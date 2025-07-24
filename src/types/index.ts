@@ -149,3 +149,190 @@ export interface MakeApiError extends Error {
   details?: any;
   retryable: boolean;
 }
+
+export interface MakeAnalytics {
+  organizationId: number;
+  period: {
+    startDate: string;
+    endDate: string;
+  };
+  usage: {
+    operations: number;
+    dataTransfer: number;
+    executions: number;
+    successfulExecutions: number;
+    failedExecutions: number;
+  };
+  performance: {
+    averageExecutionTime: number;
+    averageOperationsPerExecution: number;
+    topScenarios: Array<{
+      scenarioId: number;
+      name: string;
+      executions: number;
+      operations: number;
+    }>;
+  };
+  billing: {
+    operationsUsed: number;
+    operationsLimit: number;
+    dataTransferUsed: number;
+    dataTransferLimit: number;
+  };
+}
+
+export interface MakeAuditLog {
+  id: number;
+  timestamp: string;
+  userId: number;
+  userName: string;
+  action: string;
+  resource: string;
+  resourceId?: number;
+  details: Record<string, any>;
+  ipAddress?: string;
+  userAgent?: string;
+  organizationId?: number;
+  teamId?: number;
+}
+
+export interface MakeScenarioLog {
+  id: number;
+  scenarioId: number;
+  executionId: number;
+  timestamp: string;
+  level: 'info' | 'warning' | 'error' | 'debug';
+  message: string;
+  moduleId?: number;
+  moduleName?: string;
+  data?: Record<string, any>;
+}
+
+export interface MakeIncompleteExecution {
+  id: number;
+  scenarioId: number;
+  scenarioName: string;
+  startedAt: string;
+  stoppedAt: string;
+  reason: string;
+  status: 'waiting' | 'paused' | 'failed';
+  operations: number;
+  dataTransfer: number;
+  lastModuleId?: number;
+  lastModuleName?: string;
+  error?: {
+    message: string;
+    code?: string;
+    details?: any;
+  };
+  canResume: boolean;
+}
+
+export interface MakeHookLog {
+  id: number;
+  hookId: number;
+  timestamp: string;
+  method: string;
+  url: string;
+  headers: Record<string, string>;
+  body?: any;
+  response?: {
+    status: number;
+    headers: Record<string, string>;
+    body?: any;
+  };
+  processingTime: number;
+  success: boolean;
+  error?: string;
+}
+
+export interface MakeCustomApp {
+  id: number;
+  name: string;
+  description?: string;
+  version: string;
+  status: 'draft' | 'testing' | 'published' | 'deprecated' | 'suspended';
+  organizationId?: number;
+  teamId?: number;
+  configuration: {
+    type: 'connector' | 'trigger' | 'action' | 'transformer' | 'full_app';
+    runtime: 'nodejs' | 'python' | 'php' | 'custom';
+    environment: {
+      variables: Record<string, string>;
+      secrets: string[];
+      dependencies: Record<string, string>;
+    };
+    endpoints: Array<{
+      name: string;
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+      path: string;
+      description?: string;
+      parameters: any;
+      responses: any;
+    }>;
+    authentication: {
+      type: 'none' | 'api_key' | 'oauth2' | 'basic_auth' | 'custom';
+      configuration: Record<string, any>;
+    };
+    ui: {
+      icon?: string;
+      color?: string;
+      description?: string;
+      category?: string;
+    };
+  };
+  usage: {
+    installations: number;
+    executions: number;
+    averageResponseTime: number;
+    errorRate: number;
+    lastUsed?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  createdBy: number;
+  createdByName: string;
+}
+
+export interface MakeSDKApp {
+  id: number;
+  name: string;
+  description?: string;
+  version: string;
+  publisher: string;
+  category: 'productivity' | 'integration' | 'automation' | 'analytics' | 'communication' | 'utility' | 'custom';
+  status: 'available' | 'installed' | 'updating' | 'deprecated' | 'suspended';
+  organizationId?: number;
+  teamId?: number;
+  installation: {
+    installedAt?: string;
+    installedBy?: number;
+    installedByName?: string;
+    version: string;
+    autoUpdate: boolean;
+    configuration: Record<string, any>;
+    permissions: {
+      granted: string[];
+      requested: string[];
+      denied: string[];
+    };
+  };
+  usage: {
+    installations: number;
+    rating: number;
+    reviews: number;
+    activeUsers: number;
+    executions: number;
+    lastUsed?: string;
+  };
+  security: {
+    verified: boolean;
+    sandboxed: boolean;
+    permissions: string[];
+    dataAccess: 'none' | 'read' | 'write' | 'full';
+    networkAccess: boolean;
+  };
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}

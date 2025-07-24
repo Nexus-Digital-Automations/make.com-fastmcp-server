@@ -11,6 +11,18 @@ import MakeApiClient from './lib/make-api-client.js';
 import { setupGlobalErrorHandlers } from './utils/errors.js';
 import { addScenarioTools } from './tools/scenarios.js';
 import addConnectionTools from './tools/connections.js';
+import addPermissionTools from './tools/permissions.js';
+import addAnalyticsTools from './tools/analytics.js';
+import { addVariableTools } from './tools/variables.js';
+import { addAIAgentTools } from './tools/ai-agents.js';
+import { addTemplateTools } from './tools/templates.js';
+import { addFolderTools } from './tools/folders.js';
+import { addCertificateTools } from './tools/certificates.js';
+import { addProcedureTools } from './tools/procedures.js';
+import { addCustomAppTools } from './tools/custom-apps.js';
+import { addSDKTools } from './tools/sdk.js';
+import { addBillingTools } from './tools/billing.js';
+import { addNotificationTools } from './tools/notifications.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -50,8 +62,10 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **User & Permissions**: Role-based access control, team/organization administration  
 - **Analytics & Audit**: Access to execution logs, performance metrics, audit trails
 - **Resource Management**: Template management, folder organization, data store operations
+- **Security & Certificates**: SSL/TLS certificate management, cryptographic key lifecycle, certificate validation
+- **Remote Operations**: Remote procedure execution, device configuration, API call management
+- **Development Platform**: Custom app development, SDK management, hook lifecycle, function deployment
 - **Advanced Features**: Custom variables, AI agent configuration, billing access
-- **Development Tools**: Custom app development, SDK management, hook management
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 
@@ -196,14 +210,41 @@ ${configManager.isAuthEnabled() ?
           },
           capabilities: [
             'scenario-management',
-            'connection-management',
+            'connection-management', 
             'user-permissions',
-            'analytics-audit',
+            'role-management',
+            'team-management',
+            'organization-management',
+            'analytics-reporting',
+            'audit-logging',
+            'execution-monitoring',
+            'performance-metrics',
+            'data-export',
             'template-management',
+            'template-creation',
+            'template-sharing',
+            'folder-organization',
+            'data-store-management',
+            'resource-categorization',
             'webhook-management',
             'variable-management',
+            'custom-variable-management',
+            'ai-agent-management',
+            'llm-provider-integration',
+            'incomplete-execution-recovery',
+            'certificate-management',
+            'key-lifecycle-management',
+            'remote-procedure-execution',
+            'device-configuration-management',
             'custom-app-development',
-            'billing-access',
+            'sdk-app-management',
+            'hook-lifecycle-management',
+            'custom-function-deployment',
+            'billing-management',
+            'payment-processing',
+            'notification-system',
+            'email-preferences',
+            'data-structure-validation',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -307,7 +348,43 @@ ${configManager.isAuthEnabled() ?
     // Add connection management tools
     addConnectionTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections)');
+    // Add user permission management tools
+    addPermissionTools(this.server, this.apiClient);
+    
+    // Add analytics and audit log tools
+    addAnalyticsTools(this.server, this.apiClient);
+    
+    // Add custom variable management tools
+    addVariableTools(this.server, this.apiClient);
+    
+    // Add AI agent management tools
+    addAIAgentTools(this.server, this.apiClient);
+    
+    // Add template management tools
+    addTemplateTools(this.server, this.apiClient);
+    
+    // Add folder organization and data store tools
+    addFolderTools(this.server, this.apiClient);
+    
+    // Add certificate and key management tools
+    addCertificateTools(this.server, this.apiClient);
+    
+    // Add remote procedure and device management tools
+    addProcedureTools(this.server, this.apiClient);
+    
+    // Add custom app development tools
+    addCustomAppTools(this.server, this.apiClient);
+    
+    // Add SDK app management tools
+    addSDKTools(this.server, this.apiClient);
+    
+    // Add billing and payment management tools
+    addBillingTools(this.server, this.apiClient);
+    
+    // Add notification and email management tools
+    addNotificationTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications)');
   }
 
   public getServer(): FastMCP {
