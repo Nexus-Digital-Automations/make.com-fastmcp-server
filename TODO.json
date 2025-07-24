@@ -1,0 +1,498 @@
+{
+  "project": "make.com-fastmcp-server",
+  "tasks": [
+    {
+      "id": "task-1",
+      "mode": "DEVELOPMENT",
+      "description": "Set up FastMCP server development environment",
+      "prompt": "Configure and develop a Make.com FastMCP server with proper project structure, dependencies, and development workflow",
+      "dependencies": [],
+      "important_files": [],
+      "status": "completed",
+      "requires_research": false,
+      "subtasks": [],
+      "completed_at": "2025-07-24T19:16:14.632Z"
+    },
+    {
+      "id": "research-make-api-auth",
+      "mode": "RESEARCH",
+      "description": "Research Make.com API authentication methods and rate limits",
+      "prompt": "Study Make.com API documentation to understand authentication (API keys, OAuth), rate limiting, error handling, and best practices for API integration. Document authentication flows and security considerations.",
+      "dependencies": [],
+      "important_files": [],
+      "status": "pending",
+      "requires_research": true,
+      "subtasks": [],
+      "success_criteria": [
+        "Complete documentation of Make.com API authentication methods",
+        "Understanding of rate limits and error handling patterns",
+        "Security best practices documented"
+      ],
+      "estimate": "2-3 hours",
+      "priority": "high",
+      "created_at": "2025-07-24T19:06:47.328Z"
+    },
+    {
+      "id": "research-make-api-endpoints",
+      "mode": "RESEARCH",
+      "description": "Research Make.com API endpoints not covered by official MCP server",
+      "prompt": "Analyze Make.com API documentation to identify all endpoints for platform management, resource management, analytics, and development features. Create comprehensive mapping of available endpoints and their capabilities.",
+      "dependencies": [
+        "research-make-api-auth"
+      ],
+      "important_files": [],
+      "status": "pending",
+      "requires_research": true,
+      "subtasks": [],
+      "success_criteria": [
+        "Complete inventory of Make.com API endpoints",
+        "Categorization by functionality (platform, resource, analytics, dev)",
+        "Identification of endpoints not in official MCP server"
+      ],
+      "estimate": "3-4 hours",
+      "priority": "high",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "setup-fastmcp-server",
+      "mode": "DEVELOPMENT",
+      "description": "Set up FastMCP TypeScript server foundation",
+      "prompt": "Create the foundational FastMCP TypeScript server structure with proper authentication, error handling, logging, and session management following FastMCP best practices.",
+      "dependencies": [
+        "research-make-api-auth"
+      ],
+      "important_files": [
+        "src/index.ts",
+        "src/server.ts",
+        "package.json"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "FastMCP server initialization",
+        "Authentication setup",
+        "Error handling framework",
+        "Logging configuration",
+        "Session management"
+      ],
+      "success_criteria": [
+        "FastMCP server running correctly",
+        "Authentication working",
+        "Comprehensive error handling",
+        "Structured logging implemented",
+        "Session management functional"
+      ],
+      "estimate": "4-5 hours",
+      "priority": "high",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "create-api-client",
+      "mode": "DEVELOPMENT",
+      "description": "Create Make.com API client with rate limiting and error handling",
+      "prompt": "Build a robust Make.com API client with rate limiting, retry logic, error handling, and comprehensive logging. Include connection pooling and request/response validation.",
+      "dependencies": [
+        "setup-fastmcp-server"
+      ],
+      "important_files": [
+        "src/lib/make-api-client.ts",
+        "src/lib/rate-limiter.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "API client foundation",
+        "Rate limiting implementation",
+        "Retry logic and circuit breaker",
+        "Request/response validation",
+        "Connection pooling"
+      ],
+      "success_criteria": [
+        "Robust API client working",
+        "Rate limiting preventing API abuse",
+        "Intelligent retry mechanisms",
+        "Comprehensive validation",
+        "Performance optimizations"
+      ],
+      "estimate": "5-6 hours",
+      "priority": "high",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "implement-scenario-management",
+      "mode": "DEVELOPMENT",
+      "description": "Implement scenario CRUD operations (create, modify, delete)",
+      "prompt": "Create FastMCP tools for full scenario lifecycle management including creating new scenarios, modifying existing ones, deleting scenarios, and managing scenario configurations. Ensure proper error handling and validation.",
+      "dependencies": [
+        "research-make-api-endpoints"
+      ],
+      "important_files": [
+        "src/tools/scenarios.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "Create scenario creation tool",
+        "Implement scenario modification tool",
+        "Add scenario deletion tool",
+        "Add scenario configuration management"
+      ],
+      "success_criteria": [
+        "All scenario CRUD operations working",
+        "Proper input validation and error handling",
+        "FastMCP TypeScript compliance",
+        "Comprehensive logging"
+      ],
+      "estimate": "6-8 hours",
+      "priority": "high",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "implement-connection-management",
+      "mode": "DEVELOPMENT",
+      "description": "Add tools for managing app connections and webhooks",
+      "prompt": "Implement FastMCP tools for creating, updating, and managing connections between apps, including webhook configuration, connection testing, and credential management.",
+      "dependencies": [
+        "implement-scenario-management"
+      ],
+      "important_files": [
+        "src/tools/connections.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "Connection creation and configuration",
+        "Webhook endpoint management",
+        "Connection testing and validation",
+        "Credential management tools"
+      ],
+      "success_criteria": [
+        "Full connection lifecycle management",
+        "Webhook configuration working",
+        "Secure credential handling",
+        "Connection health monitoring"
+      ],
+      "estimate": "5-6 hours",
+      "priority": "high",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "implement-user-permissions",
+      "mode": "DEVELOPMENT",
+      "description": "Create tools for managing user permissions and roles",
+      "prompt": "Build FastMCP tools for user and permission management including role assignment, access control, team management, and organization administration.",
+      "dependencies": [
+        "implement-connection-management"
+      ],
+      "important_files": [
+        "src/tools/permissions.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "User role management",
+        "Permission assignment tools",
+        "Team management features",
+        "Organization administration"
+      ],
+      "success_criteria": [
+        "Complete user permission management",
+        "Role-based access control",
+        "Team and organization tools working",
+        "Audit logging for permission changes"
+      ],
+      "estimate": "4-5 hours",
+      "priority": "medium",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "implement-analytics-audit",
+      "mode": "DEVELOPMENT",
+      "description": "Add analytics and audit log access tools",
+      "prompt": "Create FastMCP tools for accessing Make.com analytics data, audit logs, execution history, and performance metrics. Include data visualization and reporting capabilities.",
+      "dependencies": [
+        "implement-user-permissions"
+      ],
+      "important_files": [
+        "src/tools/analytics.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "Analytics data retrieval",
+        "Audit log access tools",
+        "Execution history tracking",
+        "Performance metrics reporting"
+      ],
+      "success_criteria": [
+        "Complete analytics data access",
+        "Comprehensive audit log retrieval",
+        "Performance monitoring tools",
+        "Data export capabilities"
+      ],
+      "estimate": "4-5 hours",
+      "priority": "medium",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "implement-variable-management",
+      "mode": "DEVELOPMENT",
+      "description": "Create custom variable and AI agent management tools",
+      "prompt": "Build tools for managing custom variables, AI agents, LLM providers, and incomplete execution handling within Make.com platform.",
+      "dependencies": [
+        "implement-analytics-audit"
+      ],
+      "important_files": [
+        "src/tools/variables.ts",
+        "src/tools/ai-agents.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "Custom variable management",
+        "AI agent configuration",
+        "LLM provider management",
+        "Incomplete execution handling"
+      ],
+      "success_criteria": [
+        "Full variable lifecycle management",
+        "AI agent configuration tools",
+        "LLM provider integration",
+        "Execution recovery mechanisms"
+      ],
+      "estimate": "5-6 hours",
+      "priority": "medium",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "implement-template-management",
+      "mode": "DEVELOPMENT",
+      "description": "Add template and folder management capabilities",
+      "prompt": "Create FastMCP tools for managing Make.com templates, folder organization, and data store operations including creation, modification, and deletion.",
+      "dependencies": [
+        "implement-variable-management"
+      ],
+      "important_files": [
+        "src/tools/templates.ts",
+        "src/tools/folders.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "Template CRUD operations",
+        "Folder organization tools",
+        "Data store management",
+        "Resource categorization"
+      ],
+      "success_criteria": [
+        "Complete template management",
+        "Folder organization working",
+        "Data store operations functional",
+        "Resource search and filtering"
+      ],
+      "estimate": "4-5 hours",
+      "priority": "medium",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "implement-certificate-management",
+      "mode": "DEVELOPMENT",
+      "description": "Create certificate, key, and remote procedure management",
+      "prompt": "Build tools for managing certificates, keys, remote procedures, and device configurations (incoming/outgoing) in Make.com platform.",
+      "dependencies": [
+        "implement-template-management"
+      ],
+      "important_files": [
+        "src/tools/certificates.ts",
+        "src/tools/procedures.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "Certificate management",
+        "Key management and storage",
+        "Remote procedure configuration",
+        "Device management tools"
+      ],
+      "success_criteria": [
+        "Secure certificate handling",
+        "Key lifecycle management",
+        "Remote procedure execution",
+        "Device configuration tools"
+      ],
+      "estimate": "3-4 hours",
+      "priority": "low",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "implement-custom-apps",
+      "mode": "DEVELOPMENT",
+      "description": "Add custom app development and SDK management tools",
+      "prompt": "Create FastMCP tools for custom app development, SDK app management, hook management, and custom function creation within Make.com platform.",
+      "dependencies": [
+        "implement-certificate-management"
+      ],
+      "important_files": [
+        "src/tools/custom-apps.ts",
+        "src/tools/sdk.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "Custom app development tools",
+        "SDK app management",
+        "Hook management and logging",
+        "Custom function creation"
+      ],
+      "success_criteria": [
+        "Custom app development workflow",
+        "SDK integration tools",
+        "Hook lifecycle management",
+        "Function testing and deployment"
+      ],
+      "estimate": "6-7 hours",
+      "priority": "low",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "implement-billing-notifications",
+      "mode": "DEVELOPMENT",
+      "description": "Add billing and notification management features",
+      "prompt": "Build tools for accessing billing/cashier functionality, managing notifications and email preferences, and handling custom properties and data structures.",
+      "dependencies": [
+        "implement-custom-apps"
+      ],
+      "important_files": [
+        "src/tools/billing.ts",
+        "src/tools/notifications.ts"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "Billing information access",
+        "Notification management",
+        "Email preference configuration",
+        "Custom data structure handling"
+      ],
+      "success_criteria": [
+        "Billing data access working",
+        "Notification system management",
+        "Email preferences configurable",
+        "Data structure validation"
+      ],
+      "estimate": "3-4 hours",
+      "priority": "low",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "create-comprehensive-tests",
+      "mode": "TESTING",
+      "description": "Create comprehensive test suite for all Make.com API tools",
+      "prompt": "Build complete test suite including unit tests, integration tests, and E2E tests for all Make.com API tools. Include mock implementations and test data generation.",
+      "dependencies": [
+        "implement-billing-notifications"
+      ],
+      "important_files": [
+        "tests/",
+        "jest.config.js"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "Unit test coverage for all tools",
+        "Integration test suite",
+        "E2E testing framework",
+        "Mock API implementations",
+        "Test data generation"
+      ],
+      "success_criteria": [
+        "95%+ test coverage achieved",
+        "All integration tests passing",
+        "E2E tests covering main workflows",
+        "Mock implementations working",
+        "Automated test data generation"
+      ],
+      "estimate": "8-10 hours",
+      "priority": "medium",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "create-documentation",
+      "mode": "DEVELOPMENT",
+      "description": "Create comprehensive documentation and examples",
+      "prompt": "Build complete documentation including API reference, usage examples, configuration guides, and troubleshooting information. Include interactive examples and video tutorials.",
+      "dependencies": [
+        "create-comprehensive-tests"
+      ],
+      "important_files": [
+        "README.md",
+        "docs/",
+        "examples/"
+      ],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [
+        "API reference documentation",
+        "Usage examples and tutorials",
+        "Configuration guides",
+        "Troubleshooting documentation",
+        "Interactive examples"
+      ],
+      "success_criteria": [
+        "Complete API documentation",
+        "Working examples for all features",
+        "Clear configuration instructions",
+        "Comprehensive troubleshooting guide",
+        "Interactive demo available"
+      ],
+      "estimate": "6-8 hours",
+      "priority": "medium",
+      "created_at": "2025-07-24T19:06:47.329Z"
+    },
+    {
+      "id": "review-strike-1",
+      "mode": "REVIEWER",
+      "description": "Review Strike 1: Ensure the project builds completely without errors",
+      "prompt": "Perform a comprehensive code review with focus on: Ensure the project builds completely without errors\n\nCheck the entire codebase and ensure this criterion is met.\n\n## CRITICAL FAILURE RESPONSE PROTOCOL\n\nIF BUILD FAILS: Create specific TASK CREATION tasks in TODO.json to fix build issues:\n- Missing dependencies installation tasks\n- Build configuration setup tasks  \n- Compilation error resolution tasks\n- Environment setup tasks\n- Build script creation tasks\n\nCRITICAL: Use TaskManager API to add these tasks immediately when build failures are detected.\n\n## SUCCESS CRITERIA\n- Mark this review task as completed ONLY if the criterion is fully met\n- If criterion fails, you MUST create remediation tasks using TaskManager API before marking review as completed\n- All new tasks should be actionable, specific, and include proper dependencies/important_files parameters\n\n## TASK CREATION REQUIREMENT\nWhen creating remediation tasks, ensure each task includes:\n- Clear success criteria\n- Appropriate mode (DEVELOPMENT/TESTING/REFACTORING)\n- Specific file dependencies\n- Realistic time estimates\n- High priority for critical issues\n\nUse the task-creation.md guidelines for optimal task structure.",
+      "dependencies": [],
+      "important_files": [],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [],
+      "is_review_task": true,
+      "strike_number": 1
+    },
+    {
+      "id": "review-strike-2",
+      "mode": "REVIEWER",
+      "description": "Review Strike 2: Verify no lint errors exist in the codebase",
+      "prompt": "Perform a comprehensive code review with focus on: Verify no lint errors exist in the codebase\n\nCheck the entire codebase and ensure this criterion is met.\n\n## CRITICAL FAILURE RESPONSE PROTOCOL\n\nIF LINT ERRORS FOUND: Create specific TASK CREATION tasks in TODO.json to achieve zero lint errors:\n- Linting tool setup and configuration tasks\n- Code style correction tasks\n- Import organization tasks\n- Naming convention fixes tasks\n- Dead code removal tasks\n\nCRITICAL: Use TaskManager API to add these tasks immediately when lint errors are detected.\n\n## SUCCESS CRITERIA\n- Mark this review task as completed ONLY if the criterion is fully met\n- If criterion fails, you MUST create remediation tasks using TaskManager API before marking review as completed\n- All new tasks should be actionable, specific, and include proper dependencies/important_files parameters\n\n## TASK CREATION REQUIREMENT\nWhen creating remediation tasks, ensure each task includes:\n- Clear success criteria\n- Appropriate mode (DEVELOPMENT/TESTING/REFACTORING)\n- Specific file dependencies\n- Realistic time estimates\n- High priority for critical issues\n\nUse the task-creation.md guidelines for optimal task structure.",
+      "dependencies": [],
+      "important_files": [],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [],
+      "is_review_task": true,
+      "strike_number": 2
+    },
+    {
+      "id": "review-strike-3",
+      "mode": "REVIEWER",
+      "description": "Review Strike 3: Confirm test coverage is 100% on important modules and 90%+ on others, with all tests passing",
+      "prompt": "Perform a comprehensive code review with focus on: Confirm test coverage is 100% on important modules and 90%+ on others, with all tests passing\n\nCheck the entire codebase and ensure this criterion is met.\n\n## CRITICAL FAILURE RESPONSE PROTOCOL\n\nIF TEST COVERAGE INSUFFICIENT: Create specific TASK CREATION tasks in TODO.json to achieve required coverage:\n- Test framework setup tasks (Jest/Mocha/Vitest)\n- Unit test creation tasks for all modules\n- Integration test development tasks\n- Test coverage reporting setup tasks\n- CI/CD test integration tasks\n\nCRITICAL: Use TaskManager API to add these tasks immediately when coverage is below requirements.\n\n## SUCCESS CRITERIA\n- Mark this review task as completed ONLY if the criterion is fully met\n- If criterion fails, you MUST create remediation tasks using TaskManager API before marking review as completed\n- All new tasks should be actionable, specific, and include proper dependencies/important_files parameters\n\n## TASK CREATION REQUIREMENT\nWhen creating remediation tasks, ensure each task includes:\n- Clear success criteria\n- Appropriate mode (DEVELOPMENT/TESTING/REFACTORING)\n- Specific file dependencies\n- Realistic time estimates\n- High priority for critical issues\n\nUse the task-creation.md guidelines for optimal task structure.",
+      "dependencies": [],
+      "important_files": [],
+      "status": "pending",
+      "requires_research": false,
+      "subtasks": [],
+      "is_review_task": true,
+      "strike_number": 3
+    }
+  ],
+  "review_strikes": 0,
+  "strikes_completed_last_run": false,
+  "current_task_index": 0,
+  "last_mode": "RESEARCH",
+  "execution_count": 3,
+  "last_hook_activation": 1753384590506
+}
