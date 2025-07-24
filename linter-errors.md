@@ -1,169 +1,8 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-24T23:42:04.487Z
-**Total Issues:** 187 (8 errors, 179 warnings)
+**Generated:** 2025-07-24T23:53:59.151Z
+**Total Issues:** 179 (0 errors, 179 warnings)
 **Files:** 21
-
-## notifications.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/notifications.ts`
-**Issues:** 14
-
-❌ **Line 511:25** - '_' is defined but never used. `[@typescript-eslint/no-unused-vars]`
-
-❌ **Line 687:25** - '_' is defined but never used. `[@typescript-eslint/no-unused-vars]`
-
-⚠️ **Line 19:25** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 64:31** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 139:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 140:31** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 165:22** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 205:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 215:19** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 225:20** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 230:14** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 547:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 625:27** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 941:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## templates.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/templates.ts`
-**Issues:** 11
-
-❌ **Line 161:7** - 'FolderCreateSchema' is assigned a value but never used. `[@typescript-eslint/no-unused-vars]`
-
-⚠️ **Line 302:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 405:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 431:29** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 482:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 650:47** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 652:63** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 664:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 666:63** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 672:48** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 674:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## folders.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/folders.ts`
-**Issues:** 9
-
-❌ **Line 113:7** - 'FolderUpdateSchema' is assigned a value but never used. `[@typescript-eslint/no-unused-vars]`
-
-⚠️ **Line 61:22** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 66:16** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 300:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 393:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 639:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 713:55** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 714:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 715:22** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## variables.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/variables.ts`
-**Issues:** 9
-
-❌ **Line 106:7** - Unexpected lexical declaration in case block. `[no-case-declarations]`
-
-⚠️ **Line 82:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 101:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 101:57** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 239:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 293:64** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 395:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 704:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 974:78** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## sdk.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/sdk.ts`
-**Issues:** 5
-
-❌ **Line 9:10** - 'ApiResponse' is defined but never used. `[@typescript-eslint/no-unused-vars]`
-
-⚠️ **Line 29:35** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 123:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 241:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 489:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## certificates.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/certificates.ts`
-**Issues:** 4
-
-❌ **Line 153:7** - 'CertificateUpdateSchema' is assigned a value but never used. `[@typescript-eslint/no-unused-vars]`
-
-⚠️ **Line 369:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 487:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 513:29** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## validation.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/utils/validation.ts`
-**Issues:** 4
-
-❌ **Line 173:33** - Unnecessary escape character: \". `[no-useless-escape]`
-
-⚠️ **Line 140:32** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 148:44** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 156:43** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
 
 ## index.ts (eslint)
 
@@ -339,6 +178,37 @@
 
 ---
 
+## notifications.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/notifications.ts`
+**Issues:** 12
+
+⚠️ **Line 19:25** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 64:31** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 139:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 140:31** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 165:22** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 205:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 215:19** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 225:20** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 230:14** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 547:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 625:27** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 941:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
 ## procedures.ts (eslint)
 
 **File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/procedures.ts`
@@ -370,6 +240,33 @@
 
 ---
 
+## templates.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/templates.ts`
+**Issues:** 10
+
+⚠️ **Line 289:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 392:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 418:29** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 469:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 637:47** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 639:63** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 651:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 653:63** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 659:48** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 661:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
 ## make-api-client.ts (eslint)
 
 **File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/lib/make-api-client.ts`
@@ -392,6 +289,52 @@
 ⚠️ **Line 183:51** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
 
 ⚠️ **Line 190:27** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
+## folders.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/folders.ts`
+**Issues:** 8
+
+⚠️ **Line 61:22** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 66:16** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 288:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 381:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 627:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 701:55** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 702:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 703:22** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
+## variables.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/variables.ts`
+**Issues:** 8
+
+⚠️ **Line 82:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 101:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 101:57** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 240:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 294:64** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 396:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 705:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 975:78** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
 
 ---
 
@@ -516,12 +459,53 @@
 
 ---
 
+## sdk.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/sdk.ts`
+**Issues:** 4
+
+⚠️ **Line 28:35** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 122:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 240:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 488:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
+## certificates.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/certificates.ts`
+**Issues:** 3
+
+⚠️ **Line 356:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 474:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 500:29** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
+## validation.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/utils/validation.ts`
+**Issues:** 3
+
+⚠️ **Line 140:32** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 148:44** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 156:43** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
 ## config.ts (eslint)
 
 **File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/lib/config.ts`
 **Issues:** 1
 
-⚠️ **Line 49:43** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 355:8** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
 ---
 

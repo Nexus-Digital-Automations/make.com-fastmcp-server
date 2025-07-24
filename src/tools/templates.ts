@@ -158,19 +158,6 @@ const TemplateUseSchema = z.object({
   }).optional().describe('Override template scheduling'),
 }).strict();
 
-const FolderCreateSchema = z.object({
-  name: z.string().min(1).max(100).describe('Folder name (1-100 characters)'),
-  description: z.string().max(500).optional().describe('Folder description (max 500 characters)'),
-  parentId: z.number().min(1).optional().describe('Parent folder ID (for nested folders)'),
-  type: z.enum(['template', 'scenario', 'connection', 'mixed']).default('mixed').describe('Folder content type'),
-  organizationId: z.number().min(1).optional().describe('Organization ID (for organization folders)'),
-  teamId: z.number().min(1).optional().describe('Team ID (for team folders)'),
-  permissions: z.object({
-    read: z.array(z.string()).default([]).describe('User/team IDs with read access'),
-    write: z.array(z.string()).default([]).describe('User/team IDs with write access'),
-    admin: z.array(z.string()).default([]).describe('User/team IDs with admin access'),
-  }).default({}).describe('Folder permissions'),
-}).strict();
 
 /**
  * Add template management tools to FastMCP server

@@ -150,19 +150,6 @@ const CertificateCreateSchema = z.object({
   }).optional().describe('Auto-rotation settings'),
 }).strict();
 
-const CertificateUpdateSchema = z.object({
-  certificateId: z.number().min(1).describe('Certificate ID to update'),
-  name: z.string().min(1).max(100).optional().describe('New certificate name'),
-  description: z.string().max(500).optional().describe('New certificate description'),
-  status: z.enum(['active', 'inactive', 'expired', 'revoked']).optional().describe('New certificate status'),
-  certificateData: z.string().optional().describe('Updated certificate data'),
-  privateKeyData: z.string().optional().describe('Updated private key data'),
-  password: z.string().optional().describe('New password for encrypted key'),
-  autoRotation: z.object({
-    enabled: z.boolean().optional(),
-    daysBeforeExpiry: z.number().min(1).max(365).optional(),
-  }).optional().describe('Updated auto-rotation settings'),
-}).strict();
 
 const CertificateListSchema = z.object({
   type: z.enum(['ssl', 'client', 'ca', 'signing', 'encryption', 'all']).default('all').describe('Filter by certificate type'),

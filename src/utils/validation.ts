@@ -170,7 +170,7 @@ export function validateDateRange(params: any): z.infer<typeof dateRangeSchema> 
 }
 
 export function sanitizeString(str: string): string {
-  return str.trim().replace(/[<>\"'&]/g, '');
+  return str.trim().replace(/[<>"'&]/g, '');
 }
 
 export function isValidEmail(email: string): boolean {

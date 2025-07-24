@@ -508,7 +508,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             priority: notification.priority,
             status: notification.status,
             channels: Object.entries(notification.channels)
-              .filter(([_, enabled]) => enabled)
+              .filter(([, enabled]) => enabled)
               .map(([channel]) => channel),
             totalRecipients: notification.delivery.totalRecipients,
             scheduled: !!schedule?.sendAt,
@@ -684,7 +684,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
               scenarios: updatedPreferences.preferences.scenarios.enabled,
               team: updatedPreferences.preferences.team.enabled,
               marketing: updatedPreferences.preferences.marketing.enabled,
-            }).filter(([_, enabled]) => enabled).map(([category]) => category),
+            }).filter(([, enabled]) => enabled).map(([category]) => category),
             lastUpdated: updatedPreferences.lastUpdated,
           },
         }, null, 2);

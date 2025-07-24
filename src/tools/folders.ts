@@ -110,18 +110,6 @@ const FolderCreateSchema = z.object({
   }).default({}).describe('Folder permissions'),
 }).strict();
 
-const FolderUpdateSchema = z.object({
-  folderId: z.number().min(1).describe('Folder ID to update'),
-  name: z.string().min(1).max(100).optional().describe('New folder name'),
-  description: z.string().max(500).optional().describe('New folder description'),
-  parentId: z.number().min(1).optional().describe('New parent folder ID (for moving)'),
-  type: z.enum(['template', 'scenario', 'connection', 'mixed']).optional().describe('New folder type'),
-  permissions: z.object({
-    read: z.array(z.string()).optional(),
-    write: z.array(z.string()).optional(),
-    admin: z.array(z.string()).optional(),
-  }).optional().describe('Updated permissions'),
-}).strict();
 
 const FolderListSchema = z.object({
   parentId: z.number().min(1).optional().describe('List folders under this parent (null for root)'),

@@ -102,12 +102,13 @@ function formatVariableValue(value: any, type: string): any {
   switch (type) {
     case 'string':
       return String(value);
-    case 'number':
+    case 'number': {
       const num = Number(value);
       if (isNaN(num)) {
         throw new UserError(`Invalid number value: ${value}`);
       }
       return num;
+    }
     case 'boolean':
       if (typeof value === 'boolean') return value;
       if (typeof value === 'string') {
