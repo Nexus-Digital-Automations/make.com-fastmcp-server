@@ -1,0 +1,497 @@
+{
+  "listScenarios": {
+    "success": {
+      "scenarios": [
+        {
+          "id": 2001,
+          "name": "Active Test Scenario",
+          "teamId": 12345,
+          "folderId": 3001,
+          "isActive": true,
+          "createdAt": "2024-01-01T00:00:00Z",
+          "updatedAt": "2024-01-15T12:00:00Z"
+        },
+        {
+          "id": 2002,
+          "name": "Inactive Test Scenario",
+          "teamId": 12345,
+          "folderId": null,
+          "isActive": false,
+          "createdAt": "2024-01-02T00:00:00Z",
+          "updatedAt": "2024-01-10T08:00:00Z"
+        }
+      ],
+      "pagination": {
+        "total": 15,
+        "limit": 10,
+        "offset": 0,
+        "hasMore": true
+      },
+      "filters": {
+        "active": true,
+        "limit": 10,
+        "offset": 0
+      },
+      "timestamp": "2024-01-15T14:30:00Z"
+    }
+  },
+  
+  "getScenario": {
+    "success": {
+      "scenario": {
+        "id": 2001,
+        "name": "Active Test Scenario",
+        "teamId": 12345,
+        "folderId": 3001,
+        "isActive": true,
+        "blueprint": {
+          "flow": [
+            {
+              "id": 1,
+              "app": "webhook",
+              "operation": "trigger",
+              "parameters": {
+                "url": "https://hook.make.com/example",
+                "method": "POST"
+              }
+            },
+            {
+              "id": 2,
+              "app": "email",
+              "operation": "send",
+              "parameters": {
+                "to": "user@example.com",
+                "subject": "Demo Notification"
+              }
+            }
+          ]
+        },
+        "scheduling": {
+          "type": "indefinitely",
+          "interval": 900
+        },
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-15T12:00:00Z"
+      },
+      "recentExecutions": [
+        {
+          "id": 5001,
+          "status": "success",
+          "startedAt": "2024-01-15T10:00:00Z",
+          "finishedAt": "2024-01-15T10:02:30Z",
+          "operations": 5,
+          "dataTransfer": 1024
+        }
+      ],
+      "timestamp": "2024-01-15T14:30:00Z"
+    },
+    "notFound": {
+      "error": {
+        "message": "Scenario with ID scn_99999 not found",
+        "code": "NOT_FOUND",
+        "details": {
+          "scenarioId": "scn_99999"
+        }
+      }
+    }
+  },
+  
+  "createScenario": {
+    "success": {
+      "scenario": {
+        "id": 2004,
+        "name": "Basic Demo 1642251234567",
+        "teamId": 12345,
+        "folderId": 3001,
+        "isActive": false,
+        "blueprint": {
+          "flow": [
+            {
+              "id": 1,
+              "app": "webhook",
+              "operation": "trigger",
+              "parameters": {
+                "url": "https://hook.make.com/example",
+                "method": "POST"
+              }
+            },
+            {
+              "id": 2,
+              "app": "email",
+              "operation": "send",
+              "parameters": {
+                "to": "user@example.com",
+                "subject": "Demo Notification",
+                "body": "This is a demo email from the FastMCP server"
+              }
+            }
+          ]
+        },
+        "scheduling": {
+          "type": "immediately"
+        },
+        "createdAt": "2024-01-15T14:30:00Z",
+        "updatedAt": "2024-01-15T14:30:00Z"
+      },
+      "message": "Scenario \"Basic Demo 1642251234567\" created successfully",
+      "timestamp": "2024-01-15T14:30:00Z"
+    },
+    "validationError": {
+      "error": {
+        "message": "Validation failed",
+        "code": "VALIDATION_ERROR",
+        "details": {
+          "name": "Name is required",
+          "blueprint.flow": "At least one module is required"
+        }
+      }
+    },
+    "permissionError": {
+      "error": {
+        "message": "Insufficient permissions to create scenario",
+        "code": "PERMISSION_DENIED",
+        "requiredPermission": "scenario:create",
+        "userPermissions": ["scenario:read"]
+      }
+    }
+  },
+  
+  "updateScenario": {
+    "success": {
+      "scenario": {
+        "id": 2001,
+        "name": "Updated Demo Scenario Name",
+        "teamId": 12345,
+        "folderId": 3001,
+        "isActive": true,
+        "blueprint": {
+          "flow": [
+            {
+              "id": 1,
+              "app": "webhook",
+              "operation": "trigger",
+              "parameters": {
+                "url": "https://hook.make.com/updated",
+                "method": "POST"
+              }
+            },
+            {
+              "id": 2,
+              "app": "database",
+              "operation": "insert",
+              "parameters": {
+                "table": "webhook_logs",
+                "data": "{{1}}"
+              }
+            }
+          ]
+        },
+        "scheduling": {
+          "type": "interval",
+          "interval": 1800
+        },
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-15T14:35:00Z"
+      },
+      "updates": {
+        "name": "Updated Demo Scenario Name",
+        "active": true,
+        "scheduling": {
+          "type": "interval",
+          "interval": 1800
+        }
+      },
+      "message": "Scenario updated successfully",
+      "timestamp": "2024-01-15T14:35:00Z"
+    },
+    "noChanges": {
+      "error": {
+        "message": "No update parameters provided",
+        "code": "VALIDATION_ERROR"
+      }
+    }
+  },
+  
+  "cloneScenario": {
+    "success": {
+      "originalScenarioId": 2001,
+      "clonedScenario": {
+        "id": 2005,
+        "name": "Cloned Basic Demo 1642251234567",
+        "teamId": 12345,
+        "folderId": 3001,
+        "isActive": false,
+        "blueprint": {
+          "flow": [
+            {
+              "id": 1,
+              "app": "webhook",
+              "operation": "trigger",
+              "parameters": {
+                "url": "https://hook.make.com/example",
+                "method": "POST"
+              }
+            },
+            {
+              "id": 2,
+              "app": "email",
+              "operation": "send",
+              "parameters": {
+                "to": "user@example.com",
+                "subject": "Demo Notification"
+              }
+            }
+          ]
+        },
+        "scheduling": {
+          "type": "indefinitely",
+          "interval": 900
+        },
+        "createdAt": "2024-01-15T14:40:00Z",
+        "updatedAt": "2024-01-15T14:40:00Z"
+      },
+      "message": "Scenario cloned successfully as \"Cloned Basic Demo 1642251234567\"",
+      "timestamp": "2024-01-15T14:40:00Z"
+    },
+    "sourceNotFound": {
+      "error": {
+        "message": "Failed to get source scenario blueprint: Scenario not found",
+        "code": "NOT_FOUND",
+        "details": {
+          "sourceScenarioId": "invalid_id"
+        }
+      }
+    }
+  },
+  
+  "deleteScenario": {
+    "success": {
+      "scenarioId": 2002,
+      "message": "Scenario deleted successfully",
+      "force": false,
+      "timestamp": "2024-01-15T14:45:00Z"
+    },
+    "activeScenarioError": {
+      "error": {
+        "message": "Cannot delete active scenario. Set active=false first or use force=true.",
+        "code": "VALIDATION_ERROR",
+        "details": {
+          "scenarioId": 2001,
+          "isActive": true
+        }
+      }
+    },
+    "forceDelete": {
+      "scenarioId": 2001,
+      "message": "Scenario deleted successfully",
+      "force": true,
+      "timestamp": "2024-01-15T14:45:00Z"
+    }
+  },
+  
+  "runScenario": {
+    "success": {
+      "scenarioId": 2001,
+      "executionId": 5002,
+      "status": "success",
+      "execution": {
+        "id": 5002,
+        "scenarioId": 2001,
+        "status": "success",
+        "startedAt": "2024-01-15T14:50:00Z",
+        "finishedAt": "2024-01-15T14:52:30Z",
+        "operations": 5,
+        "dataTransfer": 1024
+      },
+      "duration": 150000,
+      "message": "Scenario execution success",
+      "timestamp": "2024-01-15T14:52:30Z"
+    },
+    "asyncExecution": {
+      "scenarioId": 2001,
+      "executionId": 5003,
+      "status": "started",
+      "message": "Scenario execution started",
+      "timestamp": "2024-01-15T14:55:00Z"
+    },
+    "timeout": {
+      "scenarioId": 2001,
+      "executionId": 5004,
+      "status": "started",
+      "message": "Scenario execution timeout - check status manually",
+      "timeout": true,
+      "timestamp": "2024-01-15T14:58:00Z"
+    },
+    "executionError": {
+      "scenarioId": 2001,
+      "executionId": 5005,
+      "status": "error",
+      "execution": {
+        "id": 5005,
+        "scenarioId": 2001,
+        "status": "error",
+        "startedAt": "2024-01-15T15:00:00Z",
+        "finishedAt": "2024-01-15T15:00:45Z",
+        "operations": 2,
+        "dataTransfer": 256,
+        "error": {
+          "message": "Connection timeout",
+          "code": "TIMEOUT",
+          "details": {
+            "timeout": 30000
+          }
+        }
+      },
+      "duration": 45000,
+      "message": "Scenario execution error",
+      "timestamp": "2024-01-15T15:00:45Z"
+    }
+  },
+  
+  "batchOperations": {
+    "createMultiple": [
+      {
+        "scenario": {
+          "id": 2006,
+          "name": "Batch Demo 1",
+          "isActive": false
+        },
+        "message": "Scenario created successfully"
+      },
+      {
+        "scenario": {
+          "id": 2007,
+          "name": "Batch Demo 2",
+          "isActive": false
+        },
+        "message": "Scenario created successfully"
+      },
+      {
+        "scenario": {
+          "id": 2008,
+          "name": "Batch Demo 3",
+          "isActive": false
+        },
+        "message": "Scenario created successfully"
+      }
+    ],
+    "bulkUpdate": {
+      "updated": [
+        {
+          "scenarioId": 2006,
+          "active": true,
+          "message": "Scenario activated"
+        },
+        {
+          "scenarioId": 2007,
+          "active": true,
+          "message": "Scenario activated"
+        },
+        {
+          "scenarioId": 2008,
+          "active": true,
+          "message": "Scenario activated"
+        }
+      ]
+    }
+  },
+  
+  "commonErrors": {
+    "unauthorized": {
+      "error": {
+        "message": "Unauthorized access",
+        "code": "UNAUTHORIZED",
+        "details": {
+          "statusCode": 401
+        }
+      }
+    },
+    "rateLimited": {
+      "error": {
+        "message": "Rate limit exceeded",
+        "code": "RATE_LIMITED", 
+        "details": {
+          "statusCode": 429,
+          "retryAfter": 60,
+          "limit": 100,
+          "remaining": 0
+        }
+      }
+    },
+    "serverError": {
+      "error": {
+        "message": "Internal server error",
+        "code": "INTERNAL_ERROR",
+        "details": {
+          "statusCode": 500
+        }
+      }
+    },
+    "invalidBlueprint": {
+      "error": {
+        "message": "Invalid blueprint configuration",
+        "code": "VALIDATION_ERROR",
+        "details": {
+          "blueprint.flow[0].app": "Required field missing",
+          "blueprint.flow[1].operation": "Invalid operation type"
+        }
+      }
+    },
+    "connectionFailed": {
+      "error": {
+        "message": "Failed to connect to MCP server",
+        "code": "CONNECTION_ERROR",
+        "details": {
+          "server": "localhost:3000",
+          "timeout": 30000
+        }
+      }
+    }
+  },
+  
+  "performanceMetrics": {
+    "listScenarios": {
+      "averageResponseTime": 250,
+      "maxResponseTime": 500,
+      "minResponseTime": 150,
+      "unit": "milliseconds"
+    },
+    "createScenario": {
+      "averageResponseTime": 800,
+      "maxResponseTime": 1200,
+      "minResponseTime": 600,
+      "unit": "milliseconds"
+    },
+    "updateScenario": {
+      "averageResponseTime": 400,
+      "maxResponseTime": 700,
+      "minResponseTime": 300,
+      "unit": "milliseconds"
+    },
+    "executeScenario": {
+      "averageResponseTime": 2500,
+      "maxResponseTime": 5000,
+      "minResponseTime": 1000,
+      "unit": "milliseconds",
+      "note": "Varies significantly based on scenario complexity"
+    }
+  },
+  
+  "testValidation": {
+    "successCriteria": [
+      "All API calls return status 200",
+      "Response structure matches expected format",
+      "Required fields are present in responses",
+      "Error handling works correctly for invalid inputs",
+      "Pagination works for list operations",
+      "Blueprint validation catches configuration errors"
+    ],
+    "performanceCriteria": [
+      "List operations complete within 500ms",
+      "Create operations complete within 1500ms",
+      "Update operations complete within 1000ms",
+      "No memory leaks during extended operations",
+      "Concurrent operations handle properly"
+    ]
+  }
+}

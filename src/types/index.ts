@@ -336,3 +336,60 @@ export interface MakeSDKApp {
   updatedAt: string;
   publishedAt: string;
 }
+
+export interface MakeBillingAccount {
+  id: number;
+  organizationId: number;
+  organizationName: string;
+  accountStatus: 'active' | 'suspended' | 'cancelled' | 'pending';
+  billingPlan: {
+    name: string;
+    type: 'free' | 'starter' | 'professional' | 'team' | 'enterprise';
+    price: number;
+    currency: string;
+    billingCycle: 'monthly' | 'annual';
+  };
+  usage: {
+    currentPeriod: {
+      startDate: string;
+      endDate: string;
+      operations: {
+        used: number;
+        limit: number;
+        percentage: number;
+      };
+    };
+  };
+  billing: {
+    nextBillingDate: string;
+    currentBalance: number;
+    paymentStatus: 'current' | 'overdue' | 'failed' | 'processing';
+    autoRenewal: boolean;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MakeNotification {
+  id: number;
+  type: 'system' | 'billing' | 'security' | 'scenario' | 'team' | 'marketing' | 'custom';
+  category: 'info' | 'warning' | 'error' | 'success' | 'reminder' | 'alert';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  title: string;
+  message: string;
+  status: 'draft' | 'scheduled' | 'sent' | 'delivered' | 'failed' | 'cancelled';
+  channels: {
+    email: boolean;
+    inApp: boolean;
+    sms: boolean;
+    webhook: boolean;
+  };
+  delivery: {
+    totalRecipients: number;
+    successfulDeliveries: number;
+    failedDeliveries: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+  createdBy: number;
+}

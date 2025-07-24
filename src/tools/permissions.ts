@@ -1,6 +1,18 @@
 /**
- * User permissions and role management tools for Make.com FastMCP Server
- * Comprehensive tools for managing users, teams, organizations, and roles
+ * @fileoverview Make.com User Permissions & Role Management Tools
+ * 
+ * Provides comprehensive CRUD operations for Make.com users, teams, organizations, and roles including:
+ * - User management with role-based access control (RBAC)
+ * - Team creation, modification, and membership management
+ * - Organization-level administration and settings
+ * - Advanced filtering and search capabilities for user directories
+ * - Invitation system with role pre-assignment
+ * - Permission scoping and hierarchy enforcement
+ * - Audit logging for all permission changes
+ * 
+ * @version 1.0.0
+ * @author Make.com FastMCP Server
+ * @see {@link https://docs.make.com/api/users} Make.com Users API Documentation
  */
 
 import { FastMCP, UserError } from 'fastmcp';
@@ -71,14 +83,58 @@ const InviteUserSchema = z.object({
 }).strict();
 
 /**
- * Add user permission management tools to FastMCP server
+ * Adds comprehensive user permission and role management tools to the FastMCP server
+ * 
+ * @param {FastMCP} server - The FastMCP server instance
+ * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and authentication
+ * @returns {void}
+ * 
+ * @example
+ * ```typescript
+ * import { addPermissionTools } from './tools/permissions.js';
+ * 
+ * const server = new FastMCP();
+ * const apiClient = new MakeApiClient(config);
+ * addPermissionTools(server, apiClient);
+ * ```
  */
 export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): void {
   const componentLogger = logger.child({ component: 'PermissionTools' });
   
   componentLogger.info('Adding user permission management tools');
 
-  // Get current user info
+  /**
+   * Get current user information and permissions for the authenticated session
+   * 
+   * Retrieves comprehensive user profile information including roles, permissions,
+   * team memberships, organization associations, and session details.
+   * 
+   * @tool get-current-user
+   * @category User Management
+   * @permission authenticated
+   * 
+   * @param {Object} args - No parameters required
+   * 
+   * @returns {Promise<string>} JSON response containing:
+   * - user: Complete user object with profile information
+   * - roles: Array of assigned roles with scope information
+   * - permissions: List of granted permissions
+   * - teams: Team memberships with role details
+   * - organizations: Organization associations
+   * - preferences: User preferences and settings
+   * - lastLoginAt: ISO timestamp of last login
+   * - createdAt: ISO timestamp of account creation
+   * 
+   * @throws {UserError} When authentication fails or user not found
+   * 
+   * @example
+   * ```bash
+   * # Get current user information
+   * mcp-client get-current-user
+   * ```
+   * 
+   * @see {@link https://docs.make.com/api/users#current} Make.com Current User API
+   */
   server.addTool({
     name: 'get-current-user',
     description: 'Get current user information and permissions',

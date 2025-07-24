@@ -65,7 +65,9 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Security & Certificates**: SSL/TLS certificate management, cryptographic key lifecycle, certificate validation
 - **Remote Operations**: Remote procedure execution, device configuration, API call management
 - **Development Platform**: Custom app development, SDK management, hook lifecycle, function deployment
-- **Advanced Features**: Custom variables, AI agent configuration, billing access
+- **Business Management**: Billing access, payment processing, usage analytics, invoice management
+- **Communication**: Notification system, email preferences, multi-channel messaging
+- **Advanced Features**: Custom variables, AI agent configuration, data structure validation
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 

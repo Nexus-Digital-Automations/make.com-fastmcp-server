@@ -1,0 +1,368 @@
+{
+  "scenarios": {
+    "basic": {
+      "name": "Basic Demo Scenario",
+      "teamId": "12345",
+      "folderId": "3001",
+      "blueprint": {
+        "flow": [
+          {
+            "id": 1,
+            "app": "webhook",
+            "operation": "trigger",
+            "parameters": {
+              "url": "https://hook.make.com/example",
+              "method": "POST"
+            }
+          },
+          {
+            "id": 2,
+            "app": "email",
+            "operation": "send",
+            "parameters": {
+              "to": "user@example.com",
+              "subject": "Demo Notification",
+              "body": "This is a demo email from the FastMCP server"
+            }
+          }
+        ]
+      },
+      "scheduling": {
+        "type": "immediately"
+      }
+    },
+    "advanced": {
+      "name": "Advanced Workflow Demo",
+      "teamId": "12345",
+      "folderId": "3002",
+      "blueprint": {
+        "flow": [
+          {
+            "id": 1,
+            "app": "scheduler",
+            "operation": "interval",
+            "parameters": {
+              "interval": 900
+            }
+          },
+          {
+            "id": 2,
+            "app": "database",
+            "operation": "select",
+            "parameters": {
+              "query": "SELECT * FROM users WHERE active = 1",
+              "connection": "mysql_demo"
+            }
+          },
+          {
+            "id": 3,
+            "app": "filter",
+            "operation": "condition",
+            "parameters": {
+              "condition": "{{2.length}} > 0"
+            }
+          },
+          {
+            "id": 4,
+            "app": "email",
+            "operation": "send_bulk",
+            "parameters": {
+              "recipients": "{{2.email}}",
+              "subject": "Weekly Update",
+              "template": "weekly_template"
+            }
+          }
+        ]
+      },
+      "scheduling": {
+        "type": "cron",
+        "cron": "0 9 * * 1"
+      }
+    },
+    "ecommerce": {
+      "name": "E-commerce Order Processing",
+      "teamId": "12345",
+      "folderId": "3003",
+      "blueprint": {
+        "flow": [
+          {
+            "id": 1,
+            "app": "webhook",
+            "operation": "trigger",
+            "parameters": {
+              "url": "https://shop.example.com/webhook/orders",
+              "method": "POST"
+            }
+          },
+          {
+            "id": 2,
+            "app": "filter",
+            "operation": "condition",
+            "parameters": {
+              "condition": "{{1.order_status}} = 'paid'"
+            }
+          },
+          {
+            "id": 3,
+            "app": "inventory",
+            "operation": "update_stock",
+            "parameters": {
+              "product_id": "{{1.product_id}}",
+              "quantity": "{{1.quantity}}",
+              "operation": "decrease"
+            }
+          },
+          {
+            "id": 4,
+            "app": "shipping",
+            "operation": "create_label",
+            "parameters": {
+              "order_id": "{{1.order_id}}",
+              "address": "{{1.shipping_address}}"
+            }
+          },
+          {
+            "id": 5,
+            "app": "email",
+            "operation": "send",
+            "parameters": {
+              "to": "{{1.customer_email}}",
+              "subject": "Order Confirmation - {{1.order_id}}",
+              "template": "order_confirmation",
+              "data": {
+                "order_id": "{{1.order_id}}",
+                "tracking_number": "{{4.tracking_number}}"
+              }
+            }
+          }
+        ]
+      },
+      "scheduling": {
+        "type": "immediately"
+      }
+    }
+  },
+  "filters": {
+    "activeScenarios": {
+      "active": true,
+      "limit": 20,
+      "offset": 0
+    },
+    "teamScenarios": {
+      "teamId": "12345",
+      "limit": 50,
+      "offset": 0
+    },
+    "searchExample": {
+      "search": "demo",
+      "active": true,
+      "limit": 10
+    },
+    "folderScenarios": {
+      "folderId": "3001",
+      "limit": 25,
+      "offset": 0
+    }
+  },
+  "updates": {
+    "activateScenario": {
+      "active": true
+    },
+    "updateName": {
+      "name": "Updated Demo Scenario Name"
+    },
+    "updateScheduling": {
+      "scheduling": {
+        "type": "interval",
+        "interval": 1800
+      }
+    },
+    "updateBlueprint": {
+      "blueprint": {
+        "flow": [
+          {
+            "id": 1,
+            "app": "webhook",
+            "operation": "trigger",
+            "parameters": {
+              "url": "https://hook.make.com/updated",
+              "method": "POST"
+            }
+          },
+          {
+            "id": 2,
+            "app": "database",
+            "operation": "insert",
+            "parameters": {
+              "table": "webhook_logs",
+              "data": "{{1}}"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "cloning": {
+    "basicClone": {
+      "name": "Cloned Basic Demo",
+      "active": false
+    },
+    "crossTeamClone": {
+      "name": "Cross-Team Clone",
+      "teamId": "54321",
+      "folderId": "4001",
+      "active": false
+    },
+    "productionClone": {
+      "name": "Production Version",
+      "teamId": "12345",
+      "folderId": "3004",
+      "active": true
+    }
+  },
+  "execution": {
+    "basicRun": {
+      "wait": true,
+      "timeout": 60
+    },
+    "asyncRun": {
+      "wait": false
+    },
+    "longRunning": {
+      "wait": true,
+      "timeout": 300
+    }
+  },
+  "batch": {
+    "createMultiple": [
+      {
+        "name": "Batch Demo 1",
+        "blueprint": {
+          "flow": [
+            {
+              "id": 1,
+              "app": "webhook",
+              "operation": "trigger"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Batch Demo 2",
+        "blueprint": {
+          "flow": [
+            {
+              "id": 1,
+              "app": "scheduler",
+              "operation": "interval"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Batch Demo 3",
+        "blueprint": {
+          "flow": [
+            {
+              "id": 1,
+              "app": "database",
+              "operation": "select"
+            }
+          ]
+        }
+      }
+    ],
+    "bulkActivate": {
+      "active": true
+    },
+    "bulkDeactivate": {
+      "active": false
+    }
+  },
+  "validation": {
+    "validBlueprint": {
+      "flow": [
+        {
+          "id": 1,
+          "app": "webhook",
+          "operation": "trigger",
+          "parameters": {
+            "url": "https://example.com/webhook"
+          }
+        }
+      ]
+    },
+    "invalidBlueprint": {
+      "flow": [
+        {
+          "id": 1,
+          "app": "invalid_app",
+          "operation": "invalid_operation"
+        }
+      ]
+    },
+    "missingParameters": {
+      "flow": [
+        {
+          "id": 1,
+          "app": "email",
+          "operation": "send"
+        }
+      ]
+    }
+  },
+  "testScenarios": {
+    "existing": {
+      "id": 2001,
+      "name": "Active Test Scenario",
+      "teamId": 12345,
+      "isActive": true
+    },
+    "inactive": {
+      "id": 2002,
+      "name": "Inactive Test Scenario",
+      "teamId": 12345,
+      "isActive": false
+    },
+    "scheduled": {
+      "id": 2003,
+      "name": "Scheduled Test Scenario",
+      "teamId": 12345,
+      "isActive": true,
+      "scheduling": {
+        "type": "cron",
+        "cron": "0 9 * * 1-5"
+      }
+    }
+  },
+  "expectedOutputs": {
+    "createSuccess": {
+      "scenario": {
+        "id": "generated_id",
+        "name": "Basic Demo Scenario",
+        "teamId": 12345,
+        "isActive": false,
+        "blueprint": "full_blueprint_object",
+        "createdAt": "timestamp"
+      },
+      "message": "Scenario created successfully"
+    },
+    "listSuccess": {
+      "scenarios": "array_of_scenarios",
+      "pagination": {
+        "total": "number",
+        "limit": 20,
+        "offset": 0,
+        "hasMore": "boolean"
+      }
+    },
+    "executeSuccess": {
+      "scenarioId": "scenario_id",
+      "executionId": "execution_id",
+      "status": "success",
+      "duration": "milliseconds",
+      "operations": "number",
+      "message": "Scenario execution completed successfully"
+    }
+  }
+}

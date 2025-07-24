@@ -6,7 +6,7 @@
 import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-import { MakeVariable, MakeIncompleteExecution, ApiResponse } from '../types/index.js';
+import { MakeVariable, MakeIncompleteExecution } from '../types/index.js';
 import logger from '../lib/logger.js';
 
 // Extended variable types for comprehensive management

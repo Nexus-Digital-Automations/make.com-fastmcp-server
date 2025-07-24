@@ -6,7 +6,6 @@
 import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-import { ApiResponse } from '../types/index.js';
 import logger from '../lib/logger.js';
 
 // AI Agent types for comprehensive management

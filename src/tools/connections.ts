@@ -1,6 +1,17 @@
 /**
- * Connection management tools for Make.com FastMCP Server
- * Comprehensive tools for managing app connections and webhooks
+ * @fileoverview Make.com Connection and Webhook Management Tools
+ * 
+ * Provides comprehensive CRUD operations for Make.com app connections and webhooks including:
+ * - Creating, updating, and deleting connections with secure credential handling
+ * - Connection validation and testing with service-specific protocols
+ * - Webhook management with endpoint configuration and monitoring
+ * - Service discovery and integration status monitoring
+ * - Advanced filtering and search capabilities
+ * - Security-conscious credential storage and access control
+ * 
+ * @version 1.0.0
+ * @author Make.com FastMCP Server
+ * @see {@link https://docs.make.com/api/connections} Make.com Connections API Documentation
  */
 
 import { FastMCP, UserError } from 'fastmcp';
@@ -61,14 +72,65 @@ const UpdateWebhookSchema = z.object({
 }).strict();
 
 /**
- * Add connection management tools to FastMCP server
+ * Adds comprehensive connection and webhook management tools to the FastMCP server
+ * 
+ * @param {FastMCP} server - The FastMCP server instance
+ * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and error handling
+ * @returns {void}
+ * 
+ * @example
+ * ```typescript
+ * import { addConnectionTools } from './tools/connections.js';
+ * 
+ * const server = new FastMCP();
+ * const apiClient = new MakeApiClient(config);
+ * addConnectionTools(server, apiClient);
+ * ```
  */
 export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): void {
   const componentLogger = logger.child({ component: 'ConnectionTools' });
   
   componentLogger.info('Adding connection management tools');
 
-  // List connections tool
+  /**
+   * List and filter app connections in Make.com with advanced search capabilities
+   * 
+   * Provides comprehensive connection listing with support for service filtering,
+   * status validation, text search, and pagination for managing integrations.
+   * 
+   * @tool list-connections
+   * @category Connection Management
+   * @permission connection:read
+   * 
+   * @param {Object} args - Connection filtering parameters
+   * @param {string} [args.service] - Filter by service name (e.g., "slack", "gmail")
+   * @param {('valid'|'invalid'|'all')} [args.status='all'] - Filter by connection status
+   * @param {string} [args.search] - Search connections by name or account
+   * @param {number} [args.limit=20] - Maximum number of connections to return (1-100)
+   * @param {number} [args.offset=0] - Number of connections to skip for pagination
+   * 
+   * @returns {Promise<string>} JSON response containing:
+   * - connections: Array of connection objects with service details
+   * - pagination: Pagination metadata (total, limit, offset, hasMore)
+   * - filters: Applied filter parameters for reference
+   * - timestamp: ISO timestamp of the response
+   * 
+   * @throws {UserError} When API request fails or parameters are invalid
+   * 
+   * @example
+   * ```bash
+   * # List all connections
+   * mcp-client list-connections
+   * 
+   * # Filter by service and status
+   * mcp-client list-connections --service "slack" --status "valid"
+   * 
+   * # Search connections with pagination
+   * mcp-client list-connections --search "production" --limit 50 --offset 20
+   * ```
+   * 
+   * @see {@link https://docs.make.com/api/connections#list} Make.com List Connections API
+   */
   server.addTool({
     name: 'list-connections',
     description: 'List and filter app connections in Make.com',
@@ -126,7 +188,32 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     },
   });
 
-  // Get connection details tool
+  /**
+   * Get detailed information about a specific Make.com connection
+   * 
+   * Retrieves comprehensive details for a specific connection including
+   * service configuration, authentication status, and usage metadata.
+   * 
+   * @tool get-connection
+   * @category Connection Management
+   * @permission connection:read
+   * 
+   * @param {Object} args - Connection retrieval parameters
+   * @param {number} args.connectionId - Connection ID to retrieve (required)
+   * 
+   * @returns {Promise<string>} JSON response containing:
+   * - connection: Complete connection object with service details and status
+   * 
+   * @throws {UserError} When connection not found, access denied, or API request fails
+   * 
+   * @example
+   * ```bash
+   * # Get connection details
+   * mcp-client get-connection --connectionId 12345
+   * ```
+   * 
+   * @see {@link https://docs.make.com/api/connections#get} Make.com Get Connection API
+   */
   server.addTool({
     name: 'get-connection',
     description: 'Get detailed information about a specific connection',
@@ -166,7 +253,49 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     },
   });
 
-  // Create connection tool
+  /**
+   * Create a new app connection in Make.com with secure credential handling
+   * 
+   * Creates a new connection to external services with proper credential
+   * storage, validation, and security measures for integration management.
+   * 
+   * @tool create-connection
+   * @category Connection Management
+   * @permission connection:create
+   * 
+   * @param {Object} args - Connection creation parameters
+   * @param {string} args.name - Connection name (required, 1-100 chars)
+   * @param {string} args.service - Service identifier (e.g., "slack", "gmail") (required)
+   * @param {string} args.accountName - Account name or identifier (required, 1-100 chars)
+   * @param {Object} args.credentials - Service-specific credentials (required)
+   * @param {Object} [args.metadata] - Additional connection metadata
+   * 
+   * @returns {Promise<string>} JSON response containing:
+   * - connection: Complete created connection object
+   * - message: Success confirmation message
+   * 
+   * @throws {UserError} When creation fails, credentials are invalid, or service is not supported
+   * 
+   * @example
+   * ```bash
+   * # Create Slack connection
+   * mcp-client create-connection \
+   *   --name "Team Slack" \
+   *   --service "slack" \
+   *   --accountName "team-workspace" \
+   *   --credentials '{"token": "xoxb-...", "workspace": "team"}'
+   * 
+   * # Create Gmail connection with metadata
+   * mcp-client create-connection \
+   *   --name "Support Gmail" \
+   *   --service "gmail" \
+   *   --accountName "support@company.com" \
+   *   --credentials '{"refresh_token": "...", "client_id": "..."}' \
+   *   --metadata '{"department": "support", "primary": true}'
+   * ```
+   * 
+   * @see {@link https://docs.make.com/api/connections#create} Make.com Create Connection API
+   */
   server.addTool({
     name: 'create-connection',
     description: 'Create a new app connection in Make.com',
@@ -219,7 +348,49 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     },
   });
 
-  // Update connection tool
+  /**
+   * Update an existing app connection with secure credential management
+   * 
+   * Modifies connection properties including name, account details, credentials,
+   * and metadata with validation and security measures for safe updates.
+   * 
+   * @tool update-connection
+   * @category Connection Management
+   * @permission connection:write
+   * 
+   * @param {Object} args - Connection update parameters
+   * @param {number} args.connectionId - Connection ID to update (required)
+   * @param {string} [args.name] - New connection name (1-100 chars)
+   * @param {string} [args.accountName] - New account name (1-100 chars)
+   * @param {Object} [args.credentials] - Updated credentials
+   * @param {Object} [args.metadata] - Updated metadata
+   * 
+   * @returns {Promise<string>} JSON response containing:
+   * - connection: Updated connection object
+   * - message: Success confirmation message
+   * - updatedFields: List of fields that were modified
+   * 
+   * @throws {UserError} When connection not found, update fails, or no data provided
+   * 
+   * @example
+   * ```bash
+   * # Update connection name
+   * mcp-client update-connection --connectionId 12345 --name "Updated Slack Connection"
+   * 
+   * # Update credentials and metadata
+   * mcp-client update-connection \
+   *   --connectionId 12345 \
+   *   --credentials '{"token": "new-token-123"}' \
+   *   --metadata '{"updated": true, "version": "2.0"}'
+   * 
+   * # Update account name
+   * mcp-client update-connection \
+   *   --connectionId 12345 \
+   *   --accountName "new-account@company.com"
+   * ```
+   * 
+   * @see {@link https://docs.make.com/api/connections#update} Make.com Update Connection API
+   */
   server.addTool({
     name: 'update-connection',
     description: 'Update an existing app connection',

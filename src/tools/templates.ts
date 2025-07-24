@@ -6,7 +6,7 @@
 import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-import { MakeTemplate, ApiResponse } from '../types/index.js';
+import { MakeTemplate } from '../types/index.js';
 import logger from '../lib/logger.js';
 
 // Extended template types for comprehensive management
