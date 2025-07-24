@@ -9,6 +9,8 @@ import configManager from './lib/config.js';
 import logger from './lib/logger.js';
 import MakeApiClient from './lib/make-api-client.js';
 import { setupGlobalErrorHandlers } from './utils/errors.js';
+import { addScenarioTools } from './tools/scenarios.js';
+import addConnectionTools from './tools/connections.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -34,6 +36,7 @@ export class MakeServerInstance {
 
     this.setupServerEvents();
     this.addBasicTools();
+    this.addAdvancedTools();
   }
 
   private getServerInstructions(): string {
@@ -293,6 +296,18 @@ ${configManager.isAuthEnabled() ?
         }
       },
     });
+  }
+
+  private addAdvancedTools(): void {
+    this.componentLogger.info('Adding advanced Make.com API tools');
+    
+    // Add scenario management tools
+    addScenarioTools(this.server, this.apiClient);
+    
+    // Add connection management tools
+    addConnectionTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections)');
   }
 
   public getServer(): FastMCP {
