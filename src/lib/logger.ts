@@ -11,11 +11,13 @@ interface LogEntry {
   timestamp: string;
   level: LogLevel;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   component?: string;
   operation?: string;
   sessionId?: string;
   userId?: string;
+  correlationId?: string;
+  traceId?: string;
 }
 
 class Logger {
@@ -62,11 +64,13 @@ class Logger {
     return logLine;
   }
 
-  private log(level: LogLevel, message: string, data?: any, context?: {
+  private log(level: LogLevel, message: string, data?: Record<string, unknown>, context?: {
     component?: string;
     operation?: string;
     sessionId?: string;
     userId?: string;
+    correlationId?: string;
+    traceId?: string;
   }): void {
     if (!this.shouldLog(level)) return;
 
@@ -94,19 +98,47 @@ class Logger {
     }
   }
 
-  public debug(message: string, data?: any, context?: any): void {
+  public debug(message: string, data?: Record<string, unknown>, context?: {
+    component?: string;
+    operation?: string;
+    sessionId?: string;
+    userId?: string;
+    correlationId?: string;
+    traceId?: string;
+  }): void {
     this.log('debug', message, data, context);
   }
 
-  public info(message: string, data?: any, context?: any): void {
+  public info(message: string, data?: Record<string, unknown>, context?: {
+    component?: string;
+    operation?: string;
+    sessionId?: string;
+    userId?: string;
+    correlationId?: string;
+    traceId?: string;
+  }): void {
     this.log('info', message, data, context);
   }
 
-  public warn(message: string, data?: any, context?: any): void {
+  public warn(message: string, data?: Record<string, unknown>, context?: {
+    component?: string;
+    operation?: string;
+    sessionId?: string;
+    userId?: string;
+    correlationId?: string;
+    traceId?: string;
+  }): void {
     this.log('warn', message, data, context);
   }
 
-  public error(message: string, data?: any, context?: any): void {
+  public error(message: string, data?: Record<string, unknown>, context?: {
+    component?: string;
+    operation?: string;
+    sessionId?: string;
+    userId?: string;
+    correlationId?: string;
+    traceId?: string;
+  }): void {
     this.log('error', message, data, context);
   }
 
@@ -115,17 +147,19 @@ class Logger {
     operation?: string;
     sessionId?: string;
     userId?: string;
+    correlationId?: string;
+    traceId?: string;
   }): {
-    debug: (message: string, data?: any) => void;
-    info: (message: string, data?: any) => void;
-    warn: (message: string, data?: any) => void;
-    error: (message: string, data?: any) => void;
+    debug: (message: string, data?: Record<string, unknown>) => void;
+    info: (message: string, data?: Record<string, unknown>) => void;
+    warn: (message: string, data?: Record<string, unknown>) => void;
+    error: (message: string, data?: Record<string, unknown>) => void;
   } {
     return {
-      debug: (message: string, data?: any) => this.debug(message, data, context),
-      info: (message: string, data?: any) => this.info(message, data, context),
-      warn: (message: string, data?: any) => this.warn(message, data, context),
-      error: (message: string, data?: any) => this.error(message, data, context),
+      debug: (message: string, data?: Record<string, unknown>) => this.debug(message, data, context),
+      info: (message: string, data?: Record<string, unknown>) => this.info(message, data, context),
+      warn: (message: string, data?: Record<string, unknown>) => this.warn(message, data, context),
+      error: (message: string, data?: Record<string, unknown>) => this.error(message, data, context),
     };
   }
 

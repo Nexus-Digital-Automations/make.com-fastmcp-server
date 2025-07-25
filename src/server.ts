@@ -8,7 +8,8 @@ import { z } from 'zod';
 import configManager from './lib/config.js';
 import logger from './lib/logger.js';
 import MakeApiClient from './lib/make-api-client.js';
-import { setupGlobalErrorHandlers } from './utils/errors.js';
+import { setupGlobalErrorHandlers, MakeServerError, AuthenticationError } from './utils/errors.js';
+import { extractCorrelationId } from './utils/error-response.js';
 import { addScenarioTools } from './tools/scenarios.js';
 import addConnectionTools from './tools/connections.js';
 import addPermissionTools from './tools/permissions.js';
@@ -86,21 +87,48 @@ ${configManager.isAuthEnabled() ?
 `.trim();
   }
 
-  private authenticate(request: any): any {
-    const apiKey = request.headers?.['x-api-key'];
+  private authenticate(request: Record<string, unknown>): Record<string, unknown> {
+    const correlationId = extractCorrelationId({ headers: request.headers as Record<string, string> });
+    const componentLogger = this.componentLogger.child({ 
+      operation: 'authenticate',
+      correlationId 
+    });
+
+    const apiKey = (request.headers as Record<string, string>)?.['x-api-key'];
     const expectedSecret = configManager.getAuthSecret();
 
     if (!apiKey || apiKey !== expectedSecret) {
+      const authError = new AuthenticationError(
+        'Invalid API key provided',
+        { 
+          hasApiKey: !!apiKey,
+          expectedLength: expectedSecret?.length 
+        },
+        {
+          correlationId,
+          operation: 'authenticate',
+          component: 'MakeServer'
+        }
+      );
+      
+      componentLogger.error('Authentication failed', {
+        hasApiKey: !!apiKey,
+        correlationId: authError.correlationId
+      });
+      
       throw new Response(null, {
         status: 401,
         statusText: 'Unauthorized - Invalid API key',
       });
     }
 
+    componentLogger.info('Authentication successful', { correlationId });
+    
     // Return session data that will be available in tool context
     return {
       authenticated: true,
       timestamp: new Date().toISOString(),
+      correlationId,
     };
   }
 
@@ -130,8 +158,16 @@ ${configManager.isAuthEnabled() ?
         readOnlyHint: true,
         openWorldHint: true,
       },
-      execute: async (args, { log }) => {
-        log.info('Performing health check');
+      execute: async (args, { log, session }) => {
+        const correlationId = extractCorrelationId({ session });
+        const componentLogger = logger.child({ 
+          component: 'HealthCheck',
+          operation: 'health-check',
+          correlationId 
+        });
+        
+        componentLogger.info('Performing health check');
+        log.info('Performing health check', { correlationId });
 
         const startTime = Date.now();
         const serverHealth = {
@@ -162,9 +198,16 @@ ${configManager.isAuthEnabled() ?
           overall: apiHealthy ? 'healthy' : 'degraded',
         };
 
+        componentLogger.info('Health check completed', { 
+          overall: healthStatus.overall,
+          responseTime: healthStatus.makeApi.responseTime,
+          correlationId
+        });
+        
         log.info('Health check completed', { 
           overall: healthStatus.overall,
-          responseTime: healthStatus.makeApi.responseTime 
+          responseTime: healthStatus.makeApi.responseTime,
+          correlationId
         });
 
         return JSON.stringify(healthStatus, null, 2);
@@ -180,8 +223,16 @@ ${configManager.isAuthEnabled() ?
         title: 'Server Information',
         readOnlyHint: true,
       },
-      execute: async (args, { log }) => {
-        log.info('Retrieving server information');
+      execute: async (args, { log, session }) => {
+        const correlationId = extractCorrelationId({ session });
+        const componentLogger = logger.child({ 
+          component: 'ServerInfo',
+          operation: 'server-info',
+          correlationId 
+        });
+        
+        componentLogger.info('Retrieving server information');
+        log.info('Retrieving server information', { correlationId });
 
         const config = configManager.getConfig();
         const serverInfo = {
@@ -275,8 +326,16 @@ ${configManager.isAuthEnabled() ?
         readOnlyHint: true,
         openWorldHint: true,
       },
-      execute: async ({ includePermissions }, { log, reportProgress }) => {
-        log.info('Testing Make.com API configuration');
+      execute: async ({ includePermissions }, { log, reportProgress, session }) => {
+        const correlationId = extractCorrelationId({ session });
+        const componentLogger = logger.child({ 
+          component: 'ConfigTest',
+          operation: 'test-configuration',
+          correlationId 
+        });
+        
+        componentLogger.info('Testing Make.com API configuration');
+        log.info('Testing Make.com API configuration', { correlationId });
         
         reportProgress({ progress: 0, total: 100 });
 
@@ -289,7 +348,8 @@ ${configManager.isAuthEnabled() ?
             throw new UserError(`API connectivity test failed: ${userResponse.error?.message}`);
           }
 
-          log.info('API connectivity test passed');
+          componentLogger.info('API connectivity test passed', { correlationId });
+          log.info('API connectivity test passed', { correlationId });
 
           // Test team access if configured
           let teamAccess = null;
@@ -329,13 +389,34 @@ ${configManager.isAuthEnabled() ?
           }
 
           reportProgress({ progress: 100, total: 100 });
-          log.info('Configuration test completed successfully');
+          componentLogger.info('Configuration test completed successfully', { correlationId });
+          log.info('Configuration test completed successfully', { correlationId });
 
           return JSON.stringify(testResults, null, 2);
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          log.error('Configuration test failed', { error: errorMessage });  
-          throw new UserError(`Configuration test failed: ${errorMessage}`);
+          const makeError = error instanceof MakeServerError 
+            ? error 
+            : new MakeServerError(
+                `Configuration test failed: ${error instanceof Error ? error.message : String(error)}`,
+                'CONFIG_TEST_FAILED',
+                500,
+                true,
+                { originalError: error instanceof Error ? error.message : String(error) },
+                { correlationId, operation: 'test-configuration', component: 'ConfigTest' }
+              );
+          
+          componentLogger.error('Configuration test failed', {
+            correlationId: makeError.correlationId,
+            errorCode: makeError.code,
+            originalError: error instanceof Error ? error.message : String(error)
+          });
+          
+          log.error('Configuration test failed', { 
+            correlationId: makeError.correlationId,
+            error: makeError.message 
+          });
+          
+          throw new UserError(makeError.message);
         }
       },
     });

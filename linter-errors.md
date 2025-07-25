@@ -1,8 +1,8 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-24T23:53:59.151Z
-**Total Issues:** 179 (0 errors, 179 warnings)
-**Files:** 21
+**Generated:** 2025-07-25T00:06:26.263Z
+**Total Issues:** 142 (0 errors, 142 warnings)
+**Files:** 20
 
 ## index.ts (eslint)
 
@@ -52,94 +52,6 @@
 ⚠️ **Line 275:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
 
 ⚠️ **Line 313:35** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## errors.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/utils/errors.ts`
-**Issues:** 19
-
-⚠️ **Line 10:29** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 17:15** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 37:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 45:68** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 53:71** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 61:56** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 69:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 79:87** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 89:35** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 91:65** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 91:80** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 101:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 112:63** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 148:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 164:61** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 176:77** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 184:95** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 195:45** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 195:67** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## logger.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/lib/logger.ts`
-**Issues:** 18
-
-⚠️ **Line 14:10** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 65:56** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 97:40** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 97:55** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 101:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 101:54** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 105:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 105:54** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 109:40** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 109:55** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 119:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 120:36** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 121:36** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 122:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 125:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 126:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 127:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 128:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
 
 ---
 
@@ -414,21 +326,6 @@
 
 ---
 
-## server.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/server.ts`
-**Issues:** 4
-
-⚠️ **Line 89:33** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 89:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 325:29** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 396:87** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
 ## ai-agents.ts (eslint)
 
 **File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/ai-agents.ts`
@@ -497,6 +394,28 @@
 ⚠️ **Line 148:44** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
 
 ⚠️ **Line 156:43** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
+## server.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/server.ts`
+**Issues:** 2
+
+⚠️ **Line 385:29** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 477:87** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
+## error-response.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/utils/error-response.ts`
+**Issues:** 2
+
+⚠️ **Line 132:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 143:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
 
 ---
 
