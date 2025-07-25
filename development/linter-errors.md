@@ -1,15 +1,15 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T07:30:53.235Z
+**Generated:** 2025-07-25T18:33:29.148Z
 **Total Issues:** 1 (1 errors, 0 warnings)
 **Files:** 1
 
-## sdk.ts (eslint)
+## audit-compliance.ts (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/sdk.ts`
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/audit-compliance.ts`
 **Issues:** 1
 
-❌ **Line 421:15** - 'installedVersion' is assigned a value but never used. `[@typescript-eslint/no-unused-vars]`
+❌ **Line 425:16** - Parsing error: ',' expected.
 
 ---
 

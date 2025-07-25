@@ -18,6 +18,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { safeGetRecord, safeGetArray } from '../utils/validation.js';
 
 // Input validation schemas
 const ConnectionFiltersSchema = z.object({
@@ -162,7 +163,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to list connections: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const connections = response.data || [];
+        const connections = safeGetArray(response.data);
         const metadata = response.metadata;
 
         log.info('Successfully retrieved connections', {
@@ -232,15 +233,16 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to get connection: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const connection = response.data;
-        if (!connection) {
+        const connection = safeGetRecord(response.data);
+        
+        if (!connection || Object.keys(connection).length === 0) {
           throw new UserError(`Connection with ID ${connectionId} not found`);
         }
 
         log.info('Successfully retrieved connection', {
           connectionId,
-          name: connection.name,
-          service: connection.service,
+          name: connection.name as string,
+          service: connection.service as string,
         });
 
         return JSON.stringify({ connection }, null, 2);
@@ -324,15 +326,16 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to create connection: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const connection = response.data;
-        if (!connection) {
+        const connection = safeGetRecord(response.data);
+        
+        if (!connection || Object.keys(connection).length === 0) {
           throw new UserError('Connection creation failed - no data returned');
         }
 
         log.info('Successfully created connection', {
-          connectionId: connection.id,
-          name: connection.name,
-          service: connection.service,
+          connectionId: connection.id as number,
+          name: connection.name as string,
+          service: connection.service as string,
         });
 
         return JSON.stringify({
@@ -417,14 +420,14 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to update connection: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const connection = response.data;
-        if (!connection) {
+        const connection = safeGetRecord(response.data);
+        if (!connection || Object.keys(connection).length === 0) {
           throw new UserError('Connection update failed - no data returned');
         }
 
         log.info('Successfully updated connection', {
           connectionId,
-          name: connection.name,
+          name: connection.name as string,
           updatedFields: Object.keys(updateData),
         });
 
@@ -497,13 +500,13 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to test connection: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const testResult = response.data;
-        if (!testResult) {
+        const testResult = safeGetRecord(response.data);
+        if (!testResult || Object.keys(testResult).length === 0) {
           throw new UserError('Connection test failed - no result returned');
         }
 
-        const isValid = testResult.valid;
-        const message = testResult.message || (isValid ? 'Connection test successful' : 'Connection test failed');
+        const isValid = testResult.valid as boolean;
+        const message = (testResult.message as string) || (isValid ? 'Connection test successful' : 'Connection test failed');
 
         log.info('Connection test completed', {
           connectionId,
@@ -558,7 +561,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to list webhooks: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const webhooks = response.data || [];
+        const webhooks = safeGetArray(response.data);
         const metadata = response.metadata;
 
         log.info('Successfully retrieved webhooks', {
@@ -617,15 +620,15 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to create webhook: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const webhook = response.data;
-        if (!webhook) {
+        const webhook = safeGetRecord(response.data);
+        if (!webhook || Object.keys(webhook).length === 0) {
           throw new UserError('Webhook creation failed - no data returned');
         }
 
         log.info('Successfully created webhook', {
-          webhookId: webhook.id,
-          name: webhook.name,
-          url: webhook.url,
+          webhookId: webhook.id as number,
+          name: webhook.name as string,
+          url: webhook.url as string,
         });
 
         return JSON.stringify({
@@ -669,14 +672,14 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to update webhook: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const webhook = response.data;
-        if (!webhook) {
+        const webhook = safeGetRecord(response.data);
+        if (!webhook || Object.keys(webhook).length === 0) {
           throw new UserError('Webhook update failed - no data returned');
         }
 
         log.info('Successfully updated webhook', {
           webhookId,
-          name: webhook.name,
+          name: webhook.name as string,
           updatedFields: Object.keys(updateData),
         });
 

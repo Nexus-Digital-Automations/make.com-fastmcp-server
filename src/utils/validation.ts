@@ -192,3 +192,38 @@ export function validateSchema<T>(schema: z.ZodSchema<T>, data: unknown): T {
   }
   return result.data;
 }
+
+// Type guard utilities for API responses
+export function isValidRecord(data: unknown): data is Record<string, unknown> {
+  return typeof data === 'object' && data !== null && !Array.isArray(data);
+}
+
+export function isValidArray(data: unknown): data is unknown[] {
+  return Array.isArray(data);
+}
+
+export function safeGetRecord(data: unknown): Record<string, unknown> {
+  return isValidRecord(data) ? data : {};
+}
+
+export function safeGetArray(data: unknown): unknown[] {
+  return isValidArray(data) ? data : [];
+}
+
+export function safeGetProperty<T>(
+  obj: Record<string, unknown>, 
+  key: string, 
+  defaultValue: T
+): T {
+  const value = obj[key];
+  return value !== undefined ? (value as T) : defaultValue;
+}
+
+// Helper for logging without exposing undefined values
+export function safeLogObject(obj: Record<string, unknown>): Record<string, unknown> {
+  const logSafe: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    logSafe[key] = value ?? null;
+  }
+  return logSafe;
+}

@@ -677,28 +677,35 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           throw new UserError(`Failed to add payment method: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const paymentMethod = response.data;
+        const paymentMethod = response.data || {};
         reportProgress({ progress: 100, total: 100 });
 
+        // Type guard for payment method data
+        const isValidPaymentMethod = (data: unknown): data is Record<string, unknown> => {
+          return typeof data === 'object' && data !== null;
+        };
+
+        const validPaymentMethod = isValidPaymentMethod(paymentMethod) ? paymentMethod : {};
+
         log.info('Successfully added payment method', {
-          paymentMethodId: paymentMethod?.id,
+          paymentMethodId: String(validPaymentMethod.id || ''),
           type,
-          isDefault: setAsDefault || paymentMethod?.isDefault,
+          isDefault: Boolean(setAsDefault || validPaymentMethod.isDefault),
         });
 
         return JSON.stringify({
           paymentMethod: {
-            ...paymentMethod,
+            ...validPaymentMethod,
             // Never expose sensitive payment details
             details: '[PAYMENT_DETAILS_SECURE]',
           },
           message: `Payment method added successfully`,
           summary: {
-            id: paymentMethod?.id,
+            id: validPaymentMethod.id,
             type,
-            lastFour: paymentMethod?.lastFour,
-            isDefault: setAsDefault || paymentMethod?.isDefault,
-            status: paymentMethod?.status || 'active',
+            lastFour: validPaymentMethod.lastFour,
+            isDefault: setAsDefault || validPaymentMethod.isDefault,
+            status: (validPaymentMethod.status as string) || 'active',
           },
           nextSteps: [
             'Verify payment method if required',
@@ -764,18 +771,26 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           throw new UserError(`Failed to update billing information: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const updatedAccount = response.data;
+        const updatedAccount = response.data || {};
         reportProgress({ progress: 100, total: 100 });
 
+        // Type guard for updated account data
+        const isValidAccount = (data: unknown): data is Record<string, unknown> => {
+          return typeof data === 'object' && data !== null;
+        };
+
+        const validAccount = isValidAccount(updatedAccount) ? updatedAccount : {};
+        const accountBilling = isValidAccount(validAccount.billing) ? validAccount.billing : {};
+
         log.info('Successfully updated billing information', {
-          organizationId: updatedAccount?.organizationId,
+          organizationId: String(validAccount.organizationId || ''),
           contactsUpdated: !!contacts,
           taxInfoUpdated: !!taxInfo,
           autoRenewalUpdated: autoRenewal !== undefined,
         });
 
         return JSON.stringify({
-          account: updatedAccount,
+          account: validAccount,
           message: 'Billing information updated successfully',
           updates: {
             contacts: !!contacts,
@@ -783,11 +798,11 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             autoRenewal: autoRenewal !== undefined,
           },
           summary: {
-            organizationId: updatedAccount?.organizationId || organizationId,
+            organizationId: validAccount.organizationId || organizationId,
             billingContact: contacts?.billing ? `${contacts.billing.name} <${contacts.billing.email}>` : undefined,
             technicalContact: contacts?.technical ? `${contacts.technical.name} <${contacts.technical.email}>` : undefined,
             taxExempt: taxInfo?.taxExempt,
-            autoRenewal: autoRenewal !== undefined ? autoRenewal : updatedAccount?.billing?.autoRenewal,
+            autoRenewal: autoRenewal !== undefined ? autoRenewal : accountBilling.autoRenewal,
           },
         }, null, 2);
       } catch (error: unknown) {

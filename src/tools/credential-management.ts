@@ -84,11 +84,8 @@ export const storeCredentialTool = {
       });
 
       return {
-        success: true,
         credentialId,
         message: `Credential stored successfully with ID: ${credentialId}`,
-        autoRotate: input.autoRotate,
-        rotationIntervalDays: input.rotationIntervalDays,
       };
     } catch (error) {
       componentLogger.error('Failed to store credential via MCP tool', {
@@ -99,8 +96,8 @@ export const storeCredentialTool = {
       });
 
       return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to store credential',
+        credentialId: '',
+        message: error instanceof Error ? error.message : 'Failed to store credential',
       };
     }
   },
@@ -134,18 +131,10 @@ export const getCredentialStatusTool = {
         success: true,
         credentialId: input.credentialId,
         status: status.status,
-        metadata: {
-          type: status.metadata?.type,
-          service: status.metadata?.service,
-          createdAt: status.metadata?.createdAt,
-          lastUsed: status.metadata?.lastUsed,
-          encrypted: status.metadata?.encrypted,
-        },
-        rotation: {
-          nextRotation: status.nextRotation,
-          daysUntilRotation: status.daysUntilRotation,
-          policy: status.rotationPolicy,
-        },
+        autoRotate: status.rotationPolicy?.enabled,
+        rotationInterval: status.rotationPolicy?.interval ? Math.floor(status.rotationPolicy.interval / (24 * 60 * 60 * 1000)) : undefined,
+        lastRotation: status.metadata?.lastUsed?.toISOString(),
+        nextRotation: status.nextRotation?.toISOString(),
       };
     } catch (error) {
       componentLogger.error('Failed to get credential status via MCP tool', {
@@ -191,9 +180,8 @@ export const rotateCredentialTool = {
 
       return {
         success: true,
-        oldCredentialId: input.credentialId,
-        newCredentialId,
-        gracePeriodHours: input.gracePeriodHours,
+        credentialId: newCredentialId,
+        rotationTimestamp: new Date().toISOString(),
         message: `Credential rotated successfully. New ID: ${newCredentialId}`,
       };
     } catch (error) {
