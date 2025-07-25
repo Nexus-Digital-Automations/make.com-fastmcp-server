@@ -99,7 +99,7 @@ export class CircuitBreaker {
       const startTime = Date.now();
       const result = await Promise.race([
         operation(),
-        this.createTimeoutPromise(),
+        this.createTimeoutPromise<T>(),
       ]);
       
       const duration = Date.now() - startTime;
@@ -214,7 +214,7 @@ export async function retryWithBackoff<T>(
     operation: 'retry-with-backoff',
   });
 
-  let lastError: Error;
+  let lastError: Error = new Error('No attempts made');
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -359,8 +359,8 @@ export class Bulkhead {
         });
 
         this.queue.push({
-          operation,
-          resolve,
+          operation: operation as () => Promise<unknown>,
+          resolve: resolve as (value: unknown) => void,
           reject,
           correlationId: requestId,
         });
