@@ -418,19 +418,19 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         
         // Type guards for installation data
         const installationId = typeof installation.id === 'string' || typeof installation.id === 'number' ? installation.id : 'unknown';
-        const installedVersion = typeof installation.version === 'string' ? installation.version : 'unknown';
         
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully installed SDK app', {
           appId,
           installationId: installationId,
-          version: installedVersion,
+          version: typeof installation.version === 'string' ? installation.version : 'unknown',
         });
 
         // Additional type guards for summary
         const appName = typeof installation.appName === 'string' ? installation.appName : 'unknown';
         const installedAt = typeof installation.installedAt === 'string' ? installation.installedAt : new Date().toISOString();
+        const installedVersion = typeof installation.version === 'string' ? installation.version : 'unknown';
         const installationPermissions = installation.permissions && typeof installation.permissions === 'object' ? installation.permissions as Record<string, unknown> : {};
         const granted = Array.isArray(installationPermissions.granted) ? installationPermissions.granted : [];
 
