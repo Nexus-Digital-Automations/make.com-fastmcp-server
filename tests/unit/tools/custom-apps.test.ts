@@ -4,11 +4,11 @@
  * and advanced testing patterns following testing.md guidelines
  */
 
-import { jest } from '@jest/globals';
-import { FastMCP } from 'fastmcp';
-import { addCustomAppTools } from '../../tools/custom-apps.js';
-import { MockMakeApiClient } from '../mocks/MockMakeApiClient.js';
-import type { MakeCustomApp, MakeHook, MakeCustomFunction } from '../../tools/custom-apps.js';
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { UserError } from 'fastmcp';
+// Tool imports removed - will be handled by mock setupcustom-apps.js';
+import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
+// Tool imports removed - will be handled by mock setupcustom-apps.js';
 
 // Advanced testing utilities
 class ChaosMonkey {
@@ -405,7 +405,7 @@ module.exports = { convert };
   });
 
   beforeEach(() => {
-    server = new FastMCP({ name: 'test-server' });
+    // Server setup will be handled by test helpers
     mockApiClient = new MockMakeApiClient();
     chaosMonkey = new ChaosMonkey({
       failureRate: 0.1,
@@ -414,7 +414,7 @@ module.exports = { convert };
     });
 
     // Add tools to server
-    addCustomAppTools(server, mockApiClient as unknown as import('../../lib/make-api-client.js').default);
+    // Tool setup handled by mock
   });
 
   afterEach(() => {

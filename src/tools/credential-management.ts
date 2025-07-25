@@ -451,4 +451,13 @@ export const credentialManagementTools = [
   cleanupCredentialsTool,
 ];
 
-export default credentialManagementTools;
+/**
+ * Add all credential management tools to FastMCP server
+ */
+export function addCredentialManagementTools(server: FastMCP, apiClient: MakeApiClient): void { // eslint-disable-line @typescript-eslint/no-unused-vars
+  credentialManagementTools.forEach(tool => {
+    server.addTool(tool);
+  });
+}
+
+export default addCredentialManagementTools;

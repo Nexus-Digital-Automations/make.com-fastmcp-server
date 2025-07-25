@@ -7,7 +7,7 @@
  * Testing patterns: Chaos engineering, performance testing, advanced error scenarios
  */
 
-import { jest } from '@jest/globals';
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { FastMCPServer } from '../../index.js';
 
 // Mock the Make API client

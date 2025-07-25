@@ -27,15 +27,15 @@
     "verbatimModuleSyntax": false,
     "downlevelIteration": true,
     "lib": ["ES2022", "DOM"],
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "tests/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "tests",
     "src/examples"
   ]
 }

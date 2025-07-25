@@ -1,29 +1,15 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T06:58:20.413Z
-**Total Issues:** 8 (0 errors, 8 warnings)
+**Generated:** 2025-07-25T07:12:12.420Z
+**Total Issues:** 1 (1 errors, 0 warnings)
 **Files:** 1
 
-## certificates.test.ts (eslint)
+## audit-compliance.ts (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tests/tools/certificates.test.ts`
-**Issues:** 8
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/audit-compliance.ts`
+**Issues:** 1
 
-⚠️ **Line 1220:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
-
-⚠️ **Line 1221:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
-
-⚠️ **Line 1222:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
-
-⚠️ **Line 1223:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
-
-⚠️ **Line 1224:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
-
-⚠️ **Line 1358:14** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
-
-⚠️ **Line 1359:14** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
-
-⚠️ **Line 1360:14** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+❌ **Line 426:58** - '_apiClient' is defined but never used. `[@typescript-eslint/no-unused-vars]`
 
 ---
 

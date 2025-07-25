@@ -420,4 +420,13 @@ export const auditComplianceTools = [
   createSecurityIncidentTool,
 ];
 
-export default auditComplianceTools;
+/**
+ * Add all audit and compliance tools to FastMCP server
+ */
+export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClient): void { // eslint-disable-line @typescript-eslint/no-unused-vars
+  auditComplianceTools.forEach(tool => {
+    server.addTool(tool);
+  });
+}
+
+export default addAuditComplianceTools;

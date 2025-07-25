@@ -4,11 +4,19 @@
  * and advanced testing patterns following testing.md guidelines
  */
 
-import { jest } from '@jest/globals';
-import { FastMCP } from 'fastmcp';
-import { addAuditComplianceTools } from '../../tools/audit-compliance.js';
-import { MockMakeApiClient } from '../mocks/MockMakeApiClient.js';
-import type { MakeAuditEvent, MakeComplianceReport, MakeSecurityAlert } from '../../tools/audit-compliance.js';
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { UserError } from 'fastmcp';
+import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
+import { 
+  createMockServer, 
+  findTool, 
+  executeTool, 
+  expectToolCall,
+  expectProgressReported,
+  expectValidZodParse,
+  expectInvalidZodParse
+} from '../../utils/test-helpers.js';
+import { testScenario, testConnection, testErrors } from '../../fixtures/test-data.js';
 
 // Advanced testing utilities
 class ChaosMonkey {
@@ -46,8 +54,9 @@ const securityTestPatterns = {
 // };
 
 describe('Audit and Compliance Tools', () => {
-  let server: FastMCP;
+  let mockServer: any;
   let mockApiClient: MockMakeApiClient;
+  let mockTool: jest.MockedFunction<any>;
   let chaosMonkey: ChaosMonkey;
 
   // Mock data generators
@@ -246,7 +255,9 @@ describe('Audit and Compliance Tools', () => {
   });
 
   beforeEach(() => {
-    server = new FastMCP({ name: 'test-server' });
+    const serverSetup = createMockServer();
+    mockServer = serverSetup.server;
+    mockTool = serverSetup.mockTool;
     mockApiClient = new MockMakeApiClient();
     chaosMonkey = new ChaosMonkey({
       failureRate: 0.1,
@@ -255,7 +266,7 @@ describe('Audit and Compliance Tools', () => {
     });
 
     // Add tools to server
-    addAuditComplianceTools(server, mockApiClient as unknown as import('../../lib/make-api-client.js').default);
+    // Tool setup handled by mock
   });
 
   afterEach(() => {
@@ -263,31 +274,47 @@ describe('Audit and Compliance Tools', () => {
   });
 
   describe('Tool Registration', () => {
-    test('should register all audit and compliance tools', () => {
-      const tools = server.getTools();
+    it('should register all audit and compliance tools', async () => {
+      const { addAuditComplianceTools } = await import('../../../src/tools/audit-compliance.js');
+      addAuditComplianceTools(mockServer, mockApiClient as any);
+      
       const expectedTools = [
-        'log-audit-event',
-        'search-audit-events',
-        'generate-compliance-report',
-        'list-compliance-reports',
-        'create-security-alert',
-        'manage-security-alerts',
+        'log_audit_event',
+        'generate_compliance_report',
+        'perform_audit_maintenance',
+        'get_audit_configuration',
+        'security_health_check',
+        'create_security_incident',
       ];
 
       expectedTools.forEach(toolName => {
-        expect(tools).toHaveProperty(toolName);
+        const tool = findTool(mockTool, toolName);
+        expect(tool).toBeDefined();
+        expect(tool.name).toBe(toolName);
       });
+      
+      expect(expectedTools).toHaveLength(6);
+      expect(mockTool).toHaveBeenCalledTimes(6);
     });
 
-    test('should have correct tool schemas', () => {
-      const tools = server.getTools();
+    it('should have correct tool schemas', async () => {
+      const { addAuditComplianceTools } = await import('../../../src/tools/audit-compliance.js');
+      addAuditComplianceTools(mockServer, mockApiClient as any);
       
-      expect(tools['log-audit-event'].parameters).toBeDefined();
-      expect(tools['search-audit-events'].parameters).toBeDefined();
-      expect(tools['generate-compliance-report'].parameters).toBeDefined();
-      expect(tools['list-compliance-reports'].parameters).toBeDefined();
-      expect(tools['create-security-alert'].parameters).toBeDefined();
-      expect(tools['manage-security-alerts'].parameters).toBeDefined();
+      const expectedTools = [
+        'log_audit_event',
+        'generate_compliance_report',
+        'perform_audit_maintenance', 
+        'get_audit_configuration',
+        'security_health_check',
+        'create_security_incident'
+      ];
+      
+      expectedTools.forEach(toolName => {
+        const tool = findTool(mockTool, toolName);
+        expect(tool).toBeDefined();
+        expect(tool.parameters).toBeDefined();
+      });
     });
   });
 

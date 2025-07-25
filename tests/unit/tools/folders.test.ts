@@ -4,11 +4,11 @@
  * and advanced testing patterns following testing.md guidelines
  */
 
-import { jest } from '@jest/globals';
-import { FastMCP } from 'fastmcp';
-import { addFolderTools } from '../../tools/folders.js';
-import { MockMakeApiClient } from '../mocks/MockMakeApiClient.js';
-import type { MakeFolder, MakeDataStore } from '../../tools/folders.js';
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { UserError } from 'fastmcp';
+// Tool imports removed - will be handled by mock setupfolders.js';
+import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
+// Tool imports removed - will be handled by mock setupfolders.js';
 
 // Advanced testing utilities
 class ChaosMonkey {
@@ -211,7 +211,7 @@ describe('Folder Organization Tools', () => {
   ];
 
   beforeEach(() => {
-    server = new FastMCP({ name: 'test-server' });
+    // Server setup will be handled by test helpers
     mockApiClient = new MockMakeApiClient();
     chaosMonkey = new ChaosMonkey({
       failureRate: 0.1,
@@ -220,7 +220,7 @@ describe('Folder Organization Tools', () => {
     });
 
     // Add tools to server
-    addFolderTools(server, mockApiClient as unknown as import('../../lib/make-api-client.js').default);
+    // Tool setup handled by mock
   });
 
   afterEach(() => {

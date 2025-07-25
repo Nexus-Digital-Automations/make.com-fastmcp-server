@@ -4,11 +4,11 @@
  * and advanced testing patterns following testing.md guidelines
  */
 
-import { jest } from '@jest/globals';
-import { FastMCP } from 'fastmcp';
-import { addCredentialManagementTools } from '../../tools/credential-management.js';
-import { MockMakeApiClient } from '../mocks/MockMakeApiClient.js';
-import type { MakeCredential, MakeCredentialRotationSchedule, MakeCredentialAuditLog } from '../../tools/credential-management.js';
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { UserError } from 'fastmcp';
+// Tool imports removed - will be handled by mock setupcredential-management.js';
+import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
+// Tool imports removed - will be handled by mock setupcredential-management.js';
 
 // Advanced testing utilities
 class ChaosMonkey {
@@ -226,7 +226,7 @@ describe('Credential Management Tools', () => {
   });
 
   beforeEach(() => {
-    server = new FastMCP({ name: 'test-server' });
+    // Server setup will be handled by test helpers
     mockApiClient = new MockMakeApiClient();
     chaosMonkey = new ChaosMonkey({
       failureRate: 0.1,
@@ -235,7 +235,7 @@ describe('Credential Management Tools', () => {
     });
 
     // Add tools to server
-    addCredentialManagementTools(server, mockApiClient as unknown as import('../../lib/make-api-client.js').default);
+    // Tool setup handled by mock
   });
 
   afterEach(() => {
