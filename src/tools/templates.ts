@@ -558,7 +558,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         log.info('Successfully created scenario from template', {
           templateId,
-          scenarioId: result?.scenarioId,
+          scenarioId: result?.scenarioId as number,
           scenarioName,
         });
 
@@ -635,9 +635,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
 
 // Helper functions
 function analyzeTemplateComplexity(blueprint: Record<string, unknown>): 'simple' | 'moderate' | 'complex' {
-  const moduleCount = blueprint?.modules?.length || 0;
-  const connectionCount = new Set(blueprint?.modules?.map((m: Record<string, unknown>) => m.app) || []).size;
-  const routeCount = blueprint?.routes?.length || 0;
+  const modules = Array.isArray(blueprint?.modules) ? blueprint.modules : [];
+  const moduleCount = modules.length;
+  const connectionCount = new Set(modules.map((m: Record<string, unknown>) => m.app).filter(Boolean)).size;
+  const routes = Array.isArray(blueprint?.routes) ? blueprint.routes : [];
+  const routeCount = routes.length;
 
   if (moduleCount <= 5 && connectionCount <= 2 && routeCount <= 5) {
     return 'simple';
@@ -649,16 +651,17 @@ function analyzeTemplateComplexity(blueprint: Record<string, unknown>): 'simple'
 }
 
 function estimateSetupTime(blueprint: Record<string, unknown>): number {
-  const moduleCount = blueprint?.modules?.length || 0;
-  const connectionCount = new Set(blueprint?.modules?.map((m: Record<string, unknown>) => m.app) || []).size;
+  const modules = Array.isArray(blueprint?.modules) ? blueprint.modules : [];
+  const moduleCount = modules.length;
+  const connectionCount = new Set(modules.map((m: Record<string, unknown>) => m.app).filter(Boolean)).size;
   
   // Base time + time per module + time per connection
   return Math.max(5, 10 + (moduleCount * 2) + (connectionCount * 5));
 }
 
 function extractRequiredConnections(blueprint: Record<string, unknown>): string[] {
-  const modules = blueprint?.modules || [];
-  return [...new Set(modules.map((m: Record<string, unknown>) => m.app).filter(Boolean))];
+  const modules = Array.isArray(blueprint?.modules) ? blueprint.modules : [];
+  return [...new Set(modules.map((m: Record<string, unknown>) => m.app).filter(Boolean))] as string[];
 }
 
 export default addTemplateTools;

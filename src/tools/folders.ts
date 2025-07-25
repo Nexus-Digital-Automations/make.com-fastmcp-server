@@ -698,7 +698,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 }
 
 // Helper function to build folder hierarchy
-function buildFolderHierarchy(folders: MakeFolder[]): Array<MakeFolder & { children: Array<MakeFolder & { children?: Array<unknown> }> }> {
+function buildFolderHierarchy(folders: MakeFolder[]): Array<MakeFolder & { children: Array<unknown> }> {
   const folderMap = new Map<number, MakeFolder & { children: Array<unknown> }>();
   const rootFolders: Array<MakeFolder & { children: Array<unknown> }> = [];
 
@@ -713,6 +713,8 @@ function buildFolderHierarchy(folders: MakeFolder[]): Array<MakeFolder & { child
   // Second pass: build hierarchy
   folders.forEach(folder => {
     const folderNode = folderMap.get(folder.id);
+    if (!folderNode) return;
+    
     if (folder.parentId) {
       const parent = folderMap.get(folder.parentId);
       if (parent) {
