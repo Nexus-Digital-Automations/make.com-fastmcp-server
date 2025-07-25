@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/42</span>
+                <span class='fraction'>0/52</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/42</span>
+                <span class='fraction'>0/52</span>
             </div>
         
             
@@ -258,6 +258,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -418,16 +428,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -448,38 +448,38 @@
  * Provides common validation functions and schemas
  */
 &nbsp;
-import { z } from 'zod';
+<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
 <span class="cstat-no" title="statement not covered" ></span>
-// Common validation schem<span class="cstat-no" title="statement not covered" >as</span>
-export const idSchema = z.n<span class="cstat-no" title="statement not covered" >umber().int().posit</span>ive();
-export const nameSchema =<span class="cstat-no" title="statement not covered" > z.string().min(1</span>).max(255);
-export const emailSchema = z<span class="cstat-no" title="statement not covered" >.string().email();</span>
-export const urlSchema = z.string().<span class="cstat-no" title="statement not covered" >url();</span>
-export const teamIdSchema = z.number().int().positive().optional();
-export const organizationIdSchem<span class="cstat-no" title="statement not covered" >a = z.number().int().positive().optional();</span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" >// Common validation schemas</span>
+<span class="cstat-no" title="statement not covered" >export const idSchema = z.number().int().positive</span>();
+<span class="cstat-no" title="statement not covered" >export const nameSchema = z.string().min(1).max</span>(255);
+<span class="cstat-no" title="statement not covered" >export const emailSchema = z.string().ema</span>il();
+<span class="cstat-no" title="statement not covered" >export const urlSchema = z.string().u</span>rl();
+<span class="cstat-no" title="statement not covered" >export const teamIdSchema = z.num</span>ber().int().positive().optional();
+<span class="cstat-no" title="statement not covered" >export const organizationIdSchema = z.num</span>ber().int().positive().optional();
+<span class="cstat-no" title="statement not covered" ></span>
 // Pagination schemas
-export const paginationSchema = z.object({
-  page: z.number().int().min(1).default(1),
-  limit: z.number().int().min(1).max(100).default(20),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'de<span class="cstat-no" title="statement not covered" >sc']).default('asc'),</span>
-});
+<span class="cstat-no" title="statement not covered" >export const paginationSchema = z.object({</span>
+<span class="cstat-no" title="statement not covered" >  page: z.number().int().min(1).default(1),</span>
+<span class="cstat-no" title="statement not covered" >  limit: z.number().int().min(1).max(100).defaul</span>t(20),
+<span class="cstat-no" title="statement not covered" >  sortBy: z.string().optional(),</span>
+<span class="cstat-no" title="statement not covered" >  sortOrder: z.enum(['asc', 'desc']).default('asc'),</span>
+<span class="cstat-no" title="statement not covered" >});</span>
 &nbsp;
-// Date range schema
+<span class="cstat-no" title="statement not covered" >// Date range schema</span>
 export const dateRangeSchema = z.object({
-  startDate: z.string().datetime().o<span class="cstat-no" title="statement not covered" >ptional(),</span>
+  startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
 });
 &nbsp;
 // Scenario schemas
-export const scenarioCreateSchema = z.object({
+<span class="cstat-no" title="statement not covered" >export const scenarioCreateSchema = z.object({</span>
   name: nameSchema,
   teamId: z.number().int().positive(),
   folderId: z.number().int().positive().optional(),
   blueprint: z.any(),
-  scheduling: z.object({
-    type: z.enum(['immediate', 'inde<span class="cstat-no" title="statement not covered" >finitely', 'on-demand']),</span>
+<span class="cstat-no" title="statement not covered" >  scheduling: z.object({</span>
+    type: z.enum(['immediate', 'indefinitely', 'on-demand']),
     interval: z.number().int().positive().optional(),
   }),
   isActive: z.boolean().default(true),
@@ -489,135 +489,135 @@ export const scenarioUpdateSchema = z.object({
   name: nameSchema.optional(),
   folderId: z.number().int().positive().optional(),
   blueprint: z.any().optional(),
-  scheduling: z.object({
-    type: z.enum(['immediate', 'indefi<span class="cstat-no" title="statement not covered" >nitely', 'on-demand']),</span>
+<span class="cstat-no" title="statement not covered" >  scheduling: z.object({</span>
+    type: z.enum(['immediate', 'indefinitely', 'on-demand']),
     interval: z.number().int().positive().optional(),
   }).optional(),
   isActive: z.boolean().optional(),
 });
 &nbsp;
-// Connection schemas<span class="cstat-no" title="statement not covered" ></span>
+// Connection schemas
 export const connectionCreateSchema = z.object({
   name: nameSchema,
   accountName: z.string().min(1).max(255),
-  service: z.string().min(1).max(100),
+<span class="cstat-no" title="statement not covered" >  service: z.string().min(1).max(100),</span>
   metadata: z.record(z.any()),
-});<span class="cstat-no" title="statement not covered" ></span>
+});
 &nbsp;
 export const connectionUpdateSchema = z.object({
   name: nameSchema.optional(),
-  accountName: z.string().min(1).max(255).optional(),
+<span class="cstat-no" title="statement not covered" >  accountName: z.string().min(1).max(255).optional(),</span>
   metadata: z.record(z.any()).optional(),
 });
 &nbsp;
-// Template schemas<span class="cstat-no" title="statement not covered" ></span>
+// Template schemas
 export const templateCreateSchema = z.object({
-  name: nameSchema,
+<span class="cstat-no" title="statement not covered" >  name: nameSchema,</span>
   description: z.string().max(1000).optional(),
   category: z.string().max(100).optional(),
   blueprint: z.any(),
   tags: z.array(z.string()).default([]),
   isPublic: z.boolean().default(false),
 });
-<span class="cstat-no" title="statement not covered" ></span>
-export const templateUpdateSchema = z.object({
+&nbsp;
+<span class="cstat-no" title="statement not covered" >export const templateUpdateSchema = z.object({</span>
   name: nameSchema.optional(),
   description: z.string().max(1000).optional(),
   category: z.string().max(100).optional(),
   blueprint: z.any().optional(),
   tags: z.array(z.string()).optional(),
   isPublic: z.boolean().optional(),
-});<span class="cstat-no" title="statement not covered" ></span>
+});
 &nbsp;
-// User schemas
+<span class="cstat-no" title="statement not covered" >// User schemas</span>
 export const userCreateSchema = z.object({
   name: nameSchema,
   email: emailSchema,
   role: z.enum(['admin', 'member', 'viewer']),
   teamId: z.number().int().positive(),
-  organizationId: z.number().int().<span class="cstat-no" title="statement not covered" >positive().optional(),</span>
+  organizationId: z.number().int().positive().optional(),
   permissions: z.array(z.string()).default([]),
-});
+<span class="cstat-no" title="statement not covered" >});</span>
 &nbsp;
 export const userUpdateSchema = z.object({
   name: nameSchema.optional(),
   email: emailSchema.optional(),
   role: z.enum(['admin', 'member', 'viewer']).optional(),
-  permissions: z.array(z.string()).<span class="cstat-no" title="statement not covered" >optional(),</span>
+  permissions: z.array(z.string()).optional(),
   isActive: z.boolean().optional(),
-});
+<span class="cstat-no" title="statement not covered" >});</span>
 &nbsp;
 // Webhook schemas
 export const webhookCreateSchema = z.object({
   name: nameSchema,
   url: urlSchema,
-  method: z.enum(['GET', 'POST', 'PU<span class="cstat-no" title="statement not covered" >T', 'DELETE']).default('POST'),</span>
+  method: z.enum(['GET', 'POST', 'PUT', 'DELETE']).default('POST'),
   headers: z.record(z.string()).optional(),
-  scenarioId: z.number().int().positive().optional(),
+<span class="cstat-no" title="statement not covered" >  scenarioId: z.number().int().positive().optional(),</span>
   isActive: z.boolean().default(true),
 });
 &nbsp;
 export const webhookUpdateSchema = z.object({
-  name: nameSchema.optional(),<span class="cstat-no" title="statement not covered" ></span>
+  name: nameSchema.optional(),
   url: urlSchema.optional(),
   method: z.enum(['GET', 'POST', 'PUT', 'DELETE']).optional(),
-  headers: z.record(z.string()).optional(),
+<span class="cstat-no" title="statement not covered" >  headers: z.record(z.string()).optional(),</span>
   isActive: z.boolean().optional(),
 });
 &nbsp;
-// Variable sche<span class="fstat-no" title="function not covered" >mas</span>
-export const variab<span class="cstat-no" title="statement not covered" >leCreateSchema = z.obje</span>ct({
-  na<span class="cstat-no" title="statement not covered" >me: z.string().min(1).max(100).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/),</span>
-  value:<span class="cstat-no" title="statement not covered" > z.any(),</span>
+// Variable schemas
+export const variableCreateSchema = z.object({
+  name: z.string().min(1).max(100).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/),
+<span class="cstat-no" title="statement not covered" >  value: z.any(),</span>
   type: z.enum(['string', 'number', 'boolean', 'json']),
-  sc<span class="cstat-no" title="statement not covered" >ope: z.enum(['global</span>', 'team', 'scenario']),
+  scope: z.enum(['global', 'team', 'scenario']),
   isEncrypted: z.boolean().default(false),
-});<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-expo<span class="cstat-no" title="statement not covered" >rt const variableUpdateSchema = z.object({</span>
-  name: <span class="cstat-no" title="statement not covered" >z.string().min(1).max(100).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/).optional(),</span>
-  value: z.any().optional(),
-  ty<span class="cstat-no" title="statement not covered" >pe: z.enum(['string'</span>, 'number', 'boolean', 'json']).optional(),
-  isEncrypted: z.boolean().optional(),
-});<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-// V<span class="cstat-no" title="statement not covered" >alidation helper functions</span>
-export f<span class="cstat-no" title="statement not covered" >unction validateId(id: unknown): number {</span>
-  const result = idSchema.safeParse(id);
-  if (!result.success) {
-<span class="cstat-no" title="statement not covered" >    throw new Error(`Invalid ID: ${result.error.message}`);</span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-  return res<span class="cstat-no" title="statement not covered" >ult.data;</span>
-}
+});
 &nbsp;
-expo<span class="cstat-no" title="statement not covered" >rt function validate</span>Pagination(params: unknown): z.infer&lt;typeof paginationSchema&gt; {
-  const result = paginationSchema.safeParse(params);
-  if (!result.su<span class="fstat-no" title="function not covered" >ccess) {</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error(`Invalid pagination paramet</span>ers: ${result.error.message}`);
+export const variableUpdateSchema = z.object({
+  name: z<span class="fstat-no" title="function not covered" >.string().m</span>in(1).max(100).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/).optional(),
+  value: z.any().op<span class="cstat-no" title="statement not covered" >tional(),</span>
+  ty<span class="cstat-no" title="statement not covered" >pe: z.enum(['string', 'number', 'boolean', 'json']).optional(),</span>
+  isEncr<span class="cstat-no" title="statement not covered" >ypted: z.boolean().optional(),</span>
+});
+<span class="cstat-no" title="statement not covered" ></span>
+// Validation helper functions
+export fu<span class="fstat-no" title="function not covered" >nction validateId(i</span>d: unknown): number {
+  const result = id<span class="cstat-no" title="statement not covered" >Schema.safeParse(id);</span>
+  if<span class="cstat-no" title="statement not covered" > (!result.success) {</span>
+    thro<span class="cstat-no" title="statement not covered" >w new Error(`Invalid ID: ${result.error.message}`);</span>
   }
-  return result.<span class="fstat-no" title="function not covered" >data;</span>
+  re<span class="cstat-no" title="statement not covered" >turn result.data;</span>
+}
+<span class="fstat-no" title="function not covered" ></span>
+export function val<span class="cstat-no" title="statement not covered" >idatePagination(params: unknown): z.infer&lt;</span>typeof paginationSchema&gt; {
+  co<span class="cstat-no" title="statement not covered" >nst result = paginationSchema.safeParse(params);</span>
+  if (!r<span class="cstat-no" title="statement not covered" >esult.success) {</span>
+    throw new Error(`Invalid pagination parameters: ${result.error.message}`);
+  }
+  re<span class="cstat-no" title="statement not covered" >turn result.data;</span>
 }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-export function <span class="fstat-no" title="function not covered" >validateDat</span>eRange(params: unknown): z.infer&lt;typeof dateRangeSchema&gt; {
-  co<span class="cstat-no" title="statement not covered" >nst result = dateRangeSchema.safeParse(pa</span>rams);
-  if (!result.success) {
+<span class="cstat-no" title="statement not covered" ></span>
+export function validateDateRange(params: unknown): z.infer&lt;typeof dateRangeSchema&gt; {
+  const result = dateRangeSchema.safeParse(params);
+  if<span class="cstat-no" title="statement not covered" > (!result.success) {</span>
     throw new Error(`Invalid date range: ${result.error.message}`);
   }<span class="fstat-no" title="function not covered" ></span>
   <span class="cstat-no" title="statement not covered" ></span>
-  //<span class="cstat-no" title="statement not covered" > Additional validation: start date should be before end date</span>
-  if (re<span class="cstat-no" title="statement not covered" >sult.data.startDate &amp;&amp; result.data.endDate) {</span>
-    if (new Date(result.data.startDate) &gt;= new Date(result.data.endDate)) {
-<span class="cstat-no" title="statement not covered" >      throw new Error('S</span>tart date must be before end date');
-    }
-  }
+  // Additional validation: start date should be before end date
+  if (res<span class="fstat-no" title="function not covered" >ult.data.star</span>tDate &amp;&amp; result.data.endDate) {
+<span class="cstat-no" title="statement not covered" >    if (new Date(result.data.startDate) &gt;= new Date(resul</span>t.data.endDate)) {
+      throw new Error('Start date must be before end date');
+    }<span class="fstat-no" title="function not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
   
   return result.data;
+}<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+expo<span class="cstat-no" title="statement not covered" >rt function sanitizeString(str: string): string {</span>
+  return<span class="cstat-no" title="statement not covered" > str.trim().replace(/[&lt;&gt;"'&amp;]/g, '');</span>
 }
-&nbsp;
-export function sanitizeString(str: string): string {
-  return str.trim().replace(/[&lt;&gt;"'&amp;]/g, '');
-}
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
 export function isValidEmail(email: string): boolean {
   return emailSchema.safeParse(email).success;
 }
@@ -640,7 +640,7 @@ export function validateSchema&lt;T&gt;(schema: z.ZodSchema&lt;T&gt;, data: unkn
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T04:09:48.063Z
+                at 2025-07-25T04:35:02.986Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

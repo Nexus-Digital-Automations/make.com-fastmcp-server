@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/275</span>
+                <span class='fraction'>0/283</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/204</span>
+                <span class='fraction'>0/211</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/275</span>
+                <span class='fraction'>0/283</span>
             </div>
         
             
@@ -815,8 +815,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1500,13 +1506,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1562,116 +1562,116 @@
  * Comprehensive tools for accessing analytics data, audit logs, execution history, and performance metrics
  */
 &nbsp;
-import { FastMCP, UserError } from 'fastmcp';
-import { z } from 'zod';
+import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
+impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
 import MakeApiClient from '../lib/make-api-client.js';
-import { MakeAnalytics, MakeAud<span class="cstat-no" title="statement not covered" >itLog, MakeScenarioLog, MakeIncompleteExecution, MakeHookLog, MakeExecution } from '../types/index.js';</span>
-import logger from '../lib/logger.js';
-&nbsp;
-// Input validation schemas
-const AnalyticsFiltersSchema = z.object({
+<span class="cstat-no" title="statement not covered" >import { MakeAnalytics, MakeAuditLog, MakeScenarioLog, MakeInco</span>mpleteExecution, MakeHookLog, MakeExecution } from '../types/index.js';
+<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+// Input valid<span class="cstat-no" title="statement not covered" >ation schemas</span>
+const AnalyticsFilte<span class="cstat-no" title="statement not covered" >rsSchema = z.object({</span>
   organizationId: z.number().min(1).describe('Organization ID for analytics'),
-  startDate: z.string().optional().describe('Start date for analytics period (ISO format)'),
+  startDate: z.string().optiona<span class="cstat-no" title="statement not covered" >l().describe('Start date for analytics period (ISO format)'),</span>
   endDate: z.string().optional().describe('End date for analytics period (ISO format)'),
   period: z.enum(['day', 'week', 'month', 'quarter', 'year']).default('month').describe('Analytics period granularity'),
-  includeUsage: z.boolean().de<span class="cstat-no" title="statement not covered" >fault(true).describe('Include usage statistics'),</span>
+  includeUsage: z.boolean().default(true).describe('Include usage statistics'),
   includePerformance: z.boolean().default(true).describe('Include performance metrics'),
   includeBilling: z.boolean().default(true).describe('Include billing information'),
 }).strict();
 &nbsp;
 const AuditLogFiltersSchema = z.object({
-  organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
+  organizationId: z.number().m<span class="cstat-no" title="statement not covered" >in(1).optional().describe('Filter by organization ID'),</span>
   teamId: z.number().min(1).optional().describe('Filter by team ID'),
   userId: z.number().min(1).optional().describe('Filter by user ID'),
   action: z.string().optional().describe('Filter by action type'),
   resource: z.string().optional().describe('Filter by resource type'),
-  startDate: z.string().optional(<span class="cstat-no" title="statement not covered" >).describe('Start date for log search (ISO format)'),</span>
-  endDate: z.string().optional().describe('End date for log search (ISO format)'),
-  limit: z.number().min(1).max(1000).default(100).describe('Maximum number of logs to return'),
-  offset: z.number().min(0).default(0).describe('Number of logs to skip for pagination'),
-}).strict();
-&nbsp;
-const ScenarioLogFiltersSchema = z.object({
-  scenarioId: z.number().min(1).describe('Scenario ID to get logs for'),
-  executionId: z.number().min(1).optional().describe('Filter by specific execution ID'),
-  level: z.enum(['info', 'warning', 'e<span class="cstat-no" title="statement not covered" >rror', 'debug']).optional().describe('Filter by log level'),</span>
   startDate: z.string().optional().describe('Start date for log search (ISO format)'),
   endDate: z.string().optional().describe('End date for log search (ISO format)'),
   limit: z.number().min(1).max(1000).default(100).describe('Maximum number of logs to return'),
   offset: z.number().min(0).default(0).describe('Number of logs to skip for pagination'),
 }).strict();
 &nbsp;
+const ScenarioLogFiltersSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
+  scenarioId: z.number().min(1).describe('Scenario ID to get logs for'),
+  executionId: z.number().min(1).optional().describe('Filter by specific execution ID'),
+  level: z.enum(['info', 'warning', 'error', 'debug']).optional().describe('Filter by log level'),
+  startDate: z.string().optional().describe('Start date for log search (ISO format)'),
+  endDate: z.string().optional().describe('End date for log search (ISO format)'),
+  limit: z.number().min(1).max(1000).default(100).describe('Maximum number of logs to return'),
+  offset: z.number().min(0).default(0).describe('Number of logs to skip for pagination'),
+}).strict();
+<span class="cstat-no" title="statement not covered" ></span>
 const ExecutionHistoryFiltersSchema = z.object({
   scenarioId: z.number().min(1).optional().describe('Filter by scenario ID'),
   organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
-  teamId: z.number().min(1).optional().de<span class="cstat-no" title="statement not covered" >scribe('Filter by team ID'),</span>
+  teamId: z.number().min(1).optional().describe('Filter by team ID'),
   status: z.enum(['success', 'error', 'warning', 'incomplete']).optional().describe('Filter by execution status'),
   startDate: z.string().optional().describe('Start date for execution search (ISO format)'),
   endDate: z.string().optional().describe('End date for execution search (ISO format)'),
   limit: z.number().min(1).max(1000).default(100).describe('Maximum number of executions to return'),
   offset: z.number().min(0).default(0).describe('Number of executions to skip for pagination'),
-}).strict();
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-const IncompleteExecutionFilt<span class="cstat-no" title="statement not covered" >ersSchema = z.object({</span>
+const IncompleteExecutionFiltersSchema = z.object({
   scenarioId: z.number().min(1).optional().describe('Filter by scenario ID'),
   organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
   status: z.enum(['waiting', 'paused', 'failed']).optional().describe('Filter by incomplete execution status'),
   canResume: z.boolean().optional().describe('Filter by resumable status'),
   limit: z.number().min(1).max(100).default(20).describe('Maximum number of incomplete executions to return'),
-  offset: z.number().min(0).default(0).describe('Number of incomplete executions to skip for pagination'),
+  offset: z.number().min(0).d<span class="cstat-no" title="statement not covered" >efault(0).describe('Number of incomplete executions to skip for pagination'),</span>
 }).strict();
 &nbsp;
-const HookLogFiltersSchem<span class="cstat-no" title="statement not covered" >a = z.object({</span>
+const HookLogFiltersSchema = z.object({
   hookId: z.number().min(1).describe('Hook ID to get logs for'),
   success: z.boolean().optional().describe('Filter by success/failure status'),
   method: z.string().optional().describe('Filter by HTTP method'),
   startDate: z.string().optional().describe('Start date for log search (ISO format)'),
   endDate: z.string().optional().describe('End date for log search (ISO format)'),
-  limit: z.number().min(1).max(1000).default(100).describe('Maximum number of logs to return'),
+  limit: z.number().min(1<span class="cstat-no" title="statement not covered" >).max(1000).default(100).describe('Maximum number of logs to return'),</span>
   offset: z.number().min(0).default(0).describe('Number of logs to skip for pagination'),
 }).strict();
 &nbsp;
 const ExportDataSchema = z.object({
-  organizationId<span class="fstat-no" title="function not covered" >: z.number().min(1</span>).describe('Organization ID for data export'),
-  dataType: z.enum(['analyti<span class="cstat-no" title="statement not covered" >cs', 'audit_logs', 'execution_history', 'scena</span>rio_logs']).describe('Type of data to export'),
-  fo<span class="cstat-no" title="statement not covered" >rmat: z.enum(['json', 'csv', 'xlsx']).default('json').describe</span>('Export format'),
+  organizationId: z.number().min(1).describe('Organization ID for data export'),
+  dataType: z.enum(['analytics', 'audit_logs', 'execution_history', 'scenario_logs']).describe('Type of data to export'),
+  format: z.enum(['json', 'csv', 'xlsx']).default('json').describe('Export format'),
   startDate: z.string().describe('Start date for data export (ISO format)'),
-  en<span class="cstat-no" title="statement not covered" >dDate: z.string().describe('End date for data export (ISO format)'),</span>
+  endDate: z.string().describe('End date for data export (ISO format)'),
   includeDetails: z.boolean().default(true).describe('Include detailed data in export'),
-}).strict();
-&nbsp;
-/**<span class="fstat-no" title="function not covered" ></span>
- * Add analytics and audit log tools to FastMCP server<span class="cstat-no" title="statement not covered" ></span>
+}).strict<span class="fstat-no" title="function not covered" >();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Add analytics and audit log tools to FastMCP server
  */<span class="cstat-no" title="statement not covered" ></span>
 export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): void {
   const componentLogger = logger.child({ component: 'AnalyticsTools' });
   
-  componentLogger.info('Adding analytics and audit log tools');
-&nbsp;
+  componentLogger<span class="fstat-no" title="function not covered" >.i</span>nfo('Adding analytics and audit log tools');
+<span class="cstat-no" title="statement not covered" ></span>
   // Get org<span class="cstat-no" title="statement not covered" >anization analytics</span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+  server.addTool({
     name: 'get-organization-analytics',
     description: 'Get comprehensive analytics data for an organization',
     parameters: AnalyticsFiltersSchema,
     execute: async (input, { log }) =&gt; {
-      const { organizationId, startDate, endDate, period, includeUsage, includePerformance, includeBilling } = input;
+      const <span class="cstat-no" title="statement not covered" >{ organizationId, startDate, endDate, period, includeUsage, includePerformance, includeBilling } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('Gett<span class="cstat-no" title="statement not covered" >ing organization analytics', {</span>
-        organiza<span class="cstat-no" title="statement not covered" >tionId,</span>
-        period,<span class="cstat-no" title="statement not covered" ></span>
-        startDate,<span class="cstat-no" title="statement not covered" ></span>
-        endDate,<span class="cstat-no" title="statement not covered" ></span>
+      log.info('Getting organization analytics', {
+        organizationId,
+        period,
+        startDate,
+        endDate,
       });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
       try {<span class="cstat-no" title="statement not covered" ></span>
-        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
+        const params<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt; </span>= {
           period,<span class="cstat-no" title="statement not covered" ></span>
-          includeUsage,
-          includ<span class="cstat-no" title="statement not covered" >ePerformance,</span>
+          includ<span class="cstat-no" title="statement not covered" >eUsage,</span>
+          includePer<span class="cstat-no" title="statement not covered" >formance,</span>
           includeBilling,
-        };
-&nbsp;
-        if (startDate) params.startDate = startDate;
+        };<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (startDat<span class="cstat-no" title="statement not covered" >e) params.startDate = startDate;</span>
         if (endDate) params.endDate = endDate;
 <span class="cstat-no" title="statement not covered" ></span>
         const response = await apiClient.get(`/analytics/${organizationId}`, { params });
@@ -1679,47 +1679,47 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (!response.success) {
           throw new UserError(`Failed to get analytics: ${response.error?.message || 'Unknown error'}`);
         }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         const analytics = response.data as MakeAnalytics;
         if (!analytics) {
           throw new UserError('Analytics data not available');
         }
 &nbsp;
-        log.info('Successfully retrie<span class="cstat-no" title="statement not covered" >ved analytics', {</span>
-          organi<span class="cstat-no" title="statement not covered" >zationId,</span>
-          period<span class="cstat-no" title="statement not covered" >: analytics.period,</span>
-          executions<span class="cstat-no" title="statement not covered" >: analytics.u</span>sage.executions,
-          operat<span class="cstat-no" title="statement not covered" >ions: analytics.usage.operations,</span>
+        log.info('Successfully retrieved analytics', {
+          organizationId,
+          period: analytics.period,
+          executions: analytics.usage.executions,
+          operations: analytics.usage.operations,
         });
-&nbsp;
-        return JSON.stringify({
-          analytics,
-<span class="cstat-no" title="statement not covered" >          summary: {</span>
-            totalExecutions: analytics.usage.executions,
+<span class="cstat-no" title="statement not covered" ></span>
+        return J<span class="cstat-no" title="statement not covered" >SON.stringify({</span>
+          analyt<span class="cstat-no" title="statement not covered" >ics,</span>
+          summary: {<span class="cstat-no" title="statement not covered" ></span>
+            tota<span class="cstat-no" title="statement not covered" >lExecutions: analytics.usage.executions,</span>
             totalOperations: analytics.usage.operations,
             successRate: Math.round((analytics.usage.successfulExecutions / analytics.usage.executions) * 100),
-            avera<span class="fstat-no" title="function not covered" >ge</span>ExecutionTime: analytics.performance.averageExecutionTime,
-            operationsUtilization: Math.round((analytics.billing.operationsUsed / analytics.billing.operatio<span class="cstat-no" title="statement not covered" >nsLimi</span>t) * 100),
-          },<span class="cstat-no" title="statement not covered" ></span>
+            averageExecutionTime: analytics.performance.averageExecutionTime,
+            operationsUtilization: Math.round((analytics.billing.operationsUsed / analytics.billing.operationsLimit) * 100),
+<span class="cstat-no" title="statement not covered" >          },</span>
         }, null, 2);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting analytics', { organizationId, error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to get organization analytics: ${errorMessage}`);
+        log.error<span class="fstat-no" title="function not covered" >('</span>Error getting analytics', { organizationId, error: errorMessage });
+        if (error instanceof UserError) throw error;<span class="cstat-no" title="statement not covered" ></span>
+        thro<span class="cstat-no" title="statement not covered" >w new UserError(`Failed to get organization analytics: ${errorMessage}`);</span>
       }
     },
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  });
+&nbsp;
   // List audit logs
   server.addTool({
     name: 'list-audit-logs',
-    description:<span class="cstat-no" title="statement not covered" > 'List and filter audit logs for security and compliance monitoring',</span>
-    parameters: Audi<span class="cstat-no" title="statement not covered" >tLogFiltersSchema,</span>
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
-      const { organi<span class="cstat-no" title="statement not covered" >zationId, teamId, userId</span>, action, resource, startDate, endDate, limit, offset } = input;
-<span class="cstat-no" title="statement not covered" ></span>
-      log.info('List<span class="cstat-no" title="statement not covered" >ing audit logs', {</span>
+    description: 'List and filter audit logs for security and compliance monitoring',
+    paramete<span class="cstat-no" title="statement not covered" >rs: AuditLogFiltersSchema,</span>
+    execute: async (input, { lo<span class="cstat-no" title="statement not covered" >g }) =&gt; {</span>
+      const { organizationId, teamId, userId, action, resource, startDate, endDate, limit, offset } = input;
+&nbsp;
+      log.info('Listing audit logs', {
         organiza<span class="cstat-no" title="statement not covered" >tionId,</span>
         teamId,<span class="cstat-no" title="statement not covered" ></span>
         userId,<span class="cstat-no" title="statement not covered" ></span>
@@ -1730,530 +1730,530 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
       try {<span class="cstat-no" title="statement not covered" ></span>
-        const params<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt; = {</span>
-          limit,
-          offset,<span class="cstat-no" title="statement not covered" ></span>
+        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
+          limit,<span class="cstat-no" title="statement not covered" ></span>
+          offset<span class="cstat-no" title="statement not covered" >,</span>
         };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
+        if (orga<span class="cstat-no" title="statement not covered" >nizationId) params.organizationId = organizationId;</span>
+        if (teamId) <span class="cstat-no" title="statement not covered" >params.teamId = teamId;</span>
         if (userId) params.userId = userId;
-        if (action) params.action = action;
-        if (resource) params.res<span class="cstat-no" title="statement not covered" >ource = resource;</span>
-        if (startDate) params.startDate = startDate;
-        if (endDate) params.endDate = endDate;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        const response = await apiClient.get('/audit-logs',<span class="fstat-no" title="function not covered" > {</span> para<span class="cstat-no" title="statement not covered" >ms });</span>
+        if (action) params.action <span class="cstat-no" title="statement not covered" >= action;</span>
+        if (resource) params.reso<span class="cstat-no" title="statement not covered" >urce = resource;</span>
+        if (star<span class="cstat-no" title="statement not covered" >tDate) params.startDate = startDate;</span>
+        if (endDate) params.endDate = endDate;
 &nbsp;
-        if (!response.success) {
+        const response = await apiClient.get('/audit-logs', { params });
+&nbsp;
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
           throw new UserError(`Failed to list audit logs: ${response.error?.message || 'Unknown error'}`);
-        }
-&nbsp;
-        const au<span class="cstat-no" title="statement not covered" >ditLogs = response.data as MakeAuditLog[] || [];</span>
+        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        const auditLogs = response.data as MakeAuditLog[] |<span class="fstat-no" title="function not covered" >| </span>[];<span class="cstat-no" title="statement not covered" ></span>
         const metadata = response.metadata;
 &nbsp;
         log.info('Successfully retrieved audit logs', {
           count: auditLogs.length,
           total: metadata?.total,
-        });
+        });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         // Create summary statistics
         const summary = {
           totalLogs: metadata?.total || auditLogs.length,
           actionTypes: [...new Set(auditLogs.map(log =&gt; log.action))],
-          resourceTypes: [...new Set(<span class="cstat-no" title="statement not covered" >auditLogs.map(log =&gt; log.resource))],</span>
-          unique<span class="cstat-no" title="statement not covered" >Users: [...new Set(auditLogs.map(log =&gt; log.userId))].length,</span>
-          dateRa<span class="cstat-no" title="statement not covered" >nge: auditLogs.length &gt; 0 ? {</span>
-            earliest<span class="cstat-no" title="statement not covered" >: auditLogs[a</span>uditLogs.length - 1]?.timestamp,
-            late<span class="cstat-no" title="statement not covered" >st: auditLogs[0]?.timestamp,</span>
+          resourceTypes: [...new Set(auditLogs.map(log =&gt; log.resource))],
+          uniqueUsers: [...new Set(auditLogs.map(log =&gt; log.userId))].length,
+          dateRange: auditLogs.length &gt; 0 ? {
+            earliest: auditLogs[auditLogs.length - 1]?.timestamp,
+            latest: auditLogs[0]?.timestamp,
           } : null,
-        };
-&nbsp;
-        return JSON.stringify({
-<span class="cstat-no" title="statement not covered" >          auditLogs,</span>
-          summary,
+        };<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return J<span class="cstat-no" title="statement not covered" >SON.stringify({</span>
+          auditLogs,<span class="cstat-no" title="statement not covered" ></span>
+          summar<span class="cstat-no" title="statement not covered" >y,</span>
           pagination: {
             total: metadata?.total || auditLogs.length,
             limit,
             offset,
-            hasMo<span class="fstat-no" title="function not covered" >re</span>: (metadata?.total || 0) &gt; (offset + auditLogs.length),
-          },<span class="cstat-no" title="statement not covered" ></span>
-        }, n<span class="cstat-no" title="statement not covered" >ull, 2);</span>
-      } catc<span class="cstat-no" title="statement not covered" >h (error: unknown) {</span>
-        const errorMessage = erro<span class="cstat-no" title="statement not covered" >r instanceof Error ? error.message : String(</span>error);
-        log.erro<span class="cstat-no" title="statement not covered" >r('Error listing audit logs', { error: errorMessage });</span>
-        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
-        throw new UserError(`Failed to list audit logs: ${errorMessage}`);
+<span class="cstat-no" title="statement not covered" >            hasMore: (metadata?.total || 0) &gt; (offset + auditLogs.length),</span>
+          },
+        }, null, 2);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error listing audit logs', { error: errorMessage });
+        if (error<span class="fstat-no" title="function not covered" > i</span>nstanceof UserError) throw error;
+        throw new UserError(`F<span class="cstat-no" title="statement not covered" >ailed </span>to list audit logs: ${errorMessage}`);
       }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
   });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  // Get audit l<span class="cstat-no" title="statement not covered" >og details</span>
+<span class="cstat-no" title="statement not covered" ></span>
+  // Get audit log d<span class="cstat-no" title="statement not covered" >etails</span>
   server.addTool({
-    name: 'get-audit-log',
-    description: 'Get detailed information about a specific audit log entry',
-    parameters: z.object({
+    name: 'get-audit-log',<span class="cstat-no" title="statement not covered" ></span>
+    description:<span class="cstat-no" title="statement not covered" > 'Get detailed information about a specific audit log entry',</span>
+    parameters: z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
       logId: z.number().min(1).describe('Audit log ID to retrieve'),
     }),<span class="cstat-no" title="statement not covered" ></span>
     execute: async (input, { log }) =&gt; {
       const { logId } = input;
-<span class="cstat-no" title="statement not covered" ></span>
-      log.info('<span class="cstat-no" title="statement not covered" >Getting audit log details', { logId });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get(`/audit-logs/${logId}`);</span>
 &nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to get audit log: ${response.error?.message || 'Unknown error'}`);
-        }
+      log.info('Getting audit log details', { logId });
+&nbsp;
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const response = await apiClient.get(`/audit-logs/${logId}`);
+&nbsp;
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
+          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to get audit log: ${response.error?.message || '</span>Unknown error'}`);
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const auditLog = response.data as MakeAuditLog;
+        const au<span class="cstat-no" title="statement not covered" >ditLog = response.data as MakeAuditLog;</span>
         if (!auditLog) {
           throw new UserError(`Audit log with ID ${logId} not found`);
-        }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        log.<span class="cstat-no" title="statement not covered" >info('Successfully retrieved audit log', {</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        log.info('Successfully retrieved audit log', {</span>
           logId,
           action: auditLog.action,
           resource: auditLog.resource,
-          userId: auditLog.userId,
-        });
-&nbsp;
-        retu<span class="cstat-no" title="statement not covered" >rn JSON.stringify({ auditLog }, null, 2);</span>
-      } catch (error: unknown) <span class="cstat-no" title="statement not covered" >{</span>
+          userId:<span class="fstat-no" title="function not covered" > a</span>uditLog.userId,
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return JSON.stringify({ auditLog }, null, 2);
+      } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting audit log', { logId, error: errorMessage });
         if (error instanceof UserError) throw error;
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to get audit log details: ${errorMessage}`);</span>
+        throw new UserError(`Failed to get audit log details: ${errorMessage}`);
       }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Get scenario lo<span class="cstat-no" title="statement not covered" >gs</span>
+  });
+&nbsp;
+  // Get scenario logs
   server.addTool<span class="cstat-no" title="statement not covered" >({</span>
     name: 'get-scena<span class="cstat-no" title="statement not covered" >rio-logs',</span>
-    description: 'Get execution l<span class="cstat-no" title="statement not covered" >ogs for a specific scenario',</span>
-    parameters: <span class="cstat-no" title="statement not covered" >ScenarioLogFiltersSchema,</span>
-    execute: async (<span class="cstat-no" title="statement not covered" >input, { log }) =&gt; {</span>
-      const { scenarioId, executionId, level, startDate, endDate, limit, offset } = input;
+    description:<span class="cstat-no" title="statement not covered" > 'Get execution logs for a specific scenario',</span>
+    parameters: Scen<span class="cstat-no" title="statement not covered" >arioLogFiltersSchema,</span>
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
+      const { scenar<span class="cstat-no" title="statement not covered" >ioId, executionId, level, star</span>tDate, endDate, limit, offset } = input;
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('Getting scenario <span class="cstat-no" title="statement not covered" >logs', {</span>
-        scenario<span class="cstat-no" title="statement not covered" >Id,</span>
-        executionId,
-        level,
+      log.info('Gett<span class="cstat-no" title="statement not covered" >ing scenario logs', {</span>
+        scenarioId,<span class="cstat-no" title="statement not covered" ></span>
+        executio<span class="cstat-no" title="statement not covered" >nId,</span>
+        level,<span class="cstat-no" title="statement not covered" ></span>
         limit,
-        offset,
-      });
+        offset,<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
       try {
         const params: Record&lt;string, unknown&gt; = {
-          limit,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          offset,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        if (executionId) params.executionId = executionId;
-        if (level) params.level = level;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        if (startDate) params.startDate = startDate;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        if (endDate) params.endDate = endDate;
+          limit,
+          offset,
+        };
 <span class="cstat-no" title="statement not covered" ></span>
-        const response = await apiClient.get(`/scenarios/${scenarioId}/logs`, { params });
+        if (executionId) params.executionId = executionId;
+        if (level) params.level = level;
+        if (startDate) params.startDate = startDat<span class="fstat-no" title="function not covered" >e;<span class="cstat-no" title="statement not covered" ></span></span>
+        if (endDate) params.endDate = endDate;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        const response = await apiClient.get(`/scen<span class="fstat-no" title="function not covered" >ar</span>ios/$<span class="cstat-no" title="statement not covered" >{scenarioId}/logs`, { </span>params });
 &nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to get scenario logs: ${response.error?.message || 'Unknown error'}`);
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          throw new UserError(`Failed to get scenario logs: ${re<span class="fstat-no" title="function not covered" >sp</span>onse.<span class="cstat-no" title="statement not covered" >error?.message </span>|| 'Unknown error'}`);
         }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         const scenarioLogs = response.data as MakeScenarioLog[] || [];
         const metadata = response.metadata;
 &nbsp;
         log.info('Successfully retrieved scenario logs', {
           scenarioId,
-          count: scenarioLogs.length,<span class="cstat-no" title="statement not covered" ></span>
-          total:<span class="cstat-no" title="statement not covered" > metadata?.total,</span>
-        });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        // Creat<span class="cstat-no" title="statement not covered" >e log level summary</span>
+          count: scenarioLogs.length,
+          total: metadata?.total,
+        });
+&nbsp;
+        // Create log level summary
         const summary = {
-          totalLogs: metadata?.total || scenarioLogs.length,
-          logLevels: {
-            info: scenarioLogs.filter(log =&gt; log.level === 'info').length,
-<span class="cstat-no" title="statement not covered" >            warning: scenarioLogs.filter(log =&gt; log.level === 'warning').length,</span>
-            error: scenarioLogs.filter(log =&gt; log.level === 'error').length,
+          totalLogs: metadata?.total <span class="cstat-no" title="statement not covered" >|| scenarioLogs.length,</span>
+          logLev<span class="cstat-no" title="statement not covered" >els: {</span>
+            info<span class="cstat-no" title="statement not covered" >: scenarioLogs.filter(log =&gt; log.level === 'info').length,</span>
+            warning:<span class="cstat-no" title="statement not covered" > scenarioLogs</span>.filter(log =&gt; log.level === 'warning').length,
+            erro<span class="cstat-no" title="statement not covered" >r: scenarioLogs.filter(log =&gt; log.level === 'error').length,</span>
             debug: scenarioLogs.filter(log =&gt; log.level === 'debug').length,
           },
-          uniqueE<span class="fstat-no" title="function not covered" >xe</span>cutions: [...new Set(scenarioLogs.map(log =&gt; log.executionId))].length,
-          uniqueModules: [...new Set(scenarioLogs.map(log =&gt; log.moduleName).filter(Boolean))],<span class="cstat-no" title="statement not covered" ></span>
-        };<span class="cstat-no" title="statement not covered" ></span>
+          uniqueExecutions: [...new Set(scenarioLogs.map(log =&gt; log.executionId))].length,
+          uniqueModules: [...new Set(scenarioLogs.map(log =&gt; log.moduleName).filter(Boolean))],
+<span class="cstat-no" title="statement not covered" >        };</span>
 &nbsp;
         return JSON.stringify({
           scenarioLogs,
-          summary,
-          pagination: {
-            total: metadata?.total || scenarioLogs.length,
+          summary<span class="fstat-no" title="function not covered" >,</span>
+          pagination: {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            total: metadata?.total || scenarioLogs.length,</span>
             limit,
-<span class="cstat-no" title="statement not covered" >            offset,</span>
-            hasMore: (metadata?<span class="cstat-no" title="statement not covered" >.total || 0) &gt; (offset + scenarioLogs.length),</span>
+            offset,
+            hasMore: (metadata?.total || 0) &gt; (offset + scenarioLogs.length),
           },
         }, null, 2);
       } catch (error: unknown) {
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('E<span class="cstat-no" title="statement not covered" >rror getting scenario logs', { s</span>cenarioId, error: errorMessage });
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
-        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to get scenario logs: ${</span>errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.<span class="cstat-no" title="statement not covered" >error('Error getting scenario logs', { scenarioId, error: errorMessage });</span>
+        if (error instanceof Us<span class="cstat-no" title="statement not covered" >erError) throw error;</span>
+        throw new UserError(`Failed to get scenario logs: ${errorMessage}`);
+      }
+    },
   });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
   // Get executi<span class="cstat-no" title="statement not covered" >on history</span>
   server.addTool({<span class="cstat-no" title="statement not covered" ></span>
     name: 'get-e<span class="cstat-no" title="statement not covered" >xecution-history',</span>
-    description: 'Ge<span class="cstat-no" title="statement not covered" >t comprehensive execution </span>history with filtering and analytics',
-    parameters: ExecutionHistor<span class="cstat-no" title="statement not covered" >yFiltersSchema</span>,
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
-      const { scenar<span class="cstat-no" title="statement not covered" >ioId, organizationId, teamId, status, startDate, e</span>ndDate, limit, offset } = input;
-&nbsp;
-      log.info('Getting execution<span class="cstat-no" title="statement not covered" > history', {</span>
-        scenario<span class="cstat-no" title="statement not covered" >Id,</span>
-        organization<span class="cstat-no" title="statement not covered" >Id,</span>
-        teamId,
+    description: 'Ge<span class="cstat-no" title="statement not covered" >t comprehensive executio</span>n history with filtering and analytics',
+    parameters: <span class="cstat-no" title="statement not covered" >ExecutionHistoryFiltersSchema,</span>
+    execute: async (<span class="cstat-no" title="statement not covered" >input, { log }) =&gt; {</span>
+      const { sc<span class="cstat-no" title="statement not covered" >enarioId, organizationId, teamId, status, startDate, endDate, limit, offset } = input;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+      log.info('<span class="cstat-no" title="statement not covered" >Getting execution history', {</span>
+        scenarioId,<span class="cstat-no" title="statement not covered" ></span>
+        organizationId,<span class="cstat-no" title="statement not covered" ></span>
+        teamId,<span class="cstat-no" title="statement not covered" ></span>
         status,<span class="cstat-no" title="statement not covered" ></span>
-        limit,<span class="cstat-no" title="statement not covered" ></span>
+        limit,
         offset,<span class="cstat-no" title="statement not covered" ></span>
-      });
-&nbsp;
+      });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
       try {
-        const params: Record&lt;string, unknown&gt; = {
+        const params: Record&lt;string<span class="cstat-no" title="statement not covered" >, unknown&gt; = {</span>
           limit,<span class="cstat-no" title="statement not covered" ></span>
-          offset,
+          offset<span class="cstat-no" title="statement not covered" >,</span>
         };
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        if (scenarioId) params.scenarioId = scena<span class="fstat-no" title="function not covered" >ri</span>oId;<span class="cstat-no" title="statement not covered" ></span>
-        if (organizationId) params.organizationId =<span class="fstat-no" title="function not covered" > o</span>rganiz<span class="cstat-no" title="statement not covered" >ationId;</span>
-        if (teamId) params.teamId = teamId;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        if (status) params.status = status;
-        if (startDate) params.startDate = startDate;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        if (endDate) params.endDate = endDate;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
-        let endpoint = '/executi<span class="fstat-no" title="function not covered" >on</span>s';<span class="cstat-no" title="statement not covered" ></span>
-        if (scenarioId) {<span class="fstat-no" title="function not covered" ></span>
-          endpoint = `/scenarios/${scenari<span class="cstat-no" title="statement not covered" >oId}/executions`;</span>
+        if (scenarioId) params.scenarioId = scenarioId;
+        if (organizationId) params.organizationId = organizationId;
+        if (teamId) params.teamI<span class="cstat-no" title="statement not covered" >d = teamId;</span>
+        if (status) params.status = status;
+        if (startDate) params.startDate = startDate;
+        if (endDate) params.endDate = endDate;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        let endpoint = '/executions';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        if (scenarioId) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          endpoint = `/scenarios/${scenarioId}/executions`;
+        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        const response = await apiClient.get(endpoint, { params });
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        if (!response.success) {<span class="fstat-no" title="function not covered" ></span>
+          throw new UserError(`Failed to g<span class="cstat-no" title="statement not covered" >et execution history: ${response.er</span>ror?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const response = await apiClient.get(e<span class="fstat-no" title="function not covered" >nd</span>point,<span class="cstat-no" title="statement not covered" > { params });</span>
-&nbsp;
-        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw new UserError(`Failed to get execution history: ${response.error?.message || 'Unknown error'}`);
-        }
-&nbsp;
-        const executions = response.data as MakeExecution[] || [];
+        const executions = response.data as Ma<span class="fstat-no" title="function not covered" >ke</span>Execut<span class="cstat-no" title="statement not covered" >ion[] || [];</span>
         const metadata = response.metadata;
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         log.info('Successfully retrieved execution history', {
           count: executions.length,
           total: metadata?.total,
         });
 &nbsp;
-        // Calculate performance metr<span class="cstat-no" title="statement not covered" >ics</span>
-        const su<span class="cstat-no" title="statement not covered" >mmary = {</span>
-          totalE<span class="cstat-no" title="statement not covered" >xecutions: metadata?.total || executions.length,</span>
-          statusBrea<span class="cstat-no" title="statement not covered" >kdown: {</span>
-            succ<span class="cstat-no" title="statement not covered" >ess: executions.filter(exec =&gt; exec.status === 'success').length,</span>
+        // Calculate performance metrics
+        const summary = {
+          totalExecutions: metadata?.total || executions.length,
+          statusBreakdown: {
+            success: executions.filter(exec =&gt; exec.status === 'success').length,
             error: executions.filter(exec =&gt; exec.status === 'error').length,
-            warning: executions.filter(exec =&gt; exec.status === 'warning').length,
-            incomplete: executions.filter(exec =&gt; exec.status === 'incomplete').length,
-          },
-<span class="cstat-no" title="statement not covered" >          totalOperations: executions.reduce((sum, exec) =&gt; sum + exec.operations, 0),</span>
-          totalDataTransfer: executions.reduce((sum, exec) =&gt; sum + exec.dataTransfer, 0),
+            warning: executions.filte<span class="cstat-no" title="statement not covered" >r(exec =&gt; exec.status === 'warning').length,</span>
+            inco<span class="cstat-no" title="statement not covered" >mplete: executions.filter(exec =&gt; exec.status === 'incomplete').length,</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+          totalOpera<span class="cstat-no" title="statement not covered" >tions: execut</span>ions.reduce((sum, exec) =&gt; sum + exec.operations, 0),
+          totalD<span class="cstat-no" title="statement not covered" >ataTransfer: executions.reduce((sum, exec) =&gt; sum + exec.dataTransfer, 0),</span>
           averageExecutionTime: executions.length &gt; 0 ? executions
             .filter(exec =&gt; exec.finishedAt)
-            .redu<span class="fstat-no" title="function not covered" >ce</span>((sum, exec) =&gt; {
-              const startTime = new Date(exec.startedAt).getTime();<span class="cstat-no" title="statement not covered" ></span>
+            .reduce((sum, exec) =&gt; {
+              const startTime = new Date(exec.startedAt).getTime();
 <span class="cstat-no" title="statement not covered" >              const endTime = new Date(exec.finishedAt!).getTime();</span>
               return sum + (endTime - startTime);
             }, 0) / executions.filter(exec =&gt; exec.finishedAt).length : 0,
         };
-&nbsp;
-        return JSON.stringify({
-          executions,
+<span class="fstat-no" title="function not covered" ></span>
+        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
+          ex<span class="cstat-no" title="statement not covered" >ecutions,</span>
           summary,
-          pa<span class="cstat-no" title="statement not covered" >gination: {</span>
-            total: metadata?.to<span class="cstat-no" title="statement not covered" >tal || executions.length,</span>
+          pagination: {
+            total: metadata?.total || executions.length,
             limit,
             offset,
             hasMore: (metadata?.total || 0) &gt; (offset + executions.length),
-          },<span class="cstat-no" title="statement not covered" ></span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
-      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
-        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.</span>message : String(error);
-        log.erro<span class="cstat-no" title="statement not covered" >r('Error getting execution history', { error: errorMessage });</span>
-        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) thro</span>w error;
+          },
+        }, n<span class="cstat-no" title="statement not covered" >ull, 2);</span>
+      } catch (error: unknown) <span class="cstat-no" title="statement not covered" >{</span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error getting execution history', { error: errorMessage });
+        if (error instanceof UserError) throw error;
         throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to get execution history: ${errorMessage}`);</span>
       }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
   });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  // List incomplete executions
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'list-incomplete-execut<span class="cstat-no" title="statement not covered" >ions',</span>
-    description:<span class="cstat-no" title="statement not covered" > 'List and manage incomplete executions that require attention',</span>
-    parameters: IncompleteExecutionFiltersSchema,
-    execute: async (input, { log }) =&gt; {
+  // List incomplete<span class="cstat-no" title="statement not covered" > executions</span>
+  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+    name: 'list-inco<span class="cstat-no" title="statement not covered" >mplete-executions',</span>
+    description: 'List and manage<span class="cstat-no" title="statement not covered" > incomplete executions that require attention',</span>
+    parameters: <span class="cstat-no" title="statement not covered" >IncompleteExecutionFiltersSchema,</span>
+    execute: async (<span class="cstat-no" title="statement not covered" >input, { log }) =&gt; {</span>
       const { scenarioId, organizationId, status, canResume, limit, offset } = input;
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('Listing incomplete executions', {
-        scenarioId,
-        organizationId,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        status,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        canResume,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        limit,
-        offset,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      log.info('Listing incomplet<span class="cstat-no" title="statement not covered" >e executions', {</span>
+        scenario<span class="cstat-no" title="statement not covered" >Id,</span>
+        organizationId,
+        status,
+        canResume,
+        limit,<span class="cstat-no" title="statement not covered" ></span>
+        offset,
+      });
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      try {
-        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
+      try {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        const params: Record&lt;string, unknown&gt; = {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           limit,
-          offset,
-        };
-&nbsp;
+          offset,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         if (scenarioId) params.scenarioId = scenarioId;
-        if (organizationId) params.organizationId = organizationId;
+        if (orga<span class="cstat-no" title="statement not covered" >nizationId) params.organizationId = organizationId;</span>
         if (status) params.status = status;
         if (canResume !== undefined) params.canResume = canResume;
 &nbsp;
         const response = await apiClient.get('/incomplete-executions', { params });
 &nbsp;
-        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to list incomplete executions: ${response.error?.mess</span>age || 'Unknown error'}`);
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const in<span class="cstat-no" title="statement not covered" >completeExecutions = response.data as MakeIncompleteExecution[] || [];</span>
-        const metadata = response.metadata;
+        if (!response.success) {
+          throw new UserError(`Failed to list incomplete executions: ${response.error?.message || 'Unknown error'}`);
+        }
 &nbsp;
-        log.info('Successfully retrieved incomplete executions', {
-          count: incompleteExecutions.length,
-<span class="cstat-no" title="statement not covered" >          total: metadata?.total,</span>
-        });
+        const incompleteExecutions = response.data as MakeIncompleteExecution[] || [];
+        const metadata = response.metadata;
+<span class="cstat-no" title="statement not covered" ></span>
+        log.info<span class="cstat-no" title="statement not covered" >('Successfully retrieved incomplete executions', {</span>
+          count:<span class="cstat-no" title="statement not covered" > incompleteExecutions.length,</span>
+          total: met<span class="cstat-no" title="statement not covered" >adata?.total,</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         const summary = {
           totalIncomplete: metadata?.total || incompleteExecutions.length,
           statusBreakdown: {
-            waiting: incompleteExecutions.filter(exec =&gt; exec.status === 'waiting').length,
+<span class="cstat-no" title="statement not covered" >            waiting: incompleteExecutions.filter(exec =&gt; exec.status === 'waiting').length,</span>
             paused: incompleteExecutions.filter(exec =&gt; exec.status === 'paused').length,
-            faile<span class="fstat-no" title="function not covered" >d:</span> incompleteExecutions.filter(exec =&gt; exec.status === 'failed').length,
-          },<span class="cstat-no" title="statement not covered" ></span>
-          re<span class="cstat-no" title="statement not covered" >sumableCount: incompleteExecutions.filter(exec =&gt; exec.canResume).len</span>gth,
-          to<span class="cstat-no" title="statement not covered" >talOperationsAffected: incompleteExecutions.reduce((sum, exec) =&gt; sum + exec.operations, 0),</span>
-          uniqueScenarios: [...new S<span class="cstat-no" title="statement not covered" >et(incompleteExecutions.map(exec =&gt; exec.scenarioId))].length,</span>
-        };
-&nbsp;
-        return JSON.stringify({
-          incompleteExecutions,<span class="cstat-no" title="statement not covered" ></span>
-          summar<span class="cstat-no" title="statement not covered" >y,</span>
-          pagination<span class="cstat-no" title="statement not covered" >: {</span>
-            total: metadata?.total || incompleteExecutions.length,
-            limit,<span class="cstat-no" title="statement not covered" ></span>
-            offs<span class="cstat-no" title="statement not covered" >et,</span>
-            hasMore: (metadata?.total || 0) &gt; (offset + incompleteExecutions.length),
+            failed: incompleteExecutions.filter(exec =&gt; exec.status === 'failed').length,
           },
-        }, null, 2);
+          resumableCount: incompleteExecutions.filter(exec =&gt; exec.canResume).length,
+          totalOperationsAffected: incompleteExecutions.reduce((sum, exec) =&gt; sum + exec.operations, 0),
+          uniqueScenarios: [...new Set(incompleteExecutions.map(exec =&gt; exec.scenarioId))].length,
+        };
+<span class="fstat-no" title="function not covered" ></span>
+        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
+          in<span class="cstat-no" title="statement not covered" >completeExecutions,</span>
+          su<span class="cstat-no" title="statement not covered" >mmary,</span>
+          pagination: {<span class="cstat-no" title="statement not covered" ></span>
+            total: metadata?.total || incompleteExecutions.length,
+            limit,
+            offset,
+            hasMore: (metadata?.t<span class="cstat-no" title="statement not covered" >otal || 0) &gt; (offset + incompleteExecutions.length),</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
       } catch (error: unknown) {
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('Error listing incomplete executions', { error: errorMessage });
+        const errorMessage = er<span class="cstat-no" title="statement not covered" >ror instanceof</span> Error ? error.message : String(error);
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error listing incomplete executions', { error: errorMessage });</span>
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to list incomplete executions: ${errorMessage}`);
       }
     },
   });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Resolve inc<span class="cstat-no" title="statement not covered" >omplete execution</span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'resol<span class="cstat-no" title="statement not covered" >ve-incomplete-execution',</span>
+&nbsp;
+  // Resolve incomplete execution
+  server.addTool({
+    name: 'resolve-incomplete-execution',
     description: 'Resolve or retry an incomplete execution',
-    parameters: z.object({
-      executionId: z.number().min(1).describe('Incomplete execution ID to resolve'),
-      action: z.enum(['retry', 'skip', 'cancel']).describe('Action to take on the incomplete execution'),
-<span class="cstat-no" title="statement not covered" >      reason: z.string().optional().describe('Reason for the resolution action'),</span>
-    }),
+    parameters: z.object({<span class="cstat-no" title="statement not covered" ></span>
+      executionI<span class="cstat-no" title="statement not covered" >d: z.number().min(1).describe('Incomplete execution ID to resolve'),</span>
+      action: z.<span class="cstat-no" title="statement not covered" >enum(['retry', 'skip', 'cancel']).describe('Action to take on the incomplete execution'),</span>
+      reason: z.stri<span class="cstat-no" title="statement not covered" >ng().optional</span>().describe('Reason for the resolution action'),
+    }),<span class="cstat-no" title="statement not covered" ></span>
     execute: async (input, { log }) =&gt; {
       const { executionId, action, reason } = input;
-<span class="fstat-no" title="function not covered" ></span>
-      log.info('Resolving incomplete execution', { executionId, action });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+      log.info('Resolving incomplete execution', { executionId, action });
 <span class="cstat-no" title="statement not covered" ></span>
       try {
         const resolveData = {
           action,
-          reason,
-        };
-&nbsp;
-        cons<span class="cstat-no" title="statement not covered" >t response = await apiClient.post(`/incomplete-executions/${executionId}/resolve`, resolveData);</span>
+          reason,<span class="fstat-no" title="function not covered" ></span>
+        };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
+        const response = await apiClient.post(`/incomplete-executions/${executionId}/resolve`, resolveData);
+&nbsp;
         if (!response.success) {
           throw new UserError(`Failed to resolve incomplete execution: ${response.error?.message || 'Unknown error'}`);
         }
+&nbsp;
+        cons<span class="cstat-no" title="statement not covered" >t result = response.data as Record&lt;string, unknown&gt;;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const result<span class="cstat-no" title="statement not covered" > = response.data as Record</span>&lt;string, unknown&gt;;
-<span class="cstat-no" title="statement not covered" ></span>
-        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully resolved inco</span>mplete execution', {
-          execut<span class="cstat-no" title="statement not covered" >ionId,</span>
-          action,<span class="cstat-no" title="statement not covered" ></span>
+        log.info('Successfully resolved incomplete execution', {
+          executionId,
+          action,
           newSta<span class="cstat-no" title="statement not covered" >tus: String(result?.status || 'unknown'),</span>
         });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return J<span class="cstat-no" title="statement not covered" >SON.stringify({</span>
-          result,<span class="cstat-no" title="statement not covered" ></span>
-          message: `Incomplete execution ${executionId} ${action} successfully`,
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('Error resolving incomplete execution', { executionId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        return JSON.<span class="cstat-no" title="statement not covered" >stringify({</span>
+          result<span class="cstat-no" title="statement not covered" >,</span>
+          message: `<span class="cstat-no" title="statement not covered" >Incomplete execution ${executi</span>onId} ${action} successfully`,
+        }, null,<span class="cstat-no" title="statement not covered" > 2);</span>
+      } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
+        const errorMessage = erro<span class="cstat-no" title="statement not covered" >r instanceof Error ? error.message : String(error);</span>
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error resolving incomplete execution', { executionId, error: errorMessage });</span>
+        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
         throw new UserError(`Failed to resolve incomplete execution: ${errorMessage}`);
-      }
+      }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
-  });
+  });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  // Get hook logs<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  server.addTool({<span class="fstat-no" title="function not covered" ></span>
-    name: 'get-hook-logs<span class="cstat-no" title="statement not covered" >',</span>
-    description: 'Get we<span class="cstat-no" title="statement not covered" >bhook execut</span>ion logs for debugging and monitoring',
+  // Get hook logs
+  server.addTool({
+    name: 'get-hook-logs',
+    description: 'Get webhook ex<span class="cstat-no" title="statement not covered" >ecution logs for debugging and monitoring',</span>
     parameters: HookLogFiltersSchema,
     execute: async (input, { log }) =&gt; {
-      const { hookId, success, method, s<span class="fstat-no" title="function not covered" >ta</span>rtDate, endD<span class="cstat-no" title="statement not covered" >ate, limit, offset } = in</span>put;
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      log.info('Getting hook logs', {
+      const { hookId, success, method, startDate, en<span class="fstat-no" title="function not covered" >dD</span>ate, <span class="cstat-no" title="statement not covered" >limit, offse</span>t } = input;
+<span class="fstat-no" title="function not covered" ></span>
+      log.info('Getting <span class="cstat-no" title="statement not covered" >hook logs', {</span>
         hookId,<span class="cstat-no" title="statement not covered" ></span>
         success,
         method,
-        limit,
-        offset,
+        limit,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        offset,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       });
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
       try {
         const params: Record&lt;string, unknown&gt; = {
           limit,
           offset,
         };
+&nbsp;
+        if (success !== undefined) params.success = success;
+        if (method) params.method = method;
+        if (startDate) params.startDate = startDate;
+        if (endDate) params.endDate = endDate;
+&nbsp;
+        const response = await apiCli<span class="cstat-no" title="statement not covered" >ent.get(`/hooks/${hookId}/logs`, { params });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (succ<span class="cstat-no" title="statement not covered" >ess !== undefined) params.success = success;</span>
-        if (meth<span class="cstat-no" title="statement not covered" >od) params.method = method;</span>
-        if (startDat<span class="cstat-no" title="statement not covered" >e) params.sta</span>rtDate = startDate;
-        if (endD<span class="cstat-no" title="statement not covered" >ate) params.endDate = endDate;</span>
-&nbsp;
-        const response = await apiClient.get(`/hooks/${hookId}/logs`, { params });
-&nbsp;
-        if (!response.success) {
-<span class="cstat-no" title="statement not covered" >          throw new UserError(`Failed to get hook logs: ${response.error?.message || 'Unknown error'}`);</span>
-        }
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Fa</span>iled to get hook logs: ${response.error?.message || 'Unknown error'}`);
+        }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         const hookLogs = response.data as MakeHookLog[] || [];
-        const met<span class="fstat-no" title="function not covered" >ad</span>ata = response.metadata;
-<span class="cstat-no" title="statement not covered" ></span>
-        log.<span class="cstat-no" title="statement not covered" >info('Successfully retrieved hook logs', {</span>
+        const metadata = response.metadata;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        log.info('Successfully retrieved hook logs', {</span>
           hookId,
           count: hookLogs.length,
           total: metadata?.total,
-        });
-&nbsp;
-        const summary = {
-          to<span class="cstat-no" title="statement not covered" >talLogs: metadata?.total || hookLogs.length,</span>
-          successRate: hookLogs.len<span class="cstat-no" title="statement not covered" >gth &gt; 0 ? </span>
+        });<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        cons<span class="cstat-no" title="statement not covered" >t summary = {</span>
+          totalLogs: metadata?.total || hookLogs.length,
+          successRate: hookLogs.length &gt; 0 ? 
             Math.round((hookLogs.filter(log =&gt; log.success).length / hookLogs.length) * 100) : 0,
           methodBreakdown: hookLogs.reduce((acc: Record&lt;string, number&gt;, log) =&gt; {
             acc[log.method] = (acc[log.method] || 0) + 1;
             return acc;
-          }, {}),
-          averageProcessingTime: hookLogs.length &gt; 0 ? 
-            hookLogs.reduce((sum,<span class="cstat-no" title="statement not covered" > log) =&gt; sum + log.processingTime, 0) / hookLogs.length : 0,</span>
-          errorC<span class="cstat-no" title="statement not covered" >ount: hookLogs.filter(log =&gt; !log.success).length,</span>
-        };<span class="cstat-no" title="statement not covered" ></span>
+          },<span class="cstat-no" title="statement not covered" > {}),</span>
+          averageProcessingTime: ho<span class="cstat-no" title="statement not covered" >okLogs.length &gt; 0 ? </span>
+            hookLogs.reduce((sum, log) =&gt; sum + log.processingTime, 0) / hookLogs.length : 0,
+          errorCount: hookLogs.filter(log =&gt; !log.success).length,
+        };
 &nbsp;
-        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
-          hookLo<span class="cstat-no" title="statement not covered" >gs,</span>
-          summary,
-          pagination: {
-            total: metadata?.total || hookLogs.length,
+        return JSON.stringify({
+          hookLogs,
+          summary,<span class="cstat-no" title="statement not covered" ></span>
+          pagina<span class="cstat-no" title="statement not covered" >tion: {</span>
+            total: m<span class="cstat-no" title="statement not covered" >etadata?.total || hookLogs.length,</span>
             limit,
-            offset,
+            offset,<span class="cstat-no" title="statement not covered" ></span>
             hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; (offset + hookLogs.length),</span>
           },
         }, null, 2);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting hook logs', { hookId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
         throw new UserError(`Failed to get hook logs: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Export anal<span class="cstat-no" title="statement not covered" >ytics data</span>
+      }
+    },
+  });
+&nbsp;
+  // Export analytics data
   server.addTool({
-    name: 'export-analytics-data',
-    description: 'Export analytics, audit logs, or execution data for external analysis',
-    parameters: ExportDataSchema,
-<span class="cstat-no" title="statement not covered" >    execute: async (input, { log }) =&gt; {</span>
-      const { organizationId, dataType, format, startDate, endDate, includeDetails } = input;
+    name: 'export-analytics-data',<span class="cstat-no" title="statement not covered" ></span>
+    description:<span class="cstat-no" title="statement not covered" > 'Export analytics, audit logs, or execution data for external analysis',</span>
+    parameters: <span class="cstat-no" title="statement not covered" >ExportDataSchema,</span>
+    execute: async (<span class="cstat-no" title="statement not covered" >input, { log </span>}) =&gt; {
+      const { or<span class="cstat-no" title="statement not covered" >ganizationId, dataType, format, startDate, endDate, includeDetails } = input;</span>
 &nbsp;
       log.info('Exporting analytics data', {
         organizationId,
         dataType,
-        format,
+<span class="cstat-no" title="statement not covered" >        format,</span>
         startDate,
         endDate,
       });
-<span class="fstat-no" title="function not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        cons<span class="cstat-no" title="statement not covered" >t exportData = {</span>
+&nbsp;
+      try {
+        const exportData = {
           dataType,
           format,
           startDate,
-          endDate,
-          in<span class="cstat-no" title="statement not covered" >cludeDetails,</span>
+          endDate<span class="fstat-no" title="function not covered" >,</span>
+          includeDetails,<span class="cstat-no" title="statement not covered" ></span>
         };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         const response = await apiClient.post(`/organizations/${organizationId}/export`, exportData);
 &nbsp;
-        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to export da</span>ta: ${response.error?.message || 'Unknown error'}`);
+        if (!response.success) {
+          th<span class="cstat-no" title="statement not covered" >row new UserError(`Failed to export data: ${response.error?.message || 'Unknown error'}`);</span>
         }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const exportResult = resp<span class="cstat-no" title="statement not covered" >onse.data as Record&lt;string, unknown&gt;;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully initiated data export', {</span>
-          organizationId,
-          dataType,<span class="cstat-no" title="statement not covered" ></span>
-          format<span class="cstat-no" title="statement not covered" >,</span>
-          exportId: String(exportResult?.exportId || 'unknown'),
-        });
 &nbsp;
+        const exportResult = response.data as Record&lt;string, unknown&gt;;
+&nbsp;
+        log.info<span class="cstat-no" title="statement not covered" >('Successfully initiated data export', {</span>
+          organizati<span class="cstat-no" title="statement not covered" >onId,</span>
+          dataTy<span class="cstat-no" title="statement not covered" >pe,</span>
+          format,<span class="cstat-no" title="statement not covered" ></span>
+          exportId: String(export<span class="cstat-no" title="statement not covered" >Result?.exportId || 'unknown'),</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
         return JSON.stringify({
-          export<span class="cstat-no" title="statement not covered" >Result,</span>
-          message: `Data export initiated successfully. Export ID: ${exportResult?.exportId}`,
+          exportResult,<span class="cstat-no" title="statement not covered" ></span>
+          messag<span class="cstat-no" title="statement not covered" >e: `Data export initiated successfully. Export ID: ${exportResult?.exportId}`,</span>
           downloadUrl: exportResult?.downloadUrl,
           estimatedCompletionTime: exportResult?.estimatedCompletionTime,
         }, null, 2);
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
         log.error('Error exporting data', { organizationId, dataType, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to export analytics data: ${errorMessage}`);
       }
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Get performance<span class="cstat-no" title="statement not covered" > metrics</span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+    },
+  });
+&nbsp;
+  // Get performance metrics
+  server.addTool({
     name: 'get-performance-metrics',
-    description: 'Get detailed performance metrics and trends',
-    parameters: z.object({
-<span class="cstat-no" title="statement not covered" >      organizationId: z.number().min(1).describe('Organization ID for metrics'</span>),
-      metric: z.enum(['execution_time', 'operations_per_minute', 'success_rate', 'data_transfer', 'all']).default('all').describe('Specific metric to retrieve'),
-      period: z.enum(['hour', 'day', 'week', 'month']).default('day').describe('Aggregation period'),
+    description: 'Get detailed perfor<span class="cstat-no" title="statement not covered" >mance metrics and trends',</span>
+    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
+      organizati<span class="cstat-no" title="statement not covered" >onId: z.number().min(1).describe('Organization ID for metrics'),</span>
+      metric: z.enum<span class="cstat-no" title="statement not covered" >(['execution_</span>time', 'operations_per_minute', 'success_rate', 'data_transfer', 'all']).default('all').describe('Specific metric to retrieve'),
+      period: z.<span class="cstat-no" title="statement not covered" >enum(['hour', 'day', 'week', 'month']).default('day').describe('Aggregation period'),</span>
       startDate: z.string().optional().describe('Start date for metrics (ISO format)'),
       endDate: z.string().optional().describe('End date for metrics (ISO format)'),
     }),
-    execute: async (input, { log }) =&gt; {
+<span class="cstat-no" title="statement not covered" >    execute: async (input, { log }) =&gt; {</span>
       const { organizationId, metric, period, startDate, endDate } = input;
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
       log.info('Getting performance metrics', {
         organizationId,
         metric,
@@ -2311,7 +2311,7 @@ export default addAnalyticsTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T04:09:47.997Z
+                at 2025-07-25T04:35:02.914Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

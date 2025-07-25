@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/140</span>
+                <span class='fraction'>0/148</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/156</span>
+                <span class='fraction'>0/163</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/140</span>
+                <span class='fraction'>0/148</span>
             </div>
         
             
@@ -912,8 +912,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1529,13 +1535,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1756,16 +1756,16 @@
  * Comprehensive tools for custom app creation, configuration, testing, and lifecycle management
  */
 &nbsp;
-import { FastMCP, UserError } from 'fastmcp';
-import { z } from 'zod';
+import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
+impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
 import MakeApiClient from '../lib/make-api-client.js';
-import logger from '../lib/log<span class="cstat-no" title="statement not covered" >ger.js';</span>
-&nbsp;
-// Custom app and hook management types
-export interface MakeCustomApp {
-  id: number;
+<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+// Custom app and <span class="cstat-no" title="statement not covered" >hook management typ</span>es
+export interfa<span class="cstat-no" title="statement not covered" >ce MakeCustomAp</span>p {
+  id: number;<span class="cstat-no" title="statement not covered" ></span>
   name: string;
-  description?: string;
+  description?: string;<span class="cstat-no" title="statement not covered" ></span>
   version: string;
   status: 'draft' | 'testing' | 'published' | 'deprecated' | 'suspended';
   organizationId?: number;
@@ -1805,13 +1805,13 @@ export interface MakeCustomApp {
     startCommand?: string;
     healthCheckEndpoint?: string;
   };
-  testing: {<span class="cstat-no" title="statement not covered" ></span>
+  testing: {
     testSuite?: string;
     coverageThreshold?: number;
     lastTestRun?: {
       timestamp: string;
       passed: number;
-      failed: number;
+      failed: number;<span class="cstat-no" title="statement not covered" ></span>
       coverage: number;
       duration: number;
     };
@@ -1836,13 +1836,13 @@ export interface MakeCustomApp {
 &nbsp;
 export interface MakeHook {
   id: number;
-  name: string;<span class="cstat-no" title="statement not covered" ></span>
+  name: string;
   description?: string;
   appId: number;
   appName: string;
   type: 'webhook' | 'polling' | 'instant' | 'custom';
   status: 'active' | 'inactive' | 'testing' | 'error';
-  configuration: {
+  configuration: {<span class="cstat-no" title="statement not covered" ></span>
     endpoint: string;
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
     headers: Record&lt;string, string&gt;;
@@ -1869,32 +1869,32 @@ export interface MakeHook {
     averageResponseTime: number;
     lastExecution?: {
       timestamp: string;
-      status: 's<span class="fstat-no" title="function not covered" >uccess' | 'failure</span>' | 'timeout';
-      responseTime: number;<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      error?: string;</span>
+      status: 'success' | 'failure' | 'timeout';
+      responseTime: number;
+      error?: string;
     };
-  };<span class="cstat-no" title="statement not covered" ></span>
+  };
   logs: {
-    retention: number; // days
-    level: 'debug' | 'info' | 'warn' | 'error';
-    destinations:<span class="fstat-no" title="function not covered" > A</span>rray&lt;'console' | 'file' | 'webhook' | 'external'&gt;;
-  };<span class="cstat-no" title="statement not covered" ></span>
-  createdAt:<span class="cstat-no" title="statement not covered" > string;</span>
+    reten<span class="fstat-no" title="function not covered" >tion: number; // d</span>ays
+    level: 'debug' | 'info' <span class="cstat-no" title="statement not covered" >| 'warn' | 'error';</span>
+<span class="cstat-no" title="statement not covered" >    destinations: Array&lt;'console' | 'file' | 'webhook' | 'external'&gt;;</span>
+  };
+  cr<span class="cstat-no" title="statement not covered" >eatedAt: string;</span>
   updatedAt: string;
   createdBy: number;
 }
-&nbsp;
-export interface MakeCustomFunction {
-  id: number;
-  name: stri<span class="cstat-no" title="statement not covered" >ng;</span>
-  description?: <span class="cstat-no" title="statement not covered" >string;</span>
-  appId?: number;<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" ></span>
+export interface MakeCustomFunction {<span class="cstat-no" title="statement not covered" ></span>
+  id: number<span class="cstat-no" title="statement not covered" >;</span>
+  name: string;
+  description?: string;
+  appId?: number;
   type: 'transformer' | 'validator' | 'formatter' | 'calculator' | 'custom';
   language: 'javascript' | 'python' | 'php' | 'custom';
   status: 'draft' | 'testing' | 'published' | 'deprecated';
-  code: {
-    source: string;
-    dependencies: Record&lt;string, string&gt;;
+  code: {<span class="cstat-no" title="statement not covered" ></span>
+    source: stri<span class="cstat-no" title="statement not covered" >ng;</span>
+    dependencies: Record&lt;string,<span class="cstat-no" title="statement not covered" > string&gt;;</span>
     environment: Record&lt;string, string&gt;;
     timeout: number; // seconds
     memoryLimit: number; // MB
@@ -1929,43 +1929,43 @@ export interface MakeCustomFunction {
     averageExecutionTime: number;
     errorRate: number;
     memoryUsage: number;
-    cpuUsage: nu<span class="cstat-no" title="statement not covered" >mber;</span>
-  };<span class="cstat-no" title="statement not covered" ></span>
-  createdAt: str<span class="cstat-no" title="statement not covered" >ing;</span>
-  updatedAt: string;<span class="cstat-no" title="statement not covered" ></span>
+    cpuUsage: number;
+  };
+  createdAt: string;
+  updatedAt: string;
   createdBy: number;
-}<span class="cstat-no" title="statement not covered" ></span>
+}
 <span class="cstat-no" title="statement not covered" ></span>
-// Input validation schemas
-const CustomAppCreateSchema = z.o<span class="cstat-no" title="statement not covered" >bject({</span>
-  name: z.string<span class="cstat-no" title="statement not covered" >().min(1).max(100).describe('Custom app name (1-100 characters)'),</span>
-  description: z.str<span class="cstat-no" title="statement not covered" >ing().max(500).optional().describe('App description (max 500 characters)'),</span>
-  type: z.enum(['connector', 'trigger', 'action', 'transformer', 'full_app']).describe('App type'),
-  runtime: z.enum(['nodejs',<span class="cstat-no" title="statement not covered" > 'python', 'ph</span>p', 'custom']).default('nodejs').describe('Runtime environment'),
-  organizationId<span class="cstat-no" title="statement not covered" >: z.number().min(1).optional().describe('Organization ID (for organization apps)'),</span>
-  teamId: z.number()<span class="cstat-no" title="statement not covered" >.min(1).optional().describe('Team ID (for team apps)'),</span>
-  configuration: z.object({
-    environment:<span class="cstat-no" title="statement not covered" > z.object({</span>
-      variables:<span class="cstat-no" title="statement not covered" > z.record(z.string()).default({}).describe('Environment variables'),</span>
-      secrets: z.array(z.string()).default([]).describe('Secret names to be injected'),
-      dependencies: z.record(z.string()).default({}).describe('Package dependencies'),
-    }).default({}).describe('Environment configuration'),
+// Input validation schemas<span class="cstat-no" title="statement not covered" ></span>
+const CustomAppC<span class="cstat-no" title="statement not covered" >reateSchema = z.object({</span>
+  name: z.string().m<span class="cstat-no" title="statement not covered" >in(1).max(100).describe('Custom app name (1-100 characters)</span>'),
+  description: z.string().max(500).optional().describe('App description (max 500 characters)'),
+  type: z.enum(['conn<span class="cstat-no" title="statement not covered" >ector', 'trigger', 'action', 'transformer', 'full_app']).describe('App type'),</span>
+  runtime: z.enum(['<span class="cstat-no" title="statement not covered" >nodejs', 'python', 'php', 'custom']).defaul</span>t('nodejs').describe('Runtime environment'),
+  organizationId: z.number().min(1).optional().describe('Organization ID (for organization apps)'),
+  teamId: z.number().min(1).optio<span class="cstat-no" title="statement not covered" >nal().describe('Team ID (for team apps)'</span>),
+  configuration:<span class="cstat-no" title="statement not covered" > z.object({</span>
+    environment: z.o<span class="cstat-no" title="statement not covered" >bject({</span>
+      variables: z.record(z.string()).default({}).describe('Environment variables'),
+      secrets: z.array(z.str<span class="cstat-no" title="statement not covered" >ing()).default</span>([]).describe('Secret names to be injected'),
+      dependenci<span class="cstat-no" title="statement not covered" >es: z.record(z.string()).default({}).describe('Package dependencies'),</span>
+    }).default({}).d<span class="cstat-no" title="statement not covered" >escribe('Environment configuration'),</span>
     endpoints: z.array(z.object({
-      name: z.string().min(1).describe('Endpoint name'),
+      name: z.st<span class="cstat-no" title="statement not covered" >ring().min(1).describe('Endpoint name'),</span>
       method: z.<span class="cstat-no" title="statement not covered" >enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']).describe('HTTP method'),</span>
       path: z.string().min(1).describe('Endpoint path'),
       description: z.string().optional().describe('Endpoint description'),
       parameters: z.any().optional().describe('JSON Schema for parameters'),
       responses: z.any().optional().describe('JSON Schema for responses'),
     })).default([]).describe('API endpoints'),
-    authentication: z.object({
-      type: z.enum(['none', 'api_key', 'oauth2', 'basic_auth', 'custom']).describe(<span class="fstat-no" title="function not covered" >'A</span>uthe<span class="cstat-no" title="statement not covered" >ntication type'),</span>
+    authenticati<span class="cstat-no" title="statement not covered" >on: z.object({</span>
+      type: z.enum(['none', 'api_key', 'oauth2', 'basic_auth', 'custom']).describe('Authentication type'),
       configuration: z.record(z.any()).default({}).describe('Auth configuration'),
     }).default({ type: 'none', configuration: {} }).describe('Authentication settings'),
     ui: z.object({
       icon: z.string().optional().describe('App icon URL or identifier'),
       color: z.string().optional().describe('App theme color'),
-      description: z.string().optional().describe('UI description'),
+      description: z.string().optional().describe('UI description'),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       category: z.string().optional().describe('App category'),
     }).default({}).describe('UI configuration'),
   }).describe('App configuration'),
@@ -1981,22 +1981,22 @@ const CustomAppCreateSchema = z.o<span class="cstat-no" title="statement not cov
     scopes: z.array(z.string()).default([]).describe('Permission scopes'),
     roles: z.array(z.string()).default([]).describe('Required roles'),
     restrictions: z.record(z.any()).default({}).describe('Access restrictions'),
-  }).default({}).describe('App permis<span class="cstat-no" title="statement not covered" >sions'),</span>
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-const HookCreateSche<span class="cstat-no" title="statement not covered" >ma = z.object</span>({
-  name: z.string<span class="cstat-no" title="statement not covered" >().min(1).max(100).describe('Hook name (1-100 characters)'),</span>
+  }).default({}).describe('App permissions'),
+}).strict();
+&nbsp;
+const HookCreateSchema = z.object({
+  name: z.string().min(1).max(100).describe('Hook name (1-100 characters)'),
   description: z.string().max(500).optional().describe('Hook description (max 500 characters)'),
-  appId: z.number().min(1).describe('Custom app ID this hook belongs to'),
-  type: z.enum(['webhook', 'polling', 'instant', 'custom']).describe('Hook type'),
-  configuration: z.object({
-<span class="cstat-no" title="statement not covered" >    endpoint: z.string().url().describe('Hook endpoint URL'),</span>
-    method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']).default('POST').describe('HTTP method'),
+  appId: z.number().min(1).describe('<span class="cstat-no" title="statement not covered" >Custom app ID this hook belongs to'),</span>
+  type: z.enum([<span class="cstat-no" title="statement not covered" >'webhook', 'polling', 'instant', 'custom']).describe('Hook type'),</span>
+  configuration:<span class="cstat-no" title="statement not covered" > z.object({</span>
+    endpoint: z.stri<span class="cstat-no" title="statement not covered" >ng().url().de</span>scribe('Hook endpoint URL'),
+    method: z.en<span class="cstat-no" title="statement not covered" >um(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']).default('POST').describe('HTTP me</span>thod'),
     headers: z.record(z.string()).default({}).describe('HTTP headers'),
     authentication: z.object({
       type: z.enum(['none', 'api_key', 'bearer', 'basic', 'oauth2']).describe('Authentication type'),
       configuration: z.record(z.any()).default({}).describe('Auth configuration'),
-    }).describe('Authentication settings'),
+<span class="cstat-no" title="statement not covered" >    }).describe('Authentication settings'),</span>
     polling: z.object({
       interval: z.number().min(1).max(1440).default(5).describe('Polling interval in minutes'),
       strategy: z.enum(['incremental', 'full_scan', 'timestamp_based']).describe('Polling strategy'),
@@ -2006,94 +2006,94 @@ const HookCreateSche<span class="cstat-no" title="statement not covered" >ma = z
   events: z.array(z.object({
     name: z.string().min(1).describe('Event name'),
     description: z.string().optional().describe('Event description'),
-    schema: z.any<span class="fstat-no" title="function not covered" >()</span>.describe('JSON Schema for event data'),
-    filters: z.record(z.any()).optional().describe('Event filters'),<span class="cstat-no" title="statement not covered" ></span>
-  })).min(1)<span class="cstat-no" title="statement not covered" >.describe('Events this hook can handle'),</span>
+    schema: z.any().describe('JSON Schema for event data'),
+    filters: z.record(z.any()).optional().describe('Event filters'),
+  })).min(1).describe('Events this hook can handle'),
   logs: z.object({
     retention: z.number().min(1).max(365).default(30).describe('Log retention in days'),
     level: z.enum(['debug', 'info', 'warn', 'error']).default('info').describe('Log level'),
-    destinations: z.array(z.enum(['console', 'file', 'webhook', 'external'])).default(['console']).describe('Log destinations'),
-  }).default({}).describe('Logging configuration'),
-}).strict();
-<span class="cstat-no" title="statement not covered" ></span>
-const CustomFunctionCreateSchem<span class="cstat-no" title="statement not covered" >a = z.object({</span>
+    destinations:<span class="fstat-no" title="function not covered" > z</span>.array(z.enum(['console', 'file', 'webhook', 'external'])).default(['console']).describe('Log destinations'),
+  }).default({}).describe('Logging configuration'),<span class="cstat-no" title="statement not covered" ></span>
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+const CustomFunctionCreateSchema = z.object({
   name: z.string().min(1).max(100).describe('Function name (1-100 characters)'),
   description: z.string().max(500).optional().describe('Function description (max 500 characters)'),
   appId: z.number().min(1).optional().describe('Custom app ID this function belongs to'),
   type: z.enum(['transformer', 'validator', 'formatter', 'calculator', 'custom']).describe('Function type'),
-  language: z.enum(['javascript', 'python', 'php', 'custom']).default('javascript').describe('Programming language'),
-  code: z.object({
+  language: <span class="cstat-no" title="statement not covered" >z.enum(['javascript', 'python', 'php', 'custom']).default('javascript').describe('Programming language'),</span>
+  code: z.object({<span class="cstat-no" title="statement not covered" ></span>
     source: z.string().min(1).describe('Function source code'),
-    dependencies<span class="cstat-no" title="statement not covered" >: z.record(z.string()).default({}).describe('Package dependencies'),</span>
-    environment: z.r<span class="cstat-no" title="statement not covered" >ecord(z.string()).de</span>fault({}).describe('Environment variables'),
-    timeout: z.n<span class="cstat-no" title="statement not covered" >umber().min(1).max(300).default(30).describe('Execution timeout in seconds'),</span>
-    memoryLimit: z.n<span class="cstat-no" title="statement not covered" >umber().min(64).max(2048</span>).default(256).describe('Memory limit in MB'),
-  }).describe('C<span class="cstat-no" title="statement not covered" >ode configuration'),</span>
-  interface: z.objec<span class="cstat-no" title="statement not covered" >t({</span>
+    dependencies: z.record(z.string()).default({}).describe('Package dependencies'),
+    environment: z.record(z.string()).default({}).describe('Environment variables'),
+    timeout: z.number().min(1).max(300).default(30).describe('Execution timeout in seconds'),
+    memoryLimit: z.number().min(64).max(2048).default(256).describe('Memory limit in MB'),
+  }).describe('Code configuration'),
+  interface: z.object({
     input: z.any<span class="cstat-no" title="statement not covered" >().describe('JSON Schema for input parameters'),</span>
-    output: z.any().<span class="cstat-no" title="statement not covered" >describe('JSON Schema for output format'</span>),
+    output: z.any().<span class="cstat-no" title="statement not covered" >describe('JSON Schem</span>a for output format'),
     parameters: <span class="cstat-no" title="statement not covered" >z.record(z.any()).default({}).describe('Additional parameters'),</span>
   }).describe('Funct<span class="cstat-no" title="statement not covered" >ion interface'),</span>
-  testCases: z.array(z.object({<span class="cstat-no" title="statement not covered" ></span>
-    name: z.stri<span class="cstat-no" title="statement not covered" >ng().min(1).describe('Test case name'),</span>
-    input: z.any().d<span class="cstat-no" title="statement not covered" >escribe('Test input data'),</span>
-    expectedOutput: z.any().describe('Expected output data'),
-    description: z.string().o<span class="cstat-no" title="statement not covered" >ptional().describe('</span>Test case description'),
-  })).default([]).describe('Test <span class="cstat-no" title="statement not covered" >cases for validati</span>on'),
-  deployment: z.<span class="cstat-no" title="statement not covered" >object({</span>
-    environment: z.enum(['development', 'staging', 'production']).default('development').describe('Deployment environment'),
-    instances: z.number().min(1).max(10).default(1).describe('Number of instances'),
+  testCases: z.a<span class="cstat-no" title="statement not covered" >rray(z.object({</span>
+    name: z.string()<span class="cstat-no" title="statement not covered" >.min(1).describe('Test cas</span>e name'),
+    input: z.any<span class="cstat-no" title="statement not covered" >().describe('Test input data'),</span>
+    expectedOutput: <span class="cstat-no" title="statement not covered" >z.any().describe('Expected output data')</span>,
+    description:<span class="cstat-no" title="statement not covered" > z.string().optional().describe('Test case description'),</span>
+  })).default([]).de<span class="cstat-no" title="statement not covered" >scribe('Test cases for v</span>alidation'),
+  deployment: z.object({<span class="cstat-no" title="statement not covered" ></span>
+    environment:<span class="cstat-no" title="statement not covered" > z.enum(['development', 'staging', 'production']).default('development').describe('Deployment environment'),</span>
+    instances: z.num<span class="cstat-no" title="statement not covered" >ber().min(1).max(10).default(1).describe('Number of instances'),</span>
     autoScale: z.boolean().default(false).describe('Enable auto-scaling'),
-  }).default({}).describe('Deployment settings'),
+  }).default({}).describe('De<span class="cstat-no" title="statement not covered" >ployment settings'),</span>
 }).strict();<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-/**<span class="fstat-no" title="function not covered" ></span>
- * Add custom app develo<span class="cstat-no" title="statement not covered" >pment and management tools to FastMCP server</span>
- */<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+/**
+ * Add custom app development and management tools to FastMCP server
+ */
 export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ componen<span class="fstat-no" title="function not covered" >t:</span> 'CustomAppTools' });
-  <span class="cstat-no" title="statement not covered" ></span>
-  componentLogger.info('<span class="cstat-no" title="statement not covered" >Adding custo</span>m app development and management tools');
-&nbsp;
-  // Create custom app<span class="fstat-no" title="function not covered" ></span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'create-custom<span class="cstat-no" title="statement not covered" >-app',</span>
-    description: 'Create a new custom app for Make.com platform with comprehensive configuration',
-    parameters: CustomAppCreateSchema,
-    execute: async (input, { log, reportProgres<span class="fstat-no" title="function not covered" >s </span>}) <span class="cstat-no" title="statement not covered" >=&gt; {</span>
-      const { name, description, type, runtime, o<span class="fstat-no" title="function not covered" >rg</span>ani<span class="cstat-no" title="statement not covered" >zationId, teamId, confi</span>guration, deployment, permissions } = input;
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      log.info('Creating custom app', {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  const componentLogger = logger.<span class="cstat-no" title="statement not covered" >child({ component: 'CustomAppTools' });</span>
+  
+  componentLogger.info('Adding custom app devel<span class="fstat-no" title="function not covered" >op</span>ment and management tools');
+<span class="cstat-no" title="statement not covered" ></span>
+  // Create custom app<span class="cstat-no" title="statement not covered" ></span>
+  server.addTool({
+    name: 'create-custom-app',<span class="fstat-no" title="function not covered" ></span>
+    description: 'Create<span class="cstat-no" title="statement not covered" > a new custom app for Make.com platform with c</span>omprehensive configuration',
+    parameters: CustomAp<span class="cstat-no" title="statement not covered" >pCreateSchem</span>a,
+    execute: async (input, { log, reportProgress }) =&gt; {
+      const { name, description, type, runtime, or<span class="fstat-no" title="function not covered" >ga</span>nizationId, teamId, configuration, deployment, permissions } = input;
+<span class="cstat-no" title="statement not covered" ></span>
+      log.info('Creating<span class="cstat-no" title="statement not covered" > custom app'</span>, {
         name,
-        type,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        runtime,
-        organizationId,
+        type,
+        runtime,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        organizationId,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         teamId,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
       try {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         reportProgress({ progress: 0, total: 100 });
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        const appData = {
+&nbsp;
+        const appData = {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           name,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           description,
           version: '1.0.0',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           configuration: {
-            type,
+            type,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
             runtime,
-            environment: {
+            environment: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
               ...configuration.environment,
-              variables: configuration.environment?.variables ?? {},
+              variables: configur<span class="fstat-no" title="function not covered" >at</span>ion.<span class="cstat-no" title="statement not covered" >environment?.variables ?? {},</span>
               secrets: configuration.environment?.secrets ?? [],
               dependencies: configuration.environment?.dependencies ?? {},
-            },<span class="cstat-no" title="statement not covered" ></span>
-            endpoints: configuratio<span class="fstat-no" title="function not covered" >n.</span>endpoi<span class="cstat-no" title="statement not covered" >nts || [],</span>
+            },
+            endpoints: configuration.endpoints || [],
             authentication: {
               ...configuration.authentication,
               type: configuration.authentication?.type ?? 'none',
               configuration: configuration.authentication?.configuration ?? {},
-            },
-            ui: {
+            },<span class="cstat-no" title="statement not covered" ></span>
+            ui: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
               category: 'custom',
               ...configuration.ui,
             },
@@ -2107,36 +2107,36 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           },
           permissions: {
             ...permissions,
-            scopes: permissions?.scop<span class="cstat-no" title="statement not covered" >es ?? [],</span>
-            role<span class="cstat-no" title="statement not covered" >s: permissions?.roles ?? ['developer'],</span>
-            rest<span class="cstat-no" title="statement not covered" >rictions: permissions?.restrictions ?? {},</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-          organi<span class="cstat-no" title="statement not covered" >zationId,</span>
+            scopes: permissions?.scopes ?? [],
+            roles: permissions?.roles ?? ['developer'],
+            restrictions: permissions?.restrictions ?? {},
+          },
+          organizationId,
           teamId,
-          status: 'draft',
-        };
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        reportProgress({ progress: 50, total: 100 });</span>
-&nbsp;
+          status: 'draft',<span class="cstat-no" title="statement not covered" ></span>
+        };<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress</span>: 50, total: 100 });
+<span class="cstat-no" title="statement not covered" ></span>
         let endpoint = '/custom-apps';
         if (organizationId) {
-          endpoin<span class="fstat-no" title="function not covered" >t </span>= `/organizations/${organizationId}/custom-apps`;
-        } else if (teamId) {<span class="cstat-no" title="statement not covered" ></span>
-          en<span class="cstat-no" title="statement not covered" >dpoint = `/teams/${teamId}/custom-apps`;</span>
+          endpoint = `/organizations/${organizationId}/custom-apps`;
+        } else if (teamId) {
+<span class="cstat-no" title="statement not covered" >          endpoint = `/teams/${teamId}/custom-apps`;</span>
         }
 &nbsp;
         const response = await apiClient.post(endpoint, appData);
-&nbsp;
-        if (!response.success) {
+<span class="fstat-no" title="function not covered" ></span>
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
           th<span class="cstat-no" title="statement not covered" >row new UserError(`Failed to create custom app: ${response.error?.message || 'Unknown error'}`);</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+        }
+&nbsp;
         const app = response.data as MakeCustomApp;
         if (!app) {
           throw new UserError('Custom app creation failed - no data returned');
-        }
-&nbsp;
-        reportProgress({ progress: 100, total: 100 });
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        reportProgress({ progress<span class="cstat-no" title="statement not covered" >: 100, total: 100 });</span>
 &nbsp;
         log.info('Successfully created custom app', {
           appId: app.id,
@@ -2160,29 +2160,29 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           development: {
             type: app.configuration.type,
             runtime: app.configuration.runtime,
-            endp<span class="cstat-no" title="statement not covered" >oints: app.configuration.endpoints.length,</span>
-            authentication: app.c<span class="cstat-no" title="statement not covered" >onfiguration.authentication.type,</span>
-            stat<span class="cstat-no" title="statement not covered" >us: app.status,</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
+            endpoints: app.configuration.endpoints.length,
+            authentication: app.configuration.authentication.type,
+            status: app.status,
+          },
           nextSteps: [
-            'Configure authen<span class="cstat-no" title="statement not covered" >tication if ne</span>eded',
+            'Configure authentication if needed',
             'Add<span class="cstat-no" title="statement not covered" > API endpoints and handlers',</span>
-            'Set up <span class="cstat-no" title="statement not covered" >deployment configuration',</span>
-            'Write and run tests',
-            'Dep<span class="cstat-no" title="statement not covered" >loy to staging for testing',</span>
-          ],<span class="cstat-no" title="statement not covered" ></span>
-        }, null, 2);
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+            'Set up deployment co<span class="cstat-no" title="statement not covered" >nfiguration',</span>
+            'Wri<span class="cstat-no" title="statement not covered" >te and run tests',</span>
+            'Deploy <span class="cstat-no" title="statement not covered" >to staging for testing',</span>
+          ],
+        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
+        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.message : String(error);</span>
         log.error('Error creating custom app', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
         throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to create custom app: ${errorMessage}`);</span>
       }
     },
   });
 &nbsp;
   // List custom apps
-  server.addTool({
+  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
     name: 'list-custom-apps',
     description: 'List and filter custom apps with development status and usage statistics',
     parameters: z.object({
@@ -2203,36 +2203,36 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
 &nbsp;
       log.info('Listing custom apps', {
         type,
-        status,<span class="cstat-no" title="statement not covered" ></span>
-        runtime,<span class="cstat-no" title="statement not covered" ></span>
-        limit,<span class="cstat-no" title="statement not covered" ></span>
-        offset,<span class="cstat-no" title="statement not covered" ></span>
-      });<span class="cstat-no" title="statement not covered" ></span>
+        status,
+        runtime,
+        limit,
+        offset,
+      });
 &nbsp;
-      try {
-        const params: Record&lt;string, unknown&gt; = {
-          limit,
-<span class="cstat-no" title="statement not covered" >          offset,</span>
-          sortBy,
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
+          limit,<span class="cstat-no" title="statement not covered" ></span>
+          offset,<span class="cstat-no" title="statement not covered" ></span>
+          sortBy<span class="cstat-no" title="statement not covered" >,</span>
           sortOrder,
           includeUsage,
-          include<span class="fstat-no" title="function not covered" >Co</span>nfig,
-        };<span class="cstat-no" title="statement not covered" ></span>
+          includeConfig,
+        };
 <span class="cstat-no" title="statement not covered" ></span>
         if (type !== 'all') params.type = type;
         if (status !== 'all') params.status = status;
         if (runtime !== 'all') params.runtime = runtime;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
+        if (organ<span class="fstat-no" title="function not covered" >iz</span>ationId) params.organizationId = organizationId;
+        if (teamId) params.teamId = teamId;<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get('/custom-apps', </span>{ params });
-<span class="cstat-no" title="statement not covered" ></span>
+        const response = await apiClient.get('/custom-apps', { params });
+&nbsp;
         if (!response.success) {
           throw new UserError(`Failed to list custom apps: ${response.error?.message || 'Unknown error'}`);
         }
-&nbsp;
-        const apps = response.data as MakeCustomApp[] || [];
-        const metadata = response.metadata;
+<span class="cstat-no" title="statement not covered" ></span>
+        const ap<span class="cstat-no" title="statement not covered" >ps = response.data as MakeCustomApp[] || [];</span>
+        const metadata = response.met<span class="cstat-no" title="statement not covered" >adata;</span>
 &nbsp;
         log.info('Successfully retrieved custom apps', {
           count: apps.length,
@@ -2252,29 +2252,29 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           }, {}),
           runtimeBreakdown: apps.reduce((acc: Record&lt;string, number&gt;, app) =&gt; {
             acc[app.configuration.runtime] = (acc[app.configuration.runtime] || 0) + 1;
-            retu<span class="cstat-no" title="statement not covered" >rn acc;</span>
-          }, {}),<span class="cstat-no" title="statement not covered" ></span>
-          develo<span class="cstat-no" title="statement not covered" >pmentSummary: {</span>
-            draftApp<span class="cstat-no" title="statement not covered" >s: apps.filter(a =&gt; a.status === 'draft').length,</span>
+            return acc;
+          }, {}),
+          developmentSummary: {
+            draftApps: apps.filter(a =&gt; a.status === 'draft').length,
             testingApps: apps.filter(a =&gt; a.status === 'testing').length,
-            publishedApps: apps.filter(<span class="cstat-no" title="statement not covered" >a =&gt; a.status </span>=== 'published').length,
-            tota<span class="cstat-no" title="statement not covered" >lEndpoints: apps.reduce((sum, a) =&gt; sum + a.configuration.endpoints.length, 0),</span>
-            averageE<span class="cstat-no" title="statement not covered" >ndpointsPerApp: apps.length &gt; 0 ? </span>
-              apps.reduce((sum, a) =&gt; sum + a.configuration.endpoints.length, 0) / apps.length : 0,
+            publishedApps: apps.filter(a =&gt; a.status === 'published').length,
+            tota<span class="cstat-no" title="statement not covered" >lEndpoints: apps.reduce((sum, a) =&gt; sum + a.co</span>nfiguration.endpoints.length, 0),
+            averageEndpointsPerAp<span class="cstat-no" title="statement not covered" >p: apps.length &gt; 0 ? </span>
+              ap<span class="cstat-no" title="statement not covered" >ps.reduce((sum, a) =&gt; sum + a.configuration.endpoints.length, 0) / apps.length : 0,</span>
           },<span class="cstat-no" title="statement not covered" ></span>
-          usageS<span class="cstat-no" title="statement not covered" >ummary: includeUsage ? {</span>
-            totalInstallations: apps.reduce((sum, a) =&gt; sum + a.usage.installations, 0),
-            totalExecutions: apps.reduce((sum, a) =&gt; sum + a.usage.executions, 0),
-            averageResponseTime: apps.length &gt; 0 ? 
+          usageSummary: includeUsage ? {
+            totalInstallations: apps.re<span class="cstat-no" title="statement not covered" >duce((sum, a) </span>=&gt; sum + a.usage.installations, 0),
+            tota<span class="cstat-no" title="statement not covered" >lExecutions: apps.reduce((sum, a) =&gt; sum + a.usage.executions, 0),</span>
+            averageR<span class="cstat-no" title="statement not covered" >esponseTime: apps.length &gt; 0 ? </span>
               apps.reduce((sum, a) =&gt; sum + a.usage.averageResponseTime, 0) / apps.length : 0,
-            averageErrorRate: apps.length &gt; 0 ? 
+            aver<span class="cstat-no" title="statement not covered" >ageErrorRate: apps.length &gt; 0 ? </span>
               ap<span class="cstat-no" title="statement not covered" >ps.reduce((sum, a) =&gt; sum + a.usage.errorRate, 0) / apps.length : 0,</span>
             mostUsedApps: apps
               .sort((a, b) =&gt; b.usage.executions - a.usage.executions)
               .slice(0, 5)
               .map(a =&gt; ({
                 id: a.id,
-                name: a.name,
+<span class="cstat-no" title="statement not covered" >                name: a.name,</span>
                 executions: a.usage.executions,
                 installations: a.usage.installations,
                 errorRate: a.usage.errorRate,
@@ -2297,56 +2297,56 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           pagination: {
             total: metadata?.total || apps.length,
             limit,
-            offset,<span class="cstat-no" title="statement not covered" ></span>
-            hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; (offset + apps.length),</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
-      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
+            offset,
+            hasMore: (metadata?.total || 0) &gt; (offset + apps.length),
+          },
+        }, null, 2);
+      } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing custom apps', { error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to list custom apps: ${errorMessage}`);
-<span class="cstat-no" title="statement not covered" >      }</span>
-    },
+        log.error('Error listing cust<span class="cstat-no" title="statement not covered" >om apps', { error: errorMessage });</span>
+        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to list custom apps: ${errorMessage}`);</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
   });
 &nbsp;
   // Create hook
   server.addTool({
-    name: 'create-hook',
+<span class="cstat-no" title="statement not covered" >    name: 'create-hook',</span>
     description: 'Create a webhook or polling hook for custom app event handling',
     parameters: HookCreateSchema,
     execute: async (input, { log, reportProgress }) =&gt; {
-      const { nam<span class="fstat-no" title="function not covered" >e,</span> description, appId, type, configuration, events, logs } = input;
-<span class="cstat-no" title="statement not covered" ></span>
-      log.in<span class="cstat-no" title="statement not covered" >fo('Creating hook', {</span>
-        name<span class="cstat-no" title="statement not covered" >,</span>
-        appId,<span class="cstat-no" title="statement not covered" ></span>
-        type,<span class="cstat-no" title="statement not covered" ></span>
-        endpoint: configuration.endpoint,
-      });
+      const { name, description, appId, type, configuration, events, logs } = input;
 &nbsp;
-      try {
-        reportProgress({ progress: 0, total: 100 });
+      log.info('Creating hook', {
+        name,
+        appId,
+        type,
+        endpoint:<span class="fstat-no" title="function not covered" > c</span>onfiguration.endpoint,
+      });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const hookData = {<span class="cstat-no" title="statement not covered" ></span>
-          name,<span class="cstat-no" title="statement not covered" ></span>
-          descriptio<span class="cstat-no" title="statement not covered" >n,</span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 0, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const hookData = {
+          name,
+          description,
           appId,
-          type,<span class="cstat-no" title="statement not covered" ></span>
+          type,
           config<span class="cstat-no" title="statement not covered" >uration: {</span>
-            endp<span class="cstat-no" title="statement not covered" >oint: configuration.endpoint,</span>
-            method: configuration.method || 'POST',
-            headers: configuration.headers || {},
+            endpoint: configurati<span class="cstat-no" title="statement not covered" >on.endpoint,</span>
+            meth<span class="cstat-no" title="statement not covered" >od: configuration.method || 'POST',</span>
+            headers:<span class="cstat-no" title="statement not covered" > configuration.headers || {},</span>
             authentication: {
-              ...configuration.authentication,
-              type: configuration.authentication?.type ?? 'none',
+              ...configuration.auth<span class="cstat-no" title="statement not covered" >entication,</span>
+              ty<span class="cstat-no" title="statement not covered" >pe: configuration.authentication?.type ?? 'none</span>',
               co<span class="cstat-no" title="statement not covered" >nfiguration: configuration.authentication?.configuration ?? {},</span>
             },
             polling: type === 'polling' ? {
               interval: 5,
               strategy: 'incremental',
               parameters: {},
-              ...configuration.polling,
+              ..<span class="cstat-no" title="statement not covered" >.configuration.polling,</span>
             } : undefined,
           },
           events,
@@ -2363,23 +2363,23 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
 &nbsp;
         const response = await apiClient.post('/hooks', hookData);
 &nbsp;
-        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to create hook: ${response.error?.message || 'Unk</span>nown error'}`);
+        if (!response.success) {
+          throw new UserError(`Failed to create hook: ${response.error?.message || 'Unknown error'}`);
+        }
+&nbsp;
+        const hook = response.data as MakeHook;
+        if (!hook) {
+          throw new UserError('Hook c<span class="cstat-no" title="statement not covered" >reation failed - no data returned');</span>
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const ho<span class="cstat-no" title="statement not covered" >ok = response.data as MakeHook;</span>
-        if (!hook) {
-          throw new UserError('Hook creation failed - no data returned');
-        }
+        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress</span>: 100, total: 100 });
 <span class="cstat-no" title="statement not covered" ></span>
-        reportProgress({ progress: 100, total: 100 });
-&nbsp;
         log.info('Successfully created hook', {
           hookId: hook.id,
           name: hook.name,
-          type: hook.type,
+<span class="cstat-no" title="statement not covered" >          type: hook.type,</span>
           appId: hook.appId,
-        });
+<span class="cstat-no" title="statement not covered" >        });</span>
 &nbsp;
         return JSON.stringify({
           hook: {
@@ -2602,7 +2602,7 @@ export default addCustomAppTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T04:09:48.063Z
+                at 2025-07-25T04:35:02.986Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

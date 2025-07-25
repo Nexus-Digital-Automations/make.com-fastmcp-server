@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/112</span>
+                <span class='fraction'>0/119</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/39</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/111</span>
+                <span class='fraction'>0/118</span>
             </div>
         
             
@@ -433,7 +433,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -696,13 +702,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -798,220 +798,220 @@
  * Integrates metrics collection and monitoring with server operations
  */
 &nbsp;
-import { FastMCP } from 'fastmcp';
-import metrics from '../lib/metrics.js';
+import { FastMCP } fro<span class="cstat-no" title="statement not covered" >m 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
+impo<span class="cstat-no" title="statement not covered" >rt metrics from '../lib/metrics.js';</span>
 import logger from '../lib/logger.js';
 <span class="cstat-no" title="statement not covered" ></span>
-interface MonitoringC<span class="cstat-no" title="statement not covered" >ontext {</span>
-  to<span class="fstat-no" title="function not covered" >ol</span>?: string;
-  operat<span class="cstat-no" title="statement not covered" >ion?: string;</span>
+<span class="cstat-no" title="statement not covered" >interface MonitoringContext {</span>
+  tool?: string;<span class="cstat-no" title="statement not covered" ></span>
+  operation?: string<span class="cstat-no" title="statement not covered" >;</span>
   sessionId?: string;
   userId?: string;
-  correlationId?: string;
-  traceId?: string;
+  correlationId?: string<span class="cstat-no" title="statement not covered" >;</span>
+  traceId?: string;<span class="cstat-no" title="statement not covered" ></span>
   sp<span class="fstat-no" title="function not covered" >an</span>Id?: string;
   [key: <span class="cstat-no" title="statement not covered" >string]: unknown; // Allow additional context fields</span>
 }
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-export inter<span class="cstat-no" title="statement not covered" >face ToolMetrics {</span>
-  startTime:<span class="cstat-no" title="statement not covered" > number;</span>
-  endTime?: number;<span class="cstat-no" title="statement not covered" ></span>
-  duration?:<span class="cstat-no" title="statement not covered" > number;</span>
+&nbsp;
+export interface ToolMetrics {
+  startTime: number;
+  en<span class="fstat-no" title="function not covered" >dT</span>ime?: number;
+  durati<span class="cstat-no" title="statement not covered" >on?: number;</span>
   status?: 'success' | 'error' | 'timeout';
-  errorType?: string;
-}
+  errorT<span class="cstat-no" title="statement not covered" >ype?: string;<span class="fstat-no" title="function not covered" ></span></span>
+}<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-class MonitoringMiddleware {
-  privat<span class="cstat-no" title="statement not covered" >e componentLogger: Retur<span class="fstat-no" title="function not covered" >nT</span>ype&lt;typeof logger.child&gt;;</span>
-  private ac<span class="cstat-no" title="statement not covered" >tiveConnections: number = 0;</span>
-  private to<span class="cstat-no" title="statement not covered" >olExecutions: Map&lt;string, ToolMetrics&gt; = new Map();</span>
-<span class="cstat-no" title="statement not covered" ></span>
+class MonitoringMiddleware {<span class="cstat-no" title="statement not covered" ></span>
+  private co<span class="cstat-no" title="statement not covered" >mponentLogger: ReturnType&lt;typeof logger.child&gt;;</span>
+  private activeConnections: number = 0;
+  private toolExecutions: Map&lt;string, ToolMetrics&gt; = new Map();
+&nbsp;
   constructo<span class="cstat-no" title="statement not covered" >r() {</span>
     this.componentLogger = logger.child({ component: 'MonitoringMiddleware' });
-  }
-&nbsp;
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * Initialize monitoring for FastMCP server
+   * Initialize monitoring for<span class="cstat-no" title="statement not covered" > FastMCP server</span>
    */<span class="cstat-no" title="statement not covered" ></span>
   public initializeServerMonitoring(server: FastMCP): void {
     this.componentLogger.info('Initializing server monitoring');
 &nbsp;
-    // Monitor connection events
-<span class="fstat-no" title="function not covered" >    se</span>rver.on('connect', (event) =&gt; {<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-      th<span class="cstat-no" title="statement not covered" >is.acti<span class="fstat-no" title="function not covered" >ve</span>Connections++;</span>
-      metrics.setActiveConnectio<span class="cstat-no" title="statement not covered" >ns(this.activeConnections);</span>
-      <span class="cstat-no" title="statement not covered" ></span>
-      const sessionId = this.ext<span class="cstat-no" title="statement not covered" >ractSessionId(event.session);</span>
+    // Monit<span class="cstat-no" title="statement not covered" >or connection events</span>
+    server.on('connect', (event) =&gt; {
+      th<span class="cstat-no" title="statement not covered" >is.activeConnections++;</span>
+      metrics.setActiveConnections(this.activeConnections);
       
-      this.componentLogger.info('Client connected', { 
-        sess<span class="cstat-no" title="statement not covered" >ionId,</span>
-        activeConnections: this.ac<span class="cstat-no" title="statement not covered" >tiveConnections </span>
-      });
-&nbsp;
+      const sessionId = this.extractSessionId(event.session);
+      
+<span class="fstat-no" title="function not covered" ></span>      this.componentLogger.info('Client connected', { <span class="branch-0 cbranch-no" title="branch not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        session<span class="fstat-no" title="function not covered" >Id</span>,</span>
+        activeConnections: this.<span class="cstat-no" title="statement not covered" >activeConnections </span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
       metrics.recordRequest('connect', 'client_connect', 'success', 0);
     });
-&nbsp;
-    server.o<span class="cstat-no" title="statement not covered" >n('disconnect', (event) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    server.on('disconnect', (event<span class="cstat-no" title="statement not covered" >) =&gt; {</span>
       this.activeConnections = Math.max(0, this.activeConnections - 1);
       metrics.setActiveConnections(this.activeConnections);
       
-      const <span class="cstat-no" title="statement not covered" >sessionId = this.extractSessionId(event.session);</span>
-      <span class="cstat-no" title="statement not covered" ></span>
-      this.componentLogger.info('<span class="cstat-no" title="statement not covered" >Client d</span>isconnected', { 
-        sessionI<span class="cstat-no" title="statement not covered" >d,</span>
-        activeCo<span class="cstat-no" title="statement not covered" >nnections: this.activeConnections </span>
-      });<span class="cstat-no" title="statement not covered" ></span>
+      const sessionId = this.extractSessionId(event.session);
+      
+      this.c<span class="cstat-no" title="statement not covered" >omponentLogger.info('Client disconnected', { </span>
+        sessionId,
+        activeConnections: this.activeConnections 
+      });
 <span class="cstat-no" title="statement not covered" ></span>
-      metrics.re<span class="cstat-no" title="statement not covered" >cordRequest('disconnect', 'client_disconnect', 'success', 0);</span>
-    });
-&nbsp;
-    this.componentLogger.info('Server monitoring initialized');
-  }
+      metrics.recordRequest('di<span class="cstat-no" title="statement not covered" >sconnect', 'client</span>_disconnect', 'success', 0);
+    });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    this.compone<span class="cstat-no" title="statement not covered" >ntLogger.info('Server monitoring </span>initialized');
+  }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
    * Create a monitoring wrapper for tool execution
    */
-  public wrapToolExecution&lt;T&gt;(<span class="cstat-no" title="statement not covered" ></span>
-    toolName: string,<span class="cstat-no" title="statement not covered" ></span>
+  public wrapToolExecution&lt;T&gt;(
+    toolName: string,
     operation: s<span class="cstat-no" title="statement not covered" >tring,</span>
-    execution: (<span class="cstat-no" title="statement not covered" >) =&gt; Promise&lt;T&gt;,</span>
-    context: Mon<span class="cstat-no" title="statement not covered" >itoringContext = {}</span>
-  ): () =&gt; Promi<span class="cstat-no" title="statement not covered" >se&lt;T&gt; {</span>
-    return async<span class="cstat-no" title="statement not covered" > (): Promise&lt;T&gt; =&gt; {</span>
-      const exec<span class="cstat-no" title="statement not covered" >utionId = `${toolName}_${Date.now()}_${Math.random()}</span>`;
+    execution: (<span class="cstat-no" title="statement not covered" >) =&gt; Promise&lt;T&gt;</span>,
+    context: MonitoringContext = {}
+  ): () =&gt; Promise&lt;T&gt; {
+    return async (): Promise&lt;T&gt; =<span class="cstat-no" title="statement not covered" >&gt; {</span>
+      const executionId = `${toolN<span class="cstat-no" title="statement not covered" >ame}_${Date.now()}_${Math.</span>random()}`;
       const time<span class="cstat-no" title="statement not covered" >r = metrics.createTimer();</span>
-      
-      const toolMetrics: ToolMetrics = {
-        startTime: Date.now()
-      };
-      
-      this.toolExecutions.set(executionId, toolMetrics);
-<span class="cstat-no" title="statement not covered" ></span>
-      const cont<span class="cstat-no" title="statement not covered" >extLogger = t</span>his.componentLogger.child({
+      <span class="cstat-no" title="statement not covered" ></span>
+      const tool<span class="cstat-no" title="statement not covered" >Metrics: ToolMetrics = {</span>
+        startTim<span class="cstat-no" title="statement not covered" >e: Date.now()</span>
+      };<span class="cstat-no" title="statement not covered" ></span>
+      <span class="cstat-no" title="statement not covered" ></span>
+      this.toolE<span class="cstat-no" title="statement not covered" >xecutions.set(executionId, toolMetrics);</span>
+&nbsp;
+      const contextLogger = this.componentLogger.child({
         tool: toolName,
         operation,
         executionId,
         ...context
+      });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      contextLogger.info('Tool execution started', {
+        tool: toolName,
+        operation
       });
 &nbsp;
-<span class="fstat-no" title="function not covered" ></span>      contextLogger.info('Tool execution starte<span class="branch-0 cbranch-no" title="branch not covered" >d',</span> {
-<span class="cstat-no" title="statement not covered" >        tool: t<span class="fstat-no" title="function not covered" >oo</span>lName,</span>
-        operation<span class="cstat-no" title="statement not covered" ></span>
-      });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
       try {
-        const result = await execution();
-        <span class="cstat-no" title="statement not covered" ></span>
-        cons<span class="cstat-no" title="statement not covered" >t duration = timer();</span>
-        toolMetrics.endTime = D<span class="cstat-no" title="statement not covered" >ate.now();</span>
-        toolMetrics.duration = du<span class="cstat-no" title="statement not covered" >ration;</span>
-        toolMetr<span class="cstat-no" title="statement not covered" >ics.status = 'success';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        metrics.<span class="cstat-no" title="statement not covered" >recordToolExecution(toolName, 'success', duration, context.userId);</span>
+<span class="fstat-no" title="function not covered" ></span>        const result = await execution();<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+        <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        const duration = t<span class="cstat-no" title="statement not covered" >imer();</span>
+        toolMetrics.endTime = Date<span class="cstat-no" title="statement not covered" >.now();</span>
+        toolMetrics.duration = duration;
+        toolMetrics.status = 'success';
 &nbsp;
-        contextLogger.info('Tool execution completed successfully', {
-          durati<span class="cstat-no" title="statement not covered" >on: `${duration</span>.toFixed(3)}s`,
-          tool: toolName,
-          operation
+        metr<span class="cstat-no" title="statement not covered" >ics.recordToolExecution(toolName, 'success', duration,</span> context.userId);
+<span class="cstat-no" title="statement not covered" ></span>
+        contextLogger.info('Too<span class="cstat-no" title="statement not covered" >l execution comple</span>ted successfully', {
+          duration: `${duration.t<span class="cstat-no" title="statement not covered" >oFixed(3</span>)}s`,
+          tool: <span class="cstat-no" title="statement not covered" >toolName,</span>
+          operat<span class="cstat-no" title="statement not covered" >ion</span>
         });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        this.too<span class="cstat-no" title="statement not covered" >lExecutions.delete(executionId);</span>
+&nbsp;
+        this.toolExecutions.delete(executionId);
         return r<span class="cstat-no" title="statement not covered" >esult;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-      } catch (e<span class="cstat-no" title="statement not covered" >rror) {</span>
-        const duration = timer();
-        const errorType = this.classifyError(error);
-        
-        toolMetrics.endTime = Date.now();
-        toolMetr<span class="cstat-no" title="statement not covered" >ics.duration </span>= duration;
-        toolMetrics.status = 'error';
+&nbsp;
+      } catch (error) {
+        const duration = timer();<span class="cstat-no" title="statement not covered" ></span>
+        const errorType = this.cla<span class="cstat-no" title="statement not covered" >ssifyError(error);</span>
+        <span class="cstat-no" title="statement not covered" ></span>
+        toolMetr<span class="cstat-no" title="statement not covered" >ics.endTime = Date.now();</span>
+        toolMetr<span class="cstat-no" title="statement not covered" >ics.duration = duration;</span>
+        toolMetr<span class="cstat-no" title="statement not covered" >ics.status = 'error';</span>
         toolMetrics.errorType = errorType;
 &nbsp;
         metrics.recordToolExecution(toolName, 'error', duration, context.userId);
         metrics.recordError(errorType, operation, toolName);
-&nbsp;
-<span class="fstat-no" title="function not covered" ></span>        contextLogger.error('Tool execution failed', {<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-<span class="cstat-no" title="statement not covered" >          durat<span class="fstat-no" title="function not covered" >io</span>n: `${duration.toFixed(3)}s`,</span>
-          error: error ins<span class="cstat-no" title="statement not covered" >tanceof Error ? error.</span>message : String(error),
-          errorType,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        contextLogger.error('Tool execution failed', {
+          duration: `${duration.toFixed(3)}s`,
+          error: error instanceof Error ? error.message : String(error),
+          errorType,
           tool: toolName,
           operation
-        });
-&nbsp;
-        this.toolExecutions.delete(executionId);
-        thro<span class="cstat-no" title="statement not covered" >w error;</span>
-      }
-    };
-  }
-<span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Monitor authentication attem<span class="cstat-no" title="statement not covered" >pts</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
-  public monitor<span class="cstat-no" title="statement not covered" >Authentication&lt;T&gt;(</span>
-    execution: () =&gt; Promise&lt;T&gt;,
-    context: MonitoringContext = {}
-  ): () =&gt; Promise&lt;T&gt; {
-    return async (): Promise&lt;T&gt; =&gt; {
-      const time<span class="cstat-no" title="statement not covered" >r = metrics.cre</span>ateTimer();
-      
-      const contextLogger = this.componentLogger.child({
-        operation: 'authenticatio<span class="cstat-no" title="statement not covered" >n',</span>
-        ...context<span class="cstat-no" title="statement not covered" ></span>
-      });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-      contextLog<span class="cstat-no" title="statement not covered" >ger.info('Authentication attempt started');</span>
-&nbsp;
-      try {
-        const result = await execution();
-        const duration = timer();
-        
-        metrics.recordAuthAttempt('success');
-        metrics.<span class="cstat-no" title="statement not covered" >recordAuthDur</span>ation(duration);
-&nbsp;
-        contextLogger.info('Authentication successful', {
-          duration: `${duration.toFixed(3)}s`
-        });
-&nbsp;
-        return result;
-<span class="fstat-no" title="function not covered" ></span>
-      } <span class="cstat-no" title="statement not covered" >catch (error) {</span>
-        const duration = timer();
-        const errorType = this.classifyError(error);
-        
-        metrics.recordAuthAttempt('failure', errorType);
-        metrics.recordAuthDuration(duration);
-        metrics.recordError(errorType, 'authentication');
-&nbsp;
-        contextLogger.error('Authentication failed', {
-<span class="fstat-no" title="function not covered" ></span>          duration: `${duration.toFixed(3)}s`,
-<span class="cstat-no" title="statement not covered" >          error: error instanceof Error ? error.message : Str<span class="fstat-no" title="function not covered" >in</span>g(error),<span class="cstat-no" title="statement not covered" ></span></span>
-          errorType
-        });
-&nbsp;
-        throw error;
+<span class="fstat-no" title="function not covered" ></span>        });<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        this.toolExecution<span class="cstat-no" title="statement not covered" >s.delete(executionId);</span>
+        throw error;<span class="cstat-no" title="statement not covered" ></span>
       }
     };
   }
 &nbsp;
   /**
-   *<span class="fstat-no" title="function not covered" > M</span>onitor Make.com API calls
-   */<span class="cstat-no" title="statement not covered" ></span>
-  public mon<span class="cstat-no" title="statement not covered" >itorMakeApiCall&lt;T&gt;(</span>
-    endpoint: string,
-    meth<span class="cstat-no" title="statement not covered" >od: string,</span>
+   * Monitor<span class="cstat-no" title="statement not covered" > authentication attempts</span>
+   */
+  public monitorAuthentication&lt;T&gt;(
     execution: () =&gt; Promise&lt;T&gt;,
-    context: MonitoringContext = {}
-  ): () =&gt; Promise&lt;T&gt; {
-    return async (): Promise&lt;T&gt; =&gt; {
-<span class="fstat-no" title="function not covered" ></span>      const timer = metrics.createTimer();
+    context:<span class="cstat-no" title="statement not covered" > MonitoringContext = {}</span>
+  ): () =&gt; Promise&lt;T&gt; {<span class="cstat-no" title="statement not covered" ></span>
+    return async (): Promise&lt;T&gt; =<span class="cstat-no" title="statement not covered" >&gt; {</span>
+      const time<span class="cstat-no" title="statement not covered" >r = metrics.createTimer();</span>
       <span class="cstat-no" title="statement not covered" ></span>
       const contextLogger = this.componentLogger.child({
-        oper<span class="cstat-no" title="statement not covered" >ation: 'make_api_call',</span>
-        endpoint<span class="cstat-no" title="statement not covered" >,</span>
-        meth<span class="cstat-no" title="statement not covered" >od,</span>
-        ...conte<span class="cstat-no" title="statement not covered" >xt</span>
-      });<span class="cstat-no" title="statement not covered" ></span>
+        operation: 'authentication',
+        ...context
+      });
 <span class="cstat-no" title="statement not covered" ></span>
+      contextLogger.info('Authentication attempt started');
+&nbsp;
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const result = await execu<span class="cstat-no" title="statement not covered" >tion();</span>
+        const du<span class="cstat-no" title="statement not covered" >ration = timer();</span>
+        <span class="cstat-no" title="statement not covered" ></span>
+        metrics.<span class="cstat-no" title="statement not covered" >recordAuthAttempt('success');</span>
+        metrics.recordAuthDuration(duration);
+&nbsp;
+        contextLogger.info('Authentication successful', {
+          duration: `${duration.toFixed(3)}s`
+        });
+&nbsp;
+        return r<span class="cstat-no" title="statement not covered" >esult;</span>
+&nbsp;
+      } catch (error) {
+        const duration = timer();
+        const errorType = this.classifyError(error);
+        
+        metrics.recordAuthAttempt('failure', errorType);
+<span class="fstat-no" title="function not covered" ></span>        metrics.recordAuthDuration(duration);
+<span class="cstat-no" title="statement not covered" >        metrics.recordError(errorType, 'authentication');</span>
+&nbsp;
+        contextLogger.error('Authentication failed', {
+          duration: `${duration.toFixed(3)}s`,
+          error: error instanceof Error ? error.message : String(error),
+          errorType
+        });
+&nbsp;
+        throw error;
+<span class="fstat-no" title="function not covered" ></span>      }
+    };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  }
+&nbsp;
+  /**
+   * Monitor Make.com API calls
+   */
+  public monitorMakeApiCall&lt;T&gt;(
+    endpoint: string,
+    method: string,
+    execution: () =&gt; Promise&lt;T&gt;,
+<span class="fstat-no" title="function not covered" >    co</span>ntext: MonitoringContext = {}
+  ): () <span class="cstat-no" title="statement not covered" >=&gt; Promise&lt;T&gt; {</span>
+    return a<span class="cstat-no" title="statement not covered" >sync (): Promise&lt;T&gt; =&gt; {</span>
+      const timer = metrics.createTimer();
+      <span class="cstat-no" title="statement not covered" ></span>
+      const contextLogger = this.componentLogger.child({
+        operation: 'make_api_call',
+        endpoint,
+        method,
+<span class="fstat-no" title="function not covered" ></span>        ...context
+      })<span class="cstat-no" title="statement not covered" >;</span>
+&nbsp;
       contex<span class="cstat-no" title="statement not covered" >tLogger.info('Make.com API call started', {</span>
         endpoint<span class="cstat-no" title="statement not covered" >,</span>
         meth<span class="cstat-no" title="statement not covered" >od</span>
@@ -1021,53 +1021,53 @@ class MonitoringMiddleware {
         cons<span class="cstat-no" title="statement not covered" >t result = await execution();</span>
         const du<span class="cstat-no" title="statement not covered" >ration = timer();</span>
         <span class="cstat-no" title="statement not covered" ></span>
-        metrics.recordMakeApiCall(endpoint, method, 'success', duration);
+        metrics.<span class="cstat-no" title="statement not covered" >recordMakeApiCall(</span>endpoint, method, 'success', duration);
 <span class="cstat-no" title="statement not covered" ></span>
-        contextLogger.info('Make.com API call completed', {
-          endpoint,
-          method,
-          duration: `${duration.toFixed(3)}s`
-<span class="fstat-no" title="function not covered" ></span>        });
+        contextL<span class="cstat-no" title="statement not covered" >ogger.info('Make.com </span>API call completed', {
+          en<span class="cstat-no" title="statement not covered" >dpoint,</span>
+          method<span class="cstat-no" title="statement not covered" >,</span>
+          du<span class="cstat-no" title="statement not covered" >ration: `${duration.toFi</span>xed(3)}s`
+        });
 <span class="cstat-no" title="statement not covered" ></span>
-        return result;<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+        return result;
+&nbsp;
       } catch (error) {
         const duration = timer();
-        const errorType = this.classifyError(error);
-        
-        metrics.recordMakeApiCall(endpoint, method, 'error', duration);
-        metrics.recordError(errorType, 'make_api_call', endpoint);
+<span class="fstat-no" title="function not covered" ></span>        const errorType = this.classifyError(error);
+        <span class="cstat-no" title="statement not covered" ></span>
+        metrics.recordMakeApiCall(<span class="cstat-no" title="statement not covered" >endpoint, method, 'error', duration);</span>
+        metr<span class="cstat-no" title="statement not covered" >ics.recordError(errorType, 'make_api_call', endpoint);</span>
 &nbsp;
-        cont<span class="cstat-no" title="statement not covered" >extLogger.error('Make.com API call failed', {</span>
+        contextLogger.error('Make.com API call failed', {
           endpoint,
           method,
-          du<span class="cstat-no" title="statement not covered" >ration: `${duration.toFixed(3)}s`,</span>
+          duration: `${duration.toFixed(3)}s`,
           error: error instanceof Error ? error.message : String(error),
           errorType
-        });
+        });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         throw error;
-      }
+      }<span class="cstat-no" title="statement not covered" ></span>
     };
   }
 &nbsp;
   /**
-   *<span class="fstat-no" title="function not covered" > G</span>et current monitoring statistics
-   */<span class="cstat-no" title="statement not covered" ></span>
-  public<span class="cstat-no" title="statement not covered" > getMonitoringStats(): {</span>
-    acti<span class="cstat-no" title="statement not covered" >veConnections: number;</span>
-    acti<span class="cstat-no" title="statement not covered" >veToolExecutions: number;</span>
+   * Get current monitoring statistics
+   */
+  public getMonitoringStats(): {
+    activeConnections: number;
+    activeToolExecutions: number;
     metricsHealth: Promise&lt;{ healthy: boolean; metricsCount: number }&gt;;
-  } {
-    return {
-      activeConnections: t<span class="cstat-no" title="statement not covered" >his.activeConnections,</span>
-      activeToolExecutions: this.toolExecutions.size,
-      metricsHealth: metrics.healthCheck()
+  } <span class="fstat-no" title="function not covered" >{</span>
+    retu<span class="cstat-no" title="statement not covered" >rn {</span>
+      ac<span class="cstat-no" title="statement not covered" >tiveConnections: this.activeC</span>onnections,
+      ac<span class="cstat-no" title="statement not covered" >tiveToolExecutions: this.too</span>lExecutions.size,
+      me<span class="cstat-no" title="statement not covered" >tricsHealth: metrics.healthCheck()</span>
     };
   }
 &nbsp;
-  /**
-   * Get detailed tool execution metrics
+<span class="cstat-no" title="statement not covered" >  /**</span>
+<span class="cstat-no" title="statement not covered" >   * Get detailed tool execution metri</span>cs
    */
   public getToolExecutionMetrics(): Array&lt;{
     executionId: string;
@@ -1165,7 +1165,7 @@ export default monitoring;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T04:09:48.063Z
+                at 2025-07-25T04:35:02.986Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

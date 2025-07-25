@@ -146,7 +146,7 @@ describe('Make.com API Client Integration Tests', () => {
       // Then rate limit kicks in
       mockApiClient.mockFailure('GET', '/burst-3', rateLimitError);
       
-      const results = [];
+      const results: Array<{ success: boolean; data?: any; error?: any }> = [];
       for (let i = 0; i < 4; i++) {
         try {
           const response = await mockApiClient.get(`/burst-${i}`);
@@ -229,7 +229,7 @@ describe('Make.com API Client Integration Tests', () => {
       
       // Simulate bursty traffic with recovery
       const burstTest = async () => {
-        const results = [];
+        const results: Array<{ success: boolean; attempt: number; data?: any; error?: any }> = [];
         
         for (let i = 0; i < maxRequests; i++) {
           requestCount++;
@@ -438,7 +438,7 @@ describe('Make.com API Client Integration Tests', () => {
       
       expect(response.success).toBe(true);
       expect(attemptCount).toBe(3);
-      expect(response.data.attempts).toBe(3);
+      expect((response.data as any).attempts).toBe(3);
     });
 
     it('should apply jitter to prevent thundering herd', async () => {
@@ -512,7 +512,7 @@ describe('Make.com API Client Integration Tests', () => {
         '/mixed-recovery'
       ];
       
-      const results = [];
+      const results: Array<{ endpoint: string; success: boolean; response?: any; error?: any }> = [];
       
       for (let i = 0; i < endpoints.length; i++) {
         let attemptCount = 0;
@@ -845,8 +845,8 @@ describe('Make.com API Client Integration Tests', () => {
             data: scenario.data
           };
         } else {
-          const error = new Error(scenario.error.message) as any;
-          error.status = scenario.error.status;
+          const error = new Error(scenario.error?.message || 'Test error') as any;
+          error.status = scenario.error?.status || 500;
           error.retryable = true;
           throw error;
         }
@@ -913,7 +913,7 @@ describe('Make.com API Client Integration Tests', () => {
       const { result: loadResults, duration } = await performanceHelpers.measureExecutionTime(async () => {
         // Simulate concurrent users making multiple requests
         const userPromises = Array.from({ length: concurrentUsers }, async (_, userIndex) => {
-          const userRequests = [];
+          const userRequests: Promise<any>[] = [];
           
           for (let reqIndex = 0; reqIndex < requestsPerUser; reqIndex++) {
             const requestId = userIndex * requestsPerUser + reqIndex;
@@ -954,7 +954,7 @@ describe('Make.com API Client Integration Tests', () => {
         }
       };
       
-      const memoryResults = [];
+      const memoryResults: Array<{ burst: number; successful: number; failed: number; duration: number; successRate: number }> = [];
       
       for (let burst = 0; burst < requestBursts; burst++) {
         // Set up responses for this burst
@@ -997,7 +997,7 @@ describe('Make.com API Client Integration Tests', () => {
 
     it('should demonstrate linear performance degradation under increasing load', async () => {
       const loadLevels = [10, 25, 50, 100, 200];
-      const performanceBaseline = [];
+      const performanceBaseline: Array<{ loadLevel: number; duration: number; successful: number; throughput: number; avgResponseTime: number; successRate: number }> = [];
       
       for (const loadLevel of loadLevels) {
         // Set up responses for this load level
@@ -1057,7 +1057,7 @@ describe('Make.com API Client Integration Tests', () => {
         { name: 'terrible', latency: 1000, jitter: 500, packetLoss: 0.1 }
       ];
       
-      const networkPerformance = [];
+      const networkPerformance: Array<{ condition: string; expectedLatency: number; packetLoss: number; successful: number; failed: number; actualDuration: number; successRate: number; avgResponseTime: number }> = [];
       
       for (const condition of networkConditions) {
         const requestCount = 20;
@@ -1692,7 +1692,7 @@ describe('Make.com API Client Integration Tests', () => {
       });
       
       const testEndpoints = ['/users', '/orders', '/inventory'];
-      const results = [];
+      const results: Array<{ round: number; endpoint: string; success: boolean; response?: any; error?: any; code?: any }> = [];
       
       // Test bulkhead isolation - failures in one endpoint shouldn't affect others
       for (let round = 0; round < 3; round++) {

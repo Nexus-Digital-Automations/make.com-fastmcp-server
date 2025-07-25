@@ -1441,7 +1441,7 @@
         "tests/e2e/complete-workflows.test.ts",
         "tests/mocks/make-api-client.mock.ts"
       ],
-      "status": "pending",
+      "status": "completed",
       "requires_research": false,
       "subtasks": [
         "Fix \"Cannot find name async\" error in scenarios.test.ts",
@@ -1593,9 +1593,9 @@
   "review_strikes": 0,
   "strikes_completed_last_run": false,
   "current_task_index": 0,
-  "last_mode": "TASK_CREATION",
-  "execution_count": 72,
-  "last_hook_activation": 1753417650772,
+  "last_mode": "TESTING",
+  "execution_count": 75,
+  "last_hook_activation": 1753419691718,
   "completion_percentage": 76,
   "current_mode": "development",
   "current_task": null

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/110</span>
+                <span class='fraction'>0/137</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/54</span>
+                <span class='fraction'>0/61</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/110</span>
+                <span class='fraction'>0/137</span>
             </div>
         
             
@@ -584,26 +584,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1014,16 +1020,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1100,55 +1100,55 @@
  * Main server implementation with authentication, error handling, and logging
  */
 &nbsp;
-import { FastMCP, UserError } from 'fastmcp';
-import { z } from 'zod';
+import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
+impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
 import configManager from './lib/config.js';
-import logger from './lib/logger.js';
-import MakeApiClient from './lib/make-api-client.js';
-import { setupGlobalErrorHandlers, MakeServerError, AuthenticationError } from './utils/errors.js';
-import { extractCorrelationId } from './utils/error-response.js';
-import { addScenarioTools } from './tools/scenarios.js';
-import addConnectionTools from './tools/connections.js';
-import addPermissionTools from './tools/permissions.js';
-import addAnalyticsTools from './tools/analytics.js';
-import { addVariableTools } from './tools/variables.js';
-import { addAIAgentTools } from './tools/ai-agents.js';
-import { addTemplateTools } from './tools/templates.js';
-import { addFolderTools } from './tools/folders.js';
-import { addCertificateTools } from './tools/certificates.js';
-import { addProcedureTools } from './tools/procedures.js';
-import { addCustomAppTools } from './tools/custom-apps.js';
-import { addSDKTools } from './tools/sdk.js';
-import { addBillingTools } from './tools/billing.js';
-import { addNotificationTools } from './tools/notifications.js';
+<span class="cstat-no" title="statement not covered" >import logger from './lib/logger.js';</span>
+<span class="cstat-no" title="statement not covered" >import MakeApiClient from './lib/make</span>-api-client.js';
+import { setupGlob<span class="cstat-no" title="statement not covered" >alErrorHandlers, Ma</span>keServerError, AuthenticationError } from './utils/errors.js';
+import { extra<span class="cstat-no" title="statement not covered" >ctCorrelationId</span> } from './utils/error-response.js';
+import { addScenario<span class="cstat-no" title="statement not covered" >Tools } from './tools/scenarios.js';</span>
+import addConnection<span class="cstat-no" title="statement not covered" >Tools from './tools/connections.js';</span>
+import addPermissionTools fro<span class="cstat-no" title="statement not covered" >m './tools/permissions.js';</span>
+import addAnalyticsT<span class="cstat-no" title="statement not covered" >ools from './tools/analytics.</span>js';
+import { addVariableTools } <span class="cstat-no" title="statement not covered" >from './tools/variables.js';</span>
+import { addAIAgentTool<span class="cstat-no" title="statement not covered" >s } from './tools/ai-agents.js';</span>
+import { addTemplateTools<span class="cstat-no" title="statement not covered" > } from './tools/templates.js';</span>
+import { addFolderTools }<span class="cstat-no" title="statement not covered" > from './tools/folders.js';</span>
+import { addCertificate<span class="cstat-no" title="statement not covered" >Tools } from './tools/certificates.js';</span>
+import { addProcedureTo<span class="cstat-no" title="statement not covered" >ols } from './tools/procedures.j</span>s';
+import { addCustomAppTo<span class="cstat-no" title="statement not covered" >ols } from './tools/custom-apps.</span>js';
+import { addSDKTools } <span class="cstat-no" title="statement not covered" >from './tools/sdk.js';</span>
+import { addBillingTo<span class="cstat-no" title="statement not covered" >ols } from './tools/billing.js</span>';
+import { addNotificationTo<span class="cstat-no" title="statement not covered" >ols } from './tools/notifications.j</span>s';
+<span class="cstat-no" title="statement not covered" ></span>
+export class MakeServerIn<span class="cstat-no" title="statement not covered" >stance {</span>
+  private server:<span class="cstat-no" title="statement not covered" > FastMCP;</span>
+  private apiClient: <span class="cstat-no" title="statement not covered" >MakeApiClient;</span>
+  private componentLogger: <span class="cstat-no" title="statement not covered" >ReturnType&lt;typeof logger.child&gt;;</span>
 &nbsp;
-export class MakeServerInstance {
-  private server: FastMCP;
-  pr<span class="fstat-no" title="function not covered" >iv</span>ate apiClient: MakeApiClient;
-  privat<span class="cstat-no" title="statement not covered" >e componentLogger: ReturnType&lt;typeof logger.child&gt;;</span>
-&nbsp;
-  constr<span class="cstat-no" title="statement not covered" >uctor() {</span>
+  constructor() {
     this.componentLogger = logger.child({ component: 'MakeServer' });
-    <span class="cstat-no" title="statement not covered" ></span>
-    // Setup global error handlers
+    
+<span class="fstat-no" title="function not covered" >    //</span> Setup global error handlers
     setu<span class="cstat-no" title="statement not covered" >pGlobalErrorHandlers();</span>
 &nbsp;
-    // Initialize API client
+    // I<span class="cstat-no" title="statement not covered" >nitialize API client</span>
     this.apiClient = new MakeApiClient(configManager.getMakeConfig());
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
     // Initialize FastMCP server
     this<span class="cstat-no" title="statement not covered" >.server = new FastMCP({</span>
-      na<span class="cstat-no" title="statement not covered" >me: configManager.getC</span>onfig().name,
-      ve<span class="cstat-no" title="statement not covered" >rsion: "1.0.0",</span>
+      name: configManager.getConfig().name,
+      version: "1.0.0",
       instructions: this.getServerInstructions(),
-<span class="fstat-no" title="function not covered" ></span>      authenticate: configManager.isAuthEnabled() ? this.authenticate.bind(this) : undefined,
-    });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-    this.setupServerEvents();
-    this.addBasicTools();
+      authenticate: configManager.isAuthEnabled() ? this.authenticate.bind(this) : undefined,
+    });
+<span class="cstat-no" title="statement not covered" ></span>
+    this<span class="cstat-no" title="statement not covered" >.setupServerEvents();</span>
+    this<span class="cstat-no" title="statement not covered" >.addBasicTools();</span>
     this.addAdvancedTools();
-  }
-&nbsp;
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   private getServerInstructions(): string {
     return `
 # Make.com FastMCP Server
@@ -1174,138 +1174,138 @@ ${configManager.isAuthEnabled() ?
 }
 &nbsp;
 ## Rate Limiting:
-- AP<span class="fstat-no" title="function not covered" >I </span>calls are rate-limited to prevent abuse of Make.com API
-- Current limits: ${configM<span class="cstat-no" title="statement not covered" >anager.g</span>etRateLimitConfig()?.maxRequests || 'unlimited'} requests per ${(configManager.getRateLimitConfig()?.windowMs || 60000) / 1000} seconds
-<span class="cstat-no" title="statement not covered" ></span>
-## Usage Notes:<span class="cstat-no" title="statement not covered" ></span>
+- API calls are rate-limited to prevent abuse of Make.com API
+- Current limits: ${configManager.getRateLimitConfig()?.maxRequests || 'unlimited'} requests per ${(configManager.getRateLimitConfig()?.windowMs || 60000) / 1000} seconds
+&nbsp;
+## Usage Notes:
 - All operations require valid Make.com API credentials
 - Some operations may require specific team/organization permissions
-- Error responses include detailed information for troubleshooting
+- Er<span class="fstat-no" title="function not covered" >ro</span>r responses include detailed information for troubleshooting
 `.trim();<span class="cstat-no" title="statement not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  private async authenticate(r<span class="cstat-no" title="statement not covered" >equest: unknown): Promise&lt;Record&lt;string, unknown&gt;&gt; {</span>
+  private async authenticate(request: unknown): Promise&lt;Record&lt;string, unknown&gt;&gt; {
     const requestObj = request as Record&lt;string, unknown&gt;;
     const correlationId = extractCorrelationId({ headers: requestObj.headers as Record&lt;string, string&gt; });
-    const componentLogger = this.componentLogger.child({ 
-      operation: 'authenticate',
-      correlationId 
-    });
+    const componentLogg<span class="cstat-no" title="statement not covered" >er = this.componentLogger.child({ </span>
+      operation: 'authenticate'<span class="cstat-no" title="statement not covered" >,</span>
+      co<span class="cstat-no" title="statement not covered" >rrelationId </span>
+    });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-    const ap<span class="cstat-no" title="statement not covered" >iKey = (requestObj.headers as Record&lt;string, string&gt;)?.['x-api-key'];</span>
+    const apiKey = (requestObj.headers as Record&lt;string, string&gt;)?.['x-api-key'];
     const expectedSecret = configManager.getAuthSecret();
 &nbsp;
     if (!apiKey || apiKey !== expectedSecret) {
-      const <span class="cstat-no" title="statement not covered" >authError = new AuthenticationError(</span>
+      const authError = new AuthenticationError(
         'Invalid API key provided',
-        { 
+        { <span class="cstat-no" title="statement not covered" ></span>
           hasApiKey: !!apiKey,
           expectedLength: expectedSecret?.length 
-<span class="cstat-no" title="statement not covered" >        },</span>
-        {
-<span class="cstat-no" title="statement not covered" >          correlationId,</span>
+        },
+        {<span class="cstat-no" title="statement not covered" ></span>
+          correlationId,
           operation: 'authenticate',
           component: 'MakeServer'
         }
-      );
+      );<span class="cstat-no" title="statement not covered" ></span>
       
-<span class="fstat-no" title="function not covered" ></span>      componentLogger.error('Authentication failed', {
-<span class="cstat-no" title="statement not covered" >        hasApiKey: !!apiKey,<span class="fstat-no" title="function not covered" ></span></span>
-        corr<span class="cstat-no" title="statement not covered" >elationId: authError.correlationId</span>
+      co<span class="cstat-no" title="statement not covered" >mponentLogger.error('Authentication failed', {</span>
+        hasApiKey: !!apiKey,
+        correlationId: authError.correlationId
       });
       
       throw new Response(null, {
-        status: 401,
-<span class="cstat-no" title="statement not covered" >        statusText: 'Unauthorized - I<span class="fstat-no" title="function not covered" >nv</span>alid API key',</span>
+<span class="fstat-no" title="function not covered" ></span>        status: 401,
+<span class="cstat-no" title="statement not covered" >        statusText: 'Unauthorized <span class="fstat-no" title="function not covered" >- </span>Invalid API key',</span>
       });<span class="cstat-no" title="statement not covered" ></span>
     }
 &nbsp;
     componentLogger.info('Authentication successful', { correlationId });
     
-<span class="fstat-no" title="function not covered" >    //</span> Return session data that will be available in tool context
-    return {
-      au<span class="cstat-no" title="statement not covered" >thenticated: true,</span>
+    // R<span class="cstat-no" title="statement not covered" >eturn session data that will <span class="fstat-no" title="function not covered" >be</span> available in tool context</span>
+    return {<span class="cstat-no" title="statement not covered" ></span>
+      authenticated: true,
       timestamp: new Date().toISOString(),
       correlationId,
     };
-  }
+  }<span class="fstat-no" title="function not covered" ></span>
 &nbsp;
-  private setupServerEvents(): void {
+  privat<span class="cstat-no" title="statement not covered" >e setupServerEvents(): void {</span>
     this.server.on('connect', (event) =&gt; {
       this.componentLogger.info('Client connected', {
-        sessionId: ev<span class="fstat-no" title="function not covered" >en</span>t.session ? 'connected' : 'unknown',
-        clientCapabilities: event.sess<span class="cstat-no" title="statement not covered" >ion?.clientCapabilities,</span>
-      });<span class="cstat-no" title="statement not covered" ></span>
+        sessionId: event.session ? 'connected' : 'unknown',
+        clientCapabilities: event.session?.clientCapabilities,
+      });
     });
 &nbsp;
     this.server.on('disconnect', (event) =&gt; {
-      this.componentLogger.info('Client disconnected', {
-        sessionI<span class="cstat-no" title="statement not covered" >d: event.session ? 'disconnected' : 'unknown',</span>
+      this.componentL<span class="fstat-no" title="function not covered" >og</span>ger.info('Client disconnected', {
+        sessionId: event.session ? 'di<span class="cstat-no" title="statement not covered" >sconnected' : 'unknown',</span>
       });<span class="cstat-no" title="statement not covered" ></span>
-    });<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+    });
+  }
 &nbsp;
   private addBasicTools(): void {
-    // Health check tool
-    this.server.addTool({
-      name: 'health-check',
-      description: 'Check server and Make.com API connectivity status',
+    // Health ch<span class="cstat-no" title="statement not covered" >eck tool</span>
+    this.server.<span class="cstat-no" title="statement not covered" >addTool({</span>
+      name: 'health-check',<span class="cstat-no" title="statement not covered" ></span>
+      description: 'Check server and <span class="cstat-no" title="statement not covered" >Make.com API connectivity status',</span>
       parameters: z.object({}),
       annotations: {
         title: 'Health Check',
         readOnlyHint: true,
         openWorldHint: true,
-      },<span class="cstat-no" title="statement not covered" ></span>
-      execute: async (args, { log, se<span class="cstat-no" title="statement not covered" >ssion }) =&gt; {</span>
-        const correlationId = extractCorre<span class="cstat-no" title="statement not covered" >lationId({ session });</span>
-        const componentLogger = logge<span class="cstat-no" title="statement not covered" >r.child({ </span>
+      },
+      execute: async (args, { log, session }) =&gt; {
+        const correlationId = extractCorrelationId({ session });
+        const componentLogger = logger.child({ 
           component: 'HealthCheck',
           operation: 'health-check',
-          correlationId 
-        });
-        
-        componentLogger.info('Performing health check');
+          correlationId <span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+        <span class="cstat-no" title="statement not covered" ></span>
+        componentLogger.info('Perform<span class="cstat-no" title="statement not covered" >ing health check');</span>
         log.info('Performing health check', { correlationId });
 &nbsp;
-        const st<span class="cstat-no" title="statement not covered" >artTime = Date.now();</span>
+        const startTime = Date.now();
         const serverHealth = {
           server: 'healthy',
           timestamp: new Date().toISOString(),
           uptime: process.uptime(),
-          memory<span class="cstat-no" title="statement not covered" >: process.memoryUsage(),</span>
-          config: {
+          memory: process.memoryUsage(),
+          config<span class="cstat-no" title="statement not covered" >: {</span>
             logLevel: configManager.getLogLevel(),
             authEnabled: configManager.isAuthEnabled(),
             environment: process.env.NODE_ENV || 'development',
-          },<span class="cstat-no" title="statement not covered" ></span>
-        };
+          },
+        };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         // Check Make.com API connectivity
-<span class="cstat-no" title="statement not covered" >        const apiHealthy = await this.apiClient.healthCheck();</span>
+        const apiHealthy = await this.apiClient.healthCheck();
         const responseTime = Date.now() - startTime;
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         const rateLimiterStatus = this.apiClient.getRateLimiterStatus();
 &nbsp;
         const healthStatus = {
-          ...serverHealth,
+<span class="cstat-no" title="statement not covered" >          ...serverHealth,</span>
           makeApi: {
-            healthy: <span class="fstat-no" title="function not covered" >ap</span>iHealthy,
-            responseTime: `${responseT<span class="cstat-no" title="statement not covered" >ime}ms`,</span>
-            rateLimiter: rateLimiterStat<span class="cstat-no" title="statement not covered" >us,</span>
+            healthy: apiHealthy,
+            responseTime: `${responseTime}ms`,
+            rateLimiter: rateLimiterStatus,
           },
           overall: apiHealthy ? 'healthy' : 'degraded',
         };
-&nbsp;
-        componen<span class="cstat-no" title="statement not covered" >tLogger.info('Health check completed', { </span>
-          overal<span class="cstat-no" title="statement not covered" >l: healthStatus.overall,</span>
-          responseTime: healthS<span class="cstat-no" title="statement not covered" >tatus.makeApi.responseTime</span>,
-          correlationId<span class="cstat-no" title="statement not covered" ></span>
-        });
-        
-        log.info('Health check completed', { 
-          overall: healthStatus.overall,
+<span class="fstat-no" title="function not covered" ></span>
+        componentLogger.info('Health c<span class="cstat-no" title="statement not covered" >heck completed', { </span>
+          overall: healthStatus.overall,<span class="cstat-no" title="statement not covered" ></span>
           responseTime: healthStatus.makeApi.responseTime,
           correlationId
+        });
+        
+        log.info<span class="cstat-no" title="statement not covered" >('Health check completed', { </span>
+          overal<span class="cstat-no" title="statement not covered" >l: healthStatus.overall,</span>
+          responseTime: healthS<span class="cstat-no" title="statement not covered" >tatus.makeApi.responseTime,</span>
+          correlationId<span class="cstat-no" title="statement not covered" ></span>
         });
 &nbsp;
         return JSON.stringify(healthStatus, null, 2);
@@ -1366,113 +1366,113 @@ ${configManager.isAuthEnabled() ?
             'role-management',
             'team-management',
             'organization-management',
-            'ana<span class="cstat-no" title="statement not covered" >lytics-reporting',</span>
+            'analytics-reporting',
             'audit-logging',
             'execution-monitoring',
             'performance-metrics',
             'data-export',
             'template-management',
-            'template-creation',
+            'tem<span class="cstat-no" title="statement not covered" >plate-creation',</span>
             'template-sharing',
             'folder-organization',
             'data-store-management',
             'resource-categorization',
-<span class="cstat-no" title="statement not covered" >            'webhook-management',</span>
+            'webhook-management',
             'variable-management',
             'custom-variable-management',
             'ai-agent-management',
             'llm-provider-integration',
             'incomplete-execution-recovery',
-            'certificate-management',
+<span class="cstat-no" title="statement not covered" >            'certificate-management',</span>
             'key-lifecycle-management',
             'remote-procedure-execution',
             'device-configuration-management',
             'custom-app-development',
-            'sdk-app-<span class="fstat-no" title="function not covered" >ma</span>nagement',
-            'hook-lifecycle-management<span class="cstat-no" title="statement not covered" >',</span>
-            'custom-function-deployment'<span class="cstat-no" title="statement not covered" >,</span>
+            'sdk-app-management',
+            'hook-lifecycle-management',
+            'custom-function-deployment',
             'billing-management',
             'payment-processing',
             'notification-system',
-            'email-preferences',
-            'dat<span class="cstat-no" title="statement not covered" >a-structure-validation',</span>
+            'email-pr<span class="fstat-no" title="function not covered" >ef</span>erences',
+            'data-structure-validation<span class="cstat-no" title="statement not covered" >',</span>
           ],<span class="cstat-no" title="statement not covered" ></span>
-          uptime<span class="cstat-no" title="statement not covered" >: process.uptime(),</span>
-          memory<span class="cstat-no" title="statement not covered" >: process.memoryUsage(),</span>
+          uptime: process.uptime(),
+          memory: process.memoryUsage(),
         };
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         return {<span class="cstat-no" title="statement not covered" ></span>
-          content: [<span class="cstat-no" title="statement not covered" ></span>
+          conten<span class="cstat-no" title="statement not covered" >t: [</span>
             {<span class="cstat-no" title="statement not covered" ></span>
-              type: 'text',
-              text: <span class="cstat-no" title="statement not covered" >JSON.stringify(serverInfo, null, 2),</span>
+              ty<span class="cstat-no" title="statement not covered" >pe: 'text',</span>
+              text: JSON.stringify(serverInfo, null, 2),
             },<span class="cstat-no" title="statement not covered" ></span>
-          ],
+          ],<span class="cstat-no" title="statement not covered" ></span>
         };<span class="cstat-no" title="statement not covered" ></span>
       },<span class="cstat-no" title="statement not covered" ></span>
-    });<span class="cstat-no" title="statement not covered" ></span>
+    });
 <span class="cstat-no" title="statement not covered" ></span>
-    // Configuration tes<span class="cstat-no" title="statement not covered" >t tool</span>
+    // Configuration<span class="cstat-no" title="statement not covered" > test tool</span>
     this.server.addTool({
-      name: 'test-configuration',
-      description: 'Test Make.com API configur<span class="cstat-no" title="statement not covered" >ation and permissions',</span>
-      parameters: z.object({
-        includePermissions: z.boolean().default(false).describe('Include detailed permission analysis'),
+      name: 'test-configuration',<span class="cstat-no" title="statement not covered" ></span>
+      description: '<span class="cstat-no" title="statement not covered" >Test Make.com API configuration and permissions',</span>
+      parameters: z.object({<span class="cstat-no" title="statement not covered" ></span>
+        includePermissio<span class="cstat-no" title="statement not covered" >ns: z.boolean().default(false).desc</span>ribe('Include detailed permission analysis'),
       }),<span class="cstat-no" title="statement not covered" ></span>
-      annotations: {<span class="cstat-no" title="statement not covered" ></span>
-        title: 'Configuration Test',<span class="cstat-no" title="statement not covered" ></span>
-        readOnlyHint: true,
+      annotations: {
+        title: 'Configuration Test',
+        readOnlyHint: true,<span class="cstat-no" title="statement not covered" ></span>
         openWorldHint: true,
       },
-      execute: async ({ includePermissions }, { log, reportProgress, session }) =&gt; {
-        const correlationId = extractCorrelationId({ session });
-        const componentLogger = logger.child({ 
+      execute: async ({ includePermissions <span class="cstat-no" title="statement not covered" >}, { log, reportProgress, </span>session }) =&gt; {
+        const correl<span class="cstat-no" title="statement not covered" >ationId = extractCorrelationId({ session });</span>
+        const componentLogger = logger.c<span class="cstat-no" title="statement not covered" >hild({ </span>
           component: 'ConfigTest',
           operation: 'test-configuration',
           correlationId 
         });
         
-        componentLog<span class="cstat-no" title="statement not covered" >ger.info('Testing Make.com API configuration');</span>
-        log.info('Testin<span class="cstat-no" title="statement not covered" >g Make.com API configuration', { correla</span>tionId });
+        componentLogger.info('Testing Make.com API configuration');
+        log.info('Testing Make.com API configuration', { correlationId });
         
-        reportProgress({<span class="cstat-no" title="statement not covered" > progress: 0, total: 100 });</span>
+        reportProgress({ progress: 0, total: 100 });
 &nbsp;
         try {
-          // Test basic API connectivity
-          const userResponse = await this.apiClient.get('/users/me');
-          reportProg<span class="cstat-no" title="statement not covered" >ress({ progress: 25, total: 100 });</span>
+          // Test ba<span class="cstat-no" title="statement not covered" >sic API connectivity</span>
+          const userResp<span class="cstat-no" title="statement not covered" >onse = await this.apiClient.get('/users/</span>me');
+          reportProgress({ progress: 25, total: 100 });
 <span class="cstat-no" title="statement not covered" ></span>
-          if (!userR<span class="cstat-no" title="statement not covered" >esponse.success) {</span>
-            throw ne<span class="cstat-no" title="statement not covered" >w UserError(`API connectivity test failed: ${</span>userResponse.error?.message}`);
+          if (!userResponse.success) {
+            throw new UserError(`API connectivity test failed: ${userResponse.error?.message}`);
           }
 &nbsp;
-          componentLogger.info('API co<span class="cstat-no" title="statement not covered" >nnectivity test passed', { correlationId });</span>
-          log.info('API connectivity test passed', { correlationId });
-&nbsp;
+          componentL<span class="cstat-no" title="statement not covered" >ogger.info('API connectivity test passed', { co</span>rrelationId });
+          log.info('<span class="cstat-no" title="statement not covered" >API connectivity test passed', { correlationId });</span>
+<span class="cstat-no" title="statement not covered" ></span>
           // Test te<span class="cstat-no" title="statement not covered" >am access if configured</span>
           let teamAccess = null;
           if (configManager.getMakeConfig().teamId) {
-            const teamResponse = await this.apiClient.get(`/teams/${configManager.getMakeConfig().teamId}`);
+            const teamResponse = await<span class="cstat-no" title="statement not covered" > this.apiClient.get(`/teams/${configManager.getMakeConfig().teamId}`);</span>
             teamAccess = teamResponse.success;
-            reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 50, total: 100 });</span>
-          }
+            reportProgress({ progress: 50, total: 100 });
+          }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
           // Test scenario access
-          const scen<span class="cstat-no" title="statement not covered" >ariosResponse = await this.apiClient.get</span>('/scenarios', {
+          const scenariosResponse = await this.apiClient.get('/scenarios', {
             params: { limit: 1 }
-          });
+          });<span class="cstat-no" title="statement not covered" ></span>
           const scenarioAccess = scenariosResponse.success;
           reportProgress({ progress: 75, total: 100 });
-<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" >          const testResults = {</span>
+&nbsp;
+          const test<span class="cstat-no" title="statement not covered" >Results = {</span>
             timestamp: new Date().toISOString(),
-<span class="cstat-no" title="statement not covered" >            apiConnectivity: userResponse.success,</span>
+            apiConnectivity: userResponse.success,
             userInfo: userResponse.data,
-<span class="cstat-no" title="statement not covered" >            teamAccess,</span>
-            scenarioAccess,
+            teamAccess,
+<span class="fstat-no" title="function not covered" ></span>            scenarioAccess,
 <span class="cstat-no" title="statement not covered" >            configuration: {</span>
               baseUrl: configManager.getMakeConfig().baseUrl,
-<span class="cstat-no" title="statement not covered" >              hasTeamId: !!configManager.getMakeConfig()</span>.teamId,
+<span class="cstat-no" title="statement not covered" >              hasTeamId: !!configManager.getMakeConfig().teamId,</span>
               hasOrgId: !!configManager.getMakeConfig().organizationId,
 <span class="cstat-no" title="statement not covered" >            },</span>
           };
@@ -1480,66 +1480,66 @@ ${configManager.isAuthEnabled() ?
           if (includePermissions &amp;&amp; userResponse.data) {
 <span class="cstat-no" title="statement not covered" >            log.info('Analyzing user permissions');</span>
             // Add more detailed permission analysis here
-<span class="cstat-no" title="statement not covered" >            (testResults as Record&lt;string, unknown&gt;).</span>permissions = {
+<span class="cstat-no" title="statement not covered" >            (testResults as Record&lt;string, unknown&gt;).permissions = {</span>
               analyzed: true,
-<span class="cstat-no" title="statement not covered" >              // This would include detailed role and perm</span>ission analysis
+<span class="cstat-no" title="statement not covered" >              // This would include detailed role and permission analysis</span>
             };
 <span class="cstat-no" title="statement not covered" >          }</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >          reportProgress({ progress: 100, total: 100 });</span>
           componentLogger.info('Configuration test completed successfully', { correlationId });
-<span class="cstat-no" title="statement not covered" >          log.info('Configuration test completed s</span>uccessfully', { correlationId });
+<span class="cstat-no" title="statement not covered" >          log.info('Configuration test completed successfully', { correlationId }</span>);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >          return JSON.stringify(testResults, null, 2);</span>
         } catch (error) {
-<span class="cstat-no" title="statement not covered" >          const makeError = error instanceof MakeServerErro</span>r 
-<span class="cstat-no" title="statement not covered" >            ? error </span>
-            : new MakeServerError(
-<span class="fstat-no" title="function not covered" ></span>                `Configuration test failed: ${error instanceof Error ? error.message : String(error)}`,
-<span class="cstat-no" title="statement not covered" >                'CONFIG_TEST</span>_FAILED',
+<span class="cstat-no" title="statement not covered" >          const makeError = error instanceof MakeServerError </span>
+            ? error 
+<span class="cstat-no" title="statement not covered" >            : new MakeServerError(</span>
+                `Configuration test failed: ${error instanceof Error ? error.message : String(error)}`,
+<span class="cstat-no" title="statement not covered" >                'CONFIG_TEST_FAILED',</span>
                 500,
-<span class="fstat-no" title="function not covered" ></span>                true,
+<span class="cstat-no" title="statement not covered" >                true,</span>
 <span class="cstat-no" title="statement not covered" >                { originalError: error instanceof Error ? error.message : String(error) },</span>
                 { correlationId, operation: 'test-configuration', component: 'ConfigTest' }
-              );
-          
+<span class="fstat-no" title="function not covered" ></span>              );
+        <span class="cstat-no" title="statement not covered" >  </span>
           componentLogger.error('Configuration test failed', {
-            correlationId: makeError.correlationId,
+<span class="fstat-no" title="function not covered" ></span>            correlationId: makeError.correlationId,
 <span class="cstat-no" title="statement not covered" >            errorCode: makeError.code,</span>
-            originalError: err<span class="cstat-no" title="statement not covered" >or instanceof Error ? error.message</span> : String(error)
-          })<span class="cstat-no" title="statement not covered" >;</span>
-          <span class="cstat-no" title="statement not covered" ></span>
-          log.error('Configuration test failed', { 
-<span class="cstat-no" title="statement not covered" >            correlationId: makeError.correlationId,</span>
-            error: makeError.message 
+            originalError: error instanceof Error ? error.message : String(error)
           });
+          
+          log.error('Configuration test failed', { 
+            correlationId: makeError.correlationId,
+<span class="cstat-no" title="statement not covered" >            error: makeError.message </span>
+          });<span class="cstat-no" title="statement not covered" ></span>
           <span class="cstat-no" title="statement not covered" ></span>
-          throw new UserError(makeError.message);
-<span class="cstat-no" title="statement not covered" >        }</span>
-      },
+          throw <span class="cstat-no" title="statement not covered" >new UserError(makeError.message);</span>
+        }
+      },<span class="cstat-no" title="statement not covered" ></span>
     });
-  }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  pr<span class="fstat-no" title="function not covered" >iv</span>ate addAdvancedTools(): void {
-    this<span class="cstat-no" title="statement not covered" >.componentLogger.info('Adding advanced Make.com API</span> tools');
+  }
+<span class="cstat-no" title="statement not covered" ></span>
+  private addAdvancedTools(): void {
+    this<span class="cstat-no" title="statement not covered" >.componentLogger.info('Adding advanced Make.com API tools');</span>
+    
+    // Add scenario management tools
+    addS<span class="cstat-no" title="statement not covered" >cenarioTools(this.server, this.apiClient);</span>
+    
+<span class="fstat-no" title="function not covered" >    //</span> Add connection management tools
+    addC<span class="cstat-no" title="statement not covered" >onnectionTools(this.server, this.apiClient);</span>
     <span class="cstat-no" title="statement not covered" ></span>
-    // Add s<span class="cstat-no" title="statement not covered" >cenario management tools</span>
-    addScena<span class="cstat-no" title="statement not covered" >rioTools(this.server, this.apiClient);</span>
-    
-    // Add connection management tools
-    addConne<span class="cstat-no" title="statement not covered" >ctionTools(this.server, this.apiClient);</span>
-    
-    // A<span class="cstat-no" title="statement not covered" >dd user permission management tools</span>
-    addPermissionTools(this.server, this.apiClient);
+    // Add u<span class="cstat-no" title="statement not covered" >ser permission management tools</span>
+    addPermi<span class="cstat-no" title="statement not covered" >ssionTools(this.server, this.apiClient);</span>
     
     // Add analytics and audit log tools
-    addAnalyticsTools(this.server, this.apiClient);
+    addAnaly<span class="cstat-no" title="statement not covered" >ticsTools(this.server, this.apiClient);</span>
     
-    // Add custom variable management tools
+    // A<span class="cstat-no" title="statement not covered" >dd custom variable management tools</span>
     addVariableTools(this.server, this.apiClient);
     
-    // Add AI agent management tools
-    addAIAgentTools(this.server, this.apiClient);
+<span class="cstat-no" title="statement not covered" >    // Add AI agent management tools</span>
+<span class="cstat-no" title="statement not covered" >    addAIAgentTools(this.server, this.</span>apiClient);
     
     // Add template management tools
     addTemplateTools(this.server, this.apiClient);
@@ -1618,7 +1618,7 @@ export default MakeServerInstance;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T04:09:48.063Z
+                at 2025-07-25T04:35:02.986Z
             </div>
         <script src="../prettify.js"></script>
         <script>

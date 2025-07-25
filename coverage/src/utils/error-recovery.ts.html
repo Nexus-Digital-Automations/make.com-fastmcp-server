@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/134</span>
+                <span class='fraction'>0/147</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/79</span>
+                <span class='fraction'>0/86</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/26</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/132</span>
+                <span class='fraction'>0/145</span>
             </div>
         
             
@@ -585,8 +585,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -711,6 +719,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -909,6 +918,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -928,6 +938,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -947,18 +958,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1102,268 +1102,268 @@
  * Implements circuit breaker patterns, exponential backoff, and resilience strategies
  */
 &nbsp;
-import { randomUUID } from 'crypto';
-import { MakeServerError, ExternalServiceError, TimeoutError } from './errors.js';
+import { randomUUID } <span class="cstat-no" title="statement not covered" >from 'crypto';<span class="fstat-no" title="function not covered" ></span></span>
+impo<span class="cstat-no" title="statement not covered" >rt { MakeServerError, ExternalServiceError, TimeoutError } </span>from './errors.js';
 import logger from '../lib/logger.js';
-&nbsp;
-export interface RetryOptions {
-  maxRetries?: number;
-  baseDelay?: number;
-  maxDelay?:<span class="cstat-no" title="statement not covered" > number;</span>
-  exponentialBase?:<span class="cstat-no" title="statement not covered" > n</span>umber;
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >export interface RetryOptions {</span>
+<span class="cstat-no" title="statement not covered" >  maxRetries?: number;</span>
+<span class="cstat-no" title="statement not covered" >  baseDelay?: number;</span>
+  maxDelay?: numb<span class="cstat-no" title="statement not covered" >er;</span>
+  exponentialBase?: <span class="cstat-no" title="statement not covered" >number;</span>
   jitter?: boolean;<span class="cstat-no" title="statement not covered" ></span>
-  retryCondition?:<span class="cstat-no" title="statement not covered" > (</span>error: Error) =&gt; boolean;
+  retryCondition?: (error: Error) =&gt; boolean;
   onRetry?: (error: Error, attempt: number) =&gt; void;
 }
-<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-export i<span class="cstat-no" title="statement not covered" >nterface CircuitBr</span>eakerOptions {
-  failur<span class="cstat-no" title="statement not covered" >eThreshold?: number;</span>
-  successThreshold?: number;
-  timeout?: number;
-  resetTimeout?: number;
+&nbsp;
+export interface CircuitBreakerOptions {
+  failureThr<span class="cstat-no" title="statement not covered" >eshold?: </span>number;
+  successThreshold?<span class="cstat-no" title="statement not covered" >: </span>number;
+  timeout?: number;<span class="cstat-no" title="statement not covered" ></span>
+  resetTimeout?: n<span class="cstat-no" title="statement not covered" >um</span>ber;
   onStateChange?: (state: CircuitBreakerState) =&gt; void;
-}<span class="fstat-no" title="function not covered" ></span>
-&nbsp;
-export t<span class="cstat-no" title="statement not covered" >ype CircuitBreakerState = 'CLOSED' | 'OPEN' | 'HALF_OPEN';</span>
-&nbsp;
+}
+<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+export t<span class="cstat-no" title="statement not covered" >ype CircuitBreaker</span>State = 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+<span class="cstat-no" title="statement not covered" ></span>
 /**
  * Circuit Breaker implementation for external service calls
  */
-expo<span class="fstat-no" title="function not covered" >rt</span> class CircuitBreaker {
-  private state: CircuitBreakerS<span class="cstat-no" title="statement not covered" >tate = 'CLOSED';</span>
+export class CircuitBreaker {
+  private state: CircuitBreakerState = 'CLOSED';<span class="fstat-no" title="function not covered" ></span>
   private failureCount = 0;
-  private successCount = 0;
+  privat<span class="cstat-no" title="statement not covered" >e successCount = 0;</span>
   private nextAttempt = 0;
-  privat<span class="cstat-no" title="statement not covered" >e readonly options: Required&lt;CircuitBreakerOptions&gt;;</span>
-  private re<span class="cstat-no" title="statement not covered" >adonly componentLogger: ReturnType&lt;typeof logger.child&gt;;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-  constructor(
-    private readonly name: string,
+  private readonly options: Required&lt;CircuitBreakerOptions&gt;;
+  private readonly componentLogger: ReturnType&lt;typeof logger.child&gt;;
+&nbsp;
+  co<span class="fstat-no" title="function not covered" >ns</span>tructor(
+    private readonly name: strin<span class="cstat-no" title="statement not covered" >g,</span>
     options: CircuitBreakerOptions = {}
   ) {
     this.options = {
-      failureThreshold: options.failureThreshold ?? 5,
-      successThreshold: options.successThreshold ?? 3,
-      timeout: options.timeout ?? 30000,
-      resetTimeo<span class="cstat-no" title="statement not covered" >ut: options.resetTimeout ?? 60000,</span>
+      fa<span class="cstat-no" title="statement not covered" >ilureThreshold: options.failureThreshold ?? 5,</span>
+      succes<span class="cstat-no" title="statement not covered" >sThreshold: options.successThreshold ?? 3,</span>
+      timeout: options.timeout<span class="cstat-no" title="statement not covered" > ?? 30000,</span>
+      resetTimeout: options.resetTimeout ?? 60000,
       onStateChange: options.onStateChange ?? ((): void =&gt; {}),
     };
 &nbsp;
-    this.compone<span class="cstat-no" title="statement not covered" >ntLogger = lo</span>gger.child({
+    this.componentLogger = logger.child({
       component: 'CircuitBreaker',
       circuitName: name,
-    });<span class="cstat-no" title="statement not covered" ></span>
+    });
   }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   async execute&lt;T&gt;(
-    oper<span class="cstat-no" title="statement not covered" >ation: () =&gt; Promise&lt;T&gt;,</span>
-    correlationId?: string<span class="cstat-no" title="statement not covered" ></span>
-  ): Promise&lt;T&gt; {<span class="cstat-no" title="statement not covered" ></span>
+    operation: () =&gt; Promise&lt;T&gt;,
+    correlationI<span class="cstat-no" title="statement not covered" >d?: string</span>
+  ): Promise&lt;T&gt; {
     const operationLogger = this.componentLogger.child({
-      correlationId: correlationId || randomUUID(),
-      operation: 'circuit-breaker-execute',
-    });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    if (this<span class="cstat-no" title="statement not covered" >.state === 'OPEN') {</span>
-      if (Date.now() &lt; this.nextAttempt) {
-        const error = new ExternalServiceError(
+      correlatio<span class="cstat-no" title="statement not covered" >nId: correlationId || random</span>UUID(),
+      operation:<span class="cstat-no" title="statement not covered" > 'circuit-breaker-execute',</span>
+    });
+&nbsp;
+    if (<span class="cstat-no" title="statement not covered" >this.state === 'OPEN') {</span>
+      if (Date.now() &lt; this.ne<span class="cstat-no" title="statement not covered" >xtAttempt) </span>{
+        const error = new E<span class="cstat-no" title="statement not covered" >xternalServiceError(</span>
           this.name,
-          'C<span class="cstat-no" title="statement not covered" >ircuit breaker </span>is OPEN - requests blocked',
+          'Circuit breaker is OPEN - requests blocked',
           undefined,
-          {
+          {<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >            circuitState: this</span>.state,
 <span class="cstat-no" title="statement not covered" >            nextAttempt: new Date(this.nextAttempt).toISOString(),</span>
             failureCount: this.failureCount,
           },
           {
-            correlationId,
-<span class="cstat-no" title="statement not covered" >            component: 'C</span>ircuitBreaker',
+<span class="cstat-no" title="statement not covered" >            correlationId,</span>
+            component: 'CircuitBreaker',
             operation: 'circuit-breaker-execute',
-          }
-<span class="fstat-no" title="function not covered" ></span>        );
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        oper<span class="cstat-no" title="statement not covered" >ationLogger<span class="fstat-no" title="function not covered" >.w</span>arn('Circuit breaker blocking request', {</span>
-          state:<span class="cstat-no" title="statement not covered" > this.state,</span>
-          nextAttempt: new Date(this.nextAttempt).toISOString(),
-        });
+          }<span class="cstat-no" title="statement not covered" ></span>
+        );<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-<span class="fstat-no" title="function not covered" ></span>        throw error;
-      } <span class="cstat-no" title="statement not covered" >else {</span>
-<span class="cstat-no" title="statement not covered" >        this.setState('HALF_OPEN');</span>
-        oper<span class="cstat-no" title="statement not covered" >ationLogger.info('Cir</span>cuit breaker transitioning to HALF_OPEN');
+        operationLogger.warn('Circuit breaker blocking request', {
+          state: this.state,
+          nextAttempt: new Date(this.nextAttempt).toISOString(),
+        });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        throw error;
+<span class="fstat-no" title="function not covered" ></span>      } else {
+<span class="cstat-no" title="statement not covered" >        this.setState('HALF<span class="fstat-no" title="function not covered" >_O</span>PEN');</span>
+        oper<span class="cstat-no" title="statement not covered" >ationLogger<span class="fstat-no" title="function not covered" >.i</span>nfo('Circuit breaker transitioning to HALF_OPEN');</span>
       }<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+    }
+&nbsp;
     try {
-      const startTime = Date.now();
-      const result = await Promise.race([
-<span class="fstat-no" title="function not covered" ></span>        operation(),
-<span class="cstat-no" title="statement not covered" >        this.createTimeoutPro</span>mise(),
-      ])<span class="cstat-no" title="statement not covered" >;</span>
+<span class="fstat-no" title="function not covered" ></span>      const startTime = Date.now();
+      co<span class="cstat-no" title="statement not covered" >nst result = await Prom</span>ise.race([
+<span class="cstat-no" title="statement not covered" >        operation(),</span>
+        this<span class="cstat-no" title="statement not covered" >.createTimeoutPromise</span>(),
+      ]);<span class="cstat-no" title="statement not covered" ></span>
       <span class="cstat-no" title="statement not covered" ></span>
-      const <span class="cstat-no" title="statement not covered" >duration = Date.now() -</span> startTime;
-      this.o<span class="cstat-no" title="statement not covered" >nSuccess();</span>
+      const dura<span class="cstat-no" title="statement not covered" >tion = Date.now() - sta</span>rtTime;
+      this.onSuccess();
       
       operationLogger.info('Circuit breaker operation succeeded', {
 <span class="fstat-no" title="function not covered" ></span>        duration,
-        state: this.state<span class="cstat-no" title="statement not covered" >,</span>
+<span class="cstat-no" title="statement not covered" >        state: this.state,</span>
       })<span class="cstat-no" title="statement not covered" >;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      return result;
-    } catch (error) {
+      return<span class="cstat-no" title="statement not covered" > result;</span>
+    } catch <span class="cstat-no" title="statement not covered" >(error) {</span>
       this.onFailure();
       
-      operationLogger.error('Circuit breaker operation failed', {
-<span class="cstat-no" title="statement not covered" >        error: error instanceof Error ? error.</span>message : String(error),
-        state: this.state,
-<span class="fstat-no" title="function not covered" ></span>        failureCount: this.failureCount,
-      })<span class="cstat-no" title="statement not covered" >;</span>
+<span class="fstat-no" title="function not covered" ></span>      operationLogger.error('Circuit breaker operation failed', {
+        error: error inst<span class="cstat-no" title="statement not covered" >anceof Erro</span>r ? error.message : String(error),
+<span class="cstat-no" title="statement not covered" >        state: this.state,</span>
+<span class="cstat-no" title="statement not covered" >        failureCount: this.failureCount,</span>
+      });
 &nbsp;
-<span class="fstat-no" title="function not covered" ></span>      throw error;
-    }<span class="cstat-no" title="statement not covered" ></span>
+      throw error;
+    }
   }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
   private createTimeoutPromise&lt;T&gt;(): Promise&lt;T&gt; {
-    return new Promise((_, reject) =&gt; {
-      setTimeout(() =&gt; {
+<span class="fstat-no" title="function not covered" >    re</span>turn new Promise((_, reject) =&gt; {
+      se<span class="cstat-no" title="statement not covered" >tTimeout(() =&gt; {</span>
         reject(new TimeoutError(
-          `Circuit breaker operation for ${this.name}`,
-          this.options.timeout
+<span class="fstat-no" title="function not covered" ></span>          `Circuit breaker operation for ${this.name}`,
+<span class="cstat-no" title="statement not covered" >          this.options.timeout</span>
         ));
       }, this.options.timeout);
-    });<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-  }<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
+    });
+  }
+&nbsp;
   private onSuccess(): void {
     this.failureCount = 0;
-    
+<span class="cstat-no" title="statement not covered" >    </span>
     if (this.state === 'HALF_OPEN') {
       this.successCount++;
-<span class="cstat-no" title="statement not covered" >      if (this.successC<span class="cstat-no" title="statement not covered" >ou</span>nt &gt;= this.options.successThreshold) {</span>
-<span class="cstat-no" title="statement not covered" >        this.setState('CLOSED');</span>
-        this.successCount =<span class="cstat-no" title="statement not covered" > 0;</span>
+      if (this.successCount &gt;= this.options.successThreshold) {
+        this.se<span class="fstat-no" title="function not covered" >tState('CLOSED');<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+        this.successCount<span class="branch-0 cbranch-no" title="branch not covered" > =</span> 0;<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
       }<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+    }
   }
 &nbsp;
   private onFailure(): void {
     this.failureCount++;
-    this.suc<span class="cstat-no" title="statement not covered" >cessCount = 0;</span>
-&nbsp;
-    if (this.failureCount &gt;= this.options.failureThreshold) {
+<span class="cstat-no" title="statement not covered" >    this.successCount =<span class="cstat-no" title="statement not covered" > 0</span>;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    if (this.failureCount &gt;<span class="cstat-no" title="statement not covered" >= this.options.fai</span>lureThreshold) {
       this.s<span class="cstat-no" title="statement not covered" >etState('OPEN');</span>
-      this.n<span class="cstat-no" title="statement not covered" >extAttempt = Date.now() + this.options.resetTimeout;</span>
+      this.nextA<span class="cstat-no" title="statement not covered" >ttempt = Date.now() + this.options.resetTimeout;</span>
     }
   }
 &nbsp;
   private setState(newState: CircuitBreakerState): void {
-    const oldState = this.state;
-    this.sta<span class="cstat-no" title="statement not covered" >te = newState;</span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    this.componentLogger.info('Circuit breaker state changed', {
-      oldState,
-      newState,<span class="cstat-no" title="statement not covered" ></span>
-      failureCount: this.failur<span class="cstat-no" title="statement not covered" >eCount,</span>
+    const ol<span class="cstat-no" title="statement not covered" >dState = this.s</span>tate;
+    this.state = newState;
+    
+    this.com<span class="cstat-no" title="statement not covered" >ponentLogger.info('</span>Circuit breaker state changed', {
+      oldSta<span class="cstat-no" title="statement not covered" >te,</span>
+      newState,
+      failureCount: this.failureCount,
       successCount: this.successCount,
     });
-<span class="cstat-no" title="statement not covered" ></span>
-    this.options.onStateChange(newState);
-  }
+&nbsp;
+    this.opt<span class="cstat-no" title="statement not covered" >ions.onStateChange(newState);</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   public getState(): CircuitBreakerState {
-    return this.state;
+    return this.state;<span class="cstat-no" title="statement not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  public getStats():<span class="cstat-no" title="statement not covered" > {</span>
-    state: CircuitBreakerState;
+&nbsp;
+  public getStats(): {
+    state: C<span class="cstat-no" title="statement not covered" >ircuitBreakerState;</span>
     failureCount: number;
-    successCount: nu<span class="cstat-no" title="statement not covered" >mber;</span>
+    successCount: number;
     nextAttempt: number;
   } {
     return {
-      state: this.state,
-      failur<span class="cstat-no" title="statement not covered" >eCount: this.failu<span class="fstat-no" title="function not covered" >re</span>Count,<span class="cstat-no" title="statement not covered" ></span></span>
-      successCount: this.successCount,
+      state:<span class="cstat-no" title="statement not covered" > this.state,</span>
+      failureCou<span class="cstat-no" title="statement not covered" >nt: this.failureCount,</span>
+      successCount: <span class="cstat-no" title="statement not covered" >this.successCount,</span>
       nextAttempt: this.nextAttempt,
     };
   }<span class="cstat-no" title="statement not covered" ></span>
 }
 &nbsp;
 /**
- * R<span class="cstat-no" title="statement not covered" >etry mechanism wi</span>th exponential backoff and jitter
- */
+ * Retry mechanism with exponential backoff and jitter
+ */<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 export async function retryWithBackoff&lt;T&gt;(
   operation: () =&gt; Promise&lt;T&gt;,
   options: RetryOptions = {},
-  correlationId?<span class="fstat-no" title="function not covered" >: string</span>
+  co<span class="cstat-no" title="statement not covered" >rrelationId?: string</span>
 ): Promise&lt;T&gt; {
-  co<span class="cstat-no" title="statement not covered" >nst {</span>
-    maxRetries = 3,<span class="cstat-no" title="statement not covered" ></span>
-    base<span class="cstat-no" title="statement not covered" >Delay = 1000,</span>
-    maxDelay<span class="cstat-no" title="statement not covered" > = 30000,</span>
+  const {
+    maxRetries = 3,
+<span class="cstat-no" title="statement not covered" >    baseDelay = 1000,</span>
+    maxDelay = 30000,
     exponentialBase = 2,
     jitter = true,
     retryCondition = defaultRetryCondition,
-<span class="cstat-no" title="statement not covered" >    onRetry,</span>
-  } = options;<span class="cstat-no" title="statement not covered" ></span>
+    onRet<span class="fstat-no" title="function not covered" >ry,</span>
+  } = options;
 <span class="cstat-no" title="statement not covered" ></span>
-  const operationLogger = logger.child({
-    component: 'RetryMechanism',
-<span class="cstat-no" title="statement not covered" >    correlationId: correlationId || randomUUID(),</span>
-    oper<span class="cstat-no" title="statement not covered" >ation: 'retry</span>-with-backoff',
+  const operationLogger = logg<span class="cstat-no" title="statement not covered" >er.child({</span>
+    comp<span class="cstat-no" title="statement not covered" >onent: 'RetryMechanism',</span>
+    correlat<span class="cstat-no" title="statement not covered" >ionId: correl</span>ationId || randomUUID(),
+    operation: 'retry-with-backoff',
   });
 &nbsp;
   le<span class="cstat-no" title="statement not covered" >t lastError: Error;</span>
   <span class="cstat-no" title="statement not covered" ></span>
-  for (let attempt = 0; attempt &lt;= maxRetries; attempt++) {
-<span class="cstat-no" title="statement not covered" >    try {</span>
+  for (l<span class="cstat-no" title="statement not covered" >et attempt = 0; attempt &lt;= maxRetries; attempt++) {</span>
+    try {
       const result = await operation();
-      
-      if (attempt &gt; 0) {
+    <span class="cstat-no" title="statement not covered" >  </span>
+      if<span class="cstat-no" title="statement not covered" > (attempt &gt; 0</span>) {
         operationLogger.info('Operation succeeded after retries', {
           attempt,
-          totalAttempts: attempt + 1,
-        });
+<span class="cstat-no" title="statement not covered" >          totalAttempts: attempt + 1,</span>
+<span class="cstat-no" title="statement not covered" >        });</span>
       }
-      
-      return result;<span class="cstat-no" title="statement not covered" ></span>
-    } catch <span class="cstat-no" title="statement not covered" >(er</span>ror) {
+    <span class="cstat-no" title="statement not covered" >  </span>
+      return result;
+    } catch (error) {
       lastError = error as Error;
-    <span class="fstat-no" title="function not covered" >  <span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span>
-      op<span class="cstat-no" title="statement not covered" >erationLogger.warn</span>('Operation failed, evaluating retry', {
-<span class="cstat-no" title="statement not covered" >        attempt,</span>
-<span class="cstat-no" title="statement not covered" >        error: lastError.message,</span>
-<span class="cstat-no" title="statement not covered" >        isLastAttempt: attempt =</span>== maxRetries,
-      })<span class="cstat-no" title="statement not covered" >;</span>
-&nbsp;
-      // Don't retry on the last attempt or if retry condition is not met
-      if (attempt === maxRetries || !retryCondition(lastError)) {
-        break;
-<span class="fstat-no" title="function not covered" ></span>      }
+      
+      operationLogger.warn('Operation failed, evaluating retry', {
+        attempt,
+        error: lastError.message,
+        isLastAttempt: attempt === maxRetries,
+      });
 <span class="cstat-no" title="statement not covered" ></span>
-      // Calculate delay with ex<span class="cstat-no" title="statement not covered" >ponential backoff and optional jitter</span>
-      const delay = Math.min(
-        baseDelay * Math.pow(exponentialBase, attempt),
+      // Don<span class="cstat-no" title="statement not covered" >'t </span>retry on the last attempt or if retry condition is not met
+      if (attempt === maxRetries || !retryCondition(lastError)) {
+<span class="fstat-no" title="function not covered" ></span>        break;<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      //<span class="cstat-no" title="statement not covered" > Calculate delay with expo</span>nential backoff and optional jitter
+      co<span class="cstat-no" title="statement not covered" >nst delay = Math.min(</span>
+<span class="cstat-no" title="statement not covered" >        baseDelay * Math.pow(exponentialBase, attempt),</span>
         maxDelay
-      );<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      <span class="cstat-no" title="statement not covered" ></span>
-      const fina<span class="cstat-no" title="statement not covered" >lDelay = jitter </span>
-        ? delay + Math.random() * 1000 
+      );
+      
+      const finalDelay = jitter 
+<span class="fstat-no" title="function not covered" ></span>        ? delay + Math.random() * 1000 
         : delay;<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
       operationLogger.info('Retrying operation after delay', {
         attempt: attempt + 1,
         delay: finalDelay,
-        nextAtte<span class="cstat-no" title="statement not covered" >mpt: attempt + 1,</span>
-      });
-&nbsp;
+<span class="cstat-no" title="statement not covered" >        nextAttempt: attemp<span class="fstat-no" title="function not covered" >t </span>+ 1,</span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
       // Call retry callback if provided
-      if (onRetry) {
-        try {
+      if (onRetry<span class="cstat-no" title="statement not covered" >) {</span>
+        try {<span class="cstat-no" title="statement not covered" ></span>
           onRetry(lastError, attempt + 1);
         } catch (callbackError) {
-          operationLogger.warn<span class="cstat-no" title="statement not covered" >('Retry callback failed', {</span>
-            error: callbackError instanceof Error ? callbackError.message : String(callbackError),
+          operationLogger.warn('Retry callback failed', {
+            erro<span class="cstat-no" title="statement not covered" >r: callbackError instanceof Error ? callbackError.message : String(callbackError),</span>
           });
         }
       }
@@ -1371,111 +1371,111 @@ export async function retryWithBackoff&lt;T&gt;(
       await new Promise(resolve =&gt; setTimeout(resolve, finalDelay));
     }
   }
-&nbsp;
-  // All retries<span class="cstat-no" title="statement not covered" > exhausted, throw the last error</span>
+<span class="cstat-no" title="statement not covered" ></span>
+  // All retries exhausted, throw the last error
   operationLogger.error('All retry attempts exhausted', {
     totalAttempts: maxRetries + 1,
     finalError: lastError.message,
-  });<span class="cstat-no" title="statement not covered" ></span>
+  });
 &nbsp;
   throw lastError;
 }
-<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Default retry condition - ret<span class="cstat-no" title="statement not covered" >ries on network and timeout errors</span>
+ * Default retry condition - retries on network and timeout errors
  */
 export function defaultRetryCondition(error: Error): boolean {
-  // Retry on network errors
-  if ('code' in error) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    const networkErrors = ['ECONN<span class="cstat-no" title="statement not covered" >RESET', 'ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND'];</span>
-    if (netw<span class="cstat-no" title="statement not covered" >orkErrors.includes(err</span>or.code as string)) {
-      return true;
+  // Retry on ne<span class="cstat-no" title="statement not covered" >twork errors</span>
+  if ('code' in error) {
+    const networkErrors = ['ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND'];
+    if (networkErrors.includes(error.code as string)) {
+<span class="fstat-no" title="function not covered" ></span>      return true;
     }<span class="cstat-no" title="statement not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Retry o<span class="cstat-no" title="statement not covered" >n specific HTTP s</span>tatus codes
-  if (error <span class="cstat-no" title="statement not covered" >instanceof ExternalServiceError &amp;&amp; 'statusCode' in error) {</span>
-    const retryableStatusCodes = [408, 429, 500, 502, 503, 504];
-    return retryableStatusCodes.includes(error.statusCode);
-  }
 &nbsp;
-  // Retry o<span class="cstat-no" title="statement not covered" >n timeout errors</span>
-  if (error <span class="cstat-no" title="statement not covered" >instanceof Time</span>outError) {
+  // Retry on specific HTTP status codes
+  if (error instanceof ExternalServiceError &amp;&amp; 'statusCode' in error) {
+    const retryableStatusC<span class="cstat-no" title="statement not covered" >odes = [408<span class="fstat-no" title="function not covered" >, </span>429, 500, 502, 503, 504];</span>
+    return retryableStatusCodes.i<span class="cstat-no" title="statement not covered" >ncludes(error.statusCode);</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  // Ret<span class="cstat-no" title="statement not covered" >ry on timeout errors</span>
+  if (error instanceof Time<span class="cstat-no" title="statement not covered" >outError) {</span>
     return t<span class="cstat-no" title="statement not covered" >rue;</span>
-  }
-&nbsp;
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   // Don't retry on client errors (4xx) or specific server errors
   if (error instanceof MakeServerError) {
     return error.statusCode &gt;= 500 &amp;&amp; error.statusCode !== 501;
-  }<span class="cstat-no" title="statement not covered" ></span>
+  }
 <span class="cstat-no" title="statement not covered" ></span>
-  return false;
-}
-<span class="fstat-no" title="function not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Bulkhead pattern imple<span class="cstat-no" title="statement not covered" >mentation for resou</span>rce isolation
- */<span class="cstat-no" title="statement not covered" ></span>
-export class Bulkhead {
-  private activeRequests = 0;
-  pr<span class="fstat-no" title="function not covered" >iv</span>ate readonly queue: Array&lt;{
-    oper<span class="cstat-no" title="statement not covered" >ation: () =&gt; Promise&lt;unknown&gt;;</span>
-    resolve: (value: unknown) =&gt; void;
-    reject: (error: Error) =&gt; void;
-    correlationId: string;
-  }&gt; = [];
+  return fal<span class="cstat-no" title="statement not covered" >se;</span>
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
+/**
+ * Bulkhead pattern implementation for resource isolation
+ */
+export class Bulkhead {
+  private ac<span class="cstat-no" title="statement not covered" >tiveRequests = 0;</span>
+  private re<span class="cstat-no" title="statement not covered" >adonly queue: Array&lt;{</span>
+    operation: () =&gt; Promise&lt;unknown&gt;;
+    resolve: (value: unknown) =&gt; void;
+<span class="fstat-no" title="function not covered" >    re</span>ject: (error: Error) =&gt; void;
+    corr<span class="cstat-no" title="statement not covered" >elationId: string;</span>
+  }&gt; = [];<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   private readonly componentLogger: ReturnType&lt;typeof logger.child&gt;;
 &nbsp;
-  constructor(
-    private readonly name: string,
+  co<span class="fstat-no" title="function not covered" >ns</span>tructor(
+    priv<span class="cstat-no" title="statement not covered" >ate readonly name: string,</span>
     private readonly maxConcurrency: number = 10,
     private readonly maxQueue: number = 100,
-    private readonly t<span class="cstat-no" title="statement not covered" >imeout: nu</span>mber = 30000
-  ) <span class="fstat-no" title="function not covered" >{</span>
-    this<span class="cstat-no" title="statement not covered" >.componentLogger = logger.child({</span>
-      compon<span class="cstat-no" title="statement not covered" >ent: 'Bulkhead',</span>
+    private readonly timeout: number = 30000
+  ) {
+    this.componentLogger = logger.child({
+      component: 'Bulkhead',
       bulkheadName: name,
-    });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    });</span>
   }
-<span class="fstat-no" title="function not covered" ></span>
-  async execute&lt;T&gt;(<span class="cstat-no" title="statement not covered" ></span>
-    oper<span class="cstat-no" title="statement not covered" >ation: () =&gt; Promise&lt;T&gt;,</span>
-    correlat<span class="cstat-no" title="statement not covered" >ionId?: string</span>
-  ): Promise&lt;T&gt; {
-    cons<span class="cstat-no" title="statement not covered" >t requestId = </span>correlationId || randomUUID();
-    const operationLogger = this.componentLogger.child({
-      correlationId: requestId,
-      operation: 'bulkhead-execute',
-    });
 &nbsp;
-    return new Promise&lt;T&gt;((resolve, reject) =&gt; {
-      if (this.activeRe<span class="cstat-no" title="statement not covered" >quests &lt; t</span>his.maxConcurrency) {
-<span class="fstat-no" title="function not covered" ></span>        this.executeImmediate(operation, resolve, reject, requestId);
-      } <span class="cstat-no" title="statement not covered" >else if (this.queue.length &lt; this.maxQueue) {</span>
-        oper<span class="cstat-no" title="statement not covered" >ationLogger.info('Request queued due to bulkhead limit', {</span>
-          activeRequests: this.activeRequests,
-<span class="cstat-no" title="statement not covered" >          queueLength: this.queue.length,</span>
-        });
+  async execute&lt;T&gt;(
+    operation: () =&gt; Promise&lt;T&gt;,
+    correlationId?: st<span class="cstat-no" title="statement not covered" >ring</span>
+  ):<span class="fstat-no" title="function not covered" > P</span>romise&lt;T&gt; {
+    cons<span class="cstat-no" title="statement not covered" >t requestId = correlationId || randomUUID();</span>
+    const op<span class="cstat-no" title="statement not covered" >erationLogger = this.componentLogger.child({</span>
+      correlationId: requestId,
+      op<span class="cstat-no" title="statement not covered" >eration: 'bulkhead-execute',</span>
+    });
 <span class="fstat-no" title="function not covered" ></span>
-        this.queue.pus<span class="cstat-no" title="statement not covered" >h({</span>
-<span class="cstat-no" title="statement not covered" >          operation,</span>
-          re<span class="cstat-no" title="statement not covered" >solve,</span>
-          reject,
-<span class="cstat-no" title="statement not covered" >          correlationI</span>d: requestId,
-        });
-      } else {
+    return new Promise<span class="cstat-no" title="statement not covered" >&lt;T&gt;</span>((resolve, reject) =&gt; {
+      if<span class="cstat-no" title="statement not covered" > (this.activeRequests &lt; this.maxConcurrency) {</span>
+        this<span class="cstat-no" title="statement not covered" >.executeImmediate(operation, resol</span>ve, reject, requestId);
+      } else if (this.queue.length &lt; this.maxQueue) {
+<span class="cstat-no" title="statement not covered" >        operationLogge</span>r.info('Request queued due to bulkhead limit', {
+          activeRequests: this.activeRequests,
+          queueLength: this.queue.length,
+<span class="cstat-no" title="statement not covered" >        });</span>
+&nbsp;
+        this.queue.push({
+          operation,
+          resolve,
+          reject,<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" ></span>          correlationId: requestId,
+<span class="cstat-no" title="statement not covered" >        });</span>
+      } else<span class="cstat-no" title="statement not covered" > {</span>
         const error = new ExternalServiceError(
-          this.name,
+<span class="cstat-no" title="statement not covered" >          this.name,</span>
           'Bulkhead capacity exceeded - request rejected',
-          undefined,
-          {
-            activeRequests: this.activeRequests,
-            queueLength: this.queue.length,
+<span class="fstat-no" title="function not covered" ></span>          undefined,
+          {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            activeRequests: this.activeRequests,</span>
+<span class="cstat-no" title="statement not covered" >            queueLength: this.queue.length,</span>
             maxConcurrency: this.maxConcurrency,
-            maxQueue: this.maxQueue,
+<span class="cstat-no" title="statement not covered" >            maxQueue: </span>this.maxQueue,
           },
           {
-            correlationId: requestId,
+<span class="cstat-no" title="statement not covered" >            correlationId: requestId,</span>
             component: 'Bulkhead',
             operation: 'bulkhead-execute',
           }
@@ -1621,7 +1621,7 @@ export class BulkheadFactory {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T04:09:48.063Z
+                at 2025-07-25T04:35:02.986Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

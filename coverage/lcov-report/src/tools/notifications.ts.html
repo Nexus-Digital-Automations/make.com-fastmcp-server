@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/188</span>
+                <span class='fraction'>0/196</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/146</span>
+                <span class='fraction'>0/153</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/187</span>
+                <span class='fraction'>0/195</span>
             </div>
         
             
@@ -1097,8 +1097,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1818,13 +1824,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2126,16 +2126,16 @@
  * Comprehensive tools for managing notifications, email preferences, and custom data structures
  */
 &nbsp;
-import { FastMCP, UserError } from 'fastmcp';
-import { z } from 'zod';
+import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
+impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
 import MakeApiClient from '../lib/make-api-client.js';
-import logger from '../lib/logger<span class="cstat-no" title="statement not covered" >.js';</span>
-&nbsp;
-// Notification management types
-export interface MakeNotification {
-  id: number;
+<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+// Notification ma<span class="cstat-no" title="statement not covered" >nagement types</span>
+export interfa<span class="cstat-no" title="statement not covered" >ce MakeNotifica</span>tion {
+  id: number;<span class="cstat-no" title="statement not covered" ></span>
   type: 'system' | 'billing' | 'security' | 'scenario' | 'team' | 'marketing' | 'custom';
-  category: 'info' | 'warning' | 'error' | 'success' | 'reminder' | 'alert';
+  category: 'info' | 'warning' | <span class="cstat-no" title="statement not covered" >'error' | 'success' | 'reminder' | 'alert';</span>
   priority: 'low' | 'medium' | 'high' | 'critical';
   title: string;
   message: string;
@@ -2164,13 +2164,13 @@ export interface MakeNotification {
     failedDeliveries: number;
     errors: Array&lt;{
       recipient: string;
-      channel: string;<span class="cstat-no" title="statement not covered" ></span>
+      channel: string;
       error: string;
       timestamp: string;
     }&gt;;
   };
   schedule: {
-    sendAt?: string;
+    sendAt?: string;<span class="cstat-no" title="statement not covered" ></span>
     timezone?: string;
     recurring?: {
       enabled: boolean;
@@ -2225,13 +2225,13 @@ export interface MakeEmailPreferences {
       enabled: boolean;
       frequency: 'immediate' | 'hourly' | 'daily' | 'never';
       categories: {
-        failures: boolean;<span class="cstat-no" title="statement not covered" ></span>
+        failures: boolean;
         completions: boolean;
         warnings: boolean;
         scheduleChanges: boolean;
       };
       filters: {
-        onlyMyScenarios: boolean;
+        onlyMyScenarios: boolean;<span class="cstat-no" title="statement not covered" ></span>
         onlyImportantScenarios: boolean;
         scenarioIds: number[];
         teamIds: number[];
@@ -2251,13 +2251,13 @@ export interface MakeEmailPreferences {
       categories: {
         productUpdates: boolean;
         newsletters: boolean;
-        webinars: boolean;<span class="cstat-no" title="statement not covered" ></span>
+        webinars: boolean;
         surveys: boolean;
       };
     };
     customChannels: Array&lt;{
       name: string;
-      type: 'webhook' | 'slack' | 'teams' | 'discord';
+      type: 'webhook' | 'sla<span class="cstat-no" title="statement not covered" >ck' | 'teams' | 'discord';</span>
       enabled: boolean;
       configuration: Record&lt;string, unknown&gt;;
       filters: Record&lt;string, unknown&gt;;
@@ -2291,42 +2291,42 @@ export interface MakeNotificationTemplate {
   };
   design: {
     theme?: string;
-    colors?: Rec<span class="fstat-no" title="function not covered" >ord&lt;string, string&gt;;</span>
-    fonts?: Record&lt;string, s<span class="cstat-no" title="statement not covered" >tring&gt;;</span>
-<span class="cstat-no" title="statement not covered" >    layout?: string;</span>
+    colors?: Record&lt;string, string&gt;;
+    fonts?: Record&lt;string, string&gt;;
+    layout?: string;
     customCss?: string;
-  };<span class="cstat-no" title="statement not covered" ></span>
+  };
   testing: {
-    lastTested?: string;
-    testResults?: {
-      renderingTi<span class="fstat-no" title="function not covered" >me</span>: number;
-      size: number;<span class="cstat-no" title="statement not covered" ></span>
-      errors<span class="cstat-no" title="statement not covered" >: string[];</span>
+    lastT<span class="fstat-no" title="function not covered" >ested?: string;</span>
+    testResults?: {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      renderingTime: number;</span>
+      size: number;
+<span class="cstat-no" title="statement not covered" >      errors: string[];</span>
       warnings: string[];
     };
   };
-  usage: {
-    totalSent: number;
-    lastUsed?: string;
-    averageD<span class="cstat-no" title="statement not covered" >eliveryTime: number;</span>
-    deliveryRate<span class="cstat-no" title="statement not covered" >: number;</span>
+  usage: {<span class="fstat-no" title="function not covered" ></span>
+    totalSent: number;<span class="cstat-no" title="statement not covered" ></span>
+    lastUsed<span class="cstat-no" title="statement not covered" >?: string;</span>
+    averageDeliveryTime: number;
+    deliveryRate: number;
   };
-  createdAt: string;<span class="cstat-no" title="statement not covered" ></span>
-  updatedAt: str<span class="cstat-no" title="statement not covered" >ing;</span>
-  createdBy: number;<span class="cstat-no" title="statement not covered" ></span>
-}
-&nbsp;
-export interface MakeCustomDataStructure<span class="cstat-no" title="statement not covered" > {</span>
+  createdAt: string;
+  updatedAt: string;
+  createdBy: number;
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+export interface MakeCustomDataStructure {
   id: number;<span class="cstat-no" title="statement not covered" ></span>
   name: string;<span class="cstat-no" title="statement not covered" ></span>
-  description?: string;
-  type: 'schema' | 'template' | 'validati<span class="cstat-no" title="statement not covered" >on' | 'transformation';</span>
+  description?: stri<span class="cstat-no" title="statement not covered" >ng;</span>
+  type: 'schema' | 'template' | 'validation' | 'transformation';
   organizationId?: number;
-  teamId?: number;
-  scope: 'global' | 'organization' | 'team' | 'personal';
-  structure: {
+  teamId?: number;<span class="cstat-no" title="statement not covered" ></span>
+  scope: 'global<span class="cstat-no" title="statement not covered" >' | 'organization' | 'team' | 'personal';</span>
+  structure: {<span class="cstat-no" title="statement not covered" ></span>
     schema: Record&lt;string, unknown&gt;; // JSON Schema
-    version: string;
+    version: string;<span class="cstat-no" title="statement not covered" ></span>
     format: 'json' | 'xml' | 'yaml' | 'csv' | 'custom';
   };
   validation: {
@@ -2336,29 +2336,29 @@ export interface MakeCustomDataStructure<span class="cstat-no" title="statement 
       field: string;
       type: 'required' | 'format' | 'range' | 'custom';
       parameters: unknown;
-      message: s<span class="cstat-no" title="statement not covered" >tring;</span>
-    }&gt;;<span class="cstat-no" title="statement not covered" ></span>
-  };<span class="cstat-no" title="statement not covered" ></span>
-  transformation: {<span class="cstat-no" title="statement not covered" ></span>
-    enabled: boolean;
-    mappings: Array&lt;{<span class="cstat-no" title="statement not covered" ></span>
-      source: st<span class="cstat-no" title="statement not covered" >ring;</span>
-      target: string<span class="cstat-no" title="statement not covered" >;</span>
-      function?: string;
-      parameters<span class="cstat-no" title="statement not covered" >?: unknown;</span>
-    }&gt;;<span class="cstat-no" title="statement not covered" ></span>
-    filters: Array&lt;{
-      field: string;
-      operator: string;
-      value: unknown;
+      message: string;
     }&gt;;
+  };
+  transformation: {
+    enabled: boolean;
+    mappings: Array&lt;{
+      source: st<span class="cstat-no" title="statement not covered" >ring;</span>
+      target: string;<span class="cstat-no" title="statement not covered" ></span>
+      function?:<span class="cstat-no" title="statement not covered" > string;</span>
+      parameters?: u<span class="cstat-no" title="statement not covered" >nknown;</span>
+    }&gt;;
+    filters: Array&lt;{<span class="cstat-no" title="statement not covered" ></span>
+      field: str<span class="cstat-no" title="statement not covered" >ing;</span>
+      operator: stri<span class="cstat-no" title="statement not covered" >ng;</span>
+      value: unknown;
+    }&gt;;<span class="cstat-no" title="statement not covered" ></span>
   };<span class="cstat-no" title="statement not covered" ></span>
   usage: {
     scenariosUsing: number;
     lastUsed?: string;
     validationCount: number;
     errorRate: number;
-  };
+  };<span class="cstat-no" title="statement not covered" ></span>
   versions: Array&lt;{
     version: string;
     changes: string;
@@ -2371,14 +2371,14 @@ export interface MakeCustomDataStructure<span class="cstat-no" title="statement 
 }
 &nbsp;
 // Input validation schemas
-const NotificationCreateSchema = z.o<span class="fstat-no" title="function not covered" >bj</span>ect({<span class="cstat-no" title="statement not covered" ></span>
-  type: z.enum(['system', 'billin<span class="fstat-no" title="function not covered" >g'</span>, 'security',<span class="cstat-no" title="statement not covered" > 'scenar</span>io', 'team', 'marketing', 'custom']).describe('Notification type'),
+const NotificationCreateSchema = z.object({
+  type: z.enum(['system', 'billing', 'security', 'scenario', 'team', 'marketing', 'custom']).describe('Notification type'),
   category: z.enum(['info', 'warning', 'error', 'success', 'reminder', 'alert']).describe('Notification category'),
   priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium').describe('Notification priority'),
   title: z.string().min(1).max(200).describe('Notification title'),
   message: z.string().min(1).max(2000).describe('Notification message content'),
-  data: z.record(z.any()).optional().describe('Additional structured data'),
-  recipients: z.object({
+  data: z.record(z.any()).optional()<span class="fstat-no" title="function not covered" >.d</span>escribe('Additi<span class="cstat-no" title="statement not covered" >onal str</span>uctured data'),
+  recipients: z.object({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     users: z.array(z.number()).default([]).describe('User IDs to notify'),
     teams: z.array(z.number()).default([]).describe('Team IDs to notify'),
     organizations: z.array(z.number()).default([]).describe('Organization IDs to notify'),
@@ -2386,53 +2386,53 @@ const NotificationCreateSchema = z.o<span class="fstat-no" title="function not c
   }).describe('Notification recipients'),
   channels: z.object({
     email: z.boolean().default(true).describe('Send via email'),
-    inApp: z.boolean().default(true).<span class="cstat-no" title="statement not covered" >describe('Show in-app notification'),</span>
-    sms: z.boole<span class="cstat-no" title="statement not covered" >an().default(false).describe('Send via SMS'),</span>
-    webhook: z.b<span class="cstat-no" title="statement not covered" >oolean().default(false).describe('Send to webhook'),</span>
-    slack: z.boolean<span class="cstat-no" title="statement not covered" >().default(fa</span>lse).describe('Send to Slack'),
-    teams: z.boo<span class="cstat-no" title="statement not covered" >lean().default(false).describe('Send to Microsoft Teams'),</span>
+    inApp: z.boolean().default(true).describe('Show in-app notification'),
+    sms: z.boolean().default(false).describe('Send via SMS'),
+    webhook: z.boolean().default(false).describe('Send to webhook'),
+    slack: z.boolean().default(false).describe('Send to Slack'),
+    teams: z.boolean().default(false).describe('Send to Microsoft Teams'),
   }).describe('Delivery channels'),
-  schedule: z.object({
-    sendAt: z.string().optional().describe('Schedule send time (ISO 8601)'),
-    timezone: z.string().default('UTC').describe('Timezone for scheduling'),
-<span class="cstat-no" title="statement not covered" >    recurring: z.object({</span>
-      frequency: z.enum(['daily', 'weekly', 'monthly', 'quarterly', 'yearly']).describe('Recurrence frequency'),
+  schedule: z.object({<span class="cstat-no" title="statement not covered" ></span>
+    sendAt: z.st<span class="cstat-no" title="statement not covered" >ring().optional().describe('Schedule send time (ISO 8601)'),</span>
+    timezone: z.<span class="cstat-no" title="statement not covered" >string().default('UTC').describe('Timezone for scheduling'),</span>
+    recurring: z.obj<span class="cstat-no" title="statement not covered" >ect({</span>
+      frequency:<span class="cstat-no" title="statement not covered" > z.enum(['daily', 'weekly', 'monthly', 'quarterly', 'yearly']).describe('Recurren</span>ce frequency'),
       interval: z.number().min(1).default(1).describe('Interval between recurrences'),
       daysOfWeek: z.array(z.number().min(0).max(6)).optional().describe('Days of week (0=Sunday)'),
       dayOfMonth: z.number().min(1).max(31).optional().describe('Day of month'),
       endDate: z.string().optional().describe('End date for recurrence'),
-    }).optional().describe('Recurring schedule configuration'),
-  }).optional().d<span class="fstat-no" title="function not covered" >es</span>cribe('Scheduling options'),
-  templateId: z.number().optional().describe(<span class="cstat-no" title="statement not covered" >'Templ</span>ate ID to use'),
-  templateVa<span class="cstat-no" title="statement not covered" >riables: z.record(z.any()).default({}).describe('Template variabl</span>e values'),
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    }).optional().describe('Recurring schedule configuration'),</span>
+  }).optional().describe('Scheduling options'),
+  templateId: z.number().optional().describe('Template ID to use'),
+  templateVariables: z.record(z.any()).default({}).describe('Template variable values'),
+}).strict();
+&nbsp;
 const EmailPreferencesSchema = z.object({
-  userId: z.number().min(1).optional().describe('User ID (defaults to current user)'),
+  userId: z.numbe<span class="fstat-no" title="function not covered" >r(</span>).min(1).optional().describe('User ID (defaults to current user)'),
   preferences: z.object({<span class="cstat-no" title="statement not covered" ></span>
-    system: z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
-      enabled: z.boo<span class="cstat-no" title="statement not covered" >lean().describe('Enable system notifications'),</span>
-      frequency: z.enum(['immediate', 'hourly', 'daily', 'weekly', 'never']).describe('System notification frequency'),
-      categories: z.object({<span class="cstat-no" title="statement not covered" ></span>
-        updates:<span class="cstat-no" title="statement not covered" > z.boolean().describe('Product updates'),</span>
-        maintenance:<span class="cstat-no" title="statement not covered" > z.boolean().describe('Maintenance notifications'),</span>
-        security: z.boolean().describe('Security alerts'),
-        announcements: z.boolean().d<span class="cstat-no" title="statement not covered" >escribe('Compa</span>ny announcements'),
-      }).partial<span class="cstat-no" title="statement not covered" >(),</span>
-    }).partial().opt<span class="cstat-no" title="statement not covered" >ional(),</span>
-    billing: z.object({
-      enabled: z<span class="cstat-no" title="statement not covered" >.boolean().describe('Enable billing notifications'),</span>
+    system: <span class="cstat-no" title="statement not covered" >z.object({</span>
+      enable<span class="cstat-no" title="statement not covered" >d: z.boolean().describe('Enable system notifications'),</span>
+      frequency: z.enum(['immed<span class="cstat-no" title="statement not covered" >iate', 'hourly', 'daily', 'weekly', 'never']).describe('System notification frequency'),</span>
       categories: z.object({
-        invoices: z.boolean().describe('Invoice notifications'),
-        paymentReminders: z.boolean().describe('Payment reminders'),
-        usageAlerts: z.boolean().describe('Usage limit alerts'),
-        planChan<span class="cstat-no" title="statement not covered" >ges: z.boolean().describe('Plan change notifications'),</span>
+        updates: z.boolean().describe('Product updates'),
+        maintenance: z.boolean(<span class="cstat-no" title="statement not covered" >).describe('Maintenance notificatio</span>ns'),
+        security<span class="cstat-no" title="statement not covered" >: z.boolean().describe('Security alerts'),</span>
+        announcement<span class="cstat-no" title="statement not covered" >s: z.boolean().describe('Company announcements'),</span>
       }).partial(),
+    }).partial().optional(),<span class="cstat-no" title="statement not covered" ></span>
+    billing: z.o<span class="cstat-no" title="statement not covered" >bject({</span>
+      enabled: z.boo<span class="cstat-no" title="statement not covered" >lean().describe('Enable billing notifications'),</span>
+      categories: z.object({
+        invoices: z.boolean().descri<span class="cstat-no" title="statement not covered" >be('Invoice no</span>tifications'),
+        paymentR<span class="cstat-no" title="statement not covered" >eminders: z.boolean().describe('Payment reminders'),</span>
+        usageAlerts:<span class="cstat-no" title="statement not covered" > z.boolean().describe('Usage limit alerts'),</span>
+        planChanges: z.boolean().describe('Plan change notifications'),
+      }).partial<span class="cstat-no" title="statement not covered" >(),</span>
     }).partial().optional(),
     scenarios: z.object({
       enabled: z.boolean().describe('Enable scenario notifications'),
       frequency: z.enum(['immediate', 'hourly', 'daily', 'never']).describe('Scenario notification frequency'),
-      categories: z.object({
+      categories<span class="cstat-no" title="statement not covered" >: z.object({</span>
         failures: z.boolean().describe('Scenario failure notifications'),
         completions: z.boolean().describe('Scenario completion notifications'),
         warnings: z.boolean().describe('Scenario warning notifications'),
@@ -2452,69 +2452,69 @@ const EmailPreferencesSchema = z.object({
         roleChanges: z.boolean().describe('Role change notifications'),
         memberChanges: z.boolean().describe('Member change notifications'),
         teamUpdates: z.boolean().describe('Team update notifications'),
+      }).partial(),
+    }).partial().optional(),
+    marketing: z.object({
+      enabled: z.boolean().describe('Enable marketing notifications'),
+      categories: z.object({
+        productUpdates: z.boolean().describe('Product update emails'),
+        newsletters: z.boolean().desc<span class="cstat-no" title="statement not covered" >ribe('Newsletter subscriptions'),</span>
+        webinars<span class="cstat-no" title="statement not covered" >: z.boolean().describe('Webinar invitations'),</span>
+        surveys:<span class="cstat-no" title="statement not covered" > z.boolean().describe('Survey invitations'),</span>
       }).partial(),<span class="cstat-no" title="statement not covered" ></span>
     }).partial()<span class="cstat-no" title="statement not covered" >.optional(),</span>
-    marketing: z<span class="cstat-no" title="statement not covered" >.object({</span>
-      enabled: z.boo<span class="cstat-no" title="statement not covered" >lean().descri</span>be('Enable marketing notifications'),
-      categories<span class="cstat-no" title="statement not covered" >: z.object({</span>
-        productUpdates: z.boolean().describe('Product update emails'),
-        newsletters: z.boolean().describe('Newsletter subscriptions'),
-        webinars: z.boolean().describe('Webinar invitations'),
-        surveys: z.boolean().describe('Survey invitations'),
-<span class="cstat-no" title="statement not covered" >      }).partial(),</span>
-    }).partial().optional(),
   }).describe('Email preference settings'),
   timezone: z.string().optional().describe('User timezone'),
-  language: z.str<span class="fstat-no" title="function not covered" >in</span>g().optional().describe('Preferred language'),
-  unsubscribeAll: z.boolean().optional().describe('Unsubscribe from all emails')<span class="cstat-no" title="statement not covered" >,</span>
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
+  language: z.string().optional().describe('Preferred language'),
+  unsubscribeAll: z.boolean().optional().describe('Unsubscribe from all emails'),
+}).s<span class="cstat-no" title="statement not covered" >trict();</span>
 &nbsp;
 const NotificationTemplateSchema = z.object({
   name: z.string().min(1).max(100).describe('Template name'),
-  description: z.string().max(500).optional().describe('Template description'),
-  type: z.enum(['email', 'sms', 'push', 'webhook', 'slack', 'teams']).describe('Template type'),
-  category: z.enum(['system', 'billing', 'scenario', 'team', 'marketing', 'custom']).describe('Template category'),
-  organizati<span class="cstat-no" title="statement not covered" >onId: z.number().min(1).optional().describe('Organization ID (for org templates)'),</span>
-  template: z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
-    subject: z.string().max(200).op<span class="cstat-no" title="statement not covered" >tio</span>nal().describe('Email subject template'),
-    body: z.stri<span class="cstat-no" title="statement not covered" >ng().min(1).describe('Template body content'),</span>
-    format: z.enum([<span class="cstat-no" title="statement not covered" >'text', 'html', 'markdown', 'json']).d</span>efault('html').describe('Template format'),
+  description: z.<span class="fstat-no" title="function not covered" >st</span>ring().max(500).optional().describe('Template description'),
+  type: z.enum(['email', 'sms', 'push', 'webhook', 'slack', 'teams']).describe('<span class="cstat-no" title="statement not covered" >Templa</span>te type'),
+  category: <span class="cstat-no" title="statement not covered" >z.enum(['system', 'billing', 'scenario', 'team', 'marketing', 'custom']).describe('Template category'),</span>
+  organizationId: z.number().min(1).optional().describe('Organization ID (for org templates)'),
+  template: z.object({
+    subject: z.string().max(200).optional().describe('Email subject template'),
+    body: z.string().min(1).describe('Template body content'),
+    format: z.enum(['text', 'html', 'markdown', 'json']).default('html').describe('Template format'),
     variables: z.array(z.object({
-      name: z.st<span class="cstat-no" title="statement not covered" >ring().min(1).describe('Variable name'),</span>
-      type: z.enum([<span class="cstat-no" title="statement not covered" >'string', 'number', 'boolean', '</span>date', 'object']).describe('Variable type'),
-      required: z.boolean().default(false).describe('Is variable required'),
+      name: <span class="cstat-no" title="statement not covered" >z.string().min(1).describe('Variable name'),</span>
+      type: z.en<span class="cstat-no" title="statement not covered" >um(['string', 'number', 'boolean', 'date', 'o</span>bject']).describe('Variable type'),
+      required: z.boolean().default<span class="cstat-no" title="statement not covered" >(fa</span>lse).describe('Is variable required'),
       defaultVal<span class="cstat-no" title="statement not covered" >ue: z.any().optional().describe('Default value'),</span>
-      description: z<span class="cstat-no" title="statement not covered" >.string().optional().describe('V</span>ariable description'),
+      description: z<span class="cstat-no" title="statement not covered" >.string().optional().describe('Variabl</span>e description'),
     })).default([]).describe('Template variables'),
   }).describe('T<span class="cstat-no" title="statement not covered" >emplate configuration'),</span>
   design: z.object({<span class="cstat-no" title="statement not covered" ></span>
     theme: z.string().optional().describe('Design theme'),
     colors: z.re<span class="cstat-no" title="statement not covered" >cord(z.string()).optional().describe('Color scheme'),</span>
-    fonts: z.record(<span class="cstat-no" title="statement not covered" >z.string()).optional().describe('Font configuration'),</span>
+    fonts: z.record(<span class="cstat-no" title="statement not covered" >z.string()).optional().describe(</span>'Font configuration'),
     layout: z.string().optional().describe('Layout template'),
     customCss: z<span class="cstat-no" title="statement not covered" >.string().optional().describe('Custom CSS'),</span>
-  }).optional().describe('Desig<span class="cstat-no" title="statement not covered" >n configuration'),</span>
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
+  }).optional().desc<span class="cstat-no" title="statement not covered" >ribe('Design configuration'),</span>
+}).strict();
 <span class="cstat-no" title="statement not covered" ></span>
-const DataStructureSchema = z.object({
-  name: z.string().min(1).max(100<span class="cstat-no" title="statement not covered" >).describe('Data structure name'),</span>
-  description: z<span class="cstat-no" title="statement not covered" >.string().max(500).optional().describe('Data structure description'),</span>
-  type: z.enum(['sch<span class="cstat-no" title="statement not covered" >ema', 'template', 'validation', 'transformation']).describe('Structure type'),</span>
-  organizationId: z.number().min(1).optional().describe('Organization ID'),
-  teamId: z.number().min(1).optional().desc<span class="cstat-no" title="statement not covered" >ribe('Team ID'</span>),
-  scope: z.enum(<span class="cstat-no" title="statement not covered" >['global', 'organization', 'team', 'personal'])</span>.default('personal').describe('Access scope'),
-  structure: z.o<span class="cstat-no" title="statement not covered" >bject({</span>
-    schema: z.any().describe('JSON Schema definition'),
-    version: z.string().default('1.0.0').describe('Schema version'),
+const DataStructureS<span class="cstat-no" title="statement not covered" >chema = z.object({</span>
+  name: z.string().min(1).max(100).describe('Data structure name'),
+  description: z<span class="cstat-no" title="statement not covered" >.string().max(500).optional().describe('Data s</span>tructure description'),
+  type: z.enum(['schema', 'temp<span class="cstat-no" title="statement not covered" >late', 'validation', 'transformatio</span>n']).describe('Structure type'),
+  organizationId<span class="cstat-no" title="statement not covered" >: z.number().min(1).optional().describe('Organization ID'),</span>
+  teamId: z.number()<span class="cstat-no" title="statement not covered" >.min(1).optional().describe('Team ID'),</span>
+  scope: z.enum(['global', 'organization', 'team', 'personal']).default('personal').describe('Access scope'),
+  structure: z.object({<span class="cstat-no" title="statement not covered" ></span>
+    schema: z.an<span class="cstat-no" title="statement not covered" >y().describe('JSON Schema definition'),</span>
+    version: z.strin<span class="cstat-no" title="statement not covered" >g().default('1.0.0').describe('Schema version'),</span>
     format: z.enum(['json', 'xml', 'yaml', 'csv', 'custom']).default('json').describe('Data format'),
-  }).describe('Structure definition'),
+  }).describe('Structure definition'),<span class="cstat-no" title="statement not covered" ></span>
   validation: z.<span class="cstat-no" title="statement not covered" >object({</span>
-    enabled: z.boolean().default(true).describe('Enable validation'),
+    enabled: z.b<span class="cstat-no" title="statement not covered" >oolean().default(true).describe('Enable validation'),</span>
     strict: z.boolean().default(false).describe('Strict validation mode'),
     rules: z.array(z.object({
       field: z.string().min(1).describe('Field path'),
       type: z.enum(['required', 'format', 'range', 'custom']).describe('Rule type'),
-      parameters: z.any().optional().describe('Rule parameters'),
+      parameters<span class="cstat-no" title="statement not covered" >: z.any().optional().describe('Rule parameters'),</span>
       message: z.string().describe('Error message'),
     })).default([]).describe('Validation rules'),
   }).optional().describe('Validation configuration'),
@@ -2526,43 +2526,43 @@ const DataStructureSchema = z.object({
       function: z.string().optional().describe('Transformation function'),
       parameters: z.any().optional().describe('Function parameters'),
     })).default([]).describe('Field mappings'),
-    filters: z.array(z.object({<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+    filters: z.array(z.object({
       field: z.string().min(1).describe('Field to filter'),
       operator: z.string().min(1).describe('Filter operator'),
       value: z.any().describe('Filter value'),
     })).default([]).describe('Data filters'),
   }).optional().describe('Transformation configuration'),
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Add notification <span class="cstat-no" title="statement not covered" >and email man</span>agement tools to FastMCP server
- */<span class="cstat-no" title="statement not covered" ></span>
+}).strict();<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+&nbsp;
+/**
+ * Add notification and email management tools to FastMCP server
+ */
 export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'NotificationTools' });
-  
-  componentLogger.info('Adding notification and email management tools');
+  const componentLogger = logger.chil<span class="cstat-no" title="statement not covered" >d({ component: 'NotificationTools' });</span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  componentLogge<span class="cstat-no" title="statement not covered" >r.info('Adding notification and email management tools');</span>
 <span class="cstat-no" title="statement not covered" ></span>
-  // Create notification
+  // Create noti<span class="cstat-no" title="statement not covered" >fication</span>
   server.addTool({
     name: 'create-notification',
-    description: <span class="fstat-no" title="function not covered" >'C</span>reate and send a notification through multiple channels with scheduling support',
-    parameters: NotificationCreateSchema,<span class="cstat-no" title="statement not covered" ></span>
-    execute:<span class="cstat-no" title="statement not covered" > async (input, { log, reportProgress }) =&gt; {</span>
+    description: 'Create and send a notification through multiple channels with scheduling support',
+    parameters: NotificationCreateSchema,
+<span class="cstat-no" title="statement not covered" >    execute: async (input, { log, reportProgress }) =&gt; {</span>
       const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
 &nbsp;
       log.info('Creating notification', {
-        type,
-        category,
-        priority,
-        titl<span class="cstat-no" title="statement not covered" >e: title.substring(0, 50),</span>
-        recipien<span class="cstat-no" title="statement not covered" >tCount: recipients.users.length + recipients.</span>teams.length + recipients.organizations.length + recipients.emails.length,
-      });<span class="cstat-no" title="statement not covered" ></span>
+        type,<span class="fstat-no" title="function not covered" ></span>
+        category,<span class="cstat-no" title="statement not covered" ></span>
+        prio<span class="cstat-no" title="statement not covered" >rity,</span>
+        title: title.substring(0, 50),
+        recipientCount: recipients.users.length + recipients.teams.length + recipients.organizations.length + recipients.emails.length,
+      });
 &nbsp;
       try {
         reportProgress({ progress: 0, total: 100 });
-&nbsp;
-        // Validate recipients
-        const totalRecipients = recipients.users.length + recipients.teams.length + recipients.organizations.length + recipients.emails.length;
+<span class="cstat-no" title="statement not covered" ></span>
+        // Valid<span class="cstat-no" title="statement not covered" >ate recipients</span>
+        const totalRecipients = recip<span class="cstat-no" title="statement not covered" >ients.users.length + recipients.teams.length + recipients.organizations.length + recipients.emails.length;</span>
         if (totalRecipients === 0) {
           throw new UserError('At least one recipient must be specified');
         }
@@ -2571,33 +2571,33 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         const enabledChannels = Object.values(channels).filter(Boolean);
         if (enabledChannels.length === 0) {
           throw new UserError('At least one delivery channel must be enabled');
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const no<span class="cstat-no" title="statement not covered" >tificationData = {</span>
-          type,<span class="cstat-no" title="statement not covered" ></span>
+        }
+&nbsp;
+        const notificationData = {
+          type,
           category,
-          priority,<span class="cstat-no" title="statement not covered" ></span>
+          priority,
           title,<span class="cstat-no" title="statement not covered" ></span>
           message,<span class="cstat-no" title="statement not covered" ></span>
-          data,
-          recipients,<span class="cstat-no" title="statement not covered" ></span>
-          channe<span class="cstat-no" title="statement not covered" >ls,</span>
-          schedule: <span class="cstat-no" title="statement not covered" >schedule || {},</span>
-          template: templateId ? {
-            id: <span class="cstat-no" title="statement not covered" >templateId,</span>
-            vari<span class="cstat-no" title="statement not covered" >ables: templateVariables,</span>
-          } : undefined,
-          status: schedule?.sendAt ? 'scheduled' : 'draft',
-        };
+          data,<span class="cstat-no" title="statement not covered" ></span>
+          recipients<span class="cstat-no" title="statement not covered" >,</span>
+          channels,
+          schedule: schedule || {<span class="cstat-no" title="statement not covered" >},</span>
+          templa<span class="cstat-no" title="statement not covered" >te: templateId ? {</span>
+            id: temp<span class="cstat-no" title="statement not covered" >lateId,</span>
+            variables: templateVariables,
+          } : undefined,<span class="cstat-no" title="statement not covered" ></span>
+          status<span class="cstat-no" title="statement not covered" >: schedule?.sendAt ? 'scheduled' : 'draft',</span>
+        };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        reportProgress({ progress: 50, total: 100 });
+        reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 50, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
         const response = await apiClient.post('/notifications', notificationData);
 &nbsp;
         if (!response.success) {
           throw new UserError(`Failed to create notification: ${response.error?.message || 'Unknown error'}`);
         }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         const notification = response.data as MakeNotification;
         if (!notification) {
           throw new UserError('Notification creation failed - no data returned');
@@ -2616,47 +2616,47 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           notification: {
             ...notification,
             // Mask sensitive recipient data
-            recipients: {<span class="cstat-no" title="statement not covered" ></span>
-              us<span class="cstat-no" title="statement not covered" >erCount: notification.recipients.users.length,</span>
-              te<span class="cstat-no" title="statement not covered" >amCount: notification.recipients.teams.length,</span>
-              organi<span class="cstat-no" title="statement not covered" >zationCount: </span>notification.recipients.organizations.length,
-              em<span class="cstat-no" title="statement not covered" >ailCount: notification.recipients.emails.length,</span>
+            recipients: {
+              userCount: notification.recipients.users.length,
+              teamCount: notification.recipients.teams.length,
+              organizationCount: notification.recipients.organizations.length,
+              emailCount: notification.recipients.emails.length,
             },
-          },
-          message: `Notification "${title}" created successfully`,
-          summary: {
-<span class="cstat-no" title="statement not covered" >            id: notification.id,</span>
-            type: notification.type,
+          },<span class="cstat-no" title="statement not covered" ></span>
+          messag<span class="cstat-no" title="statement not covered" >e: `Notification "${title}" created successfully`,</span>
+          summar<span class="cstat-no" title="statement not covered" >y: {</span>
+            id: noti<span class="cstat-no" title="statement not covered" >fication.id,</span>
+            type<span class="cstat-no" title="statement not covered" >: notification.type,</span>
             category: notification.category,
             priority: notification.priority,
-            statu<span class="fstat-no" title="function not covered" >s:</span> notification.status,
-            channels: Object.entries(notification.channels)<span class="cstat-no" title="statement not covered" ></span>
+            status: notification.status,
+            channels: Object.entries(notification.channels)
 <span class="cstat-no" title="statement not covered" >              .filter(([, enabled]) =&gt; enabled)</span>
               .map(([channel]) =&gt; channel),
             totalRecipients: notification.delivery.totalRecipients,
             scheduled: !!schedule?.sendAt,
-            scheduledFor: schedule?.sendAt,
-          },
-          delivery: {
-            status: notification.status,
-<span class="cstat-no" title="statement not covered" >            sentAt: notification.delivery.sentAt,</span>
-            succ<span class="cstat-no" title="statement not covered" >essfulDeliveries: notification.delivery.succe</span>ssfulDeliveries,
-            failedDeliveries: notification.delivery.failedDeliveries,
+            sched<span class="fstat-no" title="function not covered" >ul</span>edFor: schedule?.sendAt,
           },<span class="cstat-no" title="statement not covered" ></span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
-      } catch (error: un<span class="cstat-no" title="statement not covered" >known) {</span>
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating notification', { title, error: errorMessage });
-        if (error instan<span class="cstat-no" title="statement not covered" >ceof UserError) throw error;</span>
-        throw new UserError(`Failed to create notification: ${errorMessage}`);
-      }
+          de<span class="cstat-no" title="statement not covered" >livery: {</span>
+            status: notification.status,
+            sentAt: notification.delivery.sentAt,
+            successfulDeliveries: notification.delivery.successfulDeliveries,
+            failedDeliveries: notification.delivery.failedDeliveries,
+          },
+        }, null, 2);
+      } catch (error: unknown) {
+        cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error creating notification', { title, err</span>or: errorMessage });
+        if (error instanceof UserError) throw error;
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to create notification: ${errorMessage}`);</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
   });
 &nbsp;
-  // Get email preferences
+  // Get email preferenc<span class="cstat-no" title="statement not covered" >es</span>
   server.addTool({
     name: 'get-email-preferences',
-    description: 'Get user email notification preferences and subscription settings',
+    description: 'Get user email notificat<span class="cstat-no" title="statement not covered" >ion preferences and subscription settings',</span>
     parameters: z.object({
       userId: z.number().min(1).optional().describe('User ID (defaults to current user)'),
       includeStats: z.boolean().default(false).describe('Include email statistics'),
@@ -2673,36 +2673,36 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
 &nbsp;
         let endpoint = '/notifications/email-preferences';
         if (userId) {
-          endpoi<span class="cstat-no" title="statement not covered" >nt = `/users/${userId}/email-preferences`;</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const respon<span class="cstat-no" title="statement not covered" >se = await apiClient.get(endpoint, { params });</span>
-&nbsp;
-        if (!response<span class="cstat-no" title="statement not covered" >.success) {</span>
-          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to get email preferences: ${r</span>esponse.error?.message || 'Unknown error'}`);
+          endpoint = `/users/${userId}/email-preferences`;
         }
-<span class="cstat-no" title="statement not covered" ></span>
-        const pr<span class="cstat-no" title="statement not covered" >eferences = response.data as MakeEmailPreferences;</span>
-        if (!prefere<span class="cstat-no" title="statement not covered" >nces) {</span>
-          throw new UserError('Email preferences not found');
+&nbsp;
+        const response = await apiClient.get(endpoint, { params });
+&nbsp;
+        if (!response.success) {
+          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to get email preferences</span>: ${response.error?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully retrieved email preferences', {</span>
-          userId: preferences.userId,
-          system<span class="cstat-no" title="statement not covered" >Enabled: preferences.preferences.system.enabled</span>,
-          unsubs<span class="cstat-no" title="statement not covered" >cribeAll: preferences.unsubscribeAll,</span>
-        });
+        const prefer<span class="cstat-no" title="statement not covered" >ences = response.data as MakeEmailPreferences;</span>
+        if (!preferences) {
+          throw new U<span class="cstat-no" title="statement not covered" >serError('Email preferences not found');</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        return JSON.stringify({
+        log.info('Successfully re<span class="cstat-no" title="statement not covered" >trieved email preferences', {</span>
+          userId<span class="cstat-no" title="statement not covered" >: preferences.userId,</span>
+          systemEnab<span class="cstat-no" title="statement not covered" >led: preferences.preferences.system.enabled,</span>
+          unsubscribeAll: preferences.unsubscribeAll,
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return JSON.<span class="cstat-no" title="statement not covered" >stringify({</span>
           preferences,
-          summary: {
+          summar<span class="cstat-no" title="statement not covered" >y: {</span>
             user<span class="cstat-no" title="statement not covered" >Id: preferences.userId,</span>
             organizationId: preferences.organizationId,
             unsubscribeAll: preferences.unsubscribeAll,
             timezone: preferences.timezone,
             language: preferences.language,
             categories: {
-              system: preferences.preferences.system.enabled,
+              sy<span class="cstat-no" title="statement not covered" >stem: preferences.preferences.system.enabled,</span>
               billing: preferences.preferences.billing.enabled,
               scenarios: preferences.preferences.scenarios.enabled,
               team: preferences.preferences.team.enabled,
@@ -2722,22 +2722,22 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         log.error('Error getting email preferences', { userId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get email preferences: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Update emai<span class="cstat-no" title="statement not covered" >l preferences</span>
+      }
+    },
+  });
+&nbsp;
+  // Update email preferences
   server.addTool({
-    name: 'update-email-preferences',
-    description: 'Update user email notification preferences and subscription settings',
-    parameters: EmailPreferencesSchema,
-<span class="cstat-no" title="statement not covered" >    execute: async (input, { log, reportProgress }) =&gt; {</span>
-      const { userId, preferences, timezone, language, unsubscribeAll } = input;
+    name: 'update-email-preferences',<span class="cstat-no" title="statement not covered" ></span>
+    description:<span class="cstat-no" title="statement not covered" > 'Update user email notification preferences and subscription settings',</span>
+    parameters: <span class="cstat-no" title="statement not covered" >EmailPreferencesSchema,</span>
+    execute: async (<span class="cstat-no" title="statement not covered" >input, { log,</span> reportProgress }) =&gt; {
+      const { us<span class="cstat-no" title="statement not covered" >erId, preferences, timezone, language, unsubscribeAll } = input;</span>
 &nbsp;
       log.info('Updating email preferences', {
         userId,
         hasPreferences: !!preferences,
-        timezone,
+<span class="cstat-no" title="statement not covered" >        timezone,</span>
         language,
         unsubscribeAll,
       });
@@ -2749,84 +2749,84 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
 &nbsp;
         if (preferences) {
           updateData.preferences = preferences;
-        }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (<span class="cstat-no" title="statement not covered" >timezone) {</span>
+        }
+&nbsp;
+        if (timezone) {
           updateData.timezone = timezone;
         }
 &nbsp;
-        if (language) {
-          updateData.language = language;
-        }
+        if (langu<span class="fstat-no" title="function not covered" >ag</span>e) {
+          updateData.language = language;<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        if (<span class="cstat-no" title="statement not covered" >unsubscribeAll !== undefined) {</span>
-          updateData.unsubscrib<span class="cstat-no" title="statement not covered" >eAll = unsubscribeAll;</span>
+        if (unsubscribeAll !== undefined) {
+          updateData.unsubscribeAll = unsubscribeAll;
         }
 &nbsp;
         if (Object.keys(updateData).length === 0) {
           throw new UserError('No preference updates provided');
-        }
-&nbsp;
-        reportProgress({ progress: 50, total: 100 });
-<span class="cstat-no" title="statement not covered" ></span>
-        let endpoint<span class="cstat-no" title="statement not covered" > = '/notifications/e</span>mail-preferences';
-        if (user<span class="cstat-no" title="statement not covered" >Id) {</span>
-          endpoint =<span class="cstat-no" title="statement not covered" > `/users/${userId}/email</span>-preferences`;
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
+        reportProgress({ progress: 50, total: 100 });
+&nbsp;
+        let endpoint = '/notifications/email-preferences';
+        if (userId) {
+          endpoint = `/users/${userId}/email-preferences`;
+        }
+&nbsp;
         const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.put(endpoint, updateData);</span>
 <span class="cstat-no" title="statement not covered" ></span>
         if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to update email pr</span>eferences: ${response.error?.message || 'Unknown error'}`);
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to upd</span>ate email preferences: ${response.error?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const update<span class="cstat-no" title="statement not covered" >dPreferences = response.data as MakeEmailPreferences;</span>
-        reportProgress({ progress: 100, total: 100 });
+        const up<span class="cstat-no" title="statement not covered" >datedPreferences = response.data as MakeEmailPreferences;</span>
+        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress: 100, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        log.info('Successfully up<span class="cstat-no" title="statement not covered" >dated email prefer</span>ences', {
-          userId<span class="cstat-no" title="statement not covered" >: updatedPreferences.userId,</span>
-          unsubscribeAll: updatedPreferences.unsubscribeAll,
-          categoriesUpdated: !!preferences,
+        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully updated email preferences</span>', {
+          userId: updatedPreferen<span class="cstat-no" title="statement not covered" >ces.userId,</span>
+          unsubs<span class="cstat-no" title="statement not covered" >cribeAll: updatedPreferences.unsubscribeAll,</span>
+          categories<span class="cstat-no" title="statement not covered" >Updated: !!preferences,</span>
         });
-&nbsp;
-        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
-          preferences: updatedPreferences,
-          message: 'Email preferences updated successful<span class="fstat-no" title="function not covered" >ly</span>',
-          changes: {<span class="cstat-no" title="statement not covered" ></span>
-            preferences:<span class="cstat-no" title="statement not covered" > !!preferenc</span>es,
-            timezone: !!timezone,
-            language: !!language,<span class="fstat-no" title="function not covered" ></span>
-            unsubscribeA<span class="cstat-no" title="statement not covered" >ll: unsubscribeAll !== undefined,</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-          summary: {
-            userId: updatedPreferences.userId,<span class="fstat-no" title="function not covered" ></span>
-            unsubscribeA<span class="cstat-no" title="statement not covered" >ll: updatedPreferences.unsubscribeAll,</span>
-            enabledCateg<span class="cstat-no" title="statement not covered" >ories: Objec</span>t.entries({
-              system: updatedPreferences.preferences.system.enabled,
-              billing: updatedPreferences.preferences.billing.enabled,
-              scenarios: updatedPreferences.preferences.scenar<span class="fstat-no" title="function not covered" >io</span>s.enabled,<span class="cstat-no" title="statement not covered" ></span>
-              team: updatedPreferences.preferences.team.enabled,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-              marketing: updatedPreferences.preferences.marketi<span class="fstat-no" title="function not covered" >ng</span>.enabled,<span class="cstat-no" title="statement not covered" ></span>
-            }).filter(([, enabled]) =&gt; enabled).map(([category]) =&gt; category),
-            lastUpdated: updatedPreferences.lastU<span class="fstat-no" title="function not covered" >pd</span>ated,<span class="cstat-no" title="statement not covered" ></span>
-          },
-        }, null, 2);<span class="fstat-no" title="function not covered" ></span>
-      } catch (error: un<span class="cstat-no" title="statement not covered" >known) {<span class="fstat-no" title="function not covered" ></span></span>
-        const errorMessage =<span class="cstat-no" title="statement not covered" > error instanceof Error ? error.message : String(error);</span>
-        log.error('Error updatin<span class="cstat-no" title="statement not covered" >g email preferences', { userId, error: e</span>rrorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to update email preferences: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },
-  });
 <span class="cstat-no" title="statement not covered" ></span>
-  // Create notification template<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
+          prefer<span class="cstat-no" title="statement not covered" >ences: updatedPreferences,</span>
+          message: 'Email preferences updated successfully',
+          changes: {
+            preferences: !!preferences,
+            timezone: !!timezone,
+            language: !!language,<span class="cstat-no" title="statement not covered" ></span>
+            unsubscribeAll: unsubscribeAll !== undefined,
+          },<span class="fstat-no" title="function not covered" ></span>
+          summary: {<span class="cstat-no" title="statement not covered" ></span>
+            userId: upda<span class="cstat-no" title="statement not covered" >tedPreferenc</span>es.userId,
+            unsubscribeAll: updatedPreferences.unsubscribeAll,
+            enabledCategories: Object.entries({<span class="fstat-no" title="function not covered" ></span>
+              system: up<span class="cstat-no" title="statement not covered" >datedPreferences.preferences.system.enabled,</span>
+              billing: u<span class="cstat-no" title="statement not covered" >pdatedPrefer</span>ences.preferences.billing.enabled,
+              scenarios: updatedPreferences.preferences.scenarios.enabled,
+              team: updatedPreferences.preferences.team.enab<span class="fstat-no" title="function not covered" >le</span>d,
+              marketing:<span class="cstat-no" title="statement not covered" > updatedPreferences.preferences.marketing.enabled,</span>
+            }).filter(([<span class="cstat-no" title="statement not covered" >, enabled]) </span>=&gt; enabled).map(([category]) =&gt; category),
+            lastUpdated: updatedPreferences.lastUpdated,
+          },
+        }, null, 2);<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        const errorMessage = error instanceof Error ? error.mes<span class="fstat-no" title="function not covered" >sa</span>ge : Strin<span class="cstat-no" title="statement not covered" >g(error);</span>
+        log.error('Error updating email preferences', { userId, error: errorMessage });
+        if (error instanceof UserError) throw err<span class="fstat-no" title="function not covered" >or</span>;<span class="cstat-no" title="statement not covered" ></span>
+        throw new UserError(`Failed to update email preferences: ${errorMessage}`);
+      }<span class="fstat-no" title="function not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  // Create notification template
   server.addTool({
-    name: 'create-notification-template',
+    name: 'create-notifi<span class="cstat-no" title="statement not covered" >cation-templ</span>ate',
     description: 'Create a reusable notification template with variables and design',
     parameters: NotificationTemplateSchema,
-    execute: async (input, { log, reportProgress }) =&gt; {
-      const { name, description, type, category, organizationId, template, design } = input;
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log, reportProgress }) =&gt; {</span>
+      const { name, description, type, category, orga<span class="fstat-no" title="function not covered" >ni</span>zationId<span class="cstat-no" title="statement not covered" >, template, design } = input;</span>
 &nbsp;
       log.info('Creating notification template', {
         name,
@@ -2837,23 +2837,23 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       });
 &nbsp;
       try {
-        reportProgress({ progress: 0,<span class="cstat-no" title="statement not covered" > total: 100 });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const te<span class="cstat-no" title="statement not covered" >mplateData = {</span>
-          name,<span class="cstat-no" title="statement not covered" ></span>
-          descri<span class="cstat-no" title="statement not covered" >ption,</span>
+        reportProgress({ progress: 0, total: 100 });
+&nbsp;
+        const templateData = {
+          name,
+          description,
           type,
-          category,
-          organizationId,
-<span class="cstat-no" title="statement not covered" >          isGlobal: !organizationId,</span>
-          template: {
-            subject: template.subject,
+          category,<span class="cstat-no" title="statement not covered" ></span>
+          organi<span class="cstat-no" title="statement not covered" >zationId,</span>
+          isGlob<span class="cstat-no" title="statement not covered" >al: !organizationId,</span>
+          template: <span class="cstat-no" title="statement not covered" >{</span>
+            subj<span class="cstat-no" title="statement not covered" >ect: template.subject,</span>
             body: template.body,
             format: template.format || 'html',
             variables: template.variables || [],
-          },
+<span class="cstat-no" title="statement not covered" >          },</span>
           design: design || {},
-        };
+<span class="cstat-no" title="statement not covered" >        };</span>
 &nbsp;
         reportProgress({ progress: 50, total: 100 });
 &nbsp;
@@ -3157,7 +3157,7 @@ export default addNotificationTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T04:09:47.997Z
+                at 2025-07-25T04:35:02.914Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
