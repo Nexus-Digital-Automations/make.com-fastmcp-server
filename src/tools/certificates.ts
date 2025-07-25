@@ -778,8 +778,8 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
         log.info('Successfully rotated certificate/key', {
           resourceId,
           resourceType,
-          newResourceId: rotationResult?.newResourceId,
-          backupId: rotationResult?.backupId,
+          newResourceId: String(rotationResult?.newResourceId || 'unknown'),
+          backupId: String(rotationResult?.backupId || 'none'),
         });
 
         return JSON.stringify({

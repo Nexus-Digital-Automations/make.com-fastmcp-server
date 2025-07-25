@@ -630,9 +630,9 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
 
         log.info('Successfully executed remote procedure', {
           procedureId,
-          executionId: executionResult?.executionId,
-          status: executionResult?.status,
-          executionTime: executionResult?.executionTime,
+          executionId: String(executionResult?.executionId || 'unknown'),
+          status: String(executionResult?.status || 'unknown'),
+          executionTime: Number(executionResult?.executionTime || 0),
         });
 
         return JSON.stringify({

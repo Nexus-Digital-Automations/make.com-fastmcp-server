@@ -471,8 +471,8 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 
         log.info('Successfully moved/copied items', {
           operation: copyInsteadOfMove ? 'copy' : 'move',
-          successful: result?.successful || 0,
-          failed: result?.failed || 0,
+          successful: Number(result?.successful || 0),
+          failed: Number(result?.failed || 0),
         });
 
         return JSON.stringify({

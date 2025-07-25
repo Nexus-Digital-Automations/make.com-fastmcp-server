@@ -699,7 +699,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           },
           deployment: {
             ...deployment,
-            version: deployment?.version ?? '1.0.0',
+            version: '1.0.0', // Default version for new functions
             environment: deployment?.environment ?? 'development',
             instances: deployment?.instances ?? 1,
             autoScale: deployment?.autoScale ?? false,
@@ -799,14 +799,14 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new UserError(`Failed to test custom app: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const testResult = response.data;
+        const testResult = response.data as Record<string, unknown>;
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully tested custom app', {
           appId,
           testType,
-          passed: testResult?.summary?.passed,
-          failed: testResult?.summary?.failed,
+          passed: Number((testResult?.summary as Record<string, unknown>)?.passed || 0),
+          failed: Number((testResult?.summary as Record<string, unknown>)?.failed || 0),
         });
 
         return JSON.stringify({
@@ -816,17 +816,17 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             appId,
             testType,
             environment,
-            totalTests: testResult?.summary?.total || 0,
-            passed: testResult?.summary?.passed || 0,
-            failed: testResult?.summary?.failed || 0,
-            duration: testResult?.summary?.duration,
+            totalTests: Number((testResult?.summary as Record<string, unknown>)?.total || 0),
+            passed: Number((testResult?.summary as Record<string, unknown>)?.passed || 0),
+            failed: Number((testResult?.summary as Record<string, unknown>)?.failed || 0),
+            duration: (testResult?.summary as Record<string, unknown>)?.duration,
             coverage: testResult?.coverage,
           },
           results: {
-            endpoints: testResult?.results?.endpoints || [],
-            functions: testResult?.results?.functions || [],
-            hooks: testResult?.results?.hooks || [],
-            performance: includePerformance ? testResult?.results?.performance || {} : undefined,
+            endpoints: (testResult?.results as Record<string, unknown>)?.endpoints || [],
+            functions: (testResult?.results as Record<string, unknown>)?.functions || [],
+            hooks: (testResult?.results as Record<string, unknown>)?.hooks || [],
+            performance: includePerformance ? (testResult?.results as Record<string, unknown>)?.performance || {} : undefined,
           },
           recommendations: testResult?.recommendations || [],
         }, null, 2);
