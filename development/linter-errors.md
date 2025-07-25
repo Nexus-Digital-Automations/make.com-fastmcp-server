@@ -1,68 +1,15 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T01:48:09.476Z
-**Total Issues:** 34 (0 errors, 34 warnings)
-**Files:** 12
+**Generated:** 2025-07-25T02:35:45.726Z
+**Total Issues:** 20 (1 errors, 19 warnings)
+**Files:** 11
 
-## connections.ts (eslint)
+## caching.ts (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/connections.ts`
-**Issues:** 5
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/middleware/caching.ts`
+**Issues:** 1
 
-⚠️ **Line 150:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 404:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 491:40** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 546:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 655:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## ai-agents.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/ai-agents.ts`
-**Issues:** 4
-
-⚠️ **Line 21:32** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 310:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 500:42** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 749:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## billing.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/billing.ts`
-**Issues:** 4
-
-⚠️ **Line 330:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 436:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 542:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 736:27** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
-
-## sdk.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/sdk.ts`
-**Issues:** 4
-
-⚠️ **Line 28:35** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 122:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 240:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 488:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+❌ **Line 177:27** - '_server' is defined but never used. `[@typescript-eslint/no-unused-vars]`
 
 ---
 
@@ -147,12 +94,30 @@
 
 ---
 
-## caching.ts (eslint)
+## make-api-client.ts (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/middleware/caching.ts`
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/lib/make-api-client.ts`
 **Issues:** 1
 
-⚠️ **Line 186:96** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+⚠️ **Line 130:33** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
+## billing.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/billing.ts`
+**Issues:** 1
+
+⚠️ **Line 736:27** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
+## sdk.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/sdk.ts`
+**Issues:** 1
+
+⚠️ **Line 122:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
 
 ---
 

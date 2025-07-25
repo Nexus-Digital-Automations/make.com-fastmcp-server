@@ -35,7 +35,12 @@ export interface LogContext {
   spanId?: string;
   parentSpanId?: string;
   requestId?: string;
+  duration?: number;
   metadata?: Record<string, unknown>;
+  // Additional context fields for specialized logging
+  circuitName?: string;
+  bulkheadName?: string;
+  [key: string]: unknown; // Index signature for extensibility
 }
 
 class Logger {
@@ -97,12 +102,14 @@ class Logger {
   private log(level: LogLevel, message: string, data?: Record<string, unknown>, context?: LogContext): void {
     if (!this.shouldLog(level)) return;
 
+    const mergedContext = { ...this.defaultContext, ...context };
+
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level,
       message,
       data,
-      ...context,
+      ...mergedContext,
     };
 
     const formattedLog = this.formatLogEntry(entry);
@@ -137,19 +144,15 @@ class Logger {
     this.log('error', message, data, context);
   }
 
-  public child(context: LogContext): {
-    debug: (message: string, data?: Record<string, unknown>) => void;
-    info: (message: string, data?: Record<string, unknown>) => void;
-    warn: (message: string, data?: Record<string, unknown>) => void;
-    error: (message: string, data?: Record<string, unknown>) => void;
-  } {
-    return {
-      debug: (message: string, data?: Record<string, unknown>) => this.debug(message, data, context),
-      info: (message: string, data?: Record<string, unknown>) => this.info(message, data, context),
-      warn: (message: string, data?: Record<string, unknown>) => this.warn(message, data, context),
-      error: (message: string, data?: Record<string, unknown>) => this.error(message, data, context),
-    };
+  public child(context: LogContext): Logger {
+    // Create a new logger instance that inherits the context
+    const childLogger = Object.create(this);
+    childLogger.defaultContext = { ...this.defaultContext, ...context };
+    return childLogger;
   }
+
+  // Helper property to store default context
+  private defaultContext: LogContext = {};
 
   // Correlation ID utilities
   public generateCorrelationId(): string {

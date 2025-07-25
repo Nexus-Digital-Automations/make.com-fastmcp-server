@@ -13,6 +13,9 @@ interface MonitoringContext {
   sessionId?: string;
   userId?: string;
   correlationId?: string;
+  traceId?: string;
+  spanId?: string;
+  [key: string]: unknown; // Allow additional context fields
 }
 
 export interface ToolMetrics {

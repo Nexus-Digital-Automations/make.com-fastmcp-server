@@ -18,7 +18,7 @@ export interface MakeAIAgent {
   configuration: {
     model: string;
     provider: string;
-    parameters: Record<string, any>;
+    parameters: Record<string, unknown>;
     systemPrompt?: string;
     temperature?: number;
     maxTokens?: number;
@@ -230,9 +230,9 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
             },
           },
           context: {
-            maxHistoryLength: 10,
-            memoryType: 'conversation',
             ...context,
+            maxHistoryLength: context?.maxHistoryLength ?? 10,
+            memoryType: context?.memoryType ?? 'conversation',
           },
           capabilities,
           organizationId,
@@ -307,7 +307,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,
@@ -497,7 +497,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       log.info('Updating AI agent', { agentId, name });
 
       try {
-        const updateData: Record<string, any> = {};
+        const updateData: Record<string, unknown> = {};
 
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
@@ -690,9 +690,9 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           configuration,
           models,
           rateLimit: {
-            requestsPerMinute: 60,
-            tokensPerMinute: 60000,
             ...rateLimit,
+            requestsPerMinute: rateLimit?.requestsPerMinute ?? 60,
+            tokensPerMinute: rateLimit?.tokensPerMinute ?? 60000,
           },
           status: 'active',
         };
@@ -746,7 +746,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       log.info('Listing LLM providers', { type, status });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           includeModels,
         };
 

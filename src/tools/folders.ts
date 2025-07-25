@@ -214,10 +214,10 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           organizationId,
           teamId,
           permissions: {
-            read: [],
-            write: [],
-            admin: [],
             ...permissions,
+            read: permissions?.read ?? [],
+            write: permissions?.write ?? [],
+            admin: permissions?.admin ?? [],
           },
         };
 
@@ -533,17 +533,17 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           teamId,
           structure: structure || {},
           settings: {
-            maxSize: 100,
-            autoCleanup: false,
-            encryption: false,
-            compression: false,
             ...settings,
+            maxSize: settings?.maxSize ?? 100,
+            autoCleanup: settings?.autoCleanup ?? false,
+            encryption: settings?.encryption ?? false,
+            compression: settings?.compression ?? false,
           },
           permissions: {
-            read: [],
-            write: [],
-            admin: [],
             ...permissions,
+            read: permissions?.read ?? [],
+            write: permissions?.write ?? [],
+            admin: permissions?.admin ?? [],
           },
         };
 

@@ -355,7 +355,7 @@ class ConfigManager {
 export function createConfigurationValidator() {
   return {
     validateMakeApiKey: (key: string): boolean => {
-      return key && key.length >= 10 && key.trim().length > 0;
+      return Boolean(key && key.length >= 10 && key.trim().length > 0);
     },
     
     validatePort: (port: number): boolean => {

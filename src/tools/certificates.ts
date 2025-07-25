@@ -643,10 +643,10 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           metadata: metadata || { hashAlgorithm: 'SHA256' },
           rotation: rotation || { enabled: false, intervalDays: 90 },
           permissions: {
-            read: [],
-            use: [],
-            admin: [],
             ...permissions,
+            read: permissions?.read ?? [],
+            use: permissions?.use ?? [],
+            admin: permissions?.admin ?? [],
           },
         };
 

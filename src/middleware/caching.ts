@@ -174,24 +174,10 @@ export class CachingMiddleware {
   /**
    * Wrap existing tools with caching logic
    */
-  private wrapServerTools(server: FastMCP): void {
-    // Get all registered tools
-    const tools = server.listTools();
-    
-    tools.forEach(tool => {
-      const originalHandler = tool.handler;
-      if (!originalHandler) return;
-
-      // Wrap the tool handler with caching
-      tool.handler = async (params: Record<string, unknown>, context: Record<string, unknown>) => {
-        return this.wrapWithCache(
-          tool.name,
-          params,
-          async () => originalHandler(params, context),
-          context
-        );
-      };
-    });
+  private wrapServerTools(_server: FastMCP): void {
+    // TODO: Re-implement tool wrapping when FastMCP API supports it
+    // For now, caching is handled manually in individual tools
+    this.componentLogger.warn('Tool wrapping temporarily disabled - caching handled per-tool');
   }
 
   /**

@@ -147,7 +147,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -401,7 +401,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       log.info('Updating connection', { connectionId });
 
       try {
-        const updateData: Record<string, any> = {};
+        const updateData: Record<string, unknown> = {};
         if (name !== undefined) updateData.name = name;
         if (accountName !== undefined) updateData.accountName = accountName;
         if (credentials !== undefined) updateData.credentials = credentials;
@@ -488,7 +488,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       log.info('Testing connection', { connectionId, testEndpoint });
 
       try {
-        const testData: Record<string, any> = {};
+        const testData: Record<string, unknown> = {};
         if (testEndpoint) testData.endpoint = testEndpoint;
 
         const response = await apiClient.post(`/connections/${connectionId}/test`, testData);
@@ -543,7 +543,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -652,7 +652,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       log.info('Updating webhook', { webhookId });
 
       try {
-        const updateData: Record<string, any> = {};
+        const updateData: Record<string, unknown> = {};
         if (name !== undefined) updateData.name = name;
         if (url !== undefined) updateData.url = url;
         if (method !== undefined) updateData.method = method;

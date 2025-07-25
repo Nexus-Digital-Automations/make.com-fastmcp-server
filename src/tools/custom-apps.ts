@@ -329,16 +329,16 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             type,
             runtime,
             environment: {
-              variables: {},
-              secrets: [],
-              dependencies: {},
               ...configuration.environment,
+              variables: configuration.environment?.variables ?? {},
+              secrets: configuration.environment?.secrets ?? [],
+              dependencies: configuration.environment?.dependencies ?? {},
             },
             endpoints: configuration.endpoints || [],
             authentication: {
-              type: 'none',
-              configuration: {},
               ...configuration.authentication,
+              type: configuration.authentication?.type ?? 'none',
+              configuration: configuration.authentication?.configuration ?? {},
             },
             ui: {
               category: 'custom',
@@ -353,10 +353,10 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             ...deployment,
           },
           permissions: {
-            scopes: [],
-            roles: ['developer'],
-            restrictions: {},
             ...permissions,
+            scopes: permissions?.scopes ?? [],
+            roles: permissions?.roles ?? ['developer'],
+            restrictions: permissions?.restrictions ?? {},
           },
           organizationId,
           teamId,
@@ -585,9 +585,9 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             method: configuration.method || 'POST',
             headers: configuration.headers || {},
             authentication: {
-              type: 'none',
-              configuration: {},
               ...configuration.authentication,
+              type: configuration.authentication?.type ?? 'none',
+              configuration: configuration.authentication?.configuration ?? {},
             },
             polling: type === 'polling' ? {
               interval: 5,
@@ -598,10 +598,10 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           },
           events,
           logs: {
-            retention: 30,
-            level: 'info',
-            destinations: ['console'],
             ...logs,
+            retention: logs?.retention ?? 30,
+            level: logs?.level ?? 'info',
+            destinations: logs?.destinations ?? ['console'],
           },
           status: 'active',
         };
@@ -698,11 +698,11 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             testCases: testCases || [],
           },
           deployment: {
-            version: '1.0.0',
-            environment: 'development',
-            instances: 1,
-            autoScale: false,
             ...deployment,
+            version: deployment?.version ?? '1.0.0',
+            environment: deployment?.environment ?? 'development',
+            instances: deployment?.instances ?? 1,
+            autoScale: deployment?.autoScale ?? false,
           },
           status: 'draft',
         };

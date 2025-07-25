@@ -25,7 +25,7 @@ async function main(): Promise<void> {
         componentLogger.info('Graceful shutdown completed');
         process.exit(0);
       } catch (error) {
-        componentLogger.error('Error during graceful shutdown', error);
+        componentLogger.error('Error during graceful shutdown', error as Record<string, unknown>);
         process.exit(1);
       }
     };
@@ -52,7 +52,7 @@ async function main(): Promise<void> {
     });
 
   } catch (error) {
-    componentLogger.error('Failed to start server', error);
+    componentLogger.error('Failed to start server', error as Record<string, unknown>);
     process.exit(1);
   }
 }

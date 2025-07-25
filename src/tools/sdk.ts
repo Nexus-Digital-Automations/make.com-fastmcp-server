@@ -25,7 +25,7 @@ export interface MakeSDKApp {
     installedByName?: string;
     version: string;
     autoUpdate: boolean;
-    configuration: Record<string, any>;
+    configuration: Record<string, unknown>;
     permissions: {
       granted: string[];
       requested: string[];
@@ -237,7 +237,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,
@@ -387,9 +387,9 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
           teamId,
           configuration,
           permissions: {
-            autoGrant: false,
-            restrictions: {},
             ...permissions,
+            autoGrant: permissions?.autoGrant ?? false,
+            restrictions: permissions?.restrictions ?? {},
           },
           autoUpdate,
           installOptions: {
@@ -485,7 +485,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,

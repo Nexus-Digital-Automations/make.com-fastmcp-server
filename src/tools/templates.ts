@@ -206,9 +206,9 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
           teamId,
           isPublic,
           sharing: {
-            organizationVisible: true,
-            teamVisible: true,
             ...sharing,
+            organizationVisible: sharing?.organizationVisible ?? true,
+            teamVisible: sharing?.teamVisible ?? true,
           },
           metadata: {
             complexity,

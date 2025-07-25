@@ -327,7 +327,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           includeUsage,
           includeHistory,
           includePaymentMethods,
@@ -433,7 +433,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,
@@ -539,7 +539,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           throw new UserError('Custom period dates are required when period is set to custom');
         }
 
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           period,
           breakdown: breakdown.join(','),
           includeProjections,

@@ -365,12 +365,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
           input: inputSpec,
           output: outputSpec,
           monitoring: {
-            healthCheck: { enabled: false, interval: 300, ...monitoring.healthCheck },
+            healthCheck: { ...monitoring.healthCheck, enabled: monitoring.healthCheck?.enabled ?? false, interval: monitoring.healthCheck?.interval ?? 300 },
             alerts: monitoring.alerts || [],
-            logging: { level: 'basic', retentionDays: 30, includePayload: false, ...monitoring.logging },
+            logging: { ...monitoring.logging, level: monitoring.logging?.level ?? 'basic', retentionDays: monitoring.logging?.retentionDays ?? 30, includePayload: monitoring.logging?.includePayload ?? false },
           },
           security: {
-            rateLimiting: { enabled: false, maxRequests: 100, windowMs: 60000, ...security.rateLimiting },
+            rateLimiting: { ...security.rateLimiting, enabled: security.rateLimiting?.enabled ?? false, maxRequests: security.rateLimiting?.maxRequests ?? 100, windowMs: security.rateLimiting?.windowMs ?? 60000 },
             ipWhitelist: security.ipWhitelist,
             requiresApproval: security.requiresApproval || false,
             encryptPayload: security.encryptPayload || false,
@@ -603,11 +603,11 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         const executionData = {
           input: inputData,
           options: {
-            async: false,
-            timeout: 30000,
-            retries: 3,
-            priority: 'normal',
             ...options,
+            async: options?.async ?? false,
+            timeout: options?.timeout ?? 30000,
+            retries: options?.retries ?? 3,
+            priority: options?.priority ?? 'normal',
           },
           metadata: {
             correlationId: metadata.correlationId || `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -689,25 +689,25 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
           teamId,
           configuration: {
             connection: {
-              protocol: 'https',
-              secure: true,
               ...configuration.connection,
+              protocol: configuration.connection?.protocol ?? 'https',
+              secure: configuration.connection?.secure ?? true,
             },
             authentication: {
-              type: 'none',
               ...configuration.authentication,
+              type: configuration.authentication?.type ?? 'none',
             },
             capabilities: {
-              canReceive: true,
-              canSend: true,
-              canExecute: false,
-              supportedFormats: ['json'],
-              maxPayloadSize: 1048576,
               ...configuration.capabilities,
+              canReceive: configuration.capabilities?.canReceive ?? true,
+              canSend: configuration.capabilities?.canSend ?? true,
+              canExecute: configuration.capabilities?.canExecute ?? false,
+              supportedFormats: configuration.capabilities?.supportedFormats ?? ['json'],
+              maxPayloadSize: configuration.capabilities?.maxPayloadSize ?? 1048576,
             },
             environment: {
-              customProperties: {},
               ...configuration.environment,
+              customProperties: configuration.environment?.customProperties ?? {},
             },
           },
           status: 'unknown', // Will be determined by initial health check

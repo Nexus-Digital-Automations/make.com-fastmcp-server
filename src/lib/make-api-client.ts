@@ -126,23 +126,26 @@ export class MakeApiClient {
   private handleAxiosError(error: unknown): MakeApiError {
     const makeError = new Error() as MakeApiError;
     
-    if (error.response) {
+    // Type guard for axios error
+    const axiosError = error as any;
+    
+    if (axiosError?.response) {
       // Server responded with error status
-      makeError.message = error.response.data?.message || error.response.statusText || 'API request failed';
-      makeError.status = error.response.status;
-      makeError.code = error.response.data?.code || `HTTP_${error.response.status}`;
-      makeError.details = error.response.data;
+      makeError.message = axiosError.response.data?.message || axiosError.response.statusText || 'API request failed';
+      makeError.status = axiosError.response.status;
+      makeError.code = axiosError.response.data?.code || `HTTP_${axiosError.response.status}`;
+      makeError.details = axiosError.response.data;
       
       // Determine if error is retryable
-      makeError.retryable = error.response.status >= 500 || error.response.status === 429;
-    } else if (error.request) {
+      makeError.retryable = axiosError.response.status >= 500 || axiosError.response.status === 429;
+    } else if (axiosError?.request) {
       // Network error
       makeError.message = 'Network error - no response received';
       makeError.code = 'NETWORK_ERROR';
       makeError.retryable = true;
     } else {
       // Request configuration error
-      makeError.message = error.message || 'Unknown API client error';
+      makeError.message = (error as Error)?.message || String(error) || 'Unknown API client error';
       makeError.code = 'CLIENT_ERROR';
       makeError.retryable = false;
     }
@@ -243,7 +246,7 @@ export class MakeApiClient {
       const response = await this.get('/users/me');
       return response.success;
     } catch (error) {
-      this.componentLogger.error('Health check failed', error);
+      this.componentLogger.error('Health check failed', error as Record<string, unknown>);
       return false;
     }
   }

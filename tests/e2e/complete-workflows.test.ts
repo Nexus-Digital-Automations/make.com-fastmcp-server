@@ -6,8 +6,6 @@
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { MockMakeApiClient } from '../mocks/make-api-client.mock.js';
 import { 
-  createMockServer,
-  findTool,
   executeTool,
   createTestEnvironment,
   waitForCondition,
@@ -21,6 +19,11 @@ import {
   testBillingAccount,
   generateTestData
 } from '../fixtures/test-data.js';
+
+// Import actual tools
+import * as scenarioTools from '../../src/tools/scenarios.js';
+import * as connectionTools from '../../src/tools/connections.js';
+import * as permissionTools from '../../src/tools/permissions.js';
 
 describe('End-to-End Workflow Tests', () => {
   let mockServer: any;

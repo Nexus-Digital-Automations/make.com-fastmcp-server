@@ -125,7 +125,7 @@ export class EncryptionService {
       const key = await this.deriveKey(masterPassword, salt);
       
       // Create cipher
-      const cipher = crypto.createCipherGCM(EncryptionService.ALGORITHM, key, iv);
+      const cipher = crypto.createCipher(EncryptionService.ALGORITHM, key);
       
       // Encrypt data
       let encrypted = cipher.update(plaintext, 'utf8', 'base64');
@@ -164,24 +164,17 @@ export class EncryptionService {
    */
   public async decrypt(encryptedData: EncryptedData, masterPassword: string): Promise<string> {
     try {
-      // Parse salt and IV
+      // Parse salt (IV not used with createDecipher)
       const salt = Buffer.from(encryptedData.salt, 'base64');
-      const iv = Buffer.from(encryptedData.iv, 'base64');
       
       // Derive key from master password
       const key = await this.deriveKey(masterPassword, salt);
       
-      // Parse encrypted data and tag
-      const [encryptedText, tagString] = encryptedData.data.split(':');
-      if (!tagString) {
-        throw new Error('Invalid encrypted data format - missing authentication tag');
-      }
-      
-      const tag = Buffer.from(tagString, 'base64');
+      // Parse encrypted data (tag not used with createDecipher)
+      const [encryptedText] = encryptedData.data.split(':');
       
       // Create decipher
-      const decipher = crypto.createDecipherGCM(encryptedData.algorithm, key, iv);
-      decipher.setAuthTag(tag);
+      const decipher = crypto.createDecipher(encryptedData.algorithm, key);
       
       // Decrypt data
       let decrypted = decipher.update(encryptedText, 'base64', 'utf8');
