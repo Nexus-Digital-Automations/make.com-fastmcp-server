@@ -86,6 +86,19 @@ describe('Error Handling System - Comprehensive Test Suite', () => {
       expect(error instanceof Error).toBe(true);
     });
 
+    it('should handle missing Error.captureStackTrace gracefully', () => {
+      const originalCaptureStackTrace = Error.captureStackTrace;
+      delete (Error as any).captureStackTrace;
+      
+      try {
+        const error = new MakeServerError('Test without captureStackTrace');
+        expect(error.message).toBe('Test without captureStackTrace');
+        expect(error instanceof MakeServerError).toBe(true);
+      } finally {
+        (Error as any).captureStackTrace = originalCaptureStackTrace;
+      }
+    });
+
     it('should create structured error object', () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
@@ -545,6 +558,30 @@ describe('Error Handling System - Comprehensive Test Suite', () => {
 
       expect(consoleErrorMock).toHaveBeenCalledWith('Uncaught Exception:', testError);
       expect(exitMock).toHaveBeenCalledWith(1);
+    });
+
+    it('should handle unhandled rejection in undefined NODE_ENV', () => {
+      const originalEnv = process.env.NODE_ENV;
+      delete process.env.NODE_ENV;
+
+      try {
+        setupGlobalErrorHandlers();
+        
+        const testPromise = Promise.resolve();
+        const testReason = new Error('Test rejection');
+        
+        process.emit('unhandledRejection', testReason, testPromise);
+
+        expect(consoleErrorMock).toHaveBeenCalledWith(
+          'Unhandled Rejection at:',
+          testPromise,
+          'reason:',
+          testReason
+        );
+        expect(exitMock).toHaveBeenCalledWith(1);
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+      }
     });
   });
 });
