@@ -1,0 +1,187 @@
+# ==============================================================================
+# Prometheus Configuration for Make.com FastMCP Server
+# Production monitoring and metrics collection
+# ==============================================================================
+
+global:
+  # Scrape interval and evaluation settings
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  
+  # External labels attached to any time series or alerts
+  external_labels:
+    monitor: 'make-fastmcp-monitor'
+    environment: 'production'
+    cluster: 'fastmcp-cluster'
+
+# Rule files for alerting (optional)
+rule_files:
+  - "rules/*.yml"
+  - "alerts/*.yml"
+
+# Alertmanager configuration (optional)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# ==============================================================================
+# Scrape Configuration
+# ==============================================================================
+scrape_configs:
+  # ----------------------------------------------------------------------------
+  # Prometheus Self-Monitoring
+  # ----------------------------------------------------------------------------
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    
+  # ----------------------------------------------------------------------------
+  # Make.com FastMCP Server Application Metrics
+  # ----------------------------------------------------------------------------
+  - job_name: 'make-fastmcp-server'
+    static_configs:
+      - targets: ['make-fastmcp-server:9090']
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /metrics
+    scheme: http
+    
+    # Custom labels for application metrics
+    params:
+      format: ['prometheus']
+    
+    # Relabel configuration for better metric organization
+    metric_relabel_configs:
+      # Add instance label based on target
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '([^:]+):\d+'
+        replacement: '${1}'
+      
+      # Add service label
+      - target_label: service
+        replacement: 'make-fastmcp-server'
+      
+      # Add environment label
+      - target_label: environment
+        replacement: 'production'
+    
+    # Health check configuration
+    honor_labels: false
+    honor_timestamps: true
+    
+  # ----------------------------------------------------------------------------
+  # System-level Metrics (Node Exporter - if deployed)
+  # ----------------------------------------------------------------------------
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: 
+        # - 'node-exporter:9100'  # Uncomment if using node-exporter
+    scrape_interval: 30s
+    metrics_path: /metrics
+    
+  # ----------------------------------------------------------------------------
+  # Redis Metrics (Redis Exporter - if deployed)
+  # ----------------------------------------------------------------------------
+  - job_name: 'redis'
+    static_configs:
+      - targets:
+        # - 'redis-exporter:9121'  # Uncomment if using redis-exporter
+    scrape_interval: 30s
+    metrics_path: /metrics
+    
+  # ----------------------------------------------------------------------------
+  # Nginx Metrics (if nginx-prometheus-exporter is deployed)
+  # ----------------------------------------------------------------------------
+  - job_name: 'nginx'
+    static_configs:
+      - targets:
+        # - 'nginx-exporter:9113'  # Uncomment if using nginx-exporter
+    scrape_interval: 30s
+    metrics_path: /metrics
+    
+  # ----------------------------------------------------------------------------
+  # Docker Container Metrics (cAdvisor - if deployed)
+  # ----------------------------------------------------------------------------
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets:
+        # - 'cadvisor:8080'  # Uncomment if using cAdvisor
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+# ==============================================================================
+# Remote Storage Configuration (Optional)
+# ==============================================================================
+# remote_write:
+#   - url: "https://your-remote-storage-endpoint/api/v1/write"
+#     basic_auth:
+#       username: "your-username"
+#       password: "your-password"
+#     queue_config:
+#       max_samples_per_send: 1000
+#       max_shards: 200
+#       capacity: 2500
+
+# remote_read:
+#   - url: "https://your-remote-storage-endpoint/api/v1/read"
+#     basic_auth:
+#       username: "your-username"
+#       password: "your-password"
+
+# ==============================================================================
+# Configuration Notes
+# ==============================================================================
+
+# This Prometheus configuration monitors:
+#
+# 1. **Application Metrics**
+#    - HTTP request metrics (duration, status codes, etc.)
+#    - Make.com API call metrics (success/failure rates, latency)
+#    - Tool execution metrics (timing, error rates)
+#    - Authentication metrics (login attempts, token validations)
+#    - System resource usage (memory, CPU)
+#
+# 2. **Infrastructure Metrics**
+#    - Container metrics (CPU, memory, network, disk I/O)
+#    - Redis cache metrics (hit/miss ratios, memory usage)
+#    - Nginx proxy metrics (request rates, response times)
+#
+# 3. **Business Metrics**
+#    - User activity patterns
+#    - API usage statistics
+#    - Error rates and types
+#    - Performance degradation alerts
+#
+# Expected Metrics from Make.com FastMCP Server:
+#
+# - fastmcp_http_requests_total
+# - fastmcp_http_request_duration_seconds
+# - fastmcp_make_api_calls_total
+# - fastmcp_make_api_call_duration_seconds
+# - fastmcp_tool_executions_total
+# - fastmcp_tool_execution_duration_seconds
+# - fastmcp_auth_attempts_total
+# - fastmcp_active_connections
+# - fastmcp_memory_usage_bytes
+# - fastmcp_cpu_usage_percent
+#
+# To add alerting:
+# 1. Create rules/alerts.yml with alerting rules
+# 2. Configure Alertmanager for notifications
+# 3. Add webhook endpoints for integrations
+#
+# Grafana Integration:
+# - Use this Prometheus as a data source
+# - Import FastMCP dashboards
+# - Set up notification channels
+#
+# Performance Tuning:
+# - Adjust scrape_interval based on your needs
+# - Configure retention policies
+# - Set up remote storage for long-term retention

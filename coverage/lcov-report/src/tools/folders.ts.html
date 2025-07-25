@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/202</span>
+                <span class='fraction'>0/204</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/201</span>
+                <span class='fraction'>0/203</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/201</span>
+                <span class='fraction'>0/203</span>
             </div>
         
             
@@ -793,7 +793,9 @@
 <a name='L728'></a><a href='#L728'>728</a>
 <a name='L729'></a><a href='#L729'>729</a>
 <a name='L730'></a><a href='#L730'>730</a>
-<a name='L731'></a><a href='#L731'>731</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L731'></a><a href='#L731'>731</a>
+<a name='L732'></a><a href='#L732'>732</a>
+<a name='L733'></a><a href='#L733'>733</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1371,6 +1373,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2104,23 +2108,23 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 <span class="cstat-no" title="statement not covered" >            maxSize:<span class="fstat-no" title="function not covered" > `</span>${dataStore.settings.maxSize} MB`,</span>
             encryption: dat<span class="cstat-no" title="statement not covered" >aStore.settings.encryptio</span>n,
 <span class="cstat-no" title="statement not covered" >            compression: dataStore.settings.compression,</span>
-            fieldCount: dat<span class="cstat-no" title="statement not covered" >aStore.structure.fields?.length</span> || 0,
+<span class="cstat-no" title="statement not covered" >            fieldCou</span>nt: dataStore.structure.fields?.length || 0,
 <span class="cstat-no" title="statement not covered" >            indexCount: dataStore.structure.indexes?.length || 0,</span>
           },<span class="cstat-no" title="statement not covered" ></span>
-          permissions: {
-            readAccess: dataStore.permissions.read.length,
-            writ<span class="cstat-no" title="statement not covered" >eAccess: dataStore.permissions</span>.write.length,
+          pe<span class="cstat-no" title="statement not covered" >rmissions: {</span>
+            read<span class="cstat-no" title="statement not covered" >Access: dataStore.permissions.read</span>.length,
+            writeAccess: dataStore.permissions.write.length,
             adminAccess: dataStore.permissions.admin.length,
-          },
+          },<span class="cstat-no" title="statement not covered" ></span>
         }, null, 2);
-      } catc<span class="cstat-no" title="statement not covered" >h (error: unknown) {</span>
+      } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating data store', { name, error: errorMessage });
-<span class="cstat-no" title="statement not covered" >        if (error instan</span>ceof UserError) throw error;
+        log.<span class="cstat-no" title="statement not covered" >error('Error creating data sto</span>re', { name, error: errorMessage });
+        if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create data store: ${errorMessage}`);
 <span class="cstat-no" title="statement not covered" >      }</span>
     },
-  });
+<span class="cstat-no" title="statement not covered" >  });</span>
 &nbsp;
   // List data stores
   server.addTool({
@@ -2223,7 +2227,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 }
 &nbsp;
 // Helper function to build folder hierarchy
-function buildFolderHierarchy(folders: MakeFolder[]): Array&lt;MakeFolder &amp; { children: Array&lt;MakeFolder &amp; { children?: Array&lt;unknown&gt; }&gt; }&gt; {
+function buildFolderHierarchy(folders: MakeFolder[]): Array&lt;MakeFolder &amp; { children: Array&lt;unknown&gt; }&gt; {
   const folderMap = new Map&lt;number, MakeFolder &amp; { children: Array&lt;unknown&gt; }&gt;();
   const rootFolders: Array&lt;MakeFolder &amp; { children: Array&lt;unknown&gt; }&gt; = [];
 &nbsp;
@@ -2238,6 +2242,8 @@ function buildFolderHierarchy(folders: MakeFolder[]): Array&lt;MakeFolder &amp; 
   // Second pass: build hierarchy
   folders.forEach(folder =&gt; {
     const folderNode = folderMap.get(folder.id);
+    if (!folderNode) return;
+    
     if (folder.parentId) {
       const parent = folderMap.get(folder.parentId);
       if (parent) {
@@ -2260,7 +2266,7 @@ export default addFolderTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T04:35:02.914Z
+                at 2025-07-25T19:49:28.251Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

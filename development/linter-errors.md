@@ -1,15 +1,15 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T19:34:45.818Z
+**Generated:** 2025-07-25T19:38:24.124Z
 **Total Issues:** 1 (1 errors, 0 warnings)
 **Files:** 1
 
-## config-report.js (eslint)
+## health-check.ts (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/scripts/config-report.js`
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/lib/health-check.ts`
 **Issues:** 1
 
-❌ **Line 46:11** - 'configSourcePath' is assigned a value but never used. Allowed unused vars must match /^_/u. `[no-unused-vars]`
+❌ **Line 235:13** - 'stats' is assigned a value but never used. Allowed unused vars must match /^_/u. `[@typescript-eslint/no-unused-vars]`
 
 ---
 

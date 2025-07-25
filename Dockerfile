@@ -45,8 +45,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build TypeScript to JavaScript
-RUN npm run build
+# Build TypeScript to JavaScript (production optimized)
+RUN npm run build:prod
 
 # Remove development dependencies after build
 RUN npm prune --production
@@ -81,22 +81,32 @@ RUN mkdir -p /app/logs && chown -R fastmcp:nodejs /app/logs
 # Switch to non-root user for security
 USER fastmcp
 
-# Expose port (configurable via environment variable)
-EXPOSE 3000
+# Expose ports (configurable via environment variables)
+EXPOSE 3000 9090
 
 # Health check to ensure container is healthy
-# Checks both the application and Make.com API connectivity
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+# Uses production-ready health endpoints with comprehensive checks
+HEALTHCHECK --interval=15s --timeout=10s --start-period=60s --retries=5 \
     CMD node -e " \
         const http = require('http'); \
         const options = { \
             hostname: 'localhost', \
             port: process.env.PORT || 3000, \
-            path: '/health', \
-            timeout: 5000 \
+            path: process.env.READINESS_PATH || '/health/ready', \
+            timeout: 8000, \
+            headers: { 'User-Agent': 'DockerHealthCheck/1.0' } \
         }; \
         const req = http.request(options, (res) => { \
-            process.exit(res.statusCode === 200 ? 0 : 1); \
+            let data = ''; \
+            res.on('data', chunk => data += chunk); \
+            res.on('end', () => { \
+                if (res.statusCode === 200) { \
+                    try { \
+                        const health = JSON.parse(data); \
+                        process.exit(health.ready ? 0 : 1); \
+                    } catch { process.exit(1); } \
+                } else { process.exit(1); } \
+            }); \
         }); \
         req.on('error', () => process.exit(1)); \
         req.on('timeout', () => process.exit(1)); \
@@ -107,8 +117,18 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 ENV NODE_ENV=production \
     LOG_LEVEL=warn \
     PORT=3000 \
+    METRICS_PORT=9090 \
     MAKE_TIMEOUT=30000 \
-    MAKE_RETRIES=3
+    MAKE_RETRIES=3 \
+    REQUEST_TIMEOUT=30000 \
+    KEEP_ALIVE_TIMEOUT=5000 \
+    HEADERS_TIMEOUT=60000 \
+    MAX_CONCURRENT_CONNECTIONS=1000 \
+    MEMORY_LIMIT_MB=512 \
+    METRICS_ENABLED=true \
+    HEALTH_CHECK_PATH=/health \
+    LIVENESS_PATH=/health/live \
+    READINESS_PATH=/health/ready
 
 # Use dumb-init as PID 1 to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]

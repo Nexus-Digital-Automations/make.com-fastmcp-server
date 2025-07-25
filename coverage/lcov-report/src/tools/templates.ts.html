@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/212</span>
+                <span class='fraction'>0/215</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/191</span>
+                <span class='fraction'>0/187</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/209</span>
+                <span class='fraction'>0/212</span>
             </div>
         
             
@@ -726,7 +726,10 @@
 <a name='L661'></a><a href='#L661'>661</a>
 <a name='L662'></a><a href='#L662'>662</a>
 <a name='L663'></a><a href='#L663'>663</a>
-<a name='L664'></a><a href='#L664'>664</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L664'></a><a href='#L664'>664</a>
+<a name='L665'></a><a href='#L665'>665</a>
+<a name='L666'></a><a href='#L666'>666</a>
+<a name='L667'></a><a href='#L667'>667</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1273,6 +1276,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1282,6 +1287,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1931,33 +1937,33 @@ export function <span class="cstat-no" title="statement not covered" >addTemplat
 &nbsp;
       try {
         c<span class="fstat-no" title="function not covered" >onst useData = {</span>
-          scenarioName,<span class="cstat-no" title="statement not covered" ></span>
-          folderId,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-          customization<span class="cstat-no" title="statement not covered" >s,</span>
-<span class="cstat-no" title="statement not covered" >          connectionMappings,</span>
-<span class="cstat-no" title="statement not covered" >          variableOverrid</span>es,
-          schedulingOverride,
-        }<span class="cstat-no" title="statement not covered" >;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const response = await apiClient.post(`/templates/${templateId}/use`, useData);
+          scenarioNa<span class="cstat-no" title="statement not covered" >me,</span>
+          folderId,<span class="cstat-no" title="statement not covered" ></span>
+          customizations,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+          connectio<span class="cstat-no" title="statement not covered" >nMappings,</span>
+          variableOverr<span class="cstat-no" title="statement not covered" >ides,</span>
+<span class="cstat-no" title="statement not covered" >          schedulingOverride,</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        if (!response.succ</span>ess) {
+        c<span class="cstat-no" title="statement not covered" >onst response = await apiClient.post(`/templates/${templateId}/use`, useData);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!response.success) {
           throw new UserError(`Failed to use template: ${response.error?.message || 'Unknown error'}`);
-        }
+<span class="cstat-no" title="statement not covered" >        }</span>
+&nbsp;
+        const result = response.data as Record&lt;string, unknown&gt;;
 <span class="fstat-no" title="function not covered" ></span>
-        const result = r<span class="cstat-no" title="statement not covered" >esponse.data as Record&lt;string, u</span>nknown&gt;;
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        log.info('Successfully created scenario from template', {
-<span class="cstat-no" title="statement not covered" >          templateId,</span>
-          scenarioId: result?.scenarioId,
-<span class="fstat-no" title="function not covered" >          scenarioName,</span>
-        });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        return JSON.stringify({
-<span class="cstat-no" title="statement not covered" >          result,</span>
-          message: `Scenario "${scenarioName}" created successfully from template`,
+        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully created scenario from template', {</span>
+          templateId,<span class="cstat-no" title="statement not covered" ></span>
+          scenarioId: result<span class="cstat-no" title="statement not covered" >?.scenarioId as numb<span class="fstat-no" title="function not covered" >er</span>,<span class="cstat-no" title="statement not covered" ></span></span>
+          scenarioName,
+<span class="cstat-no" title="statement not covered" >        });</span>
+&nbsp;
+        r<span class="fstat-no" title="function not covered" >eturn JSON.stringify({</span>
+          result,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          message: `Scenario "${sce<span class="fstat-no" title="function not covered" >na</span>rioNa<span class="cstat-no" title="statement not covered" >me}" c</span>reated successfully </span>from template`,
           scenario: {
-            id: result?.scenarioId,
+<span class="cstat-no" title="statement not covered" >            id: result?.scenarioId,</span>
             name: scenarioName,
             templateId,
             templateName: result?.templateName,
@@ -2026,9 +2032,11 @@ export function <span class="cstat-no" title="statement not covered" >addTemplat
 &nbsp;
 // Helper functions
 function analyzeTemplateComplexity(blueprint: Record&lt;string, unknown&gt;): 'simple' | 'moderate' | 'complex' {
-  const moduleCount = blueprint?.modules?.length || 0;
-  const connectionCount = new Set(blueprint?.modules?.map((m: Record&lt;string, unknown&gt;) =&gt; m.app) || []).size;
-  const routeCount = blueprint?.routes?.length || 0;
+  const modules = Array.isArray(blueprint?.modules) ? blueprint.modules : [];
+  const moduleCount = modules.length;
+  const connectionCount = new Set(modules.map((m: Record&lt;string, unknown&gt;) =&gt; m.app).filter(Boolean)).size;
+  const routes = Array.isArray(blueprint?.routes) ? blueprint.routes : [];
+  const routeCount = routes.length;
 &nbsp;
   if (moduleCount &lt;= 5 &amp;&amp; connectionCount &lt;= 2 &amp;&amp; routeCount &lt;= 5) {
     return 'simple';
@@ -2040,16 +2048,17 @@ function analyzeTemplateComplexity(blueprint: Record&lt;string, unknown&gt;): 's
 }
 &nbsp;
 function estimateSetupTime(blueprint: Record&lt;string, unknown&gt;): number {
-  const moduleCount = blueprint?.modules?.length || 0;
-  const connectionCount = new Set(blueprint?.modules?.map((m: Record&lt;string, unknown&gt;) =&gt; m.app) || []).size;
+  const modules = Array.isArray(blueprint?.modules) ? blueprint.modules : [];
+  const moduleCount = modules.length;
+  const connectionCount = new Set(modules.map((m: Record&lt;string, unknown&gt;) =&gt; m.app).filter(Boolean)).size;
   
   // Base time + time per module + time per connection
   return Math.max(5, 10 + (moduleCount * 2) + (connectionCount * 5));
 }
 &nbsp;
 function extractRequiredConnections(blueprint: Record&lt;string, unknown&gt;): string[] {
-  const modules = blueprint?.modules || [];
-  return [...new Set(modules.map((m: Record&lt;string, unknown&gt;) =&gt; m.app).filter(Boolean))];
+  const modules = Array.isArray(blueprint?.modules) ? blueprint.modules : [];
+  return [...new Set(modules.map((m: Record&lt;string, unknown&gt;) =&gt; m.app).filter(Boolean))] as string[];
 }
 &nbsp;
 export default addTemplateTools;</pre></td></tr></table></pre>
@@ -2059,7 +2068,7 @@ export default addTemplateTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T04:35:02.914Z
+                at 2025-07-25T19:49:28.251Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
