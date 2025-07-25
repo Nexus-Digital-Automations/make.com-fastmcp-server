@@ -341,12 +341,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           throw new UserError(`Variable with ID ${variableId} not found`);
         }
 
-        let usage = null;
+        let usage: Record<string, unknown> | null = null;
         if (includeUsage) {
           try {
             const usageResponse = await apiClient.get(`/variables/${variableId}/usage`);
             if (usageResponse.success) {
-              usage = usageResponse.data;
+              usage = usageResponse.data as Record<string, unknown>;
             }
           } catch (error) {
             log.warn('Failed to retrieve variable usage statistics', { variableId });
@@ -368,9 +368,9 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           usage,
           metadata: {
             canEdit: true, // This would be determined by user permissions
-            canDelete: variable.scope !== 'organization', // Example business rule
+            canDelete: variable.scope !== 'global', // Example business rule - fixed comparison
             lastAccessed: usage?.lastAccessed,
-            accessCount: usage?.accessCount || 0,
+            accessCount: Number(usage?.accessCount || 0),
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -467,8 +467,8 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
         // Check if variable is in use (unless force delete)
         if (!force) {
           const usageResponse = await apiClient.get(`/variables/${variableId}/usage`);
-          if (usageResponse.success && usageResponse.data?.usageCount > 0) {
-            throw new UserError(`Variable is currently in use (${usageResponse.data.usageCount} references). Use force=true to delete anyway.`);
+          if (usageResponse.success && Number((usageResponse.data as Record<string, unknown>)?.usageCount) > 0) {
+            throw new UserError(`Variable is currently in use (${(usageResponse.data as Record<string, unknown>).usageCount} references). Use force=true to delete anyway.`);
           }
         }
 

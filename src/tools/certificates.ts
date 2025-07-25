@@ -581,9 +581,9 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully validated certificate', {
-          isValid: validationResult?.isValid,
-          errorCount: validationResult?.errors?.length || 0,
-          warningCount: validationResult?.warnings?.length || 0,
+          isValid: Boolean(validationResult?.isValid),
+          errorCount: (validationResult?.errors as unknown[])?.length || 0,
+          warningCount: (validationResult?.warnings as unknown[])?.length || 0,
         });
 
         return JSON.stringify({
@@ -594,12 +594,12 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
             errors: validationResult?.errors || [],
             warnings: validationResult?.warnings || [],
             checksSummary: {
-              syntaxValid: validationResult?.checks?.syntax || false,
-              keyPairMatch: validationResult?.checks?.keyPairMatch || false,
-              chainValid: validationResult?.checks?.chainValid || false,
-              revocationStatus: validationResult?.checks?.revocationStatus || 'not_checked',
-              hostnameMatch: validationResult?.checks?.hostnameMatch || false,
-              customValidationsPassed: validationResult?.checks?.customValidations || 0,
+              syntaxValid: Boolean((validationResult?.checks as Record<string, unknown>)?.syntax),
+              keyPairMatch: Boolean((validationResult?.checks as Record<string, unknown>)?.keyPairMatch),
+              chainValid: Boolean((validationResult?.checks as Record<string, unknown>)?.chainValid),
+              revocationStatus: String((validationResult?.checks as Record<string, unknown>)?.revocationStatus || 'not_checked'),
+              hostnameMatch: Boolean((validationResult?.checks as Record<string, unknown>)?.hostnameMatch),
+              customValidationsPassed: Number((validationResult?.checks as Record<string, unknown>)?.customValidations || 0),
             },
           },
         }, null, 2);
@@ -772,7 +772,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           throw new UserError(`Failed to rotate ${resourceType}: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const rotationResult = response.data;
+        const rotationResult = response.data as Record<string, unknown>;
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully rotated certificate/key', {

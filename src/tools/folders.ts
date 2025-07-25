@@ -391,31 +391,31 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           throw new UserError(`Failed to get folder contents: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const contents = response.data;
+        const contents = response.data as Record<string, unknown>;
         const metadata = response.metadata;
 
         log.info('Successfully retrieved folder contents', {
           folderId,
-          itemCount: contents?.items?.length || 0,
+          itemCount: (contents?.items as unknown[])?.length || 0,
         });
 
         return JSON.stringify({
           folder: contents?.folder,
-          contents: contents?.items || [],
+          contents: (contents?.items as unknown[]) || [],
           summary: {
             totalItems: metadata?.total || 0,
             itemBreakdown: contents?.breakdown || {},
             folderInfo: {
-              name: contents?.folder?.name,
-              path: contents?.folder?.path,
-              type: contents?.folder?.type,
+              name: (contents?.folder as Record<string, unknown>)?.name,
+              path: (contents?.folder as Record<string, unknown>)?.path,
+              type: (contents?.folder as Record<string, unknown>)?.type,
             },
           },
           pagination: {
             total: metadata?.total || 0,
             limit,
             offset,
-            hasMore: (metadata?.total || 0) > (offset + (contents?.items?.length || 0)),
+            hasMore: (metadata?.total || 0) > (offset + ((contents?.items as unknown[])?.length || 0)),
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -466,7 +466,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           throw new UserError(`Failed to ${copyInsteadOfMove ? 'copy' : 'move'} items: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const result = response.data;
+        const result = response.data as Record<string, unknown>;
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully moved/copied items', {
