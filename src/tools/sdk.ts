@@ -372,9 +372,9 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             throw new UserError(`Compatibility check failed: ${compatResponse.error?.message}`);
           }
 
-          const compatibility = compatResponse.data;
+          const compatibility = compatResponse.data as Record<string, unknown>;
           if (!compatibility.compatible) {
-            throw new UserError(`App is not compatible: ${compatibility.reasons.join(', ')}`);
+            throw new UserError(`App is not compatible: ${(compatibility.reasons as string[]).join(', ')}`);
           }
         }
 
@@ -414,7 +414,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
           throw new UserError(`Failed to install SDK app: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const installation = response.data;
+        const installation = response.data as Record<string, unknown>;
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully installed SDK app', {
@@ -432,13 +432,13 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             version: installation?.version,
             installedAt: installation?.installedAt,
             autoUpdate,
-            permissionsGranted: installation?.permissions?.granted?.length || 0,
+            permissionsGranted: ((installation?.permissions as Record<string, unknown>)?.granted as unknown[])?.length || 0,
             configurationApplied: Object.keys(configuration).length > 0,
           },
           postInstall: {
             configurationUrl: `/sdk-apps/${appId}/configure`,
-            documentationUrl: installation?.app?.metadata?.documentation,
-            supportUrl: installation?.app?.metadata?.support,
+            documentationUrl: ((installation?.app as Record<string, unknown>)?.metadata as Record<string, unknown>)?.documentation,
+            supportUrl: ((installation?.app as Record<string, unknown>)?.metadata as Record<string, unknown>)?.support,
           },
           nextSteps: [
             'Review and configure app settings',

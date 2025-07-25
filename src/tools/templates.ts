@@ -554,7 +554,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
           throw new UserError(`Failed to use template: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const result = response.data;
+        const result = response.data as Record<string, unknown>;
 
         log.info('Successfully created scenario from template', {
           templateId,
@@ -603,8 +603,8 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
         // Check if template is in use (unless force delete)
         if (!force) {
           const usageResponse = await apiClient.get(`/templates/${templateId}/usage`);
-          if (usageResponse.success && usageResponse.data?.activeScenarios > 0) {
-            throw new UserError(`Template is currently in use (${usageResponse.data.activeScenarios} active scenarios). Use force=true to delete anyway.`);
+          if (usageResponse.success && Number((usageResponse.data as Record<string, unknown>)?.activeScenarios) > 0) {
+            throw new UserError(`Template is currently in use (${(usageResponse.data as Record<string, unknown>).activeScenarios} active scenarios). Use force=true to delete anyway.`);
           }
         }
 

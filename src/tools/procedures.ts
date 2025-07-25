@@ -625,7 +625,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new UserError(`Failed to execute remote procedure: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const executionResult = response.data;
+        const executionResult = response.data as Record<string, unknown>;
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully executed remote procedure', {
