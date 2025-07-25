@@ -813,13 +813,21 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         const workflowTemplate = workflowResponse.data;
         reportProgress({ progress: 25, total: 100 });
 
+        // Type guard for workflow template object
+        const templateObj = workflowTemplate as {
+          defaultConfiguration?: unknown;
+          requirements?: { apps?: unknown[] };
+        } | null | undefined;
+
         const installData = {
           workflowId,
           name,
           teamId,
           folderId,
           configuration: {
-            ...workflowTemplate.defaultConfiguration,
+            ...(templateObj?.defaultConfiguration && typeof templateObj.defaultConfiguration === 'object' 
+              ? templateObj.defaultConfiguration as Record<string, unknown> 
+              : {}),
             ...configuration,
           },
           options: {
@@ -828,7 +836,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             validateTemplate: true,
             createBackup: true,
           },
-          dependencies: workflowTemplate.requirements?.apps || [],
+          dependencies: Array.isArray(templateObj?.requirements?.apps) ? templateObj.requirements.apps : [],
         };
 
         reportProgress({ progress: 50, total: 100 });
@@ -842,9 +850,26 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         const installation = response.data;
         reportProgress({ progress: 100, total: 100 });
 
+        // Type guard for installation object
+        const installationObj = installation as {
+          scenarioId?: unknown;
+          dependenciesInstalled?: unknown;
+          started?: unknown;
+          installedDependencies?: unknown[];
+          missingDependencies?: unknown[];
+        } | null | undefined;
+
+        // Type guard for template object with additional fields
+        const templateObjFull = workflowTemplate as {
+          name?: unknown;
+          category?: unknown;
+          difficulty?: unknown;
+          requirements?: { apps?: unknown[] };
+        } | null | undefined;
+
         log.info('Successfully installed workflow', {
           workflowId,
-          scenarioId: installation?.scenarioId,
+          scenarioId: String(installationObj?.scenarioId ?? 'unknown'),
           name,
           autoStart,
         });
@@ -854,23 +879,23 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
           message: `Workflow "${name}" installed successfully`,
           summary: {
             workflowId,
-            scenarioId: installation?.scenarioId,
+            scenarioId: installationObj?.scenarioId,
             name,
-            templateName: workflowTemplate.name,
-            category: workflowTemplate.category,
-            difficulty: workflowTemplate.difficulty,
-            dependenciesInstalled: installation?.dependenciesInstalled || 0,
-            autoStarted: autoStart && installation?.started,
+            templateName: templateObjFull?.name,
+            category: templateObjFull?.category,
+            difficulty: templateObjFull?.difficulty,
+            dependenciesInstalled: installationObj?.dependenciesInstalled || 0,
+            autoStarted: autoStart && installationObj?.started,
           },
           dependencies: {
-            required: workflowTemplate.requirements?.apps || [],
-            installed: installation?.installedDependencies || [],
-            missing: installation?.missingDependencies || [],
+            required: Array.isArray(templateObjFull?.requirements?.apps) ? templateObjFull.requirements.apps : [],
+            installed: Array.isArray(installationObj?.installedDependencies) ? installationObj.installedDependencies : [],
+            missing: Array.isArray(installationObj?.missingDependencies) ? installationObj.missingDependencies : [],
           },
           access: {
-            scenarioUrl: `/scenarios/${installation?.scenarioId}`,
-            editUrl: `/scenarios/${installation?.scenarioId}/edit`,
-            runUrl: `/scenarios/${installation?.scenarioId}/run`,
+            scenarioUrl: `/scenarios/${installationObj?.scenarioId}`,
+            editUrl: `/scenarios/${installationObj?.scenarioId}/edit`,
+            runUrl: `/scenarios/${installationObj?.scenarioId}/run`,
           },
           nextSteps: [
             'Review workflow configuration',

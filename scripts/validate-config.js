@@ -7,7 +7,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -126,7 +126,7 @@ function validateConfiguration() {
   
   const errors = [];
   const warnings = [];
-  const info = [];
+  const _info = [];
   
   // Check required variables
   console.log('📋 Required Configuration:');

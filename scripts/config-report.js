@@ -43,7 +43,7 @@ async function generateReport() {
   try {
     // Check if the compiled configuration exists
     const configPath = path.join(process.cwd(), 'dist', 'lib', 'config.js');
-    const configSourcePath = path.join(process.cwd(), 'src', 'lib', 'config.ts');
+    const _configSourcePath = path.join(process.cwd(), 'src', 'lib', 'config.ts');
     
     if (!fs.existsSync(configPath)) {
       console.error('❌ Configuration module not found. Please build the project first:');

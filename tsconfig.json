@@ -22,9 +22,12 @@
     "resolveJsonModule": true,
     "allowImportingTsExtensions": false,
     "noEmit": false,
-    "isolatedModules": true,
+    "isolatedModules": true, 
     "verbatimModuleSyntax": false,
     "downlevelIteration": true,
+    "removeComments": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "lib": ["ES2022", "DOM"],
     "types": ["node", "jest"]
   },

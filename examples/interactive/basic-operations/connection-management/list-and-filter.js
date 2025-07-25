@@ -18,7 +18,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { Logger, MCPExecutor, OutputFormatter, TestDataManager, PerformanceMonitor } = require('../../shared/utils.js');
+const { Logger, MCPExecutor, OutputFormatter, TestDataManager: _TestDataManager, PerformanceMonitor } = require('../../shared/utils.js');
 
 // Configuration
 const CONFIG = {
@@ -503,7 +503,7 @@ async function main() {
     // Parse command line arguments
     const args = process.argv.slice(2);
     let operation = 'all';
-    let options = {
+    const options = {
         service: null,
         status: 'all',
         search: null,
@@ -604,7 +604,7 @@ Examples:
             case 'advanced':
                 result = await demo.demonstrateAdvancedFiltering();
                 break;
-            case 'custom':
+            case 'custom': {
                 // Run custom filter with provided options
                 const filters = {};
                 if (options.service) filters.service = options.service;
@@ -626,6 +626,7 @@ Examples:
                 }
                 result = customResult;
                 break;
+            }
             case 'all':
             default:
                 result = await demo.runAllDemonstrations();
@@ -645,7 +646,7 @@ Examples:
 }
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason, _promise) => {
     logger.error(`Unhandled Rejection: ${reason}`);
     process.exit(1);
 });

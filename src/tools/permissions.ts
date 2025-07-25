@@ -150,14 +150,17 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }
 
         const user = response.data;
-        if (!user) {
+        if (!user || typeof user !== 'object') {
           throw new UserError('Current user information not available');
         }
 
+        // Type guard for user object
+        const userObj = user as { id?: unknown; email?: unknown; role?: unknown };
+
         log.info('Successfully retrieved current user', {
-          userId: user.id,
-          email: user.email,
-          role: user.role,
+          userId: String(userObj.id ?? 'unknown'),
+          email: String(userObj.email ?? 'unknown'),
+          role: String(userObj.role ?? 'unknown'),
         });
 
         return JSON.stringify({ user }, null, 2);
@@ -217,18 +220,21 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         const users = response.data || [];
         const metadata = response.metadata;
 
+        // Type guard for users array
+        const usersArray = Array.isArray(users) ? users : [];
+
         log.info('Successfully retrieved users', {
-          count: users.length,
+          count: usersArray.length,
           total: metadata?.total,
         });
 
         return JSON.stringify({
-          users,
+          users: usersArray,
           pagination: {
-            total: metadata?.total || users.length,
+            total: metadata?.total || usersArray.length,
             limit,
             offset,
-            hasMore: (metadata?.total || 0) > (offset + users.length),
+            hasMore: (metadata?.total || 0) > (offset + usersArray.length),
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -260,14 +266,17 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }
 
         const user = response.data;
-        if (!user) {
+        if (!user || typeof user !== 'object') {
           throw new UserError(`User with ID ${userId} not found`);
         }
 
+        // Type guard for user object
+        const userObj = user as { email?: unknown; role?: unknown };
+
         log.info('Successfully retrieved user', {
           userId,
-          email: user.email,
-          role: user.role,
+          email: String(userObj.email ?? 'unknown'),
+          role: String(userObj.role ?? 'unknown'),
         });
 
         return JSON.stringify({ user }, null, 2);
@@ -369,18 +378,21 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         const teams = response.data || [];
         const metadata = response.metadata;
 
+        // Type guard for teams array
+        const teamsArray = Array.isArray(teams) ? teams : [];
+
         log.info('Successfully retrieved teams', {
-          count: teams.length,
+          count: teamsArray.length,
           total: metadata?.total,
         });
 
         return JSON.stringify({
-          teams,
+          teams: teamsArray,
           pagination: {
-            total: metadata?.total || teams.length,
+            total: metadata?.total || teamsArray.length,
             limit,
             offset,
-            hasMore: (metadata?.total || 0) > (offset + teams.length),
+            hasMore: (metadata?.total || 0) > (offset + teamsArray.length),
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -412,13 +424,16 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }
 
         const team = response.data;
-        if (!team) {
+        if (!team || typeof team !== 'object') {
           throw new UserError(`Team with ID ${teamId} not found`);
         }
 
+        // Type guard for team object
+        const teamObj = team as { name?: unknown };
+
         log.info('Successfully retrieved team', {
           teamId,
-          name: team.name,
+          name: String(teamObj.name ?? 'unknown'),
         });
 
         return JSON.stringify({ team }, null, 2);
@@ -455,13 +470,16 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }
 
         const team = response.data;
-        if (!team) {
+        if (!team || typeof team !== 'object') {
           throw new UserError('Team creation failed - no data returned');
         }
 
+        // Type guard for team object
+        const teamObj = team as { id?: unknown; name?: unknown };
+
         log.info('Successfully created team', {
-          teamId: team.id,
-          name: team.name,
+          teamId: String(teamObj.id ?? 'unknown'),
+          name: String(teamObj.name ?? 'unknown'),
         });
 
         return JSON.stringify({
@@ -503,13 +521,16 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }
 
         const team = response.data;
-        if (!team) {
+        if (!team || typeof team !== 'object') {
           throw new UserError('Team update failed - no data returned');
         }
 
+        // Type guard for team object
+        const teamObj = team as { name?: unknown };
+
         log.info('Successfully updated team', {
           teamId,
-          name: team.name,
+          name: String(teamObj.name ?? 'unknown'),
           updatedFields: Object.keys(updateData),
         });
 
@@ -590,18 +611,21 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         const organizations = response.data || [];
         const metadata = response.metadata;
 
+        // Type guard for organizations array
+        const organizationsArray = Array.isArray(organizations) ? organizations : [];
+
         log.info('Successfully retrieved organizations', {
-          count: organizations.length,
+          count: organizationsArray.length,
           total: metadata?.total,
         });
 
         return JSON.stringify({
-          organizations,
+          organizations: organizationsArray,
           pagination: {
-            total: metadata?.total || organizations.length,
+            total: metadata?.total || organizationsArray.length,
             limit,
             offset,
-            hasMore: (metadata?.total || 0) > (offset + organizations.length),
+            hasMore: (metadata?.total || 0) > (offset + organizationsArray.length),
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -633,13 +657,16 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }
 
         const organization = response.data;
-        if (!organization) {
+        if (!organization || typeof organization !== 'object') {
           throw new UserError(`Organization with ID ${organizationId} not found`);
         }
 
+        // Type guard for organization object
+        const orgObj = organization as { name?: unknown };
+
         log.info('Successfully retrieved organization', {
           organizationId,
-          name: organization.name,
+          name: String(orgObj.name ?? 'unknown'),
         });
 
         return JSON.stringify({ organization }, null, 2);
@@ -675,13 +702,16 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }
 
         const organization = response.data;
-        if (!organization) {
+        if (!organization || typeof organization !== 'object') {
           throw new UserError('Organization creation failed - no data returned');
         }
 
+        // Type guard for organization object
+        const orgObj = organization as { id?: unknown; name?: unknown };
+
         log.info('Successfully created organization', {
-          organizationId: organization.id,
-          name: organization.name,
+          organizationId: String(orgObj.id ?? 'unknown'),
+          name: String(orgObj.name ?? 'unknown'),
         });
 
         return JSON.stringify({
@@ -723,13 +753,16 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }
 
         const organization = response.data;
-        if (!organization) {
+        if (!organization || typeof organization !== 'object') {
           throw new UserError('Organization update failed - no data returned');
         }
 
+        // Type guard for organization object
+        const orgObj = organization as { name?: unknown };
+
         log.info('Successfully updated organization', {
           organizationId,
-          name: organization.name,
+          name: String(orgObj.name ?? 'unknown'),
           updatedFields: Object.keys(updateData),
         });
 

@@ -7,7 +7,7 @@
 
 import { spawn } from 'child_process';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { join as _join } from 'path';
 
 const testTypes = {
   unit: 'tests/unit',

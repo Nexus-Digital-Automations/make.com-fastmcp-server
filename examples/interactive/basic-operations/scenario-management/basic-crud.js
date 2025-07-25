@@ -458,7 +458,7 @@ async function main() {
     // Parse command line arguments
     const args = process.argv.slice(2);
     let operation = 'all';
-    let options = {};
+    const options = {};
     
     for (let i = 0; i < args.length; i++) {
         switch (args[i]) {

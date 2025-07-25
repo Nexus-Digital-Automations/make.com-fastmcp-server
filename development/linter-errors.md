@@ -1,17 +1,15 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T18:50:17.102Z
-**Total Issues:** 2 (0 errors, 2 warnings)
+**Generated:** 2025-07-25T19:34:45.818Z
+**Total Issues:** 1 (1 errors, 0 warnings)
 **Files:** 1
 
-## credential-management.ts (eslint)
+## config-report.js (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/credential-management.ts`
-**Issues:** 2
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/scripts/config-report.js`
+**Issues:** 1
 
-⚠️ **Line 456:54** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 456:70** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+❌ **Line 46:11** - 'configSourcePath' is assigned a value but never used. Allowed unused vars must match /^_/u. `[no-unused-vars]`
 
 ---
 

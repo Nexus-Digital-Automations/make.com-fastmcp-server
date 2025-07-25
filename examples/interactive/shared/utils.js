@@ -10,7 +10,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const { spawn } = require('child_process');
 
 // Configuration constants
@@ -160,7 +160,7 @@ class MCPExecutor {
         throw lastError;
     }
 
-    async _executeSingle(toolName, params, description) {
+    async _executeSingle(toolName, params, _description) {
         return new Promise((resolve, reject) => {
             const request = {
                 method: 'tools/call',

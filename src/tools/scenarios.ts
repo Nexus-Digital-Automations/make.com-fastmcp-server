@@ -172,10 +172,13 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         reportProgress({ progress: 100, total: 100 });
 
+        // Type guard for scenarios array
+        const scenariosArray = Array.isArray(scenarios) ? scenarios : [];
+
         const result = {
-          scenarios: scenarios || [],
+          scenarios: scenariosArray,
           pagination: {
-            total: metadata?.total || scenarios?.length || 0,
+            total: metadata?.total || scenariosArray.length,
             limit: args.limit,
             offset: args.offset,
             hasMore: (metadata?.total || 0) > (args.offset + args.limit),
@@ -377,8 +380,11 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
           timestamp: new Date().toISOString(),
         };
 
+        // Type guard for created scenario
+        const scenarioObj = createdScenario as { id?: unknown } | null | undefined;
+        
         log.info('Scenario created successfully', { 
-          scenarioId: createdScenario?.id,
+          scenarioId: String(scenarioObj?.id ?? 'unknown'),
           name: args.name 
         });
 
@@ -544,7 +550,11 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
           }
 
           const scenario = scenarioResponse.data;
-          if (scenario.active) {
+          
+          // Type guard for scenario object
+          const scenarioObj = scenario as { active?: unknown } | null | undefined;
+          
+          if (scenarioObj?.active) {
             throw new UserError(
               `Cannot delete active scenario. Set active=false first or use force=true.`
             );
@@ -677,9 +687,12 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
           timestamp: new Date().toISOString(),
         };
 
+        // Type guard for cloned scenario
+        const clonedScenarioObj = clonedScenario as { id?: unknown } | null | undefined;
+        
         log.info('Scenario cloned successfully', { 
           sourceId: args.scenarioId,
-          cloneId: clonedScenario?.id,
+          cloneId: String(clonedScenarioObj?.id ?? 'unknown'),
           name: args.name 
         });
 
@@ -761,10 +774,14 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         }
 
         const execution = response.data;
+        
+        // Type guard for execution object
+        const executionObj = execution as { id?: unknown; status?: unknown } | null | undefined;
+        
         let result: Record<string, unknown> = {
           scenarioId: args.scenarioId,
-          executionId: execution.id,
-          status: execution.status || 'started',
+          executionId: executionObj?.id,
+          status: executionObj?.status || 'started',
           message: 'Scenario execution started',
           timestamp: new Date().toISOString(),
         };
@@ -774,7 +791,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
           reportProgress({ progress: 100, total: 100 });
           log.info('Scenario execution started (not waiting)', { 
             scenarioId: args.scenarioId,
-            executionId: execution.id 
+            executionId: String(executionObj?.id ?? 'unknown')
           });
           return JSON.stringify(result, null, 2);
         }
@@ -786,19 +803,23 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         while (Date.now() - startTime < timeoutMs) {
           await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
           
-          const statusResponse = await apiClient.get(`/scenarios/${args.scenarioId}/executions/${execution.id}`);
+          const statusResponse = await apiClient.get(`/scenarios/${args.scenarioId}/executions/${executionObj?.id}`);
           if (statusResponse.success) {
             const currentExecution = statusResponse.data;
+            
+            // Type guard for current execution object
+            const currentExecutionObj = currentExecution as { status?: unknown } | null | undefined;
+            
             const progress = Math.min(25 + ((Date.now() - startTime) / timeoutMs) * 75, 99);
             reportProgress({ progress, total: 100 });
 
-            if (currentExecution.status === 'success' || currentExecution.status === 'error') {
+            if (currentExecutionObj?.status === 'success' || currentExecutionObj?.status === 'error') {
               result = {
                 ...result,
-                status: currentExecution.status,
+                status: currentExecutionObj.status,
                 execution: currentExecution,
                 duration: Date.now() - startTime,
-                message: `Scenario execution ${currentExecution.status}`,
+                message: `Scenario execution ${String(currentExecutionObj.status)}`,
               };
               break;
             }
@@ -814,9 +835,9 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         log.info('Scenario execution completed', { 
           scenarioId: args.scenarioId,
-          executionId: execution.id,
-          status: result.status,
-          duration: result.duration 
+          executionId: String(executionObj?.id ?? 'unknown'),
+          status: String(result.status ?? 'unknown'),
+          duration: Number(result.duration ?? 0)
         });
 
         return JSON.stringify(result, null, 2);

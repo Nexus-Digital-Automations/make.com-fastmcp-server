@@ -103,7 +103,8 @@ class EnvironmentParser {
 
 // Configuration error classes
 export class ConfigurationError extends Error {
-  constructor(message: string, public readonly key?: string, public readonly value?: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(message: string, public readonly _key?: string, public readonly _value?: string) {
     super(message);
     this.name = 'ConfigurationError';
   }
@@ -366,10 +367,10 @@ class ConfigManager {
 
 // Configuration validation utility functions
 export function createConfigurationValidator(): {
-  validateMakeApiKey: (key: string) => boolean;
-  validatePort: (port: number) => boolean;
-  validateTimeout: (timeout: number) => boolean;
-  validateLogLevel: (level: string) => boolean;
+  validateMakeApiKey: (_key: string) => boolean;
+  validatePort: (_port: number) => boolean;
+  validateTimeout: (_timeout: number) => boolean;
+  validateLogLevel: (_level: string) => boolean;
   generateSecureSecret: () => string;
 } {
   return {
