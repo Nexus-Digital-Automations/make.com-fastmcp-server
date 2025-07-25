@@ -1,0 +1,291 @@
+# ==============================================================================
+# Docker Compose Override Configuration
+# Custom overrides for specific deployment environments
+# ==============================================================================
+
+# This file provides template overrides for different deployment scenarios.
+# Copy and modify as needed for your specific environment.
+
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # Application Service Overrides
+  # ----------------------------------------------------------------------------
+  make-fastmcp-server:
+    # Custom image override (for production registries)
+    # image: your-registry.com/make-fastmcp-server:v1.0.0
+    
+    # Custom build configuration
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   target: runtime
+    #   args:
+    #     - NODE_ENV=production
+    #     - BUILD_VERSION=1.0.0
+    
+    # Environment overrides
+    environment:
+      # Override any environment variables here
+      - NODE_ENV=${NODE_ENV:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-warn}
+      
+      # Custom configuration
+      # - CUSTOM_FEATURE_FLAG=${CUSTOM_FEATURE_FLAG:-false}
+      # - EXTERNAL_SERVICE_URL=${EXTERNAL_SERVICE_URL:-}
+    
+    # Resource limits override
+    deploy:
+      resources:
+        limits:
+          # Adjust based on your server capacity
+          cpus: '${CPU_LIMIT:-1.0}'
+          memory: ${MEMORY_LIMIT:-512M}
+        reservations:
+          cpus: '${CPU_RESERVATION:-0.5}'
+          memory: ${MEMORY_RESERVATION:-256M}
+    
+    # Custom volume mounts
+    volumes:
+      # Custom log directory
+      - ${LOG_DIR:-./logs}:/app/logs:rw
+      
+      # Custom configuration files
+      # - ./config/custom.json:/app/config/custom.json:ro
+      # - ./certs:/app/certs:ro
+    
+    # Custom port mapping
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+      # - "${METRICS_PORT:-9090}:9090"  # Metrics endpoint
+    
+    # Custom networks
+    networks:
+      - make-fastmcp-network
+      # - external_network  # Connect to external services
+    
+    # Custom labels for monitoring/management
+    labels:
+      - "app.name=make-fastmcp-server"
+      - "app.version=${APP_VERSION:-1.0.0}"
+      - "app.environment=${NODE_ENV:-production}"
+      - "traefik.enable=true"  # Enable Traefik if using
+      - "traefik.http.routers.fastmcp.rule=Host(`${DOMAIN:-localhost}`)"
+
+  # ----------------------------------------------------------------------------
+  # Redis Service Overrides
+  # ----------------------------------------------------------------------------
+  redis:
+    # Custom Redis image
+    # image: redis:7-alpine
+    
+    # Custom Redis configuration
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-fastmcp-redis-password}
+      --maxmemory ${REDIS_MAX_MEMORY:-128mb}
+      --maxmemory-policy ${REDIS_EVICTION_POLICY:-allkeys-lru}
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    
+    # Custom volume for Redis data
+    volumes:
+      - ${REDIS_DATA_DIR:-./data/redis}:/data
+      # - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    
+    # Resource overrides
+    deploy:
+      resources:
+        limits:
+          cpus: '${REDIS_CPU_LIMIT:-0.5}'
+          memory: ${REDIS_MEMORY_LIMIT:-256M}
+
+  # ----------------------------------------------------------------------------
+  # Nginx Service Overrides
+  # ----------------------------------------------------------------------------
+  nginx:
+    # Custom nginx image
+    # image: nginx:alpine
+    
+    # Custom configuration and SSL certificates
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${SSL_CERT_DIR:-./nginx/ssl}:/etc/nginx/ssl:ro
+      - ${NGINX_LOGS_DIR:-./logs/nginx}:/var/log/nginx:rw
+      
+      # Custom nginx configurations
+      # - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      # - ./nginx/snippets:/etc/nginx/snippets:ro
+    
+    # Custom ports
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    
+    # Dependencies override
+    depends_on:
+      make-fastmcp-server:
+        condition: service_healthy
+      # redis:
+      #   condition: service_healthy
+
+# ==============================================================================
+# Custom Networks
+# ==============================================================================
+networks:
+  # External network for connecting to other services
+  # external_network:
+  #   external: true
+  #   name: shared_network
+  
+  # Custom network configuration
+  make-fastmcp-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${NETWORK_SUBNET:-172.20.0.0/16}
+    driver_opts:
+      com.docker.network.bridge.name: ${BRIDGE_NAME:-fastmcp-br0}
+
+# ==============================================================================
+# Custom Volumes
+# ==============================================================================
+volumes:
+  # External volume for persistent data
+  # redis-data:
+  #   external: true
+  #   name: redis_data_volume
+  
+  # Custom backup volume
+  # backup-data:
+  #   driver: local
+  #   driver_opts:
+  #     type: nfs
+  #     o: addr=${NFS_SERVER},rw
+  #     device: ":${NFS_PATH}/backups"
+
+# ==============================================================================
+# Additional Services (Optional)
+# ==============================================================================
+
+  # ----------------------------------------------------------------------------
+  # Monitoring Services
+  # ----------------------------------------------------------------------------
+  
+  # Prometheus (uncomment to enable)
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: fastmcp-prometheus
+  #   profiles:
+  #     - monitoring
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #     - prometheus-data:/prometheus
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #     - '--storage.tsdb.path=/prometheus'
+  #     - '--web.console.libraries=/etc/prometheus/console_libraries'
+  #     - '--web.console.templates=/etc/prometheus/consoles'
+  #   networks:
+  #     - make-fastmcp-network
+
+  # Grafana (uncomment to enable)
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: fastmcp-grafana
+  #   profiles:
+  #     - monitoring
+  #   ports:
+  #     - "3001:3000"
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #     - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+  #     - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+  #   networks:
+  #     - make-fastmcp-network
+
+  # ----------------------------------------------------------------------------
+  # Backup Service
+  # ----------------------------------------------------------------------------
+  
+  # Automated backup service (uncomment to enable)
+  # backup:
+  #   image: alpine:latest
+  #   container_name: fastmcp-backup
+  #   profiles:
+  #     - backup
+  #   volumes:
+  #     - redis-data:/source/redis:ro
+  #     - fastmcp-logs:/source/logs:ro
+  #     - ${BACKUP_DIR:-./backups}:/backup:rw
+  #     - ./scripts/backup.sh:/backup.sh:ro
+  #   environment:
+  #     - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION:-7}
+  #     - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-0 2 * * *}
+  #   command: |
+  #     sh -c "
+  #       apk add --no-cache dcron
+  #       echo '${BACKUP_SCHEDULE:-0 2 * * *} /backup.sh' > /etc/crontabs/root
+  #       crond -f
+  #     "
+  #   networks:
+  #     - make-fastmcp-network
+
+# ==============================================================================
+# Environment-Specific Overrides
+# ==============================================================================
+
+# Usage Examples:
+#
+# 1. Production with custom registry:
+#    export IMAGE_REGISTRY=your-registry.com
+#    docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+#
+# 2. Development with monitoring:
+#    docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.override.yml --profile monitoring up -d
+#
+# 3. Backup enabled:
+#    docker-compose --profile backup up -d
+#
+# 4. Custom environment variables:
+#    export NODE_ENV=staging
+#    export DOMAIN=staging.example.com
+#    export CPU_LIMIT=2.0
+#    export MEMORY_LIMIT=1G
+#    docker-compose up -d
+
+# ==============================================================================
+# Security Considerations
+# ==============================================================================
+
+# 1. Environment Variables:
+#    - Store sensitive values in .env files
+#    - Use Docker secrets for production
+#    - Never commit secrets to version control
+#
+# 2. Network Security:
+#    - Use custom networks to isolate services
+#    - Expose only necessary ports
+#    - Consider using Traefik or similar proxy for SSL termination
+#
+# 3. Resource Limits:
+#    - Always set appropriate CPU and memory limits
+#    - Monitor resource usage and adjust as needed
+#    - Use health checks for automatic recovery
+#
+# 4. Volume Security:
+#    - Mount volumes read-only when possible
+#    - Use named volumes for persistent data
+#    - Regular backup of important volumes
+#
+# 5. Image Security:
+#    - Use specific image tags, not 'latest'
+#    - Regularly update base images
+#    - Scan images for vulnerabilities

@@ -341,93 +341,339 @@ server {
 
 #### Option 2: Docker Deployment
 
-**1. Create Dockerfile** (create this file in your project root)
-```dockerfile
-# Dockerfile
-FROM node:18-alpine AS builder
+The project includes a comprehensive Docker setup with multi-stage builds, production optimization, and container orchestration support.
 
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
+**Prerequisites**
+- Docker Engine 20.10+ and Docker Compose 2.0+
+- At least 1GB free disk space for image builds
+- 512MB RAM for production container
 
-FROM node:18-alpine AS runtime
+**🐳 Quick Start with Docker**
 
-WORKDIR /app
+```bash
+# 1. Clone and prepare the project
+git clone <repository-url>
+cd make.com-fastmcp-server
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# 2. Set up environment variables
+cp .env.example .env
+# Edit .env with your Make.com API credentials
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S make-fastmcp -u 1001
+# 3. Build and start production containers
+docker-compose up -d
 
-# Copy built application
-COPY --from=builder --chown=make-fastmcp:nodejs /app/node_modules ./node_modules
-COPY --chown=make-fastmcp:nodejs package*.json ./
-COPY --chown=make-fastmcp:nodejs dist ./dist
-
-# Switch to non-root user
-USER make-fastmcp
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:'+process.env.PORT+'/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"
-
-EXPOSE 3000
-
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "dist/index.js"]
+# 4. Verify deployment
+docker-compose logs -f make-fastmcp-server
+curl -H "Content-Type: application/json" \
+     -d '{"method": "tools/call", "params": {"name": "health-check"}}' \
+     http://localhost:3000
 ```
 
-**2. Create Docker Compose Configuration**
+**📁 Docker Configuration Files**
+
+The project includes optimized Docker configuration:
+
+- **`Dockerfile`**: Multi-stage build with 4 stages (dependencies, builder, runtime, development)
+- **`docker-compose.yml`**: Production-optimized orchestration with Redis, Nginx proxy
+- **`docker-compose.dev.yml`**: Development override with hot reloading and debugging tools
+- **`.dockerignore`**: Optimized build context for faster builds
+
+**🚀 Production Deployment**
+
+**1. Production Configuration**
+```bash
+# Create production environment file
+cat > .env.production << EOF
+# Make.com API Configuration
+MAKE_API_KEY=your_production_api_key_here
+MAKE_BASE_URL=https://eu1.make.com/api/v2
+MAKE_TEAM_ID=your_team_id
+MAKE_ORGANIZATION_ID=your_organization_id
+
+# Production Server Settings
+NODE_ENV=production
+LOG_LEVEL=warn
+PORT=3000
+
+# Security Configuration
+AUTH_ENABLED=true
+AUTH_SECRET=$(openssl rand -base64 32)
+
+# Conservative Rate Limiting
+RATE_LIMIT_MAX_REQUESTS=50
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_SKIP_SUCCESS=true
+
+# Redis Configuration
+REDIS_PASSWORD=$(openssl rand -base64 16)
+EOF
+```
+
+**2. Full Production Stack**
+```bash
+# Start complete production stack with caching and proxy
+docker-compose --env-file .env.production up -d
+
+# Scale application instances for high availability
+docker-compose --env-file .env.production up -d --scale make-fastmcp-server=3
+
+# Monitor deployment health
+docker-compose ps
+docker-compose logs --tail=50 -f
+```
+
+**3. Production Stack Components**
+
+The full production stack includes:
+
+- **FastMCP Server** (Node.js 18 Alpine, multi-stage build)
+- **Redis Cache** (7-alpine, password-protected, persistent storage)
+- **Nginx Proxy** (Alpine, SSL-ready, load balancing)
+- **Health Monitoring** (Built-in health checks for all services)
+- **Security Hardening** (Non-root users, minimal attack surface)
+
+**🔧 Development Environment**
+
+**1. Development Setup**
+```bash
+# Start development environment with hot reloading
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# Start with development tools (Redis Commander, pgAdmin, MailHog)
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml --profile tools up -d
+
+# Full development stack with database
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml --profile development up -d
+```
+
+**2. Development Features**
+- **Hot Reloading**: Source code changes trigger automatic restarts
+- **Debug Port**: Node.js inspector on port 9229 for IDE debugging
+- **Development Tools**:
+  - Redis Commander (http://localhost:8081) - Redis database management
+  - pgAdmin (http://localhost:8080) - PostgreSQL administration (future feature)
+  - MailHog (http://localhost:8025) - Email testing and debugging
+- **Relaxed Security**: Authentication disabled, higher rate limits
+- **Enhanced Logging**: Debug-level logging with detailed traces
+
+**3. Development Workflow**
+```bash
+# Live development with mounted volumes
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# View application logs
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml logs -f make-fastmcp-server
+
+# Execute commands in development container
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec make-fastmcp-server npm test
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec make-fastmcp-server npm run lint
+
+# Interactive shell access
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec make-fastmcp-server sh
+
+# Debug with Node.js inspector
+# 1. Container exposes debug port 9229
+# 2. Connect your IDE to localhost:9229
+# 3. Set breakpoints in TypeScript source files
+```
+
+**📦 Container Images and Build Optimization**
+
+**Multi-Stage Build Architecture**
+
+```dockerfile
+# Stage 1: Dependencies (production-only for runtime)
+FROM node:18-alpine AS dependencies
+# Installs production dependencies with npm ci
+
+# Stage 2: Builder (includes dev dependencies for TypeScript compilation)
+FROM node:18-alpine AS builder  
+# Compiles TypeScript, then removes dev dependencies
+
+# Stage 3: Runtime (minimal production image)
+FROM node:18-alpine AS runtime
+# Final 180MB production image with non-root user
+
+# Stage 4: Development (includes dev tools and hot reloading)
+FROM node:18-alpine AS development
+# Full development environment with debugging capabilities
+```
+
+**Build Commands**
+```bash
+# Build production image (runtime stage)
+docker build --target runtime -t make-fastmcp-server:latest .
+
+# Build development image
+docker build --target development -t make-fastmcp-server:dev .
+
+# Build with build arguments
+docker build --target runtime \
+  --build-arg NODE_ENV=production \
+  -t make-fastmcp-server:v1.0.0 .
+
+# View image details and size
+docker images | grep make-fastmcp-server
+docker inspect make-fastmcp-server:latest
+```
+
+**🔐 Container Security Features**
+
+**Security Hardening**
+- **Non-root User**: Containers run as `fastmcp:nodejs` (UID 1001)
+- **Minimal Attack Surface**: Alpine Linux base (5MB) with essential packages only
+- **Read-only Filesystem**: Application files mounted read-only where possible
+- **Security Options**: `no-new-privileges` flag prevents privilege escalation
+- **Resource Limits**: Memory and CPU limits prevent resource exhaustion
+- **Health Checks**: Comprehensive health monitoring for early failure detection
+
+**Network Security**
 ```yaml
-# docker-compose.yml
-version: '3.8'
-
-services:
-  make-fastmcp:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - MAKE_API_KEY=${MAKE_API_KEY}
-      - MAKE_BASE_URL=${MAKE_BASE_URL:-https://eu1.make.com/api/v2}
-      - MAKE_TEAM_ID=${MAKE_TEAM_ID}
-      - MAKE_ORGANIZATION_ID=${MAKE_ORGANIZATION_ID}
-      - NODE_ENV=production
-      - LOG_LEVEL=warn
-      - AUTH_ENABLED=true
-      - AUTH_SECRET=${AUTH_SECRET}
-      - RATE_LIMIT_MAX_REQUESTS=50
-      - RATE_LIMIT_WINDOW_MS=60000
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - ./logs:/app/logs:rw
-    networks:
-      - make-fastmcp-network
-
+# Isolated network with custom subnet
 networks:
   make-fastmcp-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Service communication over private network
+# External access only through defined ports
 ```
 
-**3. Deploy with Docker**
+**📊 Monitoring and Health Checks**
+
+**Application Health Check**
 ```bash
-# Build and start
-docker-compose up -d
+# Comprehensive health check tests:
+# 1. HTTP server responsiveness
+# 2. Make.com API connectivity  
+# 3. Authentication system status
+# 4. Rate limiter health
+# 5. Memory and resource usage
 
-# View logs
-docker-compose logs -f make-fastmcp
+# Manual health check
+curl http://localhost:3000/health
 
-# Update deployment
-docker-compose pull
-docker-compose up -d --no-deps make-fastmcp
+# Container health status
+docker-compose ps
+docker inspect --format='{{.State.Health.Status}}' make-fastmcp-server
 ```
+
+**Log Management**
+```bash
+# View logs with timestamps
+docker-compose logs -t make-fastmcp-server
+
+# Follow logs in real-time
+docker-compose logs -f --tail=100 make-fastmcp-server
+
+# Export logs for analysis
+docker-compose logs --no-color make-fastmcp-server > fastmcp-logs.txt
+
+# Log rotation configuration in docker-compose.yml
+logging:
+  driver: "json-file"
+  options:
+    max-size: "10m"    # Maximum log file size
+    max-file: "3"      # Number of log files to retain
+```
+
+**🔄 Container Management Operations**
+
+**Deployment Operations**
+```bash
+# Rolling update with zero downtime
+docker-compose pull make-fastmcp-server
+docker-compose up -d --no-deps make-fastmcp-server
+
+# Backup and restore volumes
+docker run --rm -v make-fastmcp-server_redis-data:/data \
+  -v $(pwd)/backup:/backup alpine \
+  tar czf /backup/redis-backup-$(date +%Y%m%d).tar.gz -C /data .
+
+# Scale application horizontally
+docker-compose up -d --scale make-fastmcp-server=3
+```
+
+**Troubleshooting Commands**
+```bash
+# Container resource usage
+docker stats make-fastmcp-server
+
+# Inspect container configuration
+docker inspect make-fastmcp-server
+
+# Execute commands inside container
+docker-compose exec make-fastmcp-server node -e "console.log(process.env)"
+
+# View container filesystem
+docker-compose exec make-fastmcp-server ls -la /app
+
+# Debug network connectivity
+docker-compose exec make-fastmcp-server wget -qO- http://redis:6379 || echo "Redis not accessible"
+```
+
+**🌐 Advanced Deployment Scenarios**
+
+**Load Balancing with Multiple Instances**
+```yaml
+# docker-compose.prod.yml
+services:
+  make-fastmcp-server:
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+```
+
+**SSL/TLS with Nginx Proxy**
+```bash
+# 1. Generate SSL certificates (example with Let's Encrypt)
+mkdir -p nginx/ssl
+certbot certonly --standalone -d yourdomain.com
+
+# 2. Configure nginx/nginx.conf for SSL termination
+# 3. Start with SSL-enabled nginx
+docker-compose -f docker-compose.yml -f docker-compose.ssl.yml up -d
+```
+
+**Container Registry Deployment**
+```bash
+# Tag and push to container registry
+docker tag make-fastmcp-server:latest your-registry.com/make-fastmcp-server:v1.0.0
+docker push your-registry.com/make-fastmcp-server:v1.0.0
+
+# Deploy from registry
+export IMAGE_TAG=v1.0.0
+docker-compose up -d
+```
+
+**💡 Docker Best Practices**
+
+**Performance Optimization**
+- **Layer Caching**: Dockerfile optimized for maximum cache hit ratio
+- **Multi-stage Builds**: Separate build and runtime environments
+- **Minimal Base Images**: Alpine Linux for smallest possible attack surface
+- **Dependency Optimization**: Production builds exclude development dependencies
+
+**Reliability Features**
+- **Health Checks**: All services include comprehensive health monitoring
+- **Restart Policies**: Automatic restart on failure with backoff
+- **Resource Limits**: Prevent any single container from consuming all resources
+- **Graceful Shutdown**: Proper signal handling with dumb-init
+
+**Development Experience**
+- **Hot Reloading**: Source code changes reflected immediately
+- **Debug Support**: Node.js inspector integration for IDE debugging
+- **Development Tools**: Redis Commander, pgAdmin, MailHog for testing
+- **Volume Mounting**: Live editing without container rebuilding
 
 #### Option 3: Cloud Platform Deployment
 

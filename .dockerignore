@@ -1,0 +1,182 @@
+# ==============================================================================
+# Docker Build Context Optimization
+# Exclude unnecessary files from Docker build context for faster builds
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Node.js and Package Management
+# ------------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn
+.pnp.*
+package-lock.json.bak
+
+# ------------------------------------------------------------------------------
+# Build and Distribution Artifacts
+# ------------------------------------------------------------------------------
+dist/
+build/
+coverage/
+*.tgz
+*.tar.gz
+
+# ------------------------------------------------------------------------------
+# Development and Testing Files
+# ------------------------------------------------------------------------------
+tests/
+test/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+__tests__/
+jest.config.*
+.nyc_output/
+
+# ------------------------------------------------------------------------------
+# IDE and Editor Files
+# ------------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ------------------------------------------------------------------------------
+# Version Control
+# ------------------------------------------------------------------------------
+.git/
+.gitignore
+.gitattributes
+.gitmodules
+.github/
+
+# ------------------------------------------------------------------------------
+# Environment and Configuration
+# ------------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+.envrc
+
+# ------------------------------------------------------------------------------
+# Documentation and Non-Essential Files
+# ------------------------------------------------------------------------------
+README.md
+CHANGELOG.md
+LICENSE
+*.md
+docs/
+documentation/
+
+# ------------------------------------------------------------------------------
+# Logs and Runtime Files
+# ------------------------------------------------------------------------------
+logs/
+*.log
+pids/
+*.pid
+*.seed
+
+# ------------------------------------------------------------------------------
+# Docker Files (Don't Include Docker Files in Build Context)
+# ------------------------------------------------------------------------------
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# ------------------------------------------------------------------------------
+# Development Dependencies and Tools
+# ------------------------------------------------------------------------------
+.eslintrc*
+.prettierrc*
+.editorconfig
+.nvmrc
+nodemon.json
+tsconfig.json
+.babelrc*
+webpack.config.*
+
+# ------------------------------------------------------------------------------
+# Temporary Files and Caches
+# ------------------------------------------------------------------------------
+tmp/
+temp/
+.cache/
+.parcel-cache/
+.sass-cache/
+
+# ------------------------------------------------------------------------------
+# Operating System Files
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ------------------------------------------------------------------------------
+# CI/CD and Deployment Files
+# ------------------------------------------------------------------------------
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+.drone.yml
+Jenkinsfile
+azure-pipelines.yml
+.buildkite/
+
+# ------------------------------------------------------------------------------
+# Security and Secrets
+# ------------------------------------------------------------------------------
+.secrets/
+secrets/
+*.key
+*.pem
+*.p12
+*.crt
+*.csr
+
+# ------------------------------------------------------------------------------
+# Performance and Monitoring
+# ------------------------------------------------------------------------------
+newrelic.js
+.nyc_output/
+
+# ------------------------------------------------------------------------------
+# Build Optimization Notes
+# ------------------------------------------------------------------------------
+
+# This .dockerignore file optimizes the Docker build process by:
+# 
+# 1. **Reducing Build Context Size**
+#    - Excludes node_modules (installed in container)
+#    - Excludes build artifacts and temporary files
+#    - Reduces transfer time to Docker daemon
+#
+# 2. **Improving Build Performance**
+#    - Prevents invalidation of Docker layers
+#    - Reduces memory usage during builds
+#    - Faster context transfer
+#
+# 3. **Security Best Practices**
+#    - Excludes sensitive files (.env, keys, secrets)
+#    - Prevents accidental inclusion of credentials
+#    - Excludes development-only configuration
+#
+# 4. **Consistency Across Environments**
+#    - Ensures only production-relevant files are included
+#    - Prevents environment-specific files from affecting builds
+#    - Improves reproducibility
+#
+# For multi-stage builds, this file affects all stages.
+# Each stage in the Dockerfile will receive this filtered context.
