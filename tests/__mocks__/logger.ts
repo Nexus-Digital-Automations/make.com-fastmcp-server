@@ -4,7 +4,7 @@ const createMockLogger = () => ({
   debug: (...args: any[]) => {},
   warn: (...args: any[]) => {},
   error: (...args: any[]) => {},
-  child: () => createMockLogger(),
+  child: (options?: any) => createMockLogger(),
   logWithCorrelation: (...args: any[]) => 'mock_correlation_id',
   logDuration: (...args: any[]) => {},
   generateCorrelationId: () => 'mock_correlation_id',
@@ -13,6 +13,9 @@ const createMockLogger = () => ({
   generateRequestId: () => 'mock_request_id',
   setLogLevel: (...args: any[]) => {},
   getLogLevel: () => 'info',
+  trace: (...args: any[]) => {},
+  fatal: (...args: any[]) => {},
+  level: 'info',
 });
 
 // Create mock logger instance

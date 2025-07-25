@@ -16,6 +16,10 @@ export default {
     '^fastmcp$': '<rootDir>/tests/__mocks__/fastmcp.ts',
     // Mock logger
     '.*\\/logger\\.js$': '<rootDir>/tests/__mocks__/logger.ts',
+    // Mock axios
+    '^axios$': '<rootDir>/tests/__mocks__/axios.ts',
+    // Mock make-api-client
+    '.*\\/make-api-client\\.js$': '<rootDir>/tests/__mocks__/make-api-client.js',
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   collectCoverageFrom: [

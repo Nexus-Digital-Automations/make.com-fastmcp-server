@@ -31,34 +31,9 @@ import {
 import { testScenarios, testErrors, generateTestData } from '../../fixtures/test-data.js';
 import { addScenarioTools } from '../../../src/tools/scenarios.js';
 
-// Mock the scenarios module to bypass logger import issues
-jest.mock('../../../src/tools/scenarios.js', () => ({
-  addScenarioTools: jest.fn((server: any, apiClient: any) => {
-    // Mock the tool registration without actual logger dependency
-    const mockTools = [
-      'list-scenarios',
-      'get-scenario', 
-      'create-scenario',
-      'update-scenario',
-      'delete-scenario',
-      'clone-scenario',
-      'run-scenario'
-    ];
-    
-    mockTools.forEach(toolName => {
-      server.addTool({
-        name: toolName,
-        description: `Mock ${toolName} tool`,
-        parameters: {},
-        execute: jest.fn(() => Promise.resolve(JSON.stringify({ 
-          success: true, 
-          data: { mockResult: true },
-          timestamp: new Date().toISOString()
-        })))
-      });
-    });
-  })
-}));
+// Mock dependencies but allow real tool implementation
+jest.mock('../../../src/lib/logger.js');
+jest.mock('../../../src/lib/make-api-client.js');
 
 describe('Scenario Management Tools - Comprehensive Test Suite', () => {
   let mockServer: any;
@@ -82,7 +57,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
     };
     mockReportProgress = jest.fn();
     
-    // Initialize scenario tools using the mocked module
+    // Initialize scenario tools using the real implementation with mocked dependencies
     addScenarioTools(mockServer, mockApiClient as any);
   });
 
