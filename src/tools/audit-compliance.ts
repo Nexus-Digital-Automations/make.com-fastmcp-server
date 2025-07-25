@@ -46,7 +46,7 @@ export const logAuditEventTool = {
   name: 'log_audit_event',
   description: 'Log a security audit event with compliance tracking',
   inputSchema: LogAuditEventSchema,
-  handler: async (input: z.infer<typeof LogAuditEventSchema>) => {
+  handler: async (input: z.infer<typeof LogAuditEventSchema>): Promise<{ success: boolean; eventId: string; timestamp: string; message: string }> => {
     try {
       await auditLogger.logEvent({
         level: input.level,
@@ -104,7 +104,7 @@ export const generateComplianceReportTool = {
   name: 'generate_compliance_report',
   description: 'Generate a comprehensive compliance report for audit purposes',
   inputSchema: GenerateComplianceReportSchema,
-  handler: async (input: z.infer<typeof GenerateComplianceReportSchema>) => {
+  handler: async (input: z.infer<typeof GenerateComplianceReportSchema>): Promise<{ success: boolean; report: { period: string; totalEvents: number; criticalEvents: number; securityEvents: number; complianceScore: number; recommendations: string[]; summary: string } }> => {
     try {
       const startDate = new Date(input.startDate);
       const endDate = new Date(input.endDate);
@@ -160,7 +160,7 @@ export const performAuditMaintenanceTool = {
   name: 'perform_audit_maintenance',
   description: 'Perform maintenance on audit logs (cleanup, rotation)',
   inputSchema: MaintenanceSchema,
-  handler: async () => {
+  handler: async (): Promise<{ success: boolean; deletedFiles: number; rotatedFiles: number; compactedFiles: number; freedSpace: number; message: string }> => {
     try {
       const result = await auditLogger.performMaintenance();
 
@@ -199,7 +199,7 @@ export const getAuditConfigurationTool = {
   name: 'get_audit_configuration',
   description: 'Get current audit logging and compliance configuration',
   inputSchema: z.object({}),
-  handler: async () => {
+  handler: async (): Promise<{ config: { encryptionEnabled: boolean; retentionDays: number; maxFileSize: number; logDirectory: string; alertingEnabled: boolean; complianceMode: string } }> => {
     try {
       // Access configuration through environment variables
       const config = {
@@ -245,7 +245,7 @@ export const securityHealthCheckTool = {
     includePermissions: z.boolean().optional().default(false),
     includeNetworkConfig: z.boolean().optional().default(false),
   }),
-  handler: async () => {
+  handler: async (): Promise<{ stats: { totalEvents: number; recentEvents: number; securityEvents: number; failedLogins: number; dataAccess: number; configChanges: number; systemEvents: number } }> => {
     try {
       const healthCheck = {
         timestamp: new Date().toISOString(),
@@ -352,7 +352,7 @@ export const createSecurityIncidentTool = {
     affectedUsers?: string[];
     detectionTime?: string;
     responseActions?: string[];
-  }) => {
+  }): Promise<{ success: boolean; incidentId: string; timestamp: string; message: string; nextSteps: string[] }> => {
     try {
       const incidentId = crypto.randomUUID();
       const timestamp = new Date();

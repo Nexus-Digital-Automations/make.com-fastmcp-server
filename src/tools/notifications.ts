@@ -16,7 +16,7 @@ export interface MakeNotification {
   priority: 'low' | 'medium' | 'high' | 'critical';
   title: string;
   message: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   recipients: {
     users: number[];
     teams: number[];
@@ -61,7 +61,7 @@ export interface MakeNotification {
   template: {
     id?: number;
     name?: string;
-    variables: Record<string, any>;
+    variables: Record<string, unknown>;
   };
   tracking: {
     opens: number;
@@ -136,8 +136,8 @@ export interface MakeEmailPreferences {
       name: string;
       type: 'webhook' | 'slack' | 'teams' | 'discord';
       enabled: boolean;
-      configuration: Record<string, any>;
-      filters: Record<string, any>;
+      configuration: Record<string, unknown>;
+      filters: Record<string, unknown>;
     }>;
   };
   timezone: string;
@@ -162,7 +162,7 @@ export interface MakeNotificationTemplate {
       name: string;
       type: 'string' | 'number' | 'boolean' | 'date' | 'object';
       required: boolean;
-      defaultValue?: any;
+      defaultValue?: unknown;
       description?: string;
     }>;
   };
@@ -202,7 +202,7 @@ export interface MakeCustomDataStructure {
   teamId?: number;
   scope: 'global' | 'organization' | 'team' | 'personal';
   structure: {
-    schema: any; // JSON Schema
+    schema: Record<string, unknown>; // JSON Schema
     version: string;
     format: 'json' | 'xml' | 'yaml' | 'csv' | 'custom';
   };
@@ -212,7 +212,7 @@ export interface MakeCustomDataStructure {
     rules: Array<{
       field: string;
       type: 'required' | 'format' | 'range' | 'custom';
-      parameters: any;
+      parameters: unknown;
       message: string;
     }>;
   };
@@ -222,12 +222,12 @@ export interface MakeCustomDataStructure {
       source: string;
       target: string;
       function?: string;
-      parameters?: any;
+      parameters?: unknown;
     }>;
     filters: Array<{
       field: string;
       operator: string;
-      value: any;
+      value: unknown;
     }>;
   };
   usage: {

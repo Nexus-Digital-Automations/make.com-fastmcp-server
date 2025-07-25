@@ -25,7 +25,7 @@ export interface MakeRemoteProcedure {
       headers: Record<string, string>;
       authentication: {
         type: 'none' | 'api_key' | 'bearer_token' | 'basic_auth' | 'oauth2' | 'certificate';
-        credentials?: Record<string, any>;
+        credentials?: Record<string, unknown>;
       };
       timeout: number;
       retries: number;
@@ -41,24 +41,24 @@ export interface MakeRemoteProcedure {
       protocol: 'ftp' | 'sftp' | 'scp' | 'http' | 's3';
       source: string;
       destination: string;
-      credentials: Record<string, any>;
+      credentials: Record<string, unknown>;
       encryption: boolean;
     };
     database?: {
       type: 'mysql' | 'postgresql' | 'mongodb' | 'redis' | 'sqlite';
       connectionString: string;
       query: string;
-      parameters: Record<string, any>;
+      parameters: Record<string, unknown>;
     };
   };
   input: {
-    schema: any; // JSON Schema for input validation
-    example: any;
+    schema: Record<string, unknown>; // JSON Schema for input validation
+    example: unknown;
     required: string[];
   };
   output: {
-    schema: any; // JSON Schema for output validation
-    example: any;
+    schema: Record<string, unknown>; // JSON Schema for output validation
+    example: unknown;
   };
   execution: {
     totalRuns: number;
@@ -77,7 +77,7 @@ export interface MakeRemoteProcedure {
       enabled: boolean;
       interval: number; // seconds
       endpoint?: string;
-      expectedResponse?: any;
+      expectedResponse?: unknown;
     };
     alerts: Array<{
       type: 'failure_rate' | 'response_time' | 'availability' | 'error_pattern';
@@ -125,7 +125,7 @@ export interface MakeDevice {
     };
     authentication: {
       type: 'none' | 'api_key' | 'certificate' | 'ssh_key' | 'username_password';
-      credentials?: Record<string, any>;
+      credentials?: Record<string, unknown>;
     };
     capabilities: {
       canReceive: boolean;
@@ -139,7 +139,7 @@ export interface MakeDevice {
       version?: string;
       architecture?: string;
       runtime?: string;
-      customProperties: Record<string, any>;
+      customProperties: Record<string, unknown>;
     };
   };
   procedures: Array<{

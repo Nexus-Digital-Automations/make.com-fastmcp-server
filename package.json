@@ -10,7 +10,7 @@
     "start": "node dist/index.js",
     "test": "node scripts/run-tests.js all",
     "test:unit": "node scripts/run-tests.js unit",
-    "test:integration": "node scripts/run-tests.js integration", 
+    "test:integration": "node scripts/run-tests.js integration",
     "test:e2e": "node scripts/run-tests.js e2e",
     "test:watch": "node scripts/run-tests.js all --watch",
     "test:coverage": "node scripts/run-tests.js all",
@@ -42,6 +42,8 @@
     "bottleneck": "^2.19.5",
     "dotenv": "^16.3.1",
     "fastmcp": "^3.10.0",
+    "ioredis": "^5.6.1",
+    "redis": "^4.7.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

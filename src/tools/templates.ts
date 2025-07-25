@@ -286,7 +286,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,
@@ -389,7 +389,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       log.info('Getting template details', { templateId });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           includeBlueprint,
           includeUsage,
           includeVersions,
@@ -415,7 +415,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
         });
 
         // Prepare response data
-        const responseData: any = {
+        const responseData: Record<string, unknown> = {
           template: {
             ...template,
             blueprint: includeBlueprint ? template.blueprint : '[Blueprint excluded - use includeBlueprint=true to view]',
@@ -466,7 +466,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       log.info('Updating template', { templateId, name });
 
       try {
-        const updateData: Record<string, any> = {};
+        const updateData: Record<string, unknown> = {};
 
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
@@ -634,9 +634,9 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
 }
 
 // Helper functions
-function analyzeTemplateComplexity(blueprint: any): 'simple' | 'moderate' | 'complex' {
+function analyzeTemplateComplexity(blueprint: Record<string, unknown>): 'simple' | 'moderate' | 'complex' {
   const moduleCount = blueprint?.modules?.length || 0;
-  const connectionCount = new Set(blueprint?.modules?.map((m: any) => m.app) || []).size;
+  const connectionCount = new Set(blueprint?.modules?.map((m: Record<string, unknown>) => m.app) || []).size;
   const routeCount = blueprint?.routes?.length || 0;
 
   if (moduleCount <= 5 && connectionCount <= 2 && routeCount <= 5) {
@@ -648,17 +648,17 @@ function analyzeTemplateComplexity(blueprint: any): 'simple' | 'moderate' | 'com
   }
 }
 
-function estimateSetupTime(blueprint: any): number {
+function estimateSetupTime(blueprint: Record<string, unknown>): number {
   const moduleCount = blueprint?.modules?.length || 0;
-  const connectionCount = new Set(blueprint?.modules?.map((m: any) => m.app) || []).size;
+  const connectionCount = new Set(blueprint?.modules?.map((m: Record<string, unknown>) => m.app) || []).size;
   
   // Base time + time per module + time per connection
   return Math.max(5, 10 + (moduleCount * 2) + (connectionCount * 5));
 }
 
-function extractRequiredConnections(blueprint: any): string[] {
+function extractRequiredConnections(blueprint: Record<string, unknown>): string[] {
   const modules = blueprint?.modules || [];
-  return [...new Set(modules.map((m: any) => m.app).filter(Boolean))];
+  return [...new Set(modules.map((m: Record<string, unknown>) => m.app).filter(Boolean))];
 }
 
 export default addTemplateTools;

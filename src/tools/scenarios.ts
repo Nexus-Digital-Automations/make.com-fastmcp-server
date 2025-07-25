@@ -148,7 +148,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
 
       try {
         // Build query parameters
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit: args.limit,
           offset: args.offset,
         };
@@ -256,7 +256,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         }
 
         const scenario = response.data;
-        const result: any = {
+        const result: Record<string, unknown> = {
           scenario,
           timestamp: new Date().toISOString(),
         };
@@ -350,7 +350,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
       reportProgress({ progress: 0, total: 100 });
 
       try {
-        const scenarioData: any = {
+        const scenarioData: Record<string, unknown> = {
           name: args.name,
         };
 
@@ -451,7 +451,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
       reportProgress({ progress: 0, total: 100 });
 
       try {
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
         
         if (args.name !== undefined) updateData.name = args.name;
         if (args.active !== undefined) updateData.active = args.active;
@@ -649,7 +649,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         reportProgress({ progress: 25, total: 100 });
 
         // Create clone data
-        const cloneData: any = {
+        const cloneData: Record<string, unknown> = {
           name: args.name,
           blueprint: blueprintResponse.data,
           active: args.active,
@@ -761,7 +761,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         }
 
         const execution = response.data;
-        let result: any = {
+        let result: Record<string, unknown> = {
           scenarioId: args.scenarioId,
           executionId: execution.id,
           status: execution.status || 'started',

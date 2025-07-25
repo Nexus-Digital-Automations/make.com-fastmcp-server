@@ -105,7 +105,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           period,
           includeUsage,
           includePerformance,
@@ -171,7 +171,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -287,7 +287,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -362,7 +362,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -450,7 +450,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -569,7 +569,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -702,7 +702,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           metric,
           period,
         };

@@ -1,59 +1,8 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T00:51:41.051Z
-**Total Issues:** 147 (0 errors, 147 warnings)
-**Files:** 21
-
-## index.ts (eslint)
-
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/types/index.ts`
-**Issues:** 22
-
-⚠️ **Line 40:14** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 55:28** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 66:14** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 84:15** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 113:10** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 120:34** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 126:15** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 137:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 138:36** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 139:36** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 140:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 143:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 149:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 192:27** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 208:25** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 226:15** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 238:10** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 242:12** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 270:19** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 271:18** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 275:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 313:35** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
----
+**Generated:** 2025-07-25T01:29:37.129Z
+**Total Issues:** 133 (0 errors, 133 warnings)
+**Files:** 22
 
 ## custom-apps.ts (eslint)
 
@@ -269,6 +218,27 @@
 
 ---
 
+## index.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/types/index.ts`
+**Issues:** 7
+
+⚠️ **Line 226:15** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 238:10** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 242:12** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 270:19** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 271:18** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 275:37** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 313:35** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
 ## audit-compliance.ts (eslint)
 
 **File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/audit-compliance.ts`
@@ -442,6 +412,15 @@
 **Issues:** 1
 
 ⚠️ **Line 355:8** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+---
+
+## caching.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/middleware/caching.ts`
+**Issues:** 1
+
+⚠️ **Line 186:96** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
 ---
 

@@ -58,12 +58,12 @@ export interface MakeDataStore {
       name: string;
       type: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'array';
       required: boolean;
-      defaultValue?: any;
+      defaultValue?: unknown;
       validation?: {
         min?: number;
         max?: number;
         pattern?: string;
-        enum?: any[];
+        enum?: unknown[];
       };
     }>;
     indexes?: Array<{
@@ -285,7 +285,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,
@@ -378,7 +378,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
       log.info('Getting folder contents', { folderId, contentType });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           contentType,
           includeMetadata,
           limit,
@@ -624,7 +624,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,
@@ -698,9 +698,9 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 }
 
 // Helper function to build folder hierarchy
-function buildFolderHierarchy(folders: MakeFolder[]): any {
-  const folderMap = new Map<number, any>();
-  const rootFolders: any[] = [];
+function buildFolderHierarchy(folders: MakeFolder[]): Array<MakeFolder & { children: Array<MakeFolder & { children?: Array<unknown> }> }> {
+  const folderMap = new Map<number, MakeFolder & { children: Array<unknown> }>();
+  const rootFolders: Array<MakeFolder & { children: Array<unknown> }> = [];
 
   // First pass: create folder objects
   folders.forEach(folder => {

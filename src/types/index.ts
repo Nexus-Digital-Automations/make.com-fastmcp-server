@@ -37,7 +37,7 @@ export interface MakeScenario {
   name: string;
   teamId: number;
   folderId?: number;
-  blueprint: any;
+  blueprint: Record<string, unknown>;
   scheduling: {
     type: 'immediate' | 'indefinitely' | 'on-demand';
     interval?: number;
@@ -52,7 +52,7 @@ export interface MakeConnection {
   name: string;
   accountName: string;
   service: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   isValid: boolean;
   createdAt: string;
   updatedAt: string;
@@ -63,7 +63,7 @@ export interface MakeTemplate {
   name: string;
   description?: string;
   category?: string;
-  blueprint: any;
+  blueprint: Record<string, unknown>;
   tags: string[];
   isPublic: boolean;
   createdAt: string;
@@ -81,7 +81,7 @@ export interface MakeExecution {
   error?: {
     message: string;
     code?: string;
-    details?: any;
+    details?: Record<string, unknown>;
   };
 }
 
@@ -110,20 +110,20 @@ export interface MakeWebhook {
 export interface MakeVariable {
   id: number;
   name: string;
-  value: any;
+  value: unknown;
   type: 'string' | 'number' | 'boolean' | 'json';
   scope: 'global' | 'team' | 'scenario';
   isEncrypted: boolean;
   createdAt: string;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: {
     message: string;
     code?: string;
-    details?: any;
+    details?: Record<string, unknown>;
   };
   metadata?: {
     total?: number;
@@ -134,19 +134,19 @@ export interface ApiResponse<T = any> {
 
 export interface ToolExecutionContext {
   log: {
-    debug: (message: string, data?: any) => void;
-    info: (message: string, data?: any) => void;
-    warn: (message: string, data?: any) => void;
-    error: (message: string, data?: any) => void;
+    debug: (message: string, data?: unknown) => void;
+    info: (message: string, data?: unknown) => void;
+    warn: (message: string, data?: unknown) => void;
+    error: (message: string, data?: unknown) => void;
   };
   reportProgress: (progress: { progress: number; total: number }) => void;
-  session?: any;
+  session?: Record<string, unknown>;
 }
 
 export interface MakeApiError extends Error {
   code?: string;
   status?: number;
-  details?: any;
+  details?: Record<string, unknown>;
   retryable: boolean;
 }
 
@@ -189,7 +189,7 @@ export interface MakeAuditLog {
   action: string;
   resource: string;
   resourceId?: number;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
   organizationId?: number;
@@ -205,7 +205,7 @@ export interface MakeScenarioLog {
   message: string;
   moduleId?: number;
   moduleName?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 export interface MakeIncompleteExecution {
@@ -223,7 +223,7 @@ export interface MakeIncompleteExecution {
   error?: {
     message: string;
     code?: string;
-    details?: any;
+    details?: Record<string, unknown>;
   };
   canResume: boolean;
 }
@@ -235,11 +235,11 @@ export interface MakeHookLog {
   method: string;
   url: string;
   headers: Record<string, string>;
-  body?: any;
+  body?: unknown;
   response?: {
     status: number;
     headers: Record<string, string>;
-    body?: any;
+    body?: unknown;
   };
   processingTime: number;
   success: boolean;
@@ -267,12 +267,12 @@ export interface MakeCustomApp {
       method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
       path: string;
       description?: string;
-      parameters: any;
-      responses: any;
+      parameters: Record<string, unknown>;
+      responses: Record<string, unknown>;
     }>;
     authentication: {
       type: 'none' | 'api_key' | 'oauth2' | 'basic_auth' | 'custom';
-      configuration: Record<string, any>;
+      configuration: Record<string, unknown>;
     };
     ui: {
       icon?: string;
@@ -310,7 +310,7 @@ export interface MakeSDKApp {
     installedByName?: string;
     version: string;
     autoUpdate: boolean;
-    configuration: Record<string, any>;
+    configuration: Record<string, unknown>;
     permissions: {
       granted: string[];
       requested: string[];

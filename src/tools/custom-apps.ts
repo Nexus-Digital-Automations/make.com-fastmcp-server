@@ -30,12 +30,12 @@ export interface MakeCustomApp {
       method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
       path: string;
       description?: string;
-      parameters: any; // JSON Schema
-      responses: any; // JSON Schema
+      parameters: Record<string, unknown>; // JSON Schema
+      responses: Record<string, unknown>; // JSON Schema
     }>;
     authentication: {
       type: 'none' | 'api_key' | 'oauth2' | 'basic_auth' | 'custom';
-      configuration: Record<string, any>;
+      configuration: Record<string, unknown>;
     };
     ui: {
       icon?: string;
@@ -73,7 +73,7 @@ export interface MakeCustomApp {
   permissions: {
     scopes: string[];
     roles: string[];
-    restrictions: Record<string, any>;
+    restrictions: Record<string, unknown>;
   };
   createdAt: string;
   updatedAt: string;
@@ -95,19 +95,19 @@ export interface MakeHook {
     headers: Record<string, string>;
     authentication: {
       type: 'none' | 'api_key' | 'bearer' | 'basic' | 'oauth2';
-      configuration: Record<string, any>;
+      configuration: Record<string, unknown>;
     };
     polling?: {
       interval: number; // minutes
       strategy: 'incremental' | 'full_scan' | 'timestamp_based';
-      parameters: Record<string, any>;
+      parameters: Record<string, unknown>;
     };
   };
   events: Array<{
     name: string;
     description?: string;
-    schema: any; // JSON Schema for event data
-    filters?: Record<string, any>;
+    schema: Record<string, unknown>; // JSON Schema for event data
+    filters?: Record<string, unknown>;
   }>;
   execution: {
     totalCalls: number;
@@ -147,15 +147,15 @@ export interface MakeCustomFunction {
     memoryLimit: number; // MB
   };
   interface: {
-    input: any; // JSON Schema
-    output: any; // JSON Schema
-    parameters: Record<string, any>;
+    input: Record<string, unknown>; // JSON Schema
+    output: Record<string, unknown>; // JSON Schema
+    parameters: Record<string, unknown>;
   };
   testing: {
     testCases: Array<{
       name: string;
-      input: any;
-      expectedOutput: any;
+      input: unknown;
+      expectedOutput: unknown;
       description?: string;
     }>;
     lastTestRun?: {
@@ -457,7 +457,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,

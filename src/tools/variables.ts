@@ -79,7 +79,7 @@ const VariableExportSchema = z.object({
 /**
  * Validate variable scope consistency
  */
-function validateVariableScope(input: any): void {
+function validateVariableScope(input: Record<string, unknown>): void {
   const { scope, organizationId, teamId, scenarioId } = input;
   
   if (scope === 'organization' && !organizationId) {
@@ -98,7 +98,7 @@ function validateVariableScope(input: any): void {
 /**
  * Format variable value based on type
  */
-function formatVariableValue(value: any, type: string): any {
+function formatVariableValue(value: unknown, type: string): unknown {
   switch (type) {
     case 'string':
       return String(value);
@@ -237,7 +237,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,
@@ -291,7 +291,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             json: variables.filter(v => v.type === 'json').length,
           },
           encryptedCount: variables.filter(v => v.isEncrypted).length,
-          uniqueTags: [...new Set(variables.flatMap(v => (v as any).tags || []))],
+          uniqueTags: [...new Set(variables.flatMap(v => (v as MakeCustomVariable).tags || []))],
         };
 
         return JSON.stringify({
@@ -393,7 +393,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       log.info('Updating custom variable', { variableId, name });
 
       try {
-        const updateData: Record<string, any> = {};
+        const updateData: Record<string, unknown> = {};
 
         if (name !== undefined) updateData.name = name;
         if (value !== undefined && type !== undefined) {
@@ -702,7 +702,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           includeRecoveryPlan,
@@ -972,7 +972,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             totalFailures: insights.totalFailures,
             failureRate: `${(insights.failureRate * 100).toFixed(2)}%`,
             topIssue: insights.mostCommonErrors[0]?.error || 'No dominant error pattern',
-            actionableRecommendations: analysis?.recommendations?.filter((r: any) => r.priority === 'high').length || 0,
+            actionableRecommendations: analysis?.recommendations?.filter((r: { priority: string }) => r.priority === 'high').length || 0,
           },
         }, null, 2);
       } catch (error: unknown) {

@@ -58,7 +58,7 @@ export const storeCredentialTool = {
   name: 'store_credential',
   description: 'Store a new credential with encryption and optional auto-rotation',
   inputSchema: StoreCredentialSchema,
-  handler: async (input: z.infer<typeof StoreCredentialSchema>) => {
+  handler: async (input: z.infer<typeof StoreCredentialSchema>): Promise<{ credentialId: string; message: string }> => {
     try {
       const rotationInterval = input.autoRotate 
         ? input.rotationIntervalDays * 24 * 60 * 60 * 1000 
@@ -113,7 +113,7 @@ export const getCredentialStatusTool = {
   name: 'get_credential_status',
   description: 'Get credential metadata and security status without exposing the actual credential value',
   inputSchema: GetCredentialSchema,
-  handler: async (input: z.infer<typeof GetCredentialSchema>) => {
+  handler: async (input: z.infer<typeof GetCredentialSchema>): Promise<{ success: boolean; error?: string; message?: string; credentialId?: string; status?: string; autoRotate?: boolean; rotationInterval?: number; lastRotation?: string; nextRotation?: string }> => {
     try {
       const status = secureConfigManager.getCredentialStatus(input.credentialId);
       
@@ -169,7 +169,7 @@ export const rotateCredentialTool = {
   name: 'rotate_credential',
   description: 'Immediately rotate a credential, optionally providing a new value',
   inputSchema: RotateCredentialSchema,
-  handler: async (input: z.infer<typeof RotateCredentialSchema>) => {
+  handler: async (input: z.infer<typeof RotateCredentialSchema>): Promise<{ success: boolean; message?: string; error?: string; credentialId?: string; rotationTimestamp?: string }> => {
     try {
       const gracePeriod = input.gracePeriodHours * 60 * 60 * 1000; // Convert to milliseconds
 
@@ -218,7 +218,7 @@ export const listCredentialsTool = {
   name: 'list_credentials',
   description: 'List all credentials with optional filtering by service, type, or status',
   inputSchema: ListCredentialsSchema,
-  handler: async (input: z.infer<typeof ListCredentialsSchema>) => {
+  handler: async (input: z.infer<typeof ListCredentialsSchema>): Promise<{ credentials: Array<{ credentialId: string; type: string; service: string; status: string; autoRotate: boolean; lastRotation?: string; nextRotation?: string }> }> => {
     try {
       const credentials = credentialManager.listCredentials({
         service: input.service,
@@ -269,7 +269,7 @@ export const getAuditEventsTool = {
   name: 'get_audit_events',
   description: 'Retrieve security audit events with optional filtering',
   inputSchema: AuditQuerySchema,
-  handler: async (input: z.infer<typeof AuditQuerySchema>) => {
+  handler: async (input: z.infer<typeof AuditQuerySchema>): Promise<{ events: Array<{ timestamp: string; action: string; credentialId: string; userId?: string; success: boolean; details?: Record<string, unknown> }> }> => {
     try {
       const filter = {
         credentialId: input.credentialId,
@@ -322,7 +322,7 @@ export const migrateCredentialsTool = {
   name: 'migrate_credentials',
   description: 'Migrate existing plain-text credentials to encrypted storage',
   inputSchema: MigrateCredentialsSchema,
-  handler: async (input: z.infer<typeof MigrateCredentialsSchema>) => {
+  handler: async (input: z.infer<typeof MigrateCredentialsSchema>): Promise<{ success: boolean; migratedCount: number; failedCount: number; errors: string[]; message: string }> => {
     try {
       const result = await secureConfigManager.migrateToSecureStorage(input.userId);
 
@@ -367,7 +367,7 @@ export const generateCredentialTool = {
     type: 'api_key' | 'secret';
     prefix?: string;
     length?: number;
-  }) => {
+  }): Promise<{ success: boolean; value?: string; error?: string; type: string; length: number }> => {
     try {
       let generated: string;
       
@@ -411,7 +411,7 @@ export const cleanupCredentialsTool = {
   name: 'cleanup_credentials',
   description: 'Clean up expired credentials and old audit events',
   inputSchema: z.object({}),
-  handler: async () => {
+  handler: async (): Promise<{ status: string; totalCredentials: number; activeCredentials: number; rotationsPending: number; encryptionStrength: string; storageType: string; lastAudit?: string }> => {
     try {
       const result = secureConfigManager.cleanup();
 

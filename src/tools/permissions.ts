@@ -189,7 +189,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -291,7 +291,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       log.info('Updating user role', { userId, role, teamId });
 
       try {
-        const updateData: Record<string, any> = { role };
+        const updateData: Record<string, unknown> = { role };
         if (teamId) updateData.teamId = teamId;
         if (permissions) updateData.permissions = permissions;
 
@@ -347,7 +347,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -488,7 +488,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       log.info('Updating team', { teamId });
 
       try {
-        const updateData: Record<string, any> = {};
+        const updateData: Record<string, unknown> = {};
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
 
@@ -574,7 +574,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
         };
@@ -708,7 +708,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       log.info('Updating organization', { organizationId });
 
       try {
-        const updateData: Record<string, any> = {};
+        const updateData: Record<string, unknown> = {};
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
 
