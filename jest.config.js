@@ -1,9 +1,8 @@
 export default {
-  preset: 'ts-jest/presets/default-esm',
-  extensionsToTreatAsEsm: ['.ts'],
+  preset: 'ts-jest',
+  testEnvironment: 'node',
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
-      useESM: true,
       tsconfig: './jest.tsconfig.json'
     }],
   },
@@ -11,10 +10,11 @@ export default {
     'node_modules/(?!(fastmcp|@modelcontextprotocol|zod)/)',
   ],
   moduleNameMapper: {
+    // Handle .js extensions in imports
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    // Mock fastmcp
     '^fastmcp$': '<rootDir>/tests/__mocks__/fastmcp.ts',
   },
-  testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   collectCoverageFrom: [
     'src/**/*.{ts,js}',

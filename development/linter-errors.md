@@ -1,20 +1,39 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T04:13:38.489Z
-**Total Issues:** 1 (1 errors, 0 warnings)
+**Generated:** 2025-07-25T04:25:10.175Z
+**Total Issues:** 13 (0 errors, 13 warnings)
 **Files:** 1
 
-## temp-lint-test.ts (eslint)
+## scenarios.ts (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/temp-lint-test.ts`
-**Issues:** 1
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/scenarios.ts`
+**Issues:** 13
 
-❌ **Line undefined:undefined** - Parsing error: ESLint was configured to run on `<tsconfigRootDir>/temp-lint-test.ts` using `parserOptions.project`: /users/jeremyparker/desktop/claude coding projects/make.com-fastmcp-server/tsconfig.json
-However, that TSConfig does not include this file. Either:
-- Change ESLint's list of included files to not include this file
-- Change that TSConfig to include this file
-- Create a new TSConfig that includes this file and include it in your parserOptions.project
-See the typescript-eslint docs for more info: https://typescript-eslint.io/linting/troubleshooting#i-get-errors-telling-me-eslint-was-configured-to-run--however-that-tsconfig-does-not--none-of-those-tsconfigs-include-this-file
+⚠️ **Line 21:13** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 25:33** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 26:7** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 27:7** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 28:7** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 29:7** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 30:7** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 40:31** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 41:5** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 42:5** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 43:5** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 44:5** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 45:5** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
 ---
 
