@@ -531,12 +531,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new UserError(`Failed to resolve incomplete execution: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const result = response.data;
+        const result = response.data as Record<string, unknown>;
 
         log.info('Successfully resolved incomplete execution', {
           executionId,
           action,
-          newStatus: result?.status,
+          newStatus: String(result?.status || 'unknown'),
         });
 
         return JSON.stringify({
@@ -657,13 +657,13 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new UserError(`Failed to export data: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const exportResult = response.data;
+        const exportResult = response.data as Record<string, unknown>;
 
         log.info('Successfully initiated data export', {
           organizationId,
           dataType,
           format,
-          exportId: exportResult?.exportId,
+          exportId: String(exportResult?.exportId || 'unknown'),
         });
 
         return JSON.stringify({
@@ -716,12 +716,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new UserError(`Failed to get performance metrics: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const metrics = response.data;
+        const metrics = response.data as Record<string, unknown>;
 
         log.info('Successfully retrieved performance metrics', {
           organizationId,
           metric,
-          dataPoints: metrics?.dataPoints?.length || 0,
+          dataPoints: (metrics?.dataPoints as unknown[])?.length || 0,
         });
 
         return JSON.stringify({
@@ -730,7 +730,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
             trend: metrics?.trend || 'stable',
             currentValue: metrics?.currentValue,
             percentageChange: metrics?.percentageChange,
-            recommendations: metrics?.recommendations || [],
+            recommendations: (metrics?.recommendations as unknown[]) || [],
           },
         }, null, 2);
       } catch (error: unknown) {

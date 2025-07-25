@@ -1,15 +1,17 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T03:34:17.093Z
-**Total Issues:** 1 (1 errors, 0 warnings)
+**Generated:** 2025-07-25T03:41:26.220Z
+**Total Issues:** 2 (0 errors, 2 warnings)
 **Files:** 1
 
-## caching.ts (eslint)
+## server.ts (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/middleware/caching.ts`
-**Issues:** 1
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/server.ts`
+**Issues:** 2
 
-❌ **Line 162:16** - '_server' is defined but never used. `[@typescript-eslint/no-unused-vars]`
+⚠️ **Line 90:33** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+⚠️ **Line 90:39** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
 
 ---
 

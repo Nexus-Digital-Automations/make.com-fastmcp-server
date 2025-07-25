@@ -87,14 +87,15 @@ ${configManager.isAuthEnabled() ?
 `.trim();
   }
 
-  private authenticate(request: Record<string, unknown>): Record<string, unknown> {
-    const correlationId = extractCorrelationId({ headers: request.headers as Record<string, string> });
+  private async authenticate(request: unknown): Promise<Record<string, unknown>> {
+    const requestObj = request as Record<string, unknown>;
+    const correlationId = extractCorrelationId({ headers: requestObj.headers as Record<string, string> });
     const componentLogger = this.componentLogger.child({ 
       operation: 'authenticate',
       correlationId 
     });
 
-    const apiKey = (request.headers as Record<string, string>)?.['x-api-key'];
+    const apiKey = (requestObj.headers as Record<string, string>)?.['x-api-key'];
     const expectedSecret = configManager.getAuthSecret();
 
     if (!apiKey || apiKey !== expectedSecret) {
@@ -493,7 +494,7 @@ ${configManager.isAuthEnabled() ?
     }
 
     await this.server.start(options || {
-      transportType: 'stdio',
+      transportType: 'stdio' as const,
     });
 
     this.componentLogger.info('Server started successfully');

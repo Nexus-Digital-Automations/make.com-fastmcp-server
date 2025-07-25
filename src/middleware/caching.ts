@@ -188,7 +188,16 @@ export class CachingMiddleware {
     // TODO: Re-enable cache management tools when FastMCP interface is updated
     this.componentLogger.warn('Cache management tools temporarily disabled due to FastMCP interface changes');
     return;
+  }
+
+  /**
+   * Temporarily disabled cache management tools (unreachable code removed)
+   */
+  private addCacheManagementToolsDisabled(): void {
+    // This method contains the original implementation that will be restored
+    // when FastMCP interface is updated to support the required tool format
     
+    /*
     // Cache status tool
     server.addTool({
       name: 'cache-status',
@@ -297,6 +306,7 @@ export class CachingMiddleware {
         }
       }
     });
+    */
   }
 
   /**
@@ -434,12 +444,12 @@ export class CachingMiddleware {
     strategy: CacheStrategy
   ): boolean {
     if (strategy.shouldCache) {
-      return strategy.shouldCache(operation, params, response as ApiResponse<unknown>);
+      return strategy.shouldCache(operation, params, response as unknown as ApiResponse<unknown>);
     }
 
     // Default caching logic
     if (response && typeof response === 'object') {
-      const apiResponse = response as ApiResponse<unknown>;
+      const apiResponse = response as unknown as ApiResponse<unknown>;
       
       // Don't cache error responses
       if ('success' in apiResponse && !apiResponse.success) {
@@ -532,7 +542,7 @@ export class CachingMiddleware {
     }
     
     metrics.recordCacheHit('operation_cache', { operation });
-    metrics.recordToolExecutionDuration(operation, responseTime / 1000);
+    metrics.recordToolExecution(operation, 'success', responseTime / 1000);
   }
 
   /**
@@ -546,7 +556,7 @@ export class CachingMiddleware {
     }
     
     metrics.recordCacheMiss('operation_cache', { operation });
-    metrics.recordToolExecutionDuration(operation, responseTime / 1000);
+    metrics.recordToolExecution(operation, 'success', responseTime / 1000);
   }
 
   /**
@@ -618,7 +628,7 @@ export class CachingMiddleware {
         middleware: true
       };
     } catch (error) {
-      this.componentLogger.error('Caching middleware health check failed', error);
+      this.componentLogger.error('Caching middleware health check failed', error as Record<string, unknown>);
       return {
         healthy: false,
         cache: false,

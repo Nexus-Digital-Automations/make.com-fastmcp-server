@@ -473,8 +473,8 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
             canEdit: true, // This would be determined by user permissions
             canDelete: agent.status !== 'training',
             canTest: agent.status === 'active',
-            lastHealthCheck: usage?.lastHealthCheck,
-            costEstimate: usage?.estimatedCost,
+            lastHealthCheck: (usage as Record<string, unknown>)?.lastHealthCheck,
+            costEstimate: (usage as Record<string, unknown>)?.estimatedCost,
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -640,7 +640,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
         log.info('Successfully tested AI agent', {
           agentId,
           testType,
-          success: testResult?.success,
+          success: (testResult as Record<string, unknown>)?.success as boolean,
           responseTime: totalTime,
         });
 
@@ -648,14 +648,14 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           testResult,
           performance: {
             totalTime: `${totalTime}ms`,
-            agentResponseTime: testResult?.metrics?.responseTime,
-            tokenUsage: testResult?.metrics?.tokens,
-            cost: testResult?.metrics?.cost,
+            agentResponseTime: ((testResult as Record<string, unknown>)?.metrics as Record<string, unknown>)?.responseTime,
+            tokenUsage: ((testResult as Record<string, unknown>)?.metrics as Record<string, unknown>)?.tokens,
+            cost: ((testResult as Record<string, unknown>)?.metrics as Record<string, unknown>)?.cost,
           },
           validation: {
-            responseFormat: testResult?.validation?.format || 'valid',
-            contentQuality: testResult?.validation?.quality || 'good',
-            errorCount: testResult?.validation?.errors?.length || 0,
+            responseFormat: ((testResult as Record<string, unknown>)?.validation as Record<string, unknown>)?.format || 'valid',
+            contentQuality: ((testResult as Record<string, unknown>)?.validation as Record<string, unknown>)?.quality || 'good',
+            errorCount: (((testResult as Record<string, unknown>)?.validation as Record<string, unknown>)?.errors as unknown[])?.length || 0,
           },
           summary: {
             testType,
