@@ -1,8 +1,8 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T00:38:21.135Z
-**Total Issues:** 142 (0 errors, 142 warnings)
-**Files:** 20
+**Generated:** 2025-07-25T00:51:41.051Z
+**Total Issues:** 147 (0 errors, 147 warnings)
+**Files:** 21
 
 ## index.ts (eslint)
 
@@ -179,28 +179,26 @@
 
 ---
 
-## make-api-client.ts (eslint)
+## credential-management.ts (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/lib/make-api-client.ts`
-**Issues:** 9
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/credential-management.ts`
+**Issues:** 8
 
-⚠️ **Line 83:35** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 61:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
-⚠️ **Line 162:24** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 116:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
-⚠️ **Line 169:25** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 172:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
-⚠️ **Line 169:50** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 221:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
-⚠️ **Line 176:24** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 272:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
-⚠️ **Line 176:49** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 325:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
-⚠️ **Line 183:26** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 366:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
-⚠️ **Line 183:51** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
-
-⚠️ **Line 190:27** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 414:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
 ---
 
@@ -268,6 +266,25 @@
 ⚠️ **Line 572:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
 
 ⚠️ **Line 705:38** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+
+---
+
+## audit-compliance.ts (eslint)
+
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/audit-compliance.ts`
+**Issues:** 6
+
+⚠️ **Line 49:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 107:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 163:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 202:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 248:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 346:3** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
 ---
 

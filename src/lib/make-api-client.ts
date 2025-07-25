@@ -1,21 +1,24 @@
 /**
  * Make.com API Client with rate limiting, retry logic, and error handling
- * Provides robust interface to Make.com API endpoints
+ * Provides robust interface to Make.com API endpoints with secure credential management
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import Bottleneck from 'bottleneck';
 import { MakeApiConfig, ApiResponse, MakeApiError } from '../types/index.js';
 import logger from './logger.js';
+import { secureConfigManager } from './secure-config.js';
 
 export class MakeApiClient {
   private axiosInstance: AxiosInstance;
   private limiter: Bottleneck;
   private config: MakeApiConfig;
   private componentLogger: ReturnType<typeof logger.child>;
+  private userId?: string;
 
-  constructor(config: MakeApiConfig) {
+  constructor(config: MakeApiConfig, userId?: string) {
     this.config = config;
+    this.userId = userId;
     this.componentLogger = logger.child({ component: 'MakeApiClient' });
     
     this.axiosInstance = axios.create({
@@ -38,6 +41,46 @@ export class MakeApiClient {
     });
 
     this.setupInterceptors();
+  }
+
+  /**
+   * Create a MakeApiClient instance with secure credential management
+   */
+  public static async createSecure(userId?: string): Promise<MakeApiClient> {
+    try {
+      const secureConfig = await secureConfigManager.getSecureMakeConfig(userId);
+      return new MakeApiClient(secureConfig, userId);
+    } catch (error) {
+      const componentLogger = logger.child({ component: 'MakeApiClient' });
+      componentLogger.error('Failed to create secure API client', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        userId
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Refresh API credentials (useful after credential rotation)
+   */
+  public async refreshCredentials(): Promise<void> {
+    try {
+      const secureConfig = await secureConfigManager.getSecureMakeConfig(this.userId);
+      
+      // Update the authorization header
+      this.axiosInstance.defaults.headers['Authorization'] = `Token ${secureConfig.apiKey}`;
+      this.config = secureConfig;
+      
+      this.componentLogger.info('API credentials refreshed successfully', {
+        userId: this.userId
+      });
+    } catch (error) {
+      this.componentLogger.error('Failed to refresh API credentials', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        userId: this.userId
+      });
+      throw error;
+    }
   }
 
   private setupInterceptors(): void {
@@ -80,7 +123,7 @@ export class MakeApiClient {
     );
   }
 
-  private handleAxiosError(error: any): MakeApiError {
+  private handleAxiosError(error: unknown): MakeApiError {
     const makeError = new Error() as MakeApiError;
     
     if (error.response) {
@@ -159,35 +202,35 @@ export class MakeApiClient {
   }
 
   // Generic HTTP methods
-  public async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  public async get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return this.executeWithRetry(
       () => this.axiosInstance.get<T>(url, config),
       `GET ${url}`
     );
   }
 
-  public async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  public async post<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return this.executeWithRetry(
       () => this.axiosInstance.post<T>(url, data, config),
       `POST ${url}`
     );
   }
 
-  public async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  public async put<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return this.executeWithRetry(
       () => this.axiosInstance.put<T>(url, data, config),
       `PUT ${url}`
     );
   }
 
-  public async patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  public async patch<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return this.executeWithRetry(
       () => this.axiosInstance.patch<T>(url, data, config),
       `PATCH ${url}`
     );
   }
 
-  public async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  public async delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return this.executeWithRetry(
       () => this.axiosInstance.delete<T>(url, config),
       `DELETE ${url}`
