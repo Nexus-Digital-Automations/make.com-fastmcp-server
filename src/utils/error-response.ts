@@ -129,7 +129,7 @@ export function errorHandlerMiddleware() {
       errorCode: errorResponse.error.code,
     });
 
-    (res as any).status(errorResponse.error.statusCode).json(errorResponse);
+    (res as Record<string, unknown> & { status: (code: number) => { json: (data: unknown) => void } }).status(errorResponse.error.statusCode).json(errorResponse);
   };
 }
 
@@ -140,7 +140,7 @@ export function correlationMiddleware() {
   return (req: Record<string, unknown>, res: Record<string, unknown>, next: () => void): void => {
     const correlationId = (req.headers as Record<string, string>)?.['x-correlation-id'] || randomUUID();
     req.correlationId = correlationId;
-    (res as any).set('X-Correlation-ID', correlationId);
+    (res as Record<string, unknown> & { set: (key: string, value: string) => void }).set('X-Correlation-ID', correlationId);
     next();
   };
 }

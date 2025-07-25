@@ -85,7 +85,7 @@ export interface MakeKey {
   name: string;
   description?: string;
   type: 'rsa' | 'ecdsa' | 'ed25519' | 'aes' | 'hmac';
-  usage: 'signing' | 'encryption' | 'key_agreement' | 'authentication';
+  keyUsage: 'signing' | 'encryption' | 'key_agreement' | 'authentication';
   format: 'pem' | 'der' | 'jwk' | 'raw';
   organizationId?: number;
   teamId?: number;
@@ -353,7 +353,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,
@@ -471,7 +471,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       log.info('Getting certificate details', { certificateId });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           includePrivateKey,
           includeChain,
           includeUsage,
@@ -497,7 +497,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           expiryDays: certificate.certificate.validity.daysUntilExpiry,
         });
 
-        const responseData: any = {
+        const responseData: Record<string, unknown> = {
           certificate: {
             ...certificate,
             certificate: {
@@ -577,7 +577,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           throw new UserError(`Certificate validation failed: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const validationResult = response.data;
+        const validationResult = response.data as Record<string, unknown>;
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully validated certificate', {

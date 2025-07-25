@@ -544,7 +544,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       log.info('Getting email preferences', { userId, includeStats });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           includeStats,
         };
 
@@ -622,7 +622,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
 
         if (preferences) {
           updateData.preferences = preferences;
@@ -938,7 +938,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,

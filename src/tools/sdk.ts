@@ -119,7 +119,7 @@ export interface SDKAppWorkflow {
   appId: number;
   appName: string;
   version: string;
-  template: any; // Workflow template JSON
+  template: Record<string, unknown>; // Workflow template JSON
   category: 'starter' | 'advanced' | 'integration' | 'example';
   difficulty: 'beginner' | 'intermediate' | 'advanced' | 'expert';
   tags: string[];

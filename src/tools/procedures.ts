@@ -476,7 +476,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,
@@ -810,7 +810,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit,
           offset,
           sortBy,

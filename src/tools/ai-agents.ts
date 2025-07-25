@@ -422,8 +422,8 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           throw new UserError(`AI agent with ID ${agentId} not found`);
         }
 
-        let usage = null;
-        let history = null;
+        let usage: unknown = null;
+        let history: unknown = null;
 
         if (includeUsage) {
           try {
@@ -578,8 +578,8 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
         // Check if agent is in use (unless force delete)
         if (!force) {
           const usageResponse = await apiClient.get(`/ai-agents/${agentId}/usage`);
-          if (usageResponse.success && usageResponse.data?.activeConnections > 0) {
-            throw new UserError(`AI agent is currently in use (${usageResponse.data.activeConnections} active connections). Use force=true to delete anyway.`);
+          if (usageResponse.success && (usageResponse.data as Record<string, unknown>)?.activeConnections as number > 0) {
+            throw new UserError(`AI agent is currently in use (${(usageResponse.data as Record<string, unknown>).activeConnections as number} active connections). Use force=true to delete anyway.`);
           }
         }
 
@@ -631,7 +631,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           throw new UserError(`Failed to test AI agent: ${response.error?.message || 'Unknown error'}`);
         }
 
-        const testResult = response.data;
+        const testResult = response.data as Record<string, unknown>;
         const endTime = Date.now();
         const totalTime = endTime - startTime;
 

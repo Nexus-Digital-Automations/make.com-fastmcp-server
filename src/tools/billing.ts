@@ -733,7 +733,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
 
         if (contacts) {
           updateData.contacts = contacts;

@@ -382,7 +382,7 @@ ${configManager.isAuthEnabled() ?
           if (includePermissions && userResponse.data) {
             log.info('Analyzing user permissions');
             // Add more detailed permission analysis here
-            (testResults as any).permissions = {
+            (testResults as Record<string, unknown>).permissions = {
               analyzed: true,
               // This would include detailed role and permission analysis
             };
@@ -474,7 +474,7 @@ ${configManager.isAuthEnabled() ?
     return this.server;
   }
 
-  public async start(options?: { transportType?: 'stdio' | 'httpStream', httpStream?: any }): Promise<void> {
+  public async start(options?: { transportType?: 'stdio' | 'httpStream', httpStream?: unknown }): Promise<void> {
     this.componentLogger.info('Starting Make.com FastMCP Server', {
       version: configManager.getConfig().version,
       environment: process.env.NODE_ENV || 'development',

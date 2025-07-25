@@ -159,14 +159,15 @@ export class CachingMiddleware {
   /**
    * Apply caching middleware to FastMCP server
    */
-  public apply(server: FastMCP): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public apply(_server: FastMCP): void {
     this.componentLogger.info('Applying caching middleware to FastMCP server');
 
     // Wrap tool execution with caching
-    this.wrapServerTools(server);
+    this.wrapServerTools();
 
     // Add cache management tools
-    this.addCacheManagementTools(server);
+    this.addCacheManagementTools();
 
     this.componentLogger.info('Caching middleware applied successfully');
   }
@@ -174,7 +175,7 @@ export class CachingMiddleware {
   /**
    * Wrap existing tools with caching logic
    */
-  private wrapServerTools(_server: FastMCP): void {
+  private wrapServerTools(): void {
     // TODO: Re-implement tool wrapping when FastMCP API supports it
     // For now, caching is handled manually in individual tools
     this.componentLogger.warn('Tool wrapping temporarily disabled - caching handled per-tool');
@@ -183,7 +184,11 @@ export class CachingMiddleware {
   /**
    * Add cache management tools to server
    */
-  private addCacheManagementTools(server: FastMCP): void {
+  private addCacheManagementTools(): void {
+    // TODO: Re-enable cache management tools when FastMCP interface is updated
+    this.componentLogger.warn('Cache management tools temporarily disabled due to FastMCP interface changes');
+    return;
+    
     // Cache status tool
     server.addTool({
       name: 'cache-status',

@@ -137,7 +137,7 @@ export const variableUpdateSchema = z.object({
 });
 
 // Validation helper functions
-export function validateId(id: any): number {
+export function validateId(id: unknown): number {
   const result = idSchema.safeParse(id);
   if (!result.success) {
     throw new Error(`Invalid ID: ${result.error.message}`);
@@ -145,7 +145,7 @@ export function validateId(id: any): number {
   return result.data;
 }
 
-export function validatePagination(params: any): z.infer<typeof paginationSchema> {
+export function validatePagination(params: unknown): z.infer<typeof paginationSchema> {
   const result = paginationSchema.safeParse(params);
   if (!result.success) {
     throw new Error(`Invalid pagination parameters: ${result.error.message}`);
@@ -153,7 +153,7 @@ export function validatePagination(params: any): z.infer<typeof paginationSchema
   return result.data;
 }
 
-export function validateDateRange(params: any): z.infer<typeof dateRangeSchema> {
+export function validateDateRange(params: unknown): z.infer<typeof dateRangeSchema> {
   const result = dateRangeSchema.safeParse(params);
   if (!result.success) {
     throw new Error(`Invalid date range: ${result.error.message}`);

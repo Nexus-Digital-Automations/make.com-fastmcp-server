@@ -127,17 +127,25 @@ export class MakeApiClient {
     const makeError = new Error() as MakeApiError;
     
     // Type guard for axios error
-    const axiosError = error as any;
+    const axiosError = error as {
+      response?: {
+        data?: { message?: string };
+        statusText?: string;
+        status?: number;
+      };
+      request?: unknown;
+      message?: string;
+    };
     
     if (axiosError?.response) {
       // Server responded with error status
       makeError.message = axiosError.response.data?.message || axiosError.response.statusText || 'API request failed';
       makeError.status = axiosError.response.status;
-      makeError.code = axiosError.response.data?.code || `HTTP_${axiosError.response.status}`;
+      makeError.code = (axiosError.response.data as { code?: string })?.code || `HTTP_${axiosError.response?.status}` || 'HTTP_UNKNOWN';
       makeError.details = axiosError.response.data;
       
       // Determine if error is retryable
-      makeError.retryable = axiosError.response.status >= 500 || axiosError.response.status === 429;
+      makeError.retryable = (axiosError.response?.status || 0) >= 500 || axiosError.response?.status === 429;
     } else if (axiosError?.request) {
       // Network error
       makeError.message = 'Network error - no response received';

@@ -352,7 +352,13 @@ class ConfigManager {
 }
 
 // Configuration validation utility functions
-export function createConfigurationValidator() {
+export function createConfigurationValidator(): {
+  validateMakeApiKey: (key: string) => boolean;
+  validatePort: (port: number) => boolean;
+  validateTimeout: (timeout: number) => boolean;
+  validateLogLevel: (level: string) => boolean;
+  generateSecureSecret: () => string;
+} {
   return {
     validateMakeApiKey: (key: string): boolean => {
       return Boolean(key && key.length >= 10 && key.trim().length > 0);
