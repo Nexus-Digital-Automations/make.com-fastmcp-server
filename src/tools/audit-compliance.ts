@@ -451,7 +451,7 @@ export const createSecurityIncidentTool = {
   },
 };
 
-// Export all audit and compliance tools
+// Export all audit and compliance tools (excluding factory-created tool)
 export const auditComplianceTools = [
   generateComplianceReportTool,
   performAuditMaintenanceTool,

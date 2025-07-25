@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Create missing analytics.test.ts and connections.test.ts files",
+    "description": "Create comprehensive test suites for the missing analytics.ts and connections.ts modules to achieve 90%+ coverage",
+    "mode": "TESTING",
+    "priority": "high",
+    "dependencies": ["src/tools/analytics.ts", "src/tools/connections.ts"],
+    "important_files": ["src/tools/analytics.ts", "src/tools/connections.ts", "tests/unit/tools/billing.test.ts"],
+    "success_criteria": [
+      "analytics.test.ts file created with comprehensive tests",
+      "connections.test.ts file created with comprehensive tests", 
+      "90%+ line coverage achieved for both modules",
+      "All API interaction patterns tested with mocks"
+    ]
+  },
+  {
+    "title": "Fix test infrastructure issues across all tool test files",
+    "description": "Resolve mockServer undefined errors, tool registration issues, and test setup problems affecting all tool test files",
+    "mode": "TESTING", 
+    "priority": "high",
+    "dependencies": ["tests/unit/tools/", "tests/utils/test-helpers.ts"],
+    "important_files": ["tests/unit/tools/credential-management.test.ts", "tests/unit/tools/audit-compliance.test.ts", "tests/utils/test-helpers.ts"],
+    "success_criteria": [
+      "All test files can run without ReferenceError: mockServer is not defined",
+      "Tool registration working properly in all test files",
+      "Test setup and teardown functioning correctly",
+      "Mock system properly initialized for all tests"
+    ]
+  },
+  {
+    "title": "Achieve 90%+ test coverage for tool modules with working tests",
+    "description": "Run comprehensive test suites for all tool modules and enhance existing tests to achieve target coverage of 90%+",
+    "mode": "TESTING",
+    "priority": "high", 
+    "dependencies": ["tests/unit/tools/", "src/tools/"],
+    "important_files": ["tests/unit/tools/", "src/tools/", "jest.config.js"],
+    "success_criteria": [
+      "90%+ line coverage achieved across all tool modules",
+      "All existing tests passing without errors",
+      "Coverage reports showing detailed metrics per module",
+      "Performance benchmarks within acceptable ranges"
+    ]
+  },
+  {
+    "title": "Add integration tests for tool module workflows",
+    "description": "Create end-to-end integration tests that validate complete workflows across multiple tool modules working together",
+    "mode": "TESTING",
+    "priority": "medium",
+    "dependencies": ["tests/unit/tools/", "src/tools/"],
+    "important_files": ["tests/integration/", "src/tools/scenarios.ts", "src/tools/connections.ts"],
+    "success_criteria": [
+      "Integration test directory created",
+      "End-to-end workflow tests for major use cases",
+      "Cross-module interaction testing",
+      "Real API integration testing with proper mocking"
+    ]
+  }
+]
