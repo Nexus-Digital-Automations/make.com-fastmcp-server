@@ -291,7 +291,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             json: variables.filter(v => v.type === 'json').length,
           },
           encryptedCount: variables.filter(v => v.isEncrypted).length,
-          uniqueTags: [...new Set(variables.flatMap(v => (v as MakeCustomVariable).tags || []))],
+          uniqueTags: Array.from(new Set(variables.flatMap(v => (v as MakeCustomVariable).tags || []))),
         };
 
         return JSON.stringify({
@@ -522,10 +522,16 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         const result = response.data;
 
+        // Type guard for bulk operation result
+        const bulkResult = result && typeof result === 'object' ? result as Record<string, unknown> : {};
+        const affected = typeof bulkResult.affected === 'number' ? bulkResult.affected : variableIds.length;
+        const failed = typeof bulkResult.failed === 'number' ? bulkResult.failed : 0;
+        const errors = Array.isArray(bulkResult.errors) ? bulkResult.errors : [];
+
         log.info('Successfully completed bulk variable operation', {
           operation,
-          affected: result?.affected || variableIds.length,
-          failed: result?.failed || 0,
+          affected,
+          failed,
         });
 
         return JSON.stringify({
@@ -533,9 +539,9 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           message: `Bulk ${operation} completed successfully`,
           summary: {
             requested: variableIds.length,
-            successful: result?.affected || 0,
-            failed: result?.failed || 0,
-            errors: result?.errors || [],
+            successful: affected,
+            failed,
+            errors,
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -581,23 +587,32 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         const exportResult = response.data;
 
+        // Type guard for export result
+        const exportResponseData = exportResult && typeof exportResult === 'object' ? exportResult as Record<string, unknown> : {};
+        const count = typeof exportResponseData.count === 'number' ? exportResponseData.count : 0;
+        const exportId = typeof exportResponseData.exportId === 'string' ? exportResponseData.exportId : '';
+        const downloadUrl = typeof exportResponseData.downloadUrl === 'string' ? exportResponseData.downloadUrl : '';
+        const expiresAt = typeof exportResponseData.expiresAt === 'string' ? exportResponseData.expiresAt : '';
+        const filename = typeof exportResponseData.filename === 'string' ? exportResponseData.filename : '';
+        const encryptedCount = typeof exportResponseData.encryptedCount === 'number' ? exportResponseData.encryptedCount : 0;
+
         log.info('Successfully exported custom variables', {
           format,
-          variableCount: exportResult?.count,
-          exportId: exportResult?.exportId,
+          variableCount: count,
+          exportId,
         });
 
         return JSON.stringify({
           exportResult,
           message: `Variables exported successfully in ${format} format`,
           download: {
-            url: exportResult?.downloadUrl,
-            expiresAt: exportResult?.expiresAt,
-            filename: exportResult?.filename,
+            url: downloadUrl,
+            expiresAt,
+            filename,
           },
           summary: {
-            totalVariables: exportResult?.count || 0,
-            encryptedVariables: exportResult?.encryptedCount || 0,
+            totalVariables: count,
+            encryptedVariables: encryptedCount,
             format: format,
             includeMetadata,
           },
@@ -647,10 +662,16 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         const result = response.data;
 
+        // Type guard for resolution result
+        const resolutionData = result && typeof result === 'object' ? result as Record<string, unknown> : {};
+        const resolvedVariable = resolutionData.resolvedVariable && typeof resolutionData.resolvedVariable === 'object' 
+          ? resolutionData.resolvedVariable as Record<string, unknown> : null;
+        const inheritanceChain = Array.isArray(resolutionData.inheritanceChain) ? resolutionData.inheritanceChain : [];
+
         log.info('Successfully tested variable resolution', {
           variableName,
-          resolved: !!result?.resolvedVariable,
-          scope: result?.resolvedVariable?.scope,
+          resolved: !!resolvedVariable,
+          scope: resolvedVariable && typeof resolvedVariable.scope === 'string' ? resolvedVariable.scope : undefined,
         });
 
         return JSON.stringify({
@@ -658,10 +679,10 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           summary: {
             variableName,
             context,
-            resolved: !!result?.resolvedVariable,
-            resolvedScope: result?.resolvedVariable?.scope,
-            value: result?.resolvedVariable?.isEncrypted ? '[ENCRYPTED]' : result?.resolvedVariable?.value,
-            inheritanceChain: result?.inheritanceChain || [],
+            resolved: !!resolvedVariable,
+            resolvedScope: resolvedVariable ? resolvedVariable.scope : undefined,
+            value: resolvedVariable && resolvedVariable.isEncrypted ? '[ENCRYPTED]' : (resolvedVariable ? resolvedVariable.value : undefined),
+            inheritanceChain,
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -763,7 +784,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           impactAnalysis: {
             totalOperationsAffected: incompleteExecutions.reduce((sum, exec) => sum + exec.operations, 0),
             totalDataTransferAffected: incompleteExecutions.reduce((sum, exec) => sum + exec.dataTransfer, 0),
-            uniqueScenarios: [...new Set(incompleteExecutions.map(exec => exec.scenarioId))].length,
+            uniqueScenarios: Array.from(new Set(incompleteExecutions.map(exec => exec.scenarioId))).length,
             oldestExecution: incompleteExecutions.length > 0 ? 
               Math.max(...incompleteExecutions.map(exec => 
                 Math.floor((Date.now() - new Date(exec.stoppedAt).getTime()) / (1000 * 60 * 60))
@@ -845,6 +866,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
         }
 
         const result = response.data;
+        
+        // Type guard for bulk resolve result
+        const resolveResult = result && typeof result === 'object' ? result as Record<string, unknown> : {};
+        const successful = typeof resolveResult.successful === 'number' ? resolveResult.successful : 0;
+        const failed = typeof resolveResult.failed === 'number' ? resolveResult.failed : 0;
+        
         reportProgress({ progress: 75, total: 100 });
 
         // Get updated status for resolved executions
@@ -854,7 +881,8 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
               const statusResponse = await apiClient.get(`/executions/${id}/status`);
               return {
                 executionId: id,
-                newStatus: statusResponse.success ? statusResponse.data?.status : 'unknown',
+                newStatus: statusResponse.success && statusResponse.data && typeof statusResponse.data === 'object' && 'status' in statusResponse.data 
+                  ? (statusResponse.data as Record<string, unknown>).status : 'unknown',
               };
             } catch (error) {
               return { executionId: id, newStatus: 'error' };
@@ -866,23 +894,28 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         log.info('Successfully completed bulk resolve operation', {
           requested: executionIds.length,
-          successful: result?.successful || 0,
-          failed: result?.failed || 0,
+          successful,
+          failed,
         });
+
+        // Additional type guards for remaining properties
+        const batchId = typeof resolveResult.batchId === 'string' ? resolveResult.batchId : undefined;
+        const estimatedCompletionTime = typeof resolveResult.estimatedCompletionTime === 'string' ? resolveResult.estimatedCompletionTime : undefined;
+        const errors = Array.isArray(resolveResult.errors) ? resolveResult.errors : [];
 
         return JSON.stringify({
           result,
           statusUpdates,
           summary: {
             requestedCount: executionIds.length,
-            successfulResolutions: result?.successful || 0,
-            failedResolutions: result?.failed || 0,
+            successfulResolutions: successful,
+            failedResolutions: failed,
             action: action,
-            batchId: result?.batchId,
-            estimatedCompletionTime: result?.estimatedCompletionTime,
+            batchId: batchId,
+            estimatedCompletionTime: estimatedCompletionTime,
           },
           message: `Bulk resolution initiated for ${executionIds.length} executions`,
-          errors: result?.errors || [],
+          errors: errors,
         }, null, 2);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -920,7 +953,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        const analysisData = {
+        const requestData = {
           organizationId,
           teamId,
           timeRange,
@@ -930,7 +963,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         reportProgress({ progress: 25, total: 100 });
 
-        const response = await apiClient.post('/incomplete-executions/failure-analysis', analysisData);
+        const response = await apiClient.post('/incomplete-executions/failure-analysis', requestData);
 
         if (!response.success) {
           throw new UserError(`Failed to analyze failure patterns: ${response.error?.message || 'Unknown error'}`);
@@ -939,18 +972,30 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
         const analysis = response.data;
         reportProgress({ progress: 75, total: 100 });
 
+        // Type guard for analysis result
+        const analysisData = analysis && typeof analysis === 'object' ? analysis as Record<string, unknown> : {};
+        const totalFailures = typeof analysisData.totalFailures === 'number' ? analysisData.totalFailures : 0;
+        const failureRate = typeof analysisData.failureRate === 'number' ? analysisData.failureRate : 0;
+        const topErrors = Array.isArray(analysisData.topErrors) ? analysisData.topErrors : [];
+        const topScenarios = Array.isArray(analysisData.topScenarios) ? analysisData.topScenarios : [];
+        const timePatterns = analysisData.timePatterns && typeof analysisData.timePatterns === 'object' ? analysisData.timePatterns : {};
+        const recoveryStats = analysisData.recoveryStats && typeof analysisData.recoveryStats === 'object' ? analysisData.recoveryStats as Record<string, unknown> : {};
+        const operationsLost = typeof analysisData.operationsLost === 'number' ? analysisData.operationsLost : 0;
+        const dataTransferLost = typeof analysisData.dataTransferLost === 'number' ? analysisData.dataTransferLost : 0;
+        const estimatedCost = typeof analysisData.estimatedCost === 'number' ? analysisData.estimatedCost : 0;
+
         // Generate additional insights
         const insights = {
-          totalFailures: analysis?.totalFailures || 0,
-          failureRate: analysis?.failureRate || 0,
-          mostCommonErrors: analysis?.topErrors?.slice(0, 5) || [],
-          mostAffectedScenarios: analysis?.topScenarios?.slice(0, 5) || [],
-          timePatterns: analysis?.timePatterns || {},
-          recoverySuccess: analysis?.recoveryStats?.successRate || 0,
+          totalFailures: totalFailures,
+          failureRate: failureRate,
+          mostCommonErrors: topErrors.slice(0, 5),
+          mostAffectedScenarios: topScenarios.slice(0, 5),
+          timePatterns: timePatterns,
+          recoverySuccess: typeof recoveryStats.successRate === 'number' ? recoveryStats.successRate : 0,
           operationalImpact: {
-            operationsLost: analysis?.operationsLost || 0,
-            dataTransferLost: analysis?.dataTransferLost || 0,
-            estimatedCost: analysis?.estimatedCost || 0,
+            operationsLost: operationsLost,
+            dataTransferLost: dataTransferLost,
+            estimatedCost: estimatedCost,
           },
         };
 
@@ -962,17 +1007,19 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           analysisTimeRange: timeRange,
         });
 
+        const recommendations = Array.isArray(analysisData.recommendations) ? analysisData.recommendations : [];
+
         return JSON.stringify({
           analysis,
           insights,
-          recommendations: includeRecommendations ? analysis?.recommendations || [] : undefined,
+          recommendations: includeRecommendations ? recommendations : undefined,
           summary: {
             analysisTimeRange: timeRange,
             groupBy,
             totalFailures: insights.totalFailures,
             failureRate: `${(insights.failureRate * 100).toFixed(2)}%`,
             topIssue: insights.mostCommonErrors[0]?.error || 'No dominant error pattern',
-            actionableRecommendations: analysis?.recommendations?.filter((r: { priority: string }) => r.priority === 'high').length || 0,
+            actionableRecommendations: recommendations.filter((r: unknown) => typeof r === 'object' && r !== null && 'priority' in r && (r as { priority: string }).priority === 'high').length || 0,
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -1037,9 +1084,13 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
         }
 
         const rule = response.data;
+        
+        // Type guard for rule result
+        const ruleResponse = rule && typeof rule === 'object' ? rule as Record<string, unknown> : {};
+        const ruleId = typeof ruleResponse.id === 'string' ? ruleResponse.id : 'unknown';
 
         log.info('Successfully created recovery automation rule', {
-          ruleId: rule?.id,
+          ruleId: ruleId,
           name,
           primaryAction: actions.primaryAction,
         });
@@ -1048,7 +1099,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           rule,
           message: `Recovery automation rule "${name}" created successfully`,
           summary: {
-            ruleId: rule?.id,
+            ruleId: ruleId,
             name,
             primaryAction: actions.primaryAction,
             isActive,

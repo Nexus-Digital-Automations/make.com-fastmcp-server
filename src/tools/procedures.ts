@@ -927,7 +927,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        const testData = {
+        const requestData = {
           testType,
           timeout,
           includePerformance,
@@ -935,21 +935,39 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
 
         reportProgress({ progress: 25, total: 100 });
 
-        const response = await apiClient.post(`/devices/${deviceId}/test`, testData);
+        const response = await apiClient.post(`/devices/${deviceId}/test`, requestData);
 
         if (!response.success) {
           throw new UserError(`Failed to test device connectivity: ${response.error?.message || 'Unknown error'}`);
         }
 
         const testResult = response.data;
+        
+        // Type guard for test result
+        const testData = testResult && typeof testResult === 'object' ? testResult as Record<string, unknown> : {};
+        const success = typeof testData.success === 'boolean' ? testData.success : false;
+        const responseTime = typeof testData.responseTime === 'number' ? testData.responseTime : undefined;
+        
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully tested device connectivity', {
           deviceId,
           testType,
-          success: testResult?.success,
-          responseTime: testResult?.responseTime,
+          success: success,
+          responseTime: responseTime,
         });
+
+        // Additional type guards for summary and diagnostics
+        const deviceStatus = typeof testData.deviceStatus === 'string' ? testData.deviceStatus : 'unknown';
+        const errors = Array.isArray(testData.errors) ? testData.errors : [];
+        const warnings = Array.isArray(testData.warnings) ? testData.warnings : [];
+        const recommendations = Array.isArray(testData.recommendations) ? testData.recommendations : [];
+        
+        const diagnostics = testData.diagnostics && typeof testData.diagnostics === 'object' ? testData.diagnostics as Record<string, unknown> : {};
+        const connectivity = diagnostics.connectivity && typeof diagnostics.connectivity === 'object' ? diagnostics.connectivity : {};
+        const authentication = diagnostics.authentication && typeof diagnostics.authentication === 'object' ? diagnostics.authentication : {};
+        const performance = diagnostics.performance && typeof diagnostics.performance === 'object' ? diagnostics.performance : {};
+        const capabilities = diagnostics.capabilities && typeof diagnostics.capabilities === 'object' ? diagnostics.capabilities : {};
 
         return JSON.stringify({
           test: testResult,
@@ -957,19 +975,19 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
           summary: {
             deviceId,
             testType,
-            success: testResult?.success || false,
-            responseTime: testResult?.responseTime,
-            status: testResult?.deviceStatus,
-            errors: testResult?.errors || [],
-            warnings: testResult?.warnings || [],
+            success: success,
+            responseTime: responseTime,
+            status: deviceStatus,
+            errors: errors,
+            warnings: warnings,
           },
           diagnostics: {
-            connectivity: testResult?.diagnostics?.connectivity || {},
-            authentication: testResult?.diagnostics?.authentication || {},
-            performance: includePerformance ? testResult?.diagnostics?.performance || {} : undefined,
-            capabilities: testResult?.diagnostics?.capabilities || {},
+            connectivity: connectivity,
+            authentication: authentication,
+            performance: includePerformance ? performance : undefined,
+            capabilities: capabilities,
           },
-          recommendations: testResult?.recommendations || [],
+          recommendations: recommendations,
         }, null, 2);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);

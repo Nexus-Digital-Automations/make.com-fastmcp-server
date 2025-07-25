@@ -415,24 +415,35 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         }
 
         const installation = response.data as Record<string, unknown>;
+        
+        // Type guards for installation data
+        const installationId = typeof installation.id === 'string' || typeof installation.id === 'number' ? installation.id : 'unknown';
+        const installedVersion = typeof installation.version === 'string' ? installation.version : 'unknown';
+        
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully installed SDK app', {
           appId,
-          installationId: installation?.id,
-          version: installation?.version,
+          installationId: installationId,
+          version: installedVersion,
         });
+
+        // Additional type guards for summary
+        const appName = typeof installation.appName === 'string' ? installation.appName : 'unknown';
+        const installedAt = typeof installation.installedAt === 'string' ? installation.installedAt : new Date().toISOString();
+        const installationPermissions = installation.permissions && typeof installation.permissions === 'object' ? installation.permissions as Record<string, unknown> : {};
+        const granted = Array.isArray(installationPermissions.granted) ? installationPermissions.granted : [];
 
         return JSON.stringify({
           installation,
           message: `SDK app ${appId} installed successfully`,
           summary: {
             appId,
-            appName: installation?.appName,
-            version: installation?.version,
-            installedAt: installation?.installedAt,
+            appName: appName,
+            version: installedVersion,
+            installedAt: installedAt,
             autoUpdate,
-            permissionsGranted: ((installation?.permissions as Record<string, unknown>)?.granted as unknown[])?.length || 0,
+            permissionsGranted: granted.length,
             configurationApplied: Object.keys(configuration).length > 0,
           },
           postInstall: {
@@ -596,6 +607,10 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
 
         const currentInstallation = currentResponse.data;
         
+        // Type guard for current installation
+        const installationData = currentInstallation && typeof currentInstallation === 'object' ? currentInstallation as Record<string, unknown> : {};
+        const currentVersion = typeof installationData.version === 'string' ? installationData.version : 'unknown';
+        
         reportProgress({ progress: 20, total: 100 });
 
         const updateData = {
@@ -608,7 +623,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             preserveConfiguration: true,
             notifyUsers: true,
           },
-          currentVersion: currentInstallation.version,
+          currentVersion: currentVersion,
         };
 
         reportProgress({ progress: 40, total: 100 });
@@ -620,38 +635,53 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         }
 
         const updateResult = response.data;
+        
+        // Type guard for update result
+        const updateResultData = updateResult && typeof updateResult === 'object' ? updateResult as Record<string, unknown> : {};
+        const toVersion = typeof updateResultData.version === 'string' ? updateResultData.version : 'unknown';
+        const success = typeof updateResultData.success === 'boolean' ? updateResultData.success : true;
+        
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully updated SDK app', {
           appId,
-          fromVersion: currentInstallation.version,
-          toVersion: updateResult?.version,
-          success: updateResult?.success,
+          fromVersion: currentVersion,
+          toVersion: toVersion,
+          success: success,
         });
+
+        // Additional type guards for summary data
+        const appName = typeof updateResultData.appName === 'string' ? updateResultData.appName : 'unknown';
+        const updatedAt = typeof updateResultData.updatedAt === 'string' ? updateResultData.updatedAt : new Date().toISOString();
+        const breaking = typeof updateResultData.breaking === 'boolean' ? updateResultData.breaking : false;
+        const backupId = typeof updateResultData.backupId === 'string' ? updateResultData.backupId : undefined;
 
         return JSON.stringify({
           update: updateResult,
           message: `SDK app ${appId} updated successfully`,
           summary: {
             appId,
-            appName: updateResult?.appName,
-            fromVersion: currentInstallation.version,
-            toVersion: updateResult?.version,
-            updatedAt: updateResult?.updatedAt,
-            breaking: updateResult?.breaking || false,
-            backupCreated: backup && updateResult?.backupId,
+            appName: appName,
+            fromVersion: currentVersion,
+            toVersion: toVersion,
+            updatedAt: updatedAt,
+            breaking: breaking,
+            backupCreated: backup && backupId,
           },
-          changes: {
-            features: updateResult?.changelog?.features || [],
-            bugfixes: updateResult?.changelog?.bugfixes || [],
-            breaking: updateResult?.changelog?.breaking || [],
-            deprecated: updateResult?.changelog?.deprecated || [],
-          },
+          changes: ((): { features: unknown[]; bugfixes: unknown[]; breaking: unknown[]; deprecated: unknown[] } => {
+            const changelog = updateResultData.changelog && typeof updateResultData.changelog === 'object' ? updateResultData.changelog as Record<string, unknown> : {};
+            return {
+              features: Array.isArray(changelog.features) ? changelog.features : [],
+              bugfixes: Array.isArray(changelog.bugfixes) ? changelog.bugfixes : [],
+              breaking: Array.isArray(changelog.breaking) ? changelog.breaking : [],
+              deprecated: Array.isArray(changelog.deprecated) ? changelog.deprecated : [],
+            };
+          })(),
           postUpdate: {
-            configurationMigrated: updateResult?.configurationMigrated || false,
-            permissionsChanged: updateResult?.permissionsChanged || false,
-            testingRequired: updateResult?.requiresTesting || false,
-            rollbackAvailable: updateResult?.rollbackAvailable || false,
+            configurationMigrated: typeof updateResultData.configurationMigrated === 'boolean' ? updateResultData.configurationMigrated : false,
+            permissionsChanged: typeof updateResultData.permissionsChanged === 'boolean' ? updateResultData.permissionsChanged : false,
+            testingRequired: typeof updateResultData.requiresTesting === 'boolean' ? updateResultData.requiresTesting : false,
+            rollbackAvailable: typeof updateResultData.rollbackAvailable === 'boolean' ? updateResultData.rollbackAvailable : false,
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -699,36 +729,50 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         }
 
         const configResult = response.data;
+        
+        // Type guard for config result
+        const configData = configResult && typeof configResult === 'object' ? configResult as Record<string, unknown> : {};
+        const configurationApplied = typeof configData.configurationApplied === 'boolean' ? configData.configurationApplied : false;
+        const permissionsChanged = typeof configData.permissionsChanged === 'boolean' ? configData.permissionsChanged : false;
+        const integrationsUpdated = typeof configData.integrationsUpdated === 'boolean' ? configData.integrationsUpdated : false;
+        
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully configured SDK app', {
           appId,
-          configurationApplied: configResult?.configurationApplied,
-          permissionsChanged: configResult?.permissionsChanged,
-          integrationsUpdated: configResult?.integrationsUpdated,
+          configurationApplied: configurationApplied,
+          permissionsChanged: permissionsChanged,
+          integrationsUpdated: integrationsUpdated,
         });
+
+        // Additional type guards for summary
+        const appName = typeof configData.appName === 'string' ? configData.appName : 'unknown';
+        const validation = configData.validation && typeof configData.validation === 'object' ? configData.validation as Record<string, unknown> : {};
+        const validationErrors = Array.isArray(validation.errors) ? validation.errors : [];
+        const validationWarnings = Array.isArray(validation.warnings) ? validation.warnings : [];
+        const validationValid = typeof validation.valid === 'boolean' ? validation.valid : false;
 
         return JSON.stringify({
           configuration: configResult,
           message: `SDK app ${appId} configured successfully`,
           summary: {
             appId,
-            appName: configResult?.appName,
+            appName: appName,
             configurationKeys: Object.keys(configuration).length,
-            permissionsGranted: permissions?.grant?.length || 0,
-            permissionsRevoked: permissions?.revoke?.length || 0,
-            integrationsEnabled: integrations?.enable?.length || 0,
-            integrationsDisabled: integrations?.disable?.length || 0,
+            permissionsGranted: Array.isArray(permissions?.grant) ? permissions.grant.length : 0,
+            permissionsRevoked: Array.isArray(permissions?.revoke) ? permissions.revoke.length : 0,
+            integrationsEnabled: Array.isArray(integrations?.enable) ? integrations.enable.length : 0,
+            integrationsDisabled: Array.isArray(integrations?.disable) ? integrations.disable.length : 0,
           },
           applied: {
-            configuration: configResult?.configurationApplied || false,
-            permissions: configResult?.permissionsChanged || false,
-            integrations: configResult?.integrationsUpdated || false,
+            configuration: configurationApplied,
+            permissions: permissionsChanged,
+            integrations: integrationsUpdated,
           },
           validation: {
-            errors: configResult?.validation?.errors || [],
-            warnings: configResult?.validation?.warnings || [],
-            valid: configResult?.validation?.valid || false,
+            errors: validationErrors,
+            warnings: validationWarnings,
+            valid: validationValid,
           },
         }, null, 2);
       } catch (error: unknown) {
