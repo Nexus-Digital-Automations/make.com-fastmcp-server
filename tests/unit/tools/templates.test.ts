@@ -300,7 +300,7 @@ describe('Template Management Tools', () => {
           routes: [],
         };
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-template',
           parameters: {
             name: 'Simple Webhook Template',
@@ -341,7 +341,7 @@ describe('Template Management Tools', () => {
 
         const complexBlueprint = generateComplexBlueprint();
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-template',
           parameters: {
             name: 'Order Processing Workflow',
@@ -377,7 +377,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-template',
           parameters: {
             name: 'Folder Template',
@@ -434,7 +434,7 @@ describe('Template Management Tools', () => {
             data: mockTemplate,
           });
 
-          const result = await server.executeToolCall({
+          const result = await mockServer.executeToolCall({
             tool: 'create-template',
             parameters: {
               name: `${testCase.expectedComplexity} Template`,
@@ -472,7 +472,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-template',
           parameters: {
             name: 'Connection Analysis Template',
@@ -498,7 +498,7 @@ describe('Template Management Tools', () => {
         const maliciousName = securityTestPatterns.xss[0];
         const maliciousDescription = securityTestPatterns.sqlInjection[0];
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-template',
           parameters: {
             name: maliciousName,
@@ -525,7 +525,7 @@ describe('Template Management Tools', () => {
         ];
 
         for (const invalidBlueprint of invalidBlueprints) {
-          await expect(server.executeToolCall({
+          await expect(mockServer.executeToolCall({
             tool: 'create-template',
             parameters: {
               name: 'Invalid Blueprint Test',
@@ -545,7 +545,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-template',
           parameters: {
             name: 'Test Template',
@@ -557,7 +557,7 @@ describe('Template Management Tools', () => {
       });
 
       test('should validate required fields', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-template',
           parameters: {
             // Missing required fields
@@ -566,7 +566,7 @@ describe('Template Management Tools', () => {
       });
 
       test('should validate blueprint as object', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-template',
           parameters: {
             name: 'Test Template',
@@ -594,7 +594,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-templates',
           parameters: {
             category: 'data-integration',
@@ -631,7 +631,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-templates',
           parameters: {
             tags: ['automation', 'crm'],
@@ -665,7 +665,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-templates',
           parameters: {
             searchQuery: 'CRM sync',
@@ -703,7 +703,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-templates',
           parameters: {
             complexity: 'complex',
@@ -738,7 +738,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-templates',
           parameters: {
             creatorId: 12345,
@@ -783,7 +783,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-templates',
           parameters: {
             includeUsage: true,
@@ -811,7 +811,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'list-templates',
           parameters: {},
         })).rejects.toThrow('Failed to list templates: Template service temporarily unavailable');
@@ -828,7 +828,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'get-template',
           parameters: {
             templateId: 12345,
@@ -863,7 +863,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'get-template',
           parameters: {
             templateId: 12345,
@@ -888,7 +888,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'get-template',
           parameters: {
             templateId: 12345,
@@ -913,7 +913,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template not found', status: 404 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'get-template',
           parameters: {
             templateId: 99999,
@@ -922,7 +922,7 @@ describe('Template Management Tools', () => {
       });
 
       test('should validate template ID', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'get-template',
           parameters: {
             templateId: -1, // Invalid ID
@@ -946,7 +946,7 @@ describe('Template Management Tools', () => {
           data: updatedTemplate,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'update-template',
           parameters: {
             templateId: 12345,
@@ -985,7 +985,7 @@ describe('Template Management Tools', () => {
           data: updatedTemplate,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'update-template',
           parameters: {
             templateId: 12345,
@@ -1014,7 +1014,7 @@ describe('Template Management Tools', () => {
           data: updatedTemplate,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'update-template',
           parameters: {
             templateId: 12345,
@@ -1040,7 +1040,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template not found', status: 404 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'update-template',
           parameters: {
             templateId: 99999,
@@ -1050,7 +1050,7 @@ describe('Template Management Tools', () => {
       });
 
       test('should require at least one update field', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'update-template',
           parameters: {
             templateId: 12345,
@@ -1078,7 +1078,7 @@ describe('Template Management Tools', () => {
           data: useResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'use-template',
           parameters: {
             templateId: 12345,
@@ -1124,7 +1124,7 @@ describe('Template Management Tools', () => {
           data: useResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'use-template',
           parameters: {
             templateId: 12345,
@@ -1154,7 +1154,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template not found', status: 404 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'use-template',
           parameters: {
             templateId: 99999,
@@ -1164,7 +1164,7 @@ describe('Template Management Tools', () => {
       });
 
       test('should validate scenario name', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'use-template',
           parameters: {
             templateId: 12345,
@@ -1189,7 +1189,7 @@ describe('Template Management Tools', () => {
           data: { deleted: true, templateId: 12345 },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'delete-template',
           parameters: {
             templateId: 12345,
@@ -1217,7 +1217,7 @@ describe('Template Management Tools', () => {
           data: { deleted: true, templateId: 12345, forced: true },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'delete-template',
           parameters: {
             templateId: 12345,
@@ -1238,7 +1238,7 @@ describe('Template Management Tools', () => {
           data: { activeScenarios: 3, totalUses: 15 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'delete-template',
           parameters: {
             templateId: 12345,
@@ -1255,7 +1255,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template not found', status: 404 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'delete-template',
           parameters: {
             templateId: 99999,
@@ -1274,7 +1274,7 @@ describe('Template Management Tools', () => {
         data: newTemplate,
       });
 
-      const createResult = await server.executeToolCall({
+      const createResult = await mockServer.executeToolCall({
         tool: 'create-template',
         parameters: {
           name: 'Lifecycle Test Template',
@@ -1296,7 +1296,7 @@ describe('Template Management Tools', () => {
         data: updatedTemplate,
       });
 
-      const updateResult = await server.executeToolCall({
+      const updateResult = await mockServer.executeToolCall({
         tool: 'update-template',
         parameters: {
           templateId: newTemplate.id,
@@ -1316,7 +1316,7 @@ describe('Template Management Tools', () => {
         data: useResult,
       });
 
-      const scenarioResult = await server.executeToolCall({
+      const scenarioResult = await mockServer.executeToolCall({
         tool: 'use-template',
         parameters: {
           templateId: newTemplate.id,
@@ -1330,7 +1330,7 @@ describe('Template Management Tools', () => {
         data: updatedTemplate,
       });
 
-      const getResult = await server.executeToolCall({
+      const getResult = await mockServer.executeToolCall({
         tool: 'get-template',
         parameters: {
           templateId: newTemplate.id,
@@ -1373,7 +1373,7 @@ describe('Template Management Tools', () => {
             });
           }
 
-          await server.executeToolCall({
+          await mockServer.executeToolCall({
             tool: 'create-template',
             parameters: {
               name: `Chaos Test ${scenario}`,
@@ -1406,7 +1406,7 @@ describe('Template Management Tools', () => {
       });
 
       for (let i = 0; i < concurrentRequests; i++) {
-        promises.push(server.executeToolCall({
+        promises.push(mockServer.executeToolCall({
           tool: 'create-template',
           parameters: {
             name: `Concurrent Template ${i}`,

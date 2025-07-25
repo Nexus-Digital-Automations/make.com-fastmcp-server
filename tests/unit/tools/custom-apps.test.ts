@@ -457,7 +457,7 @@ module.exports = { convert };
           data: mockApp,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-custom-app',
           parameters: {
             name: 'Simple API Connector',
@@ -567,7 +567,7 @@ module.exports = { convert };
           data: fullApp,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-custom-app',
           parameters: {
             name: 'Business Management App',
@@ -633,7 +633,7 @@ module.exports = { convert };
         const maliciousName = securityTestPatterns.xss[0];
         const maliciousDescription = securityTestPatterns.sqlInjection[0];
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-custom-app',
           parameters: {
             name: maliciousName,
@@ -660,7 +660,7 @@ module.exports = { convert };
           data: mockApp,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-custom-app',
           parameters: {
             name: 'Secure App',
@@ -689,7 +689,7 @@ module.exports = { convert };
           error: { message: 'Custom app service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-custom-app',
           parameters: {
             name: 'Test App',
@@ -705,7 +705,7 @@ module.exports = { convert };
       });
 
       test('should validate required fields', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-custom-app',
           parameters: {
             // Missing required fields
@@ -730,7 +730,7 @@ module.exports = { convert };
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-custom-apps',
           parameters: {
             type: 'all',
@@ -776,7 +776,7 @@ module.exports = { convert };
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-custom-apps',
           parameters: {
             includeUsage: true,
@@ -806,7 +806,7 @@ module.exports = { convert };
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-custom-apps',
           parameters: {
             organizationId: 1001,
@@ -834,7 +834,7 @@ module.exports = { convert };
           error: { message: 'Custom app service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'list-custom-apps',
           parameters: {},
         })).rejects.toThrow('Failed to list custom apps: Custom app service temporarily unavailable');
@@ -851,7 +851,7 @@ module.exports = { convert };
           data: mockHook,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-hook',
           parameters: {
             name: 'Order Webhook',
@@ -917,7 +917,7 @@ module.exports = { convert };
           data: pollingHook,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-hook',
           parameters: {
             name: 'Data Polling Hook',
@@ -961,7 +961,7 @@ module.exports = { convert };
           data: mockHook,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-hook',
           parameters: {
             name: 'Secure Hook',
@@ -999,7 +999,7 @@ module.exports = { convert };
           error: { message: 'Hook service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-hook',
           parameters: {
             name: 'Test Hook',
@@ -1020,7 +1020,7 @@ module.exports = { convert };
       });
 
       test('should validate required fields', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-hook',
           parameters: {
             // Missing required fields
@@ -1053,7 +1053,7 @@ function processData(input) {
 module.exports = { processData };
         `.trim();
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-custom-function',
           parameters: {
             name: 'data_processor',
@@ -1140,7 +1140,7 @@ def calculate_metrics(data, config):
     return metrics
         `.trim();
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-custom-function',
           parameters: {
             name: 'metrics_calculator',
@@ -1212,7 +1212,7 @@ def calculate_metrics(data, config):
 
         // This should either be rejected or sanitized
         try {
-          await server.executeToolCall({
+          await mockServer.executeToolCall({
             tool: 'create-custom-function',
             parameters: {
               name: 'malicious_function',
@@ -1244,7 +1244,7 @@ def calculate_metrics(data, config):
 
         const secretCode = 'const SECRET_KEY = "super_secret_key_123";';
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-custom-function',
           parameters: {
             name: 'secure_function',
@@ -1275,7 +1275,7 @@ def calculate_metrics(data, config):
           error: { message: 'Custom function service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-custom-function',
           parameters: {
             name: 'test_function',
@@ -1294,7 +1294,7 @@ def calculate_metrics(data, config):
       });
 
       test('should validate required fields', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-custom-function',
           parameters: {
             // Missing required fields
@@ -1344,7 +1344,7 @@ def calculate_metrics(data, config):
           data: testResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'test-custom-app',
           parameters: {
             appId: 12345,
@@ -1396,7 +1396,7 @@ def calculate_metrics(data, config):
           data: endpointTestResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'test-custom-app',
           parameters: {
             appId: 12345,
@@ -1451,7 +1451,7 @@ def calculate_metrics(data, config):
           data: performanceResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'test-custom-app',
           parameters: {
             appId: 12345,
@@ -1475,7 +1475,7 @@ def calculate_metrics(data, config):
           error: { message: 'Test execution failed: app not found' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'test-custom-app',
           parameters: {
             appId: 12345,
@@ -1485,7 +1485,7 @@ def calculate_metrics(data, config):
       });
 
       test('should validate app ID', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'test-custom-app',
           parameters: {
             appId: -1, // Invalid ID
@@ -1505,7 +1505,7 @@ def calculate_metrics(data, config):
         data: newApp,
       });
 
-      const appResult = await server.executeToolCall({
+      const appResult = await mockServer.executeToolCall({
         tool: 'create-custom-app',
         parameters: {
           name: 'Lifecycle Test App',
@@ -1532,7 +1532,7 @@ def calculate_metrics(data, config):
         data: newHook,
       });
 
-      const hookResult = await server.executeToolCall({
+      const hookResult = await mockServer.executeToolCall({
         tool: 'create-hook',
         parameters: {
           name: 'Test Hook',
@@ -1560,7 +1560,7 @@ def calculate_metrics(data, config):
         data: newFunction,
       });
 
-      const functionResult = await server.executeToolCall({
+      const functionResult = await mockServer.executeToolCall({
         tool: 'create-custom-function',
         parameters: {
           name: 'test_function',
@@ -1591,7 +1591,7 @@ def calculate_metrics(data, config):
         data: testResult,
       });
 
-      const testingResult = await server.executeToolCall({
+      const testingResult = await mockServer.executeToolCall({
         tool: 'test-custom-app',
         parameters: {
           appId: newApp.id,
@@ -1635,7 +1635,7 @@ def calculate_metrics(data, config):
             });
           }
 
-          await server.executeToolCall({
+          await mockServer.executeToolCall({
             tool: 'create-custom-app',
             parameters: {
               name: `Chaos Test ${scenario}`,
@@ -1672,7 +1672,7 @@ def calculate_metrics(data, config):
       });
 
       for (let i = 0; i < concurrentRequests; i++) {
-        promises.push(server.executeToolCall({
+        promises.push(mockServer.executeToolCall({
           tool: 'create-custom-app',
           parameters: {
             name: `Concurrent App ${i}`,

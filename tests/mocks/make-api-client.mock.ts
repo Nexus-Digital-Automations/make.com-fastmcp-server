@@ -56,6 +56,13 @@ export class MockMakeApiClient {
   }
 
   /**
+   * Alias for mockResponse for backward compatibility
+   */
+  setMockResponse(method: string, endpoint: string, response: any): void {
+    this.mockResponse(method, endpoint, response);
+  }
+
+  /**
    * Mock a failure response for a specific endpoint
    */
   mockFailure(method: string, endpoint: string, error: Error): void {
@@ -129,26 +136,26 @@ export class MockMakeApiClient {
     return response;
   }
 
-  // HTTP method implementations
-  async get(endpoint: string, options?: any): Promise<ApiResponse> {
+  // HTTP method implementations (with Jest spy tracking)
+  get = jest.fn(async (endpoint: string, options?: any): Promise<ApiResponse> => {
     return this.simulateCall('GET', endpoint, options?.params);
-  }
+  });
 
-  async post(endpoint: string, data?: any, options?: any): Promise<ApiResponse> {
+  post = jest.fn(async (endpoint: string, data?: any, options?: any): Promise<ApiResponse> => {
     return this.simulateCall('POST', endpoint, data);
-  }
+  });
 
-  async put(endpoint: string, data?: any, options?: any): Promise<ApiResponse> {
+  put = jest.fn(async (endpoint: string, data?: any, options?: any): Promise<ApiResponse> => {
     return this.simulateCall('PUT', endpoint, data);
-  }
+  });
 
-  async patch(endpoint: string, data?: any, options?: any): Promise<ApiResponse> {
+  patch = jest.fn(async (endpoint: string, data?: any, options?: any): Promise<ApiResponse> => {
     return this.simulateCall('PATCH', endpoint, data);
-  }
+  });
 
-  async delete(endpoint: string, options?: any): Promise<ApiResponse> {
+  delete = jest.fn(async (endpoint: string, options?: any): Promise<ApiResponse> => {
     return this.simulateCall('DELETE', endpoint, options?.params);
-  }
+  });
 
   // Health check method
   async healthCheck(): Promise<boolean> {

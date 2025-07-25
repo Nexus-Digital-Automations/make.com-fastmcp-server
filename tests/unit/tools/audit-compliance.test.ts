@@ -254,7 +254,7 @@ describe('Audit and Compliance Tools', () => {
     ...overrides,
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const serverSetup = createMockServer();
     mockServer = serverSetup.server;
     mockTool = serverSetup.mockTool;
@@ -265,8 +265,9 @@ describe('Audit and Compliance Tools', () => {
       scenarios: ['latency', 'error', 'timeout'],
     });
 
-    // Add tools to server
-    // Tool setup handled by mock
+    // Register audit compliance tools before each test
+    const { addAuditComplianceTools } = await import('../../../src/tools/audit-compliance.js');
+    addAuditComplianceTools(mockServer, mockApiClient as any);
   });
 
   afterEach(() => {
@@ -321,23 +322,31 @@ describe('Audit and Compliance Tools', () => {
   describe('log-audit-event', () => {
     describe('Basic Functionality', () => {
       test('should log a basic audit event successfully', async () => {
+        // Register tools for this test
+        const { addAuditComplianceTools } = await import('../../../src/tools/audit-compliance.js');
+        addAuditComplianceTools(mockServer, mockApiClient as any);
+        
         const mockEvent = generateMockAuditEvent();
         mockApiClient.setMockResponse('post', '/audit/events', {
           success: true,
           data: mockEvent,
         });
 
-        const result = await server.executeToolCall({
-          tool: 'log-audit-event',
+        const result = await mockServer.executeToolCall({
+          tool: 'log_audit_event',
           parameters: {
             level: 'info',
             category: 'authentication',
             action: 'user_login',
-            actorId: '12345',
-            actorName: 'test.user@example.com',
-            resourceType: 'user_account',
-            resourceId: 'user_12345',
-            outcome: 'success',
+            resource: 'user_account:user_12345',
+            userId: '12345',
+            success: true,
+            details: {
+              actorName: 'test.user@example.com',
+              resourceType: 'user_account',
+              resourceId: 'user_12345',
+            },
+            riskLevel: 'low',
           },
         });
 
@@ -348,7 +357,7 @@ describe('Audit and Compliance Tools', () => {
         }));
 
         const response = JSON.parse(result);
-        expect(response.event).toBeDefined();
+        expect(response.eventId).toBeDefined();
         expect(response.message).toContain('logged successfully');
       });
 
@@ -365,8 +374,8 @@ describe('Audit and Compliance Tools', () => {
           data: mockEvent,
         });
 
-        const result = await server.executeToolCall({
-          tool: 'log-audit-event',
+        const result = await mockServer.executeToolCall({
+          tool: 'log_audit_event',
           parameters: {
             level: 'critical',
             category: 'security',
@@ -405,8 +414,8 @@ describe('Audit and Compliance Tools', () => {
           data: mockEvent,
         });
 
-        const result = await server.executeToolCall({
-          tool: 'log-audit-event',
+        const result = await mockServer.executeToolCall({
+          tool: 'log_audit_event',
           parameters: {
             level: 'info',
             category: 'configuration',
@@ -437,8 +446,8 @@ describe('Audit and Compliance Tools', () => {
 
         for (const { field, value } of maliciousInputs) {
           try {
-            await server.executeToolCall({
-              tool: 'log-audit-event',
+            await mockServer.executeToolCall({
+              tool: 'log_audit_event',
               parameters: {
                 level: 'info',
                 category: 'authentication',
@@ -481,8 +490,8 @@ describe('Audit and Compliance Tools', () => {
           data: generateMockAuditEvent(),
         });
 
-        await server.executeToolCall({
-          tool: 'log-audit-event',
+        await mockServer.executeToolCall({
+          tool: 'log_audit_event',
           parameters: tamperedEvent,
         });
 
@@ -502,8 +511,8 @@ describe('Audit and Compliance Tools', () => {
           error: { message: 'Audit service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
-          tool: 'log-audit-event',
+        await expect(mockServer.executeToolCall({
+          tool: 'log_audit_event',
           parameters: {
             level: 'info',
             category: 'authentication',
@@ -518,8 +527,8 @@ describe('Audit and Compliance Tools', () => {
       });
 
       test('should validate required fields', async () => {
-        await expect(server.executeToolCall({
-          tool: 'log-audit-event',
+        await expect(mockServer.executeToolCall({
+          tool: 'log_audit_event',
           parameters: {
             level: 'info',
             category: 'authentication',
@@ -529,8 +538,8 @@ describe('Audit and Compliance Tools', () => {
       });
 
       test('should validate enum values', async () => {
-        await expect(server.executeToolCall({
-          tool: 'log-audit-event',
+        await expect(mockServer.executeToolCall({
+          tool: 'log_audit_event',
           parameters: {
             level: 'invalid_level' as 'info' | 'warn' | 'error' | 'critical',
             category: 'authentication',
@@ -556,8 +565,8 @@ describe('Audit and Compliance Tools', () => {
         });
 
         for (let i = 0; i < concurrentRequests; i++) {
-          promises.push(server.executeToolCall({
-            tool: 'log-audit-event',
+          promises.push(mockServer.executeToolCall({
+            tool: 'log_audit_event',
             parameters: {
               level: 'info',
               category: 'authentication',
@@ -589,7 +598,7 @@ describe('Audit and Compliance Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'search-audit-events',
           parameters: {
             level: 'info',
@@ -623,7 +632,7 @@ describe('Audit and Compliance Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'search-audit-events',
           parameters: {
             startDate,
@@ -652,7 +661,7 @@ describe('Audit and Compliance Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'search-audit-events',
           parameters: {
             actorId: '12345',
@@ -702,7 +711,7 @@ describe('Audit and Compliance Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'search-audit-events',
           parameters: {
             category: 'authentication',
@@ -737,7 +746,7 @@ describe('Audit and Compliance Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'search-audit-events',
           parameters: {
             complianceFramework: 'GDPR',
@@ -753,7 +762,7 @@ describe('Audit and Compliance Tools', () => {
 
     describe('Error Handling', () => {
       test('should handle invalid date ranges', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'search-audit-events',
           parameters: {
             startDate: '2024-12-31T23:59:59Z',
@@ -768,7 +777,7 @@ describe('Audit and Compliance Tools', () => {
           error: { message: 'Search service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'search-audit-events',
           parameters: {
             category: 'authentication',
@@ -787,7 +796,7 @@ describe('Audit and Compliance Tools', () => {
           data: mockReport,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'generate-compliance-report',
           parameters: {
             title: 'Q4 2024 SOX Compliance Report',
@@ -829,7 +838,7 @@ describe('Audit and Compliance Tools', () => {
           data: mockReport,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'generate-compliance-report',
           parameters: {
             title: 'Data Breach Incident Compliance Analysis',
@@ -862,7 +871,7 @@ describe('Audit and Compliance Tools', () => {
           data: mockReport,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'generate-compliance-report',
           parameters: {
             title: 'Organization-wide PCI-DSS Assessment',
@@ -903,7 +912,7 @@ describe('Audit and Compliance Tools', () => {
           data: mockReport,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'generate-compliance-report',
           parameters: {
             title: 'Comprehensive Security Assessment',
@@ -940,7 +949,7 @@ describe('Audit and Compliance Tools', () => {
           data: customReport,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'generate-compliance-report',
           parameters: {
             title: 'Custom Internal Security Framework Assessment',
@@ -971,7 +980,7 @@ describe('Audit and Compliance Tools', () => {
 
     describe('Error Handling', () => {
       test('should validate report parameters', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'generate-compliance-report',
           parameters: {
             title: '', // Empty title
@@ -992,7 +1001,7 @@ describe('Audit and Compliance Tools', () => {
           error: { message: 'Insufficient data for report generation' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'generate-compliance-report',
           parameters: {
             title: 'Test Report',
@@ -1027,7 +1036,7 @@ describe('Audit and Compliance Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-compliance-reports',
           parameters: {
             framework: 'SOX',
@@ -1057,7 +1066,7 @@ describe('Audit and Compliance Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-compliance-reports',
           parameters: {
             status: 'completed',
@@ -1088,7 +1097,7 @@ describe('Audit and Compliance Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-compliance-reports',
           parameters: {
             includeAnalytics: true,
@@ -1114,7 +1123,7 @@ describe('Audit and Compliance Tools', () => {
           data: mockAlert,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-security-alert',
           parameters: {
             title: 'Suspicious Login Activity',
@@ -1167,7 +1176,7 @@ describe('Audit and Compliance Tools', () => {
           data: criticalAlert,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-security-alert',
           parameters: {
             title: 'Data Exfiltration Attempt Detected',
@@ -1206,7 +1215,7 @@ describe('Audit and Compliance Tools', () => {
     describe('Security Validation', () => {
       test('should validate security alert data', async () => {
         // Test with invalid severity
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-security-alert',
           parameters: {
             title: 'Test Alert',
@@ -1219,7 +1228,7 @@ describe('Audit and Compliance Tools', () => {
         })).rejects.toThrow();
 
         // Test with missing required fields
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-security-alert',
           parameters: {
             title: '',
@@ -1241,7 +1250,7 @@ describe('Audit and Compliance Tools', () => {
         const maliciousTitle = securityTestPatterns.xss[0];
         const maliciousDescription = securityTestPatterns.sqlInjection[0];
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'create-security-alert',
           parameters: {
             title: maliciousTitle,
@@ -1267,7 +1276,7 @@ describe('Audit and Compliance Tools', () => {
           error: { message: 'Alert service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'create-security-alert',
           parameters: {
             title: 'Test Alert',
@@ -1296,7 +1305,7 @@ describe('Audit and Compliance Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-security-alerts',
           parameters: {
             action: 'list',
@@ -1333,7 +1342,7 @@ describe('Audit and Compliance Tools', () => {
           data: updatedAlert,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-security-alerts',
           parameters: {
             action: 'update',
@@ -1367,7 +1376,7 @@ describe('Audit and Compliance Tools', () => {
           data: escalatedAlert,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-security-alerts',
           parameters: {
             action: 'escalate',
@@ -1409,7 +1418,7 @@ describe('Audit and Compliance Tools', () => {
           data: bulkUpdateResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-security-alerts',
           parameters: {
             action: 'bulk_update',
@@ -1451,7 +1460,7 @@ describe('Audit and Compliance Tools', () => {
           data: analyticsData,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-security-alerts',
           parameters: {
             action: 'analytics',
@@ -1474,7 +1483,7 @@ describe('Audit and Compliance Tools', () => {
 
     describe('Error Handling', () => {
       test('should handle invalid alert actions', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'manage-security-alerts',
           parameters: {
             action: 'invalid_action' as 'list' | 'update' | 'escalate' | 'bulk_update' | 'analytics',
@@ -1488,7 +1497,7 @@ describe('Audit and Compliance Tools', () => {
           error: { message: 'Alert management service unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'manage-security-alerts',
           parameters: {
             action: 'list',
@@ -1513,8 +1522,8 @@ describe('Audit and Compliance Tools', () => {
         data: auditEvent,
       });
 
-      const logResult = await server.executeToolCall({
-        tool: 'log-audit-event',
+      const logResult = await mockServer.executeToolCall({
+        tool: 'log_audit_event',
         parameters: {
           level: 'critical',
           category: 'security',
@@ -1546,7 +1555,7 @@ describe('Audit and Compliance Tools', () => {
         data: securityAlert,
       });
 
-      const alertResult = await server.executeToolCall({
+      const alertResult = await mockServer.executeToolCall({
         tool: 'create-security-alert',
         parameters: {
           title: 'Critical Unauthorized Access Attempt',
@@ -1573,7 +1582,7 @@ describe('Audit and Compliance Tools', () => {
         metadata: { total: 1, hasMore: false },
       });
 
-      const searchResult = await server.executeToolCall({
+      const searchResult = await mockServer.executeToolCall({
         tool: 'search-audit-events',
         parameters: {
           category: 'security',
@@ -1596,7 +1605,7 @@ describe('Audit and Compliance Tools', () => {
         data: complianceReport,
       });
 
-      const reportResult = await server.executeToolCall({
+      const reportResult = await mockServer.executeToolCall({
         tool: 'generate-compliance-report',
         parameters: {
           title: 'Monthly SOX Compliance Assessment',
@@ -1621,7 +1630,7 @@ describe('Audit and Compliance Tools', () => {
         metadata: { total: 1, hasMore: false },
       });
 
-      const listResult = await server.executeToolCall({
+      const listResult = await mockServer.executeToolCall({
         tool: 'list-compliance-reports',
         parameters: {
           framework: 'SOX',
@@ -1664,8 +1673,8 @@ describe('Audit and Compliance Tools', () => {
             });
           }
 
-          await server.executeToolCall({
-            tool: 'log-audit-event',
+          await mockServer.executeToolCall({
+            tool: 'log_audit_event',
             parameters: {
               level: 'info',
               category: 'system',

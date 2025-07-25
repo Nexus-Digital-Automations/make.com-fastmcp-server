@@ -284,7 +284,7 @@ describe('Credential Management Tools', () => {
           data: mockCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'api_key',
@@ -330,7 +330,7 @@ describe('Credential Management Tools', () => {
           data: mockCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'secret',
@@ -381,7 +381,7 @@ describe('Credential Management Tools', () => {
         const certificateData = '-----BEGIN CERTIFICATE-----\nMIIBkTCB+wIJAKHHH...';
         const privateKeyData = '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0B...';
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'certificate',
@@ -412,7 +412,7 @@ describe('Credential Management Tools', () => {
       test('should validate credential strength', async () => {
         for (const weakPassword of encryptionTestCases.weakPasswords) {
           try {
-            await server.executeToolCall({
+            await mockServer.executeToolCall({
               tool: 'store-credential',
               parameters: {
                 type: 'secret',
@@ -441,7 +441,7 @@ describe('Credential Management Tools', () => {
         const maliciousName = securityTestPatterns.xss[0];
         const maliciousDescription = securityTestPatterns.sqlInjection[0];
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'api_key',
@@ -467,7 +467,7 @@ describe('Credential Management Tools', () => {
 
         const sensitiveValue = 'sk-live-very-secret-api-key-12345';
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'api_key',
@@ -492,7 +492,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Credential storage service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'api_key',
@@ -504,7 +504,7 @@ describe('Credential Management Tools', () => {
       });
 
       test('should validate required fields', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'api_key',
@@ -514,7 +514,7 @@ describe('Credential Management Tools', () => {
       });
 
       test('should validate credential types', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'invalid_type' as 'api_key' | 'secret' | 'token' | 'certificate',
@@ -546,7 +546,7 @@ describe('Credential Management Tools', () => {
           data: mockCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'secret',
@@ -573,7 +573,7 @@ describe('Credential Management Tools', () => {
         });
 
         for (const specialChars of encryptionTestCases.specialCharacters) {
-          const result = await server.executeToolCall({
+          const result = await mockServer.executeToolCall({
             tool: 'store-credential',
             parameters: {
               type: 'secret',
@@ -597,7 +597,7 @@ describe('Credential Management Tools', () => {
         });
 
         for (const unicodeChars of encryptionTestCases.unicodeChars) {
-          const result = await server.executeToolCall({
+          const result = await mockServer.executeToolCall({
             tool: 'store-credential',
             parameters: {
               type: 'secret',
@@ -624,7 +624,7 @@ describe('Credential Management Tools', () => {
           data: mockCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'retrieve-credential',
           parameters: {
             credentialId: 12345,
@@ -653,7 +653,7 @@ describe('Credential Management Tools', () => {
           data: { ...mockCredential, value: '[CREDENTIAL_VALUE_ENCRYPTED]' },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'retrieve-credential',
           parameters: {
             credentialId: 12345,
@@ -684,7 +684,7 @@ describe('Credential Management Tools', () => {
           data: mockCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'retrieve-credential',
           parameters: {
             name: 'test-api-key',
@@ -714,7 +714,7 @@ describe('Credential Management Tools', () => {
           data: mockCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'retrieve-credential',
           parameters: {
             credentialId: 12345,
@@ -736,7 +736,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Insufficient permissions to access credential', status: 403 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'retrieve-credential',
           parameters: {
             credentialId: 12345,
@@ -752,7 +752,7 @@ describe('Credential Management Tools', () => {
           data: mockCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'retrieve-credential',
           parameters: {
             credentialId: 12345,
@@ -776,7 +776,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Credential not found', status: 404 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'retrieve-credential',
           parameters: {
             credentialId: 99999,
@@ -785,7 +785,7 @@ describe('Credential Management Tools', () => {
       });
 
       test('should validate required parameters', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'retrieve-credential',
           parameters: {
             // Missing credentialId and name/service
@@ -810,7 +810,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-credentials',
           parameters: {
             type: 'api_key',
@@ -849,7 +849,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-credentials',
           parameters: {
             includeSecurityAnalysis: true,
@@ -884,7 +884,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-credentials',
           parameters: {
             expiringDays: 30,
@@ -921,7 +921,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-credentials',
           parameters: {
             tags: ['production', 'payment'],
@@ -951,7 +951,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-credentials',
           parameters: {
             organizationId: 1001,
@@ -1002,7 +1002,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'list-credentials',
           parameters: {
             securityScore: 5.0,
@@ -1026,7 +1026,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Credential service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'list-credentials',
           parameters: {},
         })).rejects.toThrow('Failed to list credentials: Credential service temporarily unavailable');
@@ -1056,7 +1056,7 @@ describe('Credential Management Tools', () => {
           data: updatedCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'update-credential',
           parameters: {
             credentialId: 12345,
@@ -1100,7 +1100,7 @@ describe('Credential Management Tools', () => {
           data: updatedCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'update-credential',
           parameters: {
             credentialId: 12345,
@@ -1135,7 +1135,7 @@ describe('Credential Management Tools', () => {
           data: updatedCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'update-credential',
           parameters: {
             credentialId: 12345,
@@ -1159,7 +1159,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Insufficient permissions to update credential', status: 403 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'update-credential',
           parameters: {
             credentialId: 12345,
@@ -1175,7 +1175,7 @@ describe('Credential Management Tools', () => {
           data: updatedCredential,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'update-credential',
           parameters: {
             credentialId: 12345,
@@ -1198,7 +1198,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Value updates require additional authorization', status: 403 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'update-credential',
           parameters: {
             credentialId: 12345,
@@ -1215,7 +1215,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Credential not found', status: 404 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'update-credential',
           parameters: {
             credentialId: 99999,
@@ -1225,7 +1225,7 @@ describe('Credential Management Tools', () => {
       });
 
       test('should validate update parameters', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'update-credential',
           parameters: {
             credentialId: 12345,
@@ -1254,7 +1254,7 @@ describe('Credential Management Tools', () => {
           data: rotationResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'rotate-credential',
           parameters: {
             credentialId: 12345,
@@ -1296,7 +1296,7 @@ describe('Credential Management Tools', () => {
           data: rotationResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'rotate-credential',
           parameters: {
             credentialId: 12345,
@@ -1330,7 +1330,7 @@ describe('Credential Management Tools', () => {
           data: rotationResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'rotate-credential',
           parameters: {
             credentialId: 12345,
@@ -1365,7 +1365,7 @@ describe('Credential Management Tools', () => {
           data: rotationResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'rotate-credential',
           parameters: {
             credentialId: 12345,
@@ -1399,7 +1399,7 @@ describe('Credential Management Tools', () => {
           data: rotationResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'rotate-credential',
           parameters: {
             credentialId: 12345,
@@ -1425,7 +1425,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Credential rotation failed: external service unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'rotate-credential',
           parameters: {
             credentialId: 12345,
@@ -1441,7 +1441,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'New credential validation failed' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'rotate-credential',
           parameters: {
             credentialId: 12345,
@@ -1471,7 +1471,7 @@ describe('Credential Management Tools', () => {
           data: deleteResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'delete-credential',
           parameters: {
             credentialId: 12345,
@@ -1512,7 +1512,7 @@ describe('Credential Management Tools', () => {
           data: deleteResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'delete-credential',
           parameters: {
             credentialId: 12345,
@@ -1540,7 +1540,7 @@ describe('Credential Management Tools', () => {
           },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'delete-credential',
           parameters: {
             credentialId: 12345,
@@ -1551,7 +1551,7 @@ describe('Credential Management Tools', () => {
       });
 
       test('should require deletion reason', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'delete-credential',
           parameters: {
             credentialId: 12345,
@@ -1568,7 +1568,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Credential not found', status: 404 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'delete-credential',
           parameters: {
             credentialId: 99999,
@@ -1583,7 +1583,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Insufficient permissions to delete credential', status: 403 },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'delete-credential',
           parameters: {
             credentialId: 12345,
@@ -1609,7 +1609,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'audit-credential-access',
           parameters: {
             credentialId: 12345,
@@ -1655,7 +1655,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'audit-credential-access',
           parameters: {
             credentialId: 12345,
@@ -1694,7 +1694,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'audit-credential-access',
           parameters: {
             credentialId: 12345,
@@ -1737,7 +1737,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'audit-credential-access',
           parameters: {
             credentialId: 12345,
@@ -1762,7 +1762,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Audit service temporarily unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'audit-credential-access',
           parameters: {
             credentialId: 12345,
@@ -1771,7 +1771,7 @@ describe('Credential Management Tools', () => {
       });
 
       test('should validate date ranges', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'audit-credential-access',
           parameters: {
             credentialId: 12345,
@@ -1797,7 +1797,7 @@ describe('Credential Management Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-credential-rotations',
           parameters: {
             action: 'list',
@@ -1826,7 +1826,7 @@ describe('Credential Management Tools', () => {
           data: newSchedule,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-credential-rotations',
           parameters: {
             action: 'create',
@@ -1876,7 +1876,7 @@ describe('Credential Management Tools', () => {
           data: updatedSchedule,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-credential-rotations',
           parameters: {
             action: 'update',
@@ -1911,7 +1911,7 @@ describe('Credential Management Tools', () => {
           data: executionResult,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-credential-rotations',
           parameters: {
             action: 'execute',
@@ -1936,7 +1936,7 @@ describe('Credential Management Tools', () => {
           data: pausedSchedule,
         });
 
-        const pauseResult = await server.executeToolCall({
+        const pauseResult = await mockServer.executeToolCall({
           tool: 'manage-credential-rotations',
           parameters: {
             action: 'pause',
@@ -1956,7 +1956,7 @@ describe('Credential Management Tools', () => {
           data: resumedSchedule,
         });
 
-        const resumeResult = await server.executeToolCall({
+        const resumeResult = await mockServer.executeToolCall({
           tool: 'manage-credential-rotations',
           parameters: {
             action: 'resume',
@@ -1993,7 +1993,7 @@ describe('Credential Management Tools', () => {
           data: analyticsData,
         });
 
-        const result = await server.executeToolCall({
+        const result = await mockServer.executeToolCall({
           tool: 'manage-credential-rotations',
           parameters: {
             action: 'analytics',
@@ -2017,7 +2017,7 @@ describe('Credential Management Tools', () => {
 
     describe('Error Handling', () => {
       test('should handle invalid rotation actions', async () => {
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'manage-credential-rotations',
           parameters: {
             action: 'invalid_action' as 'list' | 'create' | 'update' | 'delete' | 'execute' | 'pause' | 'resume' | 'analytics',
@@ -2031,7 +2031,7 @@ describe('Credential Management Tools', () => {
           error: { message: 'Rotation management service unavailable' },
         });
 
-        await expect(server.executeToolCall({
+        await expect(mockServer.executeToolCall({
           tool: 'manage-credential-rotations',
           parameters: {
             action: 'list',
@@ -2050,7 +2050,7 @@ describe('Credential Management Tools', () => {
         data: newCredential,
       });
 
-      const storeResult = await server.executeToolCall({
+      const storeResult = await mockServer.executeToolCall({
         tool: 'store-credential',
         parameters: {
           type: 'api_key',
@@ -2069,7 +2069,7 @@ describe('Credential Management Tools', () => {
         data: newCredential,
       });
 
-      const retrieveResult = await server.executeToolCall({
+      const retrieveResult = await mockServer.executeToolCall({
         tool: 'retrieve-credential',
         parameters: {
           credentialId: newCredential.id,
@@ -2088,7 +2088,7 @@ describe('Credential Management Tools', () => {
         data: updatedCredential,
       });
 
-      const updateResult = await server.executeToolCall({
+      const updateResult = await mockServer.executeToolCall({
         tool: 'update-credential',
         parameters: {
           credentialId: newCredential.id,
@@ -2109,7 +2109,7 @@ describe('Credential Management Tools', () => {
         data: rotationResult,
       });
 
-      const rotateResult = await server.executeToolCall({
+      const rotateResult = await mockServer.executeToolCall({
         tool: 'rotate-credential',
         parameters: {
           credentialId: newCredential.id,
@@ -2155,7 +2155,7 @@ describe('Credential Management Tools', () => {
         data: emergencyRotationResult,
       });
 
-      const rotationResult = await server.executeToolCall({
+      const rotationResult = await mockServer.executeToolCall({
         tool: 'rotate-credential',
         parameters: {
           credentialId: compromisedCredential.id,
@@ -2185,7 +2185,7 @@ describe('Credential Management Tools', () => {
         metadata: { total: 1, hasMore: false },
       });
 
-      const auditResult = await server.executeToolCall({
+      const auditResult = await mockServer.executeToolCall({
         tool: 'audit-credential-access',
         parameters: {
           credentialId: compromisedCredential.id,
@@ -2209,7 +2209,7 @@ describe('Credential Management Tools', () => {
         data: deleteResult,
       });
 
-      const deletionResult = await server.executeToolCall({
+      const deletionResult = await mockServer.executeToolCall({
         tool: 'delete-credential',
         parameters: {
           credentialId: compromisedCredential.id,
@@ -2252,7 +2252,7 @@ describe('Credential Management Tools', () => {
             });
           }
 
-          await server.executeToolCall({
+          await mockServer.executeToolCall({
             tool: 'store-credential',
             parameters: {
               type: 'api_key',
@@ -2286,7 +2286,7 @@ describe('Credential Management Tools', () => {
       });
 
       for (let i = 0; i < concurrentRequests; i++) {
-        promises.push(server.executeToolCall({
+        promises.push(mockServer.executeToolCall({
           tool: 'store-credential',
           parameters: {
             type: 'api_key',

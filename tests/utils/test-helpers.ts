@@ -14,8 +14,41 @@ export const createMockServer = (): { server: any; mockTool: any } => {
   const mockTool = (...args: any[]) => {};
   mockTool.mock = { calls: [] };
   
+  const registeredTools = new Map();
+  
   const server = {
-    addTool: (...args: any[]) => { mockTool.mock.calls.push(args); },
+    addTool: (...args: any[]) => { 
+      mockTool.mock.calls.push(args);
+      // Store tool for executeToolCall
+      if (args[0] && args[0].name) {
+        registeredTools.set(args[0].name, args[0]);
+      }
+    },
+    executeToolCall: async (params: { tool: string; parameters: any }) => {
+      const tool = registeredTools.get(params.tool);
+      if (!tool) {
+        throw new Error(`Tool '${params.tool}' not found`);
+      }
+      
+      // Actually execute the tool implementation
+      const mockContext = {
+        log: {
+          info: (...args: any[]) => {},
+          error: (...args: any[]) => {},
+          warn: (...args: any[]) => {},
+          debug: (...args: any[]) => {},
+        },
+        reportProgress: (...args: any[]) => {},
+        session: { authenticated: true },
+      };
+      
+      try {
+        const result = await tool.execute(params.parameters, mockContext);
+        return result;
+      } catch (error) {
+        throw error;
+      }
+    },
     on: (...args: any[]) => {},
     start: (...args: any[]) => {},
     stop: (...args: any[]) => {},

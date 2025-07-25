@@ -44,12 +44,13 @@ const MaintenanceSchema = z.object({
 /**
  * Log an audit event
  */
-export const logAuditEventTool = {
+const createLogAuditEventTool = (apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof LogAuditEventSchema; handler: (input: z.infer<typeof LogAuditEventSchema>) => Promise<string> } => ({
   name: 'log_audit_event',
   description: 'Log a security audit event with compliance tracking',
   inputSchema: LogAuditEventSchema,
   handler: async (input: z.infer<typeof LogAuditEventSchema>): Promise<string> => {
     try {
+      // Log to internal audit logger
       await auditLogger.logEvent({
         level: input.level,
         category: input.category,
@@ -63,6 +64,23 @@ export const logAuditEventTool = {
         success: input.success,
         details: input.details,
         riskLevel: input.riskLevel,
+      });
+
+      // Send to Make.com API
+      await apiClient.post('/audit/events', {
+        level: input.level,
+        category: input.category,
+        action: input.action,
+        resource: input.resource,
+        userId: input.userId,
+        userAgent: input.userAgent,
+        ipAddress: input.ipAddress,
+        sessionId: input.sessionId,
+        requestId: input.requestId,
+        success: input.success,
+        details: input.details,
+        riskLevel: input.riskLevel,
+        timestamp: new Date().toISOString(),
       });
 
       componentLogger.info('Audit event logged via MCP tool', {
@@ -94,7 +112,7 @@ export const logAuditEventTool = {
       }, null, 2);
     }
   },
-};
+});
 
 /**
  * Generate compliance report
@@ -435,7 +453,6 @@ export const createSecurityIncidentTool = {
 
 // Export all audit and compliance tools
 export const auditComplianceTools = [
-  logAuditEventTool,
   generateComplianceReportTool,
   performAuditMaintenanceTool,
   getAuditConfigurationTool,
@@ -446,8 +463,9 @@ export const auditComplianceTools = [
 /**
  * Add all audit and compliance tools to FastMCP server
  */
-export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClient): void { // eslint-disable-line @typescript-eslint/no-unused-vars
-  // Log audit event tool
+export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClient): void {
+  // Create log audit event tool with API client
+  const logAuditEventTool = createLogAuditEventTool(apiClient);
   server.addTool({
     name: logAuditEventTool.name,
     description: logAuditEventTool.description,
