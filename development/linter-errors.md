@@ -1,15 +1,29 @@
 # Linter Errors Report
 
-**Generated:** 2025-07-25T05:16:18.576Z
-**Total Issues:** 1 (0 errors, 1 warnings)
+**Generated:** 2025-07-25T06:58:20.413Z
+**Total Issues:** 8 (0 errors, 8 warnings)
 **Files:** 1
 
-## templates.ts (eslint)
+## certificates.test.ts (eslint)
 
-**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/templates.ts`
-**Issues:** 1
+**File Path:** `/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tests/tools/certificates.test.ts`
+**Issues:** 8
 
-⚠️ **Line 640:51** - Unexpected any. Specify a different type. `[@typescript-eslint/no-explicit-any]`
+⚠️ **Line 1220:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 1221:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 1222:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 1223:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 1224:12** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 1358:14** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 1359:14** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
+
+⚠️ **Line 1360:14** - Missing return type on function. `[@typescript-eslint/explicit-function-return-type]`
 
 ---
 
