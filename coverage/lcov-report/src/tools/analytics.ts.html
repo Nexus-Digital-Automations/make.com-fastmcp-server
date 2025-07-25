@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/200</span>
+                <span class='fraction'>0/204</span>
             </div>
         
             
@@ -1664,7 +1664,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
       try {<span class="cstat-no" title="statement not covered" ></span>
-        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, any&gt; = {</span>
+        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
           period,<span class="cstat-no" title="statement not covered" ></span>
           includeUsage,
           includ<span class="cstat-no" title="statement not covered" >ePerformance,</span>
@@ -1730,7 +1730,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
       try {<span class="cstat-no" title="statement not covered" ></span>
-        const params<span class="cstat-no" title="statement not covered" >: Record&lt;string, any&gt; = {</span>
+        const params<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt; = {</span>
           limit,
           offset,<span class="cstat-no" title="statement not covered" ></span>
         };<span class="cstat-no" title="statement not covered" ></span>
@@ -1846,7 +1846,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 <span class="cstat-no" title="statement not covered" ></span>
       try {
-        const params: Record&lt;string, any&gt; = {
+        const params: Record&lt;string, unknown&gt; = {
           limit,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           offset,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
@@ -1921,7 +1921,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 &nbsp;
       try {
-        const params: Record&lt;string, any&gt; = {
+        const params: Record&lt;string, unknown&gt; = {
           limit,<span class="cstat-no" title="statement not covered" ></span>
           offset,
         };
@@ -2009,7 +2009,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       try {
-        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, any&gt; = {</span>
+        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
           limit,
           offset,
         };
@@ -2090,12 +2090,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new UserError(`Failed to resolve incomplete execution: ${response.error?.message || 'Unknown error'}`);
         }
 <span class="cstat-no" title="statement not covered" ></span>
-        const result<span class="cstat-no" title="statement not covered" > = response.data;</span>
+        const result<span class="cstat-no" title="statement not covered" > = response.data as Record</span>&lt;string, unknown&gt;;
 <span class="cstat-no" title="statement not covered" ></span>
         log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully resolved inco</span>mplete execution', {
           execut<span class="cstat-no" title="statement not covered" >ionId,</span>
           action,<span class="cstat-no" title="statement not covered" ></span>
-          newSta<span class="cstat-no" title="statement not covered" >tus: result?.status,</span>
+          newSta<span class="cstat-no" title="statement not covered" >tus: String(result?.status || 'unknown'),</span>
         });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
         return J<span class="cstat-no" title="statement not covered" >SON.stringify({</span>
@@ -2128,7 +2128,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 &nbsp;
       try {
-        const params: Record&lt;string, any&gt; = {
+        const params: Record&lt;string, unknown&gt; = {
           limit,
           offset,
         };
@@ -2216,13 +2216,13 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to export da</span>ta: ${response.error?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const exportResult = resp<span class="cstat-no" title="statement not covered" >onse.data;</span>
+        const exportResult = resp<span class="cstat-no" title="statement not covered" >onse.data as Record&lt;string, unknown&gt;;</span>
 <span class="cstat-no" title="statement not covered" ></span>
         log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully initiated data export', {</span>
           organizationId,
           dataType,<span class="cstat-no" title="statement not covered" ></span>
           format<span class="cstat-no" title="statement not covered" >,</span>
-          exportId: exportResult?.exportId,
+          exportId: String(exportResult?.exportId || 'unknown'),
         });
 &nbsp;
         return JSON.stringify({
@@ -2261,7 +2261,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       });
 &nbsp;
       try {
-        const params: Record&lt;string, any&gt; = {
+        const params: Record&lt;string, unknown&gt; = {
           metric,
           period,
         };
@@ -2275,12 +2275,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new UserError(`Failed to get performance metrics: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
-        const metrics = response.data;
+        const metrics = response.data as Record&lt;string, unknown&gt;;
 &nbsp;
         log.info('Successfully retrieved performance metrics', {
           organizationId,
           metric,
-          dataPoints: metrics?.dataPoints?.length || 0,
+          dataPoints: (metrics?.dataPoints as unknown[])?.length || 0,
         });
 &nbsp;
         return JSON.stringify({
@@ -2289,7 +2289,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
             trend: metrics?.trend || 'stable',
             currentValue: metrics?.currentValue,
             percentageChange: metrics?.percentageChange,
-            recommendations: metrics?.recommendations || [],
+            recommendations: (metrics?.recommendations as unknown[]) || [],
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -2311,7 +2311,7 @@ export default addAnalyticsTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-24T23:29:56.413Z
+                at 2025-07-25T04:09:47.997Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
