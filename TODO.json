@@ -1854,9 +1854,9 @@
   "review_strikes": 0,
   "strikes_completed_last_run": false,
   "current_task_index": 0,
-  "last_mode": "TESTING",
-  "execution_count": 78,
-  "last_hook_activation": 1753420410829,
+  "last_mode": "REVIEWER",
+  "execution_count": 80,
+  "last_hook_activation": 1753420976016,
   "completion_percentage": 76,
   "current_mode": "development",
   "current_task": null
