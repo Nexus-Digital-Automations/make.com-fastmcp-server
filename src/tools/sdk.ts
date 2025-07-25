@@ -731,10 +731,10 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         const configResult = response.data;
         
         // Type guard for config result
-        const configData = configResult && typeof configResult === 'object' ? configResult as Record<string, unknown> : {};
-        const configurationApplied = typeof configData.configurationApplied === 'boolean' ? configData.configurationApplied : false;
-        const permissionsChanged = typeof configData.permissionsChanged === 'boolean' ? configData.permissionsChanged : false;
-        const integrationsUpdated = typeof configData.integrationsUpdated === 'boolean' ? configData.integrationsUpdated : false;
+        const configResultData = configResult && typeof configResult === 'object' ? configResult as Record<string, unknown> : {};
+        const configurationApplied = typeof configResultData.configurationApplied === 'boolean' ? configResultData.configurationApplied : false;
+        const permissionsChanged = typeof configResultData.permissionsChanged === 'boolean' ? configResultData.permissionsChanged : false;
+        const integrationsUpdated = typeof configResultData.integrationsUpdated === 'boolean' ? configResultData.integrationsUpdated : false;
         
         reportProgress({ progress: 100, total: 100 });
 
@@ -746,8 +746,8 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         });
 
         // Additional type guards for summary
-        const appName = typeof configData.appName === 'string' ? configData.appName : 'unknown';
-        const validation = configData.validation && typeof configData.validation === 'object' ? configData.validation as Record<string, unknown> : {};
+        const appName = typeof configResultData.appName === 'string' ? configResultData.appName : 'unknown';
+        const validation = configResultData.validation && typeof configResultData.validation === 'object' ? configResultData.validation as Record<string, unknown> : {};
         const validationErrors = Array.isArray(validation.errors) ? validation.errors : [];
         const validationWarnings = Array.isArray(validation.warnings) ? validation.warnings : [];
         const validationValid = typeof validation.valid === 'boolean' ? validation.valid : false;

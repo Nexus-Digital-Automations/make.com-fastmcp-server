@@ -85,24 +85,6 @@ globalThis.testUtils = {
 jest.mock('axios');
 jest.mock('bottleneck');
 
-// Mock logger module with CommonJS compatible mock
-jest.mock('../src/lib/logger.js', () => ({
-  __esModule: true,
-  default: {
-    info: jest.fn(),
-    debug: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-    child: jest.fn(() => ({
-      info: jest.fn(),
-      debug: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      child: jest.fn(),
-    })),
-  },
-}));
-
 // Global afterEach cleanup
 afterEach(() => {
   jest.clearAllMocks();

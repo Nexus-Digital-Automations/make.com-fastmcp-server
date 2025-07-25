@@ -10,10 +10,12 @@ export default {
     'node_modules/(?!(fastmcp|@modelcontextprotocol|zod)/)',
   ],
   moduleNameMapper: {
-    // Handle .js extensions in imports
+    // Handle .js extensions in imports (resolve to TypeScript files)
     '^(\\.{1,2}/.*)\\.js$': '$1',
     // Mock fastmcp
     '^fastmcp$': '<rootDir>/tests/__mocks__/fastmcp.ts',
+    // Mock logger
+    '.*\\/logger\\.js$': '<rootDir>/tests/__mocks__/logger.ts',
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   collectCoverageFrom: [

@@ -119,8 +119,13 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
     mockServer = serverSetup.server;
     mockTool = serverSetup.mockTool;
     mockApiClient = new MockMakeApiClient();
-    mockLog = jest.fn();
-    mockReportProgress = jest.fn();
+    mockLog = {
+      info: (...args: any[]) => {},
+      error: (...args: any[]) => {},
+      warn: (...args: any[]) => {},
+      debug: (...args: any[]) => {},
+    };
+    mockReportProgress = (...args: any[]) => {};
   });
 
   afterEach(() => {

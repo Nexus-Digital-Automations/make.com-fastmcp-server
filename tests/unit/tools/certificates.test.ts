@@ -8,7 +8,7 @@
  */
 
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
-import { FastMCPServer } from '../../index.js';
+import { FastMCP, UserError } from 'fastmcp';
 
 // Mock the Make API client
 const mockApiClient = {
@@ -18,9 +18,9 @@ const mockApiClient = {
   put: jest.fn(),
   delete: jest.fn(),
   patch: jest.fn()
-} as unknown as import('../../lib/make-api-client.js').default;
+} as unknown as import('../../../src/lib/make-api-client.js').default;
 
-jest.mock('../../lib/make-api-client.js', () => ({
+jest.mock('../../../src/lib/make-api-client.js', () => ({
   default: jest.fn(() => mockApiClient)
 }));
 

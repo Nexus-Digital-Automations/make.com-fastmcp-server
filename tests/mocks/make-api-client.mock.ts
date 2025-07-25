@@ -64,6 +64,13 @@ export class MockMakeApiClient {
   }
 
   /**
+   * Alias for mockFailure for backward compatibility
+   */
+  mockError(method: string, endpoint: string, error: Error): void {
+    this.mockFailure(method, endpoint, error);
+  }
+
+  /**
    * Mock network delay for a specific endpoint
    */
   mockDelay(method: string, endpoint: string, delayMs: number): void {

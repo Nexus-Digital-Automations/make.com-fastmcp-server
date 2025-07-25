@@ -109,7 +109,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         expect(tool).toBeDefined();
         expect(tool.description).toBeDefined();
         expect(tool.parameters).toBeDefined();
-        expect(tool.execute).toBeInstanceOf(Function);
+        expect(typeof tool.execute).toBe('function');
       });
     });
 
