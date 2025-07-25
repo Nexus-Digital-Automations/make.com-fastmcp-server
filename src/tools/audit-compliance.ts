@@ -48,7 +48,7 @@ export const logAuditEventTool = {
   name: 'log_audit_event',
   description: 'Log a security audit event with compliance tracking',
   inputSchema: LogAuditEventSchema,
-  handler: async (input: z.infer<typeof LogAuditEventSchema>): Promise<{ success: boolean; eventId: string; timestamp: string; message: string }> => {
+  handler: async (input: z.infer<typeof LogAuditEventSchema>): Promise<string> => {
     try {
       await auditLogger.logEvent({
         level: input.level,
@@ -73,12 +73,12 @@ export const logAuditEventTool = {
         riskLevel: input.riskLevel,
       });
 
-      return {
+      return JSON.stringify({
         success: true,
         eventId: `event_${Date.now()}`,
         timestamp: new Date().toISOString(),
         message: 'Audit event logged successfully',
-      };
+      }, null, 2);
     } catch (error) {
       componentLogger.error('Failed to log audit event via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -86,12 +86,12 @@ export const logAuditEventTool = {
         category: input.category,
       });
 
-      return {
+      return JSON.stringify({
         success: false,
         eventId: '',
         timestamp: new Date().toISOString(),
         message: error instanceof Error ? error.message : 'Failed to log audit event',
-      };
+      }, null, 2);
     }
   },
 };
@@ -103,7 +103,7 @@ export const generateComplianceReportTool = {
   name: 'generate_compliance_report',
   description: 'Generate a comprehensive compliance report for audit purposes',
   inputSchema: GenerateComplianceReportSchema,
-  handler: async (input: z.infer<typeof GenerateComplianceReportSchema>): Promise<{ success: boolean; report: { period: string; totalEvents: number; criticalEvents: number; securityEvents: number; complianceScore: number; recommendations: string[]; summary: string } }> => {
+  handler: async (input: z.infer<typeof GenerateComplianceReportSchema>): Promise<string> => {
     try {
       const startDate = new Date(input.startDate);
       const endDate = new Date(input.endDate);
@@ -117,22 +117,7 @@ export const generateComplianceReportTool = {
         criticalEvents: report.summary.criticalEvents,
       });
 
-      if (input.format === 'summary') {
-        return {
-          success: true,
-          report: {
-            period: `${input.startDate} to ${input.endDate}`,
-            totalEvents: (report.summary as Record<string, unknown>)?.totalEvents as number || 0,
-            criticalEvents: (report.summary as Record<string, unknown>)?.criticalEvents as number || 0,
-            securityEvents: (report.summary as Record<string, unknown>)?.criticalEvents as number || 0,
-            complianceScore: 85, // Default compliance score
-            recommendations: ['Review security policies', 'Update access controls'],
-            summary: 'Compliance report generated successfully',
-          },
-        };
-      }
-
-      return {
+      const reportData = {
         success: true,
         report: {
           period: `${input.startDate} to ${input.endDate}`,
@@ -144,6 +129,8 @@ export const generateComplianceReportTool = {
           summary: 'Compliance report generated successfully',
         },
       };
+
+      return JSON.stringify(reportData, null, 2);
     } catch (error) {
       componentLogger.error('Failed to generate compliance report via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -151,7 +138,7 @@ export const generateComplianceReportTool = {
         endDate: input.endDate,
       });
 
-      return {
+      return JSON.stringify({
         success: false,
         report: {
           period: `${input.startDate} to ${input.endDate}`,
@@ -162,7 +149,7 @@ export const generateComplianceReportTool = {
           recommendations: [],
           summary: error instanceof Error ? error.message : 'Failed to generate compliance report',
         },
-      };
+      }, null, 2);
     }
   },
 };
@@ -174,7 +161,7 @@ export const performAuditMaintenanceTool = {
   name: 'perform_audit_maintenance',
   description: 'Perform maintenance on audit logs (cleanup, rotation)',
   inputSchema: MaintenanceSchema,
-  handler: async (): Promise<{ success: boolean; deletedFiles: number; rotatedFiles: number; compactedFiles: number; freedSpace: number; message: string }> => {
+  handler: async (): Promise<string> => {
     try {
       const result = await auditLogger.performMaintenance();
 
@@ -184,27 +171,27 @@ export const performAuditMaintenanceTool = {
         errors: result.errors.length,
       });
 
-      return {
+      return JSON.stringify({
         success: true,
         deletedFiles: result.deletedFiles || 0,
         rotatedFiles: result.rotatedFiles || 0,
         compactedFiles: (result as Record<string, unknown>).compactedFiles as number || 0,
         freedSpace: (result as Record<string, unknown>).freedSpace as number || 0,
         message: `Maintenance completed. Deleted ${result.deletedFiles} files, rotated ${result.rotatedFiles} files.`,
-      };
+      }, null, 2);
     } catch (error) {
       componentLogger.error('Failed to perform audit maintenance via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      return {
+      return JSON.stringify({
         success: false,
         deletedFiles: 0,
         rotatedFiles: 0,
         compactedFiles: 0,
         freedSpace: 0,
         message: error instanceof Error ? error.message : 'Failed to perform audit maintenance',
-      };
+      }, null, 2);
     }
   },
 };
@@ -216,7 +203,7 @@ export const getAuditConfigurationTool = {
   name: 'get_audit_configuration',
   description: 'Get current audit logging and compliance configuration',
   inputSchema: z.object({}),
-  handler: async (): Promise<{ config: { encryptionEnabled: boolean; retentionDays: number; maxFileSize: number; logDirectory: string; alertingEnabled: boolean; complianceMode: string } }> => {
+  handler: async (): Promise<string> => {
     try {
       // Access configuration through environment variables
       const config = {
@@ -230,15 +217,15 @@ export const getAuditConfigurationTool = {
 
       componentLogger.info('Audit configuration retrieved via MCP tool');
 
-      return {
+      return JSON.stringify({
         config,
-      };
+      }, null, 2);
     } catch (error) {
       componentLogger.error('Failed to get audit configuration via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      return {
+      return JSON.stringify({
         config: {
           encryptionEnabled: false,
           retentionDays: 0,
@@ -247,7 +234,7 @@ export const getAuditConfigurationTool = {
           alertingEnabled: false,
           complianceMode: error instanceof Error ? error.message : 'Failed to get audit configuration',
         },
-      };
+      }, null, 2);
     }
   },
 };
@@ -263,7 +250,7 @@ export const securityHealthCheckTool = {
     includePermissions: z.boolean().optional().default(false),
     includeNetworkConfig: z.boolean().optional().default(false),
   }),
-  handler: async (): Promise<{ stats: { totalEvents: number; recentEvents: number; securityEvents: number; failedLogins: number; dataAccess: number; configChanges: number; systemEvents: number } }> => {
+  handler: async (): Promise<string> => {
     try {
       const healthCheck = {
         timestamp: new Date().toISOString(),
@@ -326,7 +313,7 @@ export const securityHealthCheckTool = {
         environment: healthCheck.environment,
       });
 
-      return {
+      return JSON.stringify({
         stats: {
           totalEvents: 1000,
           recentEvents: 50,
@@ -336,13 +323,13 @@ export const securityHealthCheckTool = {
           configChanges: 5,
           systemEvents: 8,
         },
-      };
+      }, null, 2);
     } catch (error) {
       componentLogger.error('Failed to perform security health check via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      return {
+      return JSON.stringify({
         stats: {
           totalEvents: 0,
           recentEvents: 0,
@@ -352,7 +339,7 @@ export const securityHealthCheckTool = {
           configChanges: 0,
           systemEvents: 0,
         },
-      };
+      }, null, 2);
     }
   },
 };
@@ -382,7 +369,7 @@ export const createSecurityIncidentTool = {
     affectedUsers?: string[];
     detectionTime?: string;
     responseActions?: string[];
-  }): Promise<{ success: boolean; incidentId: string; timestamp: string; message: string; nextSteps: string[] }> => {
+  }): Promise<string> => {
     try {
       const incidentId = crypto.randomUUID();
       const timestamp = new Date();
@@ -416,7 +403,7 @@ export const createSecurityIncidentTool = {
         affectedUsersCount: input.affectedUsers?.length || 0,
       });
 
-      return {
+      return JSON.stringify({
         success: true,
         incidentId,
         timestamp: timestamp.toISOString(),
@@ -427,7 +414,7 @@ export const createSecurityIncidentTool = {
           'Implement containment measures',
           'Document findings and response',
         ],
-      };
+      }, null, 2);
     } catch (error) {
       componentLogger.error('Failed to create security incident via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -435,13 +422,13 @@ export const createSecurityIncidentTool = {
         severity: input.severity,
       });
 
-      return {
+      return JSON.stringify({
         success: false,
         incidentId: '',
         timestamp: new Date().toISOString(),
         message: error instanceof Error ? error.message : 'Failed to create security incident',
         nextSteps: [],
-      };
+      }, null, 2);
     }
   },
 };
