@@ -9,7 +9,10 @@ import { z } from 'zod';
 export const idSchema = z.number().int().positive();
 export const nameSchema = z.string().min(1).max(255);
 export const emailSchema = z.string().email();
-export const urlSchema = z.string().url();
+export const urlSchema = z.string().url().refine(
+  (url) => url.startsWith('http://') || url.startsWith('https://'),
+  { message: 'Only HTTP and HTTPS URLs are allowed' }
+);
 export const teamIdSchema = z.number().int().positive().optional();
 export const organizationIdSchema = z.number().int().positive().optional();
 
