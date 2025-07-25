@@ -341,7 +341,7 @@ server {
 
 #### Option 2: Docker Deployment
 
-The project includes a comprehensive Docker setup with multi-stage builds, production optimization, and container orchestration support.
+The project includes a comprehensive Docker setup with multi-stage builds, production optimization, comprehensive monitoring stack, and container orchestration support including Kubernetes.
 
 **Prerequisites**
 - Docker Engine 20.10+ and Docker Compose 2.0+
@@ -374,9 +374,20 @@ curl -H "Content-Type: application/json" \
 The project includes optimized Docker configuration:
 
 - **`Dockerfile`**: Multi-stage build with 4 stages (dependencies, builder, runtime, development)
-- **`docker-compose.yml`**: Production-optimized orchestration with Redis, Nginx proxy
+- **`docker-compose.yml`**: Basic production orchestration with Redis, Nginx proxy
+- **`docker-compose.prod.yml`**: **NEW** - Enhanced production stack with monitoring and resource optimization
 - **`docker-compose.dev.yml`**: Development override with hot reloading and debugging tools
 - **`.dockerignore`**: Optimized build context for faster builds
+
+**🎯 Production-Ready Features (NEW)**
+
+The latest production configuration includes:
+
+- **Comprehensive Monitoring Stack**: Prometheus metrics collection, performance monitoring, and alerting
+- **Health Check System**: Production-ready health endpoints (`/health`, `/health/live`, `/health/ready`) 
+- **Resource Optimization**: CPU/memory limits, auto-scaling configurations, and performance monitoring
+- **Security Hardening**: Enhanced container security, network policies, and production-grade configurations
+- **Kubernetes Support**: Complete K8s manifests with high availability, auto-scaling, and ingress configuration
 
 **🚀 Production Deployment**
 
@@ -409,17 +420,25 @@ REDIS_PASSWORD=$(openssl rand -base64 16)
 EOF
 ```
 
-**2. Full Production Stack**
-```bash
-# Start complete production stack with caching and proxy
-docker-compose --env-file .env.production up -d
+**2. Enhanced Production Stack (NEW)**
 
-# Scale application instances for high availability
-docker-compose --env-file .env.production up -d --scale make-fastmcp-server=3
+Use the new `docker-compose.prod.yml` for the latest production features:
+
+```bash
+# Start enhanced production stack with monitoring
+docker-compose -f docker-compose.prod.yml up -d
+
+# Scale application instances for high availability  
+docker-compose -f docker-compose.prod.yml up -d --scale make-fastmcp-server=3
 
 # Monitor deployment health
-docker-compose ps
-docker-compose logs --tail=50 -f
+docker-compose -f docker-compose.prod.yml ps
+docker-compose -f docker-compose.prod.yml logs --tail=50 -f
+
+# Access monitoring endpoints
+curl http://localhost:3000/health/ready    # Readiness check
+curl http://localhost:9090/metrics         # Application metrics
+curl http://localhost:9091                 # Prometheus dashboard
 ```
 
 **3. Production Stack Components**
@@ -675,7 +694,73 @@ docker-compose up -d
 - **Development Tools**: Redis Commander, pgAdmin, MailHog for testing
 - **Volume Mounting**: Live editing without container rebuilding
 
-#### Option 3: Cloud Platform Deployment
+#### Option 3: Kubernetes Deployment (NEW)
+
+The project now includes comprehensive Kubernetes deployment manifests for production-grade container orchestration.
+
+**📦 Kubernetes Features**
+
+- **High Availability**: 3 replicas with rolling updates and pod disruption budgets
+- **Auto-Scaling**: Horizontal Pod Autoscaler based on CPU/memory usage
+- **Service Discovery**: Kubernetes services with load balancing
+- **Ingress Controller**: HTTPS termination with cert-manager integration
+- **Health Checks**: Liveness, readiness, and startup probes
+- **Resource Management**: CPU/memory limits and requests
+- **Security**: Network policies, non-root containers, secrets management
+
+**🚀 Quick Kubernetes Deployment**
+
+```bash
+# Apply Kubernetes manifests
+kubectl apply -f k8s/
+
+# Wait for deployment to be ready
+kubectl wait --for=condition=available --timeout=600s deployment/make-fastmcp-server -n make-fastmcp
+
+# Check deployment status
+kubectl get pods -n make-fastmcp
+kubectl get services -n make-fastmcp
+
+# Port forward for local access
+kubectl port-forward -n make-fastmcp service/make-fastmcp-server 3000:3000
+```
+
+**⚙️ Production Kubernetes Configuration**
+
+The Kubernetes deployment includes:
+
+- **Namespace**: Isolated `make-fastmcp` namespace
+- **ConfigMap**: Application configuration management
+- **Secrets**: Secure storage for API keys and passwords
+- **Deployment**: Multi-replica application with health checks
+- **Service**: Load balancing and service discovery
+- **Ingress**: HTTPS ingress with SSL termination
+- **HPA**: Horizontal Pod Autoscaler (3-10 replicas)
+- **PDB**: Pod Disruption Budget for high availability
+- **NetworkPolicy**: Security isolation between services
+
+**🔧 Automated Production Deployment**
+
+Use the included deployment script for automated production deployment:
+
+```bash
+# Docker Compose deployment
+./scripts/deploy-production.sh compose
+
+# Kubernetes deployment  
+./scripts/deploy-production.sh kubernetes
+
+# Custom configuration
+./scripts/deploy-production.sh --version v1.2.3 --image my-registry/fastmcp kubernetes
+```
+
+The deployment script includes:
+- **Prerequisite validation**: Checks Docker, kubectl, environment variables
+- **Application building**: TypeScript compilation and Docker image creation
+- **Health verification**: Post-deployment health checks and monitoring
+- **Rollback support**: Automatic rollback on deployment failures
+
+#### Option 4: Cloud Platform Deployment
 
 **Heroku Deployment**
 ```bash
