@@ -140,6 +140,19 @@ class ConfigManager {
     return ConfigManager.instance;
   }
 
+  // Method to reinitialize configuration for testing purposes
+  public reinitialize(): void {
+    try {
+      this.config = this.loadConfig();
+      this.validateConfig();
+    } catch (error) {
+      if (error instanceof ConfigurationError) {
+        throw error;
+      }
+      throw new ConfigurationError(`Failed to reinitialize configuration: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
   private loadConfig(): ServerConfig {
     try {
       // Load raw configuration with proper error handling and fallbacks
