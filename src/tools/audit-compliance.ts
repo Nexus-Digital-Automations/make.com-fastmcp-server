@@ -73,14 +73,9 @@ export const logAuditEventTool = {
 
       return {
         success: true,
+        eventId: `event_${Date.now()}`,
+        timestamp: new Date().toISOString(),
         message: 'Audit event logged successfully',
-        event: {
-          action: input.action,
-          category: input.category,
-          level: input.level,
-          riskLevel: input.riskLevel,
-          timestamp: new Date().toISOString(),
-        },
       };
     } catch (error) {
       componentLogger.error('Failed to log audit event via MCP tool', {
@@ -91,7 +86,9 @@ export const logAuditEventTool = {
 
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to log audit event',
+        eventId: '',
+        timestamp: new Date().toISOString(),
+        message: error instanceof Error ? error.message : 'Failed to log audit event',
       };
     }
   },

@@ -475,7 +475,7 @@ ${configManager.isAuthEnabled() ?
     return this.server;
   }
 
-  public async start(options?: { transportType?: 'stdio' | 'httpStream', httpStream?: unknown }): Promise<void> {
+  public async start(options?: Record<string, unknown>): Promise<void> {
     this.componentLogger.info('Starting Make.com FastMCP Server', {
       version: configManager.getConfig().version,
       environment: process.env.NODE_ENV || 'development',
@@ -494,7 +494,7 @@ ${configManager.isAuthEnabled() ?
     }
 
     await this.server.start(options || {
-      transportType: 'stdio' as const,
+      transportType: 'stdio',
     });
 
     this.componentLogger.info('Server started successfully');
@@ -507,7 +507,7 @@ ${configManager.isAuthEnabled() ?
       await this.apiClient.shutdown();
       this.componentLogger.info('API client shutdown completed');
     } catch (error) {
-      this.componentLogger.error('Error during API client shutdown', error);
+      this.componentLogger.error('Error during API client shutdown', error as Record<string, unknown>);
     }
 
     this.componentLogger.info('Server shutdown completed');
