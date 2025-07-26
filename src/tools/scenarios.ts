@@ -94,7 +94,13 @@ const RunScenarioSchema = z.object({
  * ```
  */
 export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ScenarioTools' });
+  const componentLogger = logger?.child ? logger.child({ component: 'ScenarioTools' }) : {
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {},
+    child: () => componentLogger
+  } as ReturnType<typeof logger.child>;
 
   /**
    * List and search Make.com scenarios with advanced filtering options
@@ -143,7 +149,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
       openWorldHint: true,
     },
     execute: async (args, { log, reportProgress }) => {
-      log.info('Listing scenarios', { filters: args });
+      log?.info?.('Listing scenarios', { filters: args });
       reportProgress({ progress: 0, total: 100 });
 
       try {
@@ -187,7 +193,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
           timestamp: new Date().toISOString(),
         };
 
-        log.info('Scenarios listed successfully', { 
+        log?.info('Scenarios listed successfully', { 
           count: result.scenarios.length,
           total: result.pagination.total 
         });
@@ -195,7 +201,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         return JSON.stringify(result, null, 2);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Failed to list scenarios', { error: errorMessage });
+        log?.error('Failed to list scenarios', { error: errorMessage });
         throw new UserError(`Failed to list scenarios: ${errorMessage}`);
       }
     },
@@ -247,7 +253,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
       readOnlyHint: true,
     },
     execute: async (args, { log, reportProgress }) => {
-      log.info('Getting scenario details', { scenarioId: args.scenarioId });
+      log?.info('Getting scenario details', { scenarioId: args.scenarioId });
       reportProgress({ progress: 0, total: 100 });
 
       try {
@@ -284,11 +290,11 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         reportProgress({ progress: 100, total: 100 });
 
-        log.info('Scenario details retrieved successfully', { scenarioId: args.scenarioId });
+        log?.info('Scenario details retrieved successfully', { scenarioId: args.scenarioId });
         return JSON.stringify(result, null, 2);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Failed to get scenario', { scenarioId: args.scenarioId, error: errorMessage });
+        log?.error('Failed to get scenario', { scenarioId: args.scenarioId, error: errorMessage });
         throw new UserError(`Failed to get scenario: ${errorMessage}`);
       }
     },
@@ -349,7 +355,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
       title: 'Create Scenario',
     },
     execute: async (args, { log, reportProgress }) => {
-      log.info('Creating scenario', { name: args.name, teamId: args.teamId });
+      log?.info('Creating scenario', { name: args.name, teamId: args.teamId });
       reportProgress({ progress: 0, total: 100 });
 
       try {
@@ -383,7 +389,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         // Type guard for created scenario
         const scenarioObj = createdScenario as { id?: unknown } | null | undefined;
         
-        log.info('Scenario created successfully', { 
+        log?.info('Scenario created successfully', { 
           scenarioId: String(scenarioObj?.id ?? 'unknown'),
           name: args.name 
         });
@@ -391,7 +397,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         return JSON.stringify(result, null, 2);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Failed to create scenario', { name: args.name, error: errorMessage });
+        log?.error('Failed to create scenario', { name: args.name, error: errorMessage });
         throw new UserError(`Failed to create scenario: ${errorMessage}`);
       }
     },
@@ -453,7 +459,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
       title: 'Update Scenario',
     },
     execute: async (args, { log, reportProgress }) => {
-      log.info('Updating scenario', { scenarioId: args.scenarioId });
+      log?.info('Updating scenario', { scenarioId: args.scenarioId });
       reportProgress({ progress: 0, total: 100 });
 
       try {
@@ -487,11 +493,11 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
           timestamp: new Date().toISOString(),
         };
 
-        log.info('Scenario updated successfully', { scenarioId: args.scenarioId });
+        log?.info('Scenario updated successfully', { scenarioId: args.scenarioId });
         return JSON.stringify(result, null, 2);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Failed to update scenario', { scenarioId: args.scenarioId, error: errorMessage });
+        log?.error('Failed to update scenario', { scenarioId: args.scenarioId, error: errorMessage });
         throw new UserError(`Failed to update scenario: ${errorMessage}`);
       }
     },
@@ -538,7 +544,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
       title: 'Delete Scenario',
     },
     execute: async (args, { log, reportProgress }) => {
-      log.info('Deleting scenario', { scenarioId: args.scenarioId, force: args.force });
+      log?.info('Deleting scenario', { scenarioId: args.scenarioId, force: args.force });
       reportProgress({ progress: 0, total: 100 });
 
       try {
@@ -577,11 +583,11 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
           timestamp: new Date().toISOString(),
         };
 
-        log.info('Scenario deleted successfully', { scenarioId: args.scenarioId });
+        log?.info('Scenario deleted successfully', { scenarioId: args.scenarioId });
         return JSON.stringify(result, null, 2);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Failed to delete scenario', { scenarioId: args.scenarioId, error: errorMessage });
+        log?.error('Failed to delete scenario', { scenarioId: args.scenarioId, error: errorMessage });
         throw new UserError(`Failed to delete scenario: ${errorMessage}`);
       }
     },
@@ -643,7 +649,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
       title: 'Clone Scenario',
     },
     execute: async (args, { log, reportProgress }) => {
-      log.info('Cloning scenario', { 
+      log?.info('Cloning scenario', { 
         sourceId: args.scenarioId, 
         newName: args.name 
       });
@@ -690,7 +696,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         // Type guard for cloned scenario
         const clonedScenarioObj = clonedScenario as { id?: unknown } | null | undefined;
         
-        log.info('Scenario cloned successfully', { 
+        log?.info('Scenario cloned successfully', { 
           sourceId: args.scenarioId,
           cloneId: String(clonedScenarioObj?.id ?? 'unknown'),
           name: args.name 
@@ -699,7 +705,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         return JSON.stringify(result, null, 2);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Failed to clone scenario', { scenarioId: args.scenarioId, error: errorMessage });
+        log?.error('Failed to clone scenario', { scenarioId: args.scenarioId, error: errorMessage });
         throw new UserError(`Failed to clone scenario: ${errorMessage}`);
       }
     },
@@ -757,7 +763,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
       title: 'Run Scenario',
     },
     execute: async (args, { log, reportProgress }) => {
-      log.info('Running scenario', { 
+      log?.info('Running scenario', { 
         scenarioId: args.scenarioId, 
         wait: args.wait,
         timeout: args.timeout 
@@ -789,7 +795,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         // If wait is false, return immediately
         if (!args.wait) {
           reportProgress({ progress: 100, total: 100 });
-          log.info('Scenario execution started (not waiting)', { 
+          log?.info('Scenario execution started (not waiting)', { 
             scenarioId: args.scenarioId,
             executionId: String(executionObj?.id ?? 'unknown')
           });
@@ -833,7 +839,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
           result.timeout = true;
         }
 
-        log.info('Scenario execution completed', { 
+        log?.info('Scenario execution completed', { 
           scenarioId: args.scenarioId,
           executionId: String(executionObj?.id ?? 'unknown'),
           status: String(result.status ?? 'unknown'),
@@ -843,11 +849,11 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         return JSON.stringify(result, null, 2);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Failed to run scenario', { scenarioId: args.scenarioId, error: errorMessage });
+        log?.error('Failed to run scenario', { scenarioId: args.scenarioId, error: errorMessage });
         throw new UserError(`Failed to run scenario: ${errorMessage}`);
       }
     },
   });
 
-  componentLogger.info('Scenario management tools added successfully');
+  componentLogger?.info?.('Scenario management tools added successfully');
 }

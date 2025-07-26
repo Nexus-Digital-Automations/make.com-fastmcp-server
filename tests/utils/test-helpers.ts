@@ -80,6 +80,16 @@ export const executeTool = async (
   input: any, 
   context: Partial<{ log: any; reportProgress: any; session: any }> = {}
 ) => {
+  // Perform Zod schema validation if parameters schema exists
+  if (tool.parameters && typeof tool.parameters.safeParse === 'function') {
+    const validationResult = tool.parameters.safeParse(input);
+    if (!validationResult.success) {
+      throw new Error(`Parameter validation failed: ${validationResult.error.issues.map(i => i.message).join(', ')}`);
+    }
+    // Use validated data
+    input = validationResult.data;
+  }
+
   const mockContext = {
     log: {
       info: (...args: any[]) => {},
