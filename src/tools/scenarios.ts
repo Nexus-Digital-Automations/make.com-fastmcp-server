@@ -94,13 +94,13 @@ const RunScenarioSchema = z.object({
  * ```
  */
 export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger?.child ? logger.child({ component: 'ScenarioTools' }) : {
+  const componentLogger: ReturnType<typeof logger.child> = logger?.child ? logger.child({ component: 'ScenarioTools' }) : {
     info: () => {},
     warn: () => {},
     error: () => {},
     debug: () => {},
     child: () => componentLogger
-  } as ReturnType<typeof logger.child>;
+  } as unknown as ReturnType<typeof logger.child>;
 
   /**
    * List and search Make.com scenarios with advanced filtering options
