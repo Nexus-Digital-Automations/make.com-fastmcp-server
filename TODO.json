@@ -2,6 +2,204 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755670263442_t5w45uc4p",
+      "title": "Research: Enterprise-grade Make.com FastMCP enhancements initiative",
+      "description": "Research and analysis required for implementing: \"Enterprise-grade Make.com FastMCP enhancements initiative\"\n\n**Implementation Task Details:**\nComprehensive initiative to elevate the FastMCP server from comprehensive management tool to complete proactive governance and development platform. Includes: 1) Deeper Platform Integration (data structures, blueprints, marketplace), 2) Advanced Governance & Cost Control (budgeting, policies), 3) Enhanced Observability (log streaming, troubleshooting), 4) CI/CD Integration (testing, deployment tools). Total estimated effort: 40-60 hours across 9 feature areas.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755670263442_f6v7nk9t9\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755670263442_t5w45uc4p.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755670263442_t5w45uc4p.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:11:03.442Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755670263442_f6v7nk9t9",
+      "started_at": "2025-08-20T06:12:01.513Z",
+      "claimed_by": "agent_1755670321513",
+      "assigned_agent": "agent_1755670321513",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755670321513",
+          "action": "claimed",
+          "timestamp": "2025-08-20T06:12:01.513Z"
+        }
+      ]
+    },
+    {
+      "id": "task_1755670234469_utmg6adk9",
+      "title": "Research: Budgeting and cost control API capabilities",
+      "description": "Research Make.com API capabilities for programmatic budget and cost management. Investigate: billing API write capabilities, cost alert configuration endpoints, budget setting mechanisms, spending projection data access, and automatic scenario control options. Determine feasibility of implementing set_budget, create_cost_alert, get_cost_projection, pause_high_cost_scenarios tools.",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755670009466_g1b9knyq0.md",
+        "src/tools/billing.ts",
+        "./development/research-reports/research-report-task_1755670234469_utmg6adk9.md"
+      ],
+      "success_criteria": [
+        "Research report created: ./development/research-reports/research-report-task_1755670234469_utmg6adk9.md"
+      ],
+      "estimate": "2-3 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:10:34.469Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755668800371_1_general_dbb91efa",
+      "started_at": "2025-08-20T06:12:26.529Z",
+      "claimed_by": "development_session_1755668800371_1_general_dbb91efa",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755668800371_1_general_dbb91efa",
+          "role": "primary",
+          "assignedAt": "2025-08-20T06:12:26.529Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
+      "id": "task_1755670224792_5stgmahs3",
+      "title": "Research: Data structure lifecycle management API capabilities",
+      "description": "Research Make.com API endpoints and capabilities for complete data structure lifecycle management. Investigate: available CRUD operations for custom data structures, API authentication requirements, rate limits, data structure schema validation, and API response formats. Determine feasibility of implementing list_data_structures, get_data_structure, update_data_structure, delete_data_structure tools.",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755669983743_885vi6pfz.md",
+        "src/tools/notifications.ts",
+        "./development/research-reports/research-report-task_1755670224792_5stgmahs3.md"
+      ],
+      "success_criteria": [
+        "Research report created: ./development/research-reports/research-report-task_1755670224792_5stgmahs3.md"
+      ],
+      "estimate": "2-3 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:10:24.792Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755670041265_aslg3i3yz",
+      "title": "Research: Implement CI/CD and test integration tools",
+      "description": "Research and analysis required for implementing: \"Implement CI/CD and test integration tools\"\n\n**Implementation Task Details:**\nAdd developer workflow tools: run_test_suite (execute specific test categories), get_test_coverage (retrieve coverage reports), validate_deployment_readiness (pre-deployment checks), generate_build_report (compilation and quality metrics). Integrates MCP server testing capabilities into CI/CD pipelines.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755670041265_vzwremzqy\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755670041265_aslg3i3yz.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755670041265_aslg3i3yz.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:07:21.265Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755670041265_vzwremzqy"
+    },
+    {
+      "id": "task_1755670024528_ses025ysi",
+      "title": "Research: Implement advanced log streaming and query system",
+      "description": "Research and analysis required for implementing: \"Implement advanced log streaming and query system\"\n\n**Implementation Task Details:**\nAdd real-time observability tools: get_scenario_run_logs (stream detailed execution logs), query_logs_by_timerange (search historical logs), stream_live_execution (real-time scenario monitoring), export_logs_for_analysis (export to external tools). Essential for enterprise debugging and monitoring.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755670024527_5n6jc5fca\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755670024528_ses025ysi.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755670024528_ses025ysi.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:07:04.528Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755670024527_5n6jc5fca"
+    },
+    {
+      "id": "task_1755670000292_62wt7verz",
+      "title": "Research: Implement public app marketplace integration",
+      "description": "Research and analysis required for implementing: \"Implement public app marketplace integration\"\n\n**Implementation Task Details:**\nAdd tools to interact with Make.com public app marketplace: search_public_apps (find official and community apps), get_public_app_details (app specifications and requirements), list_popular_apps (trending/recommended apps). This enables discovery and integration planning for available Make.com applications.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755670000291_2nb7m3jex\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755670000292_62wt7verz.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755670000292_62wt7verz.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:06:40.292Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755670000291_2nb7m3jex"
+    },
+    {
+      "id": "task_1755669991667_zbn8gk57v",
+      "title": "Research: Implement blueprint manipulation and validation tools",
+      "description": "Research and analysis required for implementing: \"Implement blueprint manipulation and validation tools\"\n\n**Implementation Task Details:**\nAdd advanced blueprint management capabilities: validate_blueprint (validate JSON against Make.com schema), extract_blueprint_connections (parse blueprint for required connections), optimize_blueprint (performance suggestions). These tools will enable safer scenario migrations and dependency management.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755669991666_efyau9p5v\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755669991667_zbn8gk57v.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755669991667_zbn8gk57v.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:06:31.667Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755669991666_efyau9p5v"
+    },
+    {
       "id": "task_1755666913339_v4i5cd3s0",
       "title": "Research codebase features and tools inventory",
       "description": "Conduct comprehensive analysis of the existing codebase to identify all features, tools, capabilities, and components. Create detailed documentation of current implementation including APIs, endpoints, utilities, and architectural patterns. This analysis will inform alignment with Make.com integration requirements.",
@@ -47,6 +245,47 @@
           "timestamp": "2025-08-20T05:58:15.432Z"
         }
       ]
+    },
+    {
+      "id": "task_1755670033359_5zjfbmaur",
+      "title": "Implement automated troubleshooting and diagnostic system",
+      "description": "Add intelligent debugging tools: troubleshoot_scenario (comprehensive scenario diagnostics), diagnose_connection_issues (connection validation and health checks), analyze_performance_bottlenecks (identify slow operations), generate_troubleshooting_report (actionable fix recommendations). Combines multiple diagnostic checks into unified analysis.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/scenarios.ts",
+        "src/tools/connections.ts",
+        "src/lib/"
+      ],
+      "success_criteria": [],
+      "estimate": "8-10 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:07:13.360Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755670016282_sf6jwg7v6",
+      "title": "Implement enterprise policy management system",
+      "description": "Add organizational governance tools: create_naming_convention_policy (enforce naming standards), set_scenario_archival_policy (auto-disable unused scenarios), create_compliance_policy (regulatory requirements), validate_policy_compliance (audit scenarios against policies). Critical for large-scale enterprise governance.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/permissions.ts",
+        "src/lib/"
+      ],
+      "success_criteria": [],
+      "estimate": "8-10 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:06:56.283Z",
+      "auto_research_created": false
     },
     {
       "id": "task_1755045713683_review3",
@@ -111,13 +350,173 @@
       ]
     },
     {
+      "id": "task_1755670024527_5n6jc5fca",
+      "title": "Implement advanced log streaming and query system",
+      "description": "Add real-time observability tools: get_scenario_run_logs (stream detailed execution logs), query_logs_by_timerange (search historical logs), stream_live_execution (real-time scenario monitoring), export_logs_for_analysis (export to external tools). Essential for enterprise debugging and monitoring.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [
+        "task_1755670024528_ses025ysi"
+      ],
+      "important_files": [
+        "src/tools/logs.ts",
+        "src/lib/",
+        "src/tools/monitoring.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "6-8 hours",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:07:04.531Z",
+      "auto_research_created": true
+    },
+    {
+      "id": "task_1755670009466_g1b9knyq0",
+      "title": "Implement advanced budgeting and cost control system",
+      "description": "Add proactive financial management tools: set_budget (establish operational budgets for teams/org), create_cost_alert (trigger notifications when costs exceed thresholds), get_cost_projection (forecast spending based on usage patterns), pause_high_cost_scenarios (automatic cost protection). Essential for enterprise cost governance.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [
+        "task_1755670234469_utmg6adk9"
+      ],
+      "important_files": [
+        "src/tools/billing.ts",
+        "src/lib/",
+        "./development/research-reports/research-report-task_1755670009466_g1b9knyq0.md"
+      ],
+      "success_criteria": [],
+      "estimate": "6-8 hours",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:06:49.466Z",
+      "auto_research_created": false,
+      "last_modified": "2025-08-20T06:10:50.971Z"
+    },
+    {
+      "id": "task_1755669991666_efyau9p5v",
+      "title": "Implement blueprint manipulation and validation tools",
+      "description": "Add advanced blueprint management capabilities: validate_blueprint (validate JSON against Make.com schema), extract_blueprint_connections (parse blueprint for required connections), optimize_blueprint (performance suggestions). These tools will enable safer scenario migrations and dependency management.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [
+        "task_1755669991667_zbn8gk57v"
+      ],
+      "important_files": [
+        "src/tools/scenarios.ts",
+        "src/lib/"
+      ],
+      "success_criteria": [],
+      "estimate": "6-8 hours",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:06:31.670Z",
+      "auto_research_created": true
+    },
+    {
+      "id": "task_1755669983743_885vi6pfz",
+      "title": "Implement complete data structure lifecycle management",
+      "description": "Add missing CRUD operations for custom data structures: list_data_structures, get_data_structure, update_data_structure, delete_data_structure. Currently only create_data_structure exists, leaving a significant gap in data structure management capabilities.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [
+        "task_1755670224792_5stgmahs3"
+      ],
+      "important_files": [
+        "src/tools/notifications.ts",
+        "src/tools/",
+        "./development/research-reports/research-report-task_1755669983743_885vi6pfz.md"
+      ],
+      "success_criteria": [],
+      "estimate": "4-6 hours",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:06:23.744Z",
+      "auto_research_created": false,
+      "last_modified": "2025-08-20T06:10:43.416Z"
+    },
+    {
+      "id": "task_1755670041265_vzwremzqy",
+      "title": "Implement CI/CD and test integration tools",
+      "description": "Add developer workflow tools: run_test_suite (execute specific test categories), get_test_coverage (retrieve coverage reports), validate_deployment_readiness (pre-deployment checks), generate_build_report (compilation and quality metrics). Integrates MCP server testing capabilities into CI/CD pipelines.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "medium",
+      "status": "pending",
+      "dependencies": [
+        "task_1755670041265_aslg3i3yz"
+      ],
+      "important_files": [
+        "tests/",
+        "scripts/",
+        "src/tools/"
+      ],
+      "success_criteria": [],
+      "estimate": "4-6 hours",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:07:21.269Z",
+      "auto_research_created": true
+    },
+    {
+      "id": "task_1755670000291_2nb7m3jex",
+      "title": "Implement public app marketplace integration",
+      "description": "Add tools to interact with Make.com public app marketplace: search_public_apps (find official and community apps), get_public_app_details (app specifications and requirements), list_popular_apps (trending/recommended apps). This enables discovery and integration planning for available Make.com applications.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "medium",
+      "status": "pending",
+      "dependencies": [
+        "task_1755670000292_62wt7verz"
+      ],
+      "important_files": [
+        "src/tools/",
+        "src/lib/"
+      ],
+      "success_criteria": [],
+      "estimate": "3-4 hours",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:06:40.296Z",
+      "auto_research_created": true
+    },
+    {
+      "id": "task_1755670263442_f6v7nk9t9",
+      "title": "Enterprise-grade Make.com FastMCP enhancements initiative",
+      "description": "Comprehensive initiative to elevate the FastMCP server from comprehensive management tool to complete proactive governance and development platform. Includes: 1) Deeper Platform Integration (data structures, blueprints, marketplace), 2) Advanced Governance & Cost Control (budgeting, policies), 3) Enhanced Observability (log streaming, troubleshooting), 4) CI/CD Integration (testing, deployment tools). Total estimated effort: 40-60 hours across 9 feature areas.",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [
+        "task_1755670263442_t5w45uc4p"
+      ],
+      "important_files": [
+        "src/tools/",
+        "development/research-reports/"
+      ],
+      "success_criteria": [],
+      "estimate": "40-60 hours",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:11:03.446Z",
+      "auto_research_created": true
+    },
+    {
       "id": "task_1755666929288_dhpizqk98",
       "title": "Align codebase with Make.com and FastMCP standards",
       "description": "Ensure the FastMCP server implementation follows FastMCP TypeScript Protocol specifications and aligns with Make.com integration requirements. Verify all tools, resources, and prompts are properly structured according to MCP standards. Implement production-ready authentication, error handling, and logging. Validate compliance with both FastMCP framework patterns and Make.com connector standards.",
       "mode": "DEVELOPMENT",
       "category": "enhancement",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [
         "task_1755666913339_v4i5cd3s0"
       ],
@@ -132,14 +531,20 @@
       "subtasks": [],
       "created_at": "2025-08-20T05:15:29.291Z",
       "auto_research_created": true,
-      "started_at": "2025-08-20T05:46:20.387Z",
-      "claimed_by": "agent_1755668780387",
-      "assigned_agent": "agent_1755668780387",
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
       "agent_assignment_history": [
         {
           "agent": "agent_1755668780387",
           "action": "claimed",
           "timestamp": "2025-08-20T05:46:20.387Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-20T06:05:32.558Z",
+          "reason": "Task stale for 19 minutes"
         }
       ]
     }
@@ -151,13 +556,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755668800371_1_general_dbb91efa": {
+    "development_session_1755669937526_1_general_aac66f9a": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-20T05:46:40.372Z",
+      "lastHeartbeat": "2025-08-20T06:05:37.527Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -168,8 +573,29 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-20T05:46:40.372Z",
-      "sessionId": "session_1755668800371",
+      "createdAt": "2025-08-20T06:05:37.527Z",
+      "sessionId": "session_1755669937526",
+      "metadata": {}
+    },
+    "development_session_1755670394569_1_general_6185e0dd": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-20T06:13:14.570Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-20T06:13:14.570Z",
+      "sessionId": "session_1755670394569",
       "metadata": {}
     }
   },
