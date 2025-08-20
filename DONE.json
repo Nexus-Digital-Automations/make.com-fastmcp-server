@@ -3070,9 +3070,97 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755712084068_ryal4fnja",
+      "title": "Implement set_scenario_archival_policy tool for enterprise policy management",
+      "description": "Create comprehensive scenario archival policy functionality with automated enforcement, usage tracking, grace periods, and notifications for the Make.com FastMCP server",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/scenarios.ts",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/permissions.ts",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/naming-convention-policy.ts",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/development/reports/naming-convention-policy-implementation-report.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T17:48:04.068Z",
+      "auto_research_created": false,
+      "last_modified": "2025-08-20T17:48:46.734Z",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T17:56:48.624Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T17:56:48.625Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755712667221_ysnjb7qe4",
+      "title": "Research: Implement comprehensive create_compliance_policy tool for regulatory requirements",
+      "description": "Research and analysis required for implementing: \"Implement comprehensive create_compliance_policy tool for regulatory requirements\"\n\n**Implementation Task Details:**\nCreate enterprise-grade compliance policy management system with SOX, GDPR, HIPAA frameworks, automated compliance checking, and regulatory reporting\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755712667220_oqkk2866p\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755712667221_ysnjb7qe4.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755712667221_ysnjb7qe4.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T17:57:47.221Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755712667220_oqkk2866p",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T17:59:10.500Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T18:01:30.076Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T18:01:30.076Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 75,
-  "last_completion": "2025-08-20T17:36:26.209Z",
+  "total_completed": 77,
+  "last_completion": "2025-08-20T18:01:30.076Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

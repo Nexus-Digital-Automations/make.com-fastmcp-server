@@ -2,29 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755712084068_ryal4fnja",
-      "title": "Implement set_scenario_archival_policy tool for enterprise policy management",
-      "description": "Create comprehensive scenario archival policy functionality with automated enforcement, usage tracking, grace periods, and notifications for the Make.com FastMCP server",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/scenarios.ts",
-        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/permissions.ts",
-        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/naming-convention-policy.ts",
-        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/development/reports/naming-convention-policy-implementation-report.md"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T17:48:04.068Z",
-      "auto_research_created": false,
-      "last_modified": "2025-08-20T17:48:46.734Z"
-    },
-    {
       "id": "task_1755670016282_sf6jwg7v6",
       "title": "Implement enterprise policy management system",
       "description": "Add organizational governance tools: create_naming_convention_policy (enforce naming standards), set_scenario_archival_policy (auto-disable unused scenarios), create_compliance_policy (regulatory requirements), validate_policy_compliance (audit scenarios against policies). Critical for large-scale enterprise governance.",
@@ -294,6 +271,36 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-20T05:52:33.043Z",
           "reason": "Task stale for 16 minutes"
+        }
+      ]
+    },
+    {
+      "id": "task_1755712667220_oqkk2866p",
+      "title": "Implement comprehensive create_compliance_policy tool for regulatory requirements",
+      "description": "Create enterprise-grade compliance policy management system with SOX, GDPR, HIPAA frameworks, automated compliance checking, and regulatory reporting",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [
+        "task_1755712667221_ysnjb7qe4"
+      ],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T17:57:47.223Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T18:01:36.934Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
         }
       ]
     }

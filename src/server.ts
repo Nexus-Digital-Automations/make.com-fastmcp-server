@@ -29,6 +29,9 @@ import { addLogStreamingTools } from './tools/log-streaming.js';
 import { addRealTimeMonitoringTools } from './tools/real-time-monitoring.js';
 import { addNamingConventionPolicyTools } from './tools/naming-convention-policy.js';
 import { addScenarioArchivalPolicyTools } from './tools/scenario-archival-policy.js';
+import { addAuditComplianceTools } from './tools/audit-compliance.js';
+import { addCompliancePolicyTools } from './tools/compliance-policy.js';
+import { addPolicyComplianceValidationTools } from './tools/policy-compliance-validation.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -75,7 +78,10 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Business Management**: Billing access, payment processing, usage analytics, invoice management
 - **Communication**: Notification system, email preferences, multi-channel messaging
 - **Advanced Features**: Custom variables, AI agent configuration, data structure validation
-- **Enterprise Governance**: Naming convention policy management, rule enforcement, compliance validation
+- **Enterprise Governance**: Naming convention policy management, scenario archival policies, rule enforcement
+- **Comprehensive Compliance**: Enterprise regulatory compliance management (SOX, GDPR, HIPAA, PCI DSS, ISO 27001), automated policy enforcement, violation detection, compliance reporting
+- **Unified Policy Validation**: Cross-policy compliance validation, comprehensive scoring, violation tracking, remediation workflows, enterprise governance auditing
+- **Audit & Security**: Immutable audit logging, security health monitoring, incident management, compliance evidence collection
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 
@@ -324,6 +330,21 @@ ${configManager.isAuthEnabled() ?
             'usage-based-archival-triggers',
             'grace-period-management',
             'scenario-rollback-capabilities',
+            'comprehensive-compliance-management',
+            'regulatory-framework-support',
+            'sox-compliance-controls',
+            'gdpr-privacy-protection',
+            'hipaa-phi-security',
+            'pci-dss-payment-security',
+            'iso27001-security-management',
+            'custom-compliance-frameworks',
+            'automated-policy-enforcement',
+            'compliance-violation-detection',
+            'regulatory-reporting-automation',
+            'audit-trail-management',
+            'security-health-monitoring',
+            'incident-management-integration',
+            'compliance-evidence-collection',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -508,7 +529,16 @@ ${configManager.isAuthEnabled() ?
     // Add scenario archival policy management tools
     addScenarioArchivalPolicyTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy)');
+    // Add audit and compliance logging tools
+    addAuditComplianceTools(this.server, this.apiClient);
+    
+    // Add comprehensive compliance policy management tools
+    addCompliancePolicyTools(this.server, this.apiClient);
+    
+    // Add unified policy compliance validation tools
+    addPolicyComplianceValidationTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation)');
   }
 
   public getServer(): FastMCP {
