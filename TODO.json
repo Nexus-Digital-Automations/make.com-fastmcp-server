@@ -298,27 +298,6 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755673935639_ao4x10kht",
-      "title": "Research Make.com API authentication and security framework",
-      "description": "Conduct comprehensive research on Make.com API authentication methods, security protocols, access control, and integration best practices for FastMCP server implementation",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "./development/research-reports/research-report-task_1755673935639_ao4x10kht.md"
-      ],
-      "success_criteria": [
-        "Research report created: ./development/research-reports/research-report-task_1755673935639_ao4x10kht.md"
-      ],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T07:12:15.639Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755673932370_0ge6ilszq",
       "title": "Research Make.com integration patterns and real-world use cases",
       "description": "Comprehensive research on Make.com integration patterns, architectures, use cases, and implementation best practices for FastMCP server enhancement",
