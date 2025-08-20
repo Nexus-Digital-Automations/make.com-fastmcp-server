@@ -40,40 +40,6 @@
       ]
     },
     {
-      "id": "task_1755666921787_j803wvkdl",
-      "title": "Research Make.com API integration requirements",
-      "description": "Comprehensive analysis of Make.com API capabilities, authentication methods, webhook patterns, data formats, and integration requirements. Document how to build production-ready connectors that align with Make.com platform standards and user expectations. Research Make.com app development best practices and submission requirements.",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "development/guides/FASTMCP_TYPESCRIPT_PROTOCOL.md",
-        "./development/research-reports/research-report-task_1755666921787_j803wvkdl.md"
-      ],
-      "success_criteria": [
-        "Research report created: ./development/research-reports/research-report-task_1755666921787_j803wvkdl.md"
-      ],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:15:21.787Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755667044660_1_general_3b7c1feb",
-      "started_at": "2025-08-20T05:18:36.903Z",
-      "claimed_by": "development_session_1755667044660_1_general_3b7c1feb",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755667044660_1_general_3b7c1feb",
-          "role": "primary",
-          "assignedAt": "2025-08-20T05:18:36.903Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1755666913339_v4i5cd3s0",
       "title": "Research codebase features and tools inventory",
       "description": "Conduct comprehensive analysis of the existing codebase to identify all features, tools, capabilities, and components. Create detailed documentation of current implementation including APIs, endpoints, utilities, and architectural patterns. This analysis will inform alignment with Make.com integration requirements.",
@@ -100,27 +66,6 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755667055280_9e7tms6vy",
-      "title": "Research FastMCP-Make.com compliance and governance standards",
-      "description": "Research compliance requirements for FastMCP protocol, Make.com platform, enterprise standards, and governance frameworks",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "./development/research-reports/research-report-task_1755667055280_9e7tms6vy.md"
-      ],
-      "success_criteria": [
-        "Research report created: ./development/research-reports/research-report-task_1755667055280_9e7tms6vy.md"
-      ],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:17:35.281Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755667050522_paszrtpc3",
       "title": "Research production deployment architecture and DevOps strategies for FastMCP servers with Make.com integration",
       "description": "Comprehensive research covering: 1) FastMCP deployment patterns (containers, scaling, networking), 2) Make.com integration deployment (webhooks, SSL, API versioning), 3) Production infrastructure (cloud platforms, databases, CDN), 4) DevOps automation (CI/CD, monitoring, backup). Include deployment scripts and infrastructure-as-code examples.",
@@ -136,34 +81,6 @@
       "subtasks": [],
       "created_at": "2025-08-20T05:17:30.522Z",
       "auto_research_created": false
-    },
-    {
-      "id": "task_1755667046202_lii141pb8",
-      "title": "Research comprehensive error handling and resilience patterns for FastMCP-Make.com integration",
-      "description": "Research FastMCP error handling standards, Make.com integration resilience, production resilience patterns, and error monitoring/observability for robust production deployment",
-      "mode": "DEVELOPMENT",
-      "category": "research",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:17:26.202Z",
-      "auto_research_created": false,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-20T05:19:00.847Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
     },
     {
       "id": "task_1755045713681_review1",
@@ -233,7 +150,6 @@
       "status": "pending",
       "dependencies": [
         "task_1755666913339_v4i5cd3s0",
-        "task_1755666921787_j803wvkdl",
         "task_1755666929288_ctwn9naoo"
       ],
       "important_files": [
