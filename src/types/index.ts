@@ -3,6 +3,31 @@
  * Comprehensive types for Make.com API integration
  */
 
+import { FastMCP } from 'fastmcp';
+import { z } from 'zod';
+
+// FastMCP Server Types
+export type FastMCPServer = FastMCP<any>;
+export type ToolParameters = z.ZodType<any>;
+
+// Tool creation function type
+export type ToolCreationFunction<T = any> = (apiClient: T) => {
+  name: string;
+  description: string;
+  parameters: ToolParameters;
+  execute: (args: any, context?: any) => Promise<string>;
+};
+
+// Server interface for tool registration
+export interface ToolServer {
+  addTool: <Params extends ToolParameters>(tool: {
+    name: string;
+    description: string;
+    parameters: Params;
+    execute: (args: z.infer<Params>, context?: any) => Promise<string>;
+  }) => void;
+}
+
 export interface MakeApiConfig {
   apiKey: string;
   baseUrl: string;

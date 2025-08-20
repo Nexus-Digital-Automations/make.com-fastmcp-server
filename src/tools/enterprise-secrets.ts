@@ -2115,7 +2115,7 @@ export const enterpriseSecretsTools = [
 /**
  * Add all Enterprise Secrets Management tools to FastMCP server
  */
-export function addEnterpriseSecretsTools(server: FastMCP, apiClient: MakeApiClient): void {
+export function addEnterpriseSecretsTools(server: any, apiClient: MakeApiClient): void {
   enterpriseSecretsTools.forEach(createTool => {
     const tool = createTool(apiClient);
     server.addTool(tool);

@@ -568,7 +568,7 @@ class AIGovernanceEngine {
   }
 
   private async executeAutomatedRemediation(violations: any[], _options: any): Promise<any[]> {
-    if (!options.automatedRemediation) return [];
+    if (!_options.automatedRemediation) return [];
 
     return violations
       .filter(v => v.automatedRemediation)
@@ -933,9 +933,9 @@ class AIGovernanceEngine {
         {
           id: 'remediation_time',
           type: 'metric',
-          title: 'Avg Remediation Time',
+          title: 'Avg Remediation Time (minutes)',
           value: 142,
-          unit: 'minutes',
+          trend: 'stable',
           size: 'medium',
         }
       );
@@ -1040,11 +1040,11 @@ class AIGovernanceEngine {
 
   private async analyzeOptimizationImpact(_changes: any[]): Promise<any> {
     return {
-      totalChanges: changes.length,
+      totalChanges: _changes.length,
       impactLevels: {
-        high: changes.filter(c => c.impact === 'high').length,
-        medium: changes.filter(c => c.impact === 'medium').length,
-        low: changes.filter(c => c.impact === 'low').length,
+        high: _changes.filter((c: any) => c.impact === 'high').length,
+        medium: _changes.filter((c: any) => c.impact === 'medium').length,
+        low: _changes.filter((c: any) => c.impact === 'low').length,
       },
       estimatedROI: '185%',
       riskAssessment: 'low',
@@ -1305,7 +1305,7 @@ ${result.predictions.map(pred => `
 **Timeline**: ${result.mitigationPlan.timeline}
 
 **Prioritized Actions**:
-${result.mitigationPlan.prioritizedActions.map(action => `- ${action}`).join('\n')}
+${result.mitigationPlan.prioritizedActions.map((action: any) => `- ${action}`).join('\n')}
 
 Comprehensive risk assessment completed with ML-powered insights and actionable mitigation strategies.`,
             },
@@ -1385,7 +1385,7 @@ ${result.escalationPaths.map(path => `
 **Status**: ${result.testResults.status}
 ${result.testResults.testedWorkflows ? `**Workflows Tested**: ${result.testResults.testedWorkflows}` : ''}
 
-${result.testResults.results ? result.testResults.results.map(test => `
+${result.testResults.results ? result.testResults.results.map((test: any) => `
 - **${test.workflowId}**: ${test.testResult} (${Math.round(test.duration / 1000)}s)
 `).join('\n') : ''}
 
@@ -1555,7 +1555,7 @@ ${result.forecasts.map(forecast => `
 **Current Value**: ${forecast.currentValue}
 **Confidence**: ${Math.round(forecast.confidence * 100)}%
 **Predictions**:
-${forecast.forecast.map(f => `  - ${f.date}: ${f.value}`).join('\n')}
+${forecast.forecast.map((f: any) => `  - ${f.date}: ${f.value}`).join('\n')}
 `).join('\n')}
 
 Comprehensive governance dashboard generated with AI-powered insights and real-time monitoring capabilities.`,
@@ -1616,7 +1616,7 @@ Comprehensive governance dashboard generated with AI-powered insights and real-t
 **Last Optimization**: ${result.currentState.lastOptimization}
 
 **Identified Issues**:
-${result.currentState.identifiedIssues.map(issue => `- ${issue}`).join('\n')}
+${result.currentState.identifiedIssues.map((issue: any) => `- ${issue}`).join('\n')}
 
 ## 🎯 Optimization Plan
 **Plan ID**: ${result.optimizationPlan.planId}
@@ -1624,14 +1624,14 @@ ${result.currentState.identifiedIssues.map(issue => `- ${issue}`).join('\n')}
 **Goals**: ${result.optimizationPlan.goals.join(', ')}
 
 ### Implementation Phases
-${result.optimizationPlan.phases.map(phase => `
+${result.optimizationPlan.phases.map((phase: any) => `
 **Phase ${phase.phase}: ${phase.name}**
 - Duration: ${phase.duration}
 - Activities: ${phase.activities.join(', ')}
 `).join('\n')}
 
 **Estimated Benefits**:
-${result.optimizationPlan.estimatedBenefits.map(benefit => `- ${benefit}`).join('\n')}
+${result.optimizationPlan.estimatedBenefits.map((benefit: any) => `- ${benefit}`).join('\n')}
 
 ## 🔧 Proposed Changes (${result.proposedChanges.length} changes)
 ${result.proposedChanges.map(change => `
@@ -1668,7 +1668,7 @@ ${result.simurationResults ? `
 - Performance Impact: ${result.simurationResults.results.performanceImpact}
 
 **Recommendations**:
-${result.simurationResults.recommendations.map(rec => `- ${rec}`).join('\n')}
+${result.simurationResults.recommendations.map((rec: any) => `- ${rec}`).join('\n')}
 ` : 'Simulation not performed'}
 
 AI-powered policy optimization analysis completed with actionable implementation roadmap.`,

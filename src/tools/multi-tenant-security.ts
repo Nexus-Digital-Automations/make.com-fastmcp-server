@@ -1377,7 +1377,7 @@ export const multiTenantSecurityTools = [
 /**
  * Add all Multi-Tenant Security tools to FastMCP server
  */
-export function addMultiTenantSecurityTools(server: { addTool: (tool: unknown) => void }, apiClient: MakeApiClient): void {
+export function addMultiTenantSecurityTools(server: any, apiClient: MakeApiClient): void {
   multiTenantSecurityTools.forEach(createTool => {
     const tool = createTool(apiClient);
     server.addTool(tool);
