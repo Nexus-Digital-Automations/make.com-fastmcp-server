@@ -2,45 +2,13 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755670016282_sf6jwg7v6",
-      "title": "Implement enterprise policy management system",
-      "description": "Add organizational governance tools: create_naming_convention_policy (enforce naming standards), set_scenario_archival_policy (auto-disable unused scenarios), create_compliance_policy (regulatory requirements), validate_policy_compliance (audit scenarios against policies). Critical for large-scale enterprise governance.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "src/tools/permissions.ts",
-        "src/lib/"
-      ],
-      "success_criteria": [],
-      "estimate": "8-10 hours",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T06:06:56.283Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755705576236_1_general_170770af",
-      "started_at": "2025-08-20T17:38:25.859Z",
-      "claimed_by": "development_session_1755705576236_1_general_170770af",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755705576236_1_general_170770af",
-          "role": "primary",
-          "assignedAt": "2025-08-20T17:38:25.859Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1755670009466_g1b9knyq0",
       "title": "Implement advanced budgeting and cost control system",
       "description": "Add proactive financial management tools: set_budget (establish operational budgets for teams/org), create_cost_alert (trigger notifications when costs exceed thresholds), get_cost_projection (forecast spending based on usage patterns), pause_high_cost_scenarios (automatic cost protection). Essential for enterprise cost governance.",
       "mode": "DEVELOPMENT",
       "category": "missing-feature",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [
         "src/tools/billing.ts",
@@ -53,7 +21,19 @@
       "subtasks": [],
       "created_at": "2025-08-20T06:06:49.466Z",
       "auto_research_created": false,
-      "last_modified": "2025-08-20T06:10:50.971Z"
+      "last_modified": "2025-08-20T06:10:50.971Z",
+      "assigned_agent": "development_session_1755705576236_1_general_170770af",
+      "started_at": "2025-08-20T18:25:01.322Z",
+      "claimed_by": "development_session_1755705576236_1_general_170770af",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755705576236_1_general_170770af",
+          "role": "primary",
+          "assignedAt": "2025-08-20T18:25:01.322Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
     },
     {
       "id": "task_1755669991666_efyau9p5v",
@@ -213,6 +193,106 @@
       "auto_research_created": false
     },
     {
+      "id": "task_1755714471344_ck3xwn7no",
+      "title": "Implement staged test execution with proper timing controls",
+      "description": "Create a staged testing approach that respects loading times: 1) Stage 1: Wait for initial page load and basic elements, 2) Stage 2: Wait for workflow data to populate before any workflow-related tests, 3) Stage 3: Wait for dashboard components to fully render before dashboard interactions, 4) Stage 4: Add delays between view switches to prevent overload, 5) Implement configurable timing controls and performance monitoring during tests to detect when system is under stress.",
+      "mode": "DEVELOPMENT",
+      "category": "test-setup",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "tests/",
+        "cypress/",
+        "playwright/",
+        "package.json"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T18:27:51.344Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755714430656_jsx410uzi",
+      "title": "Implement comprehensive loading state detection and waiting mechanisms",
+      "description": "Create robust loading detection utilities for browser tests: 1) Implement waitForElementsToLoad() helper that checks for loading spinners, skeleton screens, and dynamic content, 2) Add waitForDashboardReady() that ensures all dashboard components are rendered, 3) Create waitForWorkflowsLoaded() that verifies all workflow data is available, 4) Add network idle detection to ensure API calls complete before interactions. Include timeouts and error handling for all wait functions.",
+      "mode": "DEVELOPMENT",
+      "category": "test-setup",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "tests/helpers/",
+        "tests/utils/",
+        "src/test/utils/"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T18:27:10.656Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755714461500_mg6ul8jv3",
+      "title": "Add error handling and recovery for test failures",
+      "description": "Implement comprehensive error handling for browser tests: 1) Add try-catch blocks around all UI interactions, 2) Implement test retry mechanisms for transient failures, 3) Add screenshot capture on test failures for debugging, 4) Create graceful fallback strategies when elements fail to load, 5) Add detailed error logging with context about what was loading when failure occurred. Include specific error handling for dashboard timeouts and workflow loading failures.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "tests/",
+        "cypress/",
+        "playwright/",
+        "jest.config.js"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T18:27:41.500Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755714419862_bspjyme7y",
+      "title": "Restructure test workflows with proper loading sequences",
+      "description": "Refactor browser tests to wait for all elements to load completely before interaction. Implement proper loading sequence: 1) Let workflows load first, 2) Wait for performance dashboard to fully load before switching views, 3) Add loading state detection and element availability checks before any clicks or interactions. This will prevent race conditions and system overload.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [
+        "tests/",
+        "src/test/",
+        "cypress/",
+        "playwright/",
+        "jest.config.js"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T18:26:59.863Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755714333868_1_general_1c9a988f",
+      "started_at": "2025-08-20T18:28:16.630Z",
+      "claimed_by": "development_session_1755714333868_1_general_1c9a988f",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755714333868_1_general_1c9a988f",
+          "role": "primary",
+          "assignedAt": "2025-08-20T18:28:16.630Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
       "id": "task_1755045713683_review3",
       "title": "Review Strike 3: Confirm test coverage is 100% on important modules and 90%+ on others, with all tests passing",
       "description": "Perform a comprehensive code review with focus on: Confirm test coverage is 100% on important modules and 90%+ on others, with all tests passing\n\nCheck the entire codebase and ensure this criterion is met.\n\n## CRITICAL FAILURE RESPONSE PROTOCOL\n\nIF TEST COVERAGE INSUFFICIENT: Create specific TASK CREATION tasks in TODO.json to achieve required coverage:\n- Test framework setup tasks (Jest/Mocha/Vitest)\n- Unit test creation tasks for all modules\n- Integration test development tasks\n- Test coverage reporting setup tasks\n- CI/CD test integration tasks\n\nCRITICAL: Use TaskManager API to add these tasks immediately when coverage is below requirements.\n\n## SUCCESS CRITERIA\n- Mark this review task as completed ONLY if the criterion is fully met\n- If criterion fails, you MUST create remediation tasks using TaskManager API before marking review as completed\n- All new tasks should be actionable, specific, and include proper dependencies/important_files parameters\n\n## TASK CREATION REQUIREMENT\nWhen creating remediation tasks, ensure each task includes:\n- Clear success criteria\n- Appropriate mode (DEVELOPMENT/TESTING/REFACTORING)\n- Specific file dependencies\n- Realistic time estimates\n- High priority for critical issues\n\nUse the task-creation.md guidelines for optimal task structure.",
@@ -273,36 +353,6 @@
           "reason": "Task stale for 16 minutes"
         }
       ]
-    },
-    {
-      "id": "task_1755712667220_oqkk2866p",
-      "title": "Implement comprehensive create_compliance_policy tool for regulatory requirements",
-      "description": "Create enterprise-grade compliance policy management system with SOX, GDPR, HIPAA frameworks, automated compliance checking, and regulatory reporting",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [
-        "task_1755712667221_ysnjb7qe4"
-      ],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-20T17:57:47.223Z",
-      "auto_research_created": true,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-20T18:01:36.934Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
     }
   ],
   "current_mode": "DEVELOPMENT",
@@ -312,13 +362,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755705576236_1_general_170770af": {
+    "development_session_1755714333868_1_general_1c9a988f": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-20T15:59:36.237Z",
+      "lastHeartbeat": "2025-08-20T18:25:33.868Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -329,8 +379,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-20T15:59:36.237Z",
-      "sessionId": "session_1755705576236",
+      "createdAt": "2025-08-20T18:25:33.868Z",
+      "sessionId": "session_1755714333868",
       "metadata": {}
     }
   },

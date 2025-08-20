@@ -3158,9 +3158,97 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755670016282_sf6jwg7v6",
+      "title": "Implement enterprise policy management system",
+      "description": "Add organizational governance tools: create_naming_convention_policy (enforce naming standards), set_scenario_archival_policy (auto-disable unused scenarios), create_compliance_policy (regulatory requirements), validate_policy_compliance (audit scenarios against policies). Critical for large-scale enterprise governance.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/permissions.ts",
+        "src/lib/"
+      ],
+      "success_criteria": [],
+      "estimate": "8-10 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:06:56.283Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755705576236_1_general_170770af",
+      "started_at": "2025-08-20T17:38:25.859Z",
+      "claimed_by": "development_session_1755705576236_1_general_170770af",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755705576236_1_general_170770af",
+          "role": "primary",
+          "assignedAt": "2025-08-20T17:38:25.859Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T18:24:39.808Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T18:24:39.809Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755712667220_oqkk2866p",
+      "title": "Implement comprehensive create_compliance_policy tool for regulatory requirements",
+      "description": "Create enterprise-grade compliance policy management system with SOX, GDPR, HIPAA frameworks, automated compliance checking, and regulatory reporting",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T17:57:47.223Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T18:01:36.934Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T18:24:54.117Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T18:24:54.118Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 77,
-  "last_completion": "2025-08-20T18:01:30.076Z",
+  "total_completed": 79,
+  "last_completion": "2025-08-20T18:24:54.118Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
