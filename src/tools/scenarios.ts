@@ -17,6 +17,9 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import DiagnosticEngine from '../lib/diagnostic-engine.js';
+import { defaultDiagnosticRules } from '../lib/diagnostic-rules.js';
+import { MakeBlueprint } from '../types/diagnostics.js';
 
 // Zod schemas for input validation
 const ScenarioFiltersSchema = z.object({
@@ -75,6 +78,20 @@ const RunScenarioSchema = z.object({
   scenarioId: z.string().min(1).describe('Scenario ID to execute (required)'),
   wait: z.boolean().default(true).describe('Wait for execution to complete'),
   timeout: z.number().min(1).max(300).default(60).describe('Timeout in seconds for execution'),
+}).strict();
+
+const TroubleshootScenarioSchema = z.object({
+  scenarioId: z.string().min(1).describe('Scenario ID to troubleshoot (required)'),
+  diagnosticTypes: z.array(z.enum([
+    'health', 'performance', 'connections', 'errors', 'security', 'all'
+  ])).default(['all']).describe('Types of diagnostics to run'),
+  includeRecommendations: z.boolean().default(true).describe('Include fix recommendations'),
+  includePerformanceHistory: z.boolean().default(true).describe('Include performance trend analysis'),
+  severityFilter: z.enum(['info', 'warning', 'error', 'critical']).optional().describe('Minimum severity level to report'),
+  autoFix: z.boolean().default(false).describe('Attempt automatic fixes for fixable issues'),
+  timeRange: z.object({
+    hours: z.number().min(1).max(720).default(24).describe('Hours of execution history to analyze')
+  }).optional().describe('Time range for historical analysis')
 }).strict();
 
 /**
@@ -851,6 +868,210 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         const errorMessage = error instanceof Error ? error.message : String(error);
         log?.error('Failed to run scenario', { scenarioId: args.scenarioId, error: errorMessage });
         throw new UserError(`Failed to run scenario: ${errorMessage}`);
+      }
+    },
+  });
+
+  /**
+   * Comprehensive scenario troubleshooting and diagnostics tool
+   * 
+   * Performs advanced diagnostic analysis of Make.com scenarios including health checks,
+   * performance analysis, error detection, connection validation, and security assessment
+   * with optional automatic fixes for common issues.
+   * 
+   * @tool troubleshoot-scenario
+   * @category Scenario Diagnostics
+   * @permission scenario:read, scenario:write (for auto-fixes)
+   * 
+   * @param {Object} args - Troubleshooting parameters
+   * @param {string} args.scenarioId - Scenario ID to troubleshoot (required)
+   * @param {string[]} [args.diagnosticTypes=['all']] - Types of diagnostics to run
+   * @param {boolean} [args.includeRecommendations=true] - Include fix recommendations
+   * @param {boolean} [args.includePerformanceHistory=true] - Include performance trend analysis
+   * @param {string} [args.severityFilter] - Minimum severity level to report
+   * @param {boolean} [args.autoFix=false] - Attempt automatic fixes for fixable issues
+   * @param {Object} [args.timeRange] - Time range for historical analysis
+   * @param {number} [args.timeRange.hours=24] - Hours of execution history to analyze
+   * 
+   * @returns {Promise<string>} JSON response containing:
+   * - scenario: Basic scenario information and status
+   * - troubleshooting: Overall health assessment and summary
+   * - diagnostics: Array of diagnostic results with details and recommendations
+   * - autoFix: Auto-fix results if requested
+   * - metadata: Troubleshooting session metadata
+   * 
+   * @throws {UserError} When scenario not found or troubleshooting fails
+   * 
+   * @example
+   * ```bash
+   * # Basic troubleshooting with all diagnostics
+   * mcp-client troubleshoot-scenario --scenarioId "scn_12345"
+   * 
+   * # Performance-focused analysis
+   * mcp-client troubleshoot-scenario \
+   *   --scenarioId "scn_12345" \
+   *   --diagnosticTypes '["performance", "errors"]' \
+   *   --timeRange.hours 72
+   * 
+   * # Complete analysis with auto-fixes
+   * mcp-client troubleshoot-scenario \
+   *   --scenarioId "scn_12345" \
+   *   --autoFix true \
+   *   --severityFilter "warning"
+   * ```
+   * 
+   * @see {@link https://docs.make.com/api/scenarios} Make.com Scenarios API
+   */
+  server.addTool({
+    name: 'troubleshoot-scenario',
+    description: 'Comprehensive Make.com scenario diagnostics with health checks, error analysis, performance monitoring, and auto-fix capabilities',
+    parameters: TroubleshootScenarioSchema,
+    annotations: {
+      title: 'Troubleshoot Scenario',
+      readOnlyHint: false, // Can perform auto-fixes
+    },
+    execute: async (args, { log, reportProgress }) => {
+      log?.info('Starting scenario troubleshooting', { 
+        scenarioId: args.scenarioId,
+        diagnosticTypes: args.diagnosticTypes,
+        autoFix: args.autoFix,
+        timeRange: args.timeRange?.hours || 24
+      });
+      
+      reportProgress({ progress: 0, total: 100 });
+      
+      try {
+        // Initialize diagnostic engine with default rules
+        const diagnosticEngine = new DiagnosticEngine();
+        
+        // Register all default diagnostic rules
+        defaultDiagnosticRules.forEach(rule => {
+          diagnosticEngine.registerRule(rule);
+        });
+        
+        reportProgress({ progress: 10, total: 100 });
+        
+        // Get scenario details
+        const scenarioResponse = await apiClient.get(`/scenarios/${args.scenarioId}`);
+        if (!scenarioResponse.success) {
+          throw new UserError(`Scenario not found: ${args.scenarioId}`);
+        }
+        
+        reportProgress({ progress: 25, total: 100 });
+        
+        // Get scenario blueprint
+        const blueprintResponse = await apiClient.get(`/scenarios/${args.scenarioId}/blueprint`);
+        if (!blueprintResponse.success) {
+          throw new UserError(`Failed to get scenario blueprint: ${blueprintResponse.error?.message}`);
+        }
+        
+        reportProgress({ progress: 40, total: 100 });
+        
+        // Prepare diagnostic options
+        const diagnosticOptions = {
+          diagnosticTypes: args.diagnosticTypes,
+          severityFilter: args.severityFilter,
+          timeRangeHours: args.timeRange?.hours || 24,
+          includePerformanceMetrics: args.includePerformanceHistory,
+          includeSecurityChecks: args.diagnosticTypes.includes('security') || args.diagnosticTypes.includes('all'),
+          timeoutMs: 30000 // 30 second timeout per rule
+        };
+        
+        // Run comprehensive diagnostics
+        const report = await diagnosticEngine.runDiagnostics(
+          args.scenarioId,
+          scenarioResponse.data,
+          blueprintResponse.data as MakeBlueprint,
+          apiClient,
+          diagnosticOptions
+        );
+        
+        reportProgress({ progress: 75, total: 100 });
+        
+        // Apply auto-fixes if requested
+        let autoFixResults;
+        if (args.autoFix) {
+          const fixableIssues = report.diagnostics.filter(d => d.fixable);
+          if (fixableIssues.length > 0) {
+            log?.info('Applying automatic fixes', { fixableCount: fixableIssues.length });
+            autoFixResults = await diagnosticEngine.applyAutoFixes(fixableIssues, apiClient);
+          } else {
+            autoFixResults = {
+              attempted: false,
+              results: [],
+              success: true,
+              fixesApplied: 0,
+              executionTime: 0
+            };
+          }
+        }
+        
+        reportProgress({ progress: 90, total: 100 });
+        
+        // Build comprehensive response
+        const response = {
+          scenario: {
+            id: args.scenarioId,
+            name: (scenarioResponse.data as { name?: string })?.name || 'Unknown',
+            status: (scenarioResponse.data as { active?: boolean })?.active ? 'active' : 'inactive',
+            moduleCount: (blueprintResponse.data as MakeBlueprint)?.flow?.length || 0
+          },
+          troubleshooting: {
+            overallHealth: report.overallHealth,
+            summary: report.summary,
+            executionTime: report.executionTime,
+            diagnosticsRun: args.diagnosticTypes,
+            timeRangeAnalyzed: args.timeRange?.hours || 24
+          },
+          diagnostics: args.includeRecommendations 
+            ? report.diagnostics 
+            : report.diagnostics.map(d => ({ 
+                ...d, 
+                recommendations: d.severity === 'critical' || d.severity === 'error' 
+                  ? d.recommendations 
+                  : [] 
+              })),
+          autoFix: args.autoFix ? {
+            attempted: autoFixResults?.attempted || false,
+            results: autoFixResults?.results || [],
+            success: autoFixResults?.success || false,
+            fixesApplied: autoFixResults?.fixesApplied || 0,
+            executionTime: autoFixResults?.executionTime || 0
+          } : undefined,
+          metadata: {
+            troubleshootingSession: {
+              diagnosticTypes: args.diagnosticTypes,
+              severityFilter: args.severityFilter,
+              timeRange: args.timeRange?.hours || 24,
+              autoFixEnabled: args.autoFix,
+              rulesExecuted: defaultDiagnosticRules.length
+            },
+            timestamp: new Date().toISOString(),
+            version: '1.0.0'
+          }
+        };
+        
+        reportProgress({ progress: 100, total: 100 });
+        
+        log?.info('Scenario troubleshooting completed', {
+          scenarioId: args.scenarioId,
+          overallHealth: report.overallHealth,
+          issueCount: report.summary.totalIssues,
+          criticalIssues: report.summary.criticalIssues,
+          fixableIssues: report.summary.fixableIssues,
+          autoFixesApplied: autoFixResults?.fixesApplied || 0,
+          executionTime: report.executionTime
+        });
+        
+        return JSON.stringify(response, null, 2);
+        
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log?.error('Scenario troubleshooting failed', { 
+          scenarioId: args.scenarioId, 
+          error: errorMessage 
+        });
+        throw new UserError(`Scenario troubleshooting failed: ${errorMessage}`);
       }
     },
   });
