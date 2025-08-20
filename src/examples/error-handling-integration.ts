@@ -3,7 +3,7 @@
  * Demonstrates comprehensive error handling with correlation IDs, recovery, and analytics
  */
 
-import { MakeServerError, ValidationError, ExternalServiceError } from '../utils/errors.js';
+import { MakeServerError, UserError, createValidationError, createExternalServiceError } from '../utils/errors.js';
 import { extractCorrelationId, createToolErrorResponse } from '../utils/error-response.js';
 import { retryWithBackoff, CircuitBreakerFactory, BulkheadFactory } from '../utils/error-recovery.js';
 import { errorAnalytics, monitorPerformance } from '../utils/error-analytics.js';
@@ -134,14 +134,14 @@ export class EnhancedMakeApiClient {
       correlationId: string;
       operation: string;
     }
-  ): MakeServerError {
-    if (error instanceof MakeServerError) {
+  ): UserError | MakeServerError {
+    if (error instanceof MakeServerError || error instanceof UserError) {
       return error;
     }
 
-    // Map common error types to appropriate MakeServerError types
+    // Map common error types to appropriate UserError types
     if (error.message.includes('timeout')) {
-      return new ExternalServiceError(
+      return createExternalServiceError(
         'Make.com API',
         'Request timeout occurred',
         error,
@@ -158,7 +158,7 @@ export class EnhancedMakeApiClient {
     }
 
     if (error.message.includes('unavailable')) {
-      return new ExternalServiceError(
+      return createExternalServiceError(
         'Make.com API',
         'Service temporarily unavailable',
         error,
@@ -175,7 +175,7 @@ export class EnhancedMakeApiClient {
     }
 
     // Default to generic external service error
-    return new ExternalServiceError(
+    return createExternalServiceError(
       'Make.com API',
       `API request failed: ${error.message}`,
       error,
@@ -234,7 +234,7 @@ export function createEnhancedTool(apiClient: EnhancedMakeApiClient): {
       try {
         // Validate input parameters
         if (!args.endpoint || typeof args.endpoint !== 'string') {
-          throw new ValidationError(
+          throw createValidationError(
             'Invalid endpoint parameter',
             {
               field: 'endpoint',

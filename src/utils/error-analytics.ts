@@ -4,7 +4,7 @@
  */
 
 import { randomUUID } from 'crypto';
-import { MakeServerError, ErrorContext } from './errors.js';
+import { MakeServerError, ErrorContext, UserError, EnhancedUserError, getErrorCode, getErrorStatusCode, getErrorCorrelationId } from './errors.js';
 import logger from '../lib/logger.js';
 
 export interface ErrorMetrics {
@@ -76,9 +76,10 @@ export class ErrorAnalytics {
 
   /**
    * Record an error event
+   * Now supports FastMCP UserError and maintains backward compatibility
    */
   public recordError(
-    error: Error | MakeServerError,
+    error: Error | MakeServerError | UserError,
     context?: {
       component?: string;
       operation?: string;
@@ -88,19 +89,31 @@ export class ErrorAnalytics {
       correlationId?: string;
     }
   ): void {
+    const correlationId = context?.correlationId || getErrorCorrelationId(error) || randomUUID();
+    const code = getErrorCode(error);
+    const statusCode = getErrorStatusCode(error);
+    
+    // Get context from error if available
+    let errorContext: ErrorContext | undefined;
+    if (error instanceof MakeServerError) {
+      errorContext = error.context;
+    } else if (error instanceof UserError && 'context' in error) {
+      errorContext = (error as EnhancedUserError).context;
+    }
+
     const errorEvent: ErrorEvent = {
       id: randomUUID(),
       timestamp: new Date().toISOString(),
-      correlationId: context?.correlationId || randomUUID(),
-      code: error instanceof MakeServerError ? error.code : 'UNKNOWN_ERROR',
+      correlationId,
+      code,
       message: error.message,
-      statusCode: error instanceof MakeServerError ? error.statusCode : 500,
+      statusCode,
       component: context?.component,
       operation: context?.operation,
       userId: context?.userId,
       sessionId: context?.sessionId,
       duration: context?.duration,
-      context: error instanceof MakeServerError ? error.context : undefined,
+      context: errorContext,
       resolved: false,
     };
 

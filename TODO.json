@@ -105,6 +105,35 @@
       ]
     },
     {
+      "id": "task_1755726522831_pnf300a3s",
+      "title": "Standardize error handling to use FastMCP UserError for full TypeScript Protocol compliance",
+      "description": "Replace all custom error classes (MakeServerError, AuthenticationError, etc.) with FastMCP UserError throughout the codebase. Update imports, maintain error context and message quality, validate compliance.",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T21:48:42.832Z",
+      "auto_research_created": false,
+      "assigned_agent": "error-standardization-agent",
+      "started_at": "2025-08-20T21:49:45.265Z",
+      "claimed_by": "error-standardization-agent",
+      "agent_assignment_history": [
+        {
+          "agentId": "error-standardization-agent",
+          "role": "primary",
+          "assignedAt": "2025-08-20T21:49:45.265Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
       "id": "task_1755677870285_ki1rn2ain",
       "title": "Research blueprint safety and security validation patterns",
       "description": "Comprehensive research on blueprint security validation, safety patterns, enterprise compliance, and automated security scanning for automation workflows",

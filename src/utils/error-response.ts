@@ -4,7 +4,7 @@
  */
 
 import { randomUUID } from 'crypto';
-import { MakeServerError, ErrorContext } from './errors.js';
+import { MakeServerError, ErrorContext, UserError, EnhancedUserError, getErrorCode, getErrorStatusCode, getErrorCorrelationId } from './errors.js';
 import logger from '../lib/logger.js';
 
 export interface ErrorResponse {
@@ -32,14 +32,16 @@ export type ApiResponse<T = unknown> = SuccessResponse<T> | ErrorResponse;
 
 /**
  * Format error into standardized response structure
+ * Now supports FastMCP UserError and maintains backward compatibility
  */
 export function formatErrorResponse(
-  error: Error | MakeServerError,
+  error: Error | MakeServerError | UserError,
   correlationId?: string
 ): ErrorResponse {
+  const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
   const componentLogger = logger.child({ 
     component: 'ErrorResponseFormatter',
-    correlationId: correlationId || (error instanceof MakeServerError ? error.correlationId : undefined)
+    correlationId: errorCorrelationId
   });
 
   let formattedError: ErrorResponse['error'];
@@ -63,9 +65,34 @@ export function formatErrorResponse(
       statusCode: structured.statusCode,
       correlationId: structured.correlationId,
     });
+  } else if (error instanceof UserError) {
+    // Handle FastMCP UserError
+    const code = getErrorCode(error);
+    const statusCode = getErrorStatusCode(error);
+    const enhancedError = error as EnhancedUserError;
+    const timestamp = enhancedError.timestamp || new Date().toISOString();
+    const context = enhancedError.context;
+    const details = enhancedError.details;
+
+    formattedError = {
+      message: error.message,
+      code,
+      statusCode,
+      correlationId: errorCorrelationId,
+      timestamp,
+      context,
+      details,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    };
+
+    componentLogger.error('Formatted UserError', {
+      code,
+      statusCode,
+      correlationId: errorCorrelationId,
+      userErrorMessage: error.message,
+    });
   } else {
     // Handle generic Error objects
-    const errorCorrelationId = correlationId || randomUUID();
     formattedError = {
       message: error.message || 'Internal server error',
       code: 'UNKNOWN_ERROR',
@@ -147,24 +174,28 @@ export function correlationMiddleware() {
 
 /**
  * Helper function to create error responses for tools
+ * Now supports FastMCP UserError and maintains backward compatibility
  */
 export function createToolErrorResponse(
-  error: Error | MakeServerError,
+  error: Error | MakeServerError | UserError,
   operation: string,
   correlationId?: string
 ): string {
+  const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
   const componentLogger = logger.child({ 
     component: 'ToolErrorHandler',
     operation,
-    correlationId: correlationId || (error instanceof MakeServerError ? error.correlationId : undefined)
+    correlationId: errorCorrelationId
   });
 
-  const errorResponse = formatErrorResponse(error, correlationId);
+  const errorResponse = formatErrorResponse(error, errorCorrelationId);
 
   componentLogger.error('Tool operation failed', {
     operation,
     errorCode: errorResponse.error.code,
     statusCode: errorResponse.error.statusCode,
+    correlationId: errorCorrelationId,
+    errorType: error.constructor.name,
   });
 
   return JSON.stringify(errorResponse, null, 2);

@@ -300,17 +300,30 @@ class MonitoringMiddleware {
 
   /**
    * Classify error types for metrics
+   * Enhanced to work with FastMCP UserError patterns
    */
   private classifyError(error: unknown): string {
     if (error instanceof Error) {
-      // Check for specific error types
+      // Check for specific error types by name
       if (error.name === 'AuthenticationError') return 'authentication';
       if (error.name === 'UserError') return 'user_error';
       if (error.name === 'MakeServerError') return 'make_server_error';
+      
+      // Check for UserError with embedded error codes
+      if (error.name === 'UserError' && error.message.includes('[AUTHENTICATION_ERROR:')) return 'authentication';
+      if (error.name === 'UserError' && error.message.includes('[VALIDATION_ERROR:')) return 'validation';
+      if (error.name === 'UserError' && error.message.includes('[NOT_FOUND:')) return 'not_found';
+      if (error.name === 'UserError' && error.message.includes('[RATE_LIMIT:')) return 'rate_limit';
+      if (error.name === 'UserError' && error.message.includes('[TIMEOUT:')) return 'timeout';
+      if (error.name === 'UserError' && error.message.includes('[EXTERNAL_SERVICE_ERROR:')) return 'external_service';
+      
+      // Fallback to message content analysis
       if (error.message.includes('timeout')) return 'timeout';
       if (error.message.includes('network')) return 'network';
       if (error.message.includes('rate limit')) return 'rate_limit';
       if (error.message.includes('permission')) return 'permission';
+      if (error.message.includes('authentication')) return 'authentication';
+      if (error.message.includes('validation')) return 'validation';
       
       return 'generic_error';
     }

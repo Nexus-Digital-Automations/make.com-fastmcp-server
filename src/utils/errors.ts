@@ -1,9 +1,11 @@
 /**
  * Enhanced error handling system for Make.com FastMCP Server
  * Provides structured error handling with correlation IDs, context tracking, and recovery mechanisms
+ * Now standardized around FastMCP UserError for full protocol compliance
  */
 
 import { randomUUID } from 'crypto';
+import { UserError } from 'fastmcp';
 
 // Error context interface for better error tracking
 export interface ErrorContext {
@@ -19,8 +21,11 @@ export interface ErrorContext {
   metadata?: Record<string, unknown>;
 }
 
-// Enhanced base error class with correlation IDs and context
-export class MakeServerError extends Error {
+// Re-export FastMCP UserError as the primary error class
+export { UserError } from 'fastmcp';
+
+// Enhanced UserError wrapper with correlation IDs and context for Make.com server
+export class MakeServerError extends UserError {
   public readonly code: string;
   public readonly statusCode: number;
   public readonly isOperational: boolean;
@@ -103,111 +108,360 @@ export class MakeServerError extends Error {
   }
 }
 
-export class ValidationError extends MakeServerError {
+// Enhanced UserError interface with additional metadata
+export interface EnhancedUserError extends UserError {
+  code: string;
+  statusCode: number;
+  details?: Record<string, unknown>;
+  correlationId: string;
+  context: ErrorContext;
+  timestamp: string;
+  isOperational?: boolean;
+  retryAfter?: number;
+  service?: string;
+  originalError?: Error;
+  operation?: string;
+  timeoutMs?: number;
+}
+
+// UserError factory functions to replace custom error classes
+// These maintain the same interface but use UserError internally
+
+export function createValidationError(message: string, details?: Record<string, unknown>, context?: ErrorContext): EnhancedUserError {
+  const correlationId = context?.correlationId || randomUUID();
+  const errorMessage = `[VALIDATION_ERROR:${correlationId}] ${message}`;
+  const userError = new UserError(errorMessage) as EnhancedUserError;
+  
+  // Attach additional metadata
+  userError.code = 'VALIDATION_ERROR';
+  userError.statusCode = 400;
+  userError.details = details;
+  userError.correlationId = correlationId;
+  userError.context = { correlationId, ...context };
+  userError.timestamp = new Date().toISOString();
+  userError.isOperational = true;
+  
+  return userError;
+}
+
+export function createAuthenticationError(message: string = 'Authentication failed', details?: Record<string, unknown>, context?: ErrorContext): EnhancedUserError {
+  const correlationId = context?.correlationId || randomUUID();
+  const errorMessage = `[AUTHENTICATION_ERROR:${correlationId}] ${message}`;
+  const userError = new UserError(errorMessage) as EnhancedUserError;
+  
+  // Attach additional metadata
+  userError.code = 'AUTHENTICATION_ERROR';
+  userError.statusCode = 401;
+  userError.details = details;
+  userError.correlationId = correlationId;
+  userError.context = { correlationId, ...context };
+  userError.timestamp = new Date().toISOString();
+  userError.isOperational = true;
+  
+  return userError;
+}
+
+export function createAuthorizationError(message: string = 'Insufficient permissions', details?: Record<string, unknown>, context?: ErrorContext): EnhancedUserError {
+  const correlationId = context?.correlationId || randomUUID();
+  const errorMessage = `[AUTHORIZATION_ERROR:${correlationId}] ${message}`;
+  const userError = new UserError(errorMessage) as EnhancedUserError;
+  
+  // Attach additional metadata
+  userError.code = 'AUTHORIZATION_ERROR';
+  userError.statusCode = 403;
+  userError.details = details;
+  userError.correlationId = correlationId;
+  userError.context = { correlationId, ...context };
+  userError.timestamp = new Date().toISOString();
+  userError.isOperational = true;
+  
+  return userError;
+}
+
+export function createNotFoundError(resource: string = 'Resource', details?: Record<string, unknown>, context?: ErrorContext): EnhancedUserError {
+  const correlationId = context?.correlationId || randomUUID();
+  const errorMessage = `[NOT_FOUND:${correlationId}] ${resource} not found`;
+  const userError = new UserError(errorMessage) as EnhancedUserError;
+  
+  // Attach additional metadata
+  userError.code = 'NOT_FOUND';
+  userError.statusCode = 404;
+  userError.details = details;
+  userError.correlationId = correlationId;
+  userError.context = { correlationId, ...context };
+  userError.timestamp = new Date().toISOString();
+  userError.isOperational = true;
+  
+  return userError;
+}
+
+export function createConflictError(message: string, details?: Record<string, unknown>, context?: ErrorContext): EnhancedUserError {
+  const correlationId = context?.correlationId || randomUUID();
+  const errorMessage = `[CONFLICT:${correlationId}] ${message}`;
+  const userError = new UserError(errorMessage) as EnhancedUserError;
+  
+  // Attach additional metadata
+  userError.code = 'CONFLICT';
+  userError.statusCode = 409;
+  userError.details = details;
+  userError.correlationId = correlationId;
+  userError.context = { correlationId, ...context };
+  userError.timestamp = new Date().toISOString();
+  userError.isOperational = true;
+  
+  return userError;
+}
+
+export function createRateLimitError(message: string = 'Rate limit exceeded', retryAfter?: number, details?: Record<string, unknown>, context?: ErrorContext): EnhancedUserError {
+  const correlationId = context?.correlationId || randomUUID();
+  const errorMessage = `[RATE_LIMIT:${correlationId}] ${message}`;
+  const userError = new UserError(errorMessage) as EnhancedUserError;
+  
+  // Attach additional metadata
+  userError.code = 'RATE_LIMIT';
+  userError.statusCode = 429;
+  userError.retryAfter = retryAfter;
+  userError.details = details;
+  userError.correlationId = correlationId;
+  userError.context = { correlationId, ...context };
+  userError.timestamp = new Date().toISOString();
+  userError.isOperational = true;
+  
+  return userError;
+}
+
+export function createExternalServiceError(service: string, message: string, originalError?: Error, details?: Record<string, unknown>, context?: ErrorContext): EnhancedUserError {
+  const correlationId = context?.correlationId || randomUUID();
+  const errorMessage = `[EXTERNAL_SERVICE_ERROR:${correlationId}] ${service} error: ${message}`;
+  const userError = new UserError(errorMessage) as EnhancedUserError;
+  
+  // Attach additional metadata
+  userError.code = 'EXTERNAL_SERVICE_ERROR';
+  userError.statusCode = 502;
+  userError.service = service;
+  userError.originalError = originalError;
+  userError.details = details;
+  userError.correlationId = correlationId;
+  userError.context = { correlationId, ...context };
+  userError.timestamp = new Date().toISOString();
+  userError.isOperational = true;
+  
+  return userError;
+}
+
+export function createConfigurationError(message: string, details?: Record<string, unknown>, context?: ErrorContext): EnhancedUserError {
+  const correlationId = context?.correlationId || randomUUID();
+  const errorMessage = `[CONFIGURATION_ERROR:${correlationId}] ${message}`;
+  const userError = new UserError(errorMessage) as EnhancedUserError;
+  
+  // Attach additional metadata
+  userError.code = 'CONFIGURATION_ERROR';
+  userError.statusCode = 500;
+  userError.isOperational = false;
+  userError.details = details;
+  userError.correlationId = correlationId;
+  userError.context = { correlationId, ...context };
+  userError.timestamp = new Date().toISOString();
+  
+  return userError;
+}
+
+export function createTimeoutError(operation: string, timeoutMs: number, details?: Record<string, unknown>, context?: ErrorContext): EnhancedUserError {
+  const correlationId = context?.correlationId || randomUUID();
+  const errorMessage = `[TIMEOUT:${correlationId}] Operation '${operation}' timed out after ${timeoutMs}ms`;
+  const userError = new UserError(errorMessage) as EnhancedUserError;
+  
+  // Attach additional metadata
+  userError.code = 'TIMEOUT';
+  userError.statusCode = 408;
+  userError.operation = operation;
+  userError.timeoutMs = timeoutMs;
+  userError.details = details;
+  userError.correlationId = correlationId;
+  userError.context = { correlationId, ...context };
+  userError.timestamp = new Date().toISOString();
+  userError.isOperational = true;
+  
+  return userError;
+}
+
+// Legacy class exports (deprecated but maintained for backward compatibility)
+export class ValidationError extends UserError {
   constructor(message: string, details?: Record<string, unknown>, context?: ErrorContext) {
-    super(message, 'VALIDATION_ERROR', 400, true, details, context);
+    const userError = createValidationError(message, details, context);
+    super(userError.message);
+    Object.assign(this, userError);
     this.name = 'ValidationError';
-    Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
 
-export class AuthenticationError extends MakeServerError {
+export class AuthenticationError extends UserError {
   constructor(message: string = 'Authentication failed', details?: Record<string, unknown>, context?: ErrorContext) {
-    super(message, 'AUTHENTICATION_ERROR', 401, true, details, context);
+    const userError = createAuthenticationError(message, details, context);
+    super(userError.message);
+    Object.assign(this, userError);
     this.name = 'AuthenticationError';
-    Object.setPrototypeOf(this, AuthenticationError.prototype);
   }
 }
 
-export class AuthorizationError extends MakeServerError {
+export class AuthorizationError extends UserError {
   constructor(message: string = 'Insufficient permissions', details?: Record<string, unknown>, context?: ErrorContext) {
-    super(message, 'AUTHORIZATION_ERROR', 403, true, details, context);
+    const userError = createAuthorizationError(message, details, context);
+    super(userError.message);
+    Object.assign(this, userError);
     this.name = 'AuthorizationError';
-    Object.setPrototypeOf(this, AuthorizationError.prototype);
   }
 }
 
-export class NotFoundError extends MakeServerError {
+export class NotFoundError extends UserError {
   constructor(resource: string = 'Resource', details?: Record<string, unknown>, context?: ErrorContext) {
-    super(`${resource} not found`, 'NOT_FOUND', 404, true, details, context);
+    const userError = createNotFoundError(resource, details, context);
+    super(userError.message);
+    Object.assign(this, userError);
     this.name = 'NotFoundError';
-    Object.setPrototypeOf(this, NotFoundError.prototype);
   }
 }
 
-export class ConflictError extends MakeServerError {
+export class ConflictError extends UserError {
   constructor(message: string, details?: Record<string, unknown>, context?: ErrorContext) {
-    super(message, 'CONFLICT', 409, true, details, context);
+    const userError = createConflictError(message, details, context);
+    super(userError.message);
+    Object.assign(this, userError);
     this.name = 'ConflictError';
-    Object.setPrototypeOf(this, ConflictError.prototype);
   }
 }
 
-export class RateLimitError extends MakeServerError {
+export class RateLimitError extends UserError {
   public readonly retryAfter?: number;
 
   constructor(message: string = 'Rate limit exceeded', retryAfter?: number, details?: Record<string, unknown>, context?: ErrorContext) {
-    super(message, 'RATE_LIMIT', 429, true, details, context);
+    const userError = createRateLimitError(message, retryAfter, details, context);
+    super(userError.message);
+    Object.assign(this, userError);
     this.name = 'RateLimitError';
     this.retryAfter = retryAfter;
-    Object.setPrototypeOf(this, RateLimitError.prototype);
   }
 }
 
-export class ExternalServiceError extends MakeServerError {
+export class ExternalServiceError extends UserError {
   public readonly service: string;
   public readonly originalError?: Error;
 
   constructor(service: string, message: string, originalError?: Error, details?: Record<string, unknown>, context?: ErrorContext) {
-    super(`${service} error: ${message}`, 'EXTERNAL_SERVICE_ERROR', 502, true, details, context);
+    const userError = createExternalServiceError(service, message, originalError, details, context);
+    super(userError.message);
+    Object.assign(this, userError);
     this.name = 'ExternalServiceError';
     this.service = service;
     this.originalError = originalError;
-    Object.setPrototypeOf(this, ExternalServiceError.prototype);
   }
 }
 
-export class ConfigurationError extends MakeServerError {
+export class ConfigurationError extends UserError {
   constructor(message: string, details?: Record<string, unknown>, context?: ErrorContext) {
-    super(message, 'CONFIGURATION_ERROR', 500, false, details, context);
+    const userError = createConfigurationError(message, details, context);
+    super(userError.message);
+    Object.assign(this, userError);
     this.name = 'ConfigurationError';
-    Object.setPrototypeOf(this, ConfigurationError.prototype);
   }
 }
 
-export class TimeoutError extends MakeServerError {
+export class TimeoutError extends UserError {
   public readonly operation: string;
   public readonly timeoutMs: number;
 
   constructor(operation: string, timeoutMs: number, details?: Record<string, unknown>, context?: ErrorContext) {
-    super(`Operation '${operation}' timed out after ${timeoutMs}ms`, 'TIMEOUT', 408, true, details, context);
+    const userError = createTimeoutError(operation, timeoutMs, details, context);
+    super(userError.message);
+    Object.assign(this, userError);
     this.name = 'TimeoutError';
     this.operation = operation;
     this.timeoutMs = timeoutMs;
-    Object.setPrototypeOf(this, TimeoutError.prototype);
   }
 }
 
-// Error handling utilities
+// Error handling utilities compatible with UserError
 export function isOperationalError(error: Error): boolean {
+  // Check for MakeServerError first
   if (error instanceof MakeServerError) {
     return error.isOperational;
   }
+  
+  // Check for UserError with metadata
+  if (error instanceof UserError && 'isOperational' in error) {
+    return (error as EnhancedUserError).isOperational || true;
+  }
+  
+  // Default to operational for UserError (client-facing errors)
+  if (error instanceof UserError) {
+    return true;
+  }
+  
   return false;
 }
 
 export function getErrorStatusCode(error: Error): number {
+  // Check for MakeServerError first
   if (error instanceof MakeServerError) {
     return error.statusCode;
   }
+  
+  // Check for UserError with metadata
+  if (error instanceof UserError && 'statusCode' in error) {
+    return (error as EnhancedUserError).statusCode;
+  }
+  
+  // Default status code for UserError is 400 (bad request)
+  if (error instanceof UserError) {
+    return 400;
+  }
+  
   return 500;
 }
 
 export function getErrorCode(error: Error): string {
+  // Check for MakeServerError first
   if (error instanceof MakeServerError) {
     return error.code;
   }
+  
+  // Check for UserError with metadata
+  if (error instanceof UserError && 'code' in error) {
+    return (error as EnhancedUserError).code;
+  }
+  
+  // Extract code from UserError message if formatted with correlation ID
+  if (error instanceof UserError) {
+    const match = error.message.match(/^\[([^:]+):[^\]]+\]/);
+    if (match) {
+      return match[1];
+    }
+    return 'USER_ERROR';
+  }
+  
   return 'UNKNOWN_ERROR';
+}
+
+export function getErrorCorrelationId(error: Error): string | undefined {
+  // Check for MakeServerError first
+  if (error instanceof MakeServerError) {
+    return error.correlationId;
+  }
+  
+  // Check for UserError with metadata
+  if (error instanceof UserError && 'correlationId' in error) {
+    return (error as EnhancedUserError).correlationId;
+  }
+  
+  // Extract correlation ID from UserError message if formatted
+  if (error instanceof UserError) {
+    const match = error.message.match(/^\[[^:]+:([^\]]+)\]/);
+    if (match) {
+      return match[1];
+    }
+  }
+  
+  return undefined;
 }
 
 export function serializeError(error: Error): {
@@ -215,6 +469,7 @@ export function serializeError(error: Error): {
   message: string;
   code: string;
   statusCode: number;
+  correlationId?: string;
   details?: Record<string, unknown>;
   stack?: string;
 } {
@@ -223,36 +478,37 @@ export function serializeError(error: Error): {
     message: error.message,
     code: getErrorCode(error),
     statusCode: getErrorStatusCode(error),
-    details: error instanceof MakeServerError ? error.details : undefined,
+    correlationId: getErrorCorrelationId(error),
+    details: 'details' in error ? (error as EnhancedUserError).details : undefined,
     stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
   };
 
   return serialized;
 }
 
-// Error factory functions
-export function createValidationError(field: string, value: unknown, expected: string): ValidationError {
-  return new ValidationError(`Invalid ${field}: expected ${expected}, got ${typeof value}`, {
+// Enhanced error factory functions with UserError compliance
+export function createValidationErrorForField(field: string, value: unknown, expected: string): EnhancedUserError {
+  return createValidationError(`Invalid ${field}: expected ${expected}, got ${typeof value}`, {
     field,
     value,
     expected,
   });
 }
 
-export function createNotFoundError(resource: string, id: string | number): NotFoundError {
-  return new NotFoundError(`${resource} with ID ${id}`, { resource, id });
+export function createNotFoundErrorForResource(resource: string, id: string | number): EnhancedUserError {
+  return createNotFoundError(`${resource} with ID ${id}`, { resource, id });
 }
 
-export function createConflictError(resource: string, field: string, value: unknown): ConflictError {
-  return new ConflictError(`${resource} with ${field} '${value}' already exists`, {
+export function createConflictErrorForResource(resource: string, field: string, value: unknown): EnhancedUserError {
+  return createConflictError(`${resource} with ${field} '${value}' already exists`, {
     resource,
     field,
     value,
   });
 }
 
-export function createExternalServiceError(service: string, operation: string, originalError: Error): ExternalServiceError {
-  return new ExternalServiceError(
+export function createExternalServiceErrorForOperation(service: string, operation: string, originalError: Error): EnhancedUserError {
+  return createExternalServiceError(
     service,
     `Failed to ${operation}`,
     originalError,

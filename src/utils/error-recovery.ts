@@ -4,7 +4,7 @@
  */
 
 import { randomUUID } from 'crypto';
-import { MakeServerError, ExternalServiceError, TimeoutError } from './errors.js';
+import { MakeServerError, UserError, createExternalServiceError, createTimeoutError, getErrorStatusCode, getErrorCode } from './errors.js';
 import logger from '../lib/logger.js';
 
 export interface RetryOptions {
@@ -67,7 +67,7 @@ export class CircuitBreaker {
 
     if (this.state === 'OPEN') {
       if (Date.now() < this.nextAttempt) {
-        const error = new ExternalServiceError(
+        const error = createExternalServiceError(
           this.name,
           'Circuit breaker is OPEN - requests blocked',
           undefined,
@@ -127,7 +127,7 @@ export class CircuitBreaker {
   private createTimeoutPromise<T>(): Promise<T> {
     return new Promise((_, reject) => {
       setTimeout(() => {
-        reject(new TimeoutError(
+        reject(createTimeoutError(
           `Circuit breaker operation for ${this.name}`,
           this.options.timeout
         ));
@@ -284,6 +284,7 @@ export async function retryWithBackoff<T>(
 
 /**
  * Default retry condition - retries on network and timeout errors
+ * Now compatible with UserError and maintains backward compatibility
  */
 export function defaultRetryCondition(error: Error): boolean {
   // Retry on network errors
@@ -294,20 +295,36 @@ export function defaultRetryCondition(error: Error): boolean {
     }
   }
 
-  // Retry on specific HTTP status codes
-  if (error instanceof ExternalServiceError && 'statusCode' in error) {
+  // Get status code using helper function
+  const statusCode = getErrorStatusCode(error);
+  const errorCode = getErrorCode(error);
+
+  // Retry on specific HTTP status codes for all error types
+  if (statusCode) {
     const retryableStatusCodes = [408, 429, 500, 502, 503, 504];
-    return retryableStatusCodes.includes(error.statusCode);
+    if (retryableStatusCodes.includes(statusCode)) {
+      return true;
+    }
   }
 
-  // Retry on timeout errors
-  if (error instanceof TimeoutError) {
+  // Retry on timeout errors (by error code)
+  if (errorCode === 'TIMEOUT') {
+    return true;
+  }
+
+  // Retry on external service errors
+  if (errorCode === 'EXTERNAL_SERVICE_ERROR') {
     return true;
   }
 
   // Don't retry on client errors (4xx) or specific server errors
   if (error instanceof MakeServerError) {
     return error.statusCode >= 500 && error.statusCode !== 501;
+  }
+
+  // For UserError, check status code
+  if (error instanceof UserError) {
+    return statusCode >= 500 && statusCode !== 501;
   }
 
   return false;
@@ -365,7 +382,7 @@ export class Bulkhead {
           correlationId: requestId,
         });
       } else {
-        const error = new ExternalServiceError(
+        const error = createExternalServiceError(
           this.name,
           'Bulkhead capacity exceeded - request rejected',
           undefined,
@@ -406,7 +423,7 @@ export class Bulkhead {
     });
 
     const timeoutId = setTimeout(() => {
-      const timeoutError = new TimeoutError(
+      const timeoutError = createTimeoutError(
         `Bulkhead operation for ${this.name}`,
         this.timeout
       );

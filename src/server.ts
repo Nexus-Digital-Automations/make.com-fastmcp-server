@@ -8,7 +8,7 @@ import { z } from 'zod';
 import configManager from './lib/config.js';
 import logger from './lib/logger.js';
 import MakeApiClient from './lib/make-api-client.js';
-import { setupGlobalErrorHandlers, MakeServerError, AuthenticationError } from './utils/errors.js';
+import { setupGlobalErrorHandlers, MakeServerError, createAuthenticationError } from './utils/errors.js';
 import { extractCorrelationId } from './utils/error-response.js';
 import { addScenarioTools } from './tools/scenarios.js';
 import addConnectionTools from './tools/connections.js';
@@ -126,7 +126,7 @@ ${configManager.isAuthEnabled() ?
     const expectedSecret = configManager.getAuthSecret();
 
     if (!apiKey || apiKey !== expectedSecret) {
-      const authError = new AuthenticationError(
+      const authError = createAuthenticationError(
         'Invalid API key provided',
         { 
           hasApiKey: !!apiKey,
