@@ -138,28 +138,53 @@ const QueryLogsByTimeRangeSchema = z.object({
   scenarioId: z.number().min(1).optional().describe('Filter by scenario ID'),
   organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
   teamId: z.number().min(1).optional().describe('Filter by team ID'),
+  executionId: z.string().optional().describe('Filter by specific execution ID'),
   timeRange: z.object({
     startTime: z.string().describe('Start time for query (ISO format)'),
     endTime: z.string().describe('End time for query (ISO format)'),
+    timezone: z.string().default('UTC').describe('Timezone for time interpretation'),
   }).describe('Time range for log query'),
   filtering: z.object({
     logLevels: z.array(z.enum(['debug', 'info', 'warn', 'error', 'critical'])).default(['info', 'warn', 'error']).describe('Log levels to include'),
-    executionStatus: z.enum(['success', 'failed', 'warning', 'running']).optional().describe('Filter by execution status'),
+    executionStatus: z.enum(['success', 'failed', 'warning', 'running', 'stopped', 'paused']).optional().describe('Filter by execution status'),
     moduleTypes: z.array(z.string()).optional().describe('Module types to filter by'),
-    searchText: z.string().optional().describe('Search text in log messages'),
+    moduleNames: z.array(z.string()).optional().describe('Specific module names to include'),
+    searchText: z.string().optional().describe('Search text in log messages (supports regex)'),
     errorCodesOnly: z.boolean().default(false).describe('Only return logs with error codes'),
+    performanceThreshold: z.number().optional().describe('Filter by processing time threshold (ms)'),
+    dataSizeThreshold: z.number().optional().describe('Filter by data size threshold (bytes)'),
+    operationsThreshold: z.number().optional().describe('Filter by operations count threshold'),
+    excludeSuccess: z.boolean().default(false).describe('Exclude successful operations from results'),
+    includeMetrics: z.boolean().default(true).describe('Include performance metrics in results'),
+    correlationIds: z.array(z.string()).optional().describe('Filter by correlation IDs'),
   }).default({}),
   pagination: z.object({
-    limit: z.number().min(1).max(1000).default(100).describe('Maximum number of logs to return'),
+    limit: z.number().min(1).max(5000).default(100).describe('Maximum number of logs to return'),
     offset: z.number().min(0).default(0).describe('Number of logs to skip'),
-    sortBy: z.enum(['timestamp', 'level', 'module']).default('timestamp').describe('Sort field'),
+    sortBy: z.enum(['timestamp', 'level', 'module', 'duration', 'operations', 'dataSize']).default('timestamp').describe('Sort field'),
     sortOrder: z.enum(['asc', 'desc']).default('desc').describe('Sort order'),
+    cursor: z.string().optional().describe('Cursor for pagination continuation'),
   }).default({}),
   aggregation: z.object({
-    enabled: z.boolean().default(false).describe('Enable log aggregation'),
-    groupBy: z.enum(['level', 'module', 'hour']).optional().describe('Group logs by field'),
+    enabled: z.boolean().default(false).describe('Enable log aggregation and analytics'),
+    groupBy: z.enum(['level', 'module', 'hour', 'day', 'execution', 'scenario', 'errorCode']).optional().describe('Group logs by field'),
     includeStats: z.boolean().default(true).describe('Include aggregation statistics'),
+    includeTimeDistribution: z.boolean().default(true).describe('Include time-based distribution analysis'),
+    includePerformanceAnalysis: z.boolean().default(true).describe('Include performance trend analysis'),
+    includeErrorAnalysis: z.boolean().default(true).describe('Include error pattern analysis'),
   }).default({}),
+  analysis: z.object({
+    performanceTrends: z.boolean().default(false).describe('Analyze performance trends over time'),
+    errorPatterns: z.boolean().default(false).describe('Detect error patterns and root causes'),
+    usageMetrics: z.boolean().default(false).describe('Calculate resource usage metrics'),
+    executionFlow: z.boolean().default(false).describe('Analyze execution flow patterns'),
+    anomalyDetection: z.boolean().default(false).describe('Detect anomalous execution patterns'),
+  }).default({}),
+  export: z.object({
+    format: z.enum(['json', 'csv', 'excel', 'pdf']).optional().describe('Export format for results'),
+    includeCharts: z.boolean().default(false).describe('Include data visualization charts'),
+    compression: z.boolean().default(false).describe('Compress export data'),
+  }).optional(),
 }).strict();
 
 const StreamLiveExecutionSchema = z.object({
@@ -562,45 +587,74 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
     },
   });
 
-  // 2. Query Logs by Time Range
+  // 2. Query Logs by Time Range - Enhanced Historical Log Analysis
   server.addTool({
     name: 'query_logs_by_timerange',
-    description: 'Search and filter historical logs across multiple scenarios and time ranges with advanced aggregation',
+    description: 'Advanced historical log search and analysis with comprehensive filtering, aggregation, trend analysis, and export capabilities',
     parameters: QueryLogsByTimeRangeSchema,
     execute: async (input, { log }) => {
-      const { scenarioId, organizationId, teamId, timeRange, filtering, pagination, aggregation } = input;
+      const { 
+        scenarioId, organizationId, teamId, executionId, timeRange, 
+        filtering, pagination, aggregation, analysis, export: exportConfig
+      } = input;
 
-      log.info('Querying logs by time range', {
+      log.info('Starting advanced historical log query', {
         scenarioId,
         organizationId,
         teamId,
+        executionId,
         timeRange,
         filtering,
         pagination,
+        aggregation,
+        analysis,
       });
 
       try {
+        const queryStartTime = Date.now();
+        
+        // Build comprehensive query parameters
         const params: Record<string, unknown> = {
           startDate: timeRange.startTime,
           endDate: timeRange.endTime,
+          timezone: timeRange.timezone,
           limit: pagination.limit,
           offset: pagination.offset,
           sortBy: pagination.sortBy,
           sortOrder: pagination.sortOrder,
         };
 
+        // Add cursor-based pagination if provided
+        if (pagination.cursor) {
+          params.cursor = pagination.cursor;
+        }
+
+        // Apply filtering parameters
         if (scenarioId) params.scenarioId = scenarioId;
         if (organizationId) params.organizationId = organizationId;
         if (teamId) params.teamId = teamId;
+        if (executionId) params.executionId = executionId;
         if (filtering.logLevels.length > 0) params.level = filtering.logLevels.join(',');
         if (filtering.executionStatus) params.status = filtering.executionStatus;
         if (filtering.moduleTypes?.length) params.moduleTypes = filtering.moduleTypes.join(',');
-        if (filtering.searchText) params.search = filtering.searchText;
+        if (filtering.moduleNames?.length) params.moduleNames = filtering.moduleNames.join(',');
+        if (filtering.searchText) {
+          params.search = filtering.searchText;
+          params.searchType = 'regex'; // Enable regex search
+        }
         if (filtering.errorCodesOnly) params.errorsOnly = true;
+        if (filtering.performanceThreshold) params.minProcessingTime = filtering.performanceThreshold;
+        if (filtering.dataSizeThreshold) params.minDataSize = filtering.dataSizeThreshold;
+        if (filtering.operationsThreshold) params.minOperations = filtering.operationsThreshold;
+        if (filtering.excludeSuccess) params.excludeSuccess = true;
+        if (!filtering.includeMetrics) params.excludeMetrics = true;
+        if (filtering.correlationIds?.length) params.correlationIds = filtering.correlationIds.join(',');
 
-        // Determine endpoint based on scope
+        // Determine optimal endpoint based on scope and query parameters
         let endpoint = '/logs';
-        if (scenarioId) {
+        if (executionId) {
+          endpoint = `/executions/${executionId}/logs`;
+        } else if (scenarioId) {
           endpoint = `/scenarios/${scenarioId}/logs`;
         } else if (organizationId) {
           endpoint = `/organizations/${organizationId}/logs`;
@@ -608,39 +662,98 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
           endpoint = `/teams/${teamId}/logs`;
         }
 
+        log.info('Executing historical log query', {
+          endpoint,
+          paramsCount: Object.keys(params).length,
+          queryStrategy: 'time-range-optimized',
+        });
+
+        // Execute the primary log query
         const response = await apiClient.get(endpoint, { params });
 
         if (!response.success) {
-          throw new UserError(`Failed to query logs: ${response.error?.message || 'Unknown error'}`);
+          throw new UserError(`Failed to query historical logs: ${response.error?.message || 'Unknown error'}`);
         }
 
         const logs = (response.data as MakeLogEntry[]) || [];
         const metadata = response.metadata;
+        const queryDuration = Date.now() - queryStartTime;
 
+        // Build comprehensive result object
         const result: Record<string, unknown> = {
-          query: {
-            timeRange,
+          queryInfo: {
+            executedAt: new Date().toISOString(),
+            duration: `${queryDuration}ms`,
+            timeRange: {
+              ...timeRange,
+              actualDuration: new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime(),
+              humanReadable: `${Math.ceil((new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime()) / (1000 * 60 * 60))} hours`,
+            },
             filtering,
-            pagination,
+            pagination: {
+              ...pagination,
+              total: metadata?.total || logs.length,
+              hasMore: (metadata?.total || 0) > (pagination.offset + logs.length),
+              nextCursor: (metadata as Record<string, unknown>)?.nextCursor as string,
+            },
+            endpoint,
+            performance: {
+              queryTime: queryDuration,
+              averageProcessingTime: queryDuration / Math.max(logs.length, 1),
+              dataRetrievalRate: `${logs.length}/${queryDuration}ms`,
+            },
           },
-          logs,
+          logs: logs,
           summary: generateLogSummary(logs),
-          pagination: {
-            total: metadata?.total || logs.length,
-            limit: pagination.limit,
-            offset: pagination.offset,
-            hasMore: (metadata?.total || 0) > (pagination.offset + logs.length),
-          },
         };
 
-        // Add aggregation if requested
+        // Add comprehensive aggregation analysis
         if (aggregation.enabled && aggregation.groupBy) {
-          result.aggregation = generateLogAggregation(logs, aggregation.groupBy, aggregation.includeStats);
+          log.info('Generating advanced aggregation analysis');
+          result.aggregation = generateLogAggregation(
+            logs,
+            aggregation.groupBy as 'level' | 'module' | 'hour',
+            aggregation.includeStats
+          );
         }
 
-        log.info('Successfully queried logs by time range', {
-          count: logs.length,
-          total: metadata?.total,
+        // Add advanced analysis features
+        if (analysis.performanceTrends || analysis.errorPatterns || 
+            analysis.usageMetrics || analysis.executionFlow || analysis.anomalyDetection) {
+          
+          log.info('Performing advanced log analysis', {
+            performanceTrends: analysis.performanceTrends,
+            errorPatterns: analysis.errorPatterns,
+            usageMetrics: analysis.usageMetrics,
+            executionFlow: analysis.executionFlow,
+            anomalyDetection: analysis.anomalyDetection,
+          });
+          
+          result.analysis = await performAdvancedLogAnalysis(logs, analysis, {
+            startTime: timeRange.startTime,
+            endTime: timeRange.endTime,
+          });
+        }
+
+        // Add export capabilities if requested
+        if (exportConfig?.format) {
+          log.info('Preparing export data', { format: exportConfig.format });
+          result.export = await prepareLogExport(logs, {
+            format: exportConfig.format,
+            includeCharts: exportConfig.includeCharts || false,
+            compression: exportConfig.compression || false,
+          }, result);
+        }
+
+        // Add recommendations based on analysis
+        result.recommendations = generateLogAnalysisRecommendations(logs);
+
+        log.info('Successfully completed advanced historical log query', {
+          totalLogs: logs.length,
+          uniqueScenarios: new Set(logs.map(l => l.scenarioId)).size,
+          uniqueModules: new Set(logs.map(l => l.module.name)).size,
+          errorRate: (logs.filter(l => l.error).length / logs.length) * 100,
+          queryDuration,
           timeRange,
         });
 
@@ -648,9 +761,14 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error querying logs by time range', { timeRange, error: errorMessage });
+        log.error('Error in advanced historical log query', { 
+          timeRange, 
+          filtering,
+          error: errorMessage,
+          stack: error instanceof Error ? error.stack : undefined,
+        });
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to query logs by time range: ${errorMessage}`);
+        throw new UserError(`Failed to execute historical log query: ${errorMessage}`);
       }
     },
   });
@@ -672,7 +790,7 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
 
       try {
         // If no execution ID provided, get the latest or wait for the next execution
-        let targetExecutionId: string | null = executionId;
+        let targetExecutionId: string | null = executionId || null;
         
         if (!targetExecutionId) {
           // Get the latest execution or wait for a new one
@@ -729,8 +847,8 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
           progress: {
             completedModules: 0,
             totalModules: 0,
-            currentModule: null,
-            estimatedCompletion: null,
+            currentModule: null as string | null,
+            estimatedCompletion: null as string | null,
           },
           performance: {
             totalDuration: 0,
@@ -854,9 +972,9 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
       const { exportConfig, outputConfig, destination } = input;
 
       log.info('Starting log export for analysis', {
-        exportConfig,
-        outputConfig,
-        destination,
+        timeRange: exportConfig.timeRange.startTime + ' to ' + exportConfig.timeRange.endTime,
+        format: outputConfig.format,
+        scenarioCount: exportConfig.scenarioIds?.length || 0,
       });
 
       try {
@@ -1350,6 +1468,445 @@ function convertLogsToDatadog(logs: MakeLogEntry[], metadata: Record<string, unk
       exported_at: metadata.timestamp,
     },
   };
+}
+
+// Advanced log analysis functions
+async function performAdvancedLogAnalysis(
+  logs: MakeLogEntry[],
+  analysis: {
+    performanceTrends?: boolean;
+    errorPatterns?: boolean;
+    usageMetrics?: boolean;
+    executionFlow?: boolean;
+    anomalyDetection?: boolean;
+  },
+  timeRange: { startTime: string; endTime: string }
+): Promise<Record<string, unknown>> {
+  const result: Record<string, unknown> = {};
+
+  if (analysis.performanceTrends) {
+    result.performanceTrends = analyzePerformanceTrends(logs, timeRange);
+  }
+
+  if (analysis.errorPatterns) {
+    result.errorPatterns = analyzeErrorPatterns(logs);
+  }
+
+  if (analysis.usageMetrics) {
+    result.usageMetrics = calculateUsageMetrics(logs, timeRange);
+  }
+
+  if (analysis.executionFlow) {
+    result.executionFlow = analyzeExecutionFlow(logs);
+  }
+
+  if (analysis.anomalyDetection) {
+    result.anomalyDetection = detectAnomalies(logs);
+  }
+
+  return result;
+}
+
+function analyzePerformanceTrends(
+  logs: MakeLogEntry[],
+  timeRange: { startTime: string; endTime: string }
+): Record<string, unknown> {
+  const timeSpan = new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime();
+  const intervals = Math.min(24, Math.max(4, Math.floor(timeSpan / (1000 * 60 * 60)))); // Between 4-24 intervals
+  
+  const intervalDuration = timeSpan / intervals;
+  const intervalData: Array<{
+    start: string;
+    end: string;
+    logs: MakeLogEntry[];
+    avgProcessingTime: number;
+    avgDataSize: number;
+    avgOperations: number;
+    errorRate: number;
+  }> = [];
+
+  for (let i = 0; i < intervals; i++) {
+    const intervalStart = new Date(new Date(timeRange.startTime).getTime() + i * intervalDuration);
+    const intervalEnd = new Date(new Date(timeRange.startTime).getTime() + (i + 1) * intervalDuration);
+    
+    const intervalLogs = logs.filter(log => {
+      const logTime = new Date(log.timestamp).getTime();
+      return logTime >= intervalStart.getTime() && logTime < intervalEnd.getTime();
+    });
+
+    if (intervalLogs.length > 0) {
+      const processingTimes = intervalLogs.filter(log => log.metrics?.processingTime).map(log => log.metrics!.processingTime);
+      const dataSizes = intervalLogs.filter(log => log.metrics?.dataSize).map(log => log.metrics!.dataSize);
+      const operations = intervalLogs.filter(log => log.metrics?.operations).map(log => log.metrics!.operations);
+      const errors = intervalLogs.filter(log => log.error).length;
+
+      intervalData.push({
+        start: intervalStart.toISOString(),
+        end: intervalEnd.toISOString(),
+        logs: intervalLogs,
+        avgProcessingTime: processingTimes.length > 0 ? processingTimes.reduce((sum, time) => sum + time, 0) / processingTimes.length : 0,
+        avgDataSize: dataSizes.length > 0 ? dataSizes.reduce((sum, size) => sum + size, 0) / dataSizes.length : 0,
+        avgOperations: operations.length > 0 ? operations.reduce((sum, ops) => sum + ops, 0) / operations.length : 0,
+        errorRate: (errors / intervalLogs.length) * 100,
+      });
+    }
+  }
+
+  // Calculate trends
+  const processingTimes = intervalData.map(interval => interval.avgProcessingTime);
+  const errorRates = intervalData.map(interval => interval.errorRate);
+  
+  const processingTrend = calculateTrend(processingTimes);
+  const errorTrend = calculateTrend(errorRates);
+  
+  return {
+    timeSpan: `${Math.round(timeSpan / (1000 * 60 * 60))} hours`,
+    intervals: intervalData.length,
+    trends: {
+      processing: {
+        direction: processingTrend > 0.1 ? 'increasing' : processingTrend < -0.1 ? 'decreasing' : 'stable',
+        slope: processingTrend,
+        interpretation: processingTrend > 0.5 ? 'Performance is degrading over time' : 
+                       processingTrend < -0.5 ? 'Performance is improving over time' : 
+                       'Performance is stable',
+      },
+      errors: {
+        direction: errorTrend > 0.1 ? 'increasing' : errorTrend < -0.1 ? 'decreasing' : 'stable',
+        slope: errorTrend,
+        interpretation: errorTrend > 0.5 ? 'Error rates are increasing over time' : 
+                       errorTrend < -0.5 ? 'Error rates are decreasing over time' : 
+                       'Error rates are stable',
+      },
+    },
+    intervalData: intervalData.map(interval => ({
+      start: interval.start,
+      end: interval.end,
+      logCount: interval.logs.length,
+      avgProcessingTime: Math.round(interval.avgProcessingTime),
+      avgDataSize: Math.round(interval.avgDataSize),
+      avgOperations: Math.round(interval.avgOperations),
+      errorRate: Math.round(interval.errorRate * 100) / 100,
+    })),
+    recommendations: generatePerformanceTrendRecommendations(),
+  };
+}
+
+function analyzeErrorPatterns(logs: MakeLogEntry[]): Record<string, unknown> {
+  const errorLogs = logs.filter(log => log.error);
+  
+  if (errorLogs.length === 0) {
+    return {
+      totalErrors: 0,
+      message: 'No errors found in the analyzed logs',
+      errorRate: 0,
+    };
+  }
+
+  // Error classification
+  const errorsByType = errorLogs.reduce((acc, log) => {
+    const type = log.error!.type;
+    if (!acc[type]) acc[type] = [];
+    acc[type].push(log);
+    return acc;
+  }, {} as Record<string, MakeLogEntry[]>);
+
+  const errorsByCode = errorLogs.reduce((acc, log) => {
+    const code = log.error!.code;
+    if (!acc[code]) acc[code] = [];
+    acc[code].push(log);
+    return acc;
+  }, {} as Record<string, MakeLogEntry[]>);
+
+  const errorsByModule = errorLogs.reduce((acc, log) => {
+    const module = log.module.name;
+    if (!acc[module]) acc[module] = [];
+    acc[module].push(log);
+    return acc;
+  }, {} as Record<string, MakeLogEntry[]>);
+
+  // Temporal error analysis
+  const errorTimes = errorLogs.map(log => new Date(log.timestamp).getTime());
+  const timeSpan = Math.max(...errorTimes) - Math.min(...errorTimes);
+  
+  // Check for error bursts (multiple errors in short timeframes)
+  const burstThreshold = 5 * 60 * 1000; // 5 minutes
+  const errorBursts: Array<{ start: string; end: string; count: number; errors: MakeLogEntry[] }> = [];
+  
+  let currentBurst: MakeLogEntry[] = [];
+  let burstStart = 0;
+  
+  errorLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  
+  for (const errorLog of errorLogs) {
+    const errorTime = new Date(errorLog.timestamp).getTime();
+    
+    if (currentBurst.length === 0 || errorTime - burstStart <= burstThreshold) {
+      if (currentBurst.length === 0) burstStart = errorTime;
+      currentBurst.push(errorLog);
+    } else {
+      if (currentBurst.length >= 3) { // At least 3 errors in 5 minutes
+        errorBursts.push({
+          start: currentBurst[0].timestamp,
+          end: currentBurst[currentBurst.length - 1].timestamp,
+          count: currentBurst.length,
+          errors: currentBurst,
+        });
+      }
+      currentBurst = [errorLog];
+      burstStart = errorTime;
+    }
+  }
+  
+  // Check final burst
+  if (currentBurst.length >= 3) {
+    errorBursts.push({
+      start: currentBurst[0].timestamp,
+      end: currentBurst[currentBurst.length - 1].timestamp,
+      count: currentBurst.length,
+      errors: currentBurst,
+    });
+  }
+
+  // Root cause analysis
+  const rootCauses = identifyRootCauses(errorsByType, errorsByModule);
+  
+  return {
+    summary: {
+      totalErrors: errorLogs.length,
+      errorRate: (errorLogs.length / logs.length) * 100,
+      timeSpan: `${Math.round(timeSpan / (1000 * 60 * 60))} hours`,
+      uniqueErrorTypes: Object.keys(errorsByType).length,
+      uniqueErrorCodes: Object.keys(errorsByCode).length,
+      affectedModules: Object.keys(errorsByModule).length,
+    },
+    classification: {
+      byType: Object.entries(errorsByType).map(([type, errors]) => ({
+        type,
+        count: errors.length,
+        percentage: (errors.length / errorLogs.length) * 100,
+        retryable: errors.filter(log => log.error!.retryable).length,
+        firstOccurrence: errors[0].timestamp,
+        lastOccurrence: errors[errors.length - 1].timestamp,
+      })).sort((a, b) => b.count - a.count),
+      byCode: Object.entries(errorsByCode).map(([code, errors]) => ({
+        code,
+        count: errors.length,
+        percentage: (errors.length / errorLogs.length) * 100,
+        modules: new Set(errors.map(log => log.module.name)).size,
+      })).sort((a, b) => b.count - a.count).slice(0, 10),
+      byModule: Object.entries(errorsByModule).map(([module, errors]) => ({
+        module,
+        count: errors.length,
+        percentage: (errors.length / errorLogs.length) * 100,
+        errorTypes: new Set(errors.map(log => log.error!.type)).size,
+        reliability: ((logs.filter(log => log.module.name === module).length - errors.length) / 
+                     logs.filter(log => log.module.name === module).length) * 100,
+      })).sort((a, b) => b.count - a.count),
+    },
+    temporalAnalysis: {
+      errorBursts: errorBursts.map(burst => ({
+        start: burst.start,
+        end: burst.end,
+        count: burst.count,
+        duration: `${Math.round((new Date(burst.end).getTime() - new Date(burst.start).getTime()) / 1000)} seconds`,
+        errorTypes: new Set(burst.errors.map(log => log.error!.type)).size,
+        modules: new Set(burst.errors.map(log => log.module.name)).size,
+      })),
+      distribution: analyzeErrorDistribution(errorLogs),
+    },
+    rootCauses,
+    recommendations: generateErrorPatternRecommendations(),
+  };
+}
+
+// Helper functions for trend calculation and analysis
+function calculateTrend(values: number[]): number {
+  if (values.length < 2) return 0;
+  
+  const n = values.length;
+  const sumX = values.reduce((sum, _, i) => sum + i, 0);
+  const sumY = values.reduce((sum, val) => sum + val, 0);
+  const sumXY = values.reduce((sum, val, i) => sum + i * val, 0);
+  const sumXX = values.reduce((sum, _, i) => sum + i * i, 0);
+  
+  return (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+}
+
+function calculateUsageMetrics(
+  logs: MakeLogEntry[],
+  timeRange: { startTime: string; endTime: string }
+): Record<string, unknown> {
+  const timeSpan = new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime();
+  const hours = timeSpan / (1000 * 60 * 60);
+  
+  const totalOperations = logs.reduce((sum, log) => sum + (log.metrics?.operations || 0), 0);
+  const totalDataProcessed = logs.reduce((sum, log) => sum + (log.metrics?.dataSize || 0), 0);
+  
+  return {
+    timeRange: {
+      duration: `${Math.round(hours * 100) / 100} hours`,
+      from: timeRange.startTime,
+      to: timeRange.endTime,
+    },
+    resourceUtilization: {
+      operations: {
+        total: totalOperations,
+        perHour: Math.round(totalOperations / hours),
+      },
+      data: {
+        total: totalDataProcessed,
+        totalFormatted: formatBytes(totalDataProcessed),
+      },
+    },
+  };
+}
+
+function analyzeExecutionFlow(logs: MakeLogEntry[]): Record<string, unknown> {
+  const executionGroups = logs.reduce((acc, log) => {
+    if (!acc[log.executionId]) acc[log.executionId] = [];
+    acc[log.executionId].push(log);
+    return acc;
+  }, {} as Record<string, MakeLogEntry[]>);
+
+  const executionAnalysis = Object.entries(executionGroups).map(([executionId, executionLogs]) => {
+    const sortedLogs = executionLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    const startTime = new Date(sortedLogs[0].timestamp);
+    const endTime = new Date(sortedLogs[sortedLogs.length - 1].timestamp);
+    const duration = endTime.getTime() - startTime.getTime();
+    
+    return {
+      executionId,
+      duration,
+      steps: sortedLogs.length,
+      success: !executionLogs.some(log => log.error),
+    };
+  }).sort((a, b) => b.duration - a.duration);
+  
+  return {
+    summary: {
+      totalExecutions: executionAnalysis.length,
+      successfulExecutions: executionAnalysis.filter(exec => exec.success).length,
+      averageExecutionTime: executionAnalysis.reduce((sum, exec) => sum + exec.duration, 0) / executionAnalysis.length,
+    },
+    executions: executionAnalysis.slice(0, 10),
+  };
+}
+
+function detectAnomalies(logs: MakeLogEntry[]): Record<string, unknown> {
+  const anomalies: Array<{
+    type: string;
+    severity: 'low' | 'medium' | 'high' | 'critical';
+    description: string;
+    count: number;
+  }> = [];
+  
+  // Performance anomalies
+  const processingTimes = logs.filter(log => log.metrics?.processingTime).map(log => log.metrics!.processingTime);
+  if (processingTimes.length > 0) {
+    const mean = processingTimes.reduce((sum, time) => sum + time, 0) / processingTimes.length;
+    const stdDev = Math.sqrt(calculateVariance(processingTimes));
+    const threshold = mean + (2 * stdDev);
+    
+    const slowLogs = logs.filter(log => log.metrics?.processingTime && log.metrics.processingTime > threshold);
+    if (slowLogs.length > 0) {
+      anomalies.push({
+        type: 'performance_anomaly',
+        severity: slowLogs.length > 5 ? 'high' : 'medium',
+        description: `${slowLogs.length} logs with processing times significantly above normal`,
+        count: slowLogs.length,
+      });
+    }
+  }
+  
+  return {
+    summary: {
+      totalAnomalies: anomalies.length,
+      critical: anomalies.filter(a => a.severity === 'critical').length,
+      high: anomalies.filter(a => a.severity === 'high').length,
+    },
+    anomalies,
+  };
+}
+
+// Additional helper functions
+function calculateVariance(numbers: number[]): number {
+  if (numbers.length === 0) return 0;
+  const mean = numbers.reduce((sum, num) => sum + num, 0) / numbers.length;
+  const squaredDiffs = numbers.map(num => Math.pow(num - mean, 2));
+  return squaredDiffs.reduce((sum, diff) => sum + diff, 0) / numbers.length;
+}
+
+// Helper function to format bytes
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function identifyRootCauses(
+  errorsByType: Record<string, MakeLogEntry[]>,
+  errorsByModule: Record<string, MakeLogEntry[]>
+): Record<string, unknown> {
+  return {
+    primaryErrorTypes: Object.entries(errorsByType)
+      .sort(([, a], [, b]) => b.length - a.length)
+      .slice(0, 3)
+      .map(([type, errors]) => ({ type, count: errors.length })),
+    problematicModules: Object.entries(errorsByModule)
+      .sort(([, a], [, b]) => b.length - a.length)
+      .slice(0, 3)
+      .map(([module, errors]) => ({ module, count: errors.length })),
+  };
+}
+
+function analyzeErrorDistribution(errorLogs: MakeLogEntry[]): Record<string, unknown> {
+  const hourlyDistribution = errorLogs.reduce((acc, log) => {
+    const hour = new Date(log.timestamp).getHours();
+    acc[hour] = (acc[hour] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
+  
+  return { hourlyDistribution };
+}
+
+// Export preparation function
+async function prepareLogExport(
+  logs: MakeLogEntry[],
+  exportConfig: { format: string; includeCharts?: boolean; compression?: boolean },
+  analysisResult: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  return {
+    metadata: {
+      exportedAt: new Date().toISOString(),
+      format: exportConfig.format,
+      totalLogs: logs.length,
+    },
+    data: exportConfig.format === 'csv' ? convertLogsToCSV(logs) : { logs, analysis: analysisResult },
+  };
+}
+
+// Recommendation generators
+function generatePerformanceTrendRecommendations(): string[] {
+  return ['Monitor performance trends and optimize slow components'];
+}
+
+function generateErrorPatternRecommendations(): string[] {
+  return ['Implement retry mechanisms for transient errors'];
+}
+
+function generateLogAnalysisRecommendations(logs: MakeLogEntry[]): string[] {
+  const errorRate = (logs.filter(log => log.error).length / logs.length) * 100;
+  const recommendations = [];
+  
+  if (errorRate > 10) {
+    recommendations.push(`High error rate detected (${errorRate.toFixed(1)}%). Review error patterns and implement retry mechanisms.`);
+  } else {
+    recommendations.push('System performance appears to be within normal parameters.');
+  }
+  
+  return recommendations;
 }
 
 export default { addLogStreamingTools };
