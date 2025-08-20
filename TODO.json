@@ -63,47 +63,13 @@
       ]
     },
     {
-      "id": "task_1755670000291_2nb7m3jex",
-      "title": "Implement public app marketplace integration",
-      "description": "Add tools to interact with Make.com public app marketplace: search_public_apps (find official and community apps), get_public_app_details (app specifications and requirements), list_popular_apps (trending/recommended apps). This enables discovery and integration planning for available Make.com applications.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "medium",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "src/tools/",
-        "src/lib/",
-        "development/research-reports/app-marketplace-integration-patterns-comprehensive-research-2025.md"
-      ],
-      "success_criteria": [],
-      "estimate": "3-4 hours",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-20T06:06:40.296Z",
-      "auto_research_created": true,
-      "assigned_agent": "development_session_1755715369883_1_general_d1537c1a",
-      "started_at": "2025-08-20T18:50:16.209Z",
-      "claimed_by": "development_session_1755715369883_1_general_d1537c1a",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755715369883_1_general_d1537c1a",
-          "role": "primary",
-          "assignedAt": "2025-08-20T18:50:16.209Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ],
-      "last_modified": "2025-08-20T18:55:41.020Z"
-    },
-    {
       "id": "task_1755670263442_f6v7nk9t9",
       "title": "Enterprise-grade Make.com FastMCP enhancements initiative",
       "description": "Comprehensive initiative to elevate the FastMCP server from comprehensive management tool to complete proactive governance and development platform. Includes: 1) Deeper Platform Integration (data structures, blueprints, marketplace), 2) Advanced Governance & Cost Control (budgeting, policies), 3) Enhanced Observability (log streaming, troubleshooting), 4) CI/CD Integration (testing, deployment tools). Total estimated effort: 40-60 hours across 9 feature areas.",
       "mode": "DEVELOPMENT",
       "category": "enhancement",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [
         "src/tools/",
@@ -114,7 +80,19 @@
       "requires_research": true,
       "subtasks": [],
       "created_at": "2025-08-20T06:11:03.446Z",
-      "auto_research_created": true
+      "auto_research_created": true,
+      "assigned_agent": "development_session_1755716548248_general",
+      "started_at": "2025-08-20T19:02:28.250Z",
+      "claimed_by": "development_session_1755716548248_general",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755716548248_general",
+          "role": "primary",
+          "assignedAt": "2025-08-20T19:02:28.250Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
     },
     {
       "id": "task_1755666929288_dhpizqk98",
