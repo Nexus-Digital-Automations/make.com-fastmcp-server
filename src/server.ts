@@ -39,6 +39,7 @@ import { addAIGovernanceEngineTools } from './tools/ai-governance-engine.js';
 import { addZeroTrustAuthTools } from './tools/zero-trust-auth.js';
 import { addMultiTenantSecurityTools } from './tools/multi-tenant-security.js';
 import { addEnterpriseSecretsTools } from './tools/enterprise-secrets.js';
+import { addBlueprintCollaborationTools } from './tools/blueprint-collaboration.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -96,6 +97,7 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Multi-Tenant Security Architecture**: Comprehensive tenant isolation with cryptographic separation, network segmentation, resource quotas, governance policies, data leakage prevention, and compliance boundaries
 - **Enterprise Secrets Management**: HashiCorp Vault integration with HSM support, automated key rotation, dynamic secret generation, RBAC secret access, secret scanning and leakage prevention, breach detection and response, comprehensive audit trails for compliance
 - **AI-Driven Governance**: Intelligent compliance monitoring with real-time alerts, ML-powered predictive analytics, automated policy enforcement, policy conflict detection and resolution, risk assessment with behavioral analytics, automated remediation workflows, governance intelligence dashboard
+- **Blueprint Versioning & Collaboration**: Git-based blueprint version control with semantic versioning, real-time collaborative editing with operational transformation, intelligent conflict resolution with AI assistance, comprehensive dependency mapping and impact analysis, blueprint optimization recommendations
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 
@@ -620,7 +622,10 @@ ${configManager.isAuthEnabled() ?
     // Add AI-driven governance engine with intelligent compliance monitoring
     addAIGovernanceEngineTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control + cicd-integration + zero-trust-auth + multi-tenant-security + enterprise-secrets + ai-governance-engine)');
+    // Add Blueprint Versioning and Collaboration System tools
+    addBlueprintCollaborationTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control + cicd-integration + zero-trust-auth + multi-tenant-security + enterprise-secrets + ai-governance-engine + blueprint-collaboration)');
   }
 
   public getServer(): FastMCP {

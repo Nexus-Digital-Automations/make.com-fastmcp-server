@@ -4659,9 +4659,147 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755723074855_uaa0wnpwn",
+      "title": "Implement comprehensive Blueprint Versioning and Collaboration System",
+      "description": "Create Git-based workflow, real-time collaboration, conflict resolution, dependency mapping, semantic versioning, optimization, and collaborative development environment for Make.com blueprints",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/templates.ts",
+        "src/tools/blueprint-collaboration.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T20:51:14.859Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T20:55:55.274Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T22:32:07.504Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T22:32:07.505Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755729229405_lyerb2boz",
+      "title": "Conduct comprehensive FastMCP tool annotations research for TypeScript Protocol compliance",
+      "description": "Research FastMCP annotation standards, analyze current codebase coverage, develop implementation strategy and best practices for comprehensive annotations across all Make.com FastMCP server tools",
+      "mode": "DEVELOPMENT",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/scenarios.ts",
+        "src/tools/connections.ts",
+        "src/tools/templates.ts",
+        "src/tools/analytics.ts",
+        "src/tools/folders.ts",
+        "src/tools/enterprise/zero-trust-auth.ts",
+        "src/tools/enterprise/multi-tenant-security.ts",
+        "src/tools/enterprise/enterprise-secrets.ts",
+        "src/tools/enterprise/ai-governance-engine.ts",
+        "src/tools/enterprise/blueprint-collaboration.ts",
+        "development/research-reports/"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T22:33:49.405Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T22:37:19.920Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T22:37:19.921Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755727617693_dtof63i21",
+      "title": "Research: Add comprehensive tool annotations for full FastMCP TypeScript Protocol compliance",
+      "description": "Research and analysis required for implementing: \"Add comprehensive tool annotations for full FastMCP TypeScript Protocol compliance\"\n\n**Implementation Task Details:**\nAdd complete annotations (title, readOnlyHint, destructiveHint, idempotentHint, openWorldHint) to all FastMCP tools in scenarios.ts, connections.ts, templates.ts, analytics.ts, folders.ts and enterprise tools\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755727617693_zvvrg416v\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755727617693_dtof63i21.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755727617693_dtof63i21.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T22:06:57.693Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755727617693_zvvrg416v",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T22:33:21.123Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T22:37:44.410Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T22:37:44.411Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 110,
-  "last_completion": "2025-08-20T22:26:25.566Z",
+  "total_completed": 113,
+  "last_completion": "2025-08-20T22:37:44.411Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
