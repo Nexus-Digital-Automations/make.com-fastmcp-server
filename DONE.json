@@ -4445,9 +4445,87 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755726522831_pnf300a3s",
+      "title": "Standardize error handling to use FastMCP UserError for full TypeScript Protocol compliance",
+      "description": "Replace all custom error classes (MakeServerError, AuthenticationError, etc.) with FastMCP UserError throughout the codebase. Update imports, maintain error context and message quality, validate compliance.",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T21:48:42.832Z",
+      "auto_research_created": false,
+      "assigned_agent": "error-standardization-agent",
+      "started_at": "2025-08-20T21:49:45.265Z",
+      "claimed_by": "error-standardization-agent",
+      "agent_assignment_history": [
+        {
+          "agentId": "error-standardization-agent",
+          "role": "primary",
+          "assignedAt": "2025-08-20T21:49:45.265Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T22:05:54.479Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T22:05:54.479Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755727617693_zvvrg416v",
+      "title": "Add comprehensive tool annotations for full FastMCP TypeScript Protocol compliance",
+      "description": "Add complete annotations (title, readOnlyHint, destructiveHint, idempotentHint, openWorldHint) to all FastMCP tools in scenarios.ts, connections.ts, templates.ts, analytics.ts, folders.ts and enterprise tools",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [
+        "task_1755727617693_dtof63i21"
+      ],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T22:06:57.697Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T22:15:02.458Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T22:15:02.459Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 105,
-  "last_completion": "2025-08-20T21:42:55.550Z",
+  "total_completed": 107,
+  "last_completion": "2025-08-20T22:15:02.459Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

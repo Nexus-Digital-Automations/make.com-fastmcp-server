@@ -273,6 +273,11 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
   server.addTool({
     name: 'create-folder',
     description: 'Create a new folder for organizing templates, scenarios, and connections',
+    annotations: {
+      title: 'Create Folder',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     parameters: FolderCreateSchema,
     execute: async (input, { log }) => {
       const { name, description, parentId, type, organizationId, teamId, permissions } = input;
@@ -360,6 +365,11 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
   server.addTool({
     name: 'list-folders',
     description: 'List and filter folders with organizational hierarchy',
+    annotations: {
+      title: 'List Folders',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: FolderListSchema,
     execute: async (input, { log }) => {
       const { parentId, type, organizationId, teamId, searchQuery, includeEmpty, includeContents, limit, offset, sortBy, sortOrder } = input;
@@ -453,6 +463,11 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
   server.addTool({
     name: 'get-folder-contents',
     description: 'Get detailed contents of a specific folder',
+    annotations: {
+      title: 'Get Folder Contents',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: z.object({
       folderId: z.number().min(1).describe('Folder ID to get contents for'),
       contentType: z.enum(['all', 'templates', 'scenarios', 'connections', 'subfolders']).default('all').describe('Filter content type'),

@@ -94,6 +94,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     name: 'get-organization-analytics',
     description: 'Get comprehensive analytics data for an organization',
     parameters: AnalyticsFiltersSchema,
+    annotations: {
+      title: 'Organization Analytics',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { organizationId, startDate, endDate, period, includeUsage, includePerformance, includeBilling } = input;
 
@@ -157,6 +162,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     name: 'list-audit-logs',
     description: 'List and filter audit logs for security and compliance monitoring',
     parameters: AuditLogFiltersSchema,
+    annotations: {
+      title: 'List Audit Logs',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { organizationId, teamId, userId, action, resource, startDate, endDate, limit, offset } = input;
 
@@ -233,6 +243,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
   server.addTool({
     name: 'get-audit-log',
     description: 'Get detailed information about a specific audit log entry',
+    annotations: {
+      title: 'Get Audit Log Details',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: z.object({
       logId: z.number().min(1).describe('Audit log ID to retrieve'),
     }),
@@ -274,6 +289,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
   server.addTool({
     name: 'get-scenario-logs',
     description: 'Get execution logs for a specific scenario',
+    annotations: {
+      title: 'Get Scenario Logs',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: ScenarioLogFiltersSchema,
     execute: async (input, { log }) => {
       const { scenarioId, executionId, level, startDate, endDate, limit, offset } = input;
@@ -348,6 +368,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
   server.addTool({
     name: 'get-execution-history',
     description: 'Get comprehensive execution history with filtering and analytics',
+    annotations: {
+      title: 'Execution History',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: ExecutionHistoryFiltersSchema,
     execute: async (input, { log }) => {
       const { scenarioId, organizationId, teamId, status, startDate, endDate, limit, offset } = input;
@@ -436,6 +461,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
   server.addTool({
     name: 'list-incomplete-executions',
     description: 'List and manage incomplete executions that require attention',
+    annotations: {
+      title: 'Incomplete Executions',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: IncompleteExecutionFiltersSchema,
     execute: async (input, { log }) => {
       const { scenarioId, organizationId, status, canResume, limit, offset } = input;
@@ -509,6 +539,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
   server.addTool({
     name: 'resolve-incomplete-execution',
     description: 'Resolve or retry an incomplete execution',
+    annotations: {
+      title: 'Resolve Incomplete Execution',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     parameters: z.object({
       executionId: z.number().min(1).describe('Incomplete execution ID to resolve'),
       action: z.enum(['retry', 'skip', 'cancel']).describe('Action to take on the incomplete execution'),
@@ -556,6 +591,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
   server.addTool({
     name: 'get-hook-logs',
     description: 'Get webhook execution logs for debugging and monitoring',
+    annotations: {
+      title: 'Get Webhook Logs',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: HookLogFiltersSchema,
     execute: async (input, { log }) => {
       const { hookId, success, method, startDate, endDate, limit, offset } = input;
@@ -630,6 +670,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
   server.addTool({
     name: 'export-analytics-data',
     description: 'Export analytics, audit logs, or execution data for external analysis',
+    annotations: {
+      title: 'Export Analytics Data',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: ExportDataSchema,
     execute: async (input, { log }) => {
       const { organizationId, dataType, format, startDate, endDate, includeDetails } = input;
@@ -685,6 +730,11 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
   server.addTool({
     name: 'get-performance-metrics',
     description: 'Get detailed performance metrics and trends',
+    annotations: {
+      title: 'Performance Metrics',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: z.object({
       organizationId: z.number().min(1).describe('Organization ID for metrics'),
       metric: z.enum(['execution_time', 'operations_per_minute', 'success_rate', 'data_transfer', 'all']).default('all').describe('Specific metric to retrieve'),

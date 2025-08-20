@@ -172,6 +172,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     name: 'create-template',
     description: 'Create a new Make.com template from a scenario or blueprint',
     parameters: TemplateCreateSchema,
+    annotations: {
+      title: 'Create Template',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, description, category, blueprint, tags, folderId, organizationId, teamId, isPublic, sharing, metadata } = input;
 
@@ -274,6 +279,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     name: 'list-templates',
     description: 'List and filter Make.com templates with comprehensive search capabilities',
     parameters: TemplateListSchema,
+    annotations: {
+      title: 'List Templates',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { category, tags, organizationId, teamId, folderId, creatorId, isPublic, complexity, hasConnections, searchQuery, minUsage, includeUsage, includeVersions, limit, offset, sortBy, sortOrder } = input;
 
@@ -376,6 +386,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
   server.addTool({
     name: 'get-template',
     description: 'Get detailed information about a specific template',
+    annotations: {
+      title: 'Get Template Details',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     parameters: z.object({
       templateId: z.number().min(1).describe('Template ID to retrieve'),
       includeBlueprint: z.boolean().default(false).describe('Include full blueprint in response'),
@@ -460,6 +475,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     name: 'update-template',
     description: 'Update an existing template',
     parameters: TemplateUpdateSchema,
+    annotations: {
+      title: 'Update Template',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { templateId, name, description, category, blueprint, tags, folderId, isPublic, sharing, metadata } = input;
 
@@ -529,6 +549,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     name: 'use-template',
     description: 'Create a new scenario from a template with customizations',
     parameters: TemplateUseSchema,
+    annotations: {
+      title: 'Use Template',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { templateId, scenarioName, folderId, customizations, connectionMappings, variableOverrides, schedulingOverride } = input;
 
@@ -590,6 +615,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
   server.addTool({
     name: 'delete-template',
     description: 'Delete a template',
+    annotations: {
+      title: 'Delete Template',
+      destructiveHint: true,
+      openWorldHint: true,
+    },
     parameters: z.object({
       templateId: z.number().min(1).describe('Template ID to delete'),
       force: z.boolean().default(false).describe('Force delete even if template is in use'),

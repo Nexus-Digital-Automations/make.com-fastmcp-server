@@ -194,6 +194,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'list-connections',
     description: 'List and filter app connections in Make.com',
     parameters: ConnectionFiltersSchema,
+    annotations: {
+      title: 'List Connections',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { service, status, search, limit, offset } = input;
 
@@ -279,6 +284,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     parameters: z.object({
       connectionId: z.number().min(1).describe('Connection ID to retrieve'),
     }),
+    annotations: {
+      title: 'Get Connection Details',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { connectionId } = input;
 
@@ -360,6 +370,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'create-connection',
     description: 'Create a new app connection in Make.com',
     parameters: CreateConnectionSchema,
+    annotations: {
+      title: 'Create Connection',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, service, accountName, credentials, metadata } = input;
 
@@ -456,6 +471,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'update-connection',
     description: 'Update an existing app connection',
     parameters: UpdateConnectionSchema,
+    annotations: {
+      title: 'Update Connection',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { connectionId, name, accountName, credentials, metadata } = input;
 
@@ -509,6 +529,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     parameters: z.object({
       connectionId: z.number().min(1).describe('Connection ID to delete'),
     }),
+    annotations: {
+      title: 'Delete Connection',
+      destructiveHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { connectionId } = input;
 
@@ -543,6 +568,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       connectionId: z.number().min(1).describe('Connection ID to test'),
       testEndpoint: z.string().optional().describe('Specific endpoint to test (optional)'),
     }),
+    annotations: {
+      title: 'Test Connection',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { connectionId, testEndpoint } = input;
 
@@ -592,6 +622,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'list-webhooks',  
     description: 'List and filter webhooks in Make.com',
     parameters: WebhookFiltersSchema,
+    annotations: {
+      title: 'List Webhooks',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { connectionId, scenarioId, status, limit, offset } = input;
 
@@ -650,6 +685,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'create-webhook',
     description: 'Create a new webhook in Make.com',
     parameters: CreateWebhookSchema,
+    annotations: {
+      title: 'Create Webhook',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, url, method, headers, connectionId, scenarioId, isActive } = input;
 
@@ -707,6 +747,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'update-webhook',
     description: 'Update an existing webhook',
     parameters: UpdateWebhookSchema,
+    annotations: {
+      title: 'Update Webhook',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { webhookId, name, url, method, headers, isActive } = input;
 
@@ -761,6 +806,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     parameters: z.object({
       webhookId: z.number().min(1).describe('Webhook ID to delete'),
     }),
+    annotations: {
+      title: 'Delete Webhook',
+      destructiveHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { webhookId } = input;
 
