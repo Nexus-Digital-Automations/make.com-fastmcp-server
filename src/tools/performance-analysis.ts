@@ -471,7 +471,7 @@ class PerformanceAnalysisEngine {
   /**
    * Collect webhook-specific metrics
    */
-  private async collectWebhookMetrics(apiClient: MakeApiClient): Promise<any> {
+  private async collectWebhookMetrics(_apiClient: MakeApiClient): Promise<any> {
     // This would typically involve checking webhook queue status, processing times, etc.
     // For now, return estimated metrics based on Make.com documentation
     return {

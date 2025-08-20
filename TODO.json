@@ -28,34 +28,6 @@
       "auto_created_for": "task_1755706954658_lw2dtoan1"
     },
     {
-      "id": "task_1755707710832_cw1ykc6b7",
-      "title": "Implement analyze_performance_bottlenecks tool for Make.com FastMCP server",
-      "description": "Create comprehensive performance analysis functionality including bottleneck detection, performance monitoring, trend analysis, and diagnostic reporting as part of the larger diagnostic system",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-20T16:35:10.836Z",
-      "auto_research_created": true,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-20T16:36:39.436Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
-    },
-    {
       "id": "task_1755670033359_5zjfbmaur",
       "title": "Implement automated troubleshooting and diagnostic system",
       "description": "Add intelligent debugging tools: troubleshoot_scenario (comprehensive scenario diagnostics), diagnose_connection_issues (connection validation and health checks), analyze_performance_bottlenecks (identify slow operations), generate_troubleshooting_report (actionable fix recommendations). Combines multiple diagnostic checks into unified analysis.",
