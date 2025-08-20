@@ -247,6 +247,110 @@ export interface MakeCustomDataStructure {
   createdBy: number;
 }
 
+// Data structure management interfaces for type safety
+export interface DataStructureUpdateData {
+  name?: string;
+  description?: string | null;
+  structure?: {
+    schema?: Record<string, unknown>;
+    version?: string;
+    format?: 'json' | 'xml' | 'yaml' | 'csv' | 'custom';
+  };
+  validation?: {
+    enabled?: boolean;
+    strict?: boolean;
+    rules?: Array<{
+      field: string;
+      type: 'required' | 'format' | 'range' | 'custom';
+      parameters?: unknown;
+      message: string;
+    }>;
+  };
+  transformation?: {
+    enabled?: boolean;
+    mappings?: Array<{
+      source: string;
+      target: string;
+      type: 'direct' | 'computed' | 'lookup' | 'constant';
+      parameters?: unknown;
+    }>;
+    filters?: Array<{
+      field: string;
+      operator: 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'notIn';
+      value: unknown;
+      caseSensitive?: boolean;
+    }>;
+  };
+}
+
+export interface DataStructureListResponse {
+  dataStructures: MakeCustomDataStructure[];
+  pagination: {
+    total: number;
+    offset: number;
+    limit: number;
+    hasMore: boolean;
+  };
+  filters: {
+    type: string;
+    scope: string;
+    format: string;
+    search?: string;
+  };
+}
+
+export interface DataStructureDependency {
+  type: string;
+  id: string;
+  name: string;
+  usage: string;
+}
+
+export interface DataStructureDependencyResponse {
+  dependencies: DataStructureDependency[];
+}
+
+export interface DataStructureArchiveInfo {
+  archiveId: string;
+  archiveUrl: string;
+}
+
+export interface DataStructureArchiveResponse {
+  archiveId: string;
+  downloadUrl: string;
+}
+
+export interface DataStructureUsageStats {
+  scenariosUsing: number;
+  lastUsed?: string;
+  validationCount: number;
+  errorRate: number;
+  transformationCount: number;
+  averageValidationTime: number;
+  successRate: number;
+}
+
+export interface DataStructureValidationHistoryItem {
+  timestamp: string;
+  result: 'success' | 'failure';
+  errors: string[];
+  processingTime: number;
+}
+
+export interface DataStructureTransformationHistoryItem {
+  timestamp: string;
+  result: 'success' | 'failure';
+  inputRecords: number;
+  outputRecords: number;
+  processingTime: number;
+}
+
+export interface DataStructureWithStats extends MakeCustomDataStructure {
+  usage?: DataStructureUsageStats;
+  validationHistory?: DataStructureValidationHistoryItem[];
+  transformationHistory?: DataStructureTransformationHistoryItem[];
+}
+
 // Input validation schemas
 const NotificationCreateSchema = z.object({
   type: z.enum(['system', 'billing', 'security', 'scenario', 'team', 'marketing', 'custom']).describe('Notification type'),
@@ -902,6 +1006,528 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         log.error('Error creating data structure', { name, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create data structure: ${errorMessage}`);
+      }
+    },
+  });
+
+  // List custom data structures
+  server.addTool({
+    name: 'list-data-structures',
+    description: 'List and filter custom data structures with comprehensive filtering and search',
+    parameters: z.object({
+      type: z.enum(['schema', 'template', 'validation', 'transformation', 'all']).default('all').describe('Filter by structure type'),
+      scope: z.enum(['global', 'organization', 'team', 'personal', 'all']).default('all').describe('Filter by access scope'),
+      organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
+      teamId: z.number().min(1).optional().describe('Filter by team ID'),
+      format: z.enum(['json', 'xml', 'yaml', 'csv', 'custom', 'all']).default('all').describe('Filter by data format'),
+      search: z.string().max(200).optional().describe('Search in name and description'),
+      includeValidation: z.boolean().default(true).describe('Include validation configuration'),
+      includeTransformation: z.boolean().default(true).describe('Include transformation details'),
+      limit: z.number().min(1).max(100).default(20).describe('Maximum structures to return'),
+      offset: z.number().min(0).default(0).describe('Structures to skip for pagination'),
+      sortBy: z.enum(['createdAt', 'updatedAt', 'name', 'type']).default('createdAt').describe('Sort field'),
+      sortOrder: z.enum(['asc', 'desc']).default('desc').describe('Sort order'),
+    }),
+    execute: async (input, { log }) => {
+      const { type, scope, organizationId, teamId, format, search, includeValidation, includeTransformation, limit, offset, sortBy, sortOrder } = input;
+
+      log.info('Listing custom data structures', {
+        type,
+        scope,
+        organizationId,
+        teamId,
+        format,
+        search,
+        limit,
+        offset,
+      });
+
+      try {
+        const params: Record<string, unknown> = {
+          limit,
+          offset,
+          sortBy,
+          sortOrder,
+          includeValidation,
+          includeTransformation,
+        };
+
+        if (type !== 'all') params.type = type;
+        if (scope !== 'all') params.scope = scope;
+        if (format !== 'all') params.format = format;
+        if (search) params.search = search;
+        if (organizationId) params.organizationId = organizationId;
+        if (teamId) params.teamId = teamId;
+
+        let endpoint = '/data-structures';
+        if (organizationId) {
+          endpoint = `/organizations/${organizationId}/data-structures`;
+        } else if (teamId) {
+          endpoint = `/teams/${teamId}/data-structures`;
+        }
+
+        const response = await apiClient.get(endpoint, { params });
+
+        if (!response.success) {
+          throw new UserError(`Failed to list data structures: ${response.error?.message || 'Unknown error'}`);
+        }
+
+        const data = response.data as DataStructureListResponse;
+
+        if (!data || !data.dataStructures) {
+          throw new UserError('Invalid response format from data structures API');
+        }
+
+        log.info('Successfully listed data structures', {
+          count: data.dataStructures.length,
+          total: data.pagination.total,
+          filters: data.filters,
+        });
+
+        return JSON.stringify({
+          dataStructures: data.dataStructures,
+          pagination: data.pagination,
+          filters: data.filters,
+          summary: {
+            totalFound: data.pagination.total,
+            currentPage: Math.floor(offset / limit) + 1,
+            totalPages: Math.ceil(data.pagination.total / limit),
+            hasMore: data.pagination.hasMore,
+          },
+          statistics: {
+            byType: data.dataStructures.reduce((acc, ds) => {
+              acc[ds.type] = (acc[ds.type] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>),
+            byScope: data.dataStructures.reduce((acc, ds) => {
+              acc[ds.scope] = (acc[ds.scope] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>),
+            byFormat: data.dataStructures.reduce((acc, ds) => {
+              acc[ds.structure.format] = (acc[ds.structure.format] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>),
+          },
+        }, null, 2);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error listing data structures', { error: errorMessage });
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to list data structures: ${errorMessage}`);
+      }
+    },
+  });
+
+  // Get custom data structure by ID
+  server.addTool({
+    name: 'get-data-structure',
+    description: 'Retrieve detailed information about a specific custom data structure',
+    parameters: z.object({
+      dataStructureId: z.number().min(1).describe('Data structure ID'),
+      organizationId: z.number().min(1).optional().describe('Organization ID (for scoped access)'),
+      teamId: z.number().min(1).optional().describe('Team ID (for scoped access)'),
+      includeUsageStats: z.boolean().default(true).describe('Include usage statistics'),
+      includeValidationHistory: z.boolean().default(false).describe('Include validation history'),
+      includeTransformationHistory: z.boolean().default(false).describe('Include transformation history'),
+    }),
+    execute: async (input, { log, reportProgress }) => {
+      const { dataStructureId, organizationId, teamId, includeUsageStats, includeValidationHistory, includeTransformationHistory } = input;
+
+      log.info('Getting data structure details', {
+        dataStructureId,
+        organizationId,
+        teamId,
+        includeUsageStats,
+        includeValidationHistory,
+        includeTransformationHistory,
+      });
+
+      try {
+        reportProgress({ progress: 0, total: 100 });
+
+        let endpoint = `/data-structures/${dataStructureId}`;
+        if (organizationId) {
+          endpoint = `/organizations/${organizationId}/data-structures/${dataStructureId}`;
+        } else if (teamId) {
+          endpoint = `/teams/${teamId}/data-structures/${dataStructureId}`;
+        }
+
+        const params: Record<string, unknown> = {
+          includeUsageStats,
+          includeValidationHistory,
+          includeTransformationHistory,
+        };
+
+        const response = await apiClient.get(endpoint, { params });
+
+        if (!response.success) {
+          throw new UserError(`Failed to get data structure: ${response.error?.message || 'Unknown error'}`);
+        }
+
+        reportProgress({ progress: 50, total: 100 });
+
+        const dataStructure = response.data as DataStructureWithStats;
+
+        if (!dataStructure) {
+          throw new UserError('Data structure not found or access denied');
+        }
+
+        reportProgress({ progress: 100, total: 100 });
+
+        log.info('Successfully retrieved data structure', {
+          dataStructureId: dataStructure.id,
+          name: dataStructure.name,
+          type: dataStructure.type,
+          scope: dataStructure.scope,
+        });
+
+        return JSON.stringify({
+          dataStructure,
+          metadata: {
+            id: dataStructure.id,
+            name: dataStructure.name,
+            type: dataStructure.type,
+            scope: dataStructure.scope,
+            format: dataStructure.structure.format,
+            version: dataStructure.structure.version,
+            createdAt: dataStructure.createdAt,
+            updatedAt: dataStructure.updatedAt,
+          },
+          configuration: {
+            validation: {
+              enabled: dataStructure.validation.enabled,
+              strict: dataStructure.validation.strict,
+              rulesCount: dataStructure.validation.rules.length,
+            },
+            transformation: {
+              enabled: dataStructure.transformation.enabled,
+              mappingsCount: dataStructure.transformation.mappings.length,
+              filtersCount: dataStructure.transformation.filters.length,
+            },
+          },
+          usage: dataStructure.usage || null,
+          operations: {
+            validateUrl: `/data-structures/${dataStructure.id}/validate`,
+            transformUrl: `/data-structures/${dataStructure.id}/transform`,
+            testUrl: `/data-structures/${dataStructure.id}/test`,
+            updateUrl: `/data-structures/${dataStructure.id}`,
+            deleteUrl: `/data-structures/${dataStructure.id}`,
+          },
+        }, null, 2);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error getting data structure', { dataStructureId, error: errorMessage });
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to get data structure: ${errorMessage}`);
+      }
+    },
+  });
+
+  // Update custom data structure
+  server.addTool({
+    name: 'update-data-structure',
+    description: 'Update an existing custom data structure configuration',
+    parameters: z.object({
+      dataStructureId: z.number().min(1).describe('Data structure ID to update'),
+      organizationId: z.number().min(1).optional().describe('Organization ID (for scoped access)'),
+      teamId: z.number().min(1).optional().describe('Team ID (for scoped access)'),
+      name: z.string().min(1).max(100).optional().describe('Updated structure name'),
+      description: z.string().max(500).optional().describe('Updated description'),
+      structure: z.object({
+        schema: z.any().optional().describe('Updated JSON Schema definition'),
+        version: z.string().optional().describe('Updated schema version'),
+        format: z.enum(['json', 'xml', 'yaml', 'csv', 'custom']).optional().describe('Updated data format'),
+      }).optional().describe('Updated structure definition'),
+      validation: z.object({
+        enabled: z.boolean().optional().describe('Enable/disable validation'),
+        strict: z.boolean().optional().describe('Strict validation mode'),
+        rules: z.array(z.object({
+          field: z.string().min(1).describe('Field path'),
+          type: z.enum(['required', 'format', 'range', 'custom']).describe('Rule type'),
+          parameters: z.any().optional().describe('Rule parameters'),
+          message: z.string().describe('Error message'),
+        })).optional().describe('Updated validation rules'),
+      }).optional().describe('Updated validation configuration'),
+      transformation: z.object({
+        enabled: z.boolean().optional().describe('Enable/disable transformation'),
+        mappings: z.array(z.object({
+          source: z.string().describe('Source field path'),
+          target: z.string().describe('Target field path'),
+          type: z.enum(['direct', 'computed', 'lookup', 'constant']).describe('Mapping type'),
+          parameters: z.any().optional().describe('Mapping parameters'),
+        })).optional().describe('Updated field mappings'),
+        filters: z.array(z.object({
+          field: z.string().describe('Field to filter'),
+          operator: z.enum(['equals', 'contains', 'startsWith', 'endsWith', 'gt', 'lt', 'gte', 'lte', 'in', 'notIn']).describe('Filter operator'),
+          value: z.any().describe('Filter value'),
+          caseSensitive: z.boolean().default(false).describe('Case sensitive comparison'),
+        })).optional().describe('Updated filters'),
+      }).optional().describe('Updated transformation configuration'),
+    }),
+    execute: async (input, { log, reportProgress }) => {
+      const { dataStructureId, organizationId, teamId, name, description, structure, validation, transformation } = input;
+
+      log.info('Updating data structure', {
+        dataStructureId,
+        organizationId,
+        teamId,
+        updates: {
+          name: !!name,
+          description: !!description,
+          structure: !!structure,
+          validation: !!validation,
+          transformation: !!transformation,
+        },
+      });
+
+      try {
+        reportProgress({ progress: 0, total: 100 });
+
+        // Validate JSON Schema if provided in updates
+        if (structure?.schema && typeof structure.schema === 'object') {
+          try {
+            JSON.stringify(structure.schema);
+          } catch (error) {
+            throw new UserError('Invalid JSON Schema provided in update');
+          }
+        }
+
+        const updateData: DataStructureUpdateData = {};
+        
+        if (name) updateData.name = name;
+        if (description !== undefined) updateData.description = description;
+        
+        if (structure) {
+          updateData.structure = {};
+          if (structure.schema) updateData.structure.schema = structure.schema;
+          if (structure.version) updateData.structure.version = structure.version;
+          if (structure.format) updateData.structure.format = structure.format;
+        }
+        
+        if (validation) {
+          updateData.validation = {};
+          if (validation.enabled !== undefined) updateData.validation.enabled = validation.enabled;
+          if (validation.strict !== undefined) updateData.validation.strict = validation.strict;
+          if (validation.rules) updateData.validation.rules = validation.rules;
+        }
+        
+        if (transformation) {
+          updateData.transformation = {};
+          if (transformation.enabled !== undefined) updateData.transformation.enabled = transformation.enabled;
+          if (transformation.mappings) updateData.transformation.mappings = transformation.mappings;
+          if (transformation.filters) updateData.transformation.filters = transformation.filters;
+        }
+
+        reportProgress({ progress: 30, total: 100 });
+
+        let endpoint = `/data-structures/${dataStructureId}`;
+        if (organizationId) {
+          endpoint = `/organizations/${organizationId}/data-structures/${dataStructureId}`;
+        } else if (teamId) {
+          endpoint = `/teams/${teamId}/data-structures/${dataStructureId}`;
+        }
+
+        const response = await apiClient.patch(endpoint, updateData);
+
+        if (!response.success) {
+          throw new UserError(`Failed to update data structure: ${response.error?.message || 'Unknown error'}`);
+        }
+
+        reportProgress({ progress: 80, total: 100 });
+
+        const updatedDataStructure = response.data as MakeCustomDataStructure;
+        if (!updatedDataStructure) {
+          throw new UserError('Data structure update failed - no data returned');
+        }
+
+        reportProgress({ progress: 100, total: 100 });
+
+        log.info('Successfully updated data structure', {
+          dataStructureId: updatedDataStructure.id,
+          name: updatedDataStructure.name,
+          type: updatedDataStructure.type,
+          updatedFields: Object.keys(updateData),
+        });
+
+        return JSON.stringify({
+          dataStructure: updatedDataStructure,
+          message: `Data structure "${updatedDataStructure.name}" updated successfully`,
+          changes: {
+            fieldsUpdated: Object.keys(updateData),
+            previousVersion: structure?.version,
+            newVersion: updatedDataStructure.structure.version,
+            lastModified: updatedDataStructure.updatedAt,
+          },
+          configuration: {
+            validation: {
+              enabled: updatedDataStructure.validation.enabled,
+              strict: updatedDataStructure.validation.strict,
+              rulesCount: updatedDataStructure.validation.rules.length,
+            },
+            transformation: {
+              enabled: updatedDataStructure.transformation.enabled,
+              mappingsCount: updatedDataStructure.transformation.mappings.length,
+              filtersCount: updatedDataStructure.transformation.filters.length,
+            },
+          },
+          operations: {
+            validateUrl: `/data-structures/${updatedDataStructure.id}/validate`,
+            transformUrl: `/data-structures/${updatedDataStructure.id}/transform`,
+            testUrl: `/data-structures/${updatedDataStructure.id}/test`,
+          },
+        }, null, 2);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error updating data structure', { dataStructureId, error: errorMessage });
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to update data structure: ${errorMessage}`);
+      }
+    },
+  });
+
+  // Delete custom data structure
+  server.addTool({
+    name: 'delete-data-structure',
+    description: 'Delete a custom data structure with optional dependency checking and confirmation',
+    parameters: z.object({
+      dataStructureId: z.number().min(1).describe('Data structure ID to delete'),
+      organizationId: z.number().min(1).optional().describe('Organization ID (for scoped access)'),
+      teamId: z.number().min(1).optional().describe('Team ID (for scoped access)'),
+      force: z.boolean().default(false).describe('Force deletion even if dependencies exist'),
+      checkDependencies: z.boolean().default(true).describe('Check for dependencies before deletion'),
+      confirmationCode: z.string().optional().describe('Confirmation code for safety (if required)'),
+      archiveBeforeDelete: z.boolean().default(true).describe('Create archive backup before deletion'),
+    }),
+    execute: async (input, { log, reportProgress }) => {
+      const { dataStructureId, organizationId, teamId, force, checkDependencies, confirmationCode, archiveBeforeDelete } = input;
+
+      log.info('Deleting data structure', {
+        dataStructureId,
+        organizationId,
+        teamId,
+        force,
+        checkDependencies,
+        archiveBeforeDelete,
+      });
+
+      try {
+        reportProgress({ progress: 0, total: 100 });
+
+        let endpoint = `/data-structures/${dataStructureId}`;
+        if (organizationId) {
+          endpoint = `/organizations/${organizationId}/data-structures/${dataStructureId}`;
+        } else if (teamId) {
+          endpoint = `/teams/${teamId}/data-structures/${dataStructureId}`;
+        }
+
+        // Get current data structure for reference
+        const getResponse = await apiClient.get(endpoint);
+        if (!getResponse.success) {
+          throw new UserError(`Data structure not found: ${getResponse.error?.message || 'Unknown error'}`);
+        }
+
+        const dataStructure = getResponse.data as MakeCustomDataStructure;
+        reportProgress({ progress: 20, total: 100 });
+
+        // Check dependencies if requested
+        let dependencies: DataStructureDependency[] = [];
+
+        if (checkDependencies) {
+          const depResponse = await apiClient.get(`${endpoint}/dependencies`);
+          if (depResponse.success && depResponse.data) {
+            dependencies = (depResponse.data as DataStructureDependencyResponse).dependencies || [];
+          }
+
+          if (dependencies.length > 0 && !force) {
+            const dependencyList = dependencies.map(dep => 
+              `- ${dep.type} "${dep.name}" (${dep.id}) - ${dep.usage}`
+            ).join('\n');
+
+            throw new UserError(
+              `Cannot delete data structure "${dataStructure.name}" because it has dependencies:\n${dependencyList}\n\nUse force=true to delete anyway, or remove dependencies first.`
+            );
+          }
+        }
+
+        reportProgress({ progress: 40, total: 100 });
+
+        // Create archive if requested
+        let archiveInfo: DataStructureArchiveInfo | null = null;
+        if (archiveBeforeDelete) {
+          try {
+            const archiveResponse = await apiClient.post(`${endpoint}/archive`, {
+              reason: 'Pre-deletion backup',
+              includeHistory: true,
+            });
+            if (archiveResponse.success && archiveResponse.data) {
+              const archiveData = archiveResponse.data as DataStructureArchiveResponse;
+              archiveInfo = {
+                archiveId: archiveData.archiveId,
+                archiveUrl: archiveData.downloadUrl,
+              };
+            }
+          } catch (archiveError) {
+            log.warn('Failed to create archive before deletion', { error: String(archiveError) });
+          }
+        }
+
+        reportProgress({ progress: 60, total: 100 });
+
+        // Perform deletion
+        const deleteParams: Record<string, unknown> = {
+          force,
+          confirmationCode: confirmationCode || undefined,
+        };
+
+        const deleteResponse = await apiClient.delete(endpoint, { params: deleteParams });
+
+        if (!deleteResponse.success) {
+          throw new UserError(`Failed to delete data structure: ${deleteResponse.error?.message || 'Unknown error'}`);
+        }
+
+        reportProgress({ progress: 100, total: 100 });
+
+        log.info('Successfully deleted data structure', {
+          dataStructureId: dataStructure.id,
+          name: dataStructure.name,
+          type: dataStructure.type,
+          hadDependencies: dependencies.length > 0,
+          archiveCreated: !!archiveInfo,
+        });
+
+        return JSON.stringify({
+          message: `Data structure "${dataStructure.name}" deleted successfully`,
+          deletedStructure: {
+            id: dataStructure.id,
+            name: dataStructure.name,
+            type: dataStructure.type,
+            scope: dataStructure.scope,
+            format: dataStructure.structure.format,
+            deletedAt: new Date().toISOString(),
+          },
+          dependencies: dependencies.length > 0 ? {
+            count: dependencies.length,
+            items: dependencies,
+            forcedDeletion: force,
+          } : null,
+          archive: archiveInfo ? {
+            created: true,
+            archiveId: archiveInfo.archiveId,
+            downloadUrl: archiveInfo.archiveUrl,
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+          } : null,
+          recovery: {
+            canRestore: !!archiveInfo,
+            restoreInstructions: archiveInfo ? 
+              'Use the archive download URL to restore this data structure if needed within 30 days.' :
+              'No archive was created. This deletion cannot be undone.',
+          },
+        }, null, 2);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error deleting data structure', { dataStructureId, error: errorMessage });
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to delete data structure: ${errorMessage}`);
       }
     },
   });
