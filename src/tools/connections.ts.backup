@@ -14,69 +14,11 @@
  * @see {@link https://docs.make.com/api/connections} Make.com Connections API Documentation
  */
 
-import { FastMCP, UserError, type SerializableValue } from 'fastmcp';
+import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { safeGetRecord, safeGetArray } from '../utils/validation.js';
-
-// Type definitions for connection diagnostics
-interface ConnectionData {
-  id: number;
-  name: string;
-  service: string;
-  accountName: string;
-  valid?: boolean;
-  lastVerified?: string;
-  createdAt?: string;
-  credentials?: Record<string, unknown>;
-}
-
-interface ConnectionDiagnosticResult {
-  category: 'health' | 'connectivity' | 'authentication' | 'performance' | 'security';
-  severity: 'info' | 'warning' | 'error' | 'critical';
-  title: string;
-  description: string;
-  details: Record<string, unknown>;
-  recommendations: string[];
-  fixable: boolean;
-  autoFixAction?: string;
-  timestamp: string;
-}
-
-interface ConnectionResult {
-  connectionId: number;
-  name: string;
-  service: string;
-  accountName: string;
-  overallHealth: 'healthy' | 'warning' | 'critical' | 'unknown';
-  healthScore: number;
-  diagnostics: ConnectionDiagnosticResult[];
-  summary: {
-    totalIssues: number;
-    criticalIssues: number;
-    warningIssues: number;
-    infoIssues: number;
-    fixableIssues: number;
-  };
-  executionTime: number;
-  timestamp: string;
-}
-
-interface DiagnosticOptions {
-  diagnosticTypes: string[];
-  includePerformanceMetrics: boolean;
-  includeSecurityChecks: boolean;
-  testConnectivity: boolean;
-  timeRangeHours: number;
-  severityFilter?: string;
-}
-
-interface Logger {
-  info: (message: string, data?: SerializableValue) => void;
-  warn: (message: string, data?: SerializableValue) => void;
-  error: (message: string, data?: SerializableValue) => void;
-}
 
 // Input validation schemas
 const ConnectionFiltersSchema = z.object({
@@ -787,6 +729,9 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
     },
   });
 
+  componentLogger.info('Connection management tools added successfully');
+}
+
   /**
    * Comprehensive connection diagnostics with validation, health checks, and performance analysis
    * 
@@ -828,14 +773,14 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
    * mcp-client diagnose-connection-issues --service "slack"
    * 
    * # Security-focused analysis
-   * mcp-client diagnose-connection-issues \\
-   *   --diagnosticTypes '["security", "authentication"]' \\
+   * mcp-client diagnose-connection-issues \
+   *   --diagnosticTypes '["security", "authentication"]' \
    *   --includeSecurityChecks true
    * 
    * # Performance analysis with extended history
-   * mcp-client diagnose-connection-issues \\
-   *   --diagnosticTypes '["performance", "connectivity"]' \\
-   *   --timeRangeHours 72 \\
+   * mcp-client diagnose-connection-issues \
+   *   --diagnosticTypes '["performance", "connectivity"]' \
+   *   --timeRangeHours 72 \
    *   --includePerformanceMetrics true
    * ```
    * 
@@ -872,7 +817,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
         testConnectivity,
         timeRangeHours,
         severityFilter,
-        generateReport: _generateReport
+        generateReport
       } = input;
 
       log.info('Starting connection diagnostics', {
@@ -1004,15 +949,15 @@ async function getConnectionsForDiagnostics(
   apiClient: MakeApiClient,
   connectionId?: number,
   service?: string,
-  log?: Logger
-): Promise<ConnectionData[]> {
+  log?: any
+): Promise<any[]> {
   if (connectionId) {
     // Get specific connection
     const response = await apiClient.get(`/connections/${connectionId}`);
     if (!response.success) {
       throw new UserError(`Failed to get connection ${connectionId}: ${response.error?.message || 'Unknown error'}`);
     }
-    return [safeGetRecord(response.data) as unknown as ConnectionData];
+    return [safeGetRecord(response.data)];
   }
 
   // Get connections with optional service filter
@@ -1024,7 +969,7 @@ async function getConnectionsForDiagnostics(
     throw new UserError(`Failed to list connections: ${response.error?.message || 'Unknown error'}`);
   }
 
-  const connections = safeGetArray(response.data) as unknown as ConnectionData[];
+  const connections = safeGetArray(response.data);
   log?.info('Retrieved connections for diagnostics', { count: connections.length });
   
   return connections;
@@ -1034,13 +979,20 @@ async function getConnectionsForDiagnostics(
  * Diagnose individual connection with comprehensive checks
  */
 async function diagnoseIndividualConnection(
-  connection: ConnectionData,
+  connection: any,
   apiClient: MakeApiClient,
-  options: DiagnosticOptions,
-  log?: Logger
-): Promise<ConnectionResult> {
+  options: {
+    diagnosticTypes: string[];
+    includePerformanceMetrics: boolean;
+    includeSecurityChecks: boolean;
+    testConnectivity: boolean;
+    timeRangeHours: number;
+    severityFilter?: string;
+  },
+  log?: any
+): Promise<any> {
   const connectionId = connection.id as number;
-  const diagnostics: ConnectionDiagnosticResult[] = [];
+  const diagnostics = [];
   const startTime = Date.now();
 
   const runAllDiagnostics = options.diagnosticTypes.includes('all');
@@ -1148,7 +1100,7 @@ async function diagnoseIndividualConnection(
 /**
  * Check basic connection health
  */
-async function checkConnectionHealth(connection: ConnectionData): Promise<ConnectionDiagnosticResult> {
+async function checkConnectionHealth(connection: any): Promise<any> {
   const issues = [];
   
   // Check if connection has required fields
@@ -1222,10 +1174,10 @@ async function checkConnectionHealth(connection: ConnectionData): Promise<Connec
  * Test connection connectivity
  */
 async function testConnectionConnectivity(
-  connection: ConnectionData,
+  connection: any,
   apiClient: MakeApiClient,
-  log?: Logger
-): Promise<ConnectionDiagnosticResult> {
+  log?: any
+): Promise<any> {
   const connectionId = connection.id as number;
   
   try {
@@ -1332,10 +1284,10 @@ async function testConnectionConnectivity(
  * Verify connection authentication
  */
 async function verifyConnectionAuthentication(
-  connection: ConnectionData,
+  connection: any,
   apiClient: MakeApiClient,
-  log?: Logger
-): Promise<ConnectionDiagnosticResult> {
+  log?: any
+): Promise<any> {
   const connectionId = connection.id as number;
   const service = connection.service as string;
   
@@ -1465,11 +1417,11 @@ async function verifyConnectionAuthentication(
  * Analyze connection performance
  */
 async function analyzeConnectionPerformance(
-  connection: ConnectionData,
+  connection: any,
   apiClient: MakeApiClient,
   timeRangeHours: number,
-  log?: Logger
-): Promise<ConnectionDiagnosticResult | null> {
+  log?: any
+): Promise<any | null> {
   const connectionId = connection.id as number;
   
   try {
@@ -1538,7 +1490,7 @@ async function analyzeConnectionPerformance(
 /**
  * Assess connection security
  */
-async function assessConnectionSecurity(connection: ConnectionData): Promise<ConnectionDiagnosticResult> {
+async function assessConnectionSecurity(connection: any): Promise<any> {
   const connectionId = connection.id as number;
   const service = connection.service as string;
   const securityIssues = [];
@@ -1612,7 +1564,7 @@ async function assessConnectionSecurity(connection: ConnectionData): Promise<Con
 /**
  * Check if diagnostic result should be included based on severity filter
  */
-function shouldIncludeResult(result: ConnectionDiagnosticResult, severityFilter?: string): boolean {
+function shouldIncludeResult(result: any, severityFilter?: string): boolean {
   if (!severityFilter) return true;
   
   const severityLevels = ['info', 'warning', 'error', 'critical'];
@@ -1625,7 +1577,7 @@ function shouldIncludeResult(result: ConnectionDiagnosticResult, severityFilter?
 /**
  * Calculate connection health score
  */
-function calculateConnectionHealthScore(diagnostics: ConnectionDiagnosticResult[]): number {
+function calculateConnectionHealthScore(diagnostics: any[]): number {
   let score = 100;
   
   for (const diagnostic of diagnostics) {
@@ -1650,7 +1602,7 @@ function calculateConnectionHealthScore(diagnostics: ConnectionDiagnosticResult[
 /**
  * Determine overall connection health
  */
-function determineConnectionHealth(diagnostics: ConnectionDiagnosticResult[]): 'healthy' | 'warning' | 'critical' | 'unknown' {
+function determineConnectionHealth(diagnostics: any[]): 'healthy' | 'warning' | 'critical' | 'unknown' {
   if (diagnostics.length === 0) return 'unknown';
   
   const hasCritical = diagnostics.some(d => d.severity === 'critical');
@@ -1667,19 +1619,7 @@ function determineConnectionHealth(diagnostics: ConnectionDiagnosticResult[]): '
 /**
  * Generate overall diagnostic summary
  */
-function generateConnectionDiagnosticSummary(connectionResults: ConnectionResult[]): {
-  overallHealth: 'healthy' | 'warning' | 'critical' | 'unknown';
-  healthScore: number;
-  totalConnections: number;
-  healthyConnections: number;
-  warningConnections: number;
-  criticalConnections: number;
-  totalIssues: number;
-  criticalIssues: number;
-  fixableIssues: number;
-  issuesByCategory: Record<string, number>;
-  issuesBySeverity: Record<string, number>;
-} {
+function generateConnectionDiagnosticSummary(connectionResults: any[]): any {
   const totalConnections = connectionResults.length;
   const healthyConnections = connectionResults.filter(c => c.overallHealth === 'healthy').length;
   const warningConnections = connectionResults.filter(c => c.overallHealth === 'warning').length;
@@ -1714,16 +1654,7 @@ function generateConnectionDiagnosticSummary(connectionResults: ConnectionResult
 /**
  * Generate performance analysis summary
  */
-function generatePerformanceAnalysis(connectionResults: ConnectionResult[], timeRangeHours: number): {
-  summary: string;
-  timeRangeHours: number;
-  connectionsAnalyzed: number;
-  metrics?: {
-    averageResponseTime: number | null;
-    averageErrorRate: number | null;
-    performanceIssues: number;
-  };
-} {
+function generatePerformanceAnalysis(connectionResults: any[], timeRangeHours: number): any {
   const performanceDiagnostics = connectionResults
     .flatMap(c => c.diagnostics)
     .filter(d => d.category === 'performance');
@@ -1737,12 +1668,12 @@ function generatePerformanceAnalysis(connectionResults: ConnectionResult[], time
   }
   
   const avgResponseTimes = performanceDiagnostics
-    .map(d => (d.details?.metrics as { averageResponseTime?: number })?.averageResponseTime)
-    .filter((t): t is number => typeof t === 'number');
+    .map(d => d.details?.metrics?.averageResponseTime)
+    .filter(t => typeof t === 'number');
     
   const errorRates = performanceDiagnostics
-    .map(d => (d.details?.metrics as { errorRate?: number })?.errorRate)
-    .filter((r): r is number => typeof r === 'number');
+    .map(d => d.details?.metrics?.errorRate)
+    .filter(r => typeof r === 'number');
   
   return {
     summary: `Performance analysis for ${performanceDiagnostics.length} connections`,
@@ -1763,13 +1694,7 @@ function generatePerformanceAnalysis(connectionResults: ConnectionResult[], time
 /**
  * Generate security assessment summary
  */
-function generateSecurityAssessment(connectionResults: ConnectionResult[]): {
-  summary: string;
-  overallSecurityScore: number;
-  connectionsAnalyzed: number;
-  securityIssuesFound?: number;
-  recommendations?: string[];
-} {
+function generateSecurityAssessment(connectionResults: any[]): any {
   const securityDiagnostics = connectionResults
     .flatMap(c => c.diagnostics)
     .filter(d => d.category === 'security');
@@ -1783,8 +1708,8 @@ function generateSecurityAssessment(connectionResults: ConnectionResult[]): {
   }
   
   const securityScores = securityDiagnostics
-    .map(d => (d.details?.securityScore as number | undefined))
-    .filter((s): s is number => typeof s === 'number');
+    .map(d => d.details?.securityScore)
+    .filter(s => typeof s === 'number');
     
   const averageSecurityScore = securityScores.length > 0
     ? Math.round(securityScores.reduce((a, b) => a + b, 0) / securityScores.length)
@@ -1808,11 +1733,7 @@ function generateSecurityAssessment(connectionResults: ConnectionResult[]): {
 /**
  * Generate actionable recommendations
  */
-function generateActionableRecommendations(connectionResults: ConnectionResult[]): {
-  topRecommendations: { recommendation: string; count: number }[];
-  urgentActions: { connection: string | undefined; issue: string; action: string }[];
-  summary: string;
-} {
+function generateActionableRecommendations(connectionResults: any[]): any {
   const allRecommendations = connectionResults
     .flatMap(c => c.diagnostics)
     .flatMap(d => d.recommendations);
@@ -1848,7 +1769,7 @@ function generateActionableRecommendations(connectionResults: ConnectionResult[]
 /**
  * Group issues by category
  */
-function groupIssuesByCategory(diagnostics: ConnectionDiagnosticResult[]): Record<string, number> {
+function groupIssuesByCategory(diagnostics: any[]): Record<string, number> {
   return diagnostics.reduce((acc, diagnostic) => {
     acc[diagnostic.category] = (acc[diagnostic.category] || 0) + 1;
     return acc;
@@ -1858,7 +1779,7 @@ function groupIssuesByCategory(diagnostics: ConnectionDiagnosticResult[]): Recor
 /**
  * Group issues by severity
  */
-function groupIssuesBySeverity(diagnostics: ConnectionDiagnosticResult[]): Record<string, number> {
+function groupIssuesBySeverity(diagnostics: any[]): Record<string, number> {
   return diagnostics.reduce((acc, diagnostic) => {
     acc[diagnostic.severity] = (acc[diagnostic.severity] || 0) + 1;
     return acc;

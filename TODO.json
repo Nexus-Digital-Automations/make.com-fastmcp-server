@@ -2,35 +2,30 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755706277931_ba40cwqd3",
-      "title": "Implement comprehensive troubleshoot_scenario tool for Make.com FastMCP server",
-      "description": "Create comprehensive diagnostic tool that provides scenario troubleshooting, error detection, performance analysis, and actionable reports",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
+      "id": "task_1755706954659_9yunlkk3q",
+      "title": "Research: Implement comprehensive connection diagnostics functionality",
+      "description": "Research and analysis required for implementing: \"Implement comprehensive connection diagnostics functionality\"\n\n**Implementation Task Details:**\nCreate diagnose_connection_issues tool with connection validation, health checks, performance monitoring, and diagnostic reporting capabilities\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755706954658_lw2dtoan1\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [
-        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/scenarios.ts",
-        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/development/research-reports/make-com-blueprint-schema-validation-patterns-comprehensive-research-2025.md"
+        "./development/research-reports/research-report-task_1755706954659_9yunlkk3q.md"
       ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755706954659_9yunlkk3q.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-20T16:11:17.942Z",
-      "auto_research_created": true,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-20T16:13:29.316Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
+      "created_at": "2025-08-20T16:22:34.659Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755706954658_lw2dtoan1"
     },
     {
       "id": "task_1755670033359_5zjfbmaur",
@@ -346,6 +341,25 @@
           "reason": "Task stale for 16 minutes"
         }
       ]
+    },
+    {
+      "id": "task_1755706954658_lw2dtoan1",
+      "title": "Implement comprehensive connection diagnostics functionality",
+      "description": "Create diagnose_connection_issues tool with connection validation, health checks, performance monitoring, and diagnostic reporting capabilities",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [
+        "task_1755706954659_9yunlkk3q"
+      ],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T16:22:34.662Z",
+      "auto_research_created": true
     }
   ],
   "current_mode": "DEVELOPMENT",
