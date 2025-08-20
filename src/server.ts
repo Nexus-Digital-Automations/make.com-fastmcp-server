@@ -24,6 +24,7 @@ import { addCustomAppTools } from './tools/custom-apps.js';
 import { addSDKTools } from './tools/sdk.js';
 import { addBillingTools } from './tools/billing.js';
 import { addNotificationTools } from './tools/notifications.js';
+import { addPerformanceAnalysisTools } from './tools/performance-analysis.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -299,6 +300,11 @@ ${configManager.isAuthEnabled() ?
             'notification-system',
             'email-preferences',
             'data-structure-validation',
+            'performance-analysis',
+            'bottleneck-detection',
+            'performance-monitoring',
+            'trend-analysis',
+            'optimization-recommendations',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -468,7 +474,10 @@ ${configManager.isAuthEnabled() ?
     // Add notification and email management tools
     addNotificationTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications)');
+    // Add performance analysis and bottleneck detection tools
+    addPerformanceAnalysisTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis)');
   }
 
   public getServer(): FastMCP {
