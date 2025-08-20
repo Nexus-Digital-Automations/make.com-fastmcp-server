@@ -890,7 +890,7 @@ class PolicyComplianceValidator {
   private async validateArchivalPolicy(
     target: z.infer<typeof ValidationTargetSchema>,
     policy: { id: string; name: string; data: Record<string, unknown> },
-    options: z.infer<typeof ValidationOptionsSchema>
+    _options: z.infer<typeof ValidationOptionsSchema>
   ): Promise<{
     policyType: PolicyType;
     policyId: string;
@@ -1250,7 +1250,7 @@ class PolicyComplianceValidator {
       });
 
       policyTypeViolations.forEach((violations, policyType) => {
-        let categoryName = policyType.replace('_', ' ');
+        const categoryName = policyType.replace('_', ' ');
         recommendations.push({
           priority: 'medium' as RemediationPriority,
           category: `${policyType}_improvement`,
