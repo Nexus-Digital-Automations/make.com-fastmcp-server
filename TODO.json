@@ -121,40 +121,6 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755667053541_x092bhjz8",
-      "title": "Research enterprise-grade authentication and security patterns for FastMCP-Make.com integration",
-      "description": "Comprehensive research covering FastMCP authentication standards, Make.com security requirements, production security implementation, and enterprise compliance for secure API integration platforms",
-      "mode": "DEVELOPMENT",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:17:33.541Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755667051590_f3saqy2f3",
-      "title": "Research FastMCP-Make.com performance optimization strategies",
-      "description": "Comprehensive research on FastMCP performance patterns, Make.com integration optimization, scalability architecture, and production monitoring for enterprise-grade performance",
-      "mode": "DEVELOPMENT",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:17:31.590Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755667050522_paszrtpc3",
       "title": "Research production deployment architecture and DevOps strategies for FastMCP servers with Make.com integration",
       "description": "Comprehensive research covering: 1) FastMCP deployment patterns (containers, scaling, networking), 2) Make.com integration deployment (webhooks, SSL, API versioning), 3) Production infrastructure (cloud platforms, databases, CDN), 4) DevOps automation (CI/CD, monitoring, backup). Include deployment scripts and infrastructure-as-code examples.",
@@ -198,72 +164,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "task_1755667045222_xeqqf9il3",
-      "title": "Research comprehensive testing and validation strategies for FastMCP-Make.com integration",
-      "description": "Research testing standards, integration testing, production frameworks, and quality assurance for FastMCP servers with Make.com integration",
-      "mode": "DEVELOPMENT",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:17:25.222Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755667040856_04knvslcx",
-      "title": "Research FastMCP TypeScript Protocol specifications for production-ready MCP server implementation",
-      "description": "Comprehensive analysis of FastMCP framework patterns, production requirements, transport architecture, and best practices for enterprise-grade implementation",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "./development/research-reports/research-report-task_1755667040856_04knvslcx.md"
-      ],
-      "success_criteria": [
-        "Research report created: ./development/research-reports/research-report-task_1755667040856_04knvslcx.md"
-      ],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:17:20.856Z",
-      "auto_research_created": false,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-20T05:18:15.298Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
-    },
-    {
-      "id": "task_1755667039165_by7gwceey",
-      "title": "Research Make.com platform integration requirements and connector development standards",
-      "description": "Comprehensive research into Make.com API architecture, connector development standards, integration patterns, and production deployment requirements for FastMCP server optimization",
-      "mode": "DEVELOPMENT",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:17:19.165Z",
-      "auto_research_created": false
     },
     {
       "id": "task_1755045713681_review1",
