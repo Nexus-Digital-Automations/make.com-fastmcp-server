@@ -281,44 +281,6 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755673961882_r5bhklugv",
-      "title": "Research Make.com API performance, rate limiting, and optimization strategies",
-      "description": "Comprehensive research on Make.com API performance characteristics, rate limits, throttling, optimization strategies, monitoring capabilities, and best practices for enterprise integrations",
-      "mode": "DEVELOPMENT",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T07:12:41.882Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755673932370_0ge6ilszq",
-      "title": "Research Make.com integration patterns and real-world use cases",
-      "description": "Comprehensive research on Make.com integration patterns, architectures, use cases, and implementation best practices for FastMCP server enhancement",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "./development/research-reports/research-report-task_1755673932370_0ge6ilszq.md"
-      ],
-      "success_criteria": [
-        "Research report created: ./development/research-reports/research-report-task_1755673932370_0ge6ilszq.md"
-      ],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T07:12:12.370Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755045713683_review3",
       "title": "Review Strike 3: Confirm test coverage is 100% on important modules and 90%+ on others, with all tests passing",
       "description": "Perform a comprehensive code review with focus on: Confirm test coverage is 100% on important modules and 90%+ on others, with all tests passing\n\nCheck the entire codebase and ensure this criterion is met.\n\n## CRITICAL FAILURE RESPONSE PROTOCOL\n\nIF TEST COVERAGE INSUFFICIENT: Create specific TASK CREATION tasks in TODO.json to achieve required coverage:\n- Test framework setup tasks (Jest/Mocha/Vitest)\n- Unit test creation tasks for all modules\n- Integration test development tasks\n- Test coverage reporting setup tasks\n- CI/CD test integration tasks\n\nCRITICAL: Use TaskManager API to add these tasks immediately when coverage is below requirements.\n\n## SUCCESS CRITERIA\n- Mark this review task as completed ONLY if the criterion is fully met\n- If criterion fails, you MUST create remediation tasks using TaskManager API before marking review as completed\n- All new tasks should be actionable, specific, and include proper dependencies/important_files parameters\n\n## TASK CREATION REQUIREMENT\nWhen creating remediation tasks, ensure each task includes:\n- Clear success criteria\n- Appropriate mode (DEVELOPMENT/TESTING/REFACTORING)\n- Specific file dependencies\n- Realistic time estimates\n- High priority for critical issues\n\nUse the task-creation.md guidelines for optimal task structure.",
