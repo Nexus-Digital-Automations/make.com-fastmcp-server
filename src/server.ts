@@ -36,6 +36,7 @@ import { addMarketplaceTools } from './tools/marketplace.js';
 import { addBudgetControlTools } from './tools/budget-control.js';
 import { addCICDIntegrationTools } from './tools/cicd-integration.js';
 import { addZeroTrustAuthTools } from './tools/zero-trust-auth.js';
+import { addMultiTenantSecurityTools } from './tools/multi-tenant-security.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -90,6 +91,7 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Public App Marketplace**: Advanced app discovery with GraphQL-style filtering, comprehensive app specifications, AI-powered recommendations, integration planning tools
 - **Enterprise Budget Control**: Advanced budget configuration with multi-tenant support, real-time cost analysis and projections, ML-powered forecasting, automated scenario control with approval workflows
 - **CI/CD Integration**: Enterprise developer workflow automation with test suite execution, coverage analysis, deployment readiness validation, comprehensive build reporting
+- **Multi-Tenant Security Architecture**: Comprehensive tenant isolation with cryptographic separation, network segmentation, resource quotas, governance policies, data leakage prevention, and compliance boundaries
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 
@@ -373,6 +375,16 @@ ${configManager.isAuthEnabled() ?
             'deployment-readiness-validation',
             'build-reporting-analytics',
             'developer-workflow-automation',
+            'multi-tenant-security-architecture',
+            'tenant-provisioning-lifecycle',
+            'cryptographic-tenant-isolation',
+            'tenant-specific-encryption-keys',
+            'network-segmentation-virtualization',
+            'resource-quota-management',
+            'tenant-governance-policies',
+            'cross-tenant-data-leakage-prevention',
+            'compliance-boundary-management',
+            'tenant-specific-compliance-frameworks',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -578,7 +590,10 @@ ${configManager.isAuthEnabled() ?
     // Add Zero Trust Authentication Framework tools
     addZeroTrustAuthTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control + cicd-integration + zero-trust-auth)');
+    // Add Multi-Tenant Security Architecture tools
+    addMultiTenantSecurityTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control + cicd-integration + zero-trust-auth + multi-tenant-security)');
   }
 
   public getServer(): FastMCP {
