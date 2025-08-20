@@ -27,6 +27,8 @@ import { addNotificationTools } from './tools/notifications.js';
 import { addPerformanceAnalysisTools } from './tools/performance-analysis.js';
 import { addLogStreamingTools } from './tools/log-streaming.js';
 import { addRealTimeMonitoringTools } from './tools/real-time-monitoring.js';
+import { addNamingConventionPolicyTools } from './tools/naming-convention-policy.js';
+import { addScenarioArchivalPolicyTools } from './tools/scenario-archival-policy.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -73,6 +75,7 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Business Management**: Billing access, payment processing, usage analytics, invoice management
 - **Communication**: Notification system, email preferences, multi-channel messaging
 - **Advanced Features**: Custom variables, AI agent configuration, data structure validation
+- **Enterprise Governance**: Naming convention policy management, rule enforcement, compliance validation
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 
@@ -312,6 +315,15 @@ ${configManager.isAuthEnabled() ?
             'historical-log-querying',
             'live-execution-monitoring',
             'log-export-analysis',
+            'naming-convention-policy-management',
+            'enterprise-naming-standards',
+            'policy-validation-enforcement',
+            'naming-rule-templates',
+            'scenario-archival-policy-management',
+            'automated-scenario-lifecycle-management',
+            'usage-based-archival-triggers',
+            'grace-period-management',
+            'scenario-rollback-capabilities',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -490,7 +502,13 @@ ${configManager.isAuthEnabled() ?
     // Add enhanced real-time execution monitoring tools
     addRealTimeMonitoringTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring)');
+    // Add naming convention policy management tools
+    addNamingConventionPolicyTools(this.server, this.apiClient);
+    
+    // Add scenario archival policy management tools
+    addScenarioArchivalPolicyTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy)');
   }
 
   public getServer(): FastMCP {

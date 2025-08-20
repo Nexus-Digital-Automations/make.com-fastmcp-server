@@ -2,13 +2,36 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755712084068_ryal4fnja",
+      "title": "Implement set_scenario_archival_policy tool for enterprise policy management",
+      "description": "Create comprehensive scenario archival policy functionality with automated enforcement, usage tracking, grace periods, and notifications for the Make.com FastMCP server",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/scenarios.ts",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/permissions.ts",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/naming-convention-policy.ts",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/development/reports/naming-convention-policy-implementation-report.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T17:48:04.068Z",
+      "auto_research_created": false,
+      "last_modified": "2025-08-20T17:48:46.734Z"
+    },
+    {
       "id": "task_1755670016282_sf6jwg7v6",
       "title": "Implement enterprise policy management system",
       "description": "Add organizational governance tools: create_naming_convention_policy (enforce naming standards), set_scenario_archival_policy (auto-disable unused scenarios), create_compliance_policy (regulatory requirements), validate_policy_compliance (audit scenarios against policies). Critical for large-scale enterprise governance.",
       "mode": "DEVELOPMENT",
       "category": "missing-feature",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [
         "src/tools/permissions.ts",
@@ -19,7 +42,19 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-20T06:06:56.283Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755705576236_1_general_170770af",
+      "started_at": "2025-08-20T17:38:25.859Z",
+      "claimed_by": "development_session_1755705576236_1_general_170770af",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755705576236_1_general_170770af",
+          "role": "primary",
+          "assignedAt": "2025-08-20T17:38:25.859Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
     },
     {
       "id": "task_1755670009466_g1b9knyq0",
