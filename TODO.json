@@ -2,43 +2,13 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755669991666_efyau9p5v",
-      "title": "Implement blueprint manipulation and validation tools",
-      "description": "Add advanced blueprint management capabilities: validate_blueprint (validate JSON against Make.com schema), extract_blueprint_connections (parse blueprint for required connections), optimize_blueprint (performance suggestions). These tools will enable safer scenario migrations and dependency management.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "src/tools/scenarios.ts",
-        "src/lib/"
-      ],
-      "success_criteria": [],
-      "estimate": "6-8 hours",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-20T06:06:31.670Z",
-      "auto_research_created": true,
-      "started_at": "2025-08-20T18:35:58.871Z",
-      "claimed_by": "agent_1755714958871",
-      "assigned_agent": "agent_1755714958871",
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755714958871",
-          "action": "claimed",
-          "timestamp": "2025-08-20T18:35:58.871Z"
-        }
-      ]
-    },
-    {
       "id": "task_1755670041265_vzwremzqy",
       "title": "Implement CI/CD and test integration tools",
       "description": "Add developer workflow tools: run_test_suite (execute specific test categories), get_test_coverage (retrieve coverage reports), validate_deployment_readiness (pre-deployment checks), generate_build_report (compilation and quality metrics). Integrates MCP server testing capabilities into CI/CD pipelines.",
       "mode": "DEVELOPMENT",
       "category": "missing-feature",
       "priority": "medium",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [
         "tests/",
@@ -51,14 +21,20 @@
       "subtasks": [],
       "created_at": "2025-08-20T06:07:21.269Z",
       "auto_research_created": true,
-      "started_at": "2025-08-20T18:50:01.079Z",
-      "claimed_by": "agent_1755715801079",
-      "assigned_agent": "agent_1755715801079",
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
       "agent_assignment_history": [
         {
           "agent": "agent_1755715801079",
           "action": "claimed",
           "timestamp": "2025-08-20T18:50:01.079Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-20T19:38:14.463Z",
+          "reason": "Task stale for 48 minutes"
         }
       ]
     },
@@ -69,7 +45,7 @@
       "mode": "DEVELOPMENT",
       "category": "enhancement",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [
         "src/tools/",
@@ -81,9 +57,9 @@
       "subtasks": [],
       "created_at": "2025-08-20T06:11:03.446Z",
       "auto_research_created": true,
-      "assigned_agent": "development_session_1755716548248_general",
-      "started_at": "2025-08-20T19:02:28.250Z",
-      "claimed_by": "development_session_1755716548248_general",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755716548248_general",
@@ -91,6 +67,12 @@
           "assignedAt": "2025-08-20T19:02:28.250Z",
           "reassignReason": null,
           "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-20T19:38:14.463Z",
+          "reason": "Task stale for 36 minutes"
         }
       ]
     },
@@ -283,13 +265,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755715369883_1_general_d1537c1a": {
+    "development_session_1755718700270_1_general_5d7ec324": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-20T18:42:49.884Z",
+      "lastHeartbeat": "2025-08-20T19:38:20.270Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -300,8 +282,29 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-20T18:42:49.884Z",
-      "sessionId": "session_1755715369883",
+      "createdAt": "2025-08-20T19:38:20.270Z",
+      "sessionId": "session_1755718700270",
+      "metadata": {}
+    },
+    "development_session_1755718783665_1_general_0a1078ef": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-20T19:39:43.665Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-20T19:39:43.665Z",
+      "sessionId": "session_1755718783665",
       "metadata": {}
     }
   },

@@ -3750,9 +3750,99 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755718788826_ws9t9yogi",
+      "title": "Research Make.com blueprint structure, validation patterns, and performance optimization techniques",
+      "description": "Comprehensive research of blueprint JSON structure, schema validation patterns, performance optimization approaches, connection extraction methods, and existing research reports to inform advanced blueprint manipulation tools development",
+      "mode": "DEVELOPMENT",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T19:39:48.826Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T19:40:19.456Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T19:40:19.457Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755669991666_efyau9p5v",
+      "title": "Implement blueprint manipulation and validation tools",
+      "description": "Add advanced blueprint management capabilities: validate_blueprint (validate JSON against Make.com schema), extract_blueprint_connections (parse blueprint for required connections), optimize_blueprint (performance suggestions). These tools will enable safer scenario migrations and dependency management.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/scenarios.ts",
+        "src/lib/"
+      ],
+      "success_criteria": [],
+      "estimate": "6-8 hours",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:06:31.670Z",
+      "auto_research_created": true,
+      "started_at": "2025-08-20T19:39:07.963Z",
+      "claimed_by": "development_session_1755718700270_1_general_5d7ec324",
+      "assigned_agent": "development_session_1755718700270_1_general_5d7ec324",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755714958871",
+          "action": "claimed",
+          "timestamp": "2025-08-20T18:35:58.871Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-20T19:38:14.463Z",
+          "reason": "Task stale for 62 minutes"
+        },
+        {
+          "agentId": "development_session_1755718700270_1_general_5d7ec324",
+          "role": "primary",
+          "assignedAt": "2025-08-20T19:39:07.963Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T19:45:46.194Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T19:45:46.195Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 90,
-  "last_completion": "2025-08-20T19:18:16.971Z",
+  "total_completed": 92,
+  "last_completion": "2025-08-20T19:45:46.195Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
