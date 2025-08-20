@@ -26,6 +26,7 @@ import { addBillingTools } from './tools/billing.js';
 import { addNotificationTools } from './tools/notifications.js';
 import { addPerformanceAnalysisTools } from './tools/performance-analysis.js';
 import { addLogStreamingTools } from './tools/log-streaming.js';
+import { addRealTimeMonitoringTools } from './tools/real-time-monitoring.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -64,7 +65,7 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Platform Management**: Full scenario CRUD operations, connection management, webhook configuration
 - **User & Permissions**: Role-based access control, team/organization administration  
 - **Analytics & Audit**: Access to execution logs, performance metrics, audit trails
-- **Real-Time Observability**: Live log streaming, execution monitoring, historical log queries
+- **Real-Time Observability**: Live log streaming, advanced execution monitoring, historical log queries, SSE-based real-time updates
 - **Resource Management**: Template management, folder organization, data store operations
 - **Security & Certificates**: SSL/TLS certificate management, cryptographic key lifecycle, certificate validation
 - **Remote Operations**: Remote procedure execution, device configuration, API call management
@@ -486,7 +487,10 @@ ${configManager.isAuthEnabled() ?
     // Add real-time log streaming and monitoring tools
     addLogStreamingTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming)');
+    // Add enhanced real-time execution monitoring tools
+    addRealTimeMonitoringTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring)');
   }
 
   public getServer(): FastMCP {
