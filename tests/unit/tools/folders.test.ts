@@ -40,7 +40,8 @@ const securityTestPatterns = {
 };
 
 describe('Folder Organization Tools', () => {
-  let server: FastMCP;
+  let mockServer: any;
+  let mockTool: any;
   let mockApiClient: MockMakeApiClient;
   let chaosMonkey: ChaosMonkey;
 
@@ -213,8 +214,11 @@ describe('Folder Organization Tools', () => {
     }),
   ];
 
-  beforeEach(() => {
-    // Server setup will be handled by test helpers
+  beforeEach(async () => {
+    const serverSetup = createMockServer();
+    mockServer = serverSetup.server;
+    mockTool = serverSetup.mockTool;
+    
     mockApiClient = new MockMakeApiClient();
     chaosMonkey = new ChaosMonkey({
       failureRate: 0.1,
@@ -222,8 +226,9 @@ describe('Folder Organization Tools', () => {
       scenarios: ['latency', 'error', 'timeout'],
     });
 
-    // Add tools to server
-    // Tool setup handled by mock
+    // Import and add folder tools
+    const { addFolderTools } = await import('../../../src/tools/folders.js');
+    addFolderTools(mockServer, mockApiClient as any);
   });
 
   afterEach(() => {
@@ -232,14 +237,14 @@ describe('Folder Organization Tools', () => {
 
   describe('Tool Registration', () => {
     test('should register all folder organization tools', () => {
-      const tools = server.getTools();
+      const tools = mockServer.getTools();
       const expectedTools = [
-        'create-folder',
-        'list-folders',
-        'get-folder-contents',
-        'move-items',
-        'create-data-store',
-        'list-data-stores',
+        'create_folder',
+        'list_folders', 
+        'get_folder_contents',
+        'move_items',
+        'create_data_store',
+        'list_data_stores',
       ];
 
       expectedTools.forEach(toolName => {
@@ -248,14 +253,14 @@ describe('Folder Organization Tools', () => {
     });
 
     test('should have correct tool schemas', () => {
-      const tools = server.getTools();
+      const tools = mockServer.getTools();
       
-      expect(tools['create-folder'].parameters).toBeDefined();
-      expect(tools['list-folders'].parameters).toBeDefined();
-      expect(tools['get-folder-contents'].parameters).toBeDefined();
-      expect(tools['move-items'].parameters).toBeDefined();
-      expect(tools['create-data-store'].parameters).toBeDefined();
-      expect(tools['list-data-stores'].parameters).toBeDefined();
+      expect(tools['create_folder'].parameters).toBeDefined();
+      expect(tools['list_folders'].parameters).toBeDefined();
+      expect(tools['get_folder_contents'].parameters).toBeDefined();
+      expect(tools['move_items'].parameters).toBeDefined();
+      expect(tools['create_data_store'].parameters).toBeDefined();
+      expect(tools['list_data_stores'].parameters).toBeDefined();
     });
   });
 
@@ -268,15 +273,12 @@ describe('Folder Organization Tools', () => {
           data: mockFolder,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'create-folder',
-          parameters: {
-            name: 'Marketing Templates',
-            description: 'Collection of marketing automation templates',
-            type: 'template',
-            organizationId: 1001,
-            teamId: 2001,
-          },
+        const result = await executeTool(mockServer, 'create_folder', {
+          name: 'Marketing Templates',
+          description: 'Collection of marketing automation templates',
+          type: 'template',
+          organizationId: 1001,
+          teamId: 2001,
         });
 
         expect(mockApiClient.post).toHaveBeenCalledWith('/organizations/1001/folders', expect.objectContaining({
@@ -310,8 +312,7 @@ describe('Folder Organization Tools', () => {
           data: childFolder,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'create-folder',
+        const result = await executeTool(mockServer, 'create_folder',
           parameters: {
             name: 'Email Campaigns',
             description: 'Email marketing campaign templates',
@@ -344,8 +345,7 @@ describe('Folder Organization Tools', () => {
           data: mockFolder,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'create-folder',
+        const result = await executeTool(mockServer, 'create_folder',
           parameters: {
             name: 'Restricted Templates',
             description: 'Templates with restricted access',
@@ -376,8 +376,7 @@ describe('Folder Organization Tools', () => {
         const maliciousName = securityTestPatterns.xss[0];
         const maliciousDescription = securityTestPatterns.sqlInjection[0];
 
-        const result = await mockServer.executeToolCall({
-          tool: 'create-folder',
+        const result = await executeTool(mockServer, 'create_folder',
           parameters: {
             name: maliciousName,
             description: maliciousDescription,
@@ -397,8 +396,7 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder not found', status: 404 },
         });
 
-        await expect(mockServer.executeToolCall({
-          tool: 'create-folder',
+        await expect(executeTool(mockServer, 'create_folder',
           parameters: {
             name: 'Invalid Parent Test',
             description: 'Testing invalid parent folder',
@@ -416,8 +414,7 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder service temporarily unavailable' },
         });
 
-        await expect(mockServer.executeToolCall({
-          tool: 'create-folder',
+        await expect(executeTool(mockServer, 'create_folder',
           parameters: {
             name: 'Test Folder',
             description: 'Test description',
@@ -427,8 +424,7 @@ describe('Folder Organization Tools', () => {
       });
 
       test('should validate required fields', async () => {
-        await expect(mockServer.executeToolCall({
-          tool: 'create-folder',
+        await expect(executeTool(mockServer, 'create_folder',
           parameters: {
             // Missing required name
             description: 'Test description',
@@ -438,8 +434,7 @@ describe('Folder Organization Tools', () => {
       });
 
       test('should validate folder types', async () => {
-        await expect(mockServer.executeToolCall({
-          tool: 'create-folder',
+        await expect(executeTool(mockServer, 'create_folder',
           parameters: {
             name: 'Test Folder',
             description: 'Test description',
@@ -460,8 +455,7 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'list-folders',
+        const result = await executeTool(mockServer, 'list_folders',
           parameters: {
             parentId: undefined, // Root folders
             type: 'all',
@@ -493,8 +487,7 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 4, hasMore: false },
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'list-folders',
+        const result = await executeTool(mockServer, 'list_folders',
           parameters: {
             includeContents: true,
             sortBy: 'name',
@@ -520,8 +513,7 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'list-folders',
+        const result = await executeTool(mockServer, 'list_folders',
           parameters: {
             type: 'template',
             organizationId: 1001,
@@ -562,8 +554,7 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'list-folders',
+        const result = await executeTool(mockServer, 'list_folders',
           parameters: {
             searchQuery: 'CRM',
             includeContents: false,
@@ -607,8 +598,7 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'list-folders',
+        const result = await executeTool(mockServer, 'list_folders',
           parameters: {
             sortBy: 'lastActivity',
             sortOrder: 'desc',
@@ -628,8 +618,7 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder service temporarily unavailable' },
         });
 
-        await expect(mockServer.executeToolCall({
-          tool: 'list-folders',
+        await expect(executeTool(mockServer, 'list_folders',
           parameters: {},
         })).rejects.toThrow('Failed to list folders: Folder service temporarily unavailable');
       });
@@ -655,8 +644,7 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'get-folder-contents',
+        const result = await executeTool(mockServer, 'get_folder_contents',
           parameters: {
             folderId: 12345,
             contentType: 'all',
@@ -695,8 +683,7 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'get-folder-contents',
+        const result = await executeTool(mockServer, 'get_folder_contents',
           parameters: {
             folderId: 12345,
             contentType: 'templates',
@@ -717,8 +704,7 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder not found', status: 404 },
         });
 
-        await expect(mockServer.executeToolCall({
-          tool: 'get-folder-contents',
+        await expect(executeTool(mockServer, 'get_folder_contents',
           parameters: {
             folderId: 99999,
           },
@@ -749,8 +735,7 @@ describe('Folder Organization Tools', () => {
           data: moveResult,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'move-items',
+        const result = await executeTool(mockServer, 'move_items',
           parameters: {
             items: [
               { type: 'template', id: 1001 },
@@ -792,8 +777,7 @@ describe('Folder Organization Tools', () => {
           data: copyResult,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'move-items',
+        const result = await executeTool(mockServer, 'move_items',
           parameters: {
             items: [
               { type: 'template', id: 1001 },
@@ -826,8 +810,7 @@ describe('Folder Organization Tools', () => {
           data: moveToRootResult,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'move-items',
+        const result = await executeTool(mockServer, 'move_items',
           parameters: {
             items: [{ type: 'folder', id: 4001 }],
             targetFolderId: undefined, // Move to root
@@ -860,8 +843,7 @@ describe('Folder Organization Tools', () => {
           data: partialFailureResult,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'move-items',
+        const result = await executeTool(mockServer, 'move_items',
           parameters: {
             items: [
               { type: 'template', id: 1001 },
@@ -888,8 +870,7 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder not found', status: 404 },
         });
 
-        await expect(mockServer.executeToolCall({
-          tool: 'move-items',
+        await expect(executeTool(mockServer, 'move_items',
           parameters: {
             items: [{ type: 'template', id: 1001 }],
             targetFolderId: 99999,
@@ -904,8 +885,7 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Move operation failed' },
         });
 
-        await expect(mockServer.executeToolCall({
-          tool: 'move-items',
+        await expect(executeTool(mockServer, 'move_items',
           parameters: {
             items: [{ type: 'template', id: 1001 }],
             targetFolderId: 5001,
@@ -915,8 +895,7 @@ describe('Folder Organization Tools', () => {
       });
 
       test('should validate items array', async () => {
-        await expect(mockServer.executeToolCall({
-          tool: 'move-items',
+        await expect(executeTool(mockServer, 'move_items',
           parameters: {
             items: [], // Empty array
             targetFolderId: 5001,
@@ -936,8 +915,7 @@ describe('Folder Organization Tools', () => {
           data: mockDataStore,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'create-data-store',
+        const result = await executeTool(mockServer, 'create_data_store',
           parameters: {
             name: 'Customer Database',
             description: 'Structured storage for customer information',
@@ -1003,8 +981,7 @@ describe('Folder Organization Tools', () => {
           data: kvDataStore,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'create-data-store',
+        const result = await executeTool(mockServer, 'create_data_store',
           parameters: {
             name: 'Session Cache',
             description: 'Key-value store for session data',
@@ -1034,8 +1011,7 @@ describe('Folder Organization Tools', () => {
           data: queueDataStore,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'create-data-store',
+        const result = await executeTool(mockServer, 'create_data_store',
           parameters: {
             name: 'Task Queue',
             description: 'Queue for background task processing',
@@ -1061,8 +1037,7 @@ describe('Folder Organization Tools', () => {
 
     describe('Data Structure Validation', () => {
       test('should validate field definitions for data_structure type', async () => {
-        await expect(mockServer.executeToolCall({
-          tool: 'create-data-store',
+        await expect(executeTool(mockServer, 'create_data_store',
           parameters: {
             name: 'Invalid Structure',
             description: 'Testing invalid structure validation',
@@ -1073,8 +1048,7 @@ describe('Folder Organization Tools', () => {
       });
 
       test('should validate unique field names', async () => {
-        await expect(mockServer.executeToolCall({
-          tool: 'create-data-store',
+        await expect(executeTool(mockServer, 'create_data_store',
           parameters: {
             name: 'Duplicate Fields',
             description: 'Testing duplicate field validation',
@@ -1097,8 +1071,7 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Data store service temporarily unavailable' },
         });
 
-        await expect(mockServer.executeToolCall({
-          tool: 'create-data-store',
+        await expect(executeTool(mockServer, 'create_data_store',
           parameters: {
             name: 'Test Store',
             description: 'Test description',
@@ -1108,8 +1081,7 @@ describe('Folder Organization Tools', () => {
       });
 
       test('should validate required fields', async () => {
-        await expect(mockServer.executeToolCall({
-          tool: 'create-data-store',
+        await expect(executeTool(mockServer, 'create_data_store',
           parameters: {
             // Missing required name and type
             description: 'Test description',
@@ -1134,8 +1106,7 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'list-data-stores',
+        const result = await executeTool(mockServer, 'list_data_stores',
           parameters: {
             type: 'all',
             organizationId: 1001,
@@ -1176,8 +1147,7 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'list-data-stores',
+        const result = await executeTool(mockServer, 'list_data_stores',
           parameters: {
             includeUsage: true,
             sortBy: 'recordCount',
@@ -1200,8 +1170,7 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Data store service temporarily unavailable' },
         });
 
-        await expect(mockServer.executeToolCall({
-          tool: 'list-data-stores',
+        await expect(executeTool(mockServer, 'list_data_stores',
           parameters: {},
         })).rejects.toThrow('Failed to list data stores: Data store service temporarily unavailable');
       });

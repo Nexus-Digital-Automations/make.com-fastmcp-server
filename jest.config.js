@@ -31,27 +31,26 @@ export default {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
-  // Temporarily disable coverage thresholds to focus on getting tests running
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 80,
-  //     functions: 80,
-  //     lines: 80,
-  //     statements: 80,
-  //   },
-  //   './src/lib/': {
-  //     branches: 100,
-  //     functions: 100,
-  //     lines: 100,
-  //     statements: 100,
-  //   },
-  //   './src/utils/': {
-  //     branches: 100,
-  //     functions: 100,
-  //     lines: 100,
-  //     statements: 100,
-  //   },
-  // },
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+    './src/lib/': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
+    },
+    './src/utils/': {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85,
+    },
+  },
   testMatch: [
     '<rootDir>/tests/**/*.test.{ts,js}',
     '<rootDir>/src/**/__tests__/**/*.{ts,js}',
@@ -64,7 +63,7 @@ export default {
   testTimeout: 30000,
   maxWorkers: '50%',
   verbose: false,
-  collectCoverage: false, // Let scripts control this
+  collectCoverage: false, // Temporarily disabled due to test infrastructure issues
   forceExit: true,
   clearMocks: true,
   restoreMocks: true,
