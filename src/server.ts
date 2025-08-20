@@ -32,6 +32,7 @@ import { addScenarioArchivalPolicyTools } from './tools/scenario-archival-policy
 import { addAuditComplianceTools } from './tools/audit-compliance.js';
 import { addCompliancePolicyTools } from './tools/compliance-policy.js';
 import { addPolicyComplianceValidationTools } from './tools/policy-compliance-validation.js';
+import { addMarketplaceTools } from './tools/marketplace.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -82,6 +83,7 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Comprehensive Compliance**: Enterprise regulatory compliance management (SOX, GDPR, HIPAA, PCI DSS, ISO 27001), automated policy enforcement, violation detection, compliance reporting
 - **Unified Policy Validation**: Cross-policy compliance validation, comprehensive scoring, violation tracking, remediation workflows, enterprise governance auditing
 - **Audit & Security**: Immutable audit logging, security health monitoring, incident management, compliance evidence collection
+- **Public App Marketplace**: Advanced app discovery with GraphQL-style filtering, comprehensive app specifications, AI-powered recommendations, integration planning tools
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 
@@ -345,6 +347,12 @@ ${configManager.isAuthEnabled() ?
             'security-health-monitoring',
             'incident-management-integration',
             'compliance-evidence-collection',
+            'public-app-marketplace-integration',
+            'advanced-app-discovery',
+            'graphql-style-filtering',
+            'ai-powered-recommendations',
+            'marketplace-analytics',
+            'integration-planning-tools',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -538,7 +546,10 @@ ${configManager.isAuthEnabled() ?
     // Add unified policy compliance validation tools
     addPolicyComplianceValidationTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation)');
+    // Add public app marketplace integration tools
+    addMarketplaceTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace)');
   }
 
   public getServer(): FastMCP {
