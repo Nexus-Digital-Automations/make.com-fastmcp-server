@@ -1781,6 +1781,277 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
     }
   });
 
+  /**
+   * Blueprint validation tool - validate Make.com blueprint JSON against schema
+   * 
+   * Validates blueprint structure, security patterns, and compliance with Make.com standards.
+   * Provides detailed validation results including errors, warnings, and security issues.
+   * 
+   * @param {any} args.blueprint - Blueprint JSON to validate
+   * @param {boolean} [args.strict=false] - Apply strict validation mode
+   * @param {boolean} [args.includeSecurityChecks=true] - Include security checks
+   * 
+   * @returns {object} Validation results with errors, warnings, and security analysis
+   * 
+   * @example
+   * ```bash
+   * # Validate a blueprint with strict mode and security checks
+   * mcp-client validate-blueprint \
+   *   --blueprint '{"name":"Test","flow":[],"metadata":{"version":1,"scenario":{"roundtrips":1,"maxErrors":3,"autoCommit":true,"sequential":false,"confidential":true,"dlq":true,"freshVariables":true}}}' \
+   *   --strict true \
+   *   --includeSecurityChecks true
+   * ```
+   */
+  server.addTool({
+    name: 'validate-blueprint',
+    description: 'Validate Make.com blueprint JSON against schema with security and compliance checks',
+    parameters: ValidateBlueprintSchema,
+    annotations: {
+      title: 'Validate Blueprint',
+      readOnlyHint: true,
+    },
+    execute: async (args, { log }) => {
+      log?.info?.('Validating blueprint', { 
+        hasBlueprint: !!args.blueprint,
+        strict: args.strict,
+        includeSecurityChecks: args.includeSecurityChecks
+      });
+
+      try {
+        const validationResult = validateBlueprintStructure(
+          args.blueprint, 
+          args.strict
+        );
+
+        log?.info('Blueprint validation completed', {
+          isValid: validationResult.isValid,
+          errorCount: validationResult.errors.length,
+          warningCount: validationResult.warnings.length,
+          securityIssueCount: validationResult.securityIssues.length
+        });
+
+        return {
+          isValid: validationResult.isValid,
+          summary: {
+            totalErrors: validationResult.errors.length,
+            totalWarnings: validationResult.warnings.length,
+            totalSecurityIssues: validationResult.securityIssues.length,
+            validationPassed: validationResult.isValid,
+            securityChecksPassed: args.includeSecurityChecks ? validationResult.securityIssues.length === 0 : true
+          },
+          validation: {
+            errors: validationResult.errors,
+            warnings: validationResult.warnings,
+            securityIssues: args.includeSecurityChecks ? validationResult.securityIssues : []
+          },
+          recommendations: [
+            ...validationResult.errors.map(error => `Fix error: ${error}`),
+            ...validationResult.warnings.map(warning => `Consider: ${warning}`),
+            ...(args.includeSecurityChecks ? validationResult.securityIssues
+              .filter(issue => issue.severity === 'critical' || issue.severity === 'high')
+              .map(issue => `Security: ${issue.description}`) : [])
+          ].slice(0, 10)
+        };
+
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log?.error('Blueprint validation failed', { error: errorMessage });
+        throw new UserError(`Blueprint validation failed: ${errorMessage}`);
+      }
+    }
+  });
+
+  /**
+   * Blueprint connection extraction tool - analyze and extract connection requirements
+   * 
+   * Parses blueprint to identify all required and optional connections, service dependencies,
+   * and creates dependency maps for scenario migration and setup planning.
+   * 
+   * @param {any} args.blueprint - Blueprint JSON to analyze
+   * @param {boolean} [args.includeOptional=false] - Include optional connections
+   * @param {boolean} [args.groupByModule=true] - Group connections by module type
+   * 
+   * @returns {object} Connection analysis with requirements and dependency mapping
+   * 
+   * @example
+   * ```bash
+   * # Extract all connections including optional ones
+   * mcp-client extract-blueprint-connections \
+   *   --blueprint '{"flow":[{"id":1,"module":"gmail:CreateDraftEmail","connection":123},{"id":2,"module":"builtin:BasicRouter"}]}' \
+   *   --includeOptional true \
+   *   --groupByModule true
+   * ```
+   */
+  server.addTool({
+    name: 'extract-blueprint-connections',
+    description: 'Extract and analyze connection requirements from Make.com blueprint for migration planning',
+    parameters: ExtractBlueprintConnectionsSchema,
+    annotations: {
+      title: 'Extract Blueprint Connections',
+      readOnlyHint: true,
+    },
+    execute: async (args, { log }) => {
+      log?.info?.('Extracting blueprint connections', { 
+        hasBlueprint: !!args.blueprint,
+        includeOptional: args.includeOptional,
+        groupByModule: args.groupByModule
+      });
+
+      try {
+        const connectionAnalysis = extractBlueprintConnections(
+          args.blueprint,
+          args.includeOptional
+        );
+
+        log?.info('Connection extraction completed', {
+          totalConnections: connectionAnalysis.requiredConnections.length,
+          uniqueServices: connectionAnalysis.connectionSummary.uniqueServices.length,
+          totalModules: connectionAnalysis.connectionSummary.totalModules
+        });
+
+        // Group by module type if requested
+        const groupedConnections = args.groupByModule 
+          ? connectionAnalysis.requiredConnections.reduce((groups, conn) => {
+              const service = conn.service || 'unknown';
+              if (!groups[service]) groups[service] = [];
+              groups[service].push(conn);
+              return groups;
+            }, {} as Record<string, typeof connectionAnalysis.requiredConnections>)
+          : null;
+
+        return {
+          summary: connectionAnalysis.connectionSummary,
+          connections: {
+            required: connectionAnalysis.requiredConnections.filter(c => c.required),
+            optional: connectionAnalysis.requiredConnections.filter(c => !c.required),
+            all: connectionAnalysis.requiredConnections
+          },
+          dependencies: connectionAnalysis.dependencyMap,
+          ...(groupedConnections ? { groupedByService: groupedConnections } : {}),
+          migrationChecklist: [
+            `Verify ${connectionAnalysis.connectionSummary.uniqueServices.length} service connections are available`,
+            `Set up connections for services: ${connectionAnalysis.connectionSummary.uniqueServices.join(', ')}`,
+            `Test ${connectionAnalysis.requiredConnections.filter(c => c.required).length} required connections`,
+            ...(connectionAnalysis.requiredConnections.filter(c => !c.required).length > 0 
+              ? [`Configure ${connectionAnalysis.requiredConnections.filter(c => !c.required).length} optional connections if needed`] 
+              : []),
+            'Verify all connection permissions and scopes'
+          ]
+        };
+
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log?.error('Connection extraction failed', { error: errorMessage });
+        throw new UserError(`Connection extraction failed: ${errorMessage}`);
+      }
+    }
+  });
+
+  /**
+   * Blueprint optimization tool - analyze and provide performance/cost/security optimization recommendations
+   * 
+   * Analyzes blueprint for optimization opportunities across performance, cost, security, and reliability.
+   * Provides actionable recommendations with implementation steps and estimated impact.
+   * 
+   * @param {any} args.blueprint - Blueprint JSON to optimize
+   * @param {'performance'|'cost'|'security'|'all'} [args.optimizationType='performance'] - Focus area
+   * @param {boolean} [args.includeImplementationSteps=true] - Include step-by-step guidance
+   * 
+   * @returns {object} Optimization analysis with recommendations and metrics
+   * 
+   * @example
+   * ```bash
+   * # Comprehensive optimization analysis
+   * mcp-client optimize-blueprint \
+   *   --blueprint '{"flow":[{"id":1,"module":"openai:CreateChatCompletion","parameters":{"model":"gpt-4"}}],"metadata":{"scenario":{"confidential":false}}}' \
+   *   --optimizationType all \
+   *   --includeImplementationSteps true
+   * ```
+   */
+  server.addTool({
+    name: 'optimize-blueprint',
+    description: 'Analyze Make.com blueprint and provide optimization recommendations for performance, cost, and security',
+    parameters: OptimizeBlueprintSchema,
+    annotations: {
+      title: 'Optimize Blueprint',
+      readOnlyHint: true,
+    },
+    execute: async (args, { log }) => {
+      log?.info?.('Optimizing blueprint', { 
+        hasBlueprint: !!args.blueprint,
+        optimizationType: args.optimizationType,
+        includeImplementationSteps: args.includeImplementationSteps
+      });
+
+      try {
+        const optimizationResult = optimizeBlueprint(
+          args.blueprint,
+          args.optimizationType
+        );
+
+        log?.info('Blueprint optimization completed', {
+          optimizationScore: optimizationResult.optimizationScore,
+          recommendationCount: optimizationResult.recommendations.length,
+          moduleCount: optimizationResult.metrics.moduleCount,
+          complexityScore: optimizationResult.metrics.complexityScore
+        });
+
+        // Categorize recommendations by priority and category
+        const categorizedRecommendations = {
+          critical: optimizationResult.recommendations.filter(r => r.priority === 'high'),
+          important: optimizationResult.recommendations.filter(r => r.priority === 'medium'),
+          optional: optimizationResult.recommendations.filter(r => r.priority === 'low')
+        };
+
+        const categoryBreakdown = optimizationResult.recommendations.reduce((acc, rec) => {
+          acc[rec.category] = (acc[rec.category] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+
+        return {
+          optimizationScore: optimizationResult.optimizationScore,
+          grade: optimizationResult.optimizationScore >= 90 ? 'A' : 
+                 optimizationResult.optimizationScore >= 80 ? 'B' :
+                 optimizationResult.optimizationScore >= 70 ? 'C' :
+                 optimizationResult.optimizationScore >= 60 ? 'D' : 'F',
+          summary: {
+            totalRecommendations: optimizationResult.recommendations.length,
+            criticalIssues: categorizedRecommendations.critical.length,
+            improvementOpportunities: categorizedRecommendations.important.length,
+            optimizationFocus: args.optimizationType,
+            categoryBreakdown
+          },
+          metrics: optimizationResult.metrics,
+          recommendations: {
+            priority: categorizedRecommendations,
+            all: optimizationResult.recommendations,
+            topPriority: optimizationResult.recommendations.slice(0, 5)
+          },
+          actionPlan: {
+            immediate: categorizedRecommendations.critical.map(r => ({
+              action: r.title,
+              description: r.description,
+              impact: r.estimatedImpact,
+              steps: args.includeImplementationSteps ? r.implementationSteps : undefined
+            })),
+            shortTerm: categorizedRecommendations.important.slice(0, 3).map(r => ({
+              action: r.title,
+              description: r.description,
+              impact: r.estimatedImpact,
+              steps: args.includeImplementationSteps ? r.implementationSteps : undefined
+            })),
+            estimatedImprovementPotential: `${100 - optimizationResult.optimizationScore}% optimization opportunity`
+          }
+        };
+
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log?.error('Blueprint optimization failed', { error: errorMessage });
+        throw new UserError(`Blueprint optimization failed: ${errorMessage}`);
+      }
+    }
+  });
+
   componentLogger?.info?.('Scenario management tools added successfully');
 }
 
@@ -2243,4 +2514,492 @@ function formatAsPdfReady(report: any): string {
   html += `</body></html>`;
   
   return html;
+}
+
+// Blueprint manipulation and validation schemas
+const ValidateBlueprintSchema = z.object({
+  blueprint: z.any().describe('Blueprint JSON to validate against Make.com schema'),
+  strict: z.boolean().default(false).describe('Whether to apply strict validation mode'),
+  includeSecurityChecks: z.boolean().default(true).describe('Include security validation checks'),
+});
+
+const ExtractBlueprintConnectionsSchema = z.object({
+  blueprint: z.any().describe('Blueprint JSON to extract connections from'),
+  includeOptional: z.boolean().default(false).describe('Include optional connections in results'),
+  groupByModule: z.boolean().default(true).describe('Group connections by module type'),
+});
+
+const OptimizeBlueprintSchema = z.object({
+  blueprint: z.any().describe('Blueprint JSON to analyze and optimize'),
+  optimizationType: z.enum(['performance', 'cost', 'security', 'all']).default('performance').describe('Type of optimization to focus on'),
+  includeImplementationSteps: z.boolean().default(true).describe('Include step-by-step implementation guidance'),
+});
+
+// Blueprint validation function
+function validateBlueprintStructure(blueprint: unknown, strict: boolean = false): { 
+  isValid: boolean; 
+  errors: string[]; 
+  warnings: string[]; 
+  securityIssues: Array<{ type: string; description: string; severity: 'low' | 'medium' | 'high' | 'critical' }>; 
+} {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const securityIssues: Array<{ type: string; description: string; severity: 'low' | 'medium' | 'high' | 'critical' }> = [];
+
+  try {
+    // Check if blueprint is an object
+    if (!blueprint || typeof blueprint !== 'object') {
+      errors.push('Blueprint must be a valid JSON object');
+      return { isValid: false, errors, warnings, securityIssues };
+    }
+
+    const bp = blueprint as any;
+
+    // Validate required top-level properties
+    if (!bp.name || typeof bp.name !== 'string') {
+      errors.push('Blueprint must have a name property of type string');
+    }
+
+    if (!bp.flow || !Array.isArray(bp.flow)) {
+      errors.push('Blueprint must have a flow property containing an array of modules');
+    }
+
+    if (!bp.metadata || typeof bp.metadata !== 'object') {
+      errors.push('Blueprint must have metadata property');
+    } else {
+      // Validate metadata structure
+      if (typeof bp.metadata.version !== 'number') {
+        errors.push('Blueprint metadata must include version number');
+      }
+
+      if (!bp.metadata.scenario || typeof bp.metadata.scenario !== 'object') {
+        errors.push('Blueprint metadata must include scenario configuration');
+      } else {
+        const scenario = bp.metadata.scenario;
+        
+        // Check critical scenario settings
+        if (typeof scenario.roundtrips !== 'number' || scenario.roundtrips < 1) {
+          warnings.push('Scenario roundtrips should be a positive number');
+        }
+        
+        if (typeof scenario.maxErrors !== 'number' || scenario.maxErrors < 0) {
+          warnings.push('Scenario maxErrors should be a non-negative number');
+        }
+
+        if (typeof scenario.autoCommit !== 'boolean') {
+          warnings.push('Scenario autoCommit should be a boolean value');
+        }
+
+        if (typeof scenario.sequential !== 'boolean') {
+          warnings.push('Scenario sequential should be a boolean value');
+        }
+
+        if (typeof scenario.confidential !== 'boolean') {
+          warnings.push('Scenario confidential should be a boolean value');
+        }
+      }
+    }
+
+    // Validate flow modules
+    if (bp.flow && Array.isArray(bp.flow)) {
+      bp.flow.forEach((module: any, index: number) => {
+        if (!module || typeof module !== 'object') {
+          errors.push(`Module at index ${index} must be an object`);
+          return;
+        }
+
+        if (typeof module.id !== 'number' || module.id < 1) {
+          errors.push(`Module at index ${index} must have a positive numeric id`);
+        }
+
+        if (!module.module || typeof module.module !== 'string') {
+          errors.push(`Module at index ${index} must have a module type string`);
+        }
+
+        if (typeof module.version !== 'number' || module.version < 1) {
+          errors.push(`Module at index ${index} must have a positive version number`);
+        }
+
+        // Security checks
+        if (module.parameters) {
+          const paramStr = JSON.stringify(module.parameters).toLowerCase();
+          
+          // Check for potential hardcoded secrets
+          const secretPatterns = ['password', 'secret', 'token', 'apikey', 'api_key', 'key'];
+          secretPatterns.forEach(pattern => {
+            if (paramStr.includes(pattern) && paramStr.includes('=')) {
+              securityIssues.push({
+                type: 'potential_hardcoded_secret',
+                description: `Module ${module.id} may contain hardcoded secrets in parameters`,
+                severity: 'high'
+              });
+            }
+          });
+
+          // Check for URLs with credentials
+          const urlWithCredentialsPattern = /https?:\/\/[^:/\s]+:[^@/\s]+@/;
+          if (urlWithCredentialsPattern.test(paramStr)) {
+            securityIssues.push({
+              type: 'credentials_in_url',
+              description: `Module ${module.id} contains credentials in URL parameters`,
+              severity: 'critical'
+            });
+          }
+        }
+
+        // Performance warnings
+        if (strict) {
+          if (!module.metadata) {
+            warnings.push(`Module ${module.id} is missing metadata (recommended for better performance)`);
+          }
+
+          if (module.connection && typeof module.connection !== 'number') {
+            warnings.push(`Module ${module.id} has invalid connection reference`);
+          }
+        }
+      });
+
+      // Check for duplicate module IDs
+      const moduleIds = bp.flow.map((m: any) => m.id).filter((id: any) => typeof id === 'number');
+      const duplicateIds = moduleIds.filter((id: number, index: number) => moduleIds.indexOf(id) !== index);
+      if (duplicateIds.length > 0) {
+        errors.push(`Duplicate module IDs found: ${duplicateIds.join(', ')}`);
+      }
+
+      // Check for sequential module ID gaps (warning only)
+      const sortedIds = [...new Set(moduleIds)].sort((a, b) => a - b);
+      for (let i = 1; i < sortedIds.length; i++) {
+        if (sortedIds[i] - sortedIds[i - 1] > 1) {
+          warnings.push(`Non-sequential module IDs detected (gap between ${sortedIds[i - 1]} and ${sortedIds[i]})`);
+          break;
+        }
+      }
+    }
+
+    // Additional security checks
+    if (bp.metadata?.scenario?.confidential === false) {
+      securityIssues.push({
+        type: 'non_confidential_scenario',
+        description: 'Scenario is not marked as confidential - consider security implications',
+        severity: 'low'
+      });
+    }
+
+    if (bp.metadata?.scenario?.dlq === false) {
+      warnings.push('Dead Letter Queue is disabled - failed executions may be lost');
+    }
+
+  } catch (error) {
+    errors.push(`Blueprint validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    securityIssues
+  };
+}
+
+// Connection extraction function
+function extractBlueprintConnections(blueprint: unknown, includeOptional: boolean = false): {
+  requiredConnections: Array<{ moduleId: number; moduleType: string; connectionId?: number; service?: string; required: boolean }>;
+  connectionSummary: { totalModules: number; modulesRequiringConnections: number; uniqueServices: string[] };
+  dependencyMap: Record<string, number[]>;
+} {
+  const connections: Array<{ moduleId: number; moduleType: string; connectionId?: number; service?: string; required: boolean }> = [];
+  const serviceMap = new Map<string, number[]>();
+
+  try {
+    if (!blueprint || typeof blueprint !== 'object') {
+      throw new Error('Invalid blueprint structure');
+    }
+
+    const bp = blueprint as any;
+
+    if (!bp.flow || !Array.isArray(bp.flow)) {
+      throw new Error('Blueprint must contain a flow array');
+    }
+
+    bp.flow.forEach((module: any) => {
+      if (!module || typeof module.id !== 'number' || !module.module) {
+        return; // Skip invalid modules
+      }
+
+      const moduleType = module.module;
+      
+      // Determine if this module type typically requires connections
+      const requiresConnection = moduleType !== 'builtin:BasicRouter' && 
+                               moduleType !== 'builtin:Delay' &&
+                               moduleType !== 'builtin:JSONTransformer' &&
+                               moduleType !== 'builtin:Iterator' &&
+                               !moduleType.startsWith('builtin:');
+
+      if (requiresConnection || module.connection) {
+        const connection = {
+          moduleId: module.id,
+          moduleType: moduleType,
+          connectionId: module.connection,
+          service: moduleType.split(':')[0] || 'unknown',
+          required: requiresConnection
+        };
+
+        // Include all required connections, and optional ones if specified
+        if (connection.required || (includeOptional && module.connection)) {
+          connections.push(connection);
+        }
+
+        // Build service dependency map
+        if (connection.service) {
+          if (!serviceMap.has(connection.service)) {
+            serviceMap.set(connection.service, []);
+          }
+          serviceMap.get(connection.service)!.push(module.id);
+        }
+      }
+    });
+
+    // Build dependency map from service map
+    const dependencyMap: Record<string, number[]> = {};
+    serviceMap.forEach((moduleIds, service) => {
+      dependencyMap[service] = moduleIds;
+    });
+
+    return {
+      requiredConnections: connections,
+      connectionSummary: {
+        totalModules: bp.flow.length,
+        modulesRequiringConnections: connections.length,
+        uniqueServices: Array.from(serviceMap.keys())
+      },
+      dependencyMap
+    };
+
+  } catch (error) {
+    throw new Error(`Connection extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+// Blueprint optimization function
+function optimizeBlueprint(blueprint: unknown, optimizationType: 'performance' | 'cost' | 'security' | 'all' = 'performance'): {
+  optimizationScore: number;
+  recommendations: Array<{
+    category: 'performance' | 'cost' | 'security' | 'reliability';
+    priority: 'high' | 'medium' | 'low';
+    title: string;
+    description: string;
+    estimatedImpact: string;
+    implementationSteps: string[];
+  }>;
+  metrics: {
+    moduleCount: number;
+    connectionCount: number;
+    complexityScore: number;
+    securityScore: number;
+  };
+} {
+  const recommendations: Array<{
+    category: 'performance' | 'cost' | 'security' | 'reliability';
+    priority: 'high' | 'medium' | 'low';
+    title: string;
+    description: string;
+    estimatedImpact: string;
+    implementationSteps: string[];
+  }> = [];
+
+  let optimizationScore = 100;
+  const metrics = { moduleCount: 0, connectionCount: 0, complexityScore: 0, securityScore: 100 };
+
+  try {
+    if (!blueprint || typeof blueprint !== 'object') {
+      throw new Error('Invalid blueprint structure');
+    }
+
+    const bp = blueprint as any;
+
+    if (!bp.flow || !Array.isArray(bp.flow)) {
+      throw new Error('Blueprint must contain a flow array');
+    }
+
+    metrics.moduleCount = bp.flow.length;
+
+    // Analyze modules for optimization opportunities
+    const connectionMap = new Map<number, number>();
+    const moduleTypes = new Set<string>();
+
+    bp.flow.forEach((module: any) => {
+      if (!module || typeof module.id !== 'number') return;
+
+      moduleTypes.add(module.module || 'unknown');
+
+      if (module.connection) {
+        metrics.connectionCount++;
+        connectionMap.set(module.id, module.connection);
+      }
+
+      // Performance optimizations
+      if (optimizationType === 'performance' || optimizationType === 'all') {
+        if (module.module === 'builtin:Iterator' && bp.flow.length > 50) {
+          recommendations.push({
+            category: 'performance',
+            priority: 'high',
+            title: 'Optimize Iterator Module for Large Workflows',
+            description: `Iterator module (ID: ${module.id}) in a workflow with ${bp.flow.length} modules may cause performance bottlenecks`,
+            estimatedImpact: '30-50% execution time reduction',
+            implementationSteps: [
+              'Consider batching iterator operations',
+              'Implement parallel processing where possible',
+              'Add progress monitoring for long iterations'
+            ]
+          });
+          optimizationScore -= 15;
+        }
+
+        if (module.module && module.module.includes('Database') && !module.parameters?.batchSize) {
+          recommendations.push({
+            category: 'performance',
+            priority: 'medium',
+            title: 'Enable Database Batch Operations',
+            description: `Database module (ID: ${module.id}) should use batch operations for better performance`,
+            estimatedImpact: '20-40% faster database operations',
+            implementationSteps: [
+              'Configure appropriate batch size parameter',
+              'Test batch operations with representative data',
+              'Monitor database connection limits'
+            ]
+          });
+          optimizationScore -= 10;
+        }
+      }
+
+      // Cost optimizations
+      if (optimizationType === 'cost' || optimizationType === 'all') {
+        if (module.module && (module.module.includes('AI') || module.module.includes('GPT'))) {
+          recommendations.push({
+            category: 'cost',
+            priority: 'high',
+            title: 'Optimize AI Service Usage',
+            description: `AI module (ID: ${module.id}) can be expensive - consider optimization strategies`,
+            estimatedImpact: '25-60% cost reduction',
+            implementationSteps: [
+              'Implement request caching for repeated queries',
+              'Use prompt optimization techniques',
+              'Consider using smaller models for simple tasks',
+              'Add usage monitoring and alerts'
+            ]
+          });
+          optimizationScore -= 20;
+        }
+      }
+
+      // Security optimizations
+      if (optimizationType === 'security' || optimizationType === 'all') {
+        if (module.parameters) {
+          const paramStr = JSON.stringify(module.parameters);
+          if (paramStr.includes('password') || paramStr.includes('secret') || paramStr.includes('token')) {
+            recommendations.push({
+              category: 'security',
+              priority: 'high',
+              title: 'Secure Credential Management',
+              description: `Module (ID: ${module.id}) may contain hardcoded credentials`,
+              estimatedImpact: 'Critical security improvement',
+              implementationSteps: [
+                'Move credentials to secure variable storage',
+                'Use Make.com connection system instead of hardcoded values',
+                'Enable scenario confidential mode',
+                'Regularly rotate credentials'
+              ]
+            });
+            optimizationScore -= 25;
+            metrics.securityScore -= 30;
+          }
+        }
+
+        if (!bp.metadata?.scenario?.confidential) {
+          recommendations.push({
+            category: 'security',
+            priority: 'medium',
+            title: 'Enable Confidential Mode',
+            description: 'Scenario is not marked as confidential, which may expose sensitive data',
+            estimatedImpact: 'Enhanced data privacy and security',
+            implementationSteps: [
+              'Enable confidential mode in scenario metadata',
+              'Review data handling and logging practices',
+              'Ensure compliance with privacy regulations'
+            ]
+          });
+          optimizationScore -= 10;
+          metrics.securityScore -= 15;
+        }
+      }
+    });
+
+    // Calculate complexity score
+    metrics.complexityScore = Math.min(100, (metrics.moduleCount * 2) + (metrics.connectionCount * 3) + (moduleTypes.size * 1.5));
+
+    // Workflow-level optimizations
+    if (metrics.moduleCount > 100) {
+      recommendations.push({
+        category: 'performance',
+        priority: 'high',
+        title: 'Consider Workflow Decomposition',
+        description: `Large workflow with ${metrics.moduleCount} modules may benefit from decomposition`,
+        estimatedImpact: 'Improved maintainability and performance',
+        implementationSteps: [
+          'Identify logical workflow boundaries',
+          'Split into smaller, focused workflows',
+          'Use webhooks or API calls to connect workflows',
+          'Implement proper error handling between workflows'
+        ]
+      });
+      optimizationScore -= 15;
+    }
+
+    if (metrics.connectionCount > 10) {
+      recommendations.push({
+        category: 'cost',
+        priority: 'medium',
+        title: 'Optimize Connection Usage',
+        description: `High number of connections (${metrics.connectionCount}) may increase costs`,
+        estimatedImpact: '10-30% cost reduction',
+        implementationSteps: [
+          'Consolidate similar service connections',
+          'Use connection pooling where available',
+          'Monitor connection usage and quotas',
+          'Consider caching strategies for repeated API calls'
+        ]
+      });
+      optimizationScore -= 8;
+    }
+
+    // Reliability recommendations
+    if (!bp.metadata?.scenario?.dlq) {
+      recommendations.push({
+        category: 'reliability',
+        priority: 'medium',
+        title: 'Enable Dead Letter Queue',
+        description: 'Enable DLQ to handle failed executions gracefully',
+        estimatedImpact: 'Improved error recovery and debugging',
+        implementationSteps: [
+          'Enable DLQ in scenario metadata',
+          'Configure appropriate retry policies',
+          'Set up monitoring for failed executions',
+          'Implement error handling workflows'
+        ]
+      });
+      optimizationScore -= 5;
+    }
+
+  } catch (error) {
+    throw new Error(`Blueprint optimization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+
+  return {
+    optimizationScore: Math.max(0, Math.round(optimizationScore)),
+    recommendations: recommendations.sort((a, b) => {
+      const priorityOrder = { high: 3, medium: 2, low: 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    }),
+    metrics
+  };
 }
