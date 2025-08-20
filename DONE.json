@@ -2588,9 +2588,268 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755708755084_k19dggf02",
+      "title": "Fix ESLint parsing error and TypeScript warnings",
+      "description": "Fix critical ESLint parsing error in test file and resolve 39 TypeScript any-type warnings in performance-analysis.ts and scenarios.ts files",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/test/troubleshoot-scenario.test.ts",
+        "src/tools/performance-analysis.ts",
+        "src/tools/scenarios.ts",
+        "tsconfig.json",
+        "eslint.config.mjs"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T16:52:35.084Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755705576236_1_general_170770af",
+      "started_at": "2025-08-20T16:53:32.017Z",
+      "claimed_by": "development_session_1755705576236_1_general_170770af",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755705576236_1_general_170770af",
+          "role": "primary",
+          "assignedAt": "2025-08-20T16:53:32.017Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T16:59:11.003Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T16:59:11.004Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755706954659_9yunlkk3q",
+      "title": "Research: Implement comprehensive connection diagnostics functionality",
+      "description": "Research and analysis required for implementing: \"Implement comprehensive connection diagnostics functionality\"\n\n**Implementation Task Details:**\nCreate diagnose_connection_issues tool with connection validation, health checks, performance monitoring, and diagnostic reporting capabilities\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755706954658_lw2dtoan1\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755706954659_9yunlkk3q.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755706954659_9yunlkk3q.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T16:22:34.659Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755706954658_lw2dtoan1",
+      "assigned_agent": "development_session_1755705576236_1_general_170770af",
+      "started_at": "2025-08-20T16:59:30.813Z",
+      "claimed_by": "development_session_1755705576236_1_general_170770af",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755705576236_1_general_170770af",
+          "role": "primary",
+          "assignedAt": "2025-08-20T16:59:30.813Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T17:00:59.457Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T17:00:59.458Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755706954658_lw2dtoan1",
+      "title": "Implement comprehensive connection diagnostics functionality",
+      "description": "Create diagnose_connection_issues tool with connection validation, health checks, performance monitoring, and diagnostic reporting capabilities",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T16:22:34.662Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T17:01:05.886Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T17:01:05.887Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755709300775_wswly1xgk",
+      "title": "Research: Implement comprehensive get_scenario_run_logs tool with real-time streaming",
+      "description": "Research and analysis required for implementing: \"Implement comprehensive get_scenario_run_logs tool with real-time streaming\"\n\n**Implementation Task Details:**\nCreate a complete log streaming system with get_scenario_run_logs tool, real-time capabilities, filtering, search functionality, and integration with existing logging infrastructure\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755709300774_tbd9z31wb\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755709300775_wswly1xgk.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755709300775_wswly1xgk.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-20T17:01:40.775Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755709300774_tbd9z31wb",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T17:02:30.909Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T17:02:30.910Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755670024527_5n6jc5fca",
+      "title": "Implement advanced log streaming and query system",
+      "description": "Add real-time observability tools: get_scenario_run_logs (stream detailed execution logs), query_logs_by_timerange (search historical logs), stream_live_execution (real-time scenario monitoring), export_logs_for_analysis (export to external tools). Essential for enterprise debugging and monitoring.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/logs.ts",
+        "src/lib/",
+        "src/tools/monitoring.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "6-8 hours",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T06:07:04.531Z",
+      "auto_research_created": true,
+      "assigned_agent": "development_session_1755705576236_1_general_170770af",
+      "started_at": "2025-08-20T17:01:12.566Z",
+      "claimed_by": "development_session_1755705576236_1_general_170770af",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755705576236_1_general_170770af",
+          "role": "primary",
+          "assignedAt": "2025-08-20T17:01:12.566Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T17:09:47.368Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T17:09:47.369Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755709300774_tbd9z31wb",
+      "title": "Implement comprehensive get_scenario_run_logs tool with real-time streaming",
+      "description": "Create a complete log streaming system with get_scenario_run_logs tool, real-time capabilities, filtering, search functionality, and integration with existing logging infrastructure",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/lib/logger.js",
+        "development/research-reports/"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T17:01:40.779Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-20T17:09:53.796Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-20T17:09:53.797Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 64,
-  "last_completion": "2025-08-20T16:52:43.072Z",
+  "total_completed": 70,
+  "last_completion": "2025-08-20T17:09:53.797Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

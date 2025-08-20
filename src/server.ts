@@ -25,6 +25,7 @@ import { addSDKTools } from './tools/sdk.js';
 import { addBillingTools } from './tools/billing.js';
 import { addNotificationTools } from './tools/notifications.js';
 import { addPerformanceAnalysisTools } from './tools/performance-analysis.js';
+import { addLogStreamingTools } from './tools/log-streaming.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -63,6 +64,7 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Platform Management**: Full scenario CRUD operations, connection management, webhook configuration
 - **User & Permissions**: Role-based access control, team/organization administration  
 - **Analytics & Audit**: Access to execution logs, performance metrics, audit trails
+- **Real-Time Observability**: Live log streaming, execution monitoring, historical log queries
 - **Resource Management**: Template management, folder organization, data store operations
 - **Security & Certificates**: SSL/TLS certificate management, cryptographic key lifecycle, certificate validation
 - **Remote Operations**: Remote procedure execution, device configuration, API call management
@@ -305,6 +307,10 @@ ${configManager.isAuthEnabled() ?
             'performance-monitoring',
             'trend-analysis',
             'optimization-recommendations',
+            'real-time-log-streaming',
+            'historical-log-querying',
+            'live-execution-monitoring',
+            'log-export-analysis',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -477,7 +483,10 @@ ${configManager.isAuthEnabled() ?
     // Add performance analysis and bottleneck detection tools
     addPerformanceAnalysisTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis)');
+    // Add real-time log streaming and monitoring tools
+    addLogStreamingTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming)');
   }
 
   public getServer(): FastMCP {
