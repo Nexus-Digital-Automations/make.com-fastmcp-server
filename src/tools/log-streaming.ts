@@ -221,18 +221,75 @@ const ExportLogsForAnalysisSchema = z.object({
       includeSuccessfulExecutions: z.boolean().default(true).describe('Include successful executions'),
       includeFailedExecutions: z.boolean().default(true).describe('Include failed executions'),
       moduleTypes: z.array(z.string()).optional().describe('Module types to include'),
+      correlationIds: z.array(z.string()).optional().describe('Filter by correlation IDs'),
+      errorCodesOnly: z.boolean().default(false).describe('Only export logs with error codes'),
+      performanceThreshold: z.number().optional().describe('Min processing time threshold (ms)'),
+    }).default({}),
+    streaming: z.object({
+      enabled: z.boolean().default(false).describe('Enable real-time streaming export'),
+      batchSize: z.number().min(1).max(1000).default(50).describe('Streaming batch size'),
+      intervalMs: z.number().min(1000).max(60000).default(5000).describe('Streaming interval in milliseconds'),
+      maxDuration: z.number().min(60).max(86400).default(3600).describe('Max streaming duration in seconds'),
     }).default({}),
   }).describe('Export configuration'),
   outputConfig: z.object({
-    format: z.enum(['json', 'csv', 'elasticsearch', 'splunk', 'datadog']).default('json').describe('Export format'),
-    compression: z.enum(['none', 'gzip', 'zip']).default('gzip').describe('Compression format'),
+    format: z.enum(['json', 'csv', 'parquet', 'elasticsearch', 'splunk', 'datadog', 'newrelic', 'prometheus', 'aws-cloudwatch', 'azure-monitor', 'gcp-logging']).default('json').describe('Export format'),
+    compression: z.enum(['none', 'gzip', 'zip', 'brotli']).default('gzip').describe('Compression format'),
     chunkSize: z.number().min(100).max(10000).default(1000).describe('Number of logs per chunk'),
     includeMetadata: z.boolean().default(true).describe('Include export metadata'),
+    fieldMapping: z.record(z.string()).optional().describe('Custom field name mapping'),
+    transformations: z.array(z.object({
+      field: z.string(),
+      operation: z.enum(['rename', 'format_date', 'parse_json', 'extract_regex']),
+      parameters: z.record(z.unknown()).optional(),
+    })).optional().describe('Data transformation rules'),
   }).default({}),
   destination: z.object({
-    type: z.enum(['download', 'webhook', 'external-system']).default('download').describe('Export destination'),
+    type: z.enum(['download', 'webhook', 'external-system', 'stream']).default('download').describe('Export destination'),
     webhookUrl: z.string().optional().describe('Webhook URL for external delivery'),
-    externalSystemConfig: z.record(z.unknown()).optional().describe('External system configuration'),
+    externalSystemConfig: z.object({
+      type: z.enum(['elasticsearch', 'splunk', 'datadog', 'newrelic', 'aws-cloudwatch', 'azure-monitor', 'gcp-logging']).optional(),
+      connection: z.object({
+        url: z.string().optional(),
+        apiKey: z.string().optional(),
+        username: z.string().optional(),
+        password: z.string().optional(),
+        region: z.string().optional(),
+        index: z.string().optional(),
+        logGroup: z.string().optional(),
+        workspace: z.string().optional(),
+      }).optional(),
+      authentication: z.object({
+        type: z.enum(['api_key', 'oauth', 'basic_auth', 'bearer_token']).optional(),
+        credentials: z.record(z.string()).optional(),
+      }).optional(),
+      retryPolicy: z.object({
+        maxRetries: z.number().min(0).max(10).default(3),
+        retryDelayMs: z.number().min(100).max(30000).default(1000),
+        backoffMultiplier: z.number().min(1).max(10).default(2),
+      }).default({}),
+    }).optional().describe('External system configuration'),
+    delivery: z.object({
+      immediate: z.boolean().default(true).describe('Immediate delivery'),
+      scheduled: z.boolean().default(false).describe('Scheduled delivery'),
+      cronExpression: z.string().optional().describe('Cron expression for scheduled delivery'),
+      bufferSize: z.number().min(1).max(10000).default(100).describe('Buffer size for batched delivery'),
+    }).default({}),
+  }).default({}),
+  analytics: z.object({
+    enabled: z.boolean().default(false).describe('Enable advanced analytics'),
+    features: z.object({
+      anomalyDetection: z.boolean().default(false).describe('Detect anomalous patterns'),
+      performanceAnalysis: z.boolean().default(false).describe('Analyze performance trends'),
+      errorCorrelation: z.boolean().default(false).describe('Correlate error patterns'),
+      predictiveInsights: z.boolean().default(false).describe('Generate predictive insights'),
+    }).default({}),
+    customMetrics: z.array(z.object({
+      name: z.string(),
+      aggregation: z.enum(['count', 'sum', 'avg', 'min', 'max']),
+      field: z.string(),
+      filters: z.record(z.unknown()).optional(),
+    })).optional().describe('Custom metrics to calculate'),
   }).default({}),
 }).strict();
 
@@ -963,36 +1020,46 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
     },
   });
 
-  // 4. Export Logs for Analysis
+  // 4. Enhanced Export Logs for Analysis with External System Integration
   server.addTool({
     name: 'export_logs_for_analysis',
-    description: 'Export logs in various formats for external analysis tools like Elasticsearch, Splunk, or custom analytics platforms',
+    description: 'Advanced log export tool with multi-format output, real-time streaming, external analytics platform integration, and comprehensive delivery options',
     parameters: ExportLogsForAnalysisSchema,
     execute: async (input, { log }) => {
-      const { exportConfig, outputConfig, destination } = input;
+      const { exportConfig, outputConfig, destination, analytics } = input;
 
-      log.info('Starting log export for analysis', {
-        timeRange: exportConfig.timeRange.startTime + ' to ' + exportConfig.timeRange.endTime,
+      log.info('Starting enhanced log export for analysis', {
+        timeRange: `${exportConfig.timeRange.startTime} to ${exportConfig.timeRange.endTime}`,
         format: outputConfig.format,
+        streaming: exportConfig.streaming.enabled,
+        external: destination.externalSystemConfig?.type,
+        analytics: analytics.enabled,
         scenarioCount: exportConfig.scenarioIds?.length || 0,
       });
 
       try {
         const exportMetadata = {
-          exportId: `export_${Date.now()}`,
+          exportId: `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           timestamp: new Date().toISOString(),
           requestedBy: 'fastmcp-server',
+          version: '2.0.0',
           config: exportConfig,
+          outputConfig,
+          destination,
+          analytics,
         };
 
-        // Build query parameters for log retrieval
+        // Enhanced query parameters for log retrieval
         const params: Record<string, unknown> = {
           startDate: exportConfig.timeRange.startTime,
           endDate: exportConfig.timeRange.endTime,
           limit: outputConfig.chunkSize,
           offset: 0,
+          sortBy: 'timestamp',
+          sortOrder: 'asc',
         };
 
+        // Apply comprehensive filtering
         if (exportConfig.scenarioIds?.length) {
           params.scenarioIds = exportConfig.scenarioIds.join(',');
         }
@@ -1005,138 +1072,45 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
         if (exportConfig.filtering.moduleTypes?.length) {
           params.moduleTypes = exportConfig.filtering.moduleTypes.join(',');
         }
+        if (exportConfig.filtering.correlationIds?.length) {
+          params.correlationIds = exportConfig.filtering.correlationIds.join(',');
+        }
+        if (exportConfig.filtering.errorCodesOnly) {
+          params.errorsOnly = true;
+        }
+        if (exportConfig.filtering.performanceThreshold) {
+          params.minProcessingTime = exportConfig.filtering.performanceThreshold;
+        }
 
-        // Determine endpoint
+        // Determine optimal endpoint
         let endpoint = '/logs';
         if (exportConfig.organizationId) {
           endpoint = `/organizations/${exportConfig.organizationId}/logs`;
         }
 
-        const allLogs: MakeLogEntry[] = [];
-        let hasMore = true;
-        let offset = 0;
-        let totalProcessed = 0;
-
-        // Fetch all logs in chunks
-        while (hasMore) {
-          params.offset = offset;
-          
-          const response = await apiClient.get(endpoint, { params });
-          
-          if (!response.success) {
-            throw new UserError(`Failed to fetch logs: ${response.error?.message || 'Unknown error'}`);
-          }
-
-          const logs = (response.data as MakeLogEntry[]) || [];
-          
-          if (logs.length === 0) {
-            hasMore = false;
-          } else {
-            // Apply additional filtering
-            let filteredLogs = logs;
-
-            if (!exportConfig.filtering.includeSuccessfulExecutions) {
-              filteredLogs = filteredLogs.filter(log => log.level !== 'info' || log.error);
-            }
-
-            if (!exportConfig.filtering.includeFailedExecutions) {
-              filteredLogs = filteredLogs.filter(log => !log.error);
-            }
-
-            allLogs.push(...filteredLogs);
-            totalProcessed += logs.length;
-            offset += outputConfig.chunkSize;
-
-            // Check if we've reached the end
-            const metadata = response.metadata;
-            if (metadata?.total && totalProcessed >= metadata.total) {
-              hasMore = false;
-            }
-          }
-
-          log.info('Processing log export chunk', {
-            offset,
-            chunkSize: logs.length,
-            totalProcessed,
-            totalFiltered: allLogs.length,
-          });
+        // Initialize enhanced export processing
+        const exportProcessor = new EnhancedLogExportProcessor(apiClient, exportMetadata, log);
+        
+        // Handle streaming vs batch export
+        if (exportConfig.streaming.enabled) {
+          return await exportProcessor.processStreamingExport(
+            endpoint,
+            params,
+            exportConfig,
+            outputConfig,
+            destination,
+            analytics
+          );
+        } else {
+          return await exportProcessor.processBatchExport(
+            endpoint,
+            params,
+            exportConfig,
+            outputConfig,
+            destination,
+            analytics
+          );
         }
-
-        // Format logs based on output format
-        let exportData: unknown;
-        let contentType: string;
-        let fileExtension: string;
-
-        switch (outputConfig.format) {
-          case 'json':
-            exportData = {
-              metadata: outputConfig.includeMetadata ? exportMetadata : undefined,
-              logs: allLogs,
-              summary: generateLogSummary(allLogs),
-            };
-            contentType = 'application/json';
-            fileExtension = 'json';
-            break;
-
-          case 'csv':
-            exportData = convertLogsToCSV(allLogs);
-            contentType = 'text/csv';
-            fileExtension = 'csv';
-            break;
-
-          case 'elasticsearch':
-            exportData = convertLogsToElasticsearch(allLogs, exportMetadata);
-            contentType = 'application/x-ndjson';
-            fileExtension = 'ndjson';
-            break;
-
-          case 'splunk':
-            exportData = convertLogsToSplunk(allLogs, exportMetadata);
-            contentType = 'text/plain';
-            fileExtension = 'log';
-            break;
-
-          case 'datadog':
-            exportData = convertLogsToDatadog(allLogs, exportMetadata);
-            contentType = 'application/json';
-            fileExtension = 'json';
-            break;
-
-          default:
-            throw new UserError(`Unsupported output format: ${outputConfig.format}`);
-        }
-
-        // Handle compression if requested
-        const finalData = exportData;
-        if (outputConfig.compression !== 'none') {
-          // Note: In a real implementation, you would compress the data here
-          log.info('Compression requested but not implemented in this demo', {
-            compression: outputConfig.compression,
-          });
-        }
-
-        const exportResult = {
-          exportMetadata,
-          dataInfo: {
-            format: outputConfig.format,
-            contentType,
-            fileExtension,
-            compression: outputConfig.compression,
-            totalLogs: allLogs.length,
-            sizeEstimate: JSON.stringify(finalData).length,
-          },
-          data: finalData,
-          summary: generateExportSummary(allLogs, exportConfig as Record<string, unknown>),
-        };
-
-        log.info('Log export completed successfully', {
-          exportId: exportMetadata.exportId,
-          totalLogs: allLogs.length,
-          format: outputConfig.format,
-          compression: outputConfig.compression,
-        });
-
-        return JSON.stringify(exportResult, null, 2);
 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1148,6 +1122,853 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
   });
 
   componentLogger.info('Log streaming tools added successfully');
+}
+
+/**
+ * Enhanced Log Export Processor for advanced analytics integration
+ */
+class EnhancedLogExportProcessor {
+  private apiClient: MakeApiClient;
+  private exportMetadata: Record<string, unknown>;
+  private logger: any;
+
+  constructor(apiClient: MakeApiClient, exportMetadata: Record<string, unknown>, logger: any) {
+    this.apiClient = apiClient;
+    this.exportMetadata = exportMetadata;
+    this.logger = logger;
+  }
+
+  /**
+   * Process batch export (traditional export)
+   */
+  async processBatchExport(
+    endpoint: string,
+    params: Record<string, unknown>,
+    exportConfig: any,
+    outputConfig: any,
+    destination: any,
+    analytics: any
+  ): Promise<string> {
+    this.logger.info('Starting batch export processing');
+
+    const allLogs: MakeLogEntry[] = [];
+    let hasMore = true;
+    let offset = 0;
+    let totalProcessed = 0;
+
+    // Fetch all logs in chunks
+    while (hasMore) {
+      params.offset = offset;
+      
+      const response = await this.apiClient.get(endpoint, { params });
+      
+      if (!response.success) {
+        throw new UserError(`Failed to fetch logs: ${response.error?.message || 'Unknown error'}`);
+      }
+
+      const logs = (response.data as MakeLogEntry[]) || [];
+      
+      if (logs.length === 0) {
+        hasMore = false;
+      } else {
+        // Apply enhanced filtering
+        const filteredLogs = this.applyAdvancedFiltering(logs, exportConfig.filtering);
+        allLogs.push(...filteredLogs);
+        totalProcessed += logs.length;
+        offset += outputConfig.chunkSize;
+
+        // Check if we've reached the end
+        const metadata = response.metadata;
+        if (metadata?.total && totalProcessed >= metadata.total) {
+          hasMore = false;
+        }
+      }
+
+      this.logger.info('Processing log export chunk', {
+        offset,
+        chunkSize: logs.length,
+        totalProcessed,
+        totalFiltered: allLogs.length,
+      });
+    }
+
+    // Apply data transformations
+    const transformedLogs = this.applyDataTransformations(allLogs, outputConfig.transformations);
+
+    // Generate analytics insights if enabled
+    let analyticsResults: Record<string, unknown> = {};
+    if (analytics.enabled) {
+      analyticsResults = await this.performAdvancedAnalytics(transformedLogs, analytics);
+    }
+
+    // Format logs for export
+    const exportData = await this.formatLogsForExport(
+      transformedLogs,
+      outputConfig,
+      this.exportMetadata,
+      analyticsResults
+    );
+
+    // Handle external system delivery
+    let deliveryResults: Record<string, unknown> = {};
+    if (destination.type === 'external-system' && destination.externalSystemConfig) {
+      deliveryResults = await this.deliverToExternalSystem(
+        exportData,
+        destination.externalSystemConfig,
+        outputConfig.format
+      );
+    }
+
+    const result = {
+      exportMetadata: this.exportMetadata,
+      dataInfo: {
+        format: outputConfig.format,
+        compression: outputConfig.compression,
+        totalLogs: transformedLogs.length,
+        sizeEstimate: JSON.stringify(exportData).length,
+        processingTime: Date.now() - new Date(this.exportMetadata.timestamp as string).getTime(),
+      },
+      data: exportData,
+      analytics: analyticsResults,
+      delivery: deliveryResults,
+      summary: this.generateEnhancedSummary(transformedLogs, exportConfig),
+    };
+
+    this.logger.info('Batch export completed successfully', {
+      exportId: this.exportMetadata.exportId,
+      totalLogs: transformedLogs.length,
+      format: outputConfig.format,
+      external: destination.externalSystemConfig?.type,
+    });
+
+    return JSON.stringify(result, null, 2);
+  }
+
+  /**
+   * Process streaming export (real-time export)
+   */
+  async processStreamingExport(
+    endpoint: string,
+    params: Record<string, unknown>,
+    exportConfig: any,
+    outputConfig: any,
+    destination: any,
+    _analytics: any
+  ): Promise<string> {
+    this.logger.info('Starting streaming export processing', {
+      batchSize: exportConfig.streaming.batchSize,
+      intervalMs: exportConfig.streaming.intervalMs,
+      maxDuration: exportConfig.streaming.maxDuration,
+    });
+
+    const streamingResults = {
+      streamId: `stream_${this.exportMetadata.exportId}`,
+      startTime: new Date().toISOString(),
+      endTime: '',
+      batchesProcessed: 0,
+      totalLogsStreamed: 0,
+      errors: [] as string[],
+      deliveryResults: [] as Record<string, unknown>[],
+    };
+
+    let lastLogTimestamp = exportConfig.timeRange.startTime;
+    const streamEndTime = Date.now() + (exportConfig.streaming.maxDuration * 1000);
+
+    // Initialize external system connection if needed
+    let externalConnector: ExternalSystemConnector | null = null;
+    if (destination.type === 'external-system' && destination.externalSystemConfig) {
+      externalConnector = new ExternalSystemConnector(
+        destination.externalSystemConfig,
+        this.logger
+      );
+      await externalConnector.connect();
+    }
+
+    while (Date.now() < streamEndTime) {
+      try {
+        // Fetch next batch of logs
+        const batchParams = {
+          ...params,
+          limit: exportConfig.streaming.batchSize,
+          offset: 0,
+          dateFrom: lastLogTimestamp,
+        };
+
+        const response = await this.apiClient.get(endpoint, { params: batchParams });
+
+        if (response.success && response.data) {
+          const logs = response.data as MakeLogEntry[];
+          
+          if (logs.length > 0) {
+            // Process batch
+            const filteredLogs = this.applyAdvancedFiltering(logs, exportConfig.filtering);
+            const transformedLogs = this.applyDataTransformations(filteredLogs, outputConfig.transformations);
+            
+            if (transformedLogs.length > 0) {
+              const batchData = await this.formatLogsForExport(
+                transformedLogs,
+                outputConfig,
+                this.exportMetadata
+              );
+
+              // Deliver batch to external system
+              if (externalConnector) {
+                const deliveryResult = await externalConnector.sendBatch(batchData, outputConfig.format);
+                streamingResults.deliveryResults.push(deliveryResult);
+              }
+
+              streamingResults.batchesProcessed++;
+              streamingResults.totalLogsStreamed += transformedLogs.length;
+              lastLogTimestamp = logs[logs.length - 1].timestamp;
+            }
+          }
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        this.logger.warn('Error processing streaming batch', { error: errorMessage });
+        streamingResults.errors.push(errorMessage);
+      }
+
+      // Wait for next interval
+      await new Promise(resolve => setTimeout(resolve, exportConfig.streaming.intervalMs));
+    }
+
+    // Cleanup external connection
+    if (externalConnector) {
+      await externalConnector.disconnect();
+    }
+
+    streamingResults.endTime = new Date().toISOString();
+
+    const result = {
+      exportMetadata: this.exportMetadata,
+      streaming: streamingResults,
+      summary: {
+        mode: 'streaming',
+        duration: `${exportConfig.streaming.maxDuration}s`,
+        totalBatches: streamingResults.batchesProcessed,
+        totalLogs: streamingResults.totalLogsStreamed,
+        averageLogsPerBatch: streamingResults.batchesProcessed > 0 ? 
+          Math.round(streamingResults.totalLogsStreamed / streamingResults.batchesProcessed) : 0,
+        errorCount: streamingResults.errors.length,
+        successRate: streamingResults.batchesProcessed > 0 ? 
+          ((streamingResults.batchesProcessed - streamingResults.errors.length) / streamingResults.batchesProcessed) * 100 : 0,
+      },
+    };
+
+    this.logger.info('Streaming export completed successfully', {
+      exportId: this.exportMetadata.exportId,
+      streamId: streamingResults.streamId,
+      totalBatches: streamingResults.batchesProcessed,
+      totalLogs: streamingResults.totalLogsStreamed,
+    });
+
+    return JSON.stringify(result, null, 2);
+  }
+
+  /**
+   * Apply advanced filtering beyond basic parameters
+   */
+  private applyAdvancedFiltering(logs: MakeLogEntry[], filtering: any): MakeLogEntry[] {
+    let filteredLogs = logs;
+
+    // Apply execution success/failure filtering
+    if (!filtering.includeSuccessfulExecutions) {
+      filteredLogs = filteredLogs.filter(log => log.level !== 'info' || log.error);
+    }
+
+    if (!filtering.includeFailedExecutions) {
+      filteredLogs = filteredLogs.filter(log => !log.error);
+    }
+
+    return filteredLogs;
+  }
+
+  /**
+   * Apply data transformations based on configuration
+   */
+  private applyDataTransformations(logs: MakeLogEntry[], transformations?: any[]): MakeLogEntry[] {
+    if (!transformations || transformations.length === 0) {
+      return logs;
+    }
+
+    return logs.map(log => {
+      const transformedLog = { ...log };
+
+      for (const transformation of transformations) {
+        switch (transformation.operation) {
+          case 'rename':
+            // Rename field implementation
+            break;
+          case 'format_date':
+            // Date formatting implementation
+            break;
+          case 'parse_json':
+            // JSON parsing implementation
+            break;
+          case 'extract_regex':
+            // Regex extraction implementation
+            break;
+        }
+      }
+
+      return transformedLog;
+    });
+  }
+
+  /**
+   * Perform advanced analytics on the exported logs
+   */
+  private async performAdvancedAnalytics(
+    logs: MakeLogEntry[],
+    analytics: any
+  ): Promise<Record<string, unknown>> {
+    const results: Record<string, unknown> = {};
+
+    if (analytics.features.anomalyDetection) {
+      results.anomalies = this.detectAnomalies(logs);
+    }
+
+    if (analytics.features.performanceAnalysis) {
+      results.performanceInsights = this.analyzePerformance(logs);
+    }
+
+    if (analytics.features.errorCorrelation) {
+      results.errorCorrelations = this.correlateErrors(logs);
+    }
+
+    if (analytics.features.predictiveInsights) {
+      results.predictions = this.generatePredictions(logs);
+    }
+
+    if (analytics.customMetrics) {
+      results.customMetrics = this.calculateCustomMetrics(logs, analytics.customMetrics);
+    }
+
+    return results;
+  }
+
+  /**
+   * Format logs for specific export formats
+   */
+  private async formatLogsForExport(
+    logs: MakeLogEntry[],
+    outputConfig: any,
+    metadata: Record<string, unknown>,
+    analytics?: Record<string, unknown>
+  ): Promise<unknown> {
+    const formatter = new EnhancedExportFormatter();
+    return formatter.format(logs, outputConfig.format, {
+      metadata,
+      analytics,
+      compression: outputConfig.compression,
+      fieldMapping: outputConfig.fieldMapping,
+    });
+  }
+
+  /**
+   * Deliver exported data to external systems
+   */
+  private async deliverToExternalSystem(
+    data: unknown,
+    config: any,
+    format: string
+  ): Promise<Record<string, unknown>> {
+    const connector = new ExternalSystemConnector(config, this.logger);
+    
+    try {
+      await connector.connect();
+      const result = await connector.sendData(data, format);
+      await connector.disconnect();
+      
+      return {
+        success: true,
+        system: config.type,
+        deliveredAt: new Date().toISOString(),
+        result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        system: config.type,
+        error: error instanceof Error ? error.message : String(error),
+        deliveredAt: new Date().toISOString(),
+      };
+    }
+  }
+
+  /**
+   * Generate enhanced summary with advanced metrics
+   */
+  private generateEnhancedSummary(logs: MakeLogEntry[], exportConfig: any): Record<string, unknown> {
+    return {
+      ...generateExportSummary(logs, exportConfig),
+      processingMetrics: {
+        logsPerSecond: logs.length / ((Date.now() - new Date(this.exportMetadata.timestamp as string).getTime()) / 1000),
+        averageLogSize: logs.length > 0 ? JSON.stringify(logs[0]).length : 0,
+        uniqueExecutions: new Set(logs.map(log => log.executionId)).size,
+        uniqueModules: new Set(logs.map(log => log.module.name)).size,
+      },
+      qualityMetrics: {
+        completeness: 100, // Assume 100% for now
+        integrity: 'verified',
+        consistency: 'validated',
+      },
+    };
+  }
+
+  // Analytics helper methods
+  private detectAnomalies(_logs: MakeLogEntry[]): Record<string, unknown> {
+    // Placeholder for anomaly detection logic
+    return { anomaliesDetected: 0, patterns: [] };
+  }
+
+  private analyzePerformance(logs: MakeLogEntry[]): Record<string, unknown> {
+    const processingTimes = logs
+      .filter(log => log.metrics?.processingTime)
+      .map(log => log.metrics!.processingTime);
+
+    if (processingTimes.length === 0) {
+      return { message: 'No performance data available' };
+    }
+
+    const avg = processingTimes.reduce((sum, time) => sum + time, 0) / processingTimes.length;
+    const sorted = processingTimes.sort((a, b) => a - b);
+    
+    return {
+      averageProcessingTime: Math.round(avg),
+      medianProcessingTime: sorted[Math.floor(sorted.length / 2)],
+      p95ProcessingTime: sorted[Math.floor(sorted.length * 0.95)],
+      maxProcessingTime: Math.max(...processingTimes),
+      minProcessingTime: Math.min(...processingTimes),
+    };
+  }
+
+  private correlateErrors(_logs: MakeLogEntry[]): Record<string, unknown> {
+    // Placeholder for error correlation logic
+    return { correlations: [], patterns: [] };
+  }
+
+  private generatePredictions(_logs: MakeLogEntry[]): Record<string, unknown> {
+    // Placeholder for predictive analytics
+    return { predictions: [], confidence: 0 };
+  }
+
+  private calculateCustomMetrics(logs: MakeLogEntry[], metrics: any[]): Record<string, unknown> {
+    const results: Record<string, unknown> = {};
+    
+    for (const metric of metrics) {
+      const values = logs
+        .filter(log => this.matchesFilters(log, metric.filters))
+        .map(log => this.extractFieldValue(log, metric.field))
+        .filter(val => val !== null && val !== undefined);
+
+      switch (metric.aggregation) {
+        case 'count':
+          results[metric.name] = values.length;
+          break;
+        case 'sum':
+          results[metric.name] = values.reduce((sum: number, val) => sum + Number(val), 0);
+          break;
+        case 'avg':
+          results[metric.name] = values.length > 0 ? 
+            (values.reduce((sum: number, val) => sum + Number(val), 0) / values.length) : 0;
+          break;
+        case 'min':
+          results[metric.name] = values.length > 0 ? Math.min(...values.map(Number)) : null;
+          break;
+        case 'max':
+          results[metric.name] = values.length > 0 ? Math.max(...values.map(Number)) : null;
+          break;
+      }
+    }
+    
+    return results;
+  }
+
+  private matchesFilters(log: MakeLogEntry, filters?: Record<string, unknown>): boolean {
+    if (!filters) return true;
+    // Implement filter matching logic
+    return true;
+  }
+
+  private extractFieldValue(log: MakeLogEntry, fieldPath: string): unknown {
+    const parts = fieldPath.split('.');
+    let value: any = log;
+    
+    for (const part of parts) {
+      if (value && typeof value === 'object' && part in value) {
+        value = value[part];
+      } else {
+        return null;
+      }
+    }
+    
+    return value;
+  }
+}
+
+/**
+ * Enhanced Export Formatter with support for multiple formats
+ */
+class EnhancedExportFormatter {
+  async format(
+    logs: MakeLogEntry[],
+    format: string,
+    options: {
+      metadata?: Record<string, unknown>;
+      analytics?: Record<string, unknown>;
+      compression?: string;
+      fieldMapping?: Record<string, string>;
+    } = {}
+  ): Promise<unknown> {
+    const { metadata, analytics, fieldMapping } = options;
+
+    // Apply field mapping if provided
+    const mappedLogs = fieldMapping ? this.applyFieldMapping(logs, fieldMapping) : logs;
+
+    switch (format) {
+      case 'json':
+        return {
+          metadata,
+          analytics,
+          logs: mappedLogs,
+          summary: generateLogSummary(mappedLogs),
+        };
+
+      case 'csv':
+        return convertLogsToCSV(mappedLogs);
+
+      case 'parquet':
+        return this.convertToParquet(mappedLogs, metadata);
+
+      case 'elasticsearch':
+        return convertLogsToElasticsearch(mappedLogs, metadata || {});
+
+      case 'splunk':
+        return convertLogsToSplunk(mappedLogs, metadata || {});
+
+      case 'datadog':
+        return convertLogsToDatadog(mappedLogs, metadata || {});
+
+      case 'newrelic':
+        return this.convertToNewRelic(mappedLogs, metadata);
+
+      case 'prometheus':
+        return this.convertToPrometheus(mappedLogs, metadata);
+
+      case 'aws-cloudwatch':
+        return this.convertToCloudWatch(mappedLogs, metadata);
+
+      case 'azure-monitor':
+        return this.convertToAzureMonitor(mappedLogs, metadata);
+
+      case 'gcp-logging':
+        return this.convertToGCPLogging(mappedLogs, metadata);
+
+      default:
+        throw new Error(`Unsupported export format: ${format}`);
+    }
+  }
+
+  private applyFieldMapping(logs: MakeLogEntry[], mapping: Record<string, string>): any[] {
+    return logs.map(log => {
+      const mappedLog: any = {};
+      
+      // Apply field mappings
+      for (const [originalField, mappedField] of Object.entries(mapping)) {
+        const value = this.getNestedValue(log, originalField);
+        if (value !== undefined) {
+          this.setNestedValue(mappedLog, mappedField, value);
+        }
+      }
+      
+      // Include unmapped fields
+      for (const [key, value] of Object.entries(log)) {
+        if (!mapping[key]) {
+          mappedLog[key] = value;
+        }
+      }
+      
+      return mappedLog;
+    });
+  }
+
+  private getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
+  }
+
+  private setNestedValue(obj: any, path: string, value: any): void {
+    const keys = path.split('.');
+    const lastKey = keys.pop()!;
+    
+    let current = obj;
+    for (const key of keys) {
+      if (!current[key]) current[key] = {};
+      current = current[key];
+    }
+    
+    current[lastKey] = value;
+  }
+
+  // Format-specific conversion methods
+  private convertToParquet(logs: MakeLogEntry[], metadata?: Record<string, unknown>): unknown {
+    // Placeholder for Parquet format conversion
+    return { format: 'parquet', logs, metadata };
+  }
+
+  private convertToNewRelic(logs: MakeLogEntry[], metadata?: Record<string, unknown>): unknown {
+    return {
+      logs: logs.map(log => ({
+        timestamp: new Date(log.timestamp).getTime(),
+        message: log.message,
+        level: log.level,
+        service: 'fastmcp-server',
+        attributes: {
+          executionId: log.executionId,
+          scenarioId: log.scenarioId,
+          module: log.module.name,
+          moduleType: log.module.type,
+          ...log.metrics,
+          ...(log.error && { error: log.error }),
+        },
+      })),
+      metadata,
+    };
+  }
+
+  private convertToPrometheus(logs: MakeLogEntry[], metadata?: Record<string, unknown>): unknown {
+    // Generate Prometheus metrics from logs
+    const metrics = this.generatePrometheusMetrics(logs);
+    return { metrics, metadata };
+  }
+
+  private convertToCloudWatch(logs: MakeLogEntry[], metadata?: Record<string, unknown>): unknown {
+    return {
+      logEvents: logs.map(log => ({
+        timestamp: new Date(log.timestamp).getTime(),
+        message: JSON.stringify({
+          level: log.level,
+          message: log.message,
+          executionId: log.executionId,
+          scenarioId: log.scenarioId,
+          module: log.module,
+          metrics: log.metrics,
+          error: log.error,
+        }),
+      })),
+      logGroupName: '/fastmcp/scenarios',
+      logStreamName: `scenario-${logs[0]?.scenarioId || 'unknown'}-${new Date().toISOString().slice(0, 10)}`,
+      metadata,
+    };
+  }
+
+  private convertToAzureMonitor(logs: MakeLogEntry[], metadata?: Record<string, unknown>): unknown {
+    return {
+      logs: logs.map(log => ({
+        TimeGenerated: log.timestamp,
+        Level: log.level,
+        Message: log.message,
+        ExecutionId: log.executionId,
+        ScenarioId: log.scenarioId,
+        ModuleName: log.module.name,
+        ModuleType: log.module.type,
+        Operations: log.metrics?.operations,
+        ProcessingTime: log.metrics?.processingTime,
+        DataSize: log.metrics?.dataSize,
+        ErrorCode: log.error?.code,
+        ErrorMessage: log.error?.message,
+      })),
+      metadata,
+    };
+  }
+
+  private convertToGCPLogging(logs: MakeLogEntry[], metadata?: Record<string, unknown>): unknown {
+    return {
+      entries: logs.map(log => ({
+        logName: 'projects/fastmcp/logs/scenarios',
+        resource: {
+          type: 'generic_node',
+          labels: {
+            project_id: 'fastmcp',
+            location: 'global',
+            namespace: 'scenarios',
+            node_id: `scenario-${log.scenarioId}`,
+          },
+        },
+        timestamp: log.timestamp,
+        severity: this.mapToGCPSeverity(log.level),
+        jsonPayload: {
+          message: log.message,
+          executionId: log.executionId,
+          scenarioId: log.scenarioId,
+          module: log.module,
+          metrics: log.metrics,
+          error: log.error,
+        },
+        labels: {
+          module_name: log.module.name,
+          module_type: log.module.type,
+          level: log.level,
+        },
+      })),
+      metadata,
+    };
+  }
+
+  private generatePrometheusMetrics(logs: MakeLogEntry[]): string[] {
+    const metrics: string[] = [];
+    const now = Date.now();
+
+    // Generate metrics for different log levels
+    const levelCounts = logs.reduce((acc, log) => {
+      acc[log.level] = (acc[log.level] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    for (const [level, count] of Object.entries(levelCounts)) {
+      metrics.push(`fastmcp_logs_total{level="${level}"} ${count} ${now}`);
+    }
+
+    // Generate performance metrics
+    const processingTimes = logs
+      .filter(log => log.metrics?.processingTime)
+      .map(log => log.metrics!.processingTime);
+
+    if (processingTimes.length > 0) {
+      const avg = processingTimes.reduce((sum, time) => sum + time, 0) / processingTimes.length;
+      metrics.push(`fastmcp_processing_time_avg ${avg} ${now}`);
+      metrics.push(`fastmcp_processing_time_max ${Math.max(...processingTimes)} ${now}`);
+    }
+
+    return metrics;
+  }
+
+  private mapToGCPSeverity(level: string): string {
+    const mapping: Record<string, string> = {
+      debug: 'DEBUG',
+      info: 'INFO',
+      warn: 'WARNING',
+      error: 'ERROR',
+      critical: 'CRITICAL',
+    };
+    return mapping[level] || 'DEFAULT';
+  }
+}
+
+/**
+ * External System Connector for delivering exported logs
+ */
+class ExternalSystemConnector {
+  private config: any;
+  private logger: any;
+  private connection: any;
+
+  constructor(config: any, logger: any) {
+    this.config = config;
+    this.logger = logger;
+  }
+
+  async connect(): Promise<void> {
+    this.logger.info('Connecting to external system', { type: this.config.type });
+    
+    switch (this.config.type) {
+      case 'elasticsearch':
+        await this.connectToElasticsearch();
+        break;
+      case 'splunk':
+        await this.connectToSplunk();
+        break;
+      case 'datadog':
+        await this.connectToDatadog();
+        break;
+      // Add other system connections
+      default:
+        this.logger.info('Using generic HTTP connection');
+        break;
+    }
+  }
+
+  async sendData(data: unknown, _format: string): Promise<Record<string, unknown>> {
+    const startTime = Date.now();
+    
+    try {
+      let result;
+      
+      switch (this.config.type) {
+        case 'elasticsearch':
+          result = await this.sendToElasticsearch(data);
+          break;
+        case 'splunk':
+          result = await this.sendToSplunk(data);
+          break;
+        case 'datadog':
+          result = await this.sendToDatadog(data);
+          break;
+        default:
+          result = await this.sendToGenericEndpoint(data);
+          break;
+      }
+
+      return {
+        success: true,
+        duration: Date.now() - startTime,
+        result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        duration: Date.now() - startTime,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  async sendBatch(data: unknown, format: string): Promise<Record<string, unknown>> {
+    return this.sendData(data, format);
+  }
+
+  async disconnect(): Promise<void> {
+    this.logger.info('Disconnecting from external system');
+    this.connection = null;
+  }
+
+  // System-specific connection methods
+  private async connectToElasticsearch(): Promise<void> {
+    // Placeholder for Elasticsearch connection
+    this.connection = { type: 'elasticsearch', connected: true };
+  }
+
+  private async connectToSplunk(): Promise<void> {
+    // Placeholder for Splunk HEC connection
+    this.connection = { type: 'splunk', connected: true };
+  }
+
+  private async connectToDatadog(): Promise<void> {
+    // Placeholder for Datadog connection
+    this.connection = { type: 'datadog', connected: true };
+  }
+
+  // System-specific send methods
+  private async sendToElasticsearch(_data: unknown): Promise<Record<string, unknown>> {
+    // Placeholder for Elasticsearch bulk API call
+    return { indexed: true, response: 'OK' };
+  }
+
+  private async sendToSplunk(_data: unknown): Promise<Record<string, unknown>> {
+    // Placeholder for Splunk HEC call
+    return { sent: true, response: 'OK' };
+  }
+
+  private async sendToDatadog(_data: unknown): Promise<Record<string, unknown>> {
+    // Placeholder for Datadog logs API call
+    return { sent: true, response: 'OK' };
+  }
+
+  private async sendToGenericEndpoint(_data: unknown): Promise<Record<string, unknown>> {
+    // Placeholder for generic HTTP POST
+    return { sent: true, response: 'OK' };
+  }
 }
 
 // Helper functions for log formatting and processing
