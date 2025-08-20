@@ -33,6 +33,7 @@ import { addAuditComplianceTools } from './tools/audit-compliance.js';
 import { addCompliancePolicyTools } from './tools/compliance-policy.js';
 import { addPolicyComplianceValidationTools } from './tools/policy-compliance-validation.js';
 import { addMarketplaceTools } from './tools/marketplace.js';
+import { addBudgetControlTools } from './tools/budget-control.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -84,6 +85,7 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Unified Policy Validation**: Cross-policy compliance validation, comprehensive scoring, violation tracking, remediation workflows, enterprise governance auditing
 - **Audit & Security**: Immutable audit logging, security health monitoring, incident management, compliance evidence collection
 - **Public App Marketplace**: Advanced app discovery with GraphQL-style filtering, comprehensive app specifications, AI-powered recommendations, integration planning tools
+- **Enterprise Budget Control**: Advanced budget configuration with multi-tenant support, real-time cost analysis and projections, ML-powered forecasting, automated scenario control with approval workflows
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 
@@ -353,6 +355,14 @@ ${configManager.isAuthEnabled() ?
             'ai-powered-recommendations',
             'marketplace-analytics',
             'integration-planning-tools',
+            'enterprise-budget-control',
+            'multi-tenant-budget-management',
+            'real-time-cost-analysis',
+            'ml-powered-cost-projections',
+            'automated-scenario-control',
+            'budget-threshold-monitoring',
+            'cost-forecasting-analytics',
+            'approval-workflow-management',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -549,7 +559,10 @@ ${configManager.isAuthEnabled() ?
     // Add public app marketplace integration tools
     addMarketplaceTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace)');
+    // Add enterprise budget control and cost management tools
+    addBudgetControlTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control)');
   }
 
   public getServer(): FastMCP {
