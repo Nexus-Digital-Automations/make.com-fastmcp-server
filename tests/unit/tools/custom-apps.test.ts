@@ -6,9 +6,13 @@
 
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { UserError } from 'fastmcp';
-// Tool imports removed - will be handled by mock setupcustom-apps.js';
 import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
-// Tool imports removed - will be handled by mock setupcustom-apps.js';
+import { 
+  createMockServer, 
+  findTool, 
+  executeTool 
+} from '../../utils/test-helpers.js';
+import type { MakeCustomApp } from '../../../src/types/index.js';
 
 // Advanced testing utilities
 class ChaosMonkey {
@@ -37,7 +41,8 @@ const securityTestPatterns = {
 };
 
 describe('Custom App Development Tools', () => {
-  let server: FastMCP;
+  let mockServer: ReturnType<typeof createMockServer>;
+  let mockTool: any;
   let mockApiClient: MockMakeApiClient;
   let chaosMonkey: ChaosMonkey;
 
@@ -404,8 +409,12 @@ module.exports = { convert };
     ...overrides,
   });
 
-  beforeEach(() => {
-    // Server setup will be handled by test helpers
+  beforeEach(async () => {
+    // Create mock server and tool
+    const serverSetup = createMockServer();
+    mockServer = serverSetup.server;
+    mockTool = serverSetup.mockTool;
+    
     mockApiClient = new MockMakeApiClient();
     chaosMonkey = new ChaosMonkey({
       failureRate: 0.1,
@@ -414,7 +423,8 @@ module.exports = { convert };
     });
 
     // Add tools to server
-    // Tool setup handled by mock
+    const { addCustomAppTools } = await import('../../../src/tools/custom-apps.js');
+    addCustomAppTools(mockServer, mockApiClient as any);
   });
 
   afterEach(() => {
@@ -423,7 +433,7 @@ module.exports = { convert };
 
   describe('Tool Registration', () => {
     test('should register all custom app development tools', () => {
-      const tools = server.getTools();
+      const toolConfigs = mockTool.mock.calls.map((call: any[]) => call[0]);
       const expectedTools = [
         'create-custom-app',
         'list-custom-apps',
@@ -433,18 +443,26 @@ module.exports = { convert };
       ];
 
       expectedTools.forEach(toolName => {
-        expect(tools).toHaveProperty(toolName);
+        const tool = toolConfigs.find((config: any) => config.name === toolName);
+        expect(tool).toBeDefined();
       });
     });
 
     test('should have correct tool schemas', () => {
-      const tools = server.getTools();
+      const toolConfigs = mockTool.mock.calls.map((call: any[]) => call[0]);
       
-      expect(tools['create-custom-app'].parameters).toBeDefined();
-      expect(tools['list-custom-apps'].parameters).toBeDefined();
-      expect(tools['create-hook'].parameters).toBeDefined();
-      expect(tools['create-custom-function'].parameters).toBeDefined();
-      expect(tools['test-custom-app'].parameters).toBeDefined();
+      const createAppTool = toolConfigs.find((config: any) => config.name === 'create-custom-app');
+      const listAppsTool = toolConfigs.find((config: any) => config.name === 'list-custom-apps');
+      
+      const createHookTool = toolConfigs.find((config: any) => config.name === 'create-hook');
+      const createFunctionTool = toolConfigs.find((config: any) => config.name === 'create-custom-function');
+      const testAppTool = toolConfigs.find((config: any) => config.name === 'test-custom-app');
+      
+      expect(createAppTool?.parameters).toBeDefined();
+      expect(listAppsTool?.parameters).toBeDefined();
+      expect(createHookTool?.parameters).toBeDefined();
+      expect(createFunctionTool?.parameters).toBeDefined();
+      expect(testAppTool?.parameters).toBeDefined();
     });
   });
 

@@ -6,9 +6,12 @@
 
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { UserError } from 'fastmcp';
-// Tool imports removed - will be handled by mock setupfolders.js';
 import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
-// Tool imports removed - will be handled by mock setupfolders.js';
+import { 
+  createMockServer, 
+  findTool, 
+  executeTool 
+} from '../../utils/test-helpers.js';
 
 // Advanced testing utilities
 class ChaosMonkey {

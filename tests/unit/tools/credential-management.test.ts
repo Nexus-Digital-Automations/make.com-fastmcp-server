@@ -6,9 +6,12 @@
 
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { UserError } from 'fastmcp';
-// Tool imports removed - will be handled by mock setupcredential-management.js';
 import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
-// Tool imports removed - will be handled by mock setupcredential-management.js';
+import { 
+  createMockServer, 
+  findTool, 
+  executeTool 
+} from '../../utils/test-helpers.js';
 
 // Advanced testing utilities
 class ChaosMonkey {
@@ -45,7 +48,8 @@ const encryptionTestCases = {
 };
 
 describe('Credential Management Tools', () => {
-  let server: FastMCP;
+  let mockServer: ReturnType<typeof createMockServer>;
+  let mockTool: any;
   let mockApiClient: MockMakeApiClient;
   let chaosMonkey: ChaosMonkey;
 
@@ -225,8 +229,12 @@ describe('Credential Management Tools', () => {
     ...overrides,
   });
 
-  beforeEach(() => {
-    // Server setup will be handled by test helpers
+  beforeEach(async () => {
+    // Create mock server and tool
+    const serverSetup = createMockServer();
+    mockServer = serverSetup.server;
+    mockTool = serverSetup.mockTool;
+    
     mockApiClient = new MockMakeApiClient();
     chaosMonkey = new ChaosMonkey({
       failureRate: 0.1,
@@ -235,7 +243,8 @@ describe('Credential Management Tools', () => {
     });
 
     // Add tools to server
-    // Tool setup handled by mock
+    const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
+    addCredentialManagementTools(mockServer, mockApiClient as any);
   });
 
   afterEach(() => {
@@ -244,34 +253,42 @@ describe('Credential Management Tools', () => {
 
   describe('Tool Registration', () => {
     test('should register all credential management tools', () => {
-      const tools = server.getTools();
+      const toolConfigs = mockTool.mock.calls.map((call: any[]) => call[0]);
       const expectedTools = [
-        'store-credential',
-        'retrieve-credential',
-        'list-credentials',
-        'update-credential',
-        'rotate-credential',
-        'delete-credential',
-        'audit-credential-access',
-        'manage-credential-rotations',
+        'store_credential',
+        'get_credential_status',
+        'rotate_credential',
+        'list_credentials',
+        'get_audit_events',
+        'migrate_credentials',
+        'generate_credential',
+        'cleanup_credentials',
       ];
 
       expectedTools.forEach(toolName => {
-        expect(tools).toHaveProperty(toolName);
+        const tool = toolConfigs.find((config: any) => config.name === toolName);
+        expect(tool).toBeDefined();
       });
     });
 
     test('should have correct tool schemas', () => {
-      const tools = server.getTools();
+      const toolConfigs = mockTool.mock.calls.map((call: any[]) => call[0]);
       
-      expect(tools['store-credential'].parameters).toBeDefined();
-      expect(tools['retrieve-credential'].parameters).toBeDefined();
-      expect(tools['list-credentials'].parameters).toBeDefined();
-      expect(tools['update-credential'].parameters).toBeDefined();
-      expect(tools['rotate-credential'].parameters).toBeDefined();
-      expect(tools['delete-credential'].parameters).toBeDefined();
-      expect(tools['audit-credential-access'].parameters).toBeDefined();
-      expect(tools['manage-credential-rotations'].parameters).toBeDefined();
+      const expectedTools = [
+        'store_credential',
+        'get_credential_status',
+        'rotate_credential',
+        'list_credentials',
+        'get_audit_events',
+        'migrate_credentials',
+        'generate_credential',
+        'cleanup_credentials',
+      ];
+      
+      expectedTools.forEach(toolName => {
+        const tool = toolConfigs.find((config: any) => config.name === toolName);
+        expect(tool?.parameters).toBeDefined();
+      });
     });
   });
 
