@@ -21,6 +21,250 @@ import DiagnosticEngine from '../lib/diagnostic-engine.js';
 import { defaultDiagnosticRules } from '../lib/diagnostic-rules.js';
 import { MakeBlueprint, TroubleshootingReport } from '../types/diagnostics.js';
 
+// Import performance analysis interfaces
+interface PerformanceAnalysisResult {
+  analysisTimestamp: string;
+  targetType: string;
+  targetId?: string;
+  timeRange: {
+    startTime: string;
+    endTime: string;
+    durationHours: number;
+  };
+  overallHealthScore: number;
+  performanceGrade: 'A' | 'B' | 'C' | 'D' | 'F';
+  bottlenecks: unknown[];
+  metrics: {
+    responseTime: {
+      average: number;
+      p50: number;
+      p95: number;
+      p99: number;
+      trend: 'improving' | 'stable' | 'degrading';
+    };
+    throughput: {
+      requestsPerSecond: number;
+      requestsPerMinute: number;
+      trend: 'improving' | 'stable' | 'degrading';
+    };
+    reliability: {
+      uptime: number;
+      errorRate: number;
+      successRate: number;
+      trend: 'improving' | 'stable' | 'degrading';
+    };
+    resources: {
+      cpuUsage: number;
+      memoryUsage: number;
+      networkUtilization: number;
+      trend: 'improving' | 'stable' | 'degrading';
+    };
+  };
+  trends: {
+    performanceDirection: 'improving' | 'stable' | 'degrading';
+    predictionConfidence: number;
+    projectedIssues: string[];
+  };
+  benchmarkComparison: {
+    industryStandard: string;
+    currentPerformance: string;
+    gap: string;
+    ranking: 'below_average' | 'average' | 'above_average' | 'excellent';
+  };
+  recommendations: {
+    immediate: string[];
+    shortTerm: string[];
+    longTerm: string[];
+    estimatedImpact: number;
+  };
+  costAnalysis?: {
+    currentCost: number;
+    optimizationPotential: number;
+    recommendedActions: string[];
+  };
+}
+
+interface ScenarioAnalysis {
+  scenarioId: string;
+  scenarioName: string;
+  diagnosticReport: TroubleshootingReport;
+  performanceAnalysis?: PerformanceAnalysisResult;
+  errors: string[];
+}
+
+interface ConsolidatedFindings {
+  totalScenarios: number;
+  healthyScenarios: number;
+  warningScenarios: number;
+  criticalScenarios: number;
+  commonIssues: Array<{
+    category: string;
+    severity: string;
+    title: string;
+    count: number;
+    affectedScenarios: string[];
+    description: string;
+    recommendations: string[];
+  }>;
+  performanceSummary: {
+    averageHealthScore: number;
+    averageResponseTime: number;
+    totalBottlenecks: number;
+    commonBottleneckTypes: string[];
+  };
+  securitySummary: {
+    averageSecurityScore: number;
+    totalSecurityIssues: number;
+    criticalSecurityIssues: number;
+    commonSecurityIssues: string[];
+  };
+  criticalActionItems: Array<{
+    severity: 'critical' | 'high';
+    action: string;
+    affectedScenarios: string[];
+    impact: string;
+    effort: 'low' | 'medium' | 'high';
+  }>;
+}
+
+interface ActionPlan {
+  immediate: Array<{
+    action: string;
+    priority: 'critical' | 'high';
+    estimatedTime: string;
+    impact: string;
+    scenarioIds: string[];
+  }>;
+  shortTerm: Array<{
+    action: string;
+    priority: 'medium' | 'high';
+    estimatedTime: string;
+    impact: string;
+    scenarioIds: string[];
+  }>;
+  longTerm: Array<{
+    action: string;
+    priority: 'low' | 'medium';
+    estimatedTime: string;
+    impact: string;
+    scenarioIds: string[];
+  }>;
+  timeline: {
+    phase1Duration: string;
+    phase2Duration: string;
+    phase3Duration: string;
+    totalDuration: string;
+  };
+}
+
+interface SystemOverview {
+  overallHealth: 'healthy' | 'warning' | 'critical' | 'unknown';
+  totalScenarios: number;
+  activeScenarios: number;
+  totalIssuesFound: number;
+  criticalIssuesFound: number;
+  averagePerformanceScore: number;
+  averageSecurityScore: number;
+  systemLoadIndicators: {
+    highVolumeScenarios: number;
+    errorProneScenarios: number;
+    slowPerformingScenarios: number;
+  };
+}
+
+interface CostAnalysisReport {
+  estimatedMonthlyCost: number;
+  costOptimizationPotential: number;
+  costBreakdown: {
+    highCostScenarios: Array<{
+      scenarioId: string;
+      scenarioName: string;
+      estimatedMonthlyCost: number;
+      optimizationPotential: number;
+    }>;
+  };
+  recommendations: Array<{
+    type: 'performance' | 'resource' | 'usage';
+    description: string;
+    estimatedSavings: number;
+    implementationEffort: 'low' | 'medium' | 'high';
+  }>;
+}
+
+interface _TroubleshootingReportFormatted {
+  metadata: {
+    reportId: string;
+    generatedAt: string;
+    analysisScope: {
+      scenarioCount: number;
+      timeRangeHours: number;
+      organizationId?: string;
+    };
+    executionTime: number;
+  };
+  executiveSummary: {
+    overallAssessment: string;
+    keyFindings: string[];
+    criticalRecommendations: string[];
+    businessImpact: {
+      riskLevel: 'low' | 'medium' | 'high' | 'critical';
+      estimatedDowntimeRisk: number;
+      costImpact: number;
+    };
+  };
+  systemOverview: SystemOverview;
+  scenarioAnalysis: Array<{
+    scenarioId: string;
+    scenarioName: string;
+    overallHealth: 'healthy' | 'warning' | 'critical' | 'unknown';
+    healthScore: number;
+    keyIssues: Array<{
+      category: string;
+      severity: string;
+      title: string;
+      impact: string;
+    }>;
+    performanceMetrics: {
+      responseTime: number;
+      errorRate: number;
+      successRate: number;
+      executionCount: number;
+    };
+  }>;
+  consolidatedFindings: ConsolidatedFindings;
+  actionPlan: ActionPlan;
+  performanceMetrics: {
+    systemWide: {
+      averageResponseTime: number;
+      overallErrorRate: number;
+      overallSuccessRate: number;
+      totalExecutions: number;
+    };
+    trends: {
+      performanceDirection: 'improving' | 'stable' | 'degrading';
+      errorTrend: 'improving' | 'stable' | 'degrading';
+    };
+  };
+  securityAssessment: {
+    overallSecurityScore: number;
+    securityIssuesFound: number;
+    criticalSecurityIssues: number;
+    recommendations: string[];
+    complianceStatus: {
+      dataPrivacy: 'compliant' | 'needs_attention' | 'non_compliant';
+      accessControl: 'compliant' | 'needs_attention' | 'non_compliant';
+      secretsManagement: 'compliant' | 'needs_attention' | 'non_compliant';
+    };
+  };
+  costAnalysis?: CostAnalysisReport;
+  appendices: {
+    detailedDiagnostics: TroubleshootingReport[];
+    performanceData: PerformanceAnalysisResult[];
+    rawMetrics: unknown[];
+    executionLogs: string[];
+  };
+}
+
 // Zod schemas for input validation
 const ScenarioFiltersSchema = z.object({
   teamId: z.string().optional().describe('Filter by team ID'),
@@ -1277,13 +1521,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         reportProgress({ progress: 20, total: 100 });
 
         // Phase 2: Run comprehensive diagnostics on each scenario
-        const scenarioAnalyses: Array<{
-          scenarioId: string;
-          scenarioName: string;
-          diagnosticReport: any;
-          performanceAnalysis?: any;
-          errors: string[];
-        }> = [];
+        const scenarioAnalyses: ScenarioAnalysis[] = [];
 
         const diagnosticEngine = new DiagnosticEngine();
         defaultDiagnosticRules.forEach(rule => {
@@ -1438,7 +1676,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
                 criticalIssues: analysis.diagnosticReport.summary.criticalIssues,
                 fixableIssues: analysis.diagnosticReport.summary.fixableIssues,
                 performanceScore: analysis.diagnosticReport.summary.performanceScore,
-                diagnostics: analysis.diagnosticReport.diagnostics.map((d: any) => ({
+                diagnostics: analysis.diagnosticReport.diagnostics.map((d: TroubleshootingReport['diagnostics'][0]) => ({
                   category: d.category,
                   severity: d.severity,
                   title: d.title,
@@ -1548,23 +1786,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
 
 // Helper functions for report generation
 
-interface ConsolidatedFindings {
-  totalIssues: number;
-  criticalIssues: number;
-  fixableIssues: number;
-  issuesByCategory: Record<string, number>;
-  issuesBySeverity: Record<string, number>;
-  topIssuePatterns: Array<{ pattern: string; frequency: number; severity: string }>;
-  securityRiskLevel: 'low' | 'medium' | 'high' | 'critical';
-  securityIssuesFound: number;
-  securityRecommendations: string[];
-  performanceIssues: Array<{ type: string; frequency: number; impact: string }>;
-  commonRecommendations: Array<{ recommendation: string; frequency: number; estimatedImpact: string }>;
-  criticalIssueRate: number;
-  fixableIssueRate: number;
-}
-
-function aggregateFindings(analyses: Array<{ diagnosticReport: any; errors: string[] }>): ConsolidatedFindings {
+function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFindings {
   let totalIssues = 0;
   let criticalIssues = 0;
   let fixableIssues = 0;
@@ -1750,7 +1972,7 @@ function generateSystemOverview(
   };
 }
 
-function generateActionPlan(findings: ConsolidatedFindings, includeTimeline: boolean): any {
+function generateActionPlan(findings: ConsolidatedFindings, includeTimeline: boolean): ActionPlan {
   const immediateActions: Array<{ action: string; priority: string; estimatedEffort: string; impact: string }> = [];
   const shortTermActions: Array<{ action: string; priority: string; estimatedEffort: string; impact: string }> = [];
   const longTermActions: Array<{ action: string; priority: string; estimatedEffort: string; impact: string }> = [];
@@ -1827,7 +2049,7 @@ function generateActionPlan(findings: ConsolidatedFindings, includeTimeline: boo
     }
   );
 
-  const result: any = {
+  const result: ActionPlan = {
     summary: {
       totalActions: immediateActions.length + shortTermActions.length + longTermActions.length,
       criticalActions: immediateActions.filter(a => a.priority === 'critical').length,
@@ -1851,7 +2073,7 @@ function generateActionPlan(findings: ConsolidatedFindings, includeTimeline: boo
   return result;
 }
 
-function generateCostAnalysis(findings: ConsolidatedFindings, scenarioCount: number): any {
+function generateCostAnalysis(findings: ConsolidatedFindings, scenarioCount: number): CostAnalysisReport {
   // Simplified cost analysis - in real implementation, this would integrate with billing APIs
   const baseOperationalCost = scenarioCount * 50; // $50 per scenario monthly estimate
   const inefficiencyCost = findings.performanceIssues.length * 25; // $25 per performance issue

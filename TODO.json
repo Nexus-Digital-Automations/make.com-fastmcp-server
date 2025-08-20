@@ -28,33 +28,35 @@
       "auto_created_for": "task_1755706954658_lw2dtoan1"
     },
     {
-      "id": "task_1755670033359_5zjfbmaur",
-      "title": "Implement automated troubleshooting and diagnostic system",
-      "description": "Add intelligent debugging tools: troubleshoot_scenario (comprehensive scenario diagnostics), diagnose_connection_issues (connection validation and health checks), analyze_performance_bottlenecks (identify slow operations), generate_troubleshooting_report (actionable fix recommendations). Combines multiple diagnostic checks into unified analysis.",
+      "id": "task_1755708755084_k19dggf02",
+      "title": "Fix ESLint parsing error and TypeScript warnings",
+      "description": "Fix critical ESLint parsing error in test file and resolve 39 TypeScript any-type warnings in performance-analysis.ts and scenarios.ts files",
       "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
+      "category": "linter-error",
+      "priority": "critical",
       "status": "in_progress",
       "dependencies": [],
       "important_files": [
+        "src/test/troubleshoot-scenario.test.ts",
+        "src/tools/performance-analysis.ts",
         "src/tools/scenarios.ts",
-        "src/tools/connections.ts",
-        "src/lib/"
+        "tsconfig.json",
+        "eslint.config.mjs"
       ],
       "success_criteria": [],
-      "estimate": "8-10 hours",
+      "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-20T06:07:13.360Z",
+      "created_at": "2025-08-20T16:52:35.084Z",
       "auto_research_created": false,
       "assigned_agent": "development_session_1755705576236_1_general_170770af",
-      "started_at": "2025-08-20T16:10:48.882Z",
+      "started_at": "2025-08-20T16:53:32.017Z",
       "claimed_by": "development_session_1755705576236_1_general_170770af",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755705576236_1_general_170770af",
           "role": "primary",
-          "assignedAt": "2025-08-20T16:10:48.882Z",
+          "assignedAt": "2025-08-20T16:53:32.017Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }

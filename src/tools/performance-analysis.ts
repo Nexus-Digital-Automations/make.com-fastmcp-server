@@ -53,6 +53,100 @@ const LiveAnalysisSchema = z.object({
 }).strict();
 
 // Performance analysis interfaces
+
+// Options and Filters interfaces
+interface PerformanceAnalysisOptions {
+  timeRangeHours: number;
+  includeBottleneckDetection?: boolean;
+  includePerformanceMetrics?: boolean;
+  includeTrendAnalysis?: boolean;
+  includeOptimizationRecommendations?: boolean;
+  includeCostAnalysis?: boolean;
+  performanceBenchmarking?: boolean;
+  detailedBreakdown?: boolean;
+  includeSystemMetrics?: boolean;
+  includeApiMetrics?: boolean;
+  includeWebhookMetrics?: boolean;
+  includeScenarioMetrics?: boolean;
+  generateRecommendations?: boolean;
+  benchmarkComparison?: boolean;
+  durationMinutes?: number;
+  samplingIntervalSeconds?: number;
+  alertThresholds?: AlertThresholds;
+}
+
+interface PerformanceAnalysisFilters {
+  minExecutionTime?: number;
+  errorThreshold: number;
+  severityFilter: 'all' | 'warning' | 'error' | 'critical';
+}
+
+interface PerformanceMetrics {
+  responseTime?: {
+    average: number;
+    p50: number;
+    p95: number;
+    p99: number;
+    trend: 'improving' | 'stable' | 'degrading';
+  } | number;
+  throughput?: {
+    requestsPerSecond: number;
+    requestsPerMinute: number;
+    trend: 'improving' | 'stable' | 'degrading';
+  };
+  reliability?: {
+    uptime: number;
+    errorRate: number;
+    successRate: number;
+    trend: 'improving' | 'stable' | 'degrading';
+  };
+  resources?: {
+    cpuUsage: number;
+    memoryUsage: number;
+    networkUtilization: number;
+    trend: 'improving' | 'stable' | 'degrading';
+  };
+  memory?: number;
+  rateLimiter?: {
+    requestsRemaining: number;
+    resetTime: number;
+  };
+  [key: string]: unknown;
+}
+
+interface TrendAnalysis {
+  performanceDirection: 'improving' | 'stable' | 'degrading';
+  predictionConfidence: number;
+  projectedIssues: string[];
+}
+
+interface BenchmarkComparison {
+  industryStandard: string;
+  currentPerformance: string;
+  gap: string;
+  ranking: 'below_average' | 'average' | 'above_average' | 'excellent';
+}
+
+interface OptimizationRecommendations {
+  immediate: string[];
+  shortTerm: string[];
+  longTerm: string[];
+  estimatedImpact: number;
+}
+
+interface CostAnalysis {
+  currentCost: number;
+  optimizationPotential: number;
+  recommendedActions: string[];
+}
+
+interface AlertThresholds {
+  responseTime: number;
+  errorRate: number;
+  cpuUsage: number;
+  memoryUsage: number;
+}
+
 interface PerformanceBottleneck {
   type: 'response_time' | 'throughput' | 'error_rate' | 'resource_usage' | 'rate_limiting' | 'webhook_queue';
   severity: 'low' | 'medium' | 'high' | 'critical';
@@ -193,8 +287,8 @@ class PerformanceAnalysisEngine {
   async analyzePerformanceBottlenecks(
     targetType: string,
     targetId: string | undefined,
-    options: any,
-    filters: any,
+    options: PerformanceAnalysisOptions,
+    filters: PerformanceAnalysisFilters,
     apiClient: MakeApiClient
   ): Promise<PerformanceAnalysisResult> {
     const startTime = Date.now();
@@ -277,7 +371,7 @@ class PerformanceAnalysisEngine {
    * Perform comprehensive system-wide performance analysis
    */
   async performComprehensiveAnalysis(
-    options: any,
+    options: PerformanceAnalysisOptions,
     apiClient: MakeApiClient
   ): Promise<PerformanceAnalysisResult> {
     this.componentLogger.info('Starting comprehensive performance analysis');
@@ -343,7 +437,7 @@ class PerformanceAnalysisEngine {
    * Perform live performance monitoring
    */
   async performLiveAnalysis(
-    options: any,
+    options: PerformanceAnalysisOptions,
     progressCallback?: (update: LivePerformanceUpdate) => void
   ): Promise<LivePerformanceUpdate[]> {
     const durationMs = options.durationMinutes * 60 * 1000;
@@ -396,7 +490,7 @@ class PerformanceAnalysisEngine {
     targetType: string,
     targetId: string | undefined,
     timeRange: { startTime: number; endTime: number; apiClient: MakeApiClient }
-  ): Promise<any> {
+  ): Promise<PerformanceMetrics> {
     const { apiClient } = timeRange;
 
     switch (targetType) {
@@ -553,7 +647,7 @@ class PerformanceAnalysisEngine {
   /**
    * Detect performance bottlenecks
    */
-  private async detectBottlenecks(metrics: any, filters: any): Promise<PerformanceBottleneck[]> {
+  private async detectBottlenecks(metrics: PerformanceMetrics, filters: PerformanceAnalysisFilters): Promise<PerformanceBottleneck[]> {
     const bottlenecks: PerformanceBottleneck[] = [];
 
     // Response time bottleneck detection
@@ -649,7 +743,7 @@ class PerformanceAnalysisEngine {
   /**
    * Analyze performance trends
    */
-  private async analyzeTrends(_metrics: any, _timeRangeHours: number): Promise<any> {
+  private async analyzeTrends(_metrics: PerformanceMetrics, _timeRangeHours: number): Promise<TrendAnalysis> {
     // In a real implementation, this would analyze historical data
     // For now, we'll simulate trend analysis based on current metrics
     
@@ -666,7 +760,7 @@ class PerformanceAnalysisEngine {
   /**
    * Compare performance to industry benchmarks
    */
-  private compareToBenchmarks(metrics: any): any {
+  private compareToBenchmarks(metrics: PerformanceMetrics): BenchmarkComparison {
     let responseTimeRanking = 'average';
     if (metrics.responseTime) {
       if (metrics.responseTime <= this.industryBenchmarks.responseTime.excellent) {
@@ -691,7 +785,7 @@ class PerformanceAnalysisEngine {
   /**
    * Calculate overall health score
    */
-  private calculateHealthScore(metrics: any, bottlenecks: PerformanceBottleneck[]): number {
+  private calculateHealthScore(metrics: PerformanceMetrics, bottlenecks: PerformanceBottleneck[]): number {
     let score = 100;
 
     // Deduct points for bottlenecks
@@ -739,7 +833,7 @@ class PerformanceAnalysisEngine {
   /**
    * Generate optimization recommendations
    */
-  private async generateRecommendations(bottlenecks: PerformanceBottleneck[], metrics: any): Promise<any> {
+  private async generateRecommendations(bottlenecks: PerformanceBottleneck[], metrics: PerformanceMetrics): Promise<OptimizationRecommendations> {
     const immediate: string[] = [];
     const shortTerm: string[] = [];
     const longTerm: string[] = [];
@@ -777,7 +871,7 @@ class PerformanceAnalysisEngine {
   /**
    * Analyze cost impact of performance issues
    */
-  private async analyzeCostImpact(metrics: any, bottlenecks: PerformanceBottleneck[], _apiClient: MakeApiClient): Promise<any> {
+  private async analyzeCostImpact(metrics: PerformanceMetrics, bottlenecks: PerformanceBottleneck[], _apiClient: MakeApiClient): Promise<CostAnalysis> {
     const costSavings = bottlenecks.reduce((sum, b) => sum + b.estimatedImpact.costSavings, 0) / bottlenecks.length || 0;
 
     return {
@@ -794,7 +888,7 @@ class PerformanceAnalysisEngine {
   /**
    * Format metrics for output
    */
-  private formatMetrics(metrics: any): any {
+  private formatMetrics(metrics: PerformanceMetrics): PerformanceMetrics {
     return {
       responseTime: {
         average: metrics.responseTime || 0,
@@ -851,7 +945,7 @@ class PerformanceAnalysisEngine {
   /**
    * Collect live performance metrics
    */
-  private async collectLiveMetrics(alertThresholds: any): Promise<LivePerformanceUpdate> {
+  private async collectLiveMetrics(alertThresholds: AlertThresholds): Promise<LivePerformanceUpdate> {
     const memUsage = process.memoryUsage();
     const cpuUsage = process.cpuUsage();
     
