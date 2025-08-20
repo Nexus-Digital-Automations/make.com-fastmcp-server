@@ -80,53 +80,6 @@
       "auto_created_for": "task_1755669991666_efyau9p5v"
     },
     {
-      "id": "task_1755666913339_v4i5cd3s0",
-      "title": "Research codebase features and tools inventory",
-      "description": "Conduct comprehensive analysis of the existing codebase to identify all features, tools, capabilities, and components. Create detailed documentation of current implementation including APIs, endpoints, utilities, and architectural patterns. This analysis will inform alignment with Make.com integration requirements.",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "src/",
-        "package.json",
-        "README.md",
-        "CLAUDE.md",
-        "development/guides/FASTMCP_TYPESCRIPT_PROTOCOL.md",
-        "./development/research-reports/research-report-task_1755666913339_v4i5cd3s0.md"
-      ],
-      "success_criteria": [
-        "Research report created: ./development/research-reports/research-report-task_1755666913339_v4i5cd3s0.md"
-      ],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:15:13.339Z",
-      "auto_research_created": false,
-      "started_at": "2025-08-20T05:58:15.432Z",
-      "claimed_by": "agent_1755669495432",
-      "assigned_agent": "agent_1755669495432",
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755667879480",
-          "action": "claimed",
-          "timestamp": "2025-08-20T05:31:19.480Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-20T05:52:33.043Z",
-          "reason": "Task stale for 21 minutes"
-        },
-        {
-          "agent": "agent_1755669495432",
-          "action": "claimed",
-          "timestamp": "2025-08-20T05:58:15.432Z"
-        }
-      ]
-    },
-    {
       "id": "task_1755670033359_5zjfbmaur",
       "title": "Implement automated troubleshooting and diagnostic system",
       "description": "Add intelligent debugging tools: troubleshoot_scenario (comprehensive scenario diagnostics), diagnose_connection_issues (connection validation and health checks), analyze_performance_bottlenecks (identify slow operations), generate_troubleshooting_report (actionable fix recommendations). Combines multiple diagnostic checks into unified analysis.",
@@ -251,6 +204,43 @@
       "subtasks": [],
       "created_at": "2025-08-20T06:11:03.446Z",
       "auto_research_created": true
+    },
+    {
+      "id": "task_1755666929288_dhpizqk98",
+      "title": "Align codebase with Make.com and FastMCP standards",
+      "description": "Ensure the FastMCP server implementation follows FastMCP TypeScript Protocol specifications and aligns with Make.com integration requirements. Verify all tools, resources, and prompts are properly structured according to MCP standards. Implement production-ready authentication, error handling, and logging. Validate compliance with both FastMCP framework patterns and Make.com connector standards.",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "development/guides/FASTMCP_TYPESCRIPT_PROTOCOL.md",
+        "src/",
+        "package.json"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-20T05:15:29.291Z",
+      "auto_research_created": true,
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755668780387",
+          "action": "claimed",
+          "timestamp": "2025-08-20T05:46:20.387Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-20T06:05:32.558Z",
+          "reason": "Task stale for 19 minutes"
+        }
+      ]
     },
     {
       "id": "task_1755045713683_review3",
@@ -380,45 +370,6 @@
       "subtasks": [],
       "created_at": "2025-08-20T06:06:40.296Z",
       "auto_research_created": true
-    },
-    {
-      "id": "task_1755666929288_dhpizqk98",
-      "title": "Align codebase with Make.com and FastMCP standards",
-      "description": "Ensure the FastMCP server implementation follows FastMCP TypeScript Protocol specifications and aligns with Make.com integration requirements. Verify all tools, resources, and prompts are properly structured according to MCP standards. Implement production-ready authentication, error handling, and logging. Validate compliance with both FastMCP framework patterns and Make.com connector standards.",
-      "mode": "DEVELOPMENT",
-      "category": "enhancement",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [
-        "task_1755666913339_v4i5cd3s0"
-      ],
-      "important_files": [
-        "development/guides/FASTMCP_TYPESCRIPT_PROTOCOL.md",
-        "src/",
-        "package.json"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-20T05:15:29.291Z",
-      "auto_research_created": true,
-      "started_at": null,
-      "claimed_by": null,
-      "assigned_agent": null,
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755668780387",
-          "action": "claimed",
-          "timestamp": "2025-08-20T05:46:20.387Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-20T06:05:32.558Z",
-          "reason": "Task stale for 19 minutes"
-        }
-      ]
     }
   ],
   "current_mode": "DEVELOPMENT",
