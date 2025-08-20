@@ -13,7 +13,8 @@ import {
   expectToolCall,
   expectProgressReported,
   expectValidZodParse,
-  expectInvalidZodParse
+  expectInvalidZodParse,
+  expectToolExecutionToFail
 } from '../../utils/test-helpers.js';
 import type { 
   MakeCustomVariable 
@@ -349,7 +350,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const tool = findTool(mockTool, 'create-custom-variable');
         
         // Test invalid variable type
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             name: 'TEST_VAR',
             value: 'test',
@@ -360,7 +361,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         );
         
         // Test invalid scope
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             name: 'TEST_VAR',
             value: 'test',
@@ -371,7 +372,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         );
         
         // Test empty name
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             name: '',
             value: 'test',
@@ -807,7 +808,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const tool = findTool(mockTool, 'bulk-variable-operations');
         
         // Test invalid operation
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             operation: 'invalid-operation',
             variableIds: [1, 2, 3]
@@ -815,7 +816,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         );
         
         // Test empty variable IDs
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             operation: 'delete',
             variableIds: []
@@ -823,7 +824,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         );
         
         // Test too many variable IDs
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             operation: 'delete',
             variableIds: Array.from({ length: 101 }, (_, i) => i + 1)
@@ -1169,7 +1170,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const tool = findTool(mockTool, 'bulk-resolve-incomplete-executions');
         
         // Test empty execution IDs
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             executionIds: [],
             action: 'retry'
@@ -1177,7 +1178,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         );
         
         // Test too many execution IDs
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             executionIds: Array.from({ length: 51 }, (_, i) => i + 1),
             action: 'retry'
@@ -1185,7 +1186,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         );
         
         // Test invalid action
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             executionIds: [1, 2],
             action: 'invalid-action'
@@ -1441,7 +1442,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const tool = findTool(mockTool, 'create-recovery-automation-rule');
         
         // Test empty name
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             name: '',
             conditions: {},
@@ -1450,7 +1451,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         );
         
         // Test invalid primary action
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             name: 'Test Rule',
             conditions: {},
@@ -1459,7 +1460,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         );
         
         // Test invalid priority
-        await expectInvalidZodParse(() => 
+        await expectToolExecutionToFail(() => 
           executeTool(tool, {
             name: 'Test Rule',
             conditions: {},

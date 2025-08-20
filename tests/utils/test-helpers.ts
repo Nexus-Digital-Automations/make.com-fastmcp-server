@@ -282,6 +282,13 @@ export const expectInvalidZodParse = (schema: any, data: any, expectedErrors?: s
 };
 
 /**
+ * Expect a tool execution function to throw an error (for validation testing)
+ */
+export const expectToolExecutionToFail = async (executionFn: () => Promise<any>, expectedErrorMessage?: string) => {
+  await expect(executionFn()).rejects.toThrow(expectedErrorMessage || '');
+};
+
+/**
  * Mock API client with common response patterns
  */
 export const createMockApiClientWithDefaults = (): MockMakeApiClient => {
@@ -434,6 +441,7 @@ export default {
   createComplexTestScenario,
   expectValidZodParse,
   expectInvalidZodParse,
+  expectToolExecutionToFail,
   createMockApiClientWithDefaults,
   simulateNetworkConditions,
   expectErrorResponse,
