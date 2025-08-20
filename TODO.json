@@ -2,43 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755670041265_vzwremzqy",
-      "title": "Implement CI/CD and test integration tools",
-      "description": "Add developer workflow tools: run_test_suite (execute specific test categories), get_test_coverage (retrieve coverage reports), validate_deployment_readiness (pre-deployment checks), generate_build_report (compilation and quality metrics). Integrates MCP server testing capabilities into CI/CD pipelines.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "medium",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "tests/",
-        "scripts/",
-        "src/tools/"
-      ],
-      "success_criteria": [],
-      "estimate": "4-6 hours",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-20T06:07:21.269Z",
-      "auto_research_created": true,
-      "started_at": null,
-      "claimed_by": null,
-      "assigned_agent": null,
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755715801079",
-          "action": "claimed",
-          "timestamp": "2025-08-20T18:50:01.079Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-20T19:38:14.463Z",
-          "reason": "Task stale for 48 minutes"
-        }
-      ]
-    },
-    {
       "id": "task_1755670263442_f6v7nk9t9",
       "title": "Enterprise-grade Make.com FastMCP enhancements initiative",
       "description": "Comprehensive initiative to elevate the FastMCP server from comprehensive management tool to complete proactive governance and development platform. Includes: 1) Deeper Platform Integration (data structures, blueprints, marketplace), 2) Advanced Governance & Cost Control (budgeting, policies), 3) Enhanced Observability (log streaming, troubleshooting), 4) CI/CD Integration (testing, deployment tools). Total estimated effort: 40-60 hours across 9 feature areas.",

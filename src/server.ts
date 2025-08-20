@@ -34,6 +34,7 @@ import { addCompliancePolicyTools } from './tools/compliance-policy.js';
 import { addPolicyComplianceValidationTools } from './tools/policy-compliance-validation.js';
 import { addMarketplaceTools } from './tools/marketplace.js';
 import { addBudgetControlTools } from './tools/budget-control.js';
+import { addCICDIntegrationTools } from './tools/cicd-integration.js';
 
 export class MakeServerInstance {
   private server: FastMCP;
@@ -86,6 +87,7 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **Audit & Security**: Immutable audit logging, security health monitoring, incident management, compliance evidence collection
 - **Public App Marketplace**: Advanced app discovery with GraphQL-style filtering, comprehensive app specifications, AI-powered recommendations, integration planning tools
 - **Enterprise Budget Control**: Advanced budget configuration with multi-tenant support, real-time cost analysis and projections, ML-powered forecasting, automated scenario control with approval workflows
+- **CI/CD Integration**: Enterprise developer workflow automation with test suite execution, coverage analysis, deployment readiness validation, comprehensive build reporting
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 
@@ -363,6 +365,12 @@ ${configManager.isAuthEnabled() ?
             'budget-threshold-monitoring',
             'cost-forecasting-analytics',
             'approval-workflow-management',
+            'cicd-integration',
+            'test-suite-execution',
+            'coverage-analysis',
+            'deployment-readiness-validation',
+            'build-reporting-analytics',
+            'developer-workflow-automation',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -562,7 +570,10 @@ ${configManager.isAuthEnabled() ?
     // Add enterprise budget control and cost management tools
     addBudgetControlTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control)');
+    // Add CI/CD integration and developer workflow tools
+    addCICDIntegrationTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control + cicd-integration)');
   }
 
   public getServer(): FastMCP {
