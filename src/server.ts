@@ -35,6 +35,7 @@ import { addPolicyComplianceValidationTools } from './tools/policy-compliance-va
 import { addMarketplaceTools } from './tools/marketplace.js';
 import { addBudgetControlTools } from './tools/budget-control.js';
 import { addCICDIntegrationTools } from './tools/cicd-integration.js';
+import { addAIGovernanceEngineTools } from './tools/ai-governance-engine.js';
 import { addZeroTrustAuthTools } from './tools/zero-trust-auth.js';
 import { addMultiTenantSecurityTools } from './tools/multi-tenant-security.js';
 import { addEnterpriseSecretsTools } from './tools/enterprise-secrets.js';
@@ -94,6 +95,7 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 - **CI/CD Integration**: Enterprise developer workflow automation with test suite execution, coverage analysis, deployment readiness validation, comprehensive build reporting
 - **Multi-Tenant Security Architecture**: Comprehensive tenant isolation with cryptographic separation, network segmentation, resource quotas, governance policies, data leakage prevention, and compliance boundaries
 - **Enterprise Secrets Management**: HashiCorp Vault integration with HSM support, automated key rotation, dynamic secret generation, RBAC secret access, secret scanning and leakage prevention, breach detection and response, comprehensive audit trails for compliance
+- **AI-Driven Governance**: Intelligent compliance monitoring with real-time alerts, ML-powered predictive analytics, automated policy enforcement, policy conflict detection and resolution, risk assessment with behavioral analytics, automated remediation workflows, governance intelligence dashboard
 
 ## Authentication:
 ${configManager.isAuthEnabled() ? 
@@ -396,6 +398,14 @@ ${configManager.isAuthEnabled() ?
             'secret-scanning-leakage-prevention',
             'breach-detection-response',
             'secrets-audit-compliance',
+            'ai-driven-governance',
+            'intelligent-compliance-monitoring',
+            'ml-powered-predictive-analytics',
+            'automated-policy-enforcement',
+            'policy-conflict-detection-resolution',
+            'behavioral-risk-assessment',
+            'automated-remediation-workflows',
+            'governance-intelligence-dashboard',
           ],
           uptime: process.uptime(),
           memory: process.memoryUsage(),
@@ -607,7 +617,10 @@ ${configManager.isAuthEnabled() ?
     // Add Enterprise Secrets Management tools
     addEnterpriseSecretsTools(this.server, this.apiClient);
     
-    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control + cicd-integration + zero-trust-auth + multi-tenant-security + enterprise-secrets)');
+    // Add AI-driven governance engine with intelligent compliance monitoring
+    addAIGovernanceEngineTools(this.server, this.apiClient);
+    
+    this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control + cicd-integration + zero-trust-auth + multi-tenant-security + enterprise-secrets + ai-governance-engine)');
   }
 
   public getServer(): FastMCP {
