@@ -39,6 +39,48 @@
       ]
     },
     {
+      "id": "task_1755802584362_9fmkng8c6",
+      "title": "Expand test coverage for core FastMCP server components",
+      "description": "Building on the resolved Jest infrastructure issues, expand test coverage for critical server components:\\n\\n1. Implement comprehensive unit tests for middleware components\\n2. Create integration tests for API client functionality\\n3. Add end-to-end tests for tool registration and execution\\n4. Expand test coverage for error handling and edge cases\\n5. Create performance tests for high-load scenarios\\n\\nTarget: Achieve 60%+ test coverage (currently ~20%) by focusing on core components with highest business value.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [
+        "./src/middleware/",
+        "./src/lib/",
+        "./tests/",
+        "./jest.config.js",
+        "./coverage/",
+        "./development/reports/comprehensive-testing-validation-strategies-fastmcp-make-integration.md"
+      ],
+      "success_criteria": [
+        "Achieve 60%+ total test coverage",
+        "All middleware components have unit tests",
+        "API client has comprehensive integration tests",
+        "Tool execution has e2e test coverage",
+        "Performance tests validate high-load scenarios"
+      ],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T18:56:24.362Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755802525688_1_general_d994ffea",
+      "started_at": "2025-08-21T18:56:30.209Z",
+      "claimed_by": "development_session_1755802525688_1_general_d994ffea",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755802525688_1_general_d994ffea",
+          "role": "primary",
+          "assignedAt": "2025-08-21T18:56:30.209Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
       "id": "task_1755772544463_kewye1muj",
       "title": "Create comprehensive test suite for Make.com FastMCP server",
       "description": "Implement comprehensive test coverage for the FastMCP server. Current coverage is only 1.36% with zero coverage for all tool files. Need to create unit tests, integration tests, and end-to-end tests for all major components including tools, middleware, API client, and server functionality.",
@@ -257,6 +299,27 @@
       "maxConcurrentTasks": 5,
       "createdAt": "2025-08-21T18:53:11.387Z",
       "sessionId": "session_1755802391386",
+      "metadata": {}
+    },
+    "development_session_1755802525688_1_general_d994ffea": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-21T18:55:25.689Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-21T18:55:25.689Z",
+      "sessionId": "session_1755802525688",
       "metadata": {}
     }
   },

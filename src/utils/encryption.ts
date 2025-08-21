@@ -176,7 +176,7 @@ export class EncryptionService {
       const tag = Buffer.from(tagB64, 'base64');
       
       // Create decipher with IV
-      const decipher = crypto.createDecipheriv(encryptedData.algorithm, key, iv);
+      const decipher = crypto.createDecipheriv(encryptedData.algorithm, key, iv) as crypto.DecipherGCM;
       decipher.setAuthTag(tag);
       
       // Decrypt data
