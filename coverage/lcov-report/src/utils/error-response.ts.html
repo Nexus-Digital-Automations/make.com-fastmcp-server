@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">24.52% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>13/53</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">17.64% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>6/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">10% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>1/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">24.52% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>13/53</span>
             </div>
         
             
@@ -309,20 +309,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -550,20 +550,20 @@
  * Provides consistent error response structure with correlation tracking
  */
 &nbsp;
-import { randomUUID } <span class="cstat-no" title="statement not covered" >from 'crypto';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { MakeServerError, ErrorContext, UserError, EnhancedUser</span>Error, getErrorCode, getErrorStatusCode, getErrorCorrelationId } from './errors.js';
+import { randomUUID } from 'crypto';
+import { MakeServerError, ErrorContext, Use<span class="branch-1 cbranch-no" title="branch not covered" >rError, EnhancedUse</span>rError, getErrorCode, getErrorStatusCode, getErrorCorrelationId } from './errors.js';
 import logger from '../lib/logger.js';
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >export interface ErrorResponse {</span>
-<span class="cstat-no" title="statement not covered" >  error: {</span>
-<span class="cstat-no" title="statement not covered" >    message: string;</span>
-<span class="cstat-no" title="statement not covered" >    code: string;</span>
-<span class="cstat-no" title="statement not covered" >    statusCode: number;</span>
-<span class="cstat-no" title="statement not covered" >    correlationId: string;</span>
-<span class="cstat-no" title="statement not covered" >    timestamp: string;</span>
-    context?: Err<span class="cstat-no" title="statement not covered" >orContext;</span>
-    details?: Record<span class="cstat-no" title="statement not covered" >&lt;string, unknown&gt;;</span>
-    stack?: string;<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+export interface ErrorResponse {
+  error: {
+    message: string;
+    code: string;
+    statusCode: number;
+    correlationId: string;
+    timestamp: string;
+    context?: ErrorContext;
+    details?: Record&lt;string, unknown&gt;;
+    stack?: string;
   };
   success: false;
 }
@@ -793,7 +793,7 @@ export function extractCorrelationId(context: {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T22:09:45.991Z
+                at 2025-08-21T22:15:22.071Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

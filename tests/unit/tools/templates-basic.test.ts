@@ -885,6 +885,7 @@ describe('Template Management Tools - Basic Tests', () => {
     it('should implement secure template creation with enterprise controls', async () => {
       const enterpriseTemplate = {
         ...testTemplate,
+        name: 'Enterprise Security Template',
         securityControls: {
           encryptionRequired: true,
           auditingEnabled: true,

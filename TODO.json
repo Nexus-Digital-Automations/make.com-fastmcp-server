@@ -36,7 +36,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -44,7 +44,17 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-21T21:03:08.972Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "started_at": "2025-08-21T22:14:16.319Z",
+      "claimed_by": "agent_1755814456319",
+      "assigned_agent": "agent_1755814456319",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755814456319",
+          "action": "claimed",
+          "timestamp": "2025-08-21T22:14:16.319Z"
+        }
+      ]
     },
     {
       "id": "task_1755801812833_ggy1i74w8",
@@ -53,7 +63,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -62,9 +72,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T18:43:32.833Z",
       "auto_research_created": false,
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
+      "assigned_agent": "development_session_1755814264541_1_general_8ec8559c",
+      "started_at": "2025-08-21T22:14:34.714Z",
+      "claimed_by": "development_session_1755814264541_1_general_8ec8559c",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755801819988_1_general_618xxr",
@@ -89,6 +99,13 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T19:21:14.286Z",
           "reason": "Task stale for 15 minutes"
+        },
+        {
+          "agentId": "development_session_1755814264541_1_general_8ec8559c",
+          "role": "primary",
+          "assignedAt": "2025-08-21T22:14:34.714Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
     },
@@ -202,13 +219,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755812965892_1_general_d1db199a": {
+    "development_session_1755814264541_1_general_8ec8559c": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T21:49:25.893Z",
+      "lastHeartbeat": "2025-08-21T22:11:04.541Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -219,8 +236,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T21:49:25.893Z",
-      "sessionId": "session_1755812965892",
+      "createdAt": "2025-08-21T22:11:04.541Z",
+      "sessionId": "session_1755814264541",
       "metadata": {}
     }
   },
