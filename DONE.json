@@ -8878,9 +8878,62 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755768736155_1tj8fj5dw",
+      "title": "Research: Complete FastMCP annotations for remaining tool files with incomplete annotations",
+      "description": "Research and analysis required for implementing: \"Complete FastMCP annotations for remaining tool files with incomplete annotations\"\n\n**Implementation Task Details:**\nSeveral tool files have incomplete FastMCP annotations or are missing critical annotation properties. Files identified with missing or incomplete annotations: src/middleware/caching.ts, src/tools/scenario-archival-policy.ts (missing complete annotations), src/tools/folders.ts (missing readOnlyHint/destructiveHint), src/tools/analytics.ts (missing destructiveHint/idempotentHint), src/tools/performance-analysis.ts (missing readOnlyHint/destructiveHint/idempotentHint), src/tools/templates.ts (missing readOnlyHint/destructiveHint), src/tools/budget-control.ts (missing complete annotations), and others. Apply consistent security-focused annotation patterns.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755768736155_2bl312o3e\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755768736155_1tj8fj5dw.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755768736155_1tj8fj5dw.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T09:32:16.155Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755768736155_2bl312o3e",
+      "assigned_agent": "development_session_1755768221401_1_general_78975474",
+      "started_at": "2025-08-21T09:32:23.483Z",
+      "claimed_by": "development_session_1755768221401_1_general_78975474",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755768221401_1_general_78975474",
+          "role": "primary",
+          "assignedAt": "2025-08-21T09:32:23.483Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T09:33:52.746Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T09:33:52.747Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 208,
-  "last_completion": "2025-08-21T09:30:42.201Z",
+  "total_completed": 209,
+  "last_completion": "2025-08-21T09:33:52.747Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

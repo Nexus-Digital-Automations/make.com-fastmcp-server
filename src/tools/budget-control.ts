@@ -264,6 +264,10 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
     parameters: BudgetConfigurationSchema,
     annotations: {
       title: 'Budget Configuration',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
     },
     execute: async (input, { log, session }) => {
       const { name, description, tenantId, organizationId, budgetLimits, budgetPeriod, alertThresholds, automatedActions, scope, isActive } = input;
@@ -400,6 +404,9 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
     annotations: {
       title: 'Budget Status Check',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
       const { budgetId, includeProjections, includeRecommendations } = input;
@@ -558,6 +565,10 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
     parameters: CostProjectionRequestSchema,
     annotations: {
       title: 'Cost Forecasting',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
       const { budgetId, projectionDays, includeSeasonality, confidenceLevel, projectionModel } = input;
@@ -714,6 +725,10 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
     parameters: ScenarioControlSchema,
     annotations: {
       title: 'Automated Cost Control',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
       const { budgetId, action, targetScenarios, priority, reason, dryRun, approvalRequired } = input;

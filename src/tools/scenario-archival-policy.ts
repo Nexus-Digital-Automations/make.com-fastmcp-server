@@ -714,6 +714,10 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
     parameters: CreateScenarioArchivalPolicySchema,
     annotations: {
       title: 'Set Scenario Archival Policy',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
       log.info('Creating scenario archival policy', {
@@ -1005,6 +1009,10 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
     parameters: EvaluatePolicySchema,
     annotations: {
       title: 'Evaluate Archival Policy',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
       log.info('Evaluating scenario archival policy', {
@@ -1207,6 +1215,8 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
     annotations: {
       title: 'List Archival Policies',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
@@ -1308,6 +1318,10 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
     parameters: UpdateArchivalPolicySchema,
     annotations: {
       title: 'Update Archival Policy',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
     },
     execute: async (input, { log }) => {
       log.info('Updating scenario archival policy', {
@@ -1473,6 +1487,10 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
     }),
     annotations: {
       title: 'Delete Archival Policy',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
     },
     execute: async (input, { log }) => {
       log.info('Deleting scenario archival policy', { policyId: input.policyId });

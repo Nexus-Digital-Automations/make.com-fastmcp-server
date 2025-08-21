@@ -1,6 +1,36 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1755768736155_2bl312o3e",
+      "title": "Complete FastMCP annotations for remaining tool files with incomplete annotations",
+      "description": "Several tool files have incomplete FastMCP annotations or are missing critical annotation properties. Files identified with missing or incomplete annotations: src/middleware/caching.ts, src/tools/scenario-archival-policy.ts (missing complete annotations), src/tools/folders.ts (missing readOnlyHint/destructiveHint), src/tools/analytics.ts (missing destructiveHint/idempotentHint), src/tools/performance-analysis.ts (missing readOnlyHint/destructiveHint/idempotentHint), src/tools/templates.ts (missing readOnlyHint/destructiveHint), src/tools/budget-control.ts (missing complete annotations), and others. Apply consistent security-focused annotation patterns.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T09:32:16.158Z",
+      "auto_research_created": true,
+      "assigned_agent": "development_session_1755768221401_1_general_78975474",
+      "started_at": "2025-08-21T09:34:01.063Z",
+      "claimed_by": "development_session_1755768221401_1_general_78975474",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755768221401_1_general_78975474",
+          "role": "primary",
+          "assignedAt": "2025-08-21T09:34:01.063Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,

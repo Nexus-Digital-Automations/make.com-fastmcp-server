@@ -292,6 +292,8 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
     description: 'Create a new folder for organizing templates, scenarios, and connections',
     annotations: {
       title: 'Create Folder',
+      readOnlyHint: false,
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
@@ -385,6 +387,8 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
     annotations: {
       title: 'List Folders',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: FolderListSchema,
@@ -483,6 +487,8 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
     annotations: {
       title: 'Get Folder Contents',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: z.object({
@@ -552,6 +558,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
     name: 'move-items',
     description: 'Move or copy items between folders with bulk operations',
     parameters: MoveItemsSchema,
+    annotations: {
+      title: 'Move Items',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { items, targetFolderId, copyInsteadOfMove } = input;
 
@@ -621,6 +634,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
     name: 'create-data-store',
     description: 'Create a new data store for persistent data management',
     parameters: DataStoreCreateSchema,
+    annotations: {
+      title: 'Create Data Store',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, description, type, organizationId, teamId, structure, settings, permissions } = input;
 
@@ -732,6 +752,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
       sortBy: z.enum(['name', 'type', 'createdAt', 'recordCount', 'sizeUsed']).default('name').describe('Sort field'),
       sortOrder: z.enum(['asc', 'desc']).default('asc').describe('Sort order'),
     }),
+    annotations: {
+      title: 'List Data Stores',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { type, organizationId, teamId, includeUsage, includeStructure, limit, offset, sortBy, sortOrder } = input;
 
@@ -819,6 +846,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
     name: 'list-data-structures',
     description: 'List and filter data structures with usage and validation information',
     parameters: DataStructureListSchema,
+    annotations: {
+      title: 'List Data Structures',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { organizationId, teamId, searchQuery, includeUsage, includeValidation, limit, offset, sortBy, sortOrder } = input;
 
@@ -913,6 +947,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
       includeValidation: z.boolean().default(true).describe('Include validation details'),
       includeDataStores: z.boolean().default(false).describe('Include associated data stores'),
     }),
+    annotations: {
+      title: 'Get Data Structure',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { id, includeUsage, includeValidation, includeDataStores } = input;
 
@@ -991,6 +1032,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
     name: 'create-data-structure',
     description: 'Create a new data structure with field specifications and validation rules',
     parameters: DataStructureCreateSchema,
+    annotations: {
+      title: 'Create Data Structure',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, description, organizationId, teamId, specification, strict } = input;
 
@@ -1083,6 +1131,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
     name: 'update-data-structure',
     description: 'Update an existing data structure with migration support',
     parameters: DataStructureUpdateSchema,
+    annotations: {
+      title: 'Update Data Structure',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { id, name, description, specification, strict, migrationOptions } = input;
 
@@ -1172,6 +1227,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
       force: z.boolean().default(false).describe('Force deletion even with associated data stores'),
       confirmDeletion: z.boolean().default(false).describe('Confirm deletion of the data structure'),
     }),
+    annotations: {
+      title: 'Delete Data Structure',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { id, force, confirmDeletion } = input;
 
@@ -1266,6 +1328,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
       includeRecords: z.boolean().default(false).describe('Include sample records'),
       recordsLimit: z.number().min(1).max(100).default(10).describe('Number of sample records to include'),
     }),
+    annotations: {
+      title: 'Get Data Store',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { id, includeStructure, includeUsage, includeRecords, recordsLimit } = input;
 
@@ -1372,6 +1441,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
         admin: z.array(z.string()).optional().describe('Updated admin permissions'),
       }).optional().describe('Updated permissions'),
     }),
+    annotations: {
+      title: 'Update Data Store',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { id, name, description, settings, permissions } = input;
 
@@ -1435,6 +1511,13 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
       exportData: z.boolean().default(false).describe('Export data before deletion'),
       exportFormat: z.enum(['json', 'csv']).default('json').describe('Export format for data backup'),
     }),
+    annotations: {
+      title: 'Delete Data Store',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { id, confirmDeletion, exportData, exportFormat } = input;
 
