@@ -631,30 +631,31 @@ class ZeroTrustAuthEngine {
 /**
  * Zero Trust Authentication Tool
  */
-const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof AuthenticationRequestSchema; execute: (input: z.infer<typeof AuthenticationRequestSchema>) => Promise<string> } => ({
+const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
   name: 'zero_trust_authenticate',
   description: 'Perform zero trust authentication with multi-factor validation and risk assessment',
   inputSchema: AuthenticationRequestSchema,
-  execute: async (input: z.infer<typeof AuthenticationRequestSchema>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
+    const parsedInput = AuthenticationRequestSchema.parse(input);
     const authEngine = ZeroTrustAuthEngine.getInstance();
     
     try {
       // Generate device fingerprint
       const deviceFingerprint = crypto
         .createHash('sha256')
-        .update(JSON.stringify(input.deviceFingerprint, Object.keys(input.deviceFingerprint).sort()))
+        .update(JSON.stringify(parsedInput.deviceFingerprint, Object.keys(parsedInput.deviceFingerprint).sort()))
         .digest('hex');
 
       // Simulate user authentication (in real implementation, validate against user store)
-      const isValidUser = input.username.length > 0 && input.password.length >= 8;
+      const isValidUser = parsedInput.username.length > 0 && parsedInput.password.length >= 8;
       
       if (!isValidUser) {
         await auditLogger.logEvent({
           level: 'warn',
           category: 'authentication',
           action: 'login_failed',
-          userId: input.username,
-          ipAddress: input.ipAddress,
+          userId: parsedInput.username,
+          ipAddress: parsedInput.ipAddress,
           success: false,
           details: { reason: 'Invalid credentials', deviceFingerprint },
           riskLevel: 'medium',
@@ -674,7 +675,7 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; des
 
       // Assess device trust
       const deviceTrust = authEngine.assessDeviceTrust({
-        fingerprint: input.deviceFingerprint,
+        fingerprint: parsedInput.deviceFingerprint,
         complianceCheck: {
           isManaged: true, // Simplified for demo
           hasAntivirus: true,
@@ -686,36 +687,36 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; des
       });
 
       // Analyze user behavior (simplified)
-      const behaviorAnalysis = authEngine.analyzeBehavior(input.username, {
+      const behaviorAnalysis = authEngine.analyzeBehavior(parsedInput.username, {
         accessPattern: {
           loginTime: new Date().toISOString(),
-          ipAddress: input.ipAddress,
-          userAgent: input.deviceFingerprint.userAgent,
+          ipAddress: parsedInput.ipAddress,
+          userAgent: parsedInput.deviceFingerprint.userAgent,
         },
-        geolocation: input.geolocation,
+        geolocation: parsedInput.geolocation,
         typingPattern: {
           averageSpeed: 45, // Simulated
         },
       });
 
       // Calculate overall risk score
-      const networkRisk = input.riskContext.networkType === 'tor' ? 80 : 
-                         input.riskContext.networkType === 'public' ? 40 : 10;
+      const networkRisk = parsedInput.riskContext.networkType === 'tor' ? 80 : 
+                         parsedInput.riskContext.networkType === 'public' ? 40 : 10;
       
       const overallRiskScore = authEngine['calculateRiskScore']({
         userBehaviorScore: behaviorAnalysis.riskScore,
         deviceTrustScore: 100 - deviceTrust.trustScore,
         networkScore: networkRisk,
-        temporalScore: input.riskContext.accessPattern === 'unusual' ? 60 : 20,
+        temporalScore: parsedInput.riskContext.accessPattern === 'unusual' ? 60 : 20,
       });
 
       // Determine if additional authentication is required
-      const requiresAdditionalAuth = overallRiskScore > 40 || !input.mfaCode;
+      const requiresAdditionalAuth = overallRiskScore > 40 || !parsedInput.mfaCode;
       const authMethods = ['password'];
 
-      if (input.mfaCode) {
+      if (parsedInput.mfaCode) {
         // In real implementation, validate TOTP code
-        const isMfaValid = input.mfaCode.length === 6;
+        const isMfaValid = parsedInput.mfaCode.length === 6;
         if (isMfaValid) {
           authMethods.push('totp');
         } else {
@@ -733,7 +734,7 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; des
       if (!requiresAdditionalAuth) {
         // Create secure session
         const session = await authEngine.createSession(
-          input.username,
+          parsedInput.username,
           deviceFingerprint,
           overallRiskScore
         );
@@ -745,9 +746,9 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; des
         level: 'info',
         category: 'authentication',
         action: 'login_success',
-        userId: input.username,
+        userId: parsedInput.username,
         sessionId,
-        ipAddress: input.ipAddress,
+        ipAddress: parsedInput.ipAddress,
         success: true,
         details: {
           authMethods,
@@ -777,8 +778,8 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; des
     } catch (error) {
       componentLogger.error('Zero trust authentication failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        username: input.username,
-        ipAddress: input.ipAddress,
+        username: parsedInput.username,
+        ipAddress: parsedInput.ipAddress,
       });
 
       return JSON.stringify({
@@ -795,25 +796,26 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; des
 /**
  * MFA Setup Tool
  */
-const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof MFASetupSchema; execute: (input: z.infer<typeof MFASetupSchema>) => Promise<string> } => ({
+const createMFASetupTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
   name: 'setup_mfa',
   description: 'Setup multi-factor authentication for a user account',
   inputSchema: MFASetupSchema,
-  execute: async (input: z.infer<typeof MFASetupSchema>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
+    const parsedInput = MFASetupSchema.parse(input);
     try {
       let result: MFASetupResult;
 
-      switch (input.method) {
+      switch (parsedInput.method) {
         case 'totp': {
           // Generate TOTP secret
           const secret = authenticator.generateSecret();
-          const accountName = input.userId;
+          const accountName = parsedInput.userId;
           const issuer = 'Make.com';
           
           const otpauth = authenticator.keyuri(accountName, issuer, secret);
           
           // Generate backup codes
-          const backupCodes = input.backupCodes 
+          const backupCodes = parsedInput.backupCodes 
             ? await Promise.all(Array(10).fill(0).map(() => 
                 randomBytes(8).then(buf => buf.toString('hex'))
               ))
@@ -825,7 +827,7 @@ const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; descript
             'secret',
             'mfa_totp',
             process.env.MASTER_PASSWORD || 'default_master_key',
-            { id: `mfa_${input.userId}` }
+            { id: `mfa_${parsedInput.userId}` }
           );
 
           result = {
@@ -839,7 +841,7 @@ const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; descript
         }
 
         case 'sms': {
-          if (!input.phoneNumber) {
+          if (!parsedInput.phoneNumber) {
             result = {
               success: false,
               error: 'Phone number required for SMS MFA',
@@ -849,16 +851,16 @@ const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; descript
 
           // Store phone number securely
           await credentialManager.storeCredential(
-            input.phoneNumber,
+            parsedInput.phoneNumber,
             'secret',
             'mfa_sms',
             process.env.MASTER_PASSWORD || 'default_master_key',
-            { id: `mfa_sms_${input.userId}` }
+            { id: `mfa_sms_${parsedInput.userId}` }
           );
 
           result = {
             success: true,
-            recoveryInstructions: `SMS codes will be sent to ${input.phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-****')}`,
+            recoveryInstructions: `SMS codes will be sent to ${parsedInput.phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-****')}`,
           };
           break;
         }
@@ -895,19 +897,19 @@ const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; descript
         level: 'info',
         category: 'security',
         action: 'mfa_setup',
-        userId: input.userId,
+        userId: parsedInput.userId,
         success: result.success,
         details: {
-          method: input.method,
-          deviceName: input.deviceName,
+          method: parsedInput.method,
+          deviceName: parsedInput.deviceName,
           hasBackupCodes: !!result.backupCodes?.length,
         },
         riskLevel: 'low',
       });
 
       componentLogger.info('MFA setup completed', {
-        userId: input.userId,
-        method: input.method,
+        userId: parsedInput.userId,
+        method: parsedInput.method,
         success: result.success,
       });
 
@@ -916,8 +918,8 @@ const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; descript
     } catch (error) {
       componentLogger.error('MFA setup failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        userId: input.userId,
-        method: input.method,
+        userId: 'unknown',
+        method: 'unknown',
       });
 
       return JSON.stringify({
@@ -931,22 +933,23 @@ const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; descript
 /**
  * Device Trust Assessment Tool
  */
-const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof DeviceTrustAssessmentSchema; execute: (input: z.infer<typeof DeviceTrustAssessmentSchema>) => Promise<string> } => ({
+const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
   name: 'assess_device_trust',
   description: 'Assess device trust level and compliance status',
   inputSchema: DeviceTrustAssessmentSchema,
-  execute: async (input: z.infer<typeof DeviceTrustAssessmentSchema>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
+    const parsedInput = DeviceTrustAssessmentSchema.parse(input);
     const authEngine = ZeroTrustAuthEngine.getInstance();
     
     try {
-      const trustResult = authEngine.assessDeviceTrust(input as DeviceAssessmentData);
+      const trustResult = authEngine.assessDeviceTrust(parsedInput as DeviceAssessmentData);
 
       // Log device assessment
       await auditLogger.logEvent({
         level: 'info',
         category: 'security',
         action: 'device_trust_assessment',
-        userId: input.deviceId,
+        userId: parsedInput.deviceId,
         success: true,
         details: {
           trustScore: trustResult.trustScore,
@@ -959,7 +962,7 @@ const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): { name: str
       });
 
       componentLogger.info('Device trust assessment completed', {
-        deviceId: input.deviceId,
+        deviceId: parsedInput.deviceId,
         trustScore: trustResult.trustScore,
         riskLevel: trustResult.riskLevel,
         issues: trustResult.issues.length,
@@ -970,7 +973,7 @@ const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): { name: str
     } catch (error) {
       componentLogger.error('Device trust assessment failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        deviceId: input.deviceId,
+        deviceId: parsedInput.deviceId,
       });
 
       return JSON.stringify({
@@ -988,17 +991,18 @@ const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): { name: str
 /**
  * Behavioral Analytics Tool
  */
-const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof BehavioralAnalyticsSchema; execute: (input: z.infer<typeof BehavioralAnalyticsSchema>) => Promise<string> } => ({
+const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
   name: 'analyze_user_behavior',
   description: 'Analyze user behavior patterns and detect anomalies',
   inputSchema: BehavioralAnalyticsSchema,
-  execute: async (input: z.infer<typeof BehavioralAnalyticsSchema>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
+    const parsedInput = BehavioralAnalyticsSchema.parse(input);
     const authEngine = ZeroTrustAuthEngine.getInstance();
     
     try {
-      const analysisResult = authEngine.analyzeBehavior(input.userId, {
-        ...input.behaviorData,
-        contextualData: input.contextualData,
+      const analysisResult = authEngine.analyzeBehavior(parsedInput.userId, {
+        ...parsedInput.behaviorData,
+        contextualData: parsedInput.contextualData,
       });
 
       // Log behavior analysis
@@ -1006,8 +1010,8 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): { name: strin
         level: analysisResult.riskScore > 70 ? 'warn' : 'info',
         category: 'security',
         action: 'behavior_analysis',
-        userId: input.userId,
-        sessionId: input.sessionId,
+        userId: parsedInput.userId,
+        sessionId: parsedInput.sessionId,
         success: true,
         details: {
           riskScore: analysisResult.riskScore,
@@ -1020,8 +1024,8 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): { name: strin
       });
 
       componentLogger.info('Behavior analysis completed', {
-        userId: input.userId,
-        sessionId: input.sessionId,
+        userId: parsedInput.userId,
+        sessionId: parsedInput.sessionId,
         riskScore: analysisResult.riskScore,
         anomalies: analysisResult.anomalies.length,
       });
@@ -1031,8 +1035,8 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): { name: strin
     } catch (error) {
       componentLogger.error('Behavior analysis failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        userId: input.userId,
-        sessionId: input.sessionId,
+        userId: parsedInput.userId,
+        sessionId: parsedInput.sessionId,
       });
 
       return JSON.stringify({
@@ -1049,40 +1053,41 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): { name: strin
 /**
  * Session Management Tool
  */
-const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof SessionManagementSchema; execute: (input: z.infer<typeof SessionManagementSchema>) => Promise<string> } => ({
+const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
   name: 'manage_session',
   description: 'Manage user sessions with continuous validation and risk-based controls',
   inputSchema: SessionManagementSchema,
-  execute: async (input: z.infer<typeof SessionManagementSchema>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
+    const parsedInput = SessionManagementSchema.parse(input);
     const authEngine = ZeroTrustAuthEngine.getInstance();
     
     try {
       let result: Record<string, unknown>;
 
-      switch (input.action) {
+      switch (parsedInput.action) {
         case 'create': {
-          if (!input.userId || !input.deviceId) {
+          if (!parsedInput.userId || !parsedInput.deviceId) {
             return JSON.stringify({
               success: false,
               error: 'User ID and Device ID required for session creation',
             }, null, 2);
           }
           
-          const riskScore = input.sessionData?.riskScore || 25;
-          const session = await authEngine.createSession(input.userId, input.deviceId, riskScore);
+          const riskScore = parsedInput.sessionData?.riskScore || 25;
+          const session = await authEngine.createSession(parsedInput.userId, parsedInput.deviceId, riskScore);
           result = { success: true, session };
           break;
         }
 
         case 'validate': {
-          if (!input.sessionId) {
+          if (!parsedInput.sessionId) {
             return JSON.stringify({
               success: false,
               error: 'Session ID required for validation',
             }, null, 2);
           }
           
-          const validatedSession = authEngine.validateSession(input.sessionId);
+          const validatedSession = authEngine.validateSession(parsedInput.sessionId);
           result = {
             success: !!validatedSession,
             session: validatedSession,
@@ -1092,7 +1097,7 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string;
         }
 
         case 'terminate': {
-          if (!input.sessionId) {
+          if (!parsedInput.sessionId) {
             return JSON.stringify({
               success: false,
               error: 'Session ID required for termination',
@@ -1100,7 +1105,7 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string;
           }
 
           // Terminate session
-          const terminated = authEngine['sessions'].delete(input.sessionId);
+          const terminated = authEngine['sessions'].delete(parsedInput.sessionId);
           result = { success: terminated, terminated: terminated };
           
           if (terminated) {
@@ -1108,7 +1113,7 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string;
               level: 'info',
               category: 'authentication',
               action: 'session_terminated',
-              sessionId: input.sessionId,
+              sessionId: parsedInput.sessionId,
               success: true,
               details: { reason: 'Manual termination' },
               riskLevel: 'low',
@@ -1118,7 +1123,7 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string;
         }
 
         case 'list': {
-          if (!input.userId) {
+          if (!parsedInput.userId) {
             return JSON.stringify({
               success: false,
               error: 'User ID required for session listing',
@@ -1126,20 +1131,20 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string;
           }
 
           const userSessions = Array.from(authEngine['sessions'].values())
-            .filter(session => session.userId === input.userId);
+            .filter(session => session.userId === parsedInput.userId);
           result = { success: true, sessions: userSessions };
           break;
         }
 
         case 'refresh': {
-          if (!input.sessionId) {
+          if (!parsedInput.sessionId) {
             return JSON.stringify({
               success: false,
               error: 'Session ID required for refresh',
             }, null, 2);
           }
 
-          const existingSession = authEngine.validateSession(input.sessionId);
+          const existingSession = authEngine.validateSession(parsedInput.sessionId);
           if (existingSession) {
             // Extend session expiration
             const newExpiry = new Date(Date.now() + 4 * 60 * 60 * 1000); // 4 hours
@@ -1158,9 +1163,9 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string;
       }
 
       componentLogger.info('Session management operation completed', {
-        action: input.action,
-        sessionId: input.sessionId,
-        userId: input.userId,
+        action: parsedInput.action,
+        sessionId: parsedInput.sessionId,
+        userId: parsedInput.userId,
         success: result.success,
       });
 
@@ -1169,9 +1174,9 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string;
     } catch (error) {
       componentLogger.error('Session management failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        action: input.action,
-        sessionId: input.sessionId,
-        userId: input.userId,
+        action: parsedInput.action,
+        sessionId: parsedInput.sessionId,
+        userId: parsedInput.userId,
       });
 
       return JSON.stringify({
@@ -1185,33 +1190,34 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string;
 /**
  * Identity Federation Tool
  */
-const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof IdentityFederationSchema; execute: (input: z.infer<typeof IdentityFederationSchema>) => Promise<string> } => ({
+const createIdentityFederationTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
   name: 'identity_federation',
   description: 'Handle identity federation and SSO integration with enterprise providers',
   inputSchema: IdentityFederationSchema,
-  execute: async (input: z.infer<typeof IdentityFederationSchema>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
+    const parsedInput = IdentityFederationSchema.parse(input);
     try {
       let result: Record<string, unknown>;
 
-      switch (input.action) {
+      switch (parsedInput.action) {
         case 'sso_initiate': {
           // Generate SSO initiation URL
           const state = crypto.randomBytes(32).toString('base64url');
           const nonce = crypto.randomBytes(32).toString('base64url');
           
           let ssoUrl: string;
-          switch (input.provider) {
+          switch (parsedInput.provider) {
             case 'okta':
-              ssoUrl = `https://your-domain.okta.com/oauth2/v1/authorize?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(input.parameters.redirectUri || '')}&state=${state}&nonce=${nonce}`;
+              ssoUrl = `https://your-domain.okta.com/oauth2/v1/authorize?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(parsedInput.parameters.redirectUri || '')}&state=${state}&nonce=${nonce}`;
               break;
             case 'azure_ad':
-              ssoUrl = `https://login.microsoftonline.com/your-tenant-id/oauth2/v2.0/authorize?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(input.parameters.redirectUri || '')}&state=${state}&nonce=${nonce}`;
+              ssoUrl = `https://login.microsoftonline.com/your-tenant-id/oauth2/v2.0/authorize?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(parsedInput.parameters.redirectUri || '')}&state=${state}&nonce=${nonce}`;
               break;
             case 'google':
-              ssoUrl = `https://accounts.google.com/oauth2/v2/auth?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(input.parameters.redirectUri || '')}&state=${state}&nonce=${nonce}`;
+              ssoUrl = `https://accounts.google.com/oauth2/v2/auth?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(parsedInput.parameters.redirectUri || '')}&state=${state}&nonce=${nonce}`;
               break;
             default:
-              ssoUrl = `https://example.com/sso/${input.provider}?state=${state}&nonce=${nonce}`;
+              ssoUrl = `https://example.com/sso/${parsedInput.provider}?state=${state}&nonce=${nonce}`;
           }
 
           result = {
@@ -1219,14 +1225,14 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string
             ssoUrl,
             state,
             nonce,
-            provider: input.provider,
+            provider: parsedInput.provider,
           };
           break;
         }
 
         case 'token_validate': {
           // Validate OAuth/SAML token
-          if (!input.parameters.token) {
+          if (!parsedInput.parameters.token) {
             result = {
               success: false,
               error: 'Token required for validation',
@@ -1235,7 +1241,7 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string
           }
 
           // Simplified token validation
-          const isValidToken = input.parameters.token.length > 10;
+          const isValidToken = parsedInput.parameters.token.length > 10;
           result = {
             success: isValidToken,
             valid: isValidToken,
@@ -1251,7 +1257,7 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string
 
         case 'user_provision': {
           // Just-in-time user provisioning
-          if (!input.parameters.userAttributes) {
+          if (!parsedInput.parameters.userAttributes) {
             result = {
               success: false,
               error: 'User attributes required for provisioning',
@@ -1259,7 +1265,7 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string
             break;
           }
 
-          const userAttributes = input.parameters.userAttributes;
+          const userAttributes = parsedInput.parameters.userAttributes;
           result = {
             success: true,
             user: {
@@ -1278,7 +1284,7 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string
 
         case 'attribute_map': {
           // Map identity provider attributes to local user attributes
-          const claims = input.parameters.claims || {};
+          const claims = parsedInput.parameters.claims || {};
           result = {
             success: true,
             mappedAttributes: {
@@ -1306,19 +1312,19 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string
       await auditLogger.logEvent({
         level: 'info',
         category: 'authentication',
-        action: `identity_federation_${input.action}`,
+        action: `identity_federation_${parsedInput.action}`,
         success: result.success as boolean,
         details: {
-          provider: input.provider,
-          action: input.action,
-          hasUserAttributes: !!input.parameters.userAttributes,
+          provider: parsedInput.provider,
+          action: parsedInput.action,
+          hasUserAttributes: !!parsedInput.parameters.userAttributes,
         },
         riskLevel: 'low',
       });
 
       componentLogger.info('Identity federation operation completed', {
-        provider: input.provider,
-        action: input.action,
+        provider: parsedInput.provider,
+        action: parsedInput.action,
         success: result.success,
       });
 
@@ -1327,8 +1333,8 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string
     } catch (error) {
       componentLogger.error('Identity federation failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        provider: input.provider,
-        action: input.action,
+        provider: parsedInput.provider,
+        action: parsedInput.action,
       });
 
       return JSON.stringify({
@@ -1342,11 +1348,12 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string
 /**
  * Risk Assessment Tool
  */
-const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof RiskAssessmentSchema; execute: (input: z.infer<typeof RiskAssessmentSchema>) => Promise<string> } => ({
+const createRiskAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
   name: 'assess_authentication_risk',
   description: 'Perform comprehensive risk assessment for authentication decisions',
   inputSchema: RiskAssessmentSchema,
-  execute: async (input: z.infer<typeof RiskAssessmentSchema>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
+    const parsedInput = RiskAssessmentSchema.parse(input);
     try {
       // Calculate weighted risk score
       const weights = {
@@ -1357,11 +1364,11 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; de
       };
 
       const overallRiskScore = Math.round(
-        input.riskFactors.userBehavior.deviationScore * weights.userBehavior +
-        (100 - input.riskFactors.deviceTrust.trustScore) * weights.deviceTrust +
-        (input.riskFactors.networkContext.ipReputation === 'malicious' ? 100 : 
-         input.riskFactors.networkContext.ipReputation === 'suspicious' ? 60 : 20) * weights.networkContext +
-        (input.riskFactors.temporalFactors.frequencyAnomaly ? 70 : 20) * weights.temporalFactors
+        parsedInput.riskFactors.userBehavior.deviationScore * weights.userBehavior +
+        (100 - parsedInput.riskFactors.deviceTrust.trustScore) * weights.deviceTrust +
+        (parsedInput.riskFactors.networkContext.ipReputation === 'malicious' ? 100 : 
+         parsedInput.riskFactors.networkContext.ipReputation === 'suspicious' ? 60 : 20) * weights.networkContext +
+        (parsedInput.riskFactors.temporalFactors.frequencyAnomaly ? 70 : 20) * weights.temporalFactors
       );
 
       // Determine risk level
@@ -1389,15 +1396,15 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; de
       }
 
       // Add specific recommendations based on risk factors
-      if (input.riskFactors.deviceTrust.trustScore < 50) {
+      if (parsedInput.riskFactors.deviceTrust.trustScore < 50) {
         recommendations.push('Device security compliance required');
       }
       
-      if (input.riskFactors.networkContext.vpnDetected) {
+      if (parsedInput.riskFactors.networkContext.vpnDetected) {
         recommendations.push('Verify VPN usage policy compliance');
       }
 
-      if (input.riskFactors.userBehavior.anomalies.length > 0) {
+      if (parsedInput.riskFactors.userBehavior.anomalies.length > 0) {
         recommendations.push('Investigate behavioral anomalies');
       }
 
@@ -1405,13 +1412,13 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; de
         success: true,
         overallRiskScore,
         riskLevel,
-        assessmentType: input.assessmentType,
+        assessmentType: parsedInput.assessmentType,
         riskBreakdown: {
-          userBehaviorContribution: Math.round(input.riskFactors.userBehavior.deviationScore * weights.userBehavior),
-          deviceTrustContribution: Math.round((100 - input.riskFactors.deviceTrust.trustScore) * weights.deviceTrust),
-          networkContextContribution: Math.round((input.riskFactors.networkContext.ipReputation === 'malicious' ? 100 : 
-                                                 input.riskFactors.networkContext.ipReputation === 'suspicious' ? 60 : 20) * weights.networkContext),
-          temporalFactorsContribution: Math.round((input.riskFactors.temporalFactors.frequencyAnomaly ? 70 : 20) * weights.temporalFactors),
+          userBehaviorContribution: Math.round(parsedInput.riskFactors.userBehavior.deviationScore * weights.userBehavior),
+          deviceTrustContribution: Math.round((100 - parsedInput.riskFactors.deviceTrust.trustScore) * weights.deviceTrust),
+          networkContextContribution: Math.round((parsedInput.riskFactors.networkContext.ipReputation === 'malicious' ? 100 : 
+                                                 parsedInput.riskFactors.networkContext.ipReputation === 'suspicious' ? 60 : 20) * weights.networkContext),
+          temporalFactorsContribution: Math.round((parsedInput.riskFactors.temporalFactors.frequencyAnomaly ? 70 : 20) * weights.temporalFactors),
         },
         recommendations,
         assessmentTimestamp: new Date().toISOString(),
@@ -1426,11 +1433,11 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; de
         level: riskLevel === 'critical' ? 'critical' : riskLevel === 'high' ? 'warn' : 'info',
         category: 'security',
         action: 'risk_assessment',
-        userId: input.userId,
-        sessionId: input.sessionId,
+        userId: parsedInput.userId,
+        sessionId: parsedInput.sessionId,
         success: true,
         details: {
-          assessmentType: input.assessmentType,
+          assessmentType: parsedInput.assessmentType,
           overallRiskScore,
           riskLevel,
           requiresAction: result.requiresAction,
@@ -1439,9 +1446,9 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; de
       });
 
       componentLogger.info('Risk assessment completed', {
-        userId: input.userId,
-        sessionId: input.sessionId,
-        assessmentType: input.assessmentType,
+        userId: parsedInput.userId,
+        sessionId: parsedInput.sessionId,
+        assessmentType: parsedInput.assessmentType,
         overallRiskScore,
         riskLevel,
       });
@@ -1451,9 +1458,9 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; de
     } catch (error) {
       componentLogger.error('Risk assessment failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        userId: input.userId,
-        sessionId: input.sessionId,
-        assessmentType: input.assessmentType,
+        userId: parsedInput.userId,
+        sessionId: parsedInput.sessionId,
+        assessmentType: parsedInput.assessmentType,
       });
 
       return JSON.stringify({
@@ -1467,12 +1474,29 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; de
   },
 });
 
+// ===== TOOL INTERFACES =====
+
+/**
+ * Generic tool interface to avoid intersection conflicts
+ */
+interface ZeroTrustTool {
+  name: string;
+  description: string;
+  inputSchema: z.ZodType<any>;
+  execute: (input: unknown) => Promise<string>;
+}
+
+/**
+ * Tool creator function type
+ */
+type ToolCreator = (apiClient: MakeApiClient) => ZeroTrustTool;
+
 // ===== TOOL COLLECTION =====
 
 /**
  * All Zero Trust Authentication tools
  */
-export const zeroTrustAuthTools = [
+export const zeroTrustAuthTools: ToolCreator[] = [
   createZeroTrustAuthTool,
   createMFASetupTool,
   createDeviceTrustAssessmentTool,
@@ -1486,7 +1510,7 @@ export const zeroTrustAuthTools = [
  * Add all Zero Trust Authentication tools to FastMCP server
  */
 export function addZeroTrustAuthTools(server: FastMCP, apiClient: MakeApiClient): void {
-  zeroTrustAuthTools.forEach(createTool => {
+  zeroTrustAuthTools.forEach((createTool: ToolCreator) => {
     const tool = createTool(apiClient);
     server.addTool({
       name: tool.name,
@@ -1501,7 +1525,7 @@ export function addZeroTrustAuthTools(server: FastMCP, apiClient: MakeApiClient)
           toolName: tool.name,
           hasArgs: args !== undefined 
         });
-        return await tool.execute(args as any);
+        return await tool.execute(args);
       }
     });
   });
