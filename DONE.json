@@ -10978,9 +10978,59 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755801464997_7y6iddsjp",
+      "title": "Fix TypeScript compilation errors in budget-control.ts and troubleshoot-scenario.ts",
+      "description": "Address TypeScript type errors preventing compilation:\\n\\n1. Fix property access errors in budget-control.ts:\\n   - currentSpend, budgetLimit, riskLevel, triggeredThresholds, tenantId properties on empty object type\\n2. Fix unknown type issues in troubleshoot-scenario.ts:\\n   - scenario type unknown access error\\n   - unknown not assignable to any[] error\\n\\nTotal: 9 TypeScript compilation errors blocking build process.",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T18:37:44.997Z",
+      "auto_research_created": false,
+      "assigned_agent": {
+        "claimPriority": "urgent"
+      },
+      "started_at": "2025-08-21T18:38:05.946Z",
+      "claimed_by": {
+        "claimPriority": "urgent"
+      },
+      "agent_assignment_history": [
+        {
+          "agentId": {
+            "claimPriority": "urgent"
+          },
+          "role": "primary",
+          "assignedAt": "2025-08-21T18:38:05.946Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T18:38:53.194Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T18:38:53.195Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 251,
-  "last_completion": "2025-08-21T18:37:53.445Z",
+  "total_completed": 252,
+  "last_completion": "2025-08-21T18:38:53.195Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

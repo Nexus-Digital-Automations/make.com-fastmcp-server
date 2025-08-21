@@ -425,7 +425,13 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
         reportProgress({ progress: 25, total: 100 });
 
         // Use API data or simulate if not available
-        const apiData = statusResponse.data;
+        const apiData = statusResponse.data as {
+          currentSpend?: number;
+          budgetLimit?: number;
+          riskLevel?: 'minimal' | 'low' | 'medium' | 'high' | 'critical';
+          triggeredThresholds?: Array<{ thresholdId: string; percentage: number; severity: string; triggeredAt: string; }>;
+          tenantId?: string;
+        };
         const currentTime = new Date();
         const _periodStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), 1);
         const daysInMonth = new Date(currentTime.getFullYear(), currentTime.getMonth() + 1, 0).getDate();

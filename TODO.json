@@ -2,23 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755801464997_7y6iddsjp",
-      "title": "Fix TypeScript compilation errors in budget-control.ts and troubleshoot-scenario.ts",
-      "description": "Address TypeScript type errors preventing compilation:\\n\\n1. Fix property access errors in budget-control.ts:\\n   - currentSpend, budgetLimit, riskLevel, triggeredThresholds, tenantId properties on empty object type\\n2. Fix unknown type issues in troubleshoot-scenario.ts:\\n   - scenario type unknown access error\\n   - unknown not assignable to any[] error\\n\\nTotal: 9 TypeScript compilation errors blocking build process.",
-      "mode": "DEVELOPMENT",
-      "category": "error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T18:37:44.997Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755794138881_zv7sw22oe",
       "title": "Research: Create comprehensive test structure for refactored scenarios module",
       "description": "Research and analysis required for implementing: \"Create comprehensive test structure for refactored scenarios module\"\n\n**Implementation Task Details:**\nSet up tests/ directory structure with integration, unit, and performance test directories\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755794138881_at7def93f\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",

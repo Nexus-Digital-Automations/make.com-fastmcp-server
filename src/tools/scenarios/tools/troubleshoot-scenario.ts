@@ -114,7 +114,7 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
 async function fetchScenarioForTroubleshooting(
   apiClient: MakeApiClient, 
   scenarioId: string
-): Promise<any> {
+): Promise<unknown> {
   const response = await apiClient.get(`/scenarios/${scenarioId}`);
   if (!response.success) {
     throw new Error(`Failed to fetch scenario ${scenarioId}`);
@@ -126,16 +126,16 @@ async function fetchScenarioForTroubleshooting(
  * Generate troubleshooting report for a single scenario
  */
 async function generateSingleScenarioTroubleshootingReport(
-  scenario: any,
+  scenario: unknown,
   timeRangeHours: number,
   diagnosticTypes: string[],
   includeRecommendations: boolean,
   includePerformanceHistory: boolean,
   severityFilter?: string,
   autoFix?: boolean
-): Promise<any> {
+): Promise<unknown> {
   return {
-    scenarioId: scenario.id,
+    scenarioId: (scenario as { id: string }).id,
     healthScore: 85,
     status: 'warning',
     diagnostics: [
@@ -214,7 +214,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
         reportProgress?.({ progress: 10, total: 100 });
 
         // Fetch scenarios for analysis
-        let scenarios = [];
+        let scenarios: unknown[] = [];
         if (scenarioIds && scenarioIds.length > 0) {
           // Fetch specific scenarios
           for (const scenarioId of scenarioIds) {
@@ -227,7 +227,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
           // Fetch all scenarios
           const response = await apiClient.get('/scenarios');
           if (response.success) {
-            scenarios = response.data;
+            scenarios = response.data as unknown[];
           }
         }
 
@@ -257,7 +257,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
                 pattern: 'Slow API response times',
                 frequency: Math.floor(scenarios.length * 0.3),
                 severity: 'medium',
-                affectedScenarios: scenarioIds || scenarios.slice(0, 3).map(s => s.id)
+                affectedScenarios: scenarioIds || scenarios.slice(0, 3).map(s => (s as { id: string }).id)
               }
             ],
             recommendations: [
