@@ -31,8 +31,8 @@ describe('Budget Control Tools - Basic Tests', () => {
     },
     budgetPeriod: {
       type: 'monthly' as const,
-      startDate: '2024-01-01',
-      endDate: '2024-01-31',
+      startDate: '2024-01-01T00:00:00.000Z',
+      endDate: '2024-01-31T23:59:59.999Z',
       timezone: 'UTC'
     },
     alertThresholds: [
@@ -305,8 +305,8 @@ describe('Budget Control Tools - Basic Tests', () => {
         },
         budgetPeriod: {
           type: 'custom',
-          startDate: '2024-01-01',
-          endDate: '2024-12-31',
+          startDate: '2024-01-01T00:00:00.000Z',
+          endDate: '2024-12-31T23:59:59.999Z',
           timezone: 'America/New_York'
         },
         alertThresholds: [
@@ -427,9 +427,9 @@ describe('Budget Control Tools - Basic Tests', () => {
         {}, // Missing required fields
         { name: '' }, // Empty name
         { name: 'Test', budgetLimits: {} }, // Empty budget limits
-        { name: 'Test', budgetLimits: { monthly: -100 } }, // Negative budget
-        { name: 'Test', budgetLimits: { monthly: 1000 }, budgetPeriod: { type: 'monthly', timezone: 'UTC' }, alertThresholds: [{ percentage: 150, type: 'actual', severity: 'warning', channels: ['email'] }] }, // Invalid percentage
-        { name: 'Test', budgetLimits: { monthly: 1000 }, budgetPeriod: { type: 'invalid', timezone: 'UTC' }, alertThresholds: [{ percentage: 80, type: 'actual', severity: 'warning', channels: ['email'] }] } // Invalid period type
+        { name: 'Test', budgetLimits: { monthly: -100 }, budgetPeriod: { type: 'monthly', timezone: 'UTC' }, alertThresholds: [{ percentage: 80, type: 'actual', severity: 'warning', channels: ['email'], cooldownMinutes: 60 }] }, // Negative budget
+        { name: 'Test', tenantId: 'tenant_123', budgetLimits: { monthly: 1000 }, budgetPeriod: { type: 'monthly', timezone: 'UTC' }, alertThresholds: [{ percentage: 250, type: 'actual', severity: 'warning', channels: ['email'], cooldownMinutes: 60 }] }, // Invalid percentage over 200
+        { name: 'Test', tenantId: 'tenant_123', budgetLimits: { monthly: 1000 }, budgetPeriod: { type: 'invalid_type' as any, timezone: 'UTC' }, alertThresholds: [{ percentage: 80, type: 'actual', severity: 'warning', channels: ['email'], cooldownMinutes: 60 }] } // Invalid period type
       ];
       
       invalidInputs.forEach(input => {
@@ -464,7 +464,8 @@ describe('Budget Control Tools - Basic Tests', () => {
             percentage: 80,
             type: 'actual',
             severity: 'warning',
-            channels: ['email']
+            channels: ['email'],
+            cooldownMinutes: 60
           }
         ]
       });
@@ -621,7 +622,7 @@ describe('Budget Control Tools - Basic Tests', () => {
         tenantId: 'tenant_123',
         budgetLimits: { monthly: 1000 },
         budgetPeriod: { type: 'monthly', timezone: 'UTC' },
-        alertThresholds: [{ percentage: 80, type: 'actual', severity: 'warning', channels: ['email'] }]
+        alertThresholds: [{ percentage: 80, type: 'actual', severity: 'warning', channels: ['email'], cooldownMinutes: 60 }]
       })).rejects.toThrow(UserError);
     });
 
@@ -726,7 +727,7 @@ describe('Budget Control Tools - Basic Tests', () => {
         tenantId: 'tenant_001',
         budgetLimits: { monthly: 5000 },
         budgetPeriod: { type: 'monthly', timezone: 'UTC' },
-        alertThresholds: [{ percentage: 80, type: 'actual', severity: 'warning', channels: ['email'] }]
+        alertThresholds: [{ percentage: 80, type: 'actual', severity: 'warning', channels: ['email'], cooldownMinutes: 60 }]
       });
       
       expect(result).toBeDefined();

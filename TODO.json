@@ -1,6 +1,34 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1755770075122_b72wrjxm3",
+      "title": "Fix TODO items in caching middleware and scenarios tool",
+      "description": "Fix 3 TODO items: 1) Re-implement tool wrapping in caching.ts, 2) Re-enable cache management tools in caching.ts, 3) Implement performance analysis integration in scenarios.ts",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T09:54:35.124Z",
+      "auto_research_created": true,
+      "mode": "DEVELOPMENT",
+      "started_at": "2025-08-21T10:01:39.640Z",
+      "claimed_by": "agent_1755770499640",
+      "assigned_agent": "agent_1755770499640",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755770499640",
+          "action": "claimed",
+          "timestamp": "2025-08-21T10:01:39.640Z"
+        }
+      ]
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
@@ -27,6 +55,27 @@
       "maxConcurrentTasks": 5,
       "createdAt": "2025-08-21T09:39:33.108Z",
       "sessionId": "session_1755769173107",
+      "metadata": {}
+    },
+    "development_session_1755769859391_1_general_b4420973": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-21T09:50:59.392Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-21T09:50:59.392Z",
+      "sessionId": "session_1755769859391",
       "metadata": {}
     }
   },
