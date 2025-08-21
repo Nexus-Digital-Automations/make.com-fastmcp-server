@@ -434,15 +434,16 @@ export async function generateTroubleshootingReport(
   }));
 
   const consolidatedFindings = aggregateFindings(scenarioAnalyses);
-  const systemOverview = generateSystemOverview(consolidatedFindings, timeRangeHours);
+  const systemOverview = generateSystemOverview(scenarioAnalyses, { compareToHistorical: false });
   const actionPlan = generateActionPlan(consolidatedFindings, true);
   const costAnalysis = generateCostAnalysis(consolidatedFindings, scenarios.length);
-  const executiveSummary = generateExecutiveSummary(
-    consolidatedFindings,
+  const executiveSummaryData = generateExecutiveSummary(
     systemOverview,
+    consolidatedFindings,
     actionPlan,
-    costAnalysis
+    scenarios.length
   );
+  const executiveSummary = JSON.stringify(executiveSummaryData);
 
   return {
     metadata: {

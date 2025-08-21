@@ -3,14 +3,13 @@
  * Centralized export of all scenario-related TypeScript types
  */
 
-// Re-export blueprint types
-export {
+// Import types for internal use
+import type {
   BlueprintModule,
   Blueprint,
 } from './blueprint.js';
 
-// Re-export report and analysis types
-export {
+import type {
   ReportMetadata,
   TroubleshootingReportData,
   PerformanceAnalysisResult,
@@ -22,8 +21,7 @@ export {
   _TroubleshootingReportFormatted,
 } from './report.js';
 
-// Re-export optimization types
-export {
+import type {
   OptimizationRecommendation,
   OptimizationAnalysis,
   BlueprintOptimizationResult,
@@ -31,6 +29,27 @@ export {
   OptimizationStrategy,
   AutoOptimizationConfig,
 } from './optimization.js';
+
+// Re-export all types
+export type {
+  BlueprintModule,
+  Blueprint,
+  ReportMetadata,
+  TroubleshootingReportData,
+  PerformanceAnalysisResult,
+  ScenarioAnalysis,
+  ConsolidatedFindings,
+  ActionPlan,
+  SystemOverview,
+  CostAnalysisReport,
+  _TroubleshootingReportFormatted,
+  OptimizationRecommendation,
+  OptimizationAnalysis,
+  BlueprintOptimizationResult,
+  PerformanceOptimizationMetrics,
+  OptimizationStrategy,
+  AutoOptimizationConfig,
+};
 
 /**
  * Collections of related types for easy access
@@ -89,23 +108,4 @@ export const TypeGuards = {
   }
 } as const;
 
-// Re-export imports for convenience
-export type {
-  BlueprintModule,
-  Blueprint,
-  ReportMetadata,
-  TroubleshootingReportData,
-  PerformanceAnalysisResult,
-  ScenarioAnalysis,
-  ConsolidatedFindings,
-  ActionPlan,
-  SystemOverview,
-  CostAnalysisReport,
-  _TroubleshootingReportFormatted,
-  OptimizationRecommendation,
-  OptimizationAnalysis,
-  BlueprintOptimizationResult,
-  PerformanceOptimizationMetrics,
-  OptimizationStrategy,
-  AutoOptimizationConfig,
-};
+// All types are already re-exported above

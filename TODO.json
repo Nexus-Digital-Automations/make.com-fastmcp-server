@@ -8,7 +8,7 @@
       "mode": "RESEARCH",
       "category": "research",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [
         "./development/research-reports/research-report-task_1755772553011_5hhqpuxvf.md"
@@ -26,9 +26,9 @@
       "created_at": "2025-08-21T10:35:53.011Z",
       "created_by": "auto-research-system",
       "auto_created_for": "task_1755772553011_ceuapaf63",
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
+      "assigned_agent": "agent_1755795189877",
+      "started_at": "2025-08-21T16:53:09.877Z",
+      "claimed_by": "agent_1755795189877",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755772478276_1_general_5ee62bd7",
@@ -42,6 +42,11 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T10:51:19.997Z",
           "reason": "Task stale for 15 minutes"
+        },
+        {
+          "agent": "agent_1755795189877",
+          "action": "claimed",
+          "timestamp": "2025-08-21T16:53:09.877Z"
         }
       ]
     },
@@ -52,7 +57,7 @@
       "mode": "DEVELOPMENT",
       "category": "linter-error",
       "priority": "critical",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -60,7 +65,19 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-21T16:38:54.098Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755795215359_1_general_a2d71673",
+      "started_at": "2025-08-21T16:53:45.086Z",
+      "claimed_by": "development_session_1755795215359_1_general_a2d71673",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755795215359_1_general_a2d71673",
+          "role": "primary",
+          "assignedAt": "2025-08-21T16:53:45.086Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
     },
     {
       "id": "task_1755770075122_b72wrjxm3",
@@ -254,6 +271,27 @@
       "maxConcurrentTasks": 5,
       "createdAt": "2025-08-21T16:40:26.140Z",
       "sessionId": "session_1755794426140",
+      "metadata": {}
+    },
+    "development_session_1755795215359_1_general_a2d71673": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-21T16:53:35.359Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-21T16:53:35.359Z",
+      "sessionId": "session_1755795215359",
       "metadata": {}
     }
   },

@@ -10,38 +10,48 @@
 import { OptimizationRecommendation } from '../types/optimization.js';
 
 // Blueprint Analysis exports
-export {
+export type {
   Blueprint,
   BlueprintModule,
   ValidateBlueprintSchema,
   ExtractBlueprintConnectionsSchema,
+} from './blueprint-analysis.js';
+
+export {
   validateBlueprintStructure,
   extractBlueprintConnections
 } from './blueprint-analysis.js';
 
 // Optimization exports
-export {
+export type {
   OptimizationMetrics,
   OptimizationResult,
   OptimizeBlueprintSchema,
+} from './optimization.js';
+
+export {
   optimizeBlueprint
 } from './optimization.js';
 
 // Re-export OptimizationRecommendation from types
-export { OptimizationRecommendation } from '../types/optimization.js';
+export type { OptimizationRecommendation } from '../types/optimization.js';
 
 // Troubleshooting exports
-export {
+export type {
   ScenarioAnalysis,
   ConsolidatedFindings,
   ActionPlan,
   SystemOverview,
   CostAnalysisReport,
+} from './troubleshooting.js';
+
+export {
   aggregateFindings,
   generateSystemOverview,
   generateActionPlan,
   generateCostAnalysis,
-  generateExecutiveSummary
+  generateExecutiveSummary,
+  generateTroubleshootingReport
 } from './troubleshooting.js';
 
 // Report Formatting exports
