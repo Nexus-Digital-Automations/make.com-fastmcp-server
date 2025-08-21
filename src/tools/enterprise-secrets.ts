@@ -1884,10 +1884,11 @@ const createRBACPolicyTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool 
   name: 'manage_rbac_policies',
   description: 'Create and manage fine-grained role-based access control policies for secret access',
   parameters: RBACPolicySchema,
-  execute: async (input: z.infer<typeof RBACPolicySchema>): Promise<string> => {
+  execute: async (input: Record<string, unknown>): Promise<string> => {
+    const validatedInput = RBACPolicySchema.parse(input);
     try {
       // Create HCL policy content
-      const policyContent = input.rules.map(rule => `
+      const policyContent = validatedInput.rules.map(rule => `
 path "${rule.path}" {
   capabilities = [${rule.capabilities.map(c => `"${c}"`).join(', ')}]
   ${rule.requiredParameters ? `required_parameters = [${rule.requiredParameters.map(p => `"${p}"`).join(', ')}]` : ''}

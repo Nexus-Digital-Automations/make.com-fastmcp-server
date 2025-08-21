@@ -87,40 +87,6 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755763842985_n1s848pva",
-      "title": "Fix TypeScript compilation errors in src/tools/budget-control.ts",
-      "description": "Fix missing properties in HistoricalBudgetData and ProjectionData type assignments (lines 571, 575, 580, 588) and arithmetic operation type error on line 910",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:10:42.985Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755763820359_cq79t8mtw",
-      "title": "Fix TypeScript compilation errors in src/server.ts",
-      "description": "Fix lines 614 and 617 type compatibility issues with FastMCP server instance addTool method",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:10:20.359Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755763819218_f9bh6y4c4",
       "title": "Fix TypeScript compilation errors in src/tools/enterprise-secrets.ts",
       "description": "Fix VaultServerConfigSchema, HSMConfigSchema, SecretEngineConfigSchema, and KeyRotationPolicySchema type parameter mismatches. Resolve Record<string, unknown> not matching Zod schema types.",
@@ -164,23 +130,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "task_1755763784659_oir47jsrz",
-      "title": "Fix TypeScript compilation errors in src/server.ts",
-      "description": "Fix type compatibility issues with FastMCP server instance addTool method at lines 614 and 617",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:09:44.659Z",
-      "auto_research_created": false
     },
     {
       "id": "task_1755763413074_myo4miwaq",
