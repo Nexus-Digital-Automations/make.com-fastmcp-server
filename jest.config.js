@@ -16,6 +16,8 @@ export default {
     '^fastmcp$': '<rootDir>/tests/__mocks__/fastmcp.ts',
     // Mock logger
     '.*\\/logger\\.js$': '<rootDir>/tests/__mocks__/logger.ts',
+    // Mock config manager
+    '.*\\/config\\.js$': '<rootDir>/tests/__mocks__/config.ts',
     // Mock audit logger
     '.*\\/audit-logger\\.js$': '<rootDir>/tests/__mocks__/audit-logger.ts',
     // Mock axios

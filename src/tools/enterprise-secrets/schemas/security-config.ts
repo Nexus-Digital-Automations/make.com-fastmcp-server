@@ -6,6 +6,30 @@
 import { z } from 'zod';
 
 /**
+ * Security Policy Configuration Schema
+ */
+export const SecurityPolicySchema = z.object({
+  passwordPolicy: z.object({
+    minLength: z.number().min(8).optional().default(12),
+    requireUppercase: z.boolean().optional().default(true),
+    requireLowercase: z.boolean().optional().default(true),
+    requireNumbers: z.boolean().optional().default(true),
+    requireSpecialChars: z.boolean().optional().default(true),
+    maxAge: z.number().optional().default(90),
+  }).optional(),
+  encryptionPolicy: z.object({
+    algorithm: z.enum(['AES', 'ChaCha20', 'RSA']).optional().default('AES'),
+    keySize: z.number().optional().default(256),
+    mode: z.enum(['GCM', 'CBC', 'CTR']).optional().default('GCM'),
+  }).optional(),
+  networkPolicy: z.object({
+    tlsVersion: z.enum(['1.2', '1.3']).optional().default('1.3'),
+    certificateValidation: z.boolean().optional().default(true),
+    cipherSuites: z.array(z.string()).optional(),
+  }).optional(),
+});
+
+/**
  * Secret Scanning Configuration Schema
  */
 export const SecretScanningConfigSchema = z.object({

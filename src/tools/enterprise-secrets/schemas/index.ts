@@ -19,6 +19,7 @@ export {
 
 // Security configuration schemas
 export {
+  SecurityPolicySchema,
   SecretScanningConfigSchema,
   BreachDetectionConfigSchema,
   AuditConfigSchema,
