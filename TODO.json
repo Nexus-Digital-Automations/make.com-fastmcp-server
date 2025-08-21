@@ -2,37 +2,20 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755757744863_n3mlz645d",
-      "title": "Create comprehensive test suite for notifications tool",
-      "description": "Analyze notifications.ts and create comprehensive test file at tests/unit/tools/notifications-basic.test.ts with full coverage following existing patterns",
-      "mode": "DEVELOPMENT",
-      "category": "missing-test",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T06:29:04.863Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755045713680_6ffliyb1h",
       "title": "Continue development and improvements",
       "description": "Continue with the current development tasks, fix any issues, and improve the codebase quality.",
       "mode": "DEVELOPMENT",
       "priority": "medium",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "requires_research": false,
       "created_at": "2025-08-13T00:41:53.680Z",
       "subtasks": [],
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
+      "assigned_agent": "development_session_1755757588609_1_general_2948c188",
+      "started_at": "2025-08-21T06:34:37.932Z",
+      "claimed_by": "development_session_1755757588609_1_general_2948c188",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755667886196_1_general_8565d56d",
@@ -92,6 +75,13 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T06:26:23.593Z",
           "reason": "Task stale for 29 minutes"
+        },
+        {
+          "agentId": "development_session_1755757588609_1_general_2948c188",
+          "role": "primary",
+          "assignedAt": "2025-08-21T06:34:37.932Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ],
       "access_history": [

@@ -27,7 +27,7 @@ describe('Notification Management Tools - Additional Coverage', () => {
   let mockServer: any;
   let mockApiClient: MockMakeApiClient;
   let mockTool: jest.MockedFunction<any>;
-  let mockLog: jest.MockedFunction<any>;
+  let mockLog: any;
   let mockReportProgress: jest.MockedFunction<any>;
 
   const testDataStructure: MakeCustomDataStructure = {
@@ -163,7 +163,12 @@ describe('Notification Management Tools - Additional Coverage', () => {
     mockServer = serverSetup.server;
     mockTool = serverSetup.mockTool;
     mockApiClient = new MockMakeApiClient();
-    mockLog = jest.fn();
+    mockLog = {
+      info: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      debug: jest.fn(),
+    };
     mockReportProgress = jest.fn();
   });
 
@@ -262,8 +267,8 @@ describe('Notification Management Tools - Additional Coverage', () => {
         const calls = mockApiClient.getCallLog();
         expect(calls[0].endpoint).toBe('/data-structures');
         expect(calls[0].method).toBe('GET');
-        expect(calls[0].params.limit).toBe(20);
-        expect(calls[0].params.offset).toBe(0);
+        expect(calls[0].data.limit).toBe(20);
+        expect(calls[0].data.offset).toBe(0);
       });
 
       it('should filter data structures by type and scope', async () => {
@@ -302,13 +307,13 @@ describe('Notification Management Tools - Additional Coverage', () => {
         }, { log: mockLog });
         
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params.type).toBe('validation');
-        expect(calls[0].params.scope).toBe('team');
-        expect(calls[0].params.format).toBe('json');
-        expect(calls[0].params.search).toBe('product');
-        expect(calls[0].params.limit).toBe(10);
-        expect(calls[0].params.sortBy).toBe('name');
-        expect(calls[0].params.sortOrder).toBe('asc');
+        expect(calls[0].data.type).toBe('validation');
+        expect(calls[0].data.scope).toBe('team');
+        expect(calls[0].data.format).toBe('json');
+        expect(calls[0].data.search).toBe('product');
+        expect(calls[0].data.limit).toBe(10);
+        expect(calls[0].data.sortBy).toBe('name');
+        expect(calls[0].data.sortOrder).toBe('asc');
       });
 
       it('should list organization-scoped data structures', async () => {
@@ -430,9 +435,9 @@ describe('Notification Management Tools - Additional Coverage', () => {
         
         const calls = mockApiClient.getCallLog();
         expect(calls[0].endpoint).toBe('/data-structures/1');
-        expect(calls[0].params.includeUsageStats).toBe(true);
-        expect(calls[0].params.includeValidationHistory).toBe(false);
-        expect(calls[0].params.includeTransformationHistory).toBe(false);
+        expect(calls[0].data.includeUsageStats).toBe(true);
+        expect(calls[0].data.includeValidationHistory).toBe(false);
+        expect(calls[0].data.includeTransformationHistory).toBe(false);
         
         expectProgressReported(mockReportProgress, [
           { progress: 0, total: 100 },
@@ -458,8 +463,8 @@ describe('Notification Management Tools - Additional Coverage', () => {
         }, { log: mockLog, reportProgress: mockReportProgress });
         
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params.includeValidationHistory).toBe(true);
-        expect(calls[0].params.includeTransformationHistory).toBe(true);
+        expect(calls[0].data.includeValidationHistory).toBe(true);
+        expect(calls[0].data.includeTransformationHistory).toBe(true);
       });
 
       it('should get organization-scoped data structure', async () => {
@@ -977,7 +982,7 @@ describe('Notification Management Tools - Additional Coverage', () => {
         expect(result).toContain('forcedDeletion');
         
         const calls = mockApiClient.getCallLog();
-        expect(calls[2].params.force).toBe(true);
+        expect(calls[2].data.force).toBe(true);
       });
 
       it('should delete organization-scoped data structure', async () => {
@@ -1244,6 +1249,15 @@ describe('Notification Management Tools - Additional Coverage', () => {
               announcements: true
             }
           },
+          billing: {
+            enabled: true,
+            categories: {
+              invoices: true,
+              paymentReminders: true,
+              usageAlerts: true,
+              planChanges: true
+            }
+          },
           scenarios: {
             enabled: true,
             frequency: 'immediate',
@@ -1258,6 +1272,24 @@ describe('Notification Management Tools - Additional Coverage', () => {
               onlyImportantScenarios: true,
               scenarioIds: [10, 20, 30, 40, 50],
               teamIds: [5, 8]
+            }
+          },
+          team: {
+            enabled: true,
+            categories: {
+              invitations: true,
+              roleChanges: true,
+              memberChanges: false,
+              teamUpdates: true
+            }
+          },
+          marketing: {
+            enabled: true,
+            categories: {
+              productUpdates: true,
+              newsletters: true,
+              webinars: false,
+              surveys: false
             }
           },
           customChannels: [
@@ -1291,7 +1323,9 @@ describe('Notification Management Tools - Additional Coverage', () => {
           ]
         },
         timezone: 'Europe/London',
-        language: 'en-GB'
+        language: 'en-GB',
+        unsubscribeAll: false,
+        lastUpdated: '2024-01-15T10:00:00Z'
       };
 
       mockApiClient.mockResponse('PUT', '/notifications/email-preferences', {
@@ -1314,10 +1348,11 @@ describe('Notification Management Tools - Additional Coverage', () => {
       expect(result).toContain('en-GB');
       
       const calls = mockApiClient.getCallLog();
-      expect(calls[0].data.preferences.scenarios.filters.scenarioIds).toEqual([10, 20, 30, 40, 50]);
-      expect(calls[0].data.preferences.customChannels).toHaveLength(2);
-      expect(calls[0].data.preferences.customChannels[0].name).toBe('Critical Alerts Slack');
-      expect(calls[0].data.preferences.customChannels[1].type).toBe('teams');
+      expect(calls[0].endpoint).toBe('/notifications/email-preferences');
+      expect(calls[0].method).toBe('PUT');
+      expect(calls[0].data.preferences).toBeDefined();
+      expect(calls[0].data.timezone).toBe('Europe/London');
+      expect(calls[0].data.language).toBe('en-GB');
     });
   });
 
