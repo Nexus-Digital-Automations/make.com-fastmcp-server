@@ -177,7 +177,7 @@ export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFin
  */
 export function generateSystemOverview(
   analyses: ScenarioAnalysis[], 
-  comparisonBaseline?: { compareToHistorical?: boolean; includeBenchmarks?: boolean }
+  _comparisonBaseline?: { compareToHistorical?: boolean; includeBenchmarks?: boolean }
 ): SystemOverview {
   const healthScores = analyses
     .map(a => a.diagnosticReport?.summary?.performanceScore || 0)

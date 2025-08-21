@@ -51,41 +51,12 @@
       ]
     },
     {
-      "id": "task_1755794334098_l3up52bnd",
-      "title": "Fix TypeScript compilation errors in scenarios refactoring",
-      "description": "Fix import/export mismatches and missing tool files to ensure TypeScript compilation succeeds",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T16:38:54.098Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755795215359_1_general_a2d71673",
-      "started_at": "2025-08-21T16:53:45.086Z",
-      "claimed_by": "development_session_1755795215359_1_general_a2d71673",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755795215359_1_general_a2d71673",
-          "role": "primary",
-          "assignedAt": "2025-08-21T16:53:45.086Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1755770075122_b72wrjxm3",
       "title": "Fix TODO items in caching middleware and scenarios tool",
       "description": "Fix 3 TODO items: 1) Re-implement tool wrapping in caching.ts, 2) Re-enable cache management tools in caching.ts, 3) Implement performance analysis integration in scenarios.ts",
       "category": "missing-feature",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -95,9 +66,9 @@
       "created_at": "2025-08-21T09:54:35.124Z",
       "auto_research_created": true,
       "mode": "DEVELOPMENT",
-      "started_at": null,
-      "claimed_by": null,
-      "assigned_agent": null,
+      "started_at": "2025-08-21T16:55:24.765Z",
+      "claimed_by": "agent_1755795324765",
+      "assigned_agent": "agent_1755795324765",
       "agent_assignment_history": [
         {
           "agent": "agent_1755770499640",
@@ -120,6 +91,11 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T10:41:49.110Z",
           "reason": "Task stale for 19 minutes"
+        },
+        {
+          "agent": "agent_1755795324765",
+          "action": "claimed",
+          "timestamp": "2025-08-21T16:55:24.765Z"
         }
       ]
     },
@@ -292,6 +268,27 @@
       "maxConcurrentTasks": 5,
       "createdAt": "2025-08-21T16:53:35.359Z",
       "sessionId": "session_1755795215359",
+      "metadata": {}
+    },
+    "development_session_1755795313302_1_general_cf3d07a9": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-21T16:55:13.303Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-21T16:55:13.303Z",
+      "sessionId": "session_1755795313302",
       "metadata": {}
     }
   },

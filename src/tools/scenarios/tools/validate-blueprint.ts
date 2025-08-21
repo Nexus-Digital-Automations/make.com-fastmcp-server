@@ -12,7 +12,7 @@ import { validateBlueprintStructure } from '../utils/blueprint-analysis.js';
  * Create validate blueprint tool configuration
  */
 export function createValidateBlueprintTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient: _apiClient, logger: _logger } = context;
   
   return {
     name: 'validate-blueprint',

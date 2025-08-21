@@ -204,8 +204,8 @@ export function validatePaginationParams(params: {
   });
 
   return {
-    limit: result.limit,
-    offset: result.offset,
+    limit: result.limit ?? 100,
+    offset: result.offset ?? 0,
   };
 }
 

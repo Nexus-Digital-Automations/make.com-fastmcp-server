@@ -372,7 +372,7 @@ async function analyzeExecutionHistory(_scenarios: unknown[], _apiClient: MakeAp
 /**
  * Generate troubleshooting insights
  */
-function generateTroubleshootingInsights(report: unknown, _scenarios: unknown[]): unknown {
+function generateTroubleshootingInsights(_report: unknown, _scenarios: unknown[]): unknown {
   return {
     keyInsights: [
       'System is operating within normal parameters',
@@ -392,16 +392,16 @@ function generateTroubleshootingInsights(report: unknown, _scenarios: unknown[])
  * Format report for executive summary
  */
 function formatExecutiveReport(baseReport: unknown): unknown {
-  const report = baseReport as any;
+  const _report = baseReport as any;
   return {
-    metadata: report.metadata,
-    executiveSummary: report.executiveSummary,
-    systemOverview: report.systemOverview,
-    keyRecommendations: report.actionPlan?.immediate?.slice(0, 5) || [],
+    metadata: _report.metadata,
+    executiveSummary: _report.executiveSummary,
+    systemOverview: _report.systemOverview,
+    keyRecommendations: _report.actionPlan?.immediate?.slice(0, 5) || [],
     riskAssessment: {
-      overallRisk: report.consolidatedFindings?.securityRiskLevel || 'low',
-      criticalIssues: report.consolidatedFindings?.criticalIssues || 0,
-      immediateActions: report.actionPlan?.immediate?.length || 0
+      overallRisk: _report.consolidatedFindings?.securityRiskLevel || 'low',
+      criticalIssues: _report.consolidatedFindings?.criticalIssues || 0,
+      immediateActions: _report.actionPlan?.immediate?.length || 0
     }
   };
 }

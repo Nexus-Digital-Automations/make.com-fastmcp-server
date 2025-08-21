@@ -11,7 +11,7 @@ import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js'
  * Create run scenario tool configuration
  */
 export function createRunScenarioTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient, logger: _logger } = context;
   
   return {
     name: 'run-scenario',
@@ -72,7 +72,7 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
           scenario: { id: string; name: string };
         };
         
-        let finalResult = {
+        const finalResult = {
           scenario: {
             id: scenario.id,
             name: scenario.name,

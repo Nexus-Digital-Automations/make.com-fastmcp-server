@@ -13,7 +13,7 @@ import { Blueprint } from '../types/blueprint.js';
  * Create optimize blueprint tool configuration
  */
 export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinition {
-  const { logger } = context;
+  const { logger: _logger } = context;
   
   return {
     name: 'optimize-blueprint',
