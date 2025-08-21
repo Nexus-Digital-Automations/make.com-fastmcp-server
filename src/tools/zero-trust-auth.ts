@@ -631,11 +631,11 @@ class ZeroTrustAuthEngine {
 /**
  * Zero Trust Authentication Tool
  */
-const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof AuthenticationRequestSchema; handler: (input: z.infer<typeof AuthenticationRequestSchema>) => Promise<string> } => ({
+const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof AuthenticationRequestSchema; execute: (input: z.infer<typeof AuthenticationRequestSchema>) => Promise<string> } => ({
   name: 'zero_trust_authenticate',
   description: 'Perform zero trust authentication with multi-factor validation and risk assessment',
   inputSchema: AuthenticationRequestSchema,
-  handler: async (input: z.infer<typeof AuthenticationRequestSchema>): Promise<string> => {
+  execute: async (input: z.infer<typeof AuthenticationRequestSchema>): Promise<string> => {
     const authEngine = ZeroTrustAuthEngine.getInstance();
     
     try {
@@ -795,11 +795,11 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): { name: string; des
 /**
  * MFA Setup Tool
  */
-const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof MFASetupSchema; handler: (input: z.infer<typeof MFASetupSchema>) => Promise<string> } => ({
+const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof MFASetupSchema; execute: (input: z.infer<typeof MFASetupSchema>) => Promise<string> } => ({
   name: 'setup_mfa',
   description: 'Setup multi-factor authentication for a user account',
   inputSchema: MFASetupSchema,
-  handler: async (input: z.infer<typeof MFASetupSchema>): Promise<string> => {
+  execute: async (input: z.infer<typeof MFASetupSchema>): Promise<string> => {
     try {
       let result: MFASetupResult;
 
@@ -931,11 +931,11 @@ const createMFASetupTool = (_apiClient: MakeApiClient): { name: string; descript
 /**
  * Device Trust Assessment Tool
  */
-const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof DeviceTrustAssessmentSchema; handler: (input: z.infer<typeof DeviceTrustAssessmentSchema>) => Promise<string> } => ({
+const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof DeviceTrustAssessmentSchema; execute: (input: z.infer<typeof DeviceTrustAssessmentSchema>) => Promise<string> } => ({
   name: 'assess_device_trust',
   description: 'Assess device trust level and compliance status',
   inputSchema: DeviceTrustAssessmentSchema,
-  handler: async (input: z.infer<typeof DeviceTrustAssessmentSchema>): Promise<string> => {
+  execute: async (input: z.infer<typeof DeviceTrustAssessmentSchema>): Promise<string> => {
     const authEngine = ZeroTrustAuthEngine.getInstance();
     
     try {
@@ -988,11 +988,11 @@ const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): { name: str
 /**
  * Behavioral Analytics Tool
  */
-const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof BehavioralAnalyticsSchema; handler: (input: z.infer<typeof BehavioralAnalyticsSchema>) => Promise<string> } => ({
+const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof BehavioralAnalyticsSchema; execute: (input: z.infer<typeof BehavioralAnalyticsSchema>) => Promise<string> } => ({
   name: 'analyze_user_behavior',
   description: 'Analyze user behavior patterns and detect anomalies',
   inputSchema: BehavioralAnalyticsSchema,
-  handler: async (input: z.infer<typeof BehavioralAnalyticsSchema>): Promise<string> => {
+  execute: async (input: z.infer<typeof BehavioralAnalyticsSchema>): Promise<string> => {
     const authEngine = ZeroTrustAuthEngine.getInstance();
     
     try {
@@ -1049,11 +1049,11 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): { name: strin
 /**
  * Session Management Tool
  */
-const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof SessionManagementSchema; handler: (input: z.infer<typeof SessionManagementSchema>) => Promise<string> } => ({
+const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof SessionManagementSchema; execute: (input: z.infer<typeof SessionManagementSchema>) => Promise<string> } => ({
   name: 'manage_session',
   description: 'Manage user sessions with continuous validation and risk-based controls',
   inputSchema: SessionManagementSchema,
-  handler: async (input: z.infer<typeof SessionManagementSchema>): Promise<string> => {
+  execute: async (input: z.infer<typeof SessionManagementSchema>): Promise<string> => {
     const authEngine = ZeroTrustAuthEngine.getInstance();
     
     try {
@@ -1185,11 +1185,11 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): { name: string;
 /**
  * Identity Federation Tool
  */
-const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof IdentityFederationSchema; handler: (input: z.infer<typeof IdentityFederationSchema>) => Promise<string> } => ({
+const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof IdentityFederationSchema; execute: (input: z.infer<typeof IdentityFederationSchema>) => Promise<string> } => ({
   name: 'identity_federation',
   description: 'Handle identity federation and SSO integration with enterprise providers',
   inputSchema: IdentityFederationSchema,
-  handler: async (input: z.infer<typeof IdentityFederationSchema>): Promise<string> => {
+  execute: async (input: z.infer<typeof IdentityFederationSchema>): Promise<string> => {
     try {
       let result: Record<string, unknown>;
 
@@ -1342,11 +1342,11 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): { name: string
 /**
  * Risk Assessment Tool
  */
-const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof RiskAssessmentSchema; handler: (input: z.infer<typeof RiskAssessmentSchema>) => Promise<string> } => ({
+const createRiskAssessmentTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof RiskAssessmentSchema; execute: (input: z.infer<typeof RiskAssessmentSchema>) => Promise<string> } => ({
   name: 'assess_authentication_risk',
   description: 'Perform comprehensive risk assessment for authentication decisions',
   inputSchema: RiskAssessmentSchema,
-  handler: async (input: z.infer<typeof RiskAssessmentSchema>): Promise<string> => {
+  execute: async (input: z.infer<typeof RiskAssessmentSchema>): Promise<string> => {
     try {
       // Calculate weighted risk score
       const weights = {
@@ -1488,7 +1488,12 @@ export const zeroTrustAuthTools = [
 export function addZeroTrustAuthTools(server: FastMCP, apiClient: MakeApiClient): void {
   zeroTrustAuthTools.forEach(createTool => {
     const tool = createTool(apiClient);
-    server.addTool(tool);
+    server.addTool({
+      name: tool.name,
+      description: tool.description,
+      parameters: tool.inputSchema,
+      execute: tool.execute
+    });
   });
 
   componentLogger.info('Zero Trust Authentication tools registered', {

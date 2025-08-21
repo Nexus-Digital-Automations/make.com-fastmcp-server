@@ -2085,11 +2085,15 @@ const createComplianceReportTool = (_apiClient: MakeApiClient): EnterpriseSecret
   parameters: z.object({
     framework: z.enum(['soc2', 'pci_dss', 'gdpr', 'hipaa', 'fisma', 'iso27001']),
   }),
-  execute: async (input: { framework: string }): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      const validatedInput = input as { framework: string };
+      // Validate input using the Zod schema
+      const inputSchema = z.object({
+        framework: z.enum(['soc2', 'pci_dss', 'gdpr', 'hipaa', 'fisma', 'iso27001']),
+      });
+      const validatedInput = inputSchema.parse(input);
       const report = await vaultManager.generateComplianceReport(validatedInput.framework);
       
       return JSON.stringify({
