@@ -121,6 +121,66 @@ export interface CostProjection {
   generatedAt: string;
 }
 
+// Additional interfaces for budget control functions
+export interface SessionUser {
+  id?: string;
+  tenantId?: string;
+  organizationId?: number;
+}
+
+export interface UserSession {
+  user?: SessionUser;
+  authenticated?: boolean;
+}
+
+export interface HistoricalBudgetData {
+  budgetId: string;
+  tenantId: string;
+  dataPoints: Array<{
+    date: string;
+    spend: number;
+    usage: number;
+    scenarios?: number;
+  }>;
+  aggregatedBy: 'daily' | 'weekly' | 'monthly';
+  totalDays: number;
+  averageDailySpend: number;
+  seasonalFactors?: Record<string, number>;
+  trendMetrics: {
+    slope: number;
+    volatility: number;
+    correlation: number;
+  };
+}
+
+export interface CurrentUsageData {
+  budgetId: string;
+  currentSpend: number;
+  dailySpend: number;
+  scenarioCount: number;
+  operationCount: number;
+  velocity: number;
+  lastUpdated: string;
+}
+
+export interface ProjectionData {
+  budgetId: string;
+  currentSpend: number;
+  projected: number;
+  confidence: number;
+  model: string;
+  dataQuality: number;
+  trendStability: number;
+  historicalAccuracy: number;
+}
+
+export interface ConfidenceMetrics {
+  overall: number;
+  dataQuality: number;
+  trendStability: number;
+  historicalAccuracy: number;
+}
+
 // Input validation schemas
 const BudgetLimitsSchema = z.object({
   monthly: z.number().min(0).describe('Monthly budget limit in USD'),
@@ -249,7 +309,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
 
         const budgetConfig: BudgetConfiguration = {
           id: budgetId,
-          tenantId: tenantId || (session as any)?.user?.id || 'default',
+          tenantId: tenantId || (session as UserSession)?.user?.id || 'default',
           organizationId,
           name,
           description,
@@ -272,7 +332,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
           isActive,
           createdAt: currentTime,
           updatedAt: currentTime,
-          createdBy: (session as any)?.user?.id || 'system',
+          createdBy: (session as UserSession)?.user?.id || 'system',
         };
 
         // Simulate budget storage (in real implementation, store in database)
@@ -806,7 +866,7 @@ async function simulateCurrentUsageAnalysis(_budgetId: string): Promise<{ curren
   };
 }
 
-async function simulateSeasonalityAnalysis(_historicalData: any): Promise<Record<string, number>> {
+async function simulateSeasonalityAnalysis(_historicalData: HistoricalBudgetData): Promise<Record<string, number>> {
   await new Promise(resolve => setTimeout(resolve, 75));
   return {
     'Q1': Math.random() * 0.2 + 0.8, // 0.8-1.0
@@ -816,7 +876,7 @@ async function simulateSeasonalityAnalysis(_historicalData: any): Promise<Record
   };
 }
 
-async function simulateTrendAnalysis(_historicalData: any): Promise<{ trend: number; stability: number }> {
+async function simulateTrendAnalysis(_historicalData: HistoricalBudgetData): Promise<{ trend: number; stability: number }> {
   await new Promise(resolve => setTimeout(resolve, 100));
   return {
     trend: Math.random() * 0.4 + 0.8, // 0.8-1.2 (multiplier)
@@ -825,8 +885,8 @@ async function simulateTrendAnalysis(_historicalData: any): Promise<{ trend: num
 }
 
 async function simulateProjectionGeneration(
-  _historicalData: any,
-  currentUsage: any,
+  _historicalData: HistoricalBudgetData,
+  currentUsage: CurrentUsageData,
   projectionDays: number,
   model: string
 ): Promise<{ currentSpend: number; projected: number }> {
@@ -841,10 +901,10 @@ async function simulateProjectionGeneration(
 }
 
 async function simulateConfidenceCalculation(
-  _projection: any,
-  historicalData: any,
+  _projection: ProjectionData,
+  historicalData: HistoricalBudgetData,
   confidenceLevel: number
-): Promise<{ overall: number; dataQuality: number; trendStability: number; historicalAccuracy: number }> {
+): Promise<ConfidenceMetrics> {
   await new Promise(resolve => setTimeout(resolve, 50));
   
   const dataQuality = Math.min(1.0, historicalData.dataPoints / 100);

@@ -1484,7 +1484,7 @@ export const zeroTrustAuthTools = [
 /**
  * Add all Zero Trust Authentication tools to FastMCP server
  */
-export function addZeroTrustAuthTools(server: any, apiClient: MakeApiClient): void {
+export function addZeroTrustAuthTools(server: { addTool: (tool: unknown) => void }, apiClient: MakeApiClient): void {
   zeroTrustAuthTools.forEach(createTool => {
     const tool = createTool(apiClient);
     server.addTool(tool);

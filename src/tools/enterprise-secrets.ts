@@ -22,6 +22,18 @@ import logger from '../lib/logger.js';
 const componentLogger = logger.child({ component: 'EnterpriseSecretsManagement' });
 const randomBytes = promisify(crypto.randomBytes);
 
+// Tool interface definition
+interface EnterpriseSecretsTool {
+  name: string;
+  description: string;
+  parameters: z.ZodSchema<Record<string, unknown>>;
+  execute: (input: Record<string, unknown>) => Promise<string>;
+}
+
+interface FastMCPServer {
+  addTool: (tool: EnterpriseSecretsTool) => void;
+}
+
 // ===== CORE SCHEMAS =====
 
 // Vault Server Configuration Schema
@@ -1702,7 +1714,7 @@ PrivateKeyDataHere
 /**
  * Vault Server Configuration Tool
  */
-const createVaultServerConfigTool = (_apiClient: MakeApiClient) => ({
+const createVaultServerConfigTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'configure_vault_server',
   description: 'Configure and provision HashiCorp Vault server cluster with high availability and enterprise features',
   parameters: VaultServerConfigSchema,
@@ -1734,7 +1746,7 @@ const createVaultServerConfigTool = (_apiClient: MakeApiClient) => ({
 /**
  * HSM Integration Tool
  */
-const createHSMIntegrationTool = (_apiClient: MakeApiClient) => ({
+const createHSMIntegrationTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'configure_hsm_integration',
   description: 'Configure Hardware Security Module integration for enterprise-grade key protection',
   parameters: HSMConfigSchema,
@@ -1766,7 +1778,7 @@ const createHSMIntegrationTool = (_apiClient: MakeApiClient) => ({
 /**
  * Secret Engine Management Tool
  */
-const createSecretEngineManagementTool = (_apiClient: MakeApiClient) => ({
+const createSecretEngineManagementTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'manage_secret_engines',
   description: 'Mount and configure Vault secret engines for various secret types and integrations',
   parameters: SecretEngineConfigSchema,
@@ -1799,7 +1811,7 @@ const createSecretEngineManagementTool = (_apiClient: MakeApiClient) => ({
 /**
  * Automated Key Rotation Tool
  */
-const createKeyRotationTool = (_apiClient: MakeApiClient) => ({
+const createKeyRotationTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'configure_key_rotation',
   description: 'Configure automated key rotation policies with scheduled and event-driven triggers',
   parameters: KeyRotationPolicySchema,
@@ -1831,7 +1843,7 @@ const createKeyRotationTool = (_apiClient: MakeApiClient) => ({
 /**
  * Dynamic Secret Generation Tool
  */
-const createDynamicSecretTool = (_apiClient: MakeApiClient) => ({
+const createDynamicSecretTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'generate_dynamic_secret',
   description: 'Generate just-in-time dynamic secrets for databases, cloud providers, and APIs',
   parameters: DynamicSecretConfigSchema,
@@ -1863,7 +1875,7 @@ const createDynamicSecretTool = (_apiClient: MakeApiClient) => ({
 /**
  * RBAC Policy Management Tool
  */
-const createRBACPolicyTool = (_apiClient: MakeApiClient) => ({
+const createRBACPolicyTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'manage_rbac_policies',
   description: 'Create and manage fine-grained role-based access control policies for secret access',
   parameters: RBACPolicySchema,
@@ -1923,7 +1935,7 @@ path "${rule.path}" {
 /**
  * Secret Scanning Tool
  */
-const createSecretScanningTool = (_apiClient: MakeApiClient) => ({
+const createSecretScanningTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'perform_secret_scanning',
   description: 'Perform comprehensive secret scanning for leakage detection and prevention',
   parameters: SecretScanningConfigSchema,
@@ -1962,7 +1974,7 @@ const createSecretScanningTool = (_apiClient: MakeApiClient) => ({
 /**
  * Breach Detection Configuration Tool
  */
-const createBreachDetectionTool = (_apiClient: MakeApiClient) => ({
+const createBreachDetectionTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'configure_breach_detection',
   description: 'Configure comprehensive breach detection and automated response systems',
   parameters: BreachDetectionConfigSchema,
@@ -1998,7 +2010,7 @@ const createBreachDetectionTool = (_apiClient: MakeApiClient) => ({
 /**
  * Audit Configuration Tool
  */
-const createAuditConfigTool = (_apiClient: MakeApiClient) => ({
+const createAuditConfigTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'configure_audit_system',
   description: 'Configure comprehensive audit system for compliance and security monitoring',
   parameters: AuditConfigSchema,
@@ -2058,7 +2070,7 @@ const createAuditConfigTool = (_apiClient: MakeApiClient) => ({
 /**
  * Compliance Report Generation Tool
  */
-const createComplianceReportTool = (_apiClient: MakeApiClient) => ({
+const createComplianceReportTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'generate_compliance_report',
   description: 'Generate comprehensive compliance reports for various regulatory frameworks',
   parameters: z.object({
@@ -2114,7 +2126,7 @@ export const enterpriseSecretsTools = [
 /**
  * Add all Enterprise Secrets Management tools to FastMCP server
  */
-export function addEnterpriseSecretsTools(server: any, apiClient: MakeApiClient): void {
+export function addEnterpriseSecretsTools(server: FastMCPServer, apiClient: MakeApiClient): void {
   enterpriseSecretsTools.forEach(createTool => {
     const tool = createTool(apiClient);
     server.addTool(tool);

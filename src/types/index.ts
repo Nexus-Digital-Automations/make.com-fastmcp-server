@@ -7,15 +7,15 @@ import { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 
 // FastMCP Server Types
-export type FastMCPServer = FastMCP<any>;
-export type ToolParameters = z.ZodType<any>;
+export type FastMCPServer = FastMCP<Record<string, unknown>>;
+export type ToolParameters = z.ZodType<Record<string, unknown>>;
 
 // Tool creation function type
-export type ToolCreationFunction<T = any> = (apiClient: T) => {
+export type ToolCreationFunction<T = Record<string, unknown>> = (apiClient: T) => {
   name: string;
   description: string;
   parameters: ToolParameters;
-  execute: (args: any, context?: any) => Promise<string>;
+  execute: (args: Record<string, unknown>, context?: ToolExecutionContext) => Promise<string>;
 };
 
 // Server interface for tool registration
@@ -24,7 +24,7 @@ export interface ToolServer {
     name: string;
     description: string;
     parameters: Params;
-    execute: (args: z.infer<Params>, context?: any) => Promise<string>;
+    execute: (args: z.infer<Params>, context?: ToolExecutionContext) => Promise<string>;
   }) => void;
 }
 

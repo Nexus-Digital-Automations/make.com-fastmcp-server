@@ -211,7 +211,24 @@ const MoveItemsSchema = z.object({
   copyInsteadOfMove: z.boolean().default(false).describe('Copy items instead of moving them'),
 }).strict();
 
-const DataStructureFieldSchema: z.ZodType<any> = z.object({
+// Interface for recursive data structure field
+interface DataStructureField {
+  name: string;
+  type: 'text' | 'number' | 'boolean' | 'date' | 'array' | 'collection';
+  required?: boolean;
+  default?: unknown;
+  constraints?: {
+    minLength?: number;
+    maxLength?: number;
+    minimum?: number;
+    maximum?: number;
+    pattern?: string;
+    enum?: unknown[];
+  };
+  spec?: DataStructureField[];
+}
+
+const DataStructureFieldSchema: z.ZodType<DataStructureField> = z.object({
   name: z.string().min(1).max(50).describe('Field name'),
   type: z.enum(['text', 'number', 'boolean', 'date', 'array', 'collection']).describe('Field data type'),
   required: z.boolean().default(false).describe('Whether field is required'),

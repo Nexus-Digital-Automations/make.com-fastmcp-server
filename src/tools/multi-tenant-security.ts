@@ -787,13 +787,46 @@ class MultiTenantSecurityEngine {
   }
 }
 
-// Supporting classes
+// Supporting interfaces and classes
+interface OrganizationInfo {
+  id?: string;
+  name?: string;
+  domain?: string;
+  contactEmail?: string;
+  size?: string;
+  industry?: string;
+  region?: string;
+}
+
+interface SecuritySettings {
+  encryption?: {
+    algorithm?: string;
+    keySize?: number;
+    rotationInterval?: number;
+  };
+  authentication?: {
+    mfaRequired?: boolean;
+    sessionTimeout?: number;
+    passwordPolicy?: Record<string, unknown>;
+  };
+  network?: {
+    allowedIPs?: string[];
+    vpnRequired?: boolean;
+    tlsVersion?: string;
+  };
+  compliance?: {
+    frameworks?: string[];
+    auditLevel?: string;
+    retentionPeriod?: number;
+  };
+}
+
 interface TenantConfiguration {
   tenantId: string;
   name: string;
   subscriptionTier: string;
-  organizationInfo: any;
-  securitySettings: any;
+  organizationInfo: OrganizationInfo;
+  securitySettings: SecuritySettings;
   provisioningDate: Date;
   status: string;
   complianceFrameworks: string[];
@@ -1377,7 +1410,7 @@ export const multiTenantSecurityTools = [
 /**
  * Add all Multi-Tenant Security tools to FastMCP server
  */
-export function addMultiTenantSecurityTools(server: any, apiClient: MakeApiClient): void {
+export function addMultiTenantSecurityTools(server: { addTool: (tool: unknown) => void }, apiClient: MakeApiClient): void {
   multiTenantSecurityTools.forEach(createTool => {
     const tool = createTool(apiClient);
     server.addTool(tool);

@@ -152,6 +152,30 @@ interface BuildReport {
   }>;
 }
 
+// Additional interfaces for CI/CD integration
+interface PackageJsonData {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  name?: string;
+  version?: string;
+  scripts?: Record<string, string>;
+}
+
+interface AuditVulnerability {
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  title?: string;
+  url?: string;
+  range?: string;
+  path?: string[];
+}
+
+interface CoverageFileData {
+  lines?: { pct: number; total: number; covered: number };
+  functions?: { pct: number; total: number; covered: number };
+  statements?: { pct: number; total: number; covered: number };
+  branches?: { pct: number; total: number; covered: number };
+}
+
 // ==================== HELPER FUNCTIONS ====================
 
 function runCommand(command: string, args: string[], options: Record<string, unknown> = {}): Promise<{ stdout: string; stderr: string; exitCode: number }> {
@@ -209,8 +233,8 @@ async function getProjectMetrics(): Promise<Record<string, number>> {
   // Count lines of code
   const { stdout: locCount } = await runCommand('find', ['src', '-name', '*.ts', '-o', '-name', '*.js', '-exec', 'wc', '-l', '{}', '+', '|', 'tail', '-1']);
   
-  const dependencies = Object.keys((packageJson as any)?.dependencies || {}).length;
-  const devDependencies = Object.keys((packageJson as any)?.devDependencies || {}).length;
+  const dependencies = Object.keys((packageJson as PackageJsonData)?.dependencies || {}).length;
+  const devDependencies = Object.keys((packageJson as PackageJsonData)?.devDependencies || {}).length;
 
   return {
     files: parseInt(fileCount.trim()) || 0,
@@ -266,7 +290,7 @@ async function runSecurityScan(): Promise<{ vulnerabilities: { critical: number;
     const auditResult = JSON.parse(stdout);
     if (auditResult.vulnerabilities) {
       for (const [, vuln] of Object.entries(auditResult.vulnerabilities)) {
-        const severity = (vuln as any).severity;
+        const severity = (vuln as AuditVulnerability).severity;
         if (vulnerabilities[severity as keyof typeof vulnerabilities] !== undefined) {
           vulnerabilities[severity as keyof typeof vulnerabilities]++;
         }
@@ -528,7 +552,7 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
             // Extract file-level coverage
             for (const [filePath, fileData] of Object.entries(summaryData)) {
               if (filePath !== 'total' && typeof fileData === 'object' && fileData !== null) {
-                const data = fileData as any;
+                const data = fileData as CoverageFileData;
                 coverageData.files.push({
                   path: filePath,
                   lines: data.lines?.pct || 0,
