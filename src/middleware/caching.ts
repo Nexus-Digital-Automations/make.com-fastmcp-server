@@ -4,6 +4,7 @@
  */
 
 import { FastMCP } from 'fastmcp';
+import { z } from 'zod';
 import RedisCache, { CacheConfig, defaultCacheConfig } from '../lib/cache.js';
 import logger from '../lib/logger.js';
 import metrics from '../lib/metrics.js';
@@ -41,6 +42,7 @@ export class CachingMiddleware {
   private config: CachingMiddlewareConfig;
   private componentLogger: ReturnType<typeof logger.child>;
   private operationMetrics = new Map<string, { hits: number; misses: number; errors: number }>();
+  private server?: FastMCP;
 
   constructor(config?: Partial<CachingMiddlewareConfig>) {
     this.config = {
@@ -159,9 +161,11 @@ export class CachingMiddleware {
   /**
    * Apply caching middleware to FastMCP server
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public apply(_server: FastMCP): void {
+  public apply(server: FastMCP): void {
     this.componentLogger.info('Applying caching middleware to FastMCP server');
+    
+    // Store server reference for cache management tools
+    this.server = server;
 
     // Wrap tool execution with caching
     this.wrapServerTools();
@@ -185,9 +189,158 @@ export class CachingMiddleware {
    * Add cache management tools to server
    */
   private addCacheManagementTools(): void {
-    // TODO: Re-enable cache management tools when FastMCP interface is updated
-    this.componentLogger.warn('Cache management tools temporarily disabled due to FastMCP interface changes');
-    return;
+    if (!this.server || typeof this.server.addTool !== 'function') {
+      this.componentLogger.error('FastMCP server not available for cache tool registration');
+      return;
+    }
+    
+    this.componentLogger.info('Registering cache management tools with FastMCP server');
+
+    // Cache status tool
+    this.server.addTool({
+      name: 'cache-status',
+      description: 'Get cache system status and statistics',
+      annotations: {
+        title: 'Cache Status',
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+      parameters: z.object({}),
+      execute: async () => {
+        try {
+          const stats = await this.cache.getStats();
+          const health = await this.cache.healthCheck();
+          const operationStats = Object.fromEntries(this.operationMetrics);
+
+          const result = {
+            success: true,
+            data: {
+              health,
+              stats,
+              operationStats,
+              strategies: Object.keys(this.config.strategies),
+              config: {
+                compression: this.config.cache.compression,
+                ttl: this.config.cache.ttl
+              }
+            },
+            timestamp: new Date().toISOString()
+          };
+
+          return JSON.stringify(result, null, 2);
+        } catch (error) {
+          const result = {
+            success: false,
+            error: {
+              message: 'Failed to get cache status',
+              details: error instanceof Error ? error.message : 'Unknown error'
+            },
+            timestamp: new Date().toISOString()
+          };
+
+          return JSON.stringify(result, null, 2);
+        }
+      }
+    });
+
+    // Cache invalidation tool
+    this.server.addTool({
+      name: 'cache-invalidate',
+      description: 'Invalidate cache entries based on trigger patterns',
+      annotations: {
+        title: 'Cache Invalidate',
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
+      parameters: z.object({
+        trigger: z.string().min(1).describe('Invalidation trigger (e.g., scenario:update)'),
+        context: z.record(z.string()).optional().describe('Optional context for pattern expansion')
+      }),
+      execute: async (args) => {
+        try {
+          const { trigger, context } = args;
+          const deletedCount = await this.cache.invalidate(trigger, context);
+
+          this.componentLogger.info('Cache invalidated via tool', { trigger, deletedCount });
+
+          const result = {
+            success: true,
+            data: {
+              trigger,
+              deletedCount,
+              timestamp: new Date().toISOString()
+            }
+          };
+
+          return JSON.stringify(result, null, 2);
+        } catch (error) {
+          const result = {
+            success: false,
+            error: {
+              message: 'Failed to invalidate cache',
+              details: error instanceof Error ? error.message : 'Unknown error'
+            },
+            timestamp: new Date().toISOString()
+          };
+
+          return JSON.stringify(result, null, 2);
+        }
+      }
+    });
+
+    // Cache warm-up tool
+    this.server.addTool({
+      name: 'cache-warmup',
+      description: 'Warm up cache with predefined data sets',
+      annotations: {
+        title: 'Cache Warmup',
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+      parameters: z.object({
+        operations: z.array(z.string()).optional().describe('List of operations to warm up (e.g., ["list_scenarios", "list_users"])')
+      }),
+      execute: async (args) => {
+        try {
+          const operations = args.operations || Object.keys(this.config.strategies);
+          const warmupData = await this.generateWarmupData(operations);
+          const successCount = await this.cache.warmUp(warmupData);
+
+          const result = {
+            success: true,
+            data: {
+              operations,
+              totalItems: warmupData.length,
+              successfulItems: successCount,
+              timestamp: new Date().toISOString()
+            }
+          };
+
+          return JSON.stringify(result, null, 2);
+        } catch (error) {
+          const result = {
+            success: false,
+            error: {
+              message: 'Failed to warm up cache',
+              details: error instanceof Error ? error.message : 'Unknown error'
+            },
+            timestamp: new Date().toISOString()
+          };
+
+          return JSON.stringify(result, null, 2);
+        }
+      }
+    });
+
+    this.componentLogger.info('Cache management tools registered successfully', {
+      tools: ['cache-status', 'cache-invalidate', 'cache-warmup']
+    });
   }
 
   /**
