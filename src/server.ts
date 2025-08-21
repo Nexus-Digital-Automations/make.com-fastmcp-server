@@ -3,7 +3,14 @@
  * Main server implementation with authentication, error handling, and logging
  */
 
-import { FastMCP, UserError, FastMCPSession } from 'fastmcp';
+import { FastMCP, UserError } from 'fastmcp';
+
+// Define our custom session authentication type that extends the FastMCP type
+type MakeSessionAuth = {
+  authenticated: boolean;
+  timestamp: string;
+  correlationId: string;
+};
 import { z } from 'zod';
 import configManager from './lib/config.js';
 import logger from './lib/logger.js';
@@ -42,7 +49,7 @@ import { addEnterpriseSecretsTools } from './tools/enterprise-secrets.js';
 import { addBlueprintCollaborationTools } from './tools/blueprint-collaboration.js';
 
 export class MakeServerInstance {
-  private server: FastMCP<FastMCPSession>;
+  private server: FastMCP<MakeSessionAuth>;
   private apiClient: MakeApiClient;
   private componentLogger: ReturnType<typeof logger.child>;
 
@@ -56,7 +63,7 @@ export class MakeServerInstance {
     this.apiClient = new MakeApiClient(configManager.getMakeConfig());
 
     // Initialize FastMCP server with proper type annotations
-    this.server = new FastMCP<FastMCPSession>({
+    this.server = new FastMCP<MakeSessionAuth>({
       name: configManager.getConfig().name,
       version: "1.0.0",
       instructions: this.getServerInstructions(),
@@ -121,7 +128,7 @@ ${configManager.isAuthEnabled() ?
 `.trim();
   }
 
-  private async authenticate(request: unknown): Promise<Record<string, unknown>> {
+  private async authenticate(request: unknown): Promise<MakeSessionAuth> {
     const requestObj = request as Record<string, unknown>;
     const correlationId = extractCorrelationId({ headers: requestObj.headers as Record<string, string> });
     const componentLogger = this.componentLogger.child({ 
@@ -643,7 +650,7 @@ ${configManager.isAuthEnabled() ?
     this.componentLogger.info('Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control + cicd-integration + zero-trust-auth + multi-tenant-security + enterprise-secrets + ai-governance-engine + blueprint-collaboration)');
   }
 
-  public getServer(): FastMCP {
+  public getServer(): FastMCP<MakeSessionAuth> {
     return this.server;
   }
 

@@ -2,6 +2,141 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755764119215_2s9hpog1r",
+      "title": "Coordinate final TypeScript compilation validation across entire codebase",
+      "description": "Run comprehensive TypeScript compilation check, verify all 86+ errors resolved, ensure no new errors, validate build process, provide final error-free confirmation report",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T08:15:19.215Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755764116376_3zps26lzt",
+      "title": "Fix critical TypeScript session type compatibility errors in src/server.ts",
+      "description": "CRITICAL ERRORS TO FIX:\n- FastMCPSession<FastMCPSessionAuth> vs FastMCPSessionAuth incompatibility\n- Type constraint violations in session handling\n- Tool registration type mismatches with session authentication\n\nREQUIREMENTS:\n1. Fix session type compatibility between FastMCPSession and FastMCPSessionAuth\n2. Resolve type constraint violations in authentication handling\n3. Ensure proper tool registration with correct session types\n4. Run TypeScript validation to confirm all errors resolved\n5. Maintain existing authentication and session management functionality",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T08:15:16.376Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T08:16:07.936Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        }
+      ]
+    },
+    {
+      "id": "task_1755764115750_7p60b9vly",
+      "title": "Fix TypeScript compilation errors in performance-analysis.ts",
+      "description": "Fix missing properties requestsRemaining and resetTime in type assignments, resolve unknown type assignments to Record<string, unknown>, ensure proper typing for API rate limiting data",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T08:15:15.750Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T08:16:02.943Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        }
+      ]
+    },
+    {
+      "id": "task_1755764115189_57oo5nwzf",
+      "title": "Fix TypeScript compilation errors in multi-tenant-security.ts",
+      "description": "Fix SecuritySettings type compatibility issue on line 445",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T08:15:15.189Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755764059596_hhx0j1i7v",
+      "title": "Fix remaining TypeScript compilation errors",
+      "description": "Fix TypeScript errors in multi-tenant-security.ts, performance-analysis.ts, and scenarios.ts files",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T08:14:19.596Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T08:14:41.022Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        }
+      ]
+    },
+    {
+      "id": "task_1755764050294_n3zlecmof",
+      "title": "Fix critical TypeScript session type compatibility errors in src/server.ts",
+      "description": "Fix FastMCPSession<FastMCPSessionAuth> vs FastMCPSessionAuth incompatibility, type constraint violations, and tool registration type mismatches",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T08:14:10.294Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755763915098_ybnapatgl",
       "title": "Fix TypeScript compilation error in src/tools/zero-trust-auth.ts",
       "description": "Fix Tool type compatibility issue on line 1491 where tool definition is not assignable to Tool<FastMCPSessionAuth, ToolParameters>",
@@ -85,51 +220,6 @@
       "subtasks": [],
       "created_at": "2025-08-21T08:11:00.427Z",
       "auto_research_created": false
-    },
-    {
-      "id": "task_1755763819218_f9bh6y4c4",
-      "title": "Fix TypeScript compilation errors in src/tools/enterprise-secrets.ts",
-      "description": "Fix VaultServerConfigSchema, HSMConfigSchema, SecretEngineConfigSchema, and KeyRotationPolicySchema type parameter mismatches. Resolve Record<string, unknown> not matching Zod schema types.",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:10:19.218Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755763784901_vfzgwfgqq",
-      "title": "Fix TypeScript compilation errors in budget-control.ts",
-      "description": "Fix type mismatches on lines 571, 575, 580, 588 and arithmetic operation error on line 910",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:09:44.902Z",
-      "auto_research_created": false,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-21T08:10:33.408Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
     },
     {
       "id": "task_1755763413074_myo4miwaq",

@@ -800,26 +800,16 @@ interface OrganizationInfo {
 }
 
 interface SecuritySettings {
-  encryption?: {
-    algorithm?: string;
-    keySize?: number;
-    rotationInterval?: number;
+  requireMFA?: boolean;
+  sessionTimeoutMinutes?: number;
+  passwordPolicy?: {
+    minLength?: number;
+    requireSpecialChars?: boolean;
+    requireNumbers?: boolean;
+    requireUppercase?: boolean;
   };
-  authentication?: {
-    mfaRequired?: boolean;
-    sessionTimeout?: number;
-    passwordPolicy?: Record<string, unknown>;
-  };
-  network?: {
-    allowedIPs?: string[];
-    vpnRequired?: boolean;
-    tlsVersion?: string;
-  };
-  compliance?: {
-    frameworks?: string[];
-    auditLevel?: string;
-    retentionPeriod?: number;
-  };
+  ipWhitelist?: string[];
+  networkIsolation?: boolean;
 }
 
 interface TenantConfiguration {
@@ -882,11 +872,11 @@ interface PolicyConfiguration {
 /**
  * Tenant Provisioning Tool
  */
-const createTenantProvisioningTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof TenantProvisioningSchema; handler: (input: z.infer<typeof TenantProvisioningSchema>) => Promise<string> } => ({
+const createTenantProvisioningTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof TenantProvisioningSchema; execute: (input: z.infer<typeof TenantProvisioningSchema>) => Promise<string> } => ({
   name: 'provision_tenant',
   description: 'Provision a new tenant with comprehensive security isolation, cryptographic keys, network segmentation, and compliance boundaries',
-  inputSchema: TenantProvisioningSchema,
-  handler: async (input: z.infer<typeof TenantProvisioningSchema>): Promise<string> => {
+  parameters: TenantProvisioningSchema,
+  execute: async (input: z.infer<typeof TenantProvisioningSchema>): Promise<string> => {
     const securityEngine = MultiTenantSecurityEngine.getInstance();
     
     try {
@@ -940,11 +930,11 @@ const createTenantProvisioningTool = (_apiClient: MakeApiClient): { name: string
 /**
  * Cryptographic Isolation Tool
  */
-const createCryptographicIsolationTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof CryptographicIsolationSchema; handler: (input: z.infer<typeof CryptographicIsolationSchema>) => Promise<string> } => ({
+const createCryptographicIsolationTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof CryptographicIsolationSchema; execute: (input: z.infer<typeof CryptographicIsolationSchema>) => Promise<string> } => ({
   name: 'manage_cryptographic_isolation',
   description: 'Manage tenant-specific cryptographic isolation including key generation, rotation, encryption, and verification',
-  inputSchema: CryptographicIsolationSchema,
-  handler: async (input: z.infer<typeof CryptographicIsolationSchema>): Promise<string> => {
+  parameters: CryptographicIsolationSchema,
+  execute: async (input: z.infer<typeof CryptographicIsolationSchema>): Promise<string> => {
     const securityEngine = MultiTenantSecurityEngine.getInstance();
     
     try {
@@ -993,11 +983,11 @@ const createCryptographicIsolationTool = (_apiClient: MakeApiClient): { name: st
 /**
  * Network Segmentation Tool
  */
-const createNetworkSegmentationTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof NetworkSegmentationSchema; handler: (input: z.infer<typeof NetworkSegmentationSchema>) => Promise<string> } => ({
+const createNetworkSegmentationTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof NetworkSegmentationSchema; execute: (input: z.infer<typeof NetworkSegmentationSchema>) => Promise<string> } => ({
   name: 'configure_network_segmentation',
   description: 'Configure tenant network segmentation with virtual isolation, microsegmentation, and traffic monitoring',
-  inputSchema: NetworkSegmentationSchema,
-  handler: async (input: z.infer<typeof NetworkSegmentationSchema>): Promise<string> => {
+  parameters: NetworkSegmentationSchema,
+  execute: async (input: z.infer<typeof NetworkSegmentationSchema>): Promise<string> => {
     const securityEngine = MultiTenantSecurityEngine.getInstance();
     
     try {
@@ -1056,11 +1046,11 @@ const createNetworkSegmentationTool = (_apiClient: MakeApiClient): { name: strin
 /**
  * Resource Quota Management Tool
  */
-const createResourceQuotaManagementTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof ResourceQuotaManagementSchema; handler: (input: z.infer<typeof ResourceQuotaManagementSchema>) => Promise<string> } => ({
+const createResourceQuotaManagementTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof ResourceQuotaManagementSchema; execute: (input: z.infer<typeof ResourceQuotaManagementSchema>) => Promise<string> } => ({
   name: 'manage_resource_quotas',
   description: 'Manage tenant resource quotas, scaling policies, and resource optimization with real-time monitoring',
-  inputSchema: ResourceQuotaManagementSchema,
-  handler: async (input: z.infer<typeof ResourceQuotaManagementSchema>): Promise<string> => {
+  parameters: ResourceQuotaManagementSchema,
+  execute: async (input: z.infer<typeof ResourceQuotaManagementSchema>): Promise<string> => {
     try {
       // Simulate resource quota management
       const result: ResourceQuotaResult = {
@@ -1159,11 +1149,11 @@ const createResourceQuotaManagementTool = (_apiClient: MakeApiClient): { name: s
 /**
  * Governance Policy Tool
  */
-const createGovernancePolicyTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof GovernancePolicySchema; handler: (input: z.infer<typeof GovernancePolicySchema>) => Promise<string> } => ({
+const createGovernancePolicyTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof GovernancePolicySchema; execute: (input: z.infer<typeof GovernancePolicySchema>) => Promise<string> } => ({
   name: 'manage_governance_policies',
   description: 'Manage tenant-specific governance policies, compliance frameworks, and automated policy enforcement',
-  inputSchema: GovernancePolicySchema,
-  handler: async (input: z.infer<typeof GovernancePolicySchema>): Promise<string> => {
+  parameters: GovernancePolicySchema,
+  execute: async (input: z.infer<typeof GovernancePolicySchema>): Promise<string> => {
     try {
       // Simulate governance policy management
       const result: GovernancePolicyResult = {
@@ -1241,11 +1231,11 @@ const createGovernancePolicyTool = (_apiClient: MakeApiClient): { name: string; 
 /**
  * Data Leakage Prevention Tool
  */
-const createDataLeakagePreventionTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof DataLeakagePreventionSchema; handler: (input: z.infer<typeof DataLeakagePreventionSchema>) => Promise<string> } => ({
+const createDataLeakagePreventionTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof DataLeakagePreventionSchema; execute: (input: z.infer<typeof DataLeakagePreventionSchema>) => Promise<string> } => ({
   name: 'prevent_data_leakage',
   description: 'Implement comprehensive data leakage prevention with classification, monitoring, and threat detection',
-  inputSchema: DataLeakagePreventionSchema,
-  handler: async (input: z.infer<typeof DataLeakagePreventionSchema>): Promise<string> => {
+  parameters: DataLeakagePreventionSchema,
+  execute: async (input: z.infer<typeof DataLeakagePreventionSchema>): Promise<string> => {
     try {
       // Simulate data leakage prevention
       const result: DataLeakagePreventionResult = {
@@ -1317,11 +1307,11 @@ const createDataLeakagePreventionTool = (_apiClient: MakeApiClient): { name: str
 /**
  * Compliance Boundary Tool
  */
-const createComplianceBoundaryTool = (_apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof ComplianceBoundarySchema; handler: (input: z.infer<typeof ComplianceBoundarySchema>) => Promise<string> } => ({
+const createComplianceBoundaryTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof ComplianceBoundarySchema; execute: (input: z.infer<typeof ComplianceBoundarySchema>) => Promise<string> } => ({
   name: 'manage_compliance_boundaries',
   description: 'Establish and manage tenant-specific compliance boundaries for multiple regulatory frameworks',
-  inputSchema: ComplianceBoundarySchema,
-  handler: async (input: z.infer<typeof ComplianceBoundarySchema>): Promise<string> => {
+  parameters: ComplianceBoundarySchema,
+  execute: async (input: z.infer<typeof ComplianceBoundarySchema>): Promise<string> => {
     try {
       // Simulate compliance boundary management
       const result: ComplianceBoundaryResult = {
@@ -1412,14 +1402,23 @@ export const multiTenantSecurityTools = [
  * Add all Multi-Tenant Security tools to FastMCP server
  */
 export function addMultiTenantSecurityTools(server: FastMCP, apiClient: MakeApiClient): void {
-  multiTenantSecurityTools.forEach(createTool => {
-    const tool = createTool(apiClient);
+  const tools = [
+    createTenantProvisioningTool(apiClient),
+    createCryptographicIsolationTool(apiClient),
+    createNetworkSegmentationTool(apiClient),
+    createResourceQuotaManagementTool(apiClient),
+    createGovernancePolicyTool(apiClient),
+    createDataLeakagePreventionTool(apiClient),
+    createComplianceBoundaryTool(apiClient),
+  ];
+
+  tools.forEach(tool => {
     server.addTool(tool);
   });
 
   componentLogger.info('Multi-Tenant Security tools registered', {
-    toolCount: multiTenantSecurityTools.length,
-    tools: multiTenantSecurityTools.map(createTool => createTool(apiClient).name),
+    toolCount: tools.length,
+    tools: tools.map(tool => tool.name),
   });
 }
 

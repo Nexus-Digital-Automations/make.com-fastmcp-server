@@ -230,6 +230,7 @@ interface ActionPlan {
     phase3Duration: string;
     totalDuration: string;
   };
+  [key: string]: unknown;
 }
 
 interface SystemOverview {
@@ -2610,29 +2611,34 @@ function formatAsMarkdown(report: Record<string, unknown>): string {
   markdown += `**Generated:** ${metadata?.generatedAt || 'N/A'}\n`;
   markdown += `**Scenarios Analyzed:** ${metadata?.analysisScope?.scenarioCount || 0}\n\n`;
 
-  if (report.executiveSummary) {
+  const executiveSummary = report.executiveSummary as TroubleshootingReportData['executiveSummary'];
+  if (executiveSummary) {
     markdown += `## Executive Summary\n\n`;
     markdown += `### Key Findings\n`;
-    report.executiveSummary.keyFindings.forEach((finding: string) => {
+    executiveSummary.keyFindings?.forEach((finding: string) => {
       markdown += `- ${finding}\n`;
     });
     markdown += `\n### Critical Recommendations\n`;
-    report.executiveSummary.criticalRecommendations.forEach((rec: string) => {
+    executiveSummary.criticalRecommendations?.forEach((rec: string) => {
       markdown += `- **${rec}**\n`;
     });
     markdown += `\n`;
   }
 
-  markdown += `## System Overview\n\n`;
-  markdown += `- **System Health Score:** ${report.systemOverview.systemHealthScore}/100\n`;
-  markdown += `- **Performance Status:** ${report.systemOverview.performanceStatus}\n`;
-  markdown += `- **Overall Status:** ${report.systemOverview.overallStatus}\n\n`;
+  const systemOverview = report.systemOverview as TroubleshootingReportData['systemOverview'];
+  if (systemOverview) {
+    markdown += `## System Overview\n\n`;
+    markdown += `- **System Health Score:** ${systemOverview.systemHealthScore}/100\n`;
+    markdown += `- **Performance Status:** ${systemOverview.performanceStatus}\n`;
+    markdown += `- **Overall Status:** ${systemOverview.overallStatus}\n\n`;
+  }
 
-  if (report.consolidatedFindings) {
+  const consolidatedFindings = report.consolidatedFindings as ConsolidatedFindings;
+  if (consolidatedFindings) {
     markdown += `## Consolidated Findings\n\n`;
-    markdown += `- **Total Issues:** ${report.consolidatedFindings.totalIssues}\n`;
-    markdown += `- **Critical Issues:** ${report.consolidatedFindings.criticalIssues}\n`;
-    markdown += `- **Security Risk Level:** ${report.consolidatedFindings.securityRiskLevel}\n\n`;
+    markdown += `- **Total Issues:** ${consolidatedFindings.totalIssues}\n`;
+    markdown += `- **Critical Issues:** ${consolidatedFindings.criticalIssues}\n`;
+    markdown += `- **Security Risk Level:** ${consolidatedFindings.securityRiskLevel}\n\n`;
   }
 
   if (report.actionPlan) {
@@ -3022,7 +3028,7 @@ function optimizeBlueprint(blueprint: unknown, optimizationType: 'performance' |
 
       // Performance optimizations
       if (optimizationType === 'performance' || optimizationType === 'all') {
-        if (module.module === 'builtin:Iterator' && bp.flow.length > 50) {
+        if (module.module === 'builtin:Iterator' && bp.flow && bp.flow.length > 50) {
           recommendations.push({
             category: 'performance',
             priority: 'high',

@@ -7,7 +7,8 @@ import { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 
 // FastMCP Server Types
-export type FastMCPServer = FastMCP<Record<string, unknown>>;
+export type FastMCPSessionAuth = Record<string, unknown> | undefined;
+export type FastMCPServer = FastMCP<FastMCPSessionAuth>;
 export type ToolParameters = z.ZodType<Record<string, unknown>>;
 
 // Tool creation function type
@@ -165,7 +166,7 @@ export interface ToolExecutionContext {
     error: (message: string, data?: unknown) => void;
   };
   reportProgress: (progress: { progress: number; total: number }) => void;
-  session?: Record<string, unknown>;
+  session?: FastMCPSessionAuth;
 }
 
 export interface MakeApiError extends Error {

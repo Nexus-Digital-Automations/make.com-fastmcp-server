@@ -80,8 +80,8 @@ interface _ApiMetrics {
   responseTime: number;
   healthy: boolean;
   rateLimiter?: {
-    requestsRemaining: number;
-    resetTime: number;
+    running: number;
+    queued: number;
   };
   error?: string;
   timestamp: number;
@@ -182,8 +182,8 @@ interface PerformanceMetrics {
   healthy?: boolean;
   error?: string;
   rateLimiter?: {
-    requestsRemaining: number;
-    resetTime: number;
+    running: number;
+    queued: number;
   };
   [key: string]: unknown;
 }
@@ -452,8 +452,8 @@ class PerformanceAnalysisEngine {
         const systemAnalysis = await this.analyzePerformanceBottlenecks(
           'system',
           undefined,
-          { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true },
-          { errorThreshold: 5, severityFilter: 'all' },
+          { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true } as PerformanceAnalysisOptions,
+          { errorThreshold: 5, severityFilter: 'all' } as PerformanceAnalysisFilters,
           apiClient
         );
         analyses.push(systemAnalysis);
@@ -464,8 +464,8 @@ class PerformanceAnalysisEngine {
         const apiAnalysis = await this.analyzePerformanceBottlenecks(
           'api',
           undefined,
-          { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true },
-          { errorThreshold: 5, severityFilter: 'all' },
+          { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true } as PerformanceAnalysisOptions,
+          { errorThreshold: 5, severityFilter: 'all' } as PerformanceAnalysisFilters,
           apiClient
         );
         analyses.push(apiAnalysis);
@@ -476,8 +476,8 @@ class PerformanceAnalysisEngine {
         const webhookAnalysis = await this.analyzePerformanceBottlenecks(
           'webhook',
           undefined,
-          { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true },
-          { errorThreshold: 5, severityFilter: 'all' },
+          { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true } as PerformanceAnalysisOptions,
+          { errorThreshold: 5, severityFilter: 'all' } as PerformanceAnalysisFilters,
           apiClient
         );
         analyses.push(webhookAnalysis);
@@ -613,8 +613,8 @@ class PerformanceAnalysisEngine {
     responseTime: number;
     healthy: boolean;
     rateLimiter?: {
-      requestsRemaining: number;
-      resetTime: number;
+      running: number;
+      queued: number;
     };
     timestamp: number;
     error?: string;
@@ -691,7 +691,7 @@ class PerformanceAnalysisEngine {
       }
 
       return {
-        scenario: scenarioResponse.data,
+        scenario: scenarioResponse.data as Record<string, unknown>,
         executionMetrics: {
           // These would come from actual execution logs
           averageExecutionTime: 5000,
@@ -733,7 +733,7 @@ class PerformanceAnalysisEngine {
       }
 
       return {
-        organization: orgResponse.data,
+        organization: orgResponse.data as Record<string, unknown>,
         usage: {
           // These would come from actual usage analytics
           operationsUsed: 10000,
@@ -821,7 +821,7 @@ class PerformanceAnalysisEngine {
     }
 
     // Rate limiting bottleneck detection
-    if (metrics.rateLimiter && metrics.rateLimiter.requestsRemaining < 10) {
+    if (metrics.rateLimiter && metrics.rateLimiter.queued > 5) {
       bottlenecks.push({
         type: 'rate_limiting',
         severity: 'high',
@@ -829,9 +829,9 @@ class PerformanceAnalysisEngine {
         impact: 'Request throttling and potential service interruption',
         affectedComponents: ['api', 'rate_limiter'],
         metrics: {
-          currentValue: metrics.rateLimiter.requestsRemaining,
-          expectedValue: 100,
-          unit: 'requests',
+          currentValue: metrics.rateLimiter.queued,
+          expectedValue: 0,
+          unit: 'queued requests',
           trend: 'degrading'
         },
         rootCause: 'High request volume or inefficient request patterns',
@@ -988,9 +988,9 @@ class PerformanceAnalysisEngine {
     const estimatedImpact = bottlenecks.reduce((sum, b) => sum + b.estimatedImpact.performanceImprovement, 0) / bottlenecks.length || 0;
 
     return {
-      immediate: [...new Set(immediate)],
-      shortTerm: [...new Set(shortTerm)],
-      longTerm: [...new Set(longTerm)],
+      immediate: Array.from(new Set(immediate)),
+      shortTerm: Array.from(new Set(shortTerm)),
+      longTerm: Array.from(new Set(longTerm)),
       estimatedImpact
     };
   }
@@ -1040,7 +1040,7 @@ class PerformanceAnalysisEngine {
       },
       resources: {
         cpuUsage: (typeof metrics.cpu === 'object' && metrics.cpu ? (metrics.cpu as CpuMetrics).utilization : 0) || 0.3,
-        memoryUsage: (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : metrics.memory) || 0.6,
+        memoryUsage: (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : (typeof metrics.memory === 'number' ? metrics.memory : 0)) || 0.6,
         networkUtilization: 0.4,
         trend: 'stable' as const
       }
@@ -1064,9 +1064,9 @@ class PerformanceAnalysisEngine {
       performanceGrade: this.calculatePerformanceGrade(avgHealthScore),
       bottlenecks: allBottlenecks,
       recommendations: {
-        immediate: [...new Set(analyses.flatMap(a => a.recommendations.immediate))],
-        shortTerm: [...new Set(analyses.flatMap(a => a.recommendations.shortTerm))],
-        longTerm: [...new Set(analyses.flatMap(a => a.recommendations.longTerm))],
+        immediate: Array.from(new Set(analyses.flatMap(a => a.recommendations.immediate))),
+        shortTerm: Array.from(new Set(analyses.flatMap(a => a.recommendations.shortTerm))),
+        longTerm: Array.from(new Set(analyses.flatMap(a => a.recommendations.longTerm))),
         estimatedImpact: analyses.reduce((sum, a) => sum + a.recommendations.estimatedImpact, 0) / analyses.length
       }
     };
@@ -1181,7 +1181,7 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
         filters = {
           errorThreshold: 0.05,
           severityFilter: 'all' as const
-        }
+        } as PerformanceAnalysisFilters
       } = args;
 
       log?.info('Starting performance bottleneck analysis', {
@@ -1198,7 +1198,16 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
         const result = await analysisEngine.analyzePerformanceBottlenecks(
           targetType,
           targetId,
-          analysisOptions,
+          {
+            timeRangeHours: analysisOptions.timeRangeHours,
+            includeBottleneckDetection: analysisOptions.includeBottleneckDetection,
+            includePerformanceMetrics: analysisOptions.includePerformanceMetrics,
+            includeTrendAnalysis: analysisOptions.includeTrendAnalysis,
+            includeOptimizationRecommendations: analysisOptions.includeOptimizationRecommendations,
+            includeCostAnalysis: analysisOptions.includeCostAnalysis,
+            performanceBenchmarking: analysisOptions.performanceBenchmarking,
+            detailedBreakdown: analysisOptions.detailedBreakdown
+          } as PerformanceAnalysisOptions,
           filters,
           apiClient
         );
@@ -1256,7 +1265,15 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
-        const result = await analysisEngine.performComprehensiveAnalysis(args, apiClient);
+        const result = await analysisEngine.performComprehensiveAnalysis({
+          timeRangeHours: args.timeRangeHours,
+          includeSystemMetrics: args.includeSystemMetrics,
+          includeApiMetrics: args.includeApiMetrics,
+          includeWebhookMetrics: args.includeWebhookMetrics,
+          includeScenarioMetrics: args.includeScenarioMetrics,
+          generateRecommendations: args.generateRecommendations,
+          benchmarkComparison: args.benchmarkComparison
+        } as PerformanceAnalysisOptions, apiClient);
         reportProgress?.({ progress: 100, total: 100 });
 
         const response = {
@@ -1309,11 +1326,20 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
 
         const monitoringResults = await analysisEngine.performLiveAnalysis({
           timeRangeHours: args.durationMinutes / 60,
-          includeBottleneckDetection: true,
-          includePerformanceMetrics: true,
-          includeTrendAnalysis: true,
-          ...args
-        }, (update) => {
+          durationMinutes: args.durationMinutes,
+          samplingIntervalSeconds: args.samplingIntervalSeconds,
+          alertThresholds: args.alertThresholds ? {
+            responseTime: args.alertThresholds.responseTime || 1000,
+            errorRate: args.alertThresholds.errorRate || 0.05,
+            cpuUsage: args.alertThresholds.cpuUsage || 0.8,
+            memoryUsage: args.alertThresholds.memoryUsage || 0.85
+          } as AlertThresholds : {
+            responseTime: 1000,
+            errorRate: 0.05,
+            cpuUsage: 0.8,
+            memoryUsage: 0.85
+          } as AlertThresholds
+        } as PerformanceAnalysisOptions, (update) => {
           updates.push(update);
           progress = Math.round((updates.length / totalUpdates) * 100);
           reportProgress?.({ progress, total: 100 });

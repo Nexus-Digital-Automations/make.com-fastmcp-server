@@ -20,12 +20,16 @@ import logger from '../lib/logger.js';
 import { EventEmitter } from 'events';
 // Import statement removed - ToolExecutionContext not used
 
-// Logger interface for proper typing
+// Logger interface for proper typing - aligned with SerializableValue
+interface SerializableValue {
+  [key: string]: unknown;
+}
+
 interface Logger {
-  debug: (message: string, data?: unknown) => void;
-  info: (message: string, data?: unknown) => void;
-  warn: (message: string, data?: unknown) => void;
-  error: (message: string, data?: unknown) => void;
+  debug: (message: string, data?: SerializableValue) => void;
+  info: (message: string, data?: SerializableValue) => void;
+  warn: (message: string, data?: SerializableValue) => void;
+  error: (message: string, data?: SerializableValue) => void;
 }
 
 // Export configuration interfaces
@@ -43,6 +47,9 @@ interface ExportConfig {
     teams?: number[];
     errorTypes?: string[];
     customFilters?: Record<string, unknown>;
+    includeSuccessfulExecutions?: boolean;
+    includeFailedExecutions?: boolean;
+    performanceThreshold?: number;
   };
   format?: string;
   compression?: boolean;
@@ -52,15 +59,23 @@ interface ExportConfig {
     enabled: boolean;
     batchSize?: number;
     intervalMs?: number;
+    maxDuration?: number;
   };
   organizationId?: number;
+  timeRange?: {
+    start: string;
+    end: string;
+  };
 }
 
 interface OutputConfig {
-  format: 'json' | 'csv' | 'xml' | 'parquet' | 'newrelic' | 'splunk' | 'elasticsearch' | 'datadog';
+  format: 'json' | 'csv' | 'parquet' | 'newrelic' | 'splunk' | 'elasticsearch' | 'datadog' | 'prometheus' | 'aws-cloudwatch' | 'azure-monitor' | 'gcp-logging';
   destination: string;
   chunkSize: number;
-  compression?: boolean;
+  compression: 'none' | 'gzip' | 'brotli';
+  includeMetadata: boolean;
+  fieldMapping?: Record<string, string>;
+  transformations?: DataTransformation[];
   encryption?: {
     enabled: boolean;
     algorithm?: string;
@@ -69,7 +84,7 @@ interface OutputConfig {
 }
 
 interface DestinationConfig {
-  type: 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook';
+  type: 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook' | 'external-system';
   path: string;
   credentials?: {
     accessKey?: string;
@@ -79,6 +94,7 @@ interface DestinationConfig {
     password?: string;
   };
   options?: Record<string, unknown>;
+  externalSystemConfig?: ExternalSystemConfig;
 }
 
 interface AnalyticsConfig {
@@ -91,6 +107,23 @@ interface AnalyticsConfig {
     sensitivity: number;
     algorithms: string[];
   };
+  features?: {
+    realTimeAnalysis?: boolean;
+    predictiveInsights?: boolean;
+    anomalyDetection?: boolean;
+    performanceOptimization?: boolean;
+  };
+  type?: 'standard' | 'advanced' | 'enterprise';
+}
+
+interface ExternalSystemConfig {
+  endpoint: string;
+  authentication?: {
+    type: 'bearer' | 'api-key' | 'basic';
+    credentials: Record<string, string>;
+  };
+  headers?: Record<string, string>;
+  timeout?: number;
 }
 
 interface DataTransformation {
@@ -1190,9 +1223,9 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
       const { exportConfig, outputConfig, destination, analytics } = input;
 
       log.info('Starting enhanced log export for analysis', {
-        timeRange: `${exportConfig.timeRange.startTime} to ${exportConfig.timeRange.endTime}`,
+        timeRange: `${exportConfig.timeRange?.start || 'earliest'} to ${exportConfig.timeRange?.end || 'latest'}`,
         format: outputConfig.format,
-        streaming: exportConfig.streaming.enabled,
+        streaming: exportConfig.streaming?.enabled || false,
         external: destination.externalSystemConfig?.type,
         analytics: analytics.enabled,
         scenarioCount: exportConfig.scenarioIds?.length || 0,
@@ -1212,8 +1245,8 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
 
         // Enhanced query parameters for log retrieval
         const params: Record<string, unknown> = {
-          startDate: exportConfig.timeRange.startTime,
-          endDate: exportConfig.timeRange.endTime,
+          startDate: exportConfig.timeRange?.start,
+          endDate: exportConfig.timeRange?.end,
           limit: outputConfig.chunkSize,
           offset: 0,
           sortBy: 'timestamp',
@@ -1227,7 +1260,7 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
         if (exportConfig.organizationId) {
           params.organizationId = exportConfig.organizationId;
         }
-        if (exportConfig.filtering.logLevels.length > 0) {
+        if (exportConfig.filtering.logLevels?.length > 0) {
           params.level = exportConfig.filtering.logLevels.join(',');
         }
         if (exportConfig.filtering.moduleTypes?.length) {
@@ -1253,7 +1286,7 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
         const exportProcessor = new EnhancedLogExportProcessor(apiClient, exportMetadata, log);
         
         // Handle streaming vs batch export
-        if (exportConfig.streaming.enabled) {
+        if (exportConfig.streaming?.enabled) {
           return await exportProcessor.processStreamingExport(
             endpoint,
             params,
@@ -1417,9 +1450,9 @@ class EnhancedLogExportProcessor {
     _analytics: AnalyticsConfig
   ): Promise<string> {
     this.logger.info('Starting streaming export processing', {
-      batchSize: exportConfig.streaming.batchSize,
-      intervalMs: exportConfig.streaming.intervalMs,
-      maxDuration: exportConfig.streaming.maxDuration,
+      batchSize: exportConfig.streaming?.batchSize || 1000,
+      intervalMs: exportConfig.streaming?.intervalMs || 5000,
+      maxDuration: exportConfig.streaming?.maxDuration || 300,
     });
 
     const streamingResults = {
@@ -1432,8 +1465,8 @@ class EnhancedLogExportProcessor {
       deliveryResults: [] as Record<string, unknown>[],
     };
 
-    let lastLogTimestamp = exportConfig.timeRange.startTime;
-    const streamEndTime = Date.now() + (exportConfig.streaming.maxDuration * 1000);
+    let lastLogTimestamp = exportConfig.timeRange?.start || new Date(0).toISOString();
+    const streamEndTime = Date.now() + ((exportConfig.streaming?.maxDuration || 300) * 1000);
 
     // Initialize external system connection if needed
     let externalConnector: ExternalSystemConnector | null = null;
@@ -1450,7 +1483,7 @@ class EnhancedLogExportProcessor {
         // Fetch next batch of logs
         const batchParams = {
           ...params,
-          limit: exportConfig.streaming.batchSize,
+          limit: exportConfig.streaming?.batchSize || 1000,
           offset: 0,
           dateFrom: lastLogTimestamp,
         };
@@ -1491,7 +1524,7 @@ class EnhancedLogExportProcessor {
       }
 
       // Wait for next interval
-      await new Promise(resolve => setTimeout(resolve, exportConfig.streaming.intervalMs));
+      await new Promise(resolve => setTimeout(resolve, exportConfig.streaming?.intervalMs || 5000));
     }
 
     // Cleanup external connection
@@ -1506,7 +1539,7 @@ class EnhancedLogExportProcessor {
       streaming: streamingResults,
       summary: {
         mode: 'streaming',
-        duration: `${exportConfig.streaming.maxDuration}s`,
+        duration: `${exportConfig.streaming?.maxDuration || 300}s`,
         totalBatches: streamingResults.batchesProcessed,
         totalLogs: streamingResults.totalLogsStreamed,
         averageLogsPerBatch: streamingResults.batchesProcessed > 0 ? 
@@ -2326,7 +2359,7 @@ function generateExecutionSummary(executionData: Record<string, unknown>): Recor
 function generateExportSummary(logs: MakeLogEntry[], exportConfig: Record<string, unknown>): Record<string, unknown> {
   return {
     totalLogsExported: logs.length,
-    timeRange: exportConfig.timeRange,
+    timeRange: exportConfig.timeRange || { start: new Date(0).toISOString(), end: new Date().toISOString() },
     scenariosCovered: new Set(logs.map(log => log.scenarioId)).size,
     modulesCovered: new Set(logs.map(log => log.module.name)).size,
     errorRate: logs.filter(log => log.error).length / logs.length * 100,
