@@ -242,8 +242,10 @@ class RealTimeExecutionMonitor extends EventEmitter {
         endpoint: '/monitoring/sse',
         heartbeatInterval: 15000,
         security: {
+          rateLimitEnabled: true,
           maxConnections: 50,
           connectionTimeout: 300000, // 5 minutes
+          maxMessageSize: 1048576, // 1MB
         },
       });
       this.componentLogger.info('SSE transport initialized for real-time monitoring');
@@ -268,10 +270,11 @@ class RealTimeExecutionMonitor extends EventEmitter {
     // Resolve execution ID if not provided
     let targetExecutionId = executionId;
     if (!targetExecutionId) {
-      targetExecutionId = await this.findOrWaitForExecution(scenarioId);
-      if (!targetExecutionId) {
+      const foundExecutionId = await this.findOrWaitForExecution(scenarioId);
+      if (!foundExecutionId) {
         throw new UserError('No active or recent execution found for monitoring');
       }
+      targetExecutionId = foundExecutionId;
     }
 
     // Create monitoring session
@@ -887,7 +890,7 @@ class RealTimeExecutionMonitor extends EventEmitter {
     const { format, colorEnabled } = config;
     
     if (format === 'ascii') {
-      return this.generateASCIIVisualization(state, colorEnabled);
+      return this.generateASCIIVisualization(state, Boolean(colorEnabled));
     } else if (format === 'compact') {
       return this.generateCompactVisualization(state);
     } else {

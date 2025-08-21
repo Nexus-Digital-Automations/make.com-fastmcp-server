@@ -1539,7 +1539,31 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
               scenarioAnalyses.push({
                 scenarioId: scenario.id,
                 scenarioName: scenario.name,
-                diagnosticReport: null,
+                diagnosticReport: {
+                  scenarioId: scenario.id,
+                  scenarioName: scenario.name,
+                  overallHealth: 'critical' as const,
+                  diagnostics: [{
+                    category: 'error' as const,
+                    severity: 'critical' as const,
+                    title: 'Blueprint Access Failed',
+                    description: `Failed to get blueprint: ${blueprintResponse.error?.message}`,
+                    details: { error: blueprintResponse.error },
+                    recommendations: ['Check scenario permissions', 'Verify scenario exists', 'Review API connectivity'],
+                    fixable: false,
+                    timestamp: new Date().toISOString()
+                  }],
+                  summary: {
+                    totalIssues: 1,
+                    criticalIssues: 1,
+                    fixableIssues: 0,
+                    performanceScore: 0,
+                    issuesByCategory: { error: 1 },
+                    issuesBySeverity: { critical: 1 }
+                  },
+                  executionTime: 0,
+                  timestamp: new Date().toISOString()
+                },
                 errors: [`Failed to get blueprint: ${blueprintResponse.error?.message}`]
               });
               continue;
@@ -1551,7 +1575,31 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
               scenarioAnalyses.push({
                 scenarioId: scenario.id,
                 scenarioName: scenario.name,
-                diagnosticReport: null,
+                diagnosticReport: {
+                  scenarioId: scenario.id,
+                  scenarioName: scenario.name,
+                  overallHealth: 'critical' as const,
+                  diagnostics: [{
+                    category: 'error' as const,
+                    severity: 'critical' as const,
+                    title: 'Scenario Details Access Failed',
+                    description: `Failed to get scenario details: ${scenarioResponse.error?.message}`,
+                    details: { error: scenarioResponse.error },
+                    recommendations: ['Check scenario permissions', 'Verify scenario exists', 'Review API connectivity'],
+                    fixable: false,
+                    timestamp: new Date().toISOString()
+                  }],
+                  summary: {
+                    totalIssues: 1,
+                    criticalIssues: 1,
+                    fixableIssues: 0,
+                    performanceScore: 0,
+                    issuesByCategory: { error: 1 },
+                    issuesBySeverity: { critical: 1 }
+                  },
+                  executionTime: 0,
+                  timestamp: new Date().toISOString()
+                },
                 errors: [`Failed to get scenario details: ${scenarioResponse.error?.message}`]
               });
               continue;
@@ -1581,15 +1629,9 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
               try {
                 // This would require integration with the performance analysis engine
                 // Future: const { addPerformanceAnalysisTools } = await import('./performance-analysis.js');
-                // For now, we'll include basic performance metrics from the diagnostic report
-                performanceAnalysis = {
-                  performanceScore: diagnosticReport.summary.performanceScore,
-                  executionMetrics: {
-                    averageExecutionTime: 'N/A',
-                    successRate: 'N/A',
-                    errorRate: 'N/A'
-                  }
-                };
+                // For now, we'll skip performance analysis as it requires complex metrics collection
+                // TODO: Implement proper performance analysis integration
+                performanceAnalysis = undefined;
               } catch (error) {
                 log?.warn('Performance analysis not available', { error: (error as Error).message });
               }
@@ -1607,7 +1649,31 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
             scenarioAnalyses.push({
               scenarioId: scenario.id,
               scenarioName: scenario.name,
-              diagnosticReport: null,
+              diagnosticReport: {
+                scenarioId: scenario.id,
+                scenarioName: scenario.name,
+                overallHealth: 'critical' as const,
+                diagnostics: [{
+                  category: 'error' as const,
+                  severity: 'critical' as const,
+                  title: 'Analysis Failed',
+                  description: `Analysis failed: ${(error as Error).message}`,
+                  details: { error: error },
+                  recommendations: ['Check system logs', 'Verify scenario configuration', 'Retry analysis'],
+                  fixable: false,
+                  timestamp: new Date().toISOString()
+                }],
+                summary: {
+                  totalIssues: 1,
+                  criticalIssues: 1,
+                  fixableIssues: 0,
+                  performanceScore: 0,
+                  issuesByCategory: { error: 1 },
+                  issuesBySeverity: { critical: 1 }
+                },
+                executionTime: 0,
+                timestamp: new Date().toISOString()
+              },
               errors: [`Analysis failed: ${(error as Error).message}`]
             });
           }
@@ -1703,9 +1769,9 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
                     .reduce((sum, a) => sum + (a.diagnosticReport.summary.performanceScore || 0), 0) /
                   Math.max(scenarioAnalyses.filter(a => a.diagnosticReport).length, 1)
                 ),
-                totalIssuesFound: consolidatedFindings.totalIssues,
-                criticalIssueRate: consolidatedFindings.criticalIssueRate,
-                fixableIssueRate: consolidatedFindings.fixableIssueRate
+                totalIssuesFound: consolidatedFindings.commonIssues.reduce((sum, issue) => sum + issue.count, 0),
+                criticalIssueRate: Math.round((consolidatedFindings.criticalScenarios / Math.max(consolidatedFindings.totalScenarios, 1)) * 100),
+                fixableIssueRate: Math.round((consolidatedFindings.commonIssues.filter(issue => issue.category === 'fixable').length / Math.max(consolidatedFindings.commonIssues.length, 1)) * 100)
               },
               ...(comparisonBaseline.includeBenchmarks && {
                 benchmarkComparison: {
@@ -1723,10 +1789,11 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
 
           ...(reportOptions.includeSecurityAssessment && {
             securityAssessment: {
-              overallRisk: consolidatedFindings.securityRiskLevel,
-              securityIssuesFound: consolidatedFindings.issuesByCategory.security || 0,
-              complianceStatus: consolidatedFindings.securityIssuesFound > 0 ? 'review_required' : 'compliant',
-              recommendations: consolidatedFindings.securityRecommendations.slice(0, 5)
+              overallRisk: consolidatedFindings.securitySummary.criticalSecurityIssues > 0 ? 'high' : 
+                          consolidatedFindings.securitySummary.totalSecurityIssues > 0 ? 'medium' : 'low',
+              securityIssuesFound: consolidatedFindings.securitySummary.totalSecurityIssues,
+              complianceStatus: consolidatedFindings.securitySummary.totalSecurityIssues > 0 ? 'review_required' : 'compliant',
+              recommendations: consolidatedFindings.securitySummary.commonSecurityIssues.slice(0, 5)
             }
           }),
 
@@ -1764,8 +1831,8 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         log?.info('Troubleshooting report generated successfully', {
           scenarioCount: scenarioAnalyses.length,
-          totalIssues: consolidatedFindings.totalIssues,
-          criticalIssues: consolidatedFindings.criticalIssues,
+          totalIssues: consolidatedFindings.commonIssues.reduce((sum, issue) => sum + issue.count, 0),
+          criticalIssues: consolidatedFindings.criticalScenarios,
           systemHealthScore: systemOverview.systemHealthScore,
           executionTime: Date.now() - startTime,
           outputFormat: reportOptions.formatType
