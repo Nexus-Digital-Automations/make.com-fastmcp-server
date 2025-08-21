@@ -27,9 +27,9 @@ import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { auditLogger } from '../lib/audit-logger.js';
-import fs from 'fs/promises';
-import path from 'path';
-import crypto from 'crypto';
+import { promises as fs } from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto';
 import { getComplianceTemplate, listComplianceTemplates, getTemplateMetadata } from './compliance-templates.js';
 
 // Core compliance policy type definitions

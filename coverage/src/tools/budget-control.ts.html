@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">24.78% </span>
+                <span class="strong">24.25% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>59/238</span>
+                <span class='fraction'>57/235</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">24.1% </span>
+                <span class="strong">23.52% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>54/224</span>
+                <span class='fraction'>52/221</span>
             </div>
         
             
@@ -1240,10 +1240,7 @@
 <a name='L1175'></a><a href='#L1175'>1175</a>
 <a name='L1176'></a><a href='#L1176'>1176</a>
 <a name='L1177'></a><a href='#L1177'>1177</a>
-<a name='L1178'></a><a href='#L1178'>1178</a>
-<a name='L1179'></a><a href='#L1179'>1179</a>
-<a name='L1180'></a><a href='#L1180'>1180</a>
-<a name='L1181'></a><a href='#L1181'>1181</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1178'></a><a href='#L1178'>1178</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1791,7 +1788,6 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1819,7 +1815,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1924,7 +1919,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2073,19 +2067,19 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2970,9 +2964,9 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
               type: 'cost_optimization',
               description: 'Review high-cost scenarios and optimize inefficient workflows',
               estimatedSavings: Math.round((projectedSpend - monthlyLimit) * 0.3),
-              implementationEffort: 'medium',
-            },<span class="missing-if-branch" title="if path not taken" >I</span>
-            {<span class="cstat-no" title="statement not covered" ></span>
+              im<span class="missing-if-branch" title="if path not taken" >I</span>plementationEffort: 'medium',
+            },<span class="cstat-no" title="statement not covered" ></span>
+            {
               type: 'usage_adjustment',
               description: 'Consider reducing non-critical scenario frequency during peak usage periods',
               estimatedSavings: Math.round((projectedSpend - monthlyLimit) * 0.2),
@@ -3007,20 +3001,20 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
     parameters: CostProjectionRequestSchema,
     annotations: {
       title: 'Cost Forecasting',
-      readOnlyHint: true,
+      readOnlyHint: true,<span class="branch-1 cbranch-no" title="branch not covered" ></span>
       destructiveHint: false,
-      idempotentHint: true,<span class="branch-1 cbranch-no" title="branch not covered" ></span>
-      openWorldHint: true,
-    },
-    execute: asy<span class="missing-if-branch" title="if path not taken" >I</span>nc (input, { log, reportProgress }) =&gt; {
-      const { budget<span class="cstat-no" title="statement not covered" >Id, projectionDays, includeSeasonality, confide</span>nceLevel, projectionModel } = input;
-<span class="cstat-no" title="statement not covered" ></span>
+      idempotentHint: true,
+      openWorldH<span class="missing-if-branch" title="if path not taken" >I</span>int: true,
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (<span class="cstat-no" title="statement not covered" >input, { log, reportProgress }) =&gt; {</span>
+      const { budgetId, projectionDays, includeSeasonality, confidenceLevel, projectionModel } = input;
+&nbsp;
       log.info('Generating cost projection', {
         budgetId,
         projectionDays,
-        model: projectionModel,
+        model: proje<span class="cstat-no" title="statement not covered" >ctionModel,</span>
         confidenceLevel,
-      });<span class="cstat-no" title="statement not covered" ></span>
+      });
 &nbsp;
       try {
         reportProgress({ progress: 0, total: 100 });
@@ -3039,9 +3033,9 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
           : null;
 &nbsp;
         reportProgress({ progress: 55, total: 100 });
-        const _trendAnalysis = await simulateTrendAnalysis(historicalData);
+        const _t<span class="missing-if-branch" title="else path not taken" >E</span>rendAnalysis = await simulateTrendAnalysis(historicalData);
 &nbsp;
-        // Phase<span class="missing-if-branch" title="else path not taken" >E</span> 3: Projection Generation
+        // Phase 3: Projection Generation
         reportProgress({ progress: 70, total: 100 });
         const baseProjection = await simulateProjectionGeneration(
           historicalData,
@@ -3060,23 +3054,23 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
         const currentTime = new Date();
         const projectionEnd = new Date(currentTime.getTime() + projectionDays * 24 * 60 * 60 * 1000);
 &nbsp;
-        // Ensure all required data is available before constructing projection
-        if (!baseProjection || typeof baseProjection.currentSpend !== 'number' || typeof baseProjection.projected !== 'number') {
-          throw <span class="cstat-no" title="statement not covered" >new UserError('Failed to generate projection: invalid base projection data');</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-        <span class="cstat-no" title="statement not covered" ></span>
+        // Ensur<span class="cstat-no" title="statement not covered" >e all required data is available before constructing projection</span>
+        if (!basePro<span class="cstat-no" title="statement not covered" >jection || typeof baseProjection.currentSpend !</span>== 'number' || typeof baseProjection.projected !== 'number') {
+          throw new <span class="cstat-no" title="statement not covered" >UserError('Failed to generate projection: invalid base projection data');</span>
+        }
+        
         if (!confidence || typeof confidence.overall !== 'number') {
           throw new UserError('Failed to generate projection: invalid confidence data');
         }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         const projection: CostProjection = {
-          budgetId,<span class="cstat-no" title="statement not covered" ></span>
+          budgetId,
           tenantId: 'default',
           projectionPeriod: {
             startDate: currentTime.toISOString(),
-            endDate: projectionEnd.toISOString(),
+            endDate: projectionEnd.toISOString(),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
             daysTotal: projectionDays,
-            daysRemaining: projectionDays,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+            daysRemaining: projectionDays,
           },
           currentSpend: baseProjection.currentSpend || 0,
           projectedSpend: {
@@ -3102,21 +3096,21 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
               'day_of_week',
               'time_of_day',
               ...(seasonalPatterns ? ['seasonal_patterns'] : []),
-              'scenario_activity',
+              'scena<span class="cstat-no" title="statement not covered" >rio_activity',</span>
               'user_count',
             ],<span class="cstat-no" title="statement not covered" ></span>
           },<span class="cstat-no" title="statement not covered" ></span>
-          recommendations: [
-            {<span class="cstat-no" title="statement not covered" ></span>
-              ty<span class="cstat-no" title="statement not covered" >pe: 'cost_optimization',</span>
-              de<span class="cstat-no" title="statement not covered" >scription: 'Implement intelligent scenario scheduling to reduce peak-time costs',</span>
+          recomm<span class="cstat-no" title="statement not covered" >endations: [</span>
+            {
+              type: 'cost_optimization',
+              description: 'Implement intelligent scenario scheduling to reduce peak-time costs',
               estimatedSavings: Math.round(baseProjection.projected * 0.15),
               implementationEffort: 'medium',
             },
-            {
+            {<span class="cstat-no" title="statement not covered" ></span>
               type: 'usage_adjustment',
               description: 'Review and optimize data transfer patterns for efficiency',
-              es<span class="cstat-no" title="statement not covered" >timatedSavings: Math.round(baseProjection.projected * 0.08),</span>
+              estimatedSavings: Math.round(baseProjection.projected * 0.08),
               implementationEffort: 'low',
             },
             {
@@ -3134,40 +3128,40 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
           budgetId,
           projectedSpend: projection.projectedSpend.expected,
           confidence: projection.confidence.overall,
-          model: projection.methodology.model,
-          dataPoints: projection.methodology.dataPoints,
-        });
+          model: projection.methodolo<span class="cstat-no" title="statement not covered" >gy.model,</span>
+          dataPo<span class="cstat-no" title="statement not covered" >ints: projection.methodology.dataPoints,</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
         // Final<span class="cstat-no" title="statement not covered" > validation of projection object before returning</span>
-        if (!pro<span class="cstat-no" title="statement not covered" >jection || !projection.projectedSpend) {</span>
-          throw new <span class="cstat-no" title="statement not covered" >UserError('Fa</span>iled to construct valid projection object');
-        }<span class="cstat-no" title="statement not covered" ></span>
+        if (!projection || !projection.projectedSpend) {
+          throw new UserError('Failed to construct valid projection object');
+        }
 &nbsp;
         const result = {
           projection,
-          analysis: {
+          analy<span class="fstat-no" title="function not covered" >sis: {</span>
             summary: `${projectionDays}-day cost projection: $${(projection.projectedSpend.expected || 0).toFixed(2)} (${((projection.confidence.overall || 0) * 100).toFixed(1)}% confidence)`,
-            trends: {
-              s<span class="fstat-no" title="function not covered" >pending: (baseProjection.projecte</span>d || 0) &gt; (baseProjection.currentSpend || 0) * 2 ? 'increasing' : 'stable',
+<span class="cstat-no" title="statement not covered" >            trends: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+              spending: (ba<span class="cstat-no" title="statement not covered" >seProjection.projected || 0) &gt; (baseP</span>rojection.currentSpend || 0) * 2 ? 'increasing' : 'stable',
               seasonality: seasonalPatterns ? 'detected' : 'not_detected',
-<span class="cstat-no" title="statement not covered" >              volatili<span class="fstat-no" title="function not covered" >ty</span>: (confid<span class="cstat-no" title="statement not covered" >ence.trendStability || 0</span>) </span>&gt; 0.8 ? 'low' : (confidence.trendStability || 0) &gt; 0.6 ? 'medium' : 'high',
+              volatilit<span class="cstat-no" title="statement not covered" >y: </span>(confidence.trendStability || 0) &gt; 0.8 ? 'low' : (confidence.trendStability || 0) &gt; 0.6 ? 'medium' : 'high',
             },<span class="cstat-no" title="statement not covered" ></span>
-            riskFactors: [
-              ...((proj<span class="cstat-no" title="statement not covered" >ect</span>ion.confidence.overall || 0) &lt; 0.7 ? ['Low prediction confidence due to insufficient data'] : []),
-              ...((pro<span class="cstat-no" title="statement not covered" >jection.projectedSpend.exp</span>ected || 0) &gt; (projection.currentSpend || 0) * 3 ? ['Unusually high projected growth rate'] : []),
-<span class="cstat-no" title="statement not covered" >              ...<span class="cstat-no" title="statement not covered" >((</span>confidence.trendStability || 0) &lt; 0.6 ? ['High spending volatility detected'] : []),</span>
-            ],<span class="cstat-no" title="statement not covered" ></span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >          actionItems: [</span>
-<span class="cstat-no" title="statement not covered" >            'Monitor spending closely during projected period',</span>
+<span class="cstat-no" title="statement not covered" >            riskF<span class="cstat-no" title="statement not covered" >ac</span>tors: [</span>
+              ...((proje<span class="cstat-no" title="statement not covered" >ction.confidence.ov</span>erall || 0) &lt; 0.7 ? ['Low prediction confidence due to insufficient data'] : []),
+              ...((pr<span class="cstat-no" title="statement not covered" >ojection.pr</span>ojectedSpend.expected || 0) &gt; (projection.currentSpend || 0) * 3 ? ['Unusually high projected growth rate'] : []),
+<span class="cstat-no" title="statement not covered" >              ...((confidence.trendStability || </span>0) &lt; 0.6 ? ['High spending volatility detected'] : []),
+<span class="cstat-no" title="statement not covered" >            ],</span>
+          },
+          actionItems: [
+            'Monitor spending closely during projected period',
             'Consider implementing recommended optimizations',
             'Update budget thresholds based on projections',
             'Schedule regular projection reviews',
-          ],
-        };
+          ],<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        };</span>
 &nbsp;
-        return JSON.str<span class="cstat-no" title="statement not covered" >ingify(result, nul<span class="fstat-no" title="function not covered" >l,</span> 2);<span class="cstat-no" title="statement not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >      } catch (error: unknown) {</span>
+        return JSON.stringify(result, null, 2);
+      } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error generating cost projection', { budgetId, error: errorMessage });
         if (error instanceof UserError) throw error;
@@ -3184,45 +3178,44 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
     annotations: {
       title: 'Automated Cost Control',
       readOnlyHint: false,
-      destructiveHint: true,
-      idempotentHint: false,
-      openWorldHint: true,
-    },<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    execute: async (in<span class="fstat-no" title="function not covered" >pu</span>t, { log,<span class="cstat-no" title="statement not covered" > reportProgress }) =&gt; {</span></span>
-      const { budgetId, a<span class="cstat-no" title="statement not covered" >ction, targetScenarios, pr</span>iority, reason, dryRun, approvalRequired } = input;
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      log.info('Executing scenario control action', {</span>
+      destructi<span class="fstat-no" title="function not covered" >veHint: true,</span>
+<span class="cstat-no" title="statement not covered" >      idempotentHint: <span class="fstat-no" title="function not covered" >fa</span>lse,<span class="cstat-no" title="statement not covered" ></span></span>
+      openWorldHint: true<span class="cstat-no" title="statement not covered" >,</span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    execute: async (input, { log, reportProgress }) =&gt; {</span>
+      const { budgetId, action, targetScenarios, priority, reason, dryRun, approvalRequired } = input;
+&nbsp;
+      log.info('Executing scenario control action', {
         budgetId,
         action,
         targetCount: targetScenarios?.length || 'auto-detect',
         priority,
         dryRun,
       });
-&nbsp;
-      try {
-        reportProgress({ progress: 0, total: 100 });
 <span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Phase 1: Id<span class="fstat-no" title="function not covered" >en</span>tify targ<span class="cstat-no" title="statement not covered" >et scenarios</span></span>
-<span class="cstat-no" title="statement not covered" >        reportProgress({ progress: 20, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" >      try {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        reportProgress({ progress: 0, total: 100 });</span>
+&nbsp;
+        // Phase 1: Identify target scenarios
+        reportProgress({ progress: 20, total: 100 });
         const scenarios = targetScenarios || await identifyHighCostScenarios(budgetId);
-        console.log('DEBUG: Identified scenarios:', scenarios.length, scenarios);
         
         if (scenarios.length === 0) {
-          return JSON.stringify({
-            message: 'No scenarios identified for cost control action',
-            ana<span class="fstat-no" title="function not covered" >lysis: {</span>
-<span class="cstat-no" title="statement not covered" >              budgetId<span class="fstat-no" title="function not covered" >,<span class="cstat-no" title="statement not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >              action,</span>
+          retur<span class="fstat-no" title="function not covered" >n JSON.stringify({</span>
+<span class="cstat-no" title="statement not covered" >            message: '<span class="fstat-no" title="function not covered" >No</span> scenario<span class="cstat-no" title="statement not covered" >s identified for cost co</span>nt</span>rol action',
+<span class="cstat-no" title="statement not covered" >            analysis: {</span>
+              budgetId,
+              action,
               scenariosEvaluated: 0,
               reason: 'All scenarios within acceptable cost thresholds',
-              totalScenarios: 0,
-              highCostScenarios: 0,
-              a<span class="fstat-no" title="function not covered" >verageCost: 0,</span>
-<span class="cstat-no" title="statement not covered" >              topCostS<span class="fstat-no" title="function not covered" >ce</span>narios: [<span class="cstat-no" title="statement not covered" >]</span></span>
+              t<span class="fstat-no" title="function not covered" >otalScenarios: 0,</span>
+<span class="cstat-no" title="statement not covered" >              highCost<span class="fstat-no" title="function not covered" >Sc</span>enarios: <span class="cstat-no" title="statement not covered" >0,</span></span>
+              averageCost<span class="cstat-no" title="statement not covered" >: 0,</span>
+              topCostScenari<span class="cstat-no" title="statement not covered" >os: []</span>
             },<span class="cstat-no" title="statement not covered" ></span>
-            recommendations:<span class="cstat-no" title="statement not covered" > [</span>
-              'All sce<span class="cstat-no" title="statement not covered" >narios are currently within acceptable cost thresholds',</span>
-<span class="cstat-no" title="statement not covered" >              'Continue monitoring for cost optimization opportunities',</span>
+<span class="cstat-no" title="statement not covered" >            recommendations: [</span>
+              'All scenarios are currently within acceptable cost thresholds',
+              'Continue monitoring for cost optimization opportunities',
               'Review budget allocation for potential adjustments'
             ],
             controlActions: {
@@ -3231,15 +3224,14 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
               estimatedSavings: 0,
               rollbackPlan: { available: false, timeframe: 'n/a' }
             },
-          }, null, 2);
-        }
-<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        reportProgress<span class="fstat-no" title="function not covered" >({</span> progress<span class="cstat-no" title="statement not covered" >: 40, total: 100 });</span></span>
+          }, nu<span class="fstat-no" title="function not covered" >ll, 2);</span>
+<span class="cstat-no" title="statement not covered" >        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        // Phase 2: Analyze sce<span class="cstat-no" title="statement not covered" >nario impact</span>
-        const scenarioAnaly<span class="cstat-no" title="statement not covered" >sis = await analyzeScenari</span>oImpact(scenarios, action);
-        console.log(<span class="cstat-no" title="statement not covered" >'DEBUG: Scenario analysis:', JSON.stringify(scenarioAnalysis, null, 2));</span>
+        reportProgress({ progre<span class="cstat-no" title="statement not covered" >ss: 40, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
+        // Phase 2: <span class="cstat-no" title="statement not covered" >Analyze scenario impact</span>
+<span class="cstat-no" title="statement not covered" >        const scenarioAnalysis = await analyzeScenarioImpact(scenarios, action);</span>
+&nbsp;
         reportProgress({ progress: 60, total: 100 });
 &nbsp;
         // Phase 3: Generate execution plan
@@ -3262,34 +3254,34 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
             action,
             scenariosAffected: scenarios.length,
             estimatedSavings: scenarioAnalysis.estimatedSavings,
-          });
-<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+          });<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+&nbsp;
           return JSON.stringify({
-            dryRun: true,
-            executionPlan,<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+            dryRun: true,<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+            executionPlan,
             message: `Dry run: ${action} would affect ${scenarios.length} scenarios`,
             preview: {
               action,
-              affectedScenarios: scenarios.length,
-              estimatedMonthlySavings: sce<span class="branch-0 cbranch-no" title="branch not covered" >narioAn</span>alysis.estimatedSavings,<span class="branch-1 cbranch-no" title="branch not covered" ></span>
-              impactLevel: scenarioAnalysis.impact.level,<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+              affectedScenarios: scenarios<span class="branch-0 cbranch-no" title="branch not covered" >.length</span>,<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+              estimatedMonthlySavings: scenarioAnalysis.estimatedSavings,<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+              impactLevel: scenarioAnalysis.impact.level,
               reversible: scenarioAnalysis.rollbackPlan.available,
             },
-            nextSteps: [
-              'Review execution plan careful<span class="branch-0 cbranch-no" title="branch not covered" >ly',<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+            nextSteps: [<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+              'Review execution plan carefully',
               'Verify impact assessment',
               'Execute with dryRun=false when ready',
-              ...(approvalRequired ? ['Obtain required approvals'] : []),
-            ],<span class="fstat-no" title="function not covered" ></span>
-          }, null, 2);
-<span class="cstat-no" title="statement not covered" >        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+              .<span class="fstat-no" title="function not covered" >..(approvalRequired ? [</span>'Obtain required approvals'] : []),
+            ],
+<span class="cstat-no" title="statement not covered" >          }, null, 2);<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        // Phase 4:<span class="cstat-no" title="statement not covered" > Execute control action (if no</span>t dry run)
-        reportProgr<span class="cstat-no" title="statement not covered" >ess</span>({ progress: 90, total: 100 });
+        // Phase 4:<span class="cstat-no" title="statement not covered" > Ex</span>ecute control action (if not dry run)
+<span class="cstat-no" title="statement not covered" >        reportProgress({ progress: 90, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (approvalRequired) {</span>
-          log.warn('Control action requires approval', {
-<span class="cstat-no" title="statement not covered" >            budgetId,</span>
+        if (approvalRequired) {
+<span class="cstat-no" title="statement not covered" >          log.warn('Control action requires approval', {</span>
+            budgetId,
             action,
             scenariosAffected: scenarios.length,
             reason,
@@ -3354,7 +3346,6 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
               riskLevel: scenarioAnalysis.impact.level,
             },
           };
-          console.log('DEBUG: Returning analysis result:', JSON.stringify(analysisResult, null, 2));
           return JSON.stringify(analysisResult, null, 2);
         }
 &nbsp;
@@ -3610,7 +3601,7 @@ export default addBudgetControlTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T23:06:00.387Z
+                at 2025-08-21T23:10:09.637Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

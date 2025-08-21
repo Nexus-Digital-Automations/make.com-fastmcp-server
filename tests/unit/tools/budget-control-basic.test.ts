@@ -558,31 +558,31 @@ describe('Budget Control Tools - Basic Tests', () => {
       const { addBudgetControlTools } = await import('../../../src/tools/budget-control.js');
       addBudgetControlTools(mockServer, mockApiClient as any);
       
-      // Debug: Log all registered tools
-      const allTools = mockTool.mock.calls.map(call => call[0].name);
-      console.log('All registered tools:', allTools);
-      
       const tool = findTool(mockTool, 'control-high-cost-scenarios');
-      console.log('Found tool:', tool?.name);
       expect(tool).toBeDefined();
       expect(tool.name).toBe('control-high-cost-scenarios');
       
       let result;
       try {
+        console.log('About to call executeTool...');
         result = await executeTool(tool, {
           budgetId: 'budget_001',
           action: 'analyze',
           reason: 'Budget threshold analysis'
         });
-        // ExecuteTool succeeded
+        console.log('ExecuteTool completed, result type:', typeof result);
+        console.log('Result is defined:', result !== undefined);
+        console.log('Result is null:', result === null);
+        if (result) {
+          console.log('Result preview:', result.substring(0, 100));
+        } else {
+          console.log('Result is falsy!');
+        }
       } catch (error) {
         console.error('ExecuteTool failed:', error.message);
+        console.error('Error stack:', error.stack);
         throw error;
       }
-      
-      console.log('Test: control-high-cost-scenarios result type:', typeof result);
-      console.log('Test: control-high-cost-scenarios result defined:', result !== undefined);
-      console.log('Test: control-high-cost-scenarios result:', result ? result.substring(0, 200) : 'undefined');
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
