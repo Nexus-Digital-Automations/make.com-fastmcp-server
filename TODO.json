@@ -38,6 +38,29 @@
       ]
     },
     {
+      "id": "task_1755759299204_cisq19e41",
+      "title": "Create comprehensive test suite for templates.ts tool",
+      "description": "Create tests/unit/tools/templates-basic.test.ts with comprehensive test coverage for all template management functions",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/templates.ts",
+        "tests/unit/tools/permissions-basic.test.ts",
+        "tests/unit/tools/connections-basic.test.ts",
+        "development/research-reports/comprehensive-enterprise-security-compliance-framework-research.md",
+        "development/reports/comprehensive-testing-validation-strategies-fastmcp-make-integration.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T06:54:59.204Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755758379331_uyczj8rax",
       "title": "Expand test coverage for additional FastMCP tools",
       "description": "Create comprehensive test suites for additional high-priority FastMCP tools that currently lack test coverage, including templates, permissions, procedures, and other core tools to further improve overall test coverage",
