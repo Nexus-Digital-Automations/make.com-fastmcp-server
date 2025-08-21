@@ -23,13 +23,23 @@ import MakeApiClient from '../../lib/make-api-client.js';
 import logger from '../../lib/logger.js';
 import { ToolContext } from '../shared/types/tool-context.js';
 
-// Import available tool creators
+// Import all available tool creators - CRUD operations
 import { createListScenariosTools } from './tools/list-scenarios.js';
 import { createGetScenarioTool } from './tools/get-scenario.js';
 import { createScenarioTool } from './tools/create-scenario.js';
 import { createUpdateScenarioTool } from './tools/update-scenario.js';
 import { createDeleteScenarioTool } from './tools/delete-scenario.js';
 import { createCloneScenarioTool } from './tools/clone-scenario.js';
+
+// Import execution and analysis tools
+import { createRunScenarioTool } from './tools/run-scenario.js';
+import { createTroubleshootScenarioTool } from './tools/troubleshoot-scenario.js';
+import { createGenerateTroubleshootingReportTool } from './tools/generate-troubleshooting-report.js';
+
+// Import blueprint tools
+import { createValidateBlueprintTool } from './tools/validate-blueprint.js';
+import { createExtractBlueprintConnectionsTool } from './tools/extract-blueprint-connections.js';
+import { createOptimizeBlueprintTool } from './tools/optimize-blueprint.js';
 
 // Import version information
 import { VERSION_INFO } from './constants.js';
@@ -62,8 +72,8 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
   };
 
   try {
-    // Register available CRUD operation tools
-    componentLogger.debug('Registering available CRUD operation tools');
+    // Register CRUD operation tools
+    componentLogger.debug('Registering CRUD operation tools');
     server.addTool(createListScenariosTools(toolContext));
     server.addTool(createGetScenarioTool(toolContext));
     server.addTool(createScenarioTool(toolContext));
@@ -71,23 +81,33 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
     server.addTool(createDeleteScenarioTool(toolContext));
     server.addTool(createCloneScenarioTool(toolContext));
 
+    // Register execution and analysis tools
+    componentLogger.debug('Registering execution and analysis tools');
+    server.addTool(createRunScenarioTool(toolContext));
+    server.addTool(createTroubleshootScenarioTool(toolContext));
+    server.addTool(createGenerateTroubleshootingReportTool(toolContext));
+
+    // Register blueprint tools
+    componentLogger.debug('Registering blueprint manipulation tools');
+    server.addTool(createValidateBlueprintTool(toolContext));
+    server.addTool(createExtractBlueprintConnectionsTool(toolContext));
+    server.addTool(createOptimizeBlueprintTool(toolContext));
+
     componentLogger.info('Scenario management tools registered successfully', {
       toolsRegistered: [
-        'list-scenarios',
-        'get-scenario',
-        'create-scenario',
-        'update-scenario',
-        'delete-scenario',
-        'clone-scenario'
+        'list-scenarios', 'get-scenario', 'create-scenario',
+        'update-scenario', 'delete-scenario', 'clone-scenario',
+        'run-scenario', 'troubleshoot-scenario', 'generate-troubleshooting-report',
+        'validate-blueprint', 'extract-blueprint-connections', 'optimize-blueprint'
       ],
-      totalTools: 6,
+      totalTools: 12,
       totalExpected: 12,
-      completionPercentage: 50,
+      completionPercentage: 100,
       categories: [
-        'CRUD operations'
+        'CRUD operations', 'execution', 'analysis', 'troubleshooting', 'optimization'
       ],
       architecture: 'modular-with-dependency-injection',
-      status: 'partial-implementation'
+      status: 'complete-implementation'
     });
 
   } catch (error) {

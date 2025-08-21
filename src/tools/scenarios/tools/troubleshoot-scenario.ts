@@ -7,6 +7,7 @@ import { UserError } from 'fastmcp';
 import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema } from '../schemas/scenario-filters.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { generateTroubleshootingReport } from '../utils/troubleshooting.js';
+import type MakeApiClient from '../../../lib/make-api-client.js';
 
 /**
  * Create troubleshoot scenario tool configuration
@@ -224,10 +225,10 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
  * Fetch scenarios for troubleshooting analysis
  */
 async function fetchScenariosForTroubleshooting(
-  apiClient: any,
+  apiClient: MakeApiClient,
   scenarioIds: string[],
   teamId?: string
-): Promise<any[]> {
+): Promise<unknown[]> {
   const scenarios: any[] = [];
   
   for (const scenarioId of scenarioIds) {
@@ -252,9 +253,9 @@ async function fetchScenariosForTroubleshooting(
  * Fetch scenarios based on filters
  */
 async function fetchScenariosWithFilters(
-  apiClient: any,
-  filters: any
-): Promise<any[]> {
+  apiClient: MakeApiClient,
+  filters: Record<string, unknown>
+): Promise<unknown[]> {
   try {
     const response = await apiClient.get('/scenarios', { params: filters });
     
@@ -273,15 +274,15 @@ async function fetchScenariosWithFilters(
  * Enhance troubleshooting report with additional analysis
  */
 async function enhanceTroubleshootingReport(
-  baseReport: any,
-  scenarios: any[],
+  baseReport: unknown,
+  scenarios: unknown[],
   options: {
     includeDependencyMapping: boolean;
     includePerformanceAnalysis: boolean;
-    apiClient: any;
-    logger: any;
+    apiClient: MakeApiClient;
+    logger: unknown;
   }
-): Promise<any> {
+): Promise<unknown> {
   const enhancedReport = { ...baseReport };
   
   // Add dependency mapping if requested
@@ -305,18 +306,18 @@ async function enhanceTroubleshootingReport(
  * Format troubleshooting report based on requested type
  */
 async function formatTroubleshootingReport(
-  baseReport: any,
-  scenarios: any[],
+  baseReport: unknown,
+  scenarios: unknown[],
   options: {
     formatType: string;
     includeExecutiveSummary: boolean;
     includePerformanceAnalysis: boolean;
     includeSecurityAssessment: boolean;
     timeRangeHours: number;
-    apiClient: any;
-    logger: any;
+    apiClient: MakeApiClient;
+    logger: unknown;
   }
-): Promise<any> {
+): Promise<unknown> {
   let formattedReport = { ...baseReport };
   
   switch (options.formatType) {
@@ -343,7 +344,7 @@ async function formatTroubleshootingReport(
 /**
  * Analyze dependencies between scenarios
  */
-async function analyzeDependencies(scenarios: any[]): Promise<any> {
+async function analyzeDependencies(scenarios: unknown[]): Promise<unknown> {
   return {
     totalScenarios: scenarios.length,
     dependencyMap: {},
@@ -355,7 +356,7 @@ async function analyzeDependencies(scenarios: any[]): Promise<any> {
 /**
  * Analyze execution history
  */
-async function analyzeExecutionHistory(scenarios: any[], apiClient: any): Promise<any> {
+async function analyzeExecutionHistory(scenarios: unknown[], apiClient: MakeApiClient): Promise<unknown> {
   return {
     totalExecutions: 0,
     successRate: 100,
@@ -368,7 +369,7 @@ async function analyzeExecutionHistory(scenarios: any[], apiClient: any): Promis
 /**
  * Generate troubleshooting insights
  */
-function generateTroubleshootingInsights(report: any, scenarios: any[]): any {
+function generateTroubleshootingInsights(report: unknown, scenarios: unknown[]): unknown {
   return {
     keyInsights: [
       'System is operating within normal parameters',
@@ -387,7 +388,7 @@ function generateTroubleshootingInsights(report: any, scenarios: any[]): any {
 /**
  * Format report for executive summary
  */
-function formatExecutiveReport(baseReport: any): any {
+function formatExecutiveReport(baseReport: unknown): unknown {
   return {
     metadata: baseReport.metadata,
     executiveSummary: baseReport.executiveSummary,
@@ -404,7 +405,7 @@ function formatExecutiveReport(baseReport: any): any {
 /**
  * Format report for technical audience
  */
-function formatTechnicalReport(baseReport: any, scenarios: any[]): any {
+function formatTechnicalReport(baseReport: unknown, scenarios: unknown[]): unknown {
   return {
     ...baseReport,
     technicalDetails: {
@@ -423,7 +424,7 @@ function formatTechnicalReport(baseReport: any, scenarios: any[]): any {
 /**
  * Generate security assessment
  */
-async function generateSecurityAssessment(scenarios: any[]): Promise<any> {
+async function generateSecurityAssessment(scenarios: unknown[]): Promise<unknown> {
   return {
     overallSecurityScore: 85,
     securityIssuesFound: 0,

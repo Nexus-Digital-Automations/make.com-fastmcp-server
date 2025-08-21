@@ -22,21 +22,30 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (args: unknown, { log, reportProgress }) => {
+    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
       log?.info?.('Listing scenarios', { filters: args });
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
         // Build query parameters
+        const argsTyped = args as {
+          limit?: number;
+          offset?: number;
+          teamId?: string;
+          folderId?: string;
+          search?: string;
+          active?: boolean;
+        };
+        
         const params: Record<string, unknown> = {
-          limit: (args as any).limit,
-          offset: (args as any).offset,
+          limit: argsTyped.limit,
+          offset: argsTyped.offset,
         };
 
-        if ((args as any).teamId) params.teamId = (args as any).teamId;
-        if ((args as any).folderId) params.folderId = (args as any).folderId;
-        if ((args as any).search) params.q = (args as any).search;
-        if ((args as any).active !== undefined) params.active = (args as any).active;
+        if (argsTyped.teamId) params.teamId = argsTyped.teamId;
+        if (argsTyped.folderId) params.folderId = argsTyped.folderId;
+        if (argsTyped.search) params.q = argsTyped.search;
+        if (argsTyped.active !== undefined) params.active = argsTyped.active;
 
         reportProgress?.({ progress: 25, total: 100 });
 
@@ -59,9 +68,9 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
           scenarios: scenariosArray,
           pagination: {
             total: metadata?.total || scenariosArray.length,
-            limit: (args as any).limit,
-            offset: (args as any).offset,
-            hasMore: (metadata?.total || 0) > ((args as any).offset + (args as any).limit),
+            limit: argsTyped.limit,
+            offset: argsTyped.offset,
+            hasMore: (metadata?.total || 0) > ((argsTyped.offset || 0) + (argsTyped.limit || 20)),
           },
           filters: args,
           timestamp: new Date().toISOString(),
