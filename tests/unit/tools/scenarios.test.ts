@@ -394,7 +394,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         includeExecutions: false
       }, { log: mockLog })).resolves.toBeDefined();
       
-      // Invalid parameters
+      // Invalid parameters should trigger validation errors
       const invalidArgs = [
         {}, // Missing scenarioId
         { scenarioId: '' }, // Empty scenarioId
