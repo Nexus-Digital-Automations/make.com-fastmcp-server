@@ -558,8 +558,14 @@ describe('Budget Control Tools - Basic Tests', () => {
       const { addBudgetControlTools } = await import('../../../src/tools/budget-control.js');
       addBudgetControlTools(mockServer, mockApiClient as any);
       
+      // Debug: Log all registered tools
+      const allTools = mockTool.mock.calls.map(call => call[0].name);
+      console.log('All registered tools:', allTools);
+      
       const tool = findTool(mockTool, 'control-high-cost-scenarios');
-      console.log('Tool found:', !!tool, tool?.name);
+      console.log('Found tool:', tool?.name);
+      expect(tool).toBeDefined();
+      expect(tool.name).toBe('control-high-cost-scenarios');
       
       let result;
       try {
@@ -568,9 +574,9 @@ describe('Budget Control Tools - Basic Tests', () => {
           action: 'analyze',
           reason: 'Budget threshold analysis'
         });
-        console.log('ExecuteTool succeeded');
+        // ExecuteTool succeeded
       } catch (error) {
-        console.log('ExecuteTool failed:', error.message);
+        console.error('ExecuteTool failed:', error.message);
         throw error;
       }
       

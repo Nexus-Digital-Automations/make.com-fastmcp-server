@@ -893,7 +893,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
             estimatedSavings: scenarioAnalysis.estimatedSavings,
           });
 
-          return JSON.stringify({
+          const analysisResult = {
             analysis: {
               totalScenarios: scenarios.length,
               highCostScenarios: scenarios.length,
@@ -926,7 +926,8 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
               executedAt: new Date().toISOString(),
               riskLevel: scenarioAnalysis.impact.level,
             },
-          }, null, 2);
+          };
+          return JSON.stringify(analysisResult, null, 2);
         }
 
         const executionResult = await executeScenarioControl(scenarios, action, reason);
@@ -975,7 +976,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
 // Helper functions for simulating ML-powered operations
 async function simulateHistoricalDataCollection(budgetId: string): Promise<HistoricalBudgetData> {
   // Simulate data collection delay
-  await new Promise(resolve => setTimeout(resolve, 100));
+  await new Promise(resolve => setTimeout(resolve, 10));
   const dataPointCount = Math.floor(Math.random() * 100) + 50; // 50-150 data points
   
   // Generate mock historical data points
@@ -1019,7 +1020,7 @@ async function simulateHistoricalDataCollection(budgetId: string): Promise<Histo
 }
 
 async function simulateCurrentUsageAnalysis(budgetId: string): Promise<CurrentUsageData> {
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, 10));
   const currentSpend = Math.random() * 800 + 100; // $100-$900
   const dailySpend = Math.random() * 50 + 10; // $10-$60 per day
   
@@ -1035,7 +1036,7 @@ async function simulateCurrentUsageAnalysis(budgetId: string): Promise<CurrentUs
 }
 
 async function simulateSeasonalityAnalysis(_historicalData: HistoricalBudgetData): Promise<Record<string, number>> {
-  await new Promise(resolve => setTimeout(resolve, 75));
+  await new Promise(resolve => setTimeout(resolve, 10));
   return {
     'Q1': Math.random() * 0.2 + 0.8, // 0.8-1.0
     'Q2': Math.random() * 0.3 + 0.9, // 0.9-1.2
@@ -1045,7 +1046,7 @@ async function simulateSeasonalityAnalysis(_historicalData: HistoricalBudgetData
 }
 
 async function simulateTrendAnalysis(_historicalData: HistoricalBudgetData): Promise<{ trend: number; stability: number }> {
-  await new Promise(resolve => setTimeout(resolve, 100));
+  await new Promise(resolve => setTimeout(resolve, 10));
   return {
     trend: Math.random() * 0.4 + 0.8, // 0.8-1.2 (multiplier)
     stability: Math.random() * 0.4 + 0.6, // 0.6-1.0
@@ -1058,7 +1059,7 @@ async function simulateProjectionGeneration(
   projectionDays: number,
   model: string
 ): Promise<ProjectionData> {
-  await new Promise(resolve => setTimeout(resolve, 150));
+  await new Promise(resolve => setTimeout(resolve, 10));
   const dailyAverage = currentUsage.velocity;
   const modelMultiplier = model === 'ml_ensemble' ? 1.1 : model === 'seasonal' ? 1.05 : 1.0;
   const projected = currentUsage.currentSpend + (dailyAverage * projectionDays * modelMultiplier);
@@ -1080,7 +1081,7 @@ async function simulateConfidenceCalculation(
   historicalData: HistoricalBudgetData,
   confidenceLevel: number
 ): Promise<ConfidenceMetrics> {
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, 10));
   
   const dataQuality = Math.min(1.0, historicalData.dataPoints.length / 100);
   const historicalAccuracy = Math.random() * 0.3 + 0.6; // 0.6-0.9
@@ -1098,7 +1099,7 @@ async function simulateConfidenceCalculation(
 
 async function identifyHighCostScenarios(_budgetId: string): Promise<number[]> {
   // Simulate scenario analysis
-  await new Promise(resolve => setTimeout(resolve, 200));
+  await new Promise(resolve => setTimeout(resolve, 10));
   
   // Return mock scenario IDs that exceed cost thresholds
   const highCostScenarios = [];
@@ -1120,7 +1121,7 @@ async function analyzeScenarioImpact(
   impact: { level: string; description: string };
   rollbackPlan: { available: boolean; timeframe: string };
 }> {
-  await new Promise(resolve => setTimeout(resolve, 150));
+  await new Promise(resolve => setTimeout(resolve, 10));
   
   const scenarioDetails = scenarios.map(id => ({
     id,

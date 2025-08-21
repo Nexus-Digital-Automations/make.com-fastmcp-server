@@ -11489,9 +11489,41 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755816670815_z0o9xeukr",
+      "title": "Fix remaining TypeScript syntax error in template tests",
+      "description": "Fix the third malformed executeTool call around line 382-383 in templates.test.ts file",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T22:51:10.815Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T22:58:34.663Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T22:58:34.664Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 261,
-  "last_completion": "2025-08-21T22:30:47.295Z",
+  "total_completed": 262,
+  "last_completion": "2025-08-21T22:58:34.664Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

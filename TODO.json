@@ -48,7 +48,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -57,9 +57,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T18:30:49.156Z",
       "auto_research_created": false,
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
+      "assigned_agent": "agent_1755817132170",
+      "started_at": "2025-08-21T22:58:52.170Z",
+      "claimed_by": "agent_1755817132170",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755801072537_1_general_8d033555",
@@ -95,6 +95,11 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T22:58:21.240Z",
           "reason": "Task stale for 27 minutes"
+        },
+        {
+          "agent": "agent_1755817132170",
+          "action": "claimed",
+          "timestamp": "2025-08-21T22:58:52.170Z"
         }
       ]
     },
@@ -105,7 +110,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -114,9 +119,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T21:51:38.304Z",
       "auto_research_created": false,
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
+      "assigned_agent": "development_session_1755817107983_1_general_fada195a",
+      "started_at": "2025-08-21T22:59:05.496Z",
+      "claimed_by": "development_session_1755817107983_1_general_fada195a",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755814264541_1_general_8ec8559c",
@@ -130,6 +135,13 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T22:58:21.240Z",
           "reason": "Task stale for 27 minutes"
+        },
+        {
+          "agentId": "development_session_1755817107983_1_general_fada195a",
+          "role": "primary",
+          "assignedAt": "2025-08-21T22:59:05.496Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
     },
