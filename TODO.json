@@ -167,6 +167,23 @@
           }
         }
       ]
+    },
+    {
+      "id": "task_1755801049156_sfvjyejuu",
+      "title": "Fix critical test execution failures in budget control and diagnostic rules",
+      "description": "Address systematic test failures preventing proper test execution:\\n\\n1. Fix undefined property expectations in budget-control-basic.test.ts (alertThresholds percentage, analysis properties)\\n2. Fix mock promise rejection expectations - tests expect rejections but promises resolve\\n3. Fix Class constructor invocation errors in diagnostic-rules.test.ts\\n4. Fix circuit breaker state expectations (expected closed, received open)\\n5. Fix workflow execution status expectations (expected completed, received failed)\\n\\nThese infrastructure issues are preventing proper test coverage analysis and need immediate resolution.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T18:30:49.156Z",
+      "auto_research_created": false
     }
   ],
   "current_mode": "DEVELOPMENT",
