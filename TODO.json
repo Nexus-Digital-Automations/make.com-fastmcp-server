@@ -2,6 +2,47 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755765880312_ze8zn37p2",
+      "title": "Implement FastMCP Tool Annotations for Enterprise Security Tools",
+      "description": "Based on comprehensive TypeScript research, implement missing FastMCP tool annotations for high-priority enterprise security tools including zero-trust-auth.ts, multi-tenant-security.ts, and enterprise-secrets.ts. Add complete annotations with proper titles, readOnlyHint, destructiveHint, idempotentHint, and openWorldHint properties following established patterns.",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/zero-trust-auth.ts",
+        "src/tools/multi-tenant-security.ts",
+        "src/tools/enterprise-secrets.ts",
+        "src/types/index.ts",
+        "./development/research-reports/fastmcp-tool-annotations-typescript-protocol-compliance-comprehensive-research-2025.md"
+      ],
+      "success_criteria": [
+        "All enterprise security tools have complete FastMCP annotations",
+        "Annotations follow established patterns from research",
+        "Security tools properly marked with destructiveHint where appropriate",
+        "External API interactions marked with openWorldHint",
+        "All tools have descriptive titles for UI enhancement"
+      ],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T08:44:40.315Z",
+      "auto_research_created": true,
+      "assigned_agent": "main-agent",
+      "started_at": "2025-08-21T08:46:19.623Z",
+      "claimed_by": "main-agent",
+      "agent_assignment_history": [
+        {
+          "agentId": "main-agent",
+          "role": "primary",
+          "assignedAt": "2025-08-21T08:46:19.623Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
       "id": "task_1755766064319_kahjhx1au",
       "title": "Research: Implement comprehensive FastMCP tool annotations for zero-trust-auth.ts",
       "description": "Research and analysis required for implementing: \"Implement comprehensive FastMCP tool annotations for zero-trust-auth.ts\"\n\n**Implementation Task Details:**\nAdd complete security-focused annotations to all 7 zero trust authentication tools with proper destructive/read-only/external marking\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755766064319_unukz6iwu\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
@@ -54,47 +95,6 @@
       "auto_created_for": "task_1755766056125_pc0zx8je6"
     },
     {
-      "id": "task_1755765880312_ze8zn37p2",
-      "title": "Implement FastMCP Tool Annotations for Enterprise Security Tools",
-      "description": "Based on comprehensive TypeScript research, implement missing FastMCP tool annotations for high-priority enterprise security tools including zero-trust-auth.ts, multi-tenant-security.ts, and enterprise-secrets.ts. Add complete annotations with proper titles, readOnlyHint, destructiveHint, idempotentHint, and openWorldHint properties following established patterns.",
-      "mode": "DEVELOPMENT",
-      "category": "enhancement",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "src/tools/zero-trust-auth.ts",
-        "src/tools/multi-tenant-security.ts",
-        "src/tools/enterprise-secrets.ts",
-        "src/types/index.ts",
-        "./development/research-reports/fastmcp-tool-annotations-typescript-protocol-compliance-comprehensive-research-2025.md"
-      ],
-      "success_criteria": [
-        "All enterprise security tools have complete FastMCP annotations",
-        "Annotations follow established patterns from research",
-        "Security tools properly marked with destructiveHint where appropriate",
-        "External API interactions marked with openWorldHint",
-        "All tools have descriptive titles for UI enhancement"
-      ],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:44:40.315Z",
-      "auto_research_created": true,
-      "assigned_agent": "main-agent",
-      "started_at": "2025-08-21T08:46:19.623Z",
-      "claimed_by": "main-agent",
-      "agent_assignment_history": [
-        {
-          "agentId": "main-agent",
-          "role": "primary",
-          "assignedAt": "2025-08-21T08:46:19.623Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1755766032834_0og3cdxc5",
       "title": "Research: Implement comprehensive FastMCP tool annotations for enterprise-secrets.ts",
       "description": "Research and analysis required for implementing: \"Implement comprehensive FastMCP tool annotations for enterprise-secrets.ts\"\n\n**Implementation Task Details:**\nAdd security-focused annotations with destructiveHint, openWorldHint, idempotentHint, and readOnlyHint to all enterprise secrets tools\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755766032834_h8z9n7fhy\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
@@ -145,44 +145,6 @@
       "created_at": "2025-08-21T08:47:09.241Z",
       "created_by": "auto-research-system",
       "auto_created_for": "task_1755766029240_gb92x252b"
-    },
-    {
-      "id": "task_1755766064319_unukz6iwu",
-      "title": "Implement comprehensive FastMCP tool annotations for zero-trust-auth.ts",
-      "description": "Add complete security-focused annotations to all 7 zero trust authentication tools with proper destructive/read-only/external marking",
-      "mode": "DEVELOPMENT",
-      "category": "enhancement",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [
-        "task_1755766064319_kahjhx1au"
-      ],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:47:44.323Z",
-      "auto_research_created": true
-    },
-    {
-      "id": "task_1755766056125_pc0zx8je6",
-      "title": "Add comprehensive FastMCP annotations to multi-tenant security tools",
-      "description": "Add complete FastMCP annotations to all multi-tenant security tools following security governance patterns with proper destructive/security markings",
-      "mode": "DEVELOPMENT",
-      "category": "enhancement",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [
-        "task_1755766056125_ri7qrpgr3"
-      ],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:47:36.129Z",
-      "auto_research_created": true
     }
   ],
   "current_mode": "DEVELOPMENT",
