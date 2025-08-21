@@ -25,6 +25,16 @@ export default {
     // Mock make-api-client
     '.*\\/make-api-client\\.js$': '<rootDir>/tests/__mocks__/make-api-client.js',
   },
+  // Prevent auto-mocking of built-in Node.js modules and our core modules
+  unmockedModulePathPatterns: [
+    '<rootDir>/src/lib/diagnostic-rules.ts',
+    '<rootDir>/src/types/',
+    'node_modules',
+    'util',
+    'fs',
+    'path',
+    'os'
+  ],
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   collectCoverageFrom: [
     'src/**/*.{ts,js}',
@@ -69,4 +79,8 @@ export default {
   errorOnDeprecated: false,
   detectOpenHandles: true,
   detectLeaks: false,
+  // Disable auto-mocking to prevent class constructor issues
+  automock: false,
+  // Don't reset mocks between tests to avoid constructor issues
+  resetMocks: false,
 };
