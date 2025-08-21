@@ -18,6 +18,13 @@ export interface CachingMiddlewareConfig {
   defaultStrategy: CacheStrategy;
   enableConditionalCaching: boolean;
   enableEtagSupport: boolean;
+  toolWrapping: {
+    enabled: boolean;
+    mode: 'all' | 'selective' | 'explicit';
+    includedTools?: string[];
+    excludedTools?: string[];
+    defaultEnabled: boolean;
+  };
 }
 
 export interface CacheStrategy {
@@ -140,6 +147,12 @@ export class CachingMiddleware {
       },
       enableConditionalCaching: true,
       enableEtagSupport: true,
+      toolWrapping: {
+        enabled: true,
+        mode: 'selective',
+        excludedTools: ['cache-status', 'cache-invalidate', 'cache-warmup'], // Don't cache cache management tools
+        defaultEnabled: true
+      },
       ...config
     };
 
@@ -177,12 +190,36 @@ export class CachingMiddleware {
   }
 
   /**
-   * Wrap existing tools with caching logic
+   * Wrap existing tools with caching logic using registration interception
    */
   private wrapServerTools(): void {
-    // TODO: Re-implement tool wrapping when FastMCP API supports it
-    // For now, caching is handled manually in individual tools
-    this.componentLogger.warn('Tool wrapping temporarily disabled - caching handled per-tool');
+    if (!this.config.toolWrapping.enabled || !this.server) {
+      this.componentLogger.info('Tool wrapping disabled or server not available');
+      return;
+    }
+
+    this.componentLogger.info('Enabling automatic tool wrapping with caching', {
+      mode: this.config.toolWrapping.mode,
+      excludedTools: this.config.toolWrapping.excludedTools?.length || 0
+    });
+
+    // Store original addTool method
+    const originalAddTool = this.server.addTool.bind(this.server);
+
+    // Replace with caching-aware version using registration interception pattern
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.server.addTool = ((toolConfig: any) => {
+      if (this.shouldWrapTool(toolConfig.name)) {
+        const wrappedTool = this.createCachedTool(toolConfig);
+        this.componentLogger.debug('Tool wrapped with caching', { toolName: toolConfig.name });
+        return originalAddTool(wrappedTool);
+      } else {
+        this.componentLogger.debug('Tool not wrapped - excluded or disabled', { toolName: toolConfig.name });
+        return originalAddTool(toolConfig);
+      }
+    }) as typeof this.server.addTool;
+
+    this.componentLogger.info('Tool wrapping interception enabled successfully');
   }
 
   /**
@@ -344,123 +381,114 @@ export class CachingMiddleware {
   }
 
   /**
-   * Temporarily disabled cache management tools (unreachable code removed)
+   * Determine if a tool should be wrapped with caching based on configuration
    */
-  private addCacheManagementToolsDisabled(): void {
-    // This method contains the original implementation that will be restored
-    // when FastMCP interface is updated to support the required tool format
+  private shouldWrapTool(toolName: string): boolean {
+    const config = this.config.toolWrapping;
     
-    /*
-    // Cache status tool
-    server.addTool({
-      name: 'cache-status',
-      description: 'Get cache system status and statistics',
-      parameters: {},
-      execute: async () => {
-        try {
-          const stats = await this.cache.getStats();
-          const health = await this.cache.healthCheck();
-          const operationStats = Object.fromEntries(this.operationMetrics);
+    if (!config.enabled) {
+      return false;
+    }
 
-          return {
-            success: true,
-            data: {
-              health,
-              stats,
-              operationStats,
-              strategies: Object.keys(this.config.strategies),
-              config: {
-                compression: this.config.cache.compression,
-                ttl: this.config.cache.ttl
-              }
-            }
-          };
-        } catch (error) {
-          return {
-            success: false,
-            error: {
-              message: 'Failed to get cache status',
-              details: error instanceof Error ? error.message : 'Unknown error'
-            }
-          };
+    // Check excluded tools first
+    if (config.excludedTools?.includes(toolName)) {
+      return false;
+    }
+
+    // Check mode-specific logic
+    switch (config.mode) {
+      case 'all':
+        return true;
+      case 'selective':
+        // If includedTools is specified, only wrap those tools
+        if (config.includedTools?.length) {
+          return config.includedTools.includes(toolName);
         }
-      }
-    });
-
-    // Cache invalidation tool
-    server.addTool({
-      name: 'cache-invalidate',
-      description: 'Invalidate cache entries based on trigger patterns',
-      parameters: {
-        trigger: { type: 'string', description: 'Invalidation trigger (e.g., scenario:update)' },
-        context: { type: 'object', description: 'Optional context for pattern expansion', required: false }
-      },
-      execute: async (params) => {
-        try {
-          const { trigger, context } = params;
-          const deletedCount = await this.cache.invalidate(trigger as string, context as Record<string, string>);
-
-          this.componentLogger.info('Cache invalidated via tool', { trigger, deletedCount });
-
-          return {
-            success: true,
-            data: {
-              trigger,
-              deletedCount,
-              timestamp: new Date().toISOString()
-            }
-          };
-        } catch (error) {
-          return {
-            success: false,
-            error: {
-              message: 'Failed to invalidate cache',
-              details: error instanceof Error ? error.message : 'Unknown error'
-            }
-          };
-        }
-      }
-    });
-
-    // Cache warm-up tool
-    server.addTool({
-      name: 'cache-warmup',
-      description: 'Warm up cache with predefined data sets',
-      parameters: {
-        operations: { 
-          type: 'array', 
-          description: 'List of operations to warm up (e.g., ["list_scenarios", "list_users"])',
-          required: false
-        }
-      },
-      execute: async (params) => {
-        try {
-          const operations = (params.operations as string[]) || Object.keys(this.config.strategies);
-          const warmupData = await this.generateWarmupData(operations);
-          const successCount = await this.cache.warmUp(warmupData);
-
-          return {
-            success: true,
-            data: {
-              operations,
-              totalItems: warmupData.length,
-              successfulItems: successCount,
-              timestamp: new Date().toISOString()
-            }
-          };
-        } catch (error) {
-          return {
-            success: false,
-            error: {
-              message: 'Failed to warm up cache',
-              details: error instanceof Error ? error.message : 'Unknown error'
-            }
-          };
-        }
-      }
-    });
-    */
+        // Otherwise use default enabled setting
+        return config.defaultEnabled;
+      case 'explicit':
+        // Only wrap tools explicitly listed in includedTools
+        return config.includedTools?.includes(toolName) || false;
+      default:
+        return config.defaultEnabled;
+    }
   }
+
+  /**
+   * Create a cached version of a tool by wrapping its execute function
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private createCachedTool(toolConfig: any): any {
+    const originalExecute = toolConfig.execute;
+    const toolName = toolConfig.name;
+    
+    // Get caching strategy for this tool
+    const strategy = this.getToolStrategy(toolName);
+
+    return {
+      ...toolConfig,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-function-return-type
+      execute: async (args: any, context: any) => {
+        // Apply caching strategy based on tool name and configuration
+        if (!strategy.enabled) {
+          // Strategy disabled, execute without caching
+          return originalExecute(args, context);
+        }
+
+        try {
+          // Use existing wrapWithCache method for consistent caching behavior
+          return await this.wrapWithCache(
+            toolName,
+            args as Record<string, unknown>,
+            () => originalExecute(args, context),
+            { toolContext: context }
+          );
+        } catch (error) {
+          // On caching error, fallback to direct execution
+          this.componentLogger.error('Cache wrapper error, falling back to direct execution', {
+            toolName,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+          return originalExecute(args, context);
+        }
+      }
+    };
+  }
+
+  /**
+   * Get caching strategy for a specific tool
+   */
+  private getToolStrategy(toolName: string): CacheStrategy {
+    // Check for tool-specific strategy first
+    if (this.config.strategies[toolName]) {
+      return this.config.strategies[toolName];
+    }
+
+    // Map common tool naming patterns to existing strategies
+    const strategyMappings: Record<string, string> = {
+      'list-scenarios': 'list_scenarios',
+      'get-scenario': 'get_scenario',
+      'list-users': 'list_users',
+      'get-user': 'get_user',
+      'list-connections': 'list_connections',
+      'get-connection': 'get_connection',
+      'list-templates': 'list_templates',
+      'get-template': 'get_template',
+      'list-organizations': 'list_organizations',
+      'list-teams': 'list_teams',
+      'get-analytics': 'get_analytics',
+      'get-execution-history': 'get_execution_history'
+    };
+
+    const mappedStrategy = strategyMappings[toolName];
+    if (mappedStrategy && this.config.strategies[mappedStrategy]) {
+      return this.config.strategies[mappedStrategy];
+    }
+
+    // Fall back to default strategy
+    return this.config.defaultStrategy;
+  }
+
 
   /**
    * Wrap operation with caching logic

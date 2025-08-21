@@ -2,39 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755771121623_6et9watfh",
-      "title": "Implement TODO fixes: Re-enable cache management tools and performance analysis integration",
-      "description": "Based on completed research report, implement Phase 1 (re-enable cache management tools) and Phase 3 (performance analysis integration). Phase 2 (tool wrapping) can be deferred as lower priority.",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "./development/research-reports/research-report-task_1755770075122_dythoqzrg.md",
-        "./src/middleware/caching.ts",
-        "./src/tools/scenarios.ts"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-21T10:12:01.625Z",
-      "auto_research_created": true,
-      "mode": "DEVELOPMENT",
-      "assigned_agent": "agent_implementation_1755771590",
-      "started_at": "2025-08-21T10:14:04.913Z",
-      "claimed_by": "agent_implementation_1755771590",
-      "agent_assignment_history": [
-        {
-          "agentId": "agent_implementation_1755771590",
-          "role": "primary",
-          "assignedAt": "2025-08-21T10:14:04.913Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1755770075122_b72wrjxm3",
       "title": "Fix TODO items in caching middleware and scenarios tool",
       "description": "Fix 3 TODO items: 1) Re-implement tool wrapping in caching.ts, 2) Re-enable cache management tools in caching.ts, 3) Implement performance analysis integration in scenarios.ts",
@@ -50,14 +17,58 @@
       "created_at": "2025-08-21T09:54:35.124Z",
       "auto_research_created": true,
       "mode": "DEVELOPMENT",
-      "started_at": "2025-08-21T10:01:39.640Z",
-      "claimed_by": "agent_1755770499640",
-      "assigned_agent": "agent_1755770499640",
+      "started_at": "2025-08-21T10:22:32.357Z",
+      "claimed_by": "agent_1755771752357",
+      "assigned_agent": "agent_1755771752357",
       "agent_assignment_history": [
         {
           "agent": "agent_1755770499640",
           "action": "claimed",
           "timestamp": "2025-08-21T10:01:39.640Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T10:22:20.230Z",
+          "reason": "Task stale for 21 minutes"
+        },
+        {
+          "agent": "agent_1755771752357",
+          "action": "claimed",
+          "timestamp": "2025-08-21T10:22:32.357Z"
+        }
+      ]
+    },
+    {
+      "id": "task_1755771804750_0ylkbto4s",
+      "title": "Implement tool wrapping in caching middleware",
+      "description": "Complete the remaining TODO: Re-implement tool wrapping when FastMCP API supports it. This was deferred from previous implementation as lower priority. Research shows this is Phase 2 with 2-3 hour complexity.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "medium",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [
+        "./src/middleware/caching.ts",
+        "./development/research-reports/research-report-task_1755770075122_dythoqzrg.md",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/development/research-reports/fastmcp-tool-wrapping-caching-middleware-research-2025.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T10:23:24.753Z",
+      "auto_research_created": true,
+      "assigned_agent": "agent_implementation_continue_1755772000",
+      "started_at": "2025-08-21T10:30:01.760Z",
+      "claimed_by": "agent_implementation_continue_1755772000",
+      "agent_assignment_history": [
+        {
+          "agentId": "agent_implementation_continue_1755772000",
+          "role": "primary",
+          "assignedAt": "2025-08-21T10:30:01.760Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
     }
