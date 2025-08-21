@@ -5,7 +5,7 @@
 
 import { UserError } from 'fastmcp';
 import { CreateScenarioSchema } from '../schemas/scenario-crud.js';
-import { ToolContext, ToolDefinition } from '../types/tool-context.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 
 /**
  * Create scenario tool configuration
@@ -19,6 +19,8 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
     parameters: CreateScenarioSchema,
     annotations: {
       title: 'Create Scenario',
+      readOnlyHint: false,
+      openWorldHint: false,
     },
     execute: async (args: unknown, { log, reportProgress }) => {
       const typedArgs = args as { 

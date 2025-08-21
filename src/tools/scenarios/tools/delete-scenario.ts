@@ -5,7 +5,7 @@
 
 import { UserError } from 'fastmcp';
 import { DeleteScenarioSchema } from '../schemas/scenario-crud.js';
-import { ToolContext, ToolDefinition } from '../types/tool-context.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 
 /**
  * Create delete scenario tool configuration
@@ -19,6 +19,9 @@ export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
     parameters: DeleteScenarioSchema,
     annotations: {
       title: 'Delete Scenario',
+      readOnlyHint: false,
+      destructiveHint: true,
+      openWorldHint: false,
     },
     execute: async (args: unknown, { log, reportProgress }) => {
       const typedArgs = args as { scenarioId: string; force?: boolean };

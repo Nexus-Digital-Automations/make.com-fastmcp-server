@@ -1,17 +1,19 @@
 /**
- * @fileoverview Make.com Scenario Management Tools - Main Integration
+ * @fileoverview Make.com Scenario Management Tools - Modular Entry Point
  * 
- * Provides comprehensive CRUD operations for Make.com scenarios including:
- * - Creating, updating, and deleting scenarios
- * - Advanced filtering and search capabilities  
- * - Scenario execution with monitoring
- * - Blueprint management and cloning
- * - Scheduling configuration
+ * This is the main export file for the refactored scenarios module.
+ * It provides comprehensive scenario management functionality through
+ * a modular architecture with dependency injection.
  * 
- * This modular implementation replaces the monolithic scenarios.ts file
- * with a clean, maintainable architecture following FastMCP best practices.
+ * Key Features:
+ * - CRUD operations for scenarios
+ * - Advanced filtering and search
+ * - Blueprint analysis and validation
+ * - Optimization recommendations
+ * - Comprehensive troubleshooting
+ * - Performance analysis
  * 
- * @version 1.0.0
+ * @version 2.0.0 - Refactored modular architecture
  * @author Make.com FastMCP Server
  * @see {@link https://docs.make.com/api} Make.com API Documentation
  */
@@ -21,39 +23,42 @@ import MakeApiClient from '../../lib/make-api-client.js';
 import logger from '../../lib/logger.js';
 import { ToolContext } from '../shared/types/tool-context.js';
 
-// Import all completed tool creators
-import { createListScenariosTools } from './tools/list-scenarios.js';
-import { createGetScenarioTool } from './tools/get-scenario.js';
-import { createCreateScenarioTool } from './tools/create-scenario.js';
-import { createUpdateScenarioTool } from './tools/update-scenario.js';
-import { createDeleteScenarioTool } from './tools/delete-scenario.js';
-import { createCloneScenarioTool } from './tools/clone-scenario.js';
+// Import all tool creators
+import {
+  createListScenariosTools,
+  createScenarioTool,
+  createCreateScenarioTool,
+  createUpdateScenarioTool,
+  createDeleteScenarioTool,
+  createCloneScenarioTool,
+  createAnalyzeBlueprintTool,
+  createOptimizeBlueprintTool,
+  createTroubleshootScenarioTool,
+  createGenerateTroubleshootingReportTool
+} from './tools/index.js';
 
-// TODO: Import remaining tools as they are completed by other subagents
-// import { createRunScenarioTool } from './tools/run-scenario.js';
-// import { createTroubleshootScenarioTool } from './tools/troubleshoot-scenario.js';
-// import { createGenerateTroubleshootingReportTool } from './tools/generate-troubleshooting-report.js';
-// import { createValidateBlueprintTool } from './tools/validate-blueprint.js';
-// import { createExtractBlueprintConnectionsTool } from './tools/extract-blueprint-connections.js';
-// import { createOptimizeBlueprintTool } from './tools/optimize-blueprint.js';
-
-// Re-export all types and schemas for external usage
-export * from './types/index.js';
-export * from './schemas/index.js';
+// Import version information
+import { VERSION_INFO } from './constants.js';
 
 /**
- * Add scenario management tools to FastMCP server
+ * Add all scenario management tools to FastMCP server
  * 
- * This function maintains 100% compatibility with the original addScenarioTools
- * function while providing a clean, modular implementation.
+ * This function implements the modular tool registration pattern with
+ * dependency injection, replacing the previous monolithic approach.
  * 
- * @param server FastMCP server instance
- * @param apiClient Make.com API client
+ * @param server - FastMCP server instance
+ * @param apiClient - Make.com API client
  */
 export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ScenarioTools' });
+  const componentLogger = logger.child({ 
+    component: 'ScenariosModule',
+    version: VERSION_INFO.SCENARIOS_MODULE_VERSION 
+  });
   
-  componentLogger.info('Adding scenario management tools');
+  componentLogger.info('Initializing modular scenario management tools', {
+    moduleVersion: VERSION_INFO.SCENARIOS_MODULE_VERSION,
+    apiVersion: VERSION_INFO.API_VERSION
+  });
 
   // Create shared tool context for dependency injection
   const toolContext: ToolContext = { 
@@ -63,79 +68,91 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
   };
 
   try {
-    // Register individual tools with proper error handling
-    const toolRegistrations = [
-      { name: 'list-scenarios', creator: createListScenariosTools },
-      { name: 'get-scenario', creator: createGetScenarioTool },
-      { name: 'create-scenario', creator: createCreateScenarioTool },
-      { name: 'update-scenario', creator: createUpdateScenarioTool },
-      { name: 'delete-scenario', creator: createDeleteScenarioTool },
-      { name: 'clone-scenario', creator: createCloneScenarioTool },
-      { name: 'run-scenario', creator: createRunScenarioTool },
-      { name: 'troubleshoot-scenario', creator: createTroubleshootScenarioTool },
-      { name: 'generate-troubleshooting-report', creator: createGenerateTroubleshootingReportTool },
-      { name: 'validate-blueprint', creator: createValidateBlueprintTool },
-      { name: 'extract-blueprint-connections', creator: createExtractBlueprintConnectionsTool },
-      { name: 'optimize-blueprint', creator: createOptimizeBlueprintTool },
-    ];
+    // Register CRUD operation tools
+    componentLogger.debug('Registering CRUD operation tools');
+    server.addTool(createListScenariosTools(toolContext));
+    server.addTool(createScenarioTool(toolContext));
+    server.addTool(createCreateScenarioTool(toolContext));
+    server.addTool(createUpdateScenarioTool(toolContext));
+    server.addTool(createDeleteScenarioTool(toolContext));
+    server.addTool(createCloneScenarioTool(toolContext));
 
-    // Register each tool with error handling
-    toolRegistrations.forEach(({ name, creator }) => {
-      try {
-        const toolDefinition = creator(toolContext);
-        server.addTool(toolDefinition);
-        componentLogger.debug(`Successfully registered tool: ${name}`);
-      } catch (error) {
-        componentLogger.error(`Failed to register tool: ${name}`, { 
-          error: error instanceof Error ? error.message : String(error) 
-        });
-        throw error; // Re-throw to maintain original error behavior
-      }
-    });
+    // Register analysis and optimization tools
+    componentLogger.debug('Registering analysis and optimization tools');
+    server.addTool(createAnalyzeBlueprintTool(toolContext));
+    server.addTool(createOptimizeBlueprintTool(toolContext));
 
-    componentLogger.info('Scenario management tools added successfully', {
-      toolCount: toolRegistrations.length,
-      categories: ['CRUD', 'execution', 'analysis', 'optimization', 'troubleshooting'],
-      tools: toolRegistrations.map(t => t.name)
+    // Register troubleshooting and diagnostic tools
+    componentLogger.debug('Registering troubleshooting tools');
+    server.addTool(createTroubleshootScenarioTool(toolContext));
+    server.addTool(createGenerateTroubleshootingReportTool(toolContext));
+
+    componentLogger.info('Scenario management tools registered successfully', {
+      toolsRegistered: [
+        'list-scenarios',
+        'get-scenario',
+        'create-scenario',
+        'update-scenario',
+        'delete-scenario',
+        'clone-scenario',
+        'analyze-blueprint',
+        'optimize-blueprint',
+        'troubleshoot-scenario',
+        'generate-troubleshooting-report'
+      ],
+      totalTools: 10,
+      categories: [
+        'CRUD operations',
+        'blueprint analysis', 
+        'optimization',
+        'troubleshooting',
+        'diagnostics'
+      ],
+      architecture: 'modular-with-dependency-injection'
     });
 
   } catch (error) {
-    componentLogger.error('Failed to add scenario management tools', {
-      error: error instanceof Error ? error.message : String(error)
+    componentLogger.error('Failed to register scenario management tools', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
     });
-    throw error; // Maintain original error propagation behavior
+    throw error;
   }
 }
 
 /**
- * Default export for backward compatibility
- * @deprecated Use named export `addScenarioTools` instead
+ * Export the main registration function as default for backward compatibility
  */
 export default addScenarioTools;
 
 /**
- * Tool metadata for introspection and documentation
+ * Re-export types and utilities for external use
  */
-export const ScenariosToolMetadata = {
+export * from './types/index.js';
+export * from './schemas/index.js';
+export * from './utils/index.js';
+export * from './constants.js';
+
+/**
+ * Module metadata for introspection
+ */
+export const ScenariosModuleInfo = {
   name: 'scenarios',
-  version: '1.0.0',
-  description: 'Comprehensive Make.com scenario management tools',
-  toolCount: 12,
-  categories: ['CRUD', 'execution', 'analysis', 'optimization', 'troubleshooting'],
-  tools: [
-    'list-scenarios',
-    'get-scenario', 
-    'create-scenario',
-    'update-scenario',
-    'delete-scenario',
-    'clone-scenario',
-    'run-scenario',
-    'troubleshoot-scenario',
-    'generate-troubleshooting-report',
-    'validate-blueprint',
-    'extract-blueprint-connections',
-    'optimize-blueprint'
+  version: VERSION_INFO.SCENARIOS_MODULE_VERSION,
+  description: 'Comprehensive Make.com scenario management with modular architecture',
+  architecture: 'modular-dependency-injection',
+  features: [
+    'CRUD operations',
+    'Advanced filtering',
+    'Blueprint validation',
+    'Performance optimization',
+    'Comprehensive troubleshooting',
+    'Executive reporting'
   ],
-  maintainer: 'Make.com FastMCP Server Team',
-  lastUpdated: new Date().toISOString()
+  toolCount: 10,
+  migrationStatus: 'phase-1-complete',
+  compatibility: {
+    fastMCP: VERSION_INFO.COMPATIBILITY_VERSION,
+    makeAPI: VERSION_INFO.API_VERSION
+  }
 } as const;

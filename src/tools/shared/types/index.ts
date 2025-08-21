@@ -6,8 +6,21 @@
 // Tool context and execution interfaces
 export type {
   ToolContext,
+  EnhancedToolContext,
   ToolExecutionContext,
   ToolDefinition,
+  ToolAnnotations,
+  ToolFactory,
+  EnhancedToolFactory,
+  ToolRegistrationFunction,
+  CacheService,
+  MetricsService,
+  ConfigService,
+  DiagnosticsService,
+  HealthStatus,
+  ServiceHealth,
+  DiagnosticMetrics,
+  DiagnosticResult,
 } from './tool-context.js';
 
 // API client types

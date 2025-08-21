@@ -5,7 +5,7 @@
 
 import { UserError } from 'fastmcp';
 import { CloneScenarioSchema } from '../schemas/scenario-crud.js';
-import { ToolContext, ToolDefinition } from '../types/tool-context.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 
 /**
  * Create clone scenario tool configuration
@@ -19,6 +19,8 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
     parameters: CloneScenarioSchema,
     annotations: {
       title: 'Clone Scenario',
+      readOnlyHint: false,
+      openWorldHint: false,
     },
     execute: async (args: unknown, { log, reportProgress }) => {
       const typedArgs = args as {

@@ -4,7 +4,7 @@
  */
 
 import { UserError } from 'fastmcp';
-import { ScenarioDetailSchema } from '../schemas/scenario-filters.js';
+import { ScenarioDetailSchema } from '../schemas/scenario-crud.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 
 /**
@@ -20,6 +20,7 @@ export function createGetScenarioTool(context: ToolContext): ToolDefinition {
     annotations: {
       title: 'Get Scenario Details',
       readOnlyHint: true,
+      openWorldHint: false,
     },
     execute: async (args: unknown, { log, reportProgress }) => {
       const typedArgs = args as { scenarioId: string; includeBlueprint?: boolean; includeExecutions?: boolean };

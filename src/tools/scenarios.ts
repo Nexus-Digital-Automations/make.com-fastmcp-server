@@ -2390,24 +2390,7 @@ function formatAsPdfReady(report: Record<string, unknown>): string {
   return html;
 }
 
-// Blueprint manipulation and validation schemas
-const ValidateBlueprintSchema = z.object({
-  blueprint: z.any().describe('Blueprint JSON to validate against Make.com schema'),
-  strict: z.boolean().default(false).describe('Whether to apply strict validation mode'),
-  includeSecurityChecks: z.boolean().default(true).describe('Include security validation checks'),
-});
-
-const ExtractBlueprintConnectionsSchema = z.object({
-  blueprint: z.any().describe('Blueprint JSON to extract connections from'),
-  includeOptional: z.boolean().default(false).describe('Include optional connections in results'),
-  groupByModule: z.boolean().default(true).describe('Group connections by module type'),
-});
-
-const OptimizeBlueprintSchema = z.object({
-  blueprint: z.any().describe('Blueprint JSON to analyze and optimize'),
-  optimizationType: z.enum(['performance', 'cost', 'security', 'all']).default('performance').describe('Type of optimization to focus on'),
-  includeImplementationSteps: z.boolean().default(true).describe('Include step-by-step implementation guidance'),
-});
+// Blueprint manipulation schemas moved to ./scenarios/schemas/
 
 // Blueprint validation function
 function validateBlueprintStructure(blueprint: unknown, strict: boolean = false): { 

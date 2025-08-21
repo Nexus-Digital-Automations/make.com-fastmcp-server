@@ -193,15 +193,20 @@ export function validateOrganizationId(orgId: unknown): number {
 export function validatePaginationParams(params: {
   limit?: unknown;
   offset?: unknown;
-}): { limit: number; offset: number } {
+} = {}): { limit: number; offset: number } {
   const paginationSchema = z.object({
-    limit: z.number().min(1).max(1000).optional().default(100),
-    offset: z.number().min(0).optional().default(0),
+    limit: z.number().min(1).max(1000).default(100),
+    offset: z.number().min(0).default(0),
   });
 
-  return validateInputOrThrow(paginationSchema, params, {
+  const result = validateInputOrThrow(paginationSchema, params, {
     context: 'Pagination parameters',
   });
+
+  return {
+    limit: result.limit,
+    offset: result.offset,
+  };
 }
 
 /**
@@ -210,8 +215,8 @@ export function validatePaginationParams(params: {
  * @returns Validated date range
  */
 export function validateDateRange(params: {
-  from?: unknown;
-  to?: unknown;
+  from: unknown;
+  to: unknown;
 }): { from: string; to: string } {
   const dateRangeSchema = z.object({
     from: z.string().datetime(),

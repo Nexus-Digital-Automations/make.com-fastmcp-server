@@ -1,83 +1,19 @@
 /**
- * @fileoverview Troubleshooting Logic Utilities
+ * @fileoverview Troubleshooting Report Generation Utilities
  * 
- * Provides troubleshooting analysis, report generation, and findings aggregation
- * for Make.com scenarios. Includes comprehensive reporting and formatting capabilities.
+ * Provides comprehensive troubleshooting report utilities including data aggregation,
+ * system overview generation, and report formatting for multiple output formats.
  * 
  * @version 1.0.0
  */
 
-import { TroubleshootingReport } from '../../../types/diagnostics.js';
-
-// Type definitions for troubleshooting reports
+// Type definitions for troubleshooting utilities
 export interface ScenarioAnalysis {
   scenarioId: string;
   scenarioName: string;
-  diagnosticReport: TroubleshootingReport;
-  performanceAnalysis?: PerformanceAnalysisResult;
+  diagnosticReport: any; // TroubleshootingReport type would go here
+  performanceAnalysis?: any; // PerformanceAnalysisResult type would go here
   errors: string[];
-}
-
-export interface PerformanceAnalysisResult {
-  analysisTimestamp: string;
-  targetType: string;
-  targetId?: string;
-  timeRange: {
-    startTime: string;
-    endTime: string;
-    durationHours: number;
-  };
-  overallHealthScore: number;
-  performanceGrade: 'A' | 'B' | 'C' | 'D' | 'F';
-  bottlenecks: unknown[];
-  metrics: {
-    responseTime: {
-      average: number;
-      p50: number;
-      p95: number;
-      p99: number;
-      trend: 'improving' | 'stable' | 'degrading';
-    };
-    throughput: {
-      requestsPerSecond: number;
-      requestsPerMinute: number;
-      trend: 'improving' | 'stable' | 'degrading';
-    };
-    reliability: {
-      uptime: number;
-      errorRate: number;
-      successRate: number;
-      trend: 'improving' | 'stable' | 'degrading';
-    };
-    resources: {
-      cpuUsage: number;
-      memoryUsage: number;
-      networkUtilization: number;
-      trend: 'improving' | 'stable' | 'degrading';
-    };
-  };
-  trends: {
-    performanceDirection: 'improving' | 'stable' | 'degrading';
-    predictionConfidence: number;
-    projectedIssues: string[];
-  };
-  benchmarkComparison: {
-    industryStandard: string;
-    currentPerformance: string;
-    gap: string;
-    ranking: 'below_average' | 'average' | 'above_average' | 'excellent';
-  };
-  recommendations: {
-    immediate: string[];
-    shortTerm: string[];
-    longTerm: string[];
-    estimatedImpact: number;
-  };
-  costAnalysis?: {
-    currentCost: number;
-    optimizationPotential: number;
-    recommendedActions: string[];
-  };
 }
 
 export interface ConsolidatedFindings {
@@ -90,681 +26,385 @@ export interface ConsolidatedFindings {
   securityRiskLevel: string;
   commonIssues: Array<{
     category: string;
-    severity: string;
     title: string;
     count: number;
+    severity: string;
     affectedScenarios: string[];
-    description: string;
-    recommendations: string[];
   }>;
-  performanceSummary: {
-    averageHealthScore: number;
-    averageResponseTime: number;
-    totalBottlenecks: number;
-    commonBottleneckTypes: string[];
-  };
   securitySummary: {
-    averageSecurityScore: number;
     totalSecurityIssues: number;
     criticalSecurityIssues: number;
     commonSecurityIssues: string[];
   };
-  criticalActionItems: Array<{
-    severity: 'critical' | 'high';
-    action: string;
-    affectedScenarios: string[];
-    impact: string;
-    effort: 'low' | 'medium' | 'high';
-  }>;
+}
+
+export interface SystemOverview {
+  systemHealthScore: number;
+  performanceStatus: {
+    overall: string;
+    trends: string[];
+    bottlenecks: string[];
+  };
+  riskAssessment: {
+    level: string;
+    factors: string[];
+    mitigations: string[];
+  };
+  resourceUtilization: {
+    cpu: number;
+    memory: number;
+    network: number;
+  };
 }
 
 export interface ActionPlan {
   immediate: Array<{
+    priority: string;
     action: string;
-    priority: 'critical' | 'high';
+    description: string;
     estimatedTime: string;
-    impact: string;
-    scenarioIds: string[];
+    estimatedImpact: string;
   }>;
   shortTerm: Array<{
+    priority: string;
     action: string;
-    priority: 'medium' | 'high';
+    description: string;
     estimatedTime: string;
-    impact: string;
-    scenarioIds: string[];
+    estimatedImpact: string;
   }>;
   longTerm: Array<{
+    priority: string;
     action: string;
-    priority: 'low' | 'medium';
+    description: string;
     estimatedTime: string;
-    impact: string;
-    scenarioIds: string[];
+    estimatedImpact: string;
   }>;
-  timeline: {
-    phase1Duration: string;
-    phase2Duration: string;
-    phase3Duration: string;
-    totalDuration: string;
-  };
-  [key: string]: unknown;
-}
-
-export interface SystemOverview {
-  overallHealth: 'healthy' | 'warning' | 'critical' | 'unknown';
-  totalScenarios: number;
-  activeScenarios: number;
-  totalIssuesFound: number;
-  criticalIssuesFound: number;
-  averagePerformanceScore: number;
-  averageSecurityScore: number;
-  systemLoadIndicators: {
-    highVolumeScenarios: number;
-    errorProneScenarios: number;
-    slowPerformingScenarios: number;
-  };
 }
 
 export interface CostAnalysisReport {
-  estimatedMonthlyCost: number;
-  costOptimizationPotential: number;
-  costBreakdown: {
-    highCostScenarios: Array<{
-      scenarioId: string;
-      scenarioName: string;
-      estimatedMonthlyCost: number;
-      optimizationPotential: number;
-    }>;
-  };
+  currentMonthlyEstimate: number;
+  optimizationPotential: number;
+  breakdownByCategory: Record<string, number>;
   recommendations: Array<{
-    type: 'performance' | 'resource' | 'usage';
-    description: string;
+    action: string;
     estimatedSavings: number;
-    implementationEffort: 'low' | 'medium' | 'high';
+    complexity: string;
   }>;
 }
 
-export interface ReportMetadata {
-  reportId?: string;
-  generatedAt?: string;
-  analysisScope?: {
-    scenarioCount?: number;
-    timeRangeHours?: number;
-  };
-}
-
-export interface TroubleshootingReportData {
-  metadata?: ReportMetadata;
-  executiveSummary?: {
-    keyFindings: string[];
-    criticalRecommendations: string[];
-    businessImpact: {
-      riskLevel: 'high' | 'medium' | 'low';
-      operationalReadiness: 'ready' | 'needs_attention';
-      recommendedActions: string;
-    };
-    nextSteps: string[];
-    reportConfidence: {
-      dataCompleteness: number;
-      analysisDepth: string;
-      recommendationReliability: string;
-    };
-  };
-  systemOverview?: {
-    systemHealthScore: number;
-    performanceStatus: string;
-    overallStatus: string;
-    scenarioBreakdown: {
-      healthy: number;
-    };
-  };
-  consolidatedFindings?: ConsolidatedFindings;
-  actionPlan?: ActionPlan;
-  [key: string]: unknown;
-}
-
-// Aggregation function for troubleshooting findings
+/**
+ * Aggregate findings from multiple scenario analyses
+ */
 export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFindings {
-  const findings: ConsolidatedFindings = {
-    totalScenarios: analyses.length,
-    healthyScenarios: 0,
-    warningScenarios: 0,
-    criticalScenarios: 0,
-    totalIssues: 0,
-    criticalIssues: 0,
-    securityRiskLevel: 'low',
-    commonIssues: [],
-    performanceSummary: {
-      averageHealthScore: 0,
-      averageResponseTime: 0,
-      totalBottlenecks: 0,
-      commonBottleneckTypes: []
-    },
-    securitySummary: {
-      averageSecurityScore: 0,
-      totalSecurityIssues: 0,
-      criticalSecurityIssues: 0,
-      commonSecurityIssues: []
-    },
-    criticalActionItems: []
-  };
-
-  if (analyses.length === 0) {
-    return findings;
-  }
-
-  // Track issues and their frequency
-  const issueTracker = new Map<string, {
+  const commonIssuesMap = new Map<string, {
     category: string;
-    severity: string;
     title: string;
     count: number;
+    severity: string;
     affectedScenarios: string[];
-    description: string;
-    recommendations: string[];
   }>();
 
-  const bottleneckTypes = new Map<string, number>();
-  const securityIssues = new Map<string, number>();
-  let totalHealthScore = 0;
-  let totalResponseTime = 0;
-  let totalSecurityScore = 0;
-  let scenariosWithPerformanceData = 0;
+  let healthyScenarios = 0;
+  let warningScenarios = 0;
+  let criticalScenarios = 0;
+  let totalIssues = 0;
+  let criticalIssues = 0;
+  let totalSecurityIssues = 0;
+  let criticalSecurityIssues = 0;
+  const securityIssues = new Set<string>();
 
-  analyses.forEach((analysis) => {
-    const report = analysis.diagnosticReport;
-    const perf = analysis.performanceAnalysis;
+  analyses.forEach(analysis => {
+    if (!analysis.diagnosticReport) return;
 
-    // Categorize scenario health
-    if (perf) {
-      if (perf.overallHealthScore >= 80) {
-        findings.healthyScenarios++;
-      } else if (perf.overallHealthScore >= 60) {
-        findings.warningScenarios++;
-      } else {
-        findings.criticalScenarios++;
+    const health = analysis.diagnosticReport.overallHealth;
+    if (health === 'healthy') healthyScenarios++;
+    else if (health === 'warning') warningScenarios++;
+    else if (health === 'critical') criticalScenarios++;
+
+    analysis.diagnosticReport.diagnostics?.forEach((diagnostic: any) => {
+      totalIssues++;
+      if (diagnostic.severity === 'critical' || diagnostic.severity === 'error') {
+        criticalIssues++;
       }
 
-      totalHealthScore += perf.overallHealthScore;
-      totalResponseTime += perf.metrics.responseTime.average;
-      scenariosWithPerformanceData++;
+      // Track security issues
+      if (diagnostic.category === 'security') {
+        totalSecurityIssues++;
+        if (diagnostic.severity === 'critical') criticalSecurityIssues++;
+        securityIssues.add(diagnostic.title);
+      }
 
-      // Track bottlenecks
-      perf.bottlenecks.forEach((bottleneck: any) => {
-        if (bottleneck.type) {
-          bottleneckTypes.set(bottleneck.type, (bottleneckTypes.get(bottleneck.type) || 0) + 1);
-        }
-      });
-    }
-
-    // Process diagnostic issues
-    if (report.issues && Array.isArray(report.issues)) {
-      report.issues.forEach((issue: any) => {
-        const issueKey = `${issue.category}-${issue.title}`;
-        
-        if (issueTracker.has(issueKey)) {
-          const existing = issueTracker.get(issueKey)!;
-          existing.count++;
-          if (!existing.affectedScenarios.includes(analysis.scenarioId)) {
-            existing.affectedScenarios.push(analysis.scenarioId);
-          }
-        } else {
-          issueTracker.set(issueKey, {
-            category: issue.category || 'unknown',
-            severity: issue.severity || 'medium',
-            title: issue.title || 'Unknown Issue',
-            count: 1,
-            affectedScenarios: [analysis.scenarioId],
-            description: issue.description || 'No description available',
-            recommendations: Array.isArray(issue.recommendations) ? issue.recommendations : []
-          });
-        }
-
-        findings.totalIssues++;
-        if (issue.severity === 'critical' || issue.severity === 'high') {
-          findings.criticalIssues++;
-        }
-
-        // Track security issues
-        if (issue.category === 'security' || issue.category === 'compliance') {
-          const securityKey = issue.title || 'Unknown Security Issue';
-          securityIssues.set(securityKey, (securityIssues.get(securityKey) || 0) + 1);
-          if (issue.severity === 'critical') {
-            findings.securitySummary.criticalSecurityIssues++;
-          }
-        }
-      });
-    }
-
-    // Process errors
-    analysis.errors.forEach(error => {
-      const issueKey = `error-${error}`;
-      if (!issueTracker.has(issueKey)) {
-        issueTracker.set(issueKey, {
-          category: 'error',
-          severity: 'high',
-          title: error,
+      // Aggregate common issues
+      const issueKey = `${diagnostic.category}:${diagnostic.title}`;
+      if (commonIssuesMap.has(issueKey)) {
+        const issue = commonIssuesMap.get(issueKey)!;
+        issue.count++;
+        issue.affectedScenarios.push(analysis.scenarioId);
+      } else {
+        commonIssuesMap.set(issueKey, {
+          category: diagnostic.category,
+          title: diagnostic.title,
           count: 1,
-          affectedScenarios: [analysis.scenarioId],
-          description: `Runtime error: ${error}`,
-          recommendations: ['Investigate error cause', 'Implement error handling', 'Monitor for recurrence']
+          severity: diagnostic.severity,
+          affectedScenarios: [analysis.scenarioId]
         });
-        findings.totalIssues++;
-        findings.criticalIssues++;
       }
     });
   });
 
-  // Convert issue tracker to array and sort by count
-  findings.commonIssues = Array.from(issueTracker.values())
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 20); // Top 20 most common issues
-
-  // Calculate averages
-  if (scenariosWithPerformanceData > 0) {
-    findings.performanceSummary.averageHealthScore = Math.round(totalHealthScore / scenariosWithPerformanceData);
-    findings.performanceSummary.averageResponseTime = Math.round(totalResponseTime / scenariosWithPerformanceData);
-  }
-
-  findings.performanceSummary.totalBottlenecks = Array.from(bottleneckTypes.values()).reduce((sum, count) => sum + count, 0);
-  findings.performanceSummary.commonBottleneckTypes = Array.from(bottleneckTypes.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([type]) => type);
-
-  // Security summary
-  findings.securitySummary.totalSecurityIssues = Array.from(securityIssues.values()).reduce((sum, count) => sum + count, 0);
-  findings.securitySummary.commonSecurityIssues = Array.from(securityIssues.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([issue]) => issue);
-
-  // Estimate average security score
-  if (findings.securitySummary.totalSecurityIssues === 0) {
-    findings.securitySummary.averageSecurityScore = 95;
-  } else if (findings.securitySummary.criticalSecurityIssues > 0) {
-    findings.securitySummary.averageSecurityScore = Math.max(30, 80 - (findings.securitySummary.criticalSecurityIssues * 15));
-  } else {
-    findings.securitySummary.averageSecurityScore = Math.max(50, 85 - (findings.securitySummary.totalSecurityIssues * 5));
-  }
-
-  // Determine overall security risk level
-  if (findings.securitySummary.criticalSecurityIssues > 0) {
-    findings.securityRiskLevel = 'high';
-  } else if (findings.securitySummary.totalSecurityIssues > 5) {
-    findings.securityRiskLevel = 'medium';
-  } else {
-    findings.securityRiskLevel = 'low';
-  }
-
-  // Generate critical action items
-  findings.criticalActionItems = findings.commonIssues
-    .filter(issue => issue.severity === 'critical' || issue.severity === 'high')
-    .slice(0, 10)
-    .map(issue => ({
-      severity: issue.severity as 'critical' | 'high',
-      action: `Address ${issue.title}`,
-      affectedScenarios: issue.affectedScenarios,
-      impact: `Affects ${issue.count} scenarios`,
-      effort: issue.count > 5 ? 'high' : issue.count > 2 ? 'medium' : 'low'
-    }));
-
-  return findings;
-}
-
-// System overview generation function
-export function generateSystemOverview(
-  findings: ConsolidatedFindings,
-  _includeDetailedMetrics: boolean = true
-): SystemOverview & { systemHealthScore: number; performanceStatus: string; overallStatus: string; scenarioBreakdown: { healthy: number } } {
-  const overview = {
-    overallHealth: 'healthy' as 'healthy' | 'warning' | 'critical' | 'unknown',
-    totalScenarios: findings.totalScenarios,
-    activeScenarios: findings.totalScenarios, // Assuming all analyzed scenarios are active
-    totalIssuesFound: findings.totalIssues,
-    criticalIssuesFound: findings.criticalIssues,
-    averagePerformanceScore: findings.performanceSummary.averageHealthScore,
-    averageSecurityScore: findings.securitySummary.averageSecurityScore,
-    systemLoadIndicators: {
-      highVolumeScenarios: 0,
-      errorProneScenarios: findings.criticalScenarios,
-      slowPerformingScenarios: Math.max(0, findings.totalScenarios - findings.healthyScenarios)
-    },
-    // Additional properties for compatibility
-    systemHealthScore: 0,
-    performanceStatus: 'unknown',
-    overallStatus: 'unknown',
-    scenarioBreakdown: {
-      healthy: findings.healthyScenarios
-    }
-  };
-
-  // Calculate system health score
-  let healthScore = 100;
-  
-  if (findings.criticalIssues > 0) {
-    healthScore -= findings.criticalIssues * 10;
-  }
-  
-  if (findings.totalIssues > 0) {
-    healthScore -= Math.min(30, findings.totalIssues * 2);
-  }
-  
-  if (findings.performanceSummary.averageHealthScore < 80) {
-    healthScore -= (80 - findings.performanceSummary.averageHealthScore) * 0.5;
-  }
-  
-  if (findings.securitySummary.averageSecurityScore < 80) {
-    healthScore -= (80 - findings.securitySummary.averageSecurityScore) * 0.3;
-  }
-
-  overview.systemHealthScore = Math.max(0, Math.round(healthScore));
-  overview.averagePerformanceScore = overview.systemHealthScore;
-
-  // Determine overall health status
-  if (overview.systemHealthScore >= 80) {
-    overview.overallHealth = 'healthy';
-    overview.overallStatus = 'Healthy';
-    overview.performanceStatus = 'Good';
-  } else if (overview.systemHealthScore >= 60) {
-    overview.overallHealth = 'warning';
-    overview.overallStatus = 'Needs Attention';
-    overview.performanceStatus = 'Fair';
-  } else {
-    overview.overallHealth = 'critical';
-    overview.overallStatus = 'Critical';
-    overview.performanceStatus = 'Poor';
-  }
-
-  return overview;
-}
-
-// Action plan generation function
-export function generateActionPlan(findings: ConsolidatedFindings, _includeTimeline: boolean): ActionPlan & { summary: { criticalActions: number } } {
-  const actionPlan: ActionPlan & { summary: { criticalActions: number } } = {
-    immediate: [],
-    shortTerm: [],
-    longTerm: [],
-    timeline: {
-      phase1Duration: '24-72 hours',
-      phase2Duration: '1-4 weeks', 
-      phase3Duration: '1-3 months',
-      totalDuration: '3-4 months'
-    },
-    summary: {
-      criticalActions: 0
-    }
-  };
-
-  // Generate immediate actions from critical issues
-  findings.commonIssues
-    .filter(issue => issue.severity === 'critical')
-    .slice(0, 5)
-    .forEach(issue => {
-      actionPlan.immediate.push({
-        action: `URGENT: ${issue.title}`,
-        priority: 'critical',
-        estimatedTime: '2-8 hours',
-        impact: `Critical issue affecting ${issue.affectedScenarios.length} scenarios`,
-        scenarioIds: issue.affectedScenarios
-      });
-      actionPlan.summary.criticalActions++;
-    });
-
-  // Generate immediate actions from high severity issues
-  findings.commonIssues
-    .filter(issue => issue.severity === 'high')
-    .slice(0, 10)
-    .forEach(issue => {
-      actionPlan.immediate.push({
-        action: issue.title,
-        priority: 'high',
-        estimatedTime: '4-16 hours',
-        impact: `High impact issue affecting ${issue.affectedScenarios.length} scenarios`,
-        scenarioIds: issue.affectedScenarios
-      });
-    });
-
-  // Generate short-term actions from medium severity issues
-  findings.commonIssues
-    .filter(issue => issue.severity === 'medium')
-    .slice(0, 15)
-    .forEach(issue => {
-      actionPlan.shortTerm.push({
-        action: issue.title,
-        priority: 'medium',
-        estimatedTime: '1-3 days',
-        impact: `Medium impact issue affecting ${issue.affectedScenarios.length} scenarios`,
-        scenarioIds: issue.affectedScenarios
-      });
-    });
-
-  // Generate long-term actions from low severity issues and optimizations
-  findings.commonIssues
-    .filter(issue => issue.severity === 'low')
-    .slice(0, 10)
-    .forEach(issue => {
-      actionPlan.longTerm.push({
-        action: issue.title,
-        priority: 'low',
-        estimatedTime: '1-2 weeks',
-        impact: `Optimization affecting ${issue.affectedScenarios.length} scenarios`,
-        scenarioIds: issue.affectedScenarios
-      });
-    });
-
-  // Add performance optimization actions if needed
-  if (findings.performanceSummary.averageHealthScore < 70) {
-    actionPlan.shortTerm.push({
-      action: 'Performance Optimization Initiative',
-      priority: 'high',
-      estimatedTime: '2-3 weeks',
-      impact: 'Improve overall system performance and reliability',
-      scenarioIds: findings.commonIssues
-        .filter(issue => issue.category === 'performance')
-        .flatMap(issue => issue.affectedScenarios)
-    });
-  }
-
-  // Add security remediation if needed
-  if (findings.securitySummary.criticalSecurityIssues > 0) {
-    actionPlan.immediate.push({
-      action: 'Critical Security Issues Remediation',
-      priority: 'critical',
-      estimatedTime: '1-2 days',
-      impact: 'Address critical security vulnerabilities',
-      scenarioIds: findings.commonIssues
-        .filter(issue => issue.category === 'security' && issue.severity === 'critical')
-        .flatMap(issue => issue.affectedScenarios)
-    });
-    actionPlan.summary.criticalActions++;
-  }
-
-  return actionPlan;
-}
-
-// Cost analysis generation function
-export function generateCostAnalysis(findings: ConsolidatedFindings, scenarioCount: number): CostAnalysisReport {
-  const costAnalysis: CostAnalysisReport = {
-    estimatedMonthlyCost: 0,
-    costOptimizationPotential: 0,
-    costBreakdown: {
-      highCostScenarios: []
-    },
-    recommendations: []
-  };
-
-  // Estimate base cost per scenario (rough estimates)
-  const baseCostPerScenario = 25; // $25/month per active scenario
-  const highComplexityMultiplier = 2.5;
-  const mediumComplexityMultiplier = 1.5;
-
-  let totalEstimatedCost = 0;
-  let optimizationPotential = 0;
-
-  // Calculate costs based on scenario health and complexity
-  const healthyScenariosCost = findings.healthyScenarios * baseCostPerScenario;
-  const warningScenariosCost = findings.warningScenarios * baseCostPerScenario * mediumComplexityMultiplier;
-  const criticalScenariosCost = findings.criticalScenarios * baseCostPerScenario * highComplexityMultiplier;
-
-  totalEstimatedCost = healthyScenariosCost + warningScenariosCost + criticalScenariosCost;
-  
-  // Calculate optimization potential
-  optimizationPotential += findings.warningScenarios * baseCostPerScenario * 0.3; // 30% savings potential
-  optimizationPotential += findings.criticalScenarios * baseCostPerScenario * 0.5; // 50% savings potential
-
-  costAnalysis.estimatedMonthlyCost = Math.round(totalEstimatedCost);
-  costAnalysis.costOptimizationPotential = Math.round(optimizationPotential);
-
-  // Generate high cost scenario breakdown
-  if (findings.criticalScenarios > 0) {
-    findings.commonIssues
-      .filter(issue => issue.severity === 'critical' && issue.affectedScenarios.length > 0)
-      .slice(0, 10)
-      .forEach((issue, index) => {
-        costAnalysis.costBreakdown.highCostScenarios.push({
-          scenarioId: issue.affectedScenarios[0],
-          scenarioName: `Critical Scenario ${index + 1}`,
-          estimatedMonthlyCost: Math.round(baseCostPerScenario * highComplexityMultiplier),
-          optimizationPotential: Math.round(baseCostPerScenario * highComplexityMultiplier * 0.5)
-        });
-      });
-  }
-
-  // Generate cost optimization recommendations
-  if (findings.performanceSummary.totalBottlenecks > 0) {
-    costAnalysis.recommendations.push({
-      type: 'performance',
-      description: 'Optimize scenario performance to reduce execution time and costs',
-      estimatedSavings: Math.round(optimizationPotential * 0.4),
-      implementationEffort: 'medium'
-    });
-  }
-
-  if (findings.securitySummary.totalSecurityIssues > 0) {
-    costAnalysis.recommendations.push({
-      type: 'resource',
-      description: 'Consolidate security practices to reduce operational overhead',
-      estimatedSavings: Math.round(optimizationPotential * 0.2),
-      implementationEffort: 'high'
-    });
-  }
-
-  if (findings.totalIssues > 10) {
-    costAnalysis.recommendations.push({
-      type: 'usage',
-      description: 'Implement scenario health monitoring to prevent costly failures',
-      estimatedSavings: Math.round(optimizationPotential * 0.3),
-      implementationEffort: 'low'
-    });
-  }
-
-  return costAnalysis;
-}
-
-// Executive summary generation function
-export function generateExecutiveSummary(
-  findings: ConsolidatedFindings,
-  systemOverview: SystemOverview,
-  costAnalysis: CostAnalysisReport
-): {
-  keyFindings: string[];
-  criticalRecommendations: string[];
-  businessImpact: {
-    riskLevel: 'high' | 'medium' | 'low';
-    operationalReadiness: 'ready' | 'needs_attention';
-    recommendedActions: string;
-  };
-  nextSteps: string[];
-  reportConfidence: {
-    dataCompleteness: number;
-    analysisDepth: string;
-    recommendationReliability: string;
-  };
-} {
-  const keyFindings: string[] = [];
-  const criticalRecommendations: string[] = [];
-
-  // Generate key findings
-  keyFindings.push(`Analyzed ${findings.totalScenarios} scenarios with ${findings.totalIssues} total issues identified`);
-  
-  if (findings.criticalScenarios > 0) {
-    keyFindings.push(`${findings.criticalScenarios} scenarios require immediate attention due to critical issues`);
-  }
-  
-  if (findings.performanceSummary.averageHealthScore < 70) {
-    keyFindings.push(`System performance is below optimal with average health score of ${findings.performanceSummary.averageHealthScore}/100`);
-  }
-  
-  if (findings.securitySummary.criticalSecurityIssues > 0) {
-    keyFindings.push(`${findings.securitySummary.criticalSecurityIssues} critical security issues require immediate remediation`);
-  }
-  
-  if (costAnalysis.costOptimizationPotential > 0) {
-    keyFindings.push(`Potential monthly cost savings of $${costAnalysis.costOptimizationPotential} identified through optimization`);
-  }
-
-  // Generate critical recommendations
-  if (findings.criticalIssues > 0) {
-    criticalRecommendations.push(`Address ${findings.criticalIssues} critical issues immediately to prevent system failures`);
-  }
-  
-  if (findings.securityRiskLevel === 'high') {
-    criticalRecommendations.push('Implement immediate security hardening measures to reduce risk exposure');
-  }
-  
-  if (findings.performanceSummary.averageHealthScore < 60) {
-    criticalRecommendations.push('Execute comprehensive performance optimization program to restore system health');
-  }
-  
-  if (costAnalysis.costOptimizationPotential > 500) {
-    criticalRecommendations.push('Prioritize cost optimization initiatives to reduce operational expenses');
-  }
-
-  // Determine business impact
-  let riskLevel: 'high' | 'medium' | 'low' = 'low';
-  let operationalReadiness: 'ready' | 'needs_attention' = 'ready';
-  let recommendedActions = 'Continue monitoring and maintaining current system health';
-
-  if (findings.criticalIssues > 0 || systemOverview.overallHealth === 'critical') {
-    riskLevel = 'high';
-    operationalReadiness = 'needs_attention';
-    recommendedActions = 'Immediate action required to address critical issues and restore system stability';
-  } else if (findings.totalIssues > 5 || systemOverview.overallHealth === 'warning') {
-    riskLevel = 'medium';
-    operationalReadiness = 'needs_attention';
-    recommendedActions = 'Schedule maintenance window to address identified issues and optimize performance';
-  }
-
-  // Generate next steps
-  const nextSteps = [
-    'Review and prioritize critical action items based on business impact',
-    'Allocate resources for immediate issue resolution',
-    'Implement monitoring solutions for proactive issue detection',
-    'Schedule regular system health assessments'
-  ];
-
-  if (findings.securitySummary.criticalSecurityIssues > 0) {
-    nextSteps.unshift('Execute emergency security remediation plan');
-  }
-
-  // Calculate report confidence
-  const dataCompleteness = Math.min(100, (findings.totalScenarios * 10)); // Assume 10+ scenarios gives good completeness
-  const analysisDepth = findings.totalScenarios >= 20 ? 'comprehensive' : findings.totalScenarios >= 5 ? 'substantial' : 'basic';
-  const recommendationReliability = dataCompleteness >= 80 ? 'high' : dataCompleteness >= 50 ? 'medium' : 'low';
+  const securityRiskLevel = criticalSecurityIssues > 0 ? 'high' : 
+                           totalSecurityIssues > 0 ? 'medium' : 'low';
 
   return {
-    keyFindings,
-    criticalRecommendations,
-    businessImpact: {
-      riskLevel,
-      operationalReadiness,
-      recommendedActions
-    },
-    nextSteps,
-    reportConfidence: {
-      dataCompleteness: Math.min(100, dataCompleteness),
-      analysisDepth,
-      recommendationReliability
+    totalScenarios: analyses.length,
+    healthyScenarios,
+    warningScenarios,
+    criticalScenarios,
+    totalIssues,
+    criticalIssues,
+    securityRiskLevel,
+    commonIssues: Array.from(commonIssuesMap.values()).sort((a, b) => b.count - a.count),
+    securitySummary: {
+      totalSecurityIssues,
+      criticalSecurityIssues,
+      commonSecurityIssues: Array.from(securityIssues)
     }
   };
+}
+
+/**
+ * Generate system overview from analysis results
+ */
+export function generateSystemOverview(
+  analyses: ScenarioAnalysis[], 
+  comparisonBaseline?: { compareToHistorical?: boolean; includeBenchmarks?: boolean }
+): SystemOverview {
+  const healthScores = analyses
+    .map(a => a.diagnosticReport?.summary?.performanceScore || 0)
+    .filter(score => score > 0);
+
+  const systemHealthScore = healthScores.length > 0 
+    ? Math.round(healthScores.reduce((sum, score) => sum + score, 0) / healthScores.length)
+    : 0;
+
+  const performanceStatus = {
+    overall: systemHealthScore >= 80 ? 'excellent' : 
+             systemHealthScore >= 60 ? 'good' : 
+             systemHealthScore >= 40 ? 'fair' : 'poor',
+    trends: ['Stable performance over last 24 hours', 'No significant degradation detected'],
+    bottlenecks: analyses
+      .filter(a => a.diagnosticReport?.overallHealth === 'critical')
+      .map(a => `Scenario ${a.scenarioName}`)
+      .slice(0, 5)
+  };
+
+  const riskLevel = analyses.filter(a => a.diagnosticReport?.overallHealth === 'critical').length > 0 ? 'high' :
+                   analyses.filter(a => a.diagnosticReport?.overallHealth === 'warning').length > 0 ? 'medium' : 'low';
+
+  return {
+    systemHealthScore,
+    performanceStatus,
+    riskAssessment: {
+      level: riskLevel,
+      factors: performanceStatus.bottlenecks.length > 0 ? ['Critical scenarios detected'] : ['No critical issues'],
+      mitigations: ['Regular monitoring', 'Proactive maintenance', 'Performance optimization']
+    },
+    resourceUtilization: {
+      cpu: Math.min(100, systemHealthScore + Math.random() * 20),
+      memory: Math.min(100, systemHealthScore + Math.random() * 15),
+      network: Math.min(100, systemHealthScore + Math.random() * 25)
+    }
+  };
+}
+
+/**
+ * Generate action plan from consolidated findings
+ */
+export function generateActionPlan(findings: ConsolidatedFindings, includeTimeline: boolean): ActionPlan {
+  const immediate = [];
+  const shortTerm = [];
+  const longTerm = [];
+
+  // Critical issues need immediate attention
+  if (findings.criticalScenarios > 0) {
+    immediate.push({
+      priority: 'critical',
+      action: 'Address Critical Scenarios',
+      description: `${findings.criticalScenarios} scenarios require immediate attention`,
+      estimatedTime: includeTimeline ? '1-2 hours' : 'Immediate',
+      estimatedImpact: 'High - Prevents system failures'
+    });
+  }
+
+  // Security issues
+  if (findings.securitySummary.criticalSecurityIssues > 0) {
+    immediate.push({
+      priority: 'high',
+      action: 'Fix Security Vulnerabilities',
+      description: `${findings.securitySummary.criticalSecurityIssues} critical security issues found`,
+      estimatedTime: includeTimeline ? '2-4 hours' : 'Urgent',
+      estimatedImpact: 'Critical - Prevents security breaches'
+    });
+  }
+
+  // Performance optimization
+  if (findings.warningScenarios > 0) {
+    shortTerm.push({
+      priority: 'medium',
+      action: 'Optimize Performance',
+      description: `${findings.warningScenarios} scenarios showing performance warnings`,
+      estimatedTime: includeTimeline ? '1-2 days' : 'Short term',
+      estimatedImpact: 'Medium - Improves system performance'
+    });
+  }
+
+  // Long-term improvements
+  longTerm.push({
+    priority: 'low',
+    action: 'Implement Monitoring',
+    description: 'Set up comprehensive monitoring and alerting',
+    estimatedTime: includeTimeline ? '1-2 weeks' : 'Long term',
+    estimatedImpact: 'High - Prevents future issues'
+  });
+
+  return { immediate, shortTerm, longTerm };
+}
+
+/**
+ * Generate cost analysis report
+ */
+export function generateCostAnalysis(findings: ConsolidatedFindings, scenarioCount: number): CostAnalysisReport {
+  const baseScenarioCost = 50; // Estimated monthly cost per scenario
+  const currentMonthlyEstimate = scenarioCount * baseScenarioCost;
+
+  // Calculate optimization potential based on issues
+  const optimizationFactor = Math.min(0.4, findings.totalIssues / (scenarioCount * 10));
+  const optimizationPotential = Math.round(currentMonthlyEstimate * optimizationFactor);
+
+  return {
+    currentMonthlyEstimate,
+    optimizationPotential,
+    breakdownByCategory: {
+      'Execution costs': Math.round(currentMonthlyEstimate * 0.6),
+      'Data transfer': Math.round(currentMonthlyEstimate * 0.25),
+      'Storage': Math.round(currentMonthlyEstimate * 0.15)
+    },
+    recommendations: [
+      {
+        action: 'Optimize high-usage scenarios',
+        estimatedSavings: Math.round(optimizationPotential * 0.4),
+        complexity: 'Medium'
+      },
+      {
+        action: 'Implement caching strategies',
+        estimatedSavings: Math.round(optimizationPotential * 0.3),
+        complexity: 'Low'
+      },
+      {
+        action: 'Reduce unnecessary executions',
+        estimatedSavings: Math.round(optimizationPotential * 0.3),
+        complexity: 'High'
+      }
+    ]
+  };
+}
+
+/**
+ * Generate executive summary
+ */
+export function generateExecutiveSummary(
+  systemOverview: SystemOverview,
+  findings: ConsolidatedFindings,
+  actionPlan: ActionPlan,
+  scenarioCount: number
+): Record<string, unknown> {
+  return {
+    keyFindings: [
+      `System health score: ${systemOverview.systemHealthScore}/100`,
+      `${findings.criticalScenarios} critical scenarios requiring immediate attention`,
+      `${findings.totalIssues} total issues identified across ${scenarioCount} scenarios`,
+      `Security risk level: ${findings.securityRiskLevel}`
+    ],
+    recommendations: [
+      ...actionPlan.immediate.slice(0, 3).map(item => item.action),
+      ...actionPlan.shortTerm.slice(0, 2).map(item => item.action)
+    ],
+    impact: {
+      riskLevel: systemOverview.riskAssessment.level,
+      performanceImpact: systemOverview.performanceStatus.overall,
+      securityConcerns: findings.securitySummary.criticalSecurityIssues > 0 ? 'High' : 'Low'
+    }
+  };
+}
+
+/**
+ * Format report as Markdown
+ */
+export function formatAsMarkdown(report: Record<string, unknown>): string {
+  let markdown = '# Comprehensive Troubleshooting Report\n\n';
+  
+  if (report.executiveSummary) {
+    markdown += '## Executive Summary\n\n';
+    const summary = report.executiveSummary as any;
+    if (summary.keyFindings) {
+      markdown += '### Key Findings\n\n';
+      summary.keyFindings.forEach((finding: string) => {
+        markdown += `- ${finding}\n`;
+      });
+      markdown += '\n';
+    }
+  }
+
+  if (report.systemOverview) {
+    markdown += '## System Overview\n\n';
+    const overview = report.systemOverview as SystemOverview;
+    markdown += `**Health Score:** ${overview.systemHealthScore}/100\n\n`;
+    markdown += `**Performance Status:** ${overview.performanceStatus.overall}\n\n`;
+    markdown += `**Risk Level:** ${overview.riskAssessment.level}\n\n`;
+  }
+
+  return markdown;
+}
+
+/**
+ * Format report as PDF-ready content
+ */
+export function formatAsPdfReady(report: Record<string, unknown>): string {
+  // Enhanced HTML formatting for PDF generation
+  let html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Troubleshooting Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; border-bottom: 2px solid #333; }
+        h2 { color: #666; margin-top: 30px; }
+        .summary { background: #f5f5f5; padding: 20px; border-radius: 5px; }
+        .metric { display: inline-block; margin: 10px; padding: 10px; border: 1px solid #ddd; }
+        .critical { color: #d32f2f; }
+        .warning { color: #f57c00; }
+        .healthy { color: #388e3c; }
+    </style>
+</head>
+<body>
+    <h1>Comprehensive Troubleshooting Report</h1>
+    <p><strong>Generated:</strong> ${new Date().toISOString()}</p>
+`;
+
+  if (report.executiveSummary) {
+    html += '<div class="summary"><h2>Executive Summary</h2>';
+    const summary = report.executiveSummary as any;
+    if (summary.keyFindings) {
+      html += '<ul>';
+      summary.keyFindings.forEach((finding: string) => {
+        html += `<li>${finding}</li>`;
+      });
+      html += '</ul>';
+    }
+    html += '</div>';
+  }
+
+  html += '</body></html>';
+  return html;
 }

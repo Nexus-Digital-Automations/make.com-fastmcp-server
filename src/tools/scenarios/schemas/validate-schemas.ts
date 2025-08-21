@@ -220,8 +220,8 @@ export function validateExtractedSchemas(): boolean {
   return allPassed;
 }
 
-// Run validation if called directly
-if (require.main === module) {
+// Run validation if called directly (ES module version)
+if (import.meta.url === `file://${process.argv[1]}`) {
   const success = validateExtractedSchemas();
   process.exit(success ? 0 : 1);
 }

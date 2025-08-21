@@ -438,7 +438,29 @@
   "review_strikes": 0,
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
-  "agents": {},
+  "agents": {
+    "development_session_1755794426140_1_general_0ced65bc": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-21T16:40:26.140Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-21T16:40:26.140Z",
+      "sessionId": "session_1755794426140",
+      "metadata": {}
+    }
+  },
   "current_task_index": 0,
   "settings": {
     "auto_sort_enabled": true,
