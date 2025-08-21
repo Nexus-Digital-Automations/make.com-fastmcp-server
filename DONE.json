@@ -11521,9 +11521,86 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755801049156_sfvjyejuu",
+      "title": "Fix critical test execution failures in budget control and diagnostic rules",
+      "description": "Address systematic test failures preventing proper test execution:\\n\\n1. Fix undefined property expectations in budget-control-basic.test.ts (alertThresholds percentage, analysis properties)\\n2. Fix mock promise rejection expectations - tests expect rejections but promises resolve\\n3. Fix Class constructor invocation errors in diagnostic-rules.test.ts\\n4. Fix circuit breaker state expectations (expected closed, received open)\\n5. Fix workflow execution status expectations (expected completed, received failed)\\n\\nThese infrastructure issues are preventing proper test coverage analysis and need immediate resolution.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T18:30:49.156Z",
+      "auto_research_created": false,
+      "assigned_agent": "agent_1755817132170",
+      "started_at": "2025-08-21T22:58:52.170Z",
+      "claimed_by": "agent_1755817132170",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755801072537_1_general_8d033555",
+          "role": "primary",
+          "assignedAt": "2025-08-21T18:31:53.197Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T18:53:03.346Z",
+          "reason": "Task stale for 21 minutes"
+        },
+        {
+          "agent": "agent_1755802404320",
+          "action": "claimed",
+          "timestamp": "2025-08-21T18:53:24.320Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T19:09:39.462Z",
+          "reason": "Task stale for 16 minutes"
+        },
+        {
+          "agent": "agent_1755815454502",
+          "action": "claimed",
+          "timestamp": "2025-08-21T22:30:54.502Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T22:58:21.240Z",
+          "reason": "Task stale for 27 minutes"
+        },
+        {
+          "agent": "agent_1755817132170",
+          "action": "claimed",
+          "timestamp": "2025-08-21T22:58:52.170Z"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T23:12:45.051Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T23:12:45.052Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 262,
-  "last_completion": "2025-08-21T22:58:34.664Z",
+  "total_completed": 263,
+  "last_completion": "2025-08-21T23:12:45.052Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

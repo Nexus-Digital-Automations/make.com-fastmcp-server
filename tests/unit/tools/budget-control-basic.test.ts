@@ -562,27 +562,22 @@ describe('Budget Control Tools - Basic Tests', () => {
       expect(tool).toBeDefined();
       expect(tool.name).toBe('control-high-cost-scenarios');
       
-      let result;
-      try {
-        console.log('About to call executeTool...');
-        result = await executeTool(tool, {
-          budgetId: 'budget_001',
-          action: 'analyze',
-          reason: 'Budget threshold analysis'
-        });
-        console.log('ExecuteTool completed, result type:', typeof result);
-        console.log('Result is defined:', result !== undefined);
-        console.log('Result is null:', result === null);
-        if (result) {
-          console.log('Result preview:', result.substring(0, 100));
-        } else {
-          console.log('Result is falsy!');
-        }
-      } catch (error) {
-        console.error('ExecuteTool failed:', error.message);
-        console.error('Error stack:', error.stack);
-        throw error;
-      }
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
+        budgetId: 'budget_001',
+        action: 'analyze',
+        reason: 'Budget threshold analysis'
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);

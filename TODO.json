@@ -8,7 +8,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -17,9 +17,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T21:03:08.972Z",
       "auto_research_created": false,
-      "started_at": null,
-      "claimed_by": null,
-      "assigned_agent": null,
+      "started_at": "2025-08-21T23:12:52.191Z",
+      "claimed_by": "agent_1755817972191",
+      "assigned_agent": "agent_1755817972191",
       "agent_assignment_history": [
         {
           "agent": "agent_1755814456319",
@@ -44,68 +44,11 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T23:06:46.765Z",
           "reason": "Task stale for 23 minutes"
-        }
-      ]
-    },
-    {
-      "id": "task_1755801049156_sfvjyejuu",
-      "title": "Fix critical test execution failures in budget control and diagnostic rules",
-      "description": "Address systematic test failures preventing proper test execution:\\n\\n1. Fix undefined property expectations in budget-control-basic.test.ts (alertThresholds percentage, analysis properties)\\n2. Fix mock promise rejection expectations - tests expect rejections but promises resolve\\n3. Fix Class constructor invocation errors in diagnostic-rules.test.ts\\n4. Fix circuit breaker state expectations (expected closed, received open)\\n5. Fix workflow execution status expectations (expected completed, received failed)\\n\\nThese infrastructure issues are preventing proper test coverage analysis and need immediate resolution.",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "critical",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T18:30:49.156Z",
-      "auto_research_created": false,
-      "assigned_agent": "agent_1755817132170",
-      "started_at": "2025-08-21T22:58:52.170Z",
-      "claimed_by": "agent_1755817132170",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755801072537_1_general_8d033555",
-          "role": "primary",
-          "assignedAt": "2025-08-21T18:31:53.197Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
         },
         {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T18:53:03.346Z",
-          "reason": "Task stale for 21 minutes"
-        },
-        {
-          "agent": "agent_1755802404320",
+          "agent": "agent_1755817972191",
           "action": "claimed",
-          "timestamp": "2025-08-21T18:53:24.320Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T19:09:39.462Z",
-          "reason": "Task stale for 16 minutes"
-        },
-        {
-          "agent": "agent_1755815454502",
-          "action": "claimed",
-          "timestamp": "2025-08-21T22:30:54.502Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T22:58:21.240Z",
-          "reason": "Task stale for 27 minutes"
-        },
-        {
-          "agent": "agent_1755817132170",
-          "action": "claimed",
-          "timestamp": "2025-08-21T22:58:52.170Z"
+          "timestamp": "2025-08-21T23:12:52.191Z"
         }
       ]
     },
@@ -116,7 +59,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -125,9 +68,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T21:51:38.304Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755817107983_1_general_fada195a",
-      "started_at": "2025-08-21T22:59:05.496Z",
-      "claimed_by": "development_session_1755817107983_1_general_fada195a",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755814264541_1_general_8ec8559c",
@@ -148,6 +91,12 @@
           "assignedAt": "2025-08-21T22:59:05.496Z",
           "reassignReason": null,
           "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T23:15:11.451Z",
+          "reason": "Task stale for 16 minutes"
         }
       ]
     },
@@ -158,7 +107,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [
         "./tests/unit/tools/budget-control-basic.test.ts",
@@ -171,9 +120,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T18:54:26.555Z",
       "auto_research_created": false,
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
+      "assigned_agent": "development_session_1755817107983_1_general_fada195a",
+      "started_at": "2025-08-21T23:13:17.033Z",
+      "claimed_by": "development_session_1755817107983_1_general_fada195a",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755802391386_1_general_23141bf4",
@@ -187,6 +136,13 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T19:09:39.462Z",
           "reason": "Task stale for 15 minutes"
+        },
+        {
+          "agentId": "development_session_1755817107983_1_general_fada195a",
+          "role": "primary",
+          "assignedAt": "2025-08-21T23:13:17.033Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
     }
@@ -198,13 +154,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755817107983_1_general_fada195a": {
+    "development_session_1755818116980_1_general_475446fb": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T22:58:27.983Z",
+      "lastHeartbeat": "2025-08-21T23:15:16.980Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -215,8 +171,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T22:58:27.983Z",
-      "sessionId": "session_1755817107983",
+      "createdAt": "2025-08-21T23:15:16.980Z",
+      "sessionId": "session_1755818116980",
       "metadata": {}
     }
   },
