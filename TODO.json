@@ -2,6 +2,23 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755816670815_z0o9xeukr",
+      "title": "Fix remaining TypeScript syntax error in template tests",
+      "description": "Fix the third malformed executeTool call around line 382-383 in templates.test.ts file",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T22:51:10.815Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755810188972_idrobhjkz",
       "title": "Fix critical test failures - destructuring errors and mock issues",
       "description": "Address systematic test failures preventing test execution:\n\n1. Fix destructuring errors in create-scenario.ts (Cannot destructure property log of undefined)\n2. Fix budget-control-basic.test.ts undefined analysis property expectations\n3. Fix mock promise rejection expectations in budget control tests\n4. Fix schema validation issues with test parameters\n5. Fix blueprint analysis connection extraction failures\n6. Fix template complexity property access errors\n7. Fix secure-config logger initialization failures\n\nThese infrastructure issues are blocking test coverage analysis and CI/CD pipeline.",

@@ -308,8 +308,7 @@ describe('Template Management Tools', () => {
           routes: [],
         };
 
-        const result = await executeTool(mockServer, 'create_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'create_template', {
             name: 'Simple Webhook Template',
             description: 'Basic webhook receiver template',
             category: 'webhooks',
@@ -348,8 +347,7 @@ describe('Template Management Tools', () => {
 
         const complexBlueprint = generateComplexBlueprint();
 
-        const result = await executeTool(mockServer, 'create_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'create_template', {
             name: 'Order Processing Workflow',
             description: 'Complete order processing with notifications',
             category: 'e-commerce',
@@ -383,8 +381,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await executeTool(mockServer, 'create_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'create_template', {
             name: 'Folder Template',
             description: 'Template created in specific folder',
             category: 'automation',
@@ -477,8 +474,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await executeTool(mockServer, 'create_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'create_template', {
             name: 'Connection Analysis Template',
             description: 'Template for testing connection extraction',
             category: 'test',
@@ -502,8 +498,7 @@ describe('Template Management Tools', () => {
         const maliciousName = securityTestPatterns.xss[0];
         const maliciousDescription = securityTestPatterns.sqlInjection[0];
 
-        const result = await executeTool(mockServer, 'create_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'create_template', {
             name: maliciousName,
             description: maliciousDescription,
             category: 'test',
@@ -548,8 +543,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template service temporarily unavailable' },
         });
 
-        await expect(executeTool(mockServer, 'create_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'create_template', {
             name: 'Test Template',
             description: 'Test description',
             category: 'test',
@@ -559,16 +553,14 @@ describe('Template Management Tools', () => {
       });
 
       test('should validate required fields', async () => {
-        await expect(executeTool(mockServer, 'create_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'create_template', {
             // Missing required fields
           },
         })).rejects.toThrow();
       });
 
       test('should validate blueprint as object', async () => {
-        await expect(executeTool(mockServer, 'create_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'create_template', {
             name: 'Test Template',
             description: 'Test description',
             category: 'test',
@@ -594,8 +586,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_templates',
-          parameters: {
+        const result = await executeTool(mockServer, 'list_templates', {
             category: 'data-integration',
             organizationId: 1001,
             limit: 50,
@@ -630,8 +621,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_templates',
-          parameters: {
+        const result = await executeTool(mockServer, 'list_templates', {
             tags: ['automation', 'crm'],
             includeUsage: true,
           },
@@ -663,8 +653,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_templates',
-          parameters: {
+        const result = await executeTool(mockServer, 'list_templates', {
             searchQuery: 'CRM sync',
             includeVersions: false,
           },
@@ -700,8 +689,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_templates',
-          parameters: {
+        const result = await executeTool(mockServer, 'list_templates', {
             complexity: 'complex',
             hasConnections: ['salesforce', 'mailchimp'],
             minUsage: 10,
@@ -734,8 +722,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_templates',
-          parameters: {
+        const result = await executeTool(mockServer, 'list_templates', {
             creatorId: 12345,
             isPublic: true,
             sortBy: 'usage',
@@ -778,8 +765,7 @@ describe('Template Management Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_templates',
-          parameters: {
+        const result = await executeTool(mockServer, 'list_templates', {
             includeUsage: true,
             includeVersions: false,
           },
@@ -805,8 +791,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template service temporarily unavailable' },
         });
 
-        await expect(executeTool(mockServer, 'list_templates',
-          parameters: {},
+        await expect(executeTool(mockServer, 'list_templates', {},
         })).rejects.toThrow('Failed to list templates: Template service temporarily unavailable');
       });
     });
@@ -821,8 +806,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await executeTool(mockServer, 'get_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'get_template', {
             templateId: 12345,
             includeBlueprint: false,
             includeUsage: true,
@@ -855,8 +839,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await executeTool(mockServer, 'get_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'get_template', {
             templateId: 12345,
             includeBlueprint: true,
             includeVersions: true,
@@ -879,8 +862,7 @@ describe('Template Management Tools', () => {
           data: mockTemplate,
         });
 
-        const result = await executeTool(mockServer, 'get_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'get_template', {
             templateId: 12345,
             includeUsage: true,
             includeSharing: true,
@@ -903,16 +885,14 @@ describe('Template Management Tools', () => {
           error: { message: 'Template not found', status: 404 },
         });
 
-        await expect(executeTool(mockServer, 'get_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'get_template', {
             templateId: 99999,
           },
         })).rejects.toThrow('Failed to get template: Template not found');
       });
 
       test('should validate template ID', async () => {
-        await expect(executeTool(mockServer, 'get_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'get_template', {
             templateId: -1, // Invalid ID
           },
         })).rejects.toThrow();
@@ -934,8 +914,7 @@ describe('Template Management Tools', () => {
           data: updatedTemplate,
         });
 
-        const result = await executeTool(mockServer, 'update_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'update_template', {
             templateId: 12345,
             name: 'Updated Template Name',
             description: 'Updated template description',
@@ -972,8 +951,7 @@ describe('Template Management Tools', () => {
           data: updatedTemplate,
         });
 
-        const result = await executeTool(mockServer, 'update_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'update_template', {
             templateId: 12345,
             blueprint: newBlueprint,
           },
@@ -1000,8 +978,7 @@ describe('Template Management Tools', () => {
           data: updatedTemplate,
         });
 
-        const result = await executeTool(mockServer, 'update_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'update_template', {
             templateId: 12345,
             isPublic: true,
             sharing: {
@@ -1025,8 +1002,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template not found', status: 404 },
         });
 
-        await expect(executeTool(mockServer, 'update_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'update_template', {
             templateId: 99999,
             name: 'Updated Name',
           },
@@ -1034,8 +1010,7 @@ describe('Template Management Tools', () => {
       });
 
       test('should require at least one update field', async () => {
-        await expect(executeTool(mockServer, 'update_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'update_template', {
             templateId: 12345,
             // No update fields provided
           },
@@ -1061,8 +1036,7 @@ describe('Template Management Tools', () => {
           data: useResult,
         });
 
-        const result = await executeTool(mockServer, 'use_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'use_template', {
             templateId: 12345,
             scenarioName: 'CRM to Email Marketing Sync',
             folderId: 5001,
@@ -1106,8 +1080,7 @@ describe('Template Management Tools', () => {
           data: useResult,
         });
 
-        const result = await executeTool(mockServer, 'use_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'use_template', {
             templateId: 12345,
             scenarioName: 'Custom Automation',
             variableOverrides: {
@@ -1135,8 +1108,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template not found', status: 404 },
         });
 
-        await expect(executeTool(mockServer, 'use_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'use_template', {
             templateId: 99999,
             scenarioName: 'Test Scenario',
           },
@@ -1144,8 +1116,7 @@ describe('Template Management Tools', () => {
       });
 
       test('should validate scenario name', async () => {
-        await expect(executeTool(mockServer, 'use_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'use_template', {
             templateId: 12345,
             scenarioName: '', // Empty name
           },
@@ -1168,8 +1139,7 @@ describe('Template Management Tools', () => {
           data: { deleted: true, templateId: 12345 },
         });
 
-        const result = await executeTool(mockServer, 'delete_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'delete_template', {
             templateId: 12345,
             force: false,
           },
@@ -1195,8 +1165,7 @@ describe('Template Management Tools', () => {
           data: { deleted: true, templateId: 12345, forced: true },
         });
 
-        const result = await executeTool(mockServer, 'delete_template',
-          parameters: {
+        const result = await executeTool(mockServer, 'delete_template', {
             templateId: 12345,
             force: true,
           },
@@ -1215,8 +1184,7 @@ describe('Template Management Tools', () => {
           data: { activeScenarios: 3, totalUses: 15 },
         });
 
-        await expect(executeTool(mockServer, 'delete_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'delete_template', {
             templateId: 12345,
             force: false,
           },
@@ -1231,8 +1199,7 @@ describe('Template Management Tools', () => {
           error: { message: 'Template not found', status: 404 },
         });
 
-        await expect(executeTool(mockServer, 'delete_template',
-          parameters: {
+        await expect(executeTool(mockServer, 'delete_template', {
             templateId: 99999,
           },
         })).rejects.toThrow('Failed to delete template: Template not found');
@@ -1249,8 +1216,7 @@ describe('Template Management Tools', () => {
         data: newTemplate,
       });
 
-      const createResult = await executeTool(mockServer, 'create_template',
-        parameters: {
+      const createResult = await executeTool(mockServer, 'create_template', {
           name: 'Lifecycle Test Template',
           description: 'Template for testing complete lifecycle',
           category: 'test',
@@ -1270,8 +1236,7 @@ describe('Template Management Tools', () => {
         data: updatedTemplate,
       });
 
-      const updateResult = await executeTool(mockServer, 'update_template',
-        parameters: {
+      const updateResult = await executeTool(mockServer, 'update_template', {
           templateId: newTemplate.id,
           description: 'Updated lifecycle template',
         },
@@ -1289,8 +1254,7 @@ describe('Template Management Tools', () => {
         data: useResult,
       });
 
-      const scenarioResult = await executeTool(mockServer, 'use_template',
-        parameters: {
+      const scenarioResult = await executeTool(mockServer, 'use_template', {
           templateId: newTemplate.id,
           scenarioName: 'Test Scenario',
         },
@@ -1302,8 +1266,7 @@ describe('Template Management Tools', () => {
         data: updatedTemplate,
       });
 
-      const getResult = await executeTool(mockServer, 'get_template',
-        parameters: {
+      const getResult = await executeTool(mockServer, 'get_template', {
           templateId: newTemplate.id,
           includeUsage: true,
         },
@@ -1344,8 +1307,7 @@ describe('Template Management Tools', () => {
             });
           }
 
-          await executeTool(mockServer, 'create_template',
-            parameters: {
+          await executeTool(mockServer, 'create_template', {
               name: `Chaos Test ${scenario}`,
               description: 'Testing service degradation scenarios',
               category: 'test',
@@ -1376,8 +1338,7 @@ describe('Template Management Tools', () => {
       });
 
       for (let i = 0; i < concurrentRequests; i++) {
-        promises.push(executeTool(mockServer, 'create_template',
-          parameters: {
+        promises.push(executeTool(mockServer, 'create_template', {
             name: `Concurrent Template ${i}`,
             description: `Testing concurrent template creation ${i}`,
             category: 'test',

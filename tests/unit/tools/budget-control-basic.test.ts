@@ -559,11 +559,20 @@ describe('Budget Control Tools - Basic Tests', () => {
       addBudgetControlTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'control-high-cost-scenarios');
-      const result = await executeTool(tool, {
-        budgetId: 'budget_001',
-        action: 'analyze',
-        reason: 'Budget threshold analysis'
-      });
+      console.log('Tool found:', !!tool, tool?.name);
+      
+      let result;
+      try {
+        result = await executeTool(tool, {
+          budgetId: 'budget_001',
+          action: 'analyze',
+          reason: 'Budget threshold analysis'
+        });
+        console.log('ExecuteTool succeeded');
+      } catch (error) {
+        console.log('ExecuteTool failed:', error.message);
+        throw error;
+      }
       
       console.log('Test: control-high-cost-scenarios result type:', typeof result);
       console.log('Test: control-high-cost-scenarios result defined:', result !== undefined);
