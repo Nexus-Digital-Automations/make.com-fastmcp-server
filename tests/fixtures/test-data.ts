@@ -13,6 +13,9 @@ import {
   MakeWebhook,
   MakeAnalytics,
   MakeAuditLog,
+  MakeScenarioLog,
+  MakeIncompleteExecution,
+  MakeHookLog,
   MakeBillingAccount,
   MakeNotification
 } from '../../src/types/index.js';
@@ -393,6 +396,108 @@ export const testNotification: MakeNotification = {
 };
 
 /**
+ * Sample audit log for testing audit functionality
+ */
+export const testAuditLog: MakeAuditLog = {
+  id: 10001,
+  timestamp: '2024-01-15T10:30:00Z',
+  userId: 1001,
+  userName: 'Admin User',
+  action: 'scenario_create',
+  resource: 'scenario',
+  resourceId: 2001,
+  details: {
+    scenarioName: 'Test Automation Scenario',
+    teamId: 12345,
+    changes: {
+      name: 'Test Automation Scenario',
+      isActive: true,
+      scheduling: { type: 'indefinitely', interval: 900 }
+    }
+  },
+  ipAddress: '192.168.1.100',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+};
+
+/**
+ * Sample scenario log for testing scenario logging
+ */
+export const testScenarioLog: MakeScenarioLog = {
+  id: 11001,
+  scenarioId: 2001,
+  executionId: 5001,
+  timestamp: '2024-01-15T12:00:00Z',
+  level: 'info',
+  message: 'Scenario execution started successfully',
+  moduleId: 1,
+  moduleName: 'Webhook',
+  data: {
+    trigger: 'webhook',
+    requestId: 'req_12345',
+    payload: { user: 'test@example.com', action: 'signup' }
+  }
+};
+
+/**
+ * Sample incomplete execution for testing incomplete execution management
+ */
+export const testIncompleteExecution: MakeIncompleteExecution = {
+  id: 12001,
+  scenarioId: 2001,
+  scenarioName: 'Test Automation Scenario',
+  startedAt: '2024-01-15T11:00:00Z',
+  stoppedAt: '2024-01-15T11:05:00Z',
+  reason: 'Module timeout after 5 minutes',
+  status: 'waiting',
+  operations: 15,
+  dataTransfer: 2048,
+  lastModuleId: 2,
+  lastModuleName: 'HTTP Request',
+  canResume: true,
+  resumeData: {
+    moduleState: { requestId: 'pending_12345' },
+    pendingOperations: 5
+  }
+};
+
+/**
+ * Sample hook log for testing webhook logging
+ */
+export const testHookLog: MakeHookLog = {
+  id: 13001,
+  hookId: 14001,
+  timestamp: '2024-01-15T12:30:00Z',
+  method: 'POST',
+  url: 'https://hook.make.com/webhook/12345',
+  headers: {
+    'content-type': 'application/json',
+    'user-agent': 'TestApp/1.0',
+    'x-request-id': 'req_67890'
+  },
+  body: {
+    event: 'user.created',
+    user: {
+      id: 12345,
+      email: 'test@example.com',
+      name: 'Test User'
+    }
+  },
+  response: {
+    status: 200,
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: {
+      success: true,
+      processed: true
+    }
+  },
+  success: true,
+  processingTime: 125,
+  executionId: 5001
+};
+
+/**
  * Error responses for testing error handling
  */
 export const testErrors = {
@@ -490,6 +595,10 @@ export default {
   testTemplates,
   testVariables,
   testAnalytics,
+  testAuditLog,
+  testScenarioLog,
+  testIncompleteExecution,
+  testHookLog,
   testBillingAccount,
   testNotification,
   testErrors,
