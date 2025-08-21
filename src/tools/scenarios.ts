@@ -21,6 +21,81 @@ import DiagnosticEngine from '../lib/diagnostic-engine.js';
 import { defaultDiagnosticRules } from '../lib/diagnostic-rules.js';
 import { MakeBlueprint, TroubleshootingReport } from '../types/diagnostics.js';
 
+// Type definitions for blueprint and report structures
+interface BlueprintModule {
+  id: number;
+  module: string;
+  version: number;
+  parameters?: Record<string, unknown>;
+  connection?: number;
+  metadata?: Record<string, unknown>;
+}
+
+interface Blueprint {
+  name?: string;
+  metadata?: {
+    version?: number;
+    scenario?: {
+      roundtrips?: number;
+      maxErrors?: number;
+      autoCommit?: boolean;
+      sequential?: boolean;
+      confidential?: boolean;
+      dlq?: boolean;
+    };
+  };
+  flow?: BlueprintModule[];
+  [key: string]: unknown;
+}
+
+interface ReportMetadata {
+  reportId?: string;
+  generatedAt?: string;
+  analysisScope?: {
+    scenarioCount?: number;
+    timeRangeHours?: number;
+  };
+}
+
+interface TroubleshootingReportData {
+  metadata?: ReportMetadata;
+  executiveSummary?: {
+    keyFindings: string[];
+    criticalRecommendations: string[];
+    businessImpact: {
+      riskLevel: 'high' | 'medium' | 'low';
+      operationalReadiness: 'ready' | 'needs_attention';
+      recommendedActions: string;
+    };
+    nextSteps: string[];
+    reportConfidence: {
+      dataCompleteness: number;
+      analysisDepth: string;
+      recommendationReliability: string;
+    };
+  };
+  systemOverview?: {
+    systemHealthScore: number;
+    performanceStatus: string;
+    overallStatus: string;
+    scenarioBreakdown: {
+      healthy: number;
+    };
+  };
+  consolidatedFindings?: ConsolidatedFindings;
+  actionPlan?: ActionPlan;
+  [key: string]: unknown;
+}
+
+interface OptimizationRecommendation {
+  category: string;
+  priority: 'high' | 'medium' | 'low';
+  title: string;
+  description: string;
+  estimatedImpact?: string;
+  implementationSteps?: string[];
+}
+
 // Import performance analysis interfaces
 interface PerformanceAnalysisResult {
   analysisTimestamp: string;
@@ -2481,11 +2556,11 @@ function generateCostAnalysis(findings: ConsolidatedFindings, scenarioCount: num
 }
 
 function generateExecutiveSummary(
-  systemOverview: any,
+  systemOverview: Record<string, unknown> & { systemHealthScore: number; performanceStatus: string; scenarioBreakdown: { healthy: number } },
   findings: ConsolidatedFindings,
-  actionPlan: any,
+  actionPlan: Record<string, unknown> & ActionPlan & { summary: { criticalActions: number } },
   scenarioCount: number
-): any {
+): NonNullable<TroubleshootingReportData['executiveSummary']> {
   return {
     keyFindings: [
       `Analyzed ${scenarioCount} scenarios with overall system health score of ${systemOverview.systemHealthScore}/100`,
@@ -2517,7 +2592,7 @@ function generateExecutiveSummary(
     },
     
     nextSteps: actionPlan.immediate.length > 0 ? 
-               actionPlan.immediate.slice(0, 3).map((a: any) => a.action) :
+               actionPlan.immediate.slice(0, 3).map((a: ActionPlan['immediate'][0]) => a.action) :
                ['Continue monitoring system health', 'Schedule routine optimization review'],
     
     reportConfidence: {
@@ -2528,11 +2603,12 @@ function generateExecutiveSummary(
   };
 }
 
-function formatAsMarkdown(report: any): string {
+function formatAsMarkdown(report: Record<string, unknown>): string {
   let markdown = `# Comprehensive Troubleshooting Report\n\n`;
-  markdown += `**Report ID:** ${report.metadata.reportId}\n`;
-  markdown += `**Generated:** ${report.metadata.generatedAt}\n`;
-  markdown += `**Scenarios Analyzed:** ${report.metadata.analysisScope.scenarioCount}\n\n`;
+  const metadata = report.metadata as ReportMetadata | undefined;
+  markdown += `**Report ID:** ${metadata?.reportId || 'N/A'}\n`;
+  markdown += `**Generated:** ${metadata?.generatedAt || 'N/A'}\n`;
+  markdown += `**Scenarios Analyzed:** ${metadata?.analysisScope?.scenarioCount || 0}\n\n`;
 
   if (report.executiveSummary) {
     markdown += `## Executive Summary\n\n`;
@@ -2562,11 +2638,11 @@ function formatAsMarkdown(report: any): string {
   if (report.actionPlan) {
     markdown += `## Action Plan\n\n`;
     markdown += `### Immediate Actions (0-24 hours)\n`;
-    report.actionPlan.immediate.forEach((action: any) => {
+    report.actionPlan.immediate.forEach((action: ActionPlan['immediate'][0]) => {
       markdown += `- **[${action.priority.toUpperCase()}]** ${action.action}\n`;
     });
     markdown += `\n### Short Term Actions (1-4 weeks)\n`;
-    report.actionPlan.shortTerm.forEach((action: any) => {
+    report.actionPlan.shortTerm.forEach((action: ActionPlan['shortTerm'][0]) => {
       markdown += `- ${action.action}\n`;
     });
     markdown += `\n`;
@@ -2575,12 +2651,12 @@ function formatAsMarkdown(report: any): string {
   return markdown;
 }
 
-function formatAsPdfReady(report: any): string {
+function formatAsPdfReady(report: Record<string, unknown>): string {
   // This would generate HTML suitable for PDF generation
   let html = `<!DOCTYPE html>
 <html>
 <head>
-  <title>Troubleshooting Report - ${report.metadata.reportId}</title>
+  <title>Troubleshooting Report - ${(report.metadata as ReportMetadata)?.reportId || 'N/A'}</title>
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
     h1, h2, h3 { color: #333; }
@@ -2595,9 +2671,10 @@ function formatAsPdfReady(report: any): string {
 <body>`;
 
   html += `<h1>Comprehensive Troubleshooting Report</h1>`;
-  html += `<p><strong>Report ID:</strong> ${report.metadata.reportId}</p>`;
-  html += `<p><strong>Generated:</strong> ${report.metadata.generatedAt}</p>`;
-  html += `<p><strong>Scenarios Analyzed:</strong> ${report.metadata.analysisScope.scenarioCount}</p>`;
+  const metadata = report.metadata as ReportMetadata | undefined;
+  html += `<p><strong>Report ID:</strong> ${metadata?.reportId || 'N/A'}</p>`;
+  html += `<p><strong>Generated:</strong> ${metadata?.generatedAt || 'N/A'}</p>`;
+  html += `<p><strong>Scenarios Analyzed:</strong> ${metadata?.analysisScope?.scenarioCount || 0}</p>`;
 
   if (report.executiveSummary) {
     html += `<div class="summary-box">`;
@@ -2659,7 +2736,7 @@ function validateBlueprintStructure(blueprint: unknown, strict: boolean = false)
       return { isValid: false, errors, warnings, securityIssues };
     }
 
-    const bp = blueprint as any;
+    const bp = blueprint as Blueprint;
 
     // Validate required top-level properties
     if (!bp.name || typeof bp.name !== 'string') {
@@ -2708,7 +2785,7 @@ function validateBlueprintStructure(blueprint: unknown, strict: boolean = false)
 
     // Validate flow modules
     if (bp.flow && Array.isArray(bp.flow)) {
-      bp.flow.forEach((module: any, index: number) => {
+      bp.flow.forEach((module: BlueprintModule, index: number) => {
         if (!module || typeof module !== 'object') {
           errors.push(`Module at index ${index} must be an object`);
           return;
@@ -2766,7 +2843,7 @@ function validateBlueprintStructure(blueprint: unknown, strict: boolean = false)
       });
 
       // Check for duplicate module IDs
-      const moduleIds = bp.flow.map((m: any) => m.id).filter((id: any) => typeof id === 'number');
+      const moduleIds = bp.flow.map((m: BlueprintModule) => m.id).filter((id: number | undefined): id is number => typeof id === 'number');
       const duplicateIds = moduleIds.filter((id: number, index: number) => moduleIds.indexOf(id) !== index);
       if (duplicateIds.length > 0) {
         errors.push(`Duplicate module IDs found: ${duplicateIds.join(', ')}`);
@@ -2821,13 +2898,13 @@ function extractBlueprintConnections(blueprint: unknown, includeOptional: boolea
       throw new Error('Invalid blueprint structure');
     }
 
-    const bp = blueprint as any;
+    const bp = blueprint as Blueprint;
 
     if (!bp.flow || !Array.isArray(bp.flow)) {
       throw new Error('Blueprint must contain a flow array');
     }
 
-    bp.flow.forEach((module: any) => {
+    bp.flow.forEach((module: BlueprintModule) => {
       if (!module || typeof module.id !== 'number' || !module.module) {
         return; // Skip invalid modules
       }
@@ -2921,7 +2998,7 @@ function optimizeBlueprint(blueprint: unknown, optimizationType: 'performance' |
       throw new Error('Invalid blueprint structure');
     }
 
-    const bp = blueprint as any;
+    const bp = blueprint as Blueprint;
 
     if (!bp.flow || !Array.isArray(bp.flow)) {
       throw new Error('Blueprint must contain a flow array');
@@ -2933,7 +3010,7 @@ function optimizeBlueprint(blueprint: unknown, optimizationType: 'performance' |
     const connectionMap = new Map<number, number>();
     const moduleTypes = new Set<string>();
 
-    bp.flow.forEach((module: any) => {
+    bp.flow.forEach((module: BlueprintModule) => {
       if (!module || typeof module.id !== 'number') return;
 
       moduleTypes.add(module.module || 'unknown');
@@ -3102,7 +3179,7 @@ function optimizeBlueprint(blueprint: unknown, optimizationType: 'performance' |
 
   return {
     optimizationScore: Math.max(0, Math.round(optimizationScore)),
-    recommendations: recommendations.sort((a: any, b: any) => {
+    recommendations: recommendations.sort((a: OptimizationRecommendation, b: OptimizationRecommendation) => {
       const priorityOrder: Record<string, number> = { high: 3, medium: 2, low: 1 };
       return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
     }),
