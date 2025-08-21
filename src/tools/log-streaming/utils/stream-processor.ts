@@ -215,7 +215,8 @@ export class LogStreamingManager extends EventEmitter {
    * Clean up all streams
    */
   cleanup(): void {
-    for (const streamId of this.activeStreams.keys()) {
+    const streamIds = Array.from(this.activeStreams.keys());
+    for (const streamId of streamIds) {
       this.stopLogStreaming(streamId);
     }
     logger.info('Log streaming manager cleaned up');

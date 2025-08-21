@@ -19,7 +19,7 @@
 import { FastMCP } from 'fastmcp';
 import MakeApiClient from '../../lib/make-api-client.js';
 import logger from '../../lib/logger.js';
-import { ToolContext } from '../shared/types/tool-context.js';
+import { ToolContext, createToolContextLogger } from '../shared/types/tool-context.js';
 
 // Import individual extracted tools
 import {
@@ -49,7 +49,7 @@ export function addExtractedScenarioTools(server: FastMCP, apiClient: MakeApiCli
   const toolContext: ToolContext = { 
     server, 
     apiClient, 
-    logger: componentLogger 
+    logger: createToolContextLogger(componentLogger)
   };
 
   // Register extracted tools

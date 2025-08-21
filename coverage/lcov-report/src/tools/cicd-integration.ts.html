@@ -1171,7 +1171,31 @@
 <a name='L1106'></a><a href='#L1106'>1106</a>
 <a name='L1107'></a><a href='#L1107'>1107</a>
 <a name='L1108'></a><a href='#L1108'>1108</a>
-<a name='L1109'></a><a href='#L1109'>1109</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1109'></a><a href='#L1109'>1109</a>
+<a name='L1110'></a><a href='#L1110'>1110</a>
+<a name='L1111'></a><a href='#L1111'>1111</a>
+<a name='L1112'></a><a href='#L1112'>1112</a>
+<a name='L1113'></a><a href='#L1113'>1113</a>
+<a name='L1114'></a><a href='#L1114'>1114</a>
+<a name='L1115'></a><a href='#L1115'>1115</a>
+<a name='L1116'></a><a href='#L1116'>1116</a>
+<a name='L1117'></a><a href='#L1117'>1117</a>
+<a name='L1118'></a><a href='#L1118'>1118</a>
+<a name='L1119'></a><a href='#L1119'>1119</a>
+<a name='L1120'></a><a href='#L1120'>1120</a>
+<a name='L1121'></a><a href='#L1121'>1121</a>
+<a name='L1122'></a><a href='#L1122'>1122</a>
+<a name='L1123'></a><a href='#L1123'>1123</a>
+<a name='L1124'></a><a href='#L1124'>1124</a>
+<a name='L1125'></a><a href='#L1125'>1125</a>
+<a name='L1126'></a><a href='#L1126'>1126</a>
+<a name='L1127'></a><a href='#L1127'>1127</a>
+<a name='L1128'></a><a href='#L1128'>1128</a>
+<a name='L1129'></a><a href='#L1129'>1129</a>
+<a name='L1130'></a><a href='#L1130'>1130</a>
+<a name='L1131'></a><a href='#L1131'>1131</a>
+<a name='L1132'></a><a href='#L1132'>1132</a>
+<a name='L1133'></a><a href='#L1133'>1133</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2060,6 +2084,30 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2433,98 +2481,122 @@ interface BuildReport<span class="cstat-no" title="statement not covered" > {</s
   }&gt;;
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
+// Additional interfaces for CI/CD integration
+interface PackageJsonData {
+  depende<span class="fstat-no" title="function not covered" >ncies?: Record&lt;string, s</span>tring&gt;;
+  devDependencies?: Record&lt;s<span class="cstat-no" title="statement not covered" >tring, string&gt;;</span>
+  name?: string;
+  version?: string;
+  scripts?: Record&lt;string, string&gt;;
+}
+&nbsp;
+interface AuditVulnerability {
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  title?: string;
+  url?: string;
+  range?: string;
+  path?: string[];
+}
+&nbsp;
+interface CoverageFileData {
+  lines?: { pct: number; total: number; covered: number };
+  functions?: { pct: number; total: number; covered: number };
+  statements?: { pct: number; total: number; covered: number };
+  branches?: { pct: number; total: number; covered: number };
+}
+&nbsp;
 // ==================== HELPER FUNCTIONS ====================
 &nbsp;
-function <span class="fstat-no" title="function not covered" >runCommand(command: stri</span>ng, args: string[], options: Record&lt;string, unknown&gt; = {}): Promise&lt;{ stdout: string; stderr: string; exitCode: number }&gt; {
-  return new Promise((resolv<span class="cstat-no" title="statement not covered" >e) =&gt; {</span>
+function runCommand(command: string, args: string[], options: Record&lt;string, unknown&gt; = {}): Promise&lt;{ stdout: string; stderr: string; exitCode: number }&gt; {
+  re<span class="cstat-no" title="statement not covered" >turn new Promise((resolve) =&gt; {</span>
     const child = spawn(command, args, {
       stdio: ['pipe', 'pipe', 'pipe'],
       shell: true,
       ...options,
     });
 &nbsp;
-    let stdout = '';
-    let stderr = '';
-&nbsp;
-    child.stdout?.on('data', (data) =&gt; {
+    let stdout = <span class="fstat-no" title="function not covered" >''</span>;
+    let stderr = '';<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    child.st<span class="cstat-no" title="statement not covered" >dout?.on('data', (data) =&gt; {</span>
       stdout += data.toString();
     });
 &nbsp;
     child.stderr?.on('data', (data) =&gt; {
       stderr += data.toString();
     });
+<span class="cstat-no" title="statement not covered" ></span>
+    child.on<span class="cstat-no" title="statement not covered" >('close', (exitCode) =&gt; {</span>
+      resolve({ <span class="cstat-no" title="statement not covered" >stdout, stderr, exitCode: exitCode || 0 });</span>
+    });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-    child.on('close', (exitCode) =&gt; {
-      resolve({ stdout, stderr, exitCode: exitCode || 0 });
-    });
-&nbsp;
-    child.on('error', (error) =&gt; {
-      resolve({ stdout, stderr: error.message, exitCode: 1 });
-<span class="cstat-no" title="statement not covered" >    });</span>
+    child.on('error', (error) =&gt; {<span class="cstat-no" title="statement not covered" ></span>
+      resolve({ <span class="cstat-no" title="statement not covered" >stdout, stderr: error.message, exitCode: 1 });</span>
+    });<span class="cstat-no" title="statement not covered" ></span>
   });
 }
-&nbsp;
-async function checkFileExists(path: string): Promise&lt;boolean&gt; {
+<span class="cstat-no" title="statement not covered" ></span>
+async function check<span class="cstat-no" title="statement not covered" >FileExists(path: string): Promise&lt;bo</span>olean&gt; {
   try {
     return existsSync(resolve(path));
-  } catch {<span class="fstat-no" title="function not covered" ></span>
-    return false;<span class="cstat-no" title="statement not covered" ></span>
+  } catch {<span class="cstat-no" title="statement not covered" ></span>
+    return false<span class="cstat-no" title="statement not covered" >;</span>
   }<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-async function getProjectMetrics(): Promise&lt;Record&lt;string, number&gt;&gt; {
-  const packagePath = resolve('package.json');
-  let packageJson = {};
-  
-  if (await checkFileExists(packagePath)) {
+<span class="cstat-no" title="statement not covered" ></span>
+async function g<span class="cstat-no" title="statement not covered" >etProjectMetrics(): Promise&lt;Record&lt;string, number&gt;&gt; {</span>
+  const packagePath <span class="cstat-no" title="statement not covered" >= resolve('package.json');</span>
+  let packageJso<span class="cstat-no" title="statement not covered" >n = {};</span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  if (await chec<span class="cstat-no" title="statement not covered" >kFileExists(packagePath)) {</span>
     try {<span class="cstat-no" title="statement not covered" ></span>
-      packag<span class="cstat-no" title="statement not covered" >eJson = JSON.parse(readFileSync(packagePath, 'utf8'));</span>
+      packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
     } catch {<span class="cstat-no" title="statement not covered" ></span>
-      // Handle JSON parse error<span class="cstat-no" title="statement not covered" ></span>
+      // Handle <span class="cstat-no" title="statement not covered" >JSON parse error</span>
     }
   }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Count TypeScrip<span class="cstat-no" title="statement not covered" >t/JavaScript files</span>
-  const { stdout: fileCount } = await runCommand('find', ['src', '-name', '*.ts', '-o', '-name', '*.js', '|', 'wc', '-l']);
+&nbsp;
+  // Count TypeScript/JavaScript fil<span class="cstat-no" title="statement not covered" >es</span>
+  const { stdout: fileCount } = awai<span class="cstat-no" title="statement not covered" >t runCommand('find', ['src', '</span>-name', '*.ts', '-o', '-name', '*.js', '|', 'wc', '-l']);
+  <span class="cstat-no" title="statement not covered" ></span>
+  // Count lines of code<span class="cstat-no" title="statement not covered" ></span>
+  const { stdout: locCount } = await runCommand('find', ['src', '-name', '*.ts', '-o', '-name', '*.js', '-exec', 'wc', '-l', '{}', '+', '|', 'tail', '-1']);
   
-  // Count lines<span class="cstat-no" title="statement not covered" > of code</span>
-  const { stdout: lo<span class="cstat-no" title="statement not covered" >cCount } = await runCommand('find', </span>['src', '-name', '*.ts', '-o', '-name', '*.js', '-exec', 'wc', '-l', '{}', '+', '|', 'tail', '-1']);
-  
-  const dependencies = Object.keys((packageJson as any)?.dependencies || {}).length;
-  const devDependencies = Object.<span class="cstat-no" title="statement not covered" >keys((packageJson</span> as any)?.devDependencies || {}).length;
-<span class="cstat-no" title="statement not covered" ></span>
-  return {<span class="cstat-no" title="statement not covered" ></span>
-    files: parse<span class="cstat-no" title="statement not covered" >Int(fileCount.trim()) || 0,</span>
-    linesOfCode: par<span class="cstat-no" title="statement not covered" >seInt(locCount.trim().split(</span>/\s+/)[0]) || 0,
-    dependencies<span class="cstat-no" title="statement not covered" >,</span>
-    devDependencies,<span class="cstat-no" title="statement not covered" ></span>
+  const dependencies = Object.keys((packageJson as PackageJsonData)?.dependencies || {}).length;
+  const devDependencies = Object.keys((packageJson as PackageJsonData)?.devDependencies || {}).length;
+&nbsp;
+  return {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    files: parseInt(fileCount.trim()) || 0,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    linesOfCode: parseInt(locCount.trim().split(/\s+/)[0]) || 0,
+    dependencies,
+    devDependenc<span class="cstat-no" title="statement not covered" >ies,</span>
   };<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-async function r<span class="cstat-no" title="statement not covered" >unLintCheck(): Promise&lt;{ passed: boolean; score: number; issues: number }&gt; {</span>
+async function runLintCheck(): Promise&lt;{ passed: boolean; score: number; issues: number }&gt; {
   const { stderr, exitCode } = await runCommand('npm', ['run', 'lint']);
-  <span class="cstat-no" title="statement not covered" ></span>
-  // Parse ESLin<span class="cstat-no" title="statement not covered" >t output for warnings and errors</span>
-  const errorRegex = /(\d+) error/;
-  const warningRegex = /(\d+) war<span class="cstat-no" title="statement not covered" >ning/;</span>
   
-  const errors = errorRegex.exec(std<span class="cstat-no" title="statement not covered" >err)?.[1] ? parseInt(errorRege</span>x.exec(stderr)![1]) : 0;
-  const warnings = warningRegex.exec<span class="cstat-no" title="statement not covered" >(stderr)?.[1] ? parseInt(warni</span>ngRegex.exec(stderr)![1]) : 0;
-  <span class="cstat-no" title="statement not covered" ></span>
-  const totalIssues = errors + warn<span class="cstat-no" title="statement not covered" >ings;</span>
+  // Parse ESLint output for warnings and errors
+  const errorRegex = /(\d+) error/;
+  const warningRegex = /(\d+) warning/;
+  
+  const errors =<span class="cstat-no" title="statement not covered" > errorRegex.exec(stderr)?.[1] ? parseInt(errorR</span>egex.exec(stderr)![1]) : 0;
+  const warnings<span class="cstat-no" title="statement not covered" > = warningRegex.exec(stderr)?.[1] ? parseInt(warningRegex.exec(stderr)![1]) : 0;</span>
+  
+  const totalIssues = errors + warnings;
   const score = Math.max(0, 100 - (errors * 10 + warnings * 2));
   
   return {
     passed: exitCode === 0,
-    score,
-    issues: totalIssues,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    score,<span class="cstat-no" title="statement not covered" ></span>
+    issues: totalIssues,
+  };
 }
 &nbsp;
-async function r<span class="cstat-no" title="statement not covered" >unTypeCheck(): Promise&lt;{ passed: boolean; score: number; errors: number }&gt; {</span>
-  const { stderr, exitCode } = await runCo<span class="cstat-no" title="statement not covered" >mmand('npm', ['run', 'typecheck']);</span>
-  <span class="cstat-no" title="statement not covered" ></span>
-  // Count TypeScript er<span class="cstat-no" title="statement not covered" >rors</span>
+async function runTypeCheck(): Promise&lt;{ passed: boolean; score: number; errors: number }&gt; {
+  const { stderr, exitCode } = await runCommand('npm', ['run', 'typecheck']);
+  
+  // Count TypeScript errors
   const errorLines = stderr.split('\n').filter(line =&gt; line.includes('error TS'));
   const errors = errorLines.length;
   
@@ -2532,25 +2604,25 @@ async function r<span class="cstat-no" title="statement not covered" >unTypeChec
   
   return {
     passed: exitCode === 0,
-    score,<span class="cstat-no" title="statement not covered" ></span>
-    errors,<span class="cstat-no" title="statement not covered" ></span>
+    score,
+    errors,
   };
 }
 &nbsp;
 async function runSecurityScan(): Promise&lt;{ vulnerabilities: { critical: number; high: number; medium: number; low: number }; score: number }&gt; {
   // Simulate security scan (in real implementation, use npm audit or snyk)
   const { stdout } = await runCommand('npm', ['audit', '--json']);
-  <span class="cstat-no" title="statement not covered" ></span>
+  
   const vulnerabilities = { critical: 0, high: 0, medium: 0, low: 0 };
   
   try {
-    const auditResult = JSON.parse(stdout);
-    if (auditResult.vulnerabilities) {
+    const auditResult = JSON.parse(st<span class="cstat-no" title="statement not covered" >dout);</span>
+    if (auditRes<span class="cstat-no" title="statement not covered" >ult.vulnerabilities) {</span>
       for (const [, vuln] of Object.entries(auditResult.vulnerabilities)) {
-        const severity = (vuln as any).severity;
+        const severity = (vuln as AuditVulnerability).severity;
         if (vulnerabilities[severity as keyof typeof vulnerabilities] !== undefined) {
           vulnerabilities[severity as keyof typeof vulnerabilities]++;
-        }
+        }<span class="cstat-no" title="statement not covered" ></span>
       }
     }
   } catch {
@@ -2568,14 +2640,14 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
   const componentLogger = logger.child({ component: 'CICDIntegration' });
 &nbsp;
   /**
-   * Run Test Suite Tool<span class="cstat-no" title="statement not covered" ></span>
-   * Execute spe<span class="cstat-no" title="statement not covered" >cific test categories with comprehensive configuration options</span>
+   * Run Test Suite Tool
+   * Execute specific test categories with comprehensive configuration options
    * 
    * @param category - Test category (unit, integration, e2e, browser, security, performance, chaos, all)
    * @param includeWatch - Enable watch mode for continuous testing
    * @param includeVerbose - Enable verbose output
-   * @param spec<span class="cstat-no" title="statement not covered" >ificFiles - Run specific test files only</span>
-   * @param testTimeout - Test timeout in milliseconds
+   * @param specificFiles - Run specific test files only
+   *<span class="cstat-no" title="statement not covered" > @param testTimeout - Test timeout in milliseconds</span>
    * @param parallel - Run tests in parallel
    * @param maxWorkers - Maximum number of worker processes
    * @returns {object} Test execution results with coverage and performance metrics
@@ -2583,115 +2655,115 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
    * @example
    * ```bash
    * # Run unit tests with coverage
-   * mcp-client run-test-suite \
-   *   --category unit \
-   *   --includeVerbose true \
-   *   --parallel true \
+   * mcp-client r<span class="fstat-no" title="function not covered" >un</span>-test-suite \
+   *   --category unit \<span class="cstat-no" title="statement not covered" ></span>
+   *   --includeVerbose true \<span class="cstat-no" title="statement not covered" ></span>
+   *   --par<span class="cstat-no" title="statement not covered" >allel true \</span>
    *   --maxWorkers 4
    * ```
    */
   server.addTool({
     name: 'run-test-suite',
-    description: 'Execute specific test categories with comprehensive configuration and real-time monitoring',
-    parameters: TestSuiteSchema,
-    annotations: {
+    descript<span class="cstat-no" title="statement not covered" >ion: 'Execute specific test categories with comprehensive configuration and real-t</span>ime monitoring',
+    paramete<span class="cstat-no" title="statement not covered" >rs: TestSuiteSchema,</span>
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
       title: 'Run Test Suite',
-    },
-    execute: async (args, { log, reportProgress }) =&gt; {
-      const { category, includeWatch, includeVerbose, specificFiles, testTimeout, parallel, maxWorkers } = args;
-<span class="cstat-no" title="statement not covered" >      const correlationId = extractCorrelationId({});</span>
-      
-      componentLogger.info('Running test suite', { 
-        category,
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (args, { log, reportProgress }) =&gt; {</span>
+      const { catego<span class="cstat-no" title="statement not covered" >ry, includeWatch, includeVerbose, specifi</span>cFiles, testTimeout, parallel, maxWorkers } = args;
+      const correlationId = extractCorrelationId({});
+      <span class="cstat-no" title="statement not covered" ></span>
+      componentLogger.info('Running test suite',<span class="cstat-no" title="statement not covered" > { </span>
+        category<span class="cstat-no" title="statement not covered" >,</span>
         includeWatch,
-        includeVerbose,
+        includeVerbose,<span class="cstat-no" title="statement not covered" ></span>
         specificFiles: specificFiles?.length || 0,
         correlationId 
-      });<span class="fstat-no" title="function not covered" ></span>
+      });
+      
+      log?.info?.('Running test suite', { category, correlationId });
       <span class="cstat-no" title="statement not covered" ></span>
-      log?.info?.('Running test su<span class="cstat-no" title="statement not covered" >ite', { category, correlationId });</span>
-      <span class="cstat-no" title="statement not covered" ></span>
-      try {
-        reportProgress({ progress: 0, total: 100 });
-&nbsp;
-        const startTime = Date.now();
-        
-        // B<span class="cstat-no" title="statement not covered" >uild test command based on category</span>
-        let <span class="cstat-no" title="statement not covered" >testCommand = ['run', `test:${category === 'all' ? '' : category}`];</span>
-        if (cate<span class="cstat-no" title="statement not covered" >gory === 'all') {</span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress: 0, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const startTime <span class="cstat-no" title="statement not covered" >= Date.now();</span>
+        <span class="cstat-no" title="statement not covered" ></span>
+        // Build test command based on category
+        let testCommand = ['run', `test:${category === 'all' ? '' : category}`];
+        if (category === 'all') {
           testCommand = ['run', 'test'];
-        }<span class="cstat-no" title="statement not covered" ></span>
+        }
         <span class="cstat-no" title="statement not covered" ></span>
-        // Add speci<span class="cstat-no" title="statement not covered" >fic files if provided</span>
+        // Add specific file<span class="cstat-no" title="statement not covered" >s if provided</span>
         if (specificFiles &amp;&amp; specificFiles.length &gt; 0) {
-          testCo<span class="cstat-no" title="statement not covered" >mmand.push(...specificFiles);</span>
+          testCommand.push(...specificFiles);
         }<span class="cstat-no" title="statement not covered" ></span>
         <span class="cstat-no" title="statement not covered" ></span>
-        // Add additional flags
-        const testArgs = [...testComm<span class="cstat-no" title="statement not covered" >and];</span>
+        // Add additional flags<span class="cstat-no" title="statement not covered" ></span>
+        const testArgs = [...tes<span class="cstat-no" title="statement not covered" >tCommand];</span>
         if (includeWatch) testArgs.push('--watch');
         if (includeVerbose) testArgs.push('--verbose');
         if (!parallel) testArgs.push('--runInBand');
         if (maxWorkers !== 4) testArgs.push(`--maxWorkers=${maxWorkers}`);
         
-        reportProgress({ progress: 20, total<span class="cstat-no" title="statement not covered" >: 100 });</span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        componentLog<span class="cstat-no" title="statement not covered" >ger.info('Executing test command', { command: 'npm', args: testArgs, correlationId });</span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        // Execute tests<span class="cstat-no" title="statement not covered" ></span>
-        const { stdout, stde<span class="cstat-no" title="statement not covered" >rr, exitCode } = await runCommand('npm', testArgs);</span>
+        reportProgress({ progress: 20, total: 100 });
+        
+        componentLogger.info('Executing test command', { command: 'npm', args: testArgs, correlationId });
+        
+        // Execute tests
+        const { stdout, <span class="cstat-no" title="statement not covered" >stderr, exitCode } = await runCommand('npm', testArgs);</span>
         
         reportProgress({ progress: 70, total: 100 });
         
-        // Parse test results
-        const duration = Date.now() - startTime;
-        <span class="cstat-no" title="statement not covered" ></span>
-        // Extract test stat<span class="cstat-no" title="statement not covered" >istics from output</span>
-        const passedMatch = stdout.match(/(\d+) passing/);
+        // Parse<span class="cstat-no" title="statement not covered" > test results</span>
+        const duration = Date.now() - startTime;<span class="cstat-no" title="statement not covered" ></span>
+        <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        // Extract test statistics from o<span class="cstat-no" title="statement not covered" >utput<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        const passed<span class="cstat-no" title="statement not covered" >Match = stdout.match(/(\d+) passing/);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
         const failedMatch = stdout.match(/(\d+) failing/);
-        const skippedMat<span class="cstat-no" title="statement not covered" >ch = stdout.match(/(\d+) pending/);</span>
+        const sk<span class="cstat-no" title="statement not covered" >ippedMatch = stdout.match(/(\d+) pending/);</span>
         <span class="cstat-no" title="statement not covered" ></span>
-        const testResult: TestResult = {<span class="cstat-no" title="statement not covered" ></span>
-          category,<span class="cstat-no" title="statement not covered" ></span>
+        const testResult: TestResult = {
+          category,
           passed: passedMatch ? parseInt(passedMatch[1]) : 0,
           failed: failedMatch ? parseInt(failedMatch[1]) : 0,
           skipped: skippedMatch ? parseInt(skippedMatch[1]) : 0,
-          duration,
+          durati<span class="cstat-no" title="statement not covered" >on,</span>
           errors: stderr ? stderr.split('\n').filter(line =&gt; line.trim().length &gt; 0) : [],
           warnings: stdout.split('\n').filter(line =&gt; line.includes('WARN')),
         };
         
         // Extract coverage information if available
         if (stdout.includes('% Stmts') || stdout.includes('% Lines')) {
-          const coverage<span class="cstat-no" title="statement not covered" >Match = stdout.match(/All files\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)\</span>s+\|\s+(\d+\.?\d*)/);
+          const coverageMatch = stdout.match(/All files\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)/);
           if (coverageMatch) {
             testResult.coverage = {
               statements: parseFloat(coverageMatch[1]),
-              br<span class="cstat-no" title="statement not covered" >anches: parseFloat(coverageMatch[2]),</span>
-              functions: parseFloat(coverageMatch[<span class="cstat-no" title="statement not covered" >3]),</span>
-              lines: parseFloat(coverage<span class="cstat-no" title="statement not covered" >Match[4]),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-            };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-          }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
+              branches: parseFloat(coverageMatch[2]),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+              functions: parseFloat(coverageMatch[3]),
+              lines: parseFloat(coverageMatch[4]),
+            };
+          }
         }
-        <span class="cstat-no" title="statement not covered" ></span>
-        reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 100, total: 100 });</span>
+        
+        reportProgress({ progress: 100, total: 100 });
         
         componentLogger.info('Test suite completed', { 
           category,
           passed: testResult.passed,
           failed: testResult.failed,
-          durati<span class="cstat-no" title="statement not covered" >on: testResult.duration,</span>
-          correlationId 
+          duration: testResult.durati<span class="cstat-no" title="statement not covered" >on,</span>
+          correl<span class="cstat-no" title="statement not covered" >ationId </span>
         });
         
         return JSON.stringify({
           status: exitCode === 0 ? 'passed' : 'failed',
-          summary: {
+          summar<span class="cstat-no" title="statement not covered" >y: {</span>
             category,
             totalTests: testResult.passed + testResult.failed + testResult.skipped,
             passed: testResult.passed,
             failed: testResult.failed,
-            skipped: testResult.skipped,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+            skipped: testResult.skipped,
             successRate: testResult.passed + testResult.failed &gt; 0 ? 
               Math.round((testResult.passed / (testResult.passed + testResult.failed)) * 100) : 0,
             duration: `${Math.round(testResult.duration / 1000)}s`,
@@ -2704,180 +2776,180 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
             parallel,
             maxWorkers,
             timeout: testTimeout,
-          },<span class="cstat-no" title="statement not covered" ></span>
-          output<span class="cstat-no" title="statement not covered" >: {</span>
+          },
+          output: {
             stdout: stdout.slice(0, 2000), // Truncate for readability
             stderr: stderr.slice(0, 1000),
           },
         }, null, 2);
-        <span class="cstat-no" title="statement not covered" ></span>
+        
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        componentLogger.error('Test suite execution failed', { 
+<span class="cstat-no" title="statement not covered" >        componentLogger.error('Test suite execution failed', { </span>
           category,
           error: errorMessage,
           correlationId 
         });
         
         throw new Error(`Test suite execution failed: ${errorMessage}`);
-      }
-    },
-  });
-&nbsp;
+      }<span class="fstat-no" title="function not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
    * Get Test Coverage Tool
    * Retrieve comprehensive test coverage reports with threshold analysis
    * 
-   * @param testCategory - Test category for coverage analysis
-   * @param format - Coverage report format (html, json, lcov, text, summary)
-   * @param threshold - Minimum coverage threshold percentage
-   * @param includeUncoveredFiles - Include uncovered files in report
-   * @param outputPath - Custom output path for coverage reports
-   * @returns {object} Coverage analysis with file-level details and recommendations
-   * 
+   * @param <span class="cstat-no" title="statement not covered" >testCategory - Test category for coverage analysis</span>
+   * @param <span class="cstat-no" title="statement not covered" >format - Coverage report format (html, json, lcov, text, summary)</span>
+   * @param thre<span class="cstat-no" title="statement not covered" >shold - Minimum coverage threshold percentage</span>
+   * @param includeUncoveredFil<span class="cstat-no" title="statement not covered" >es </span>- Include uncovered files in report
+   * @param outputPath - Custom output<span class="cstat-no" title="statement not covered" > p</span>ath for coverage reports
+   * @returns {object} Coverage anal<span class="cstat-no" title="statement not covered" >ysis with file-level details and recommendations</span>
+   * <span class="cstat-no" title="statement not covered" ></span>
    * @example
-   * ```bash
-   *<span class="cstat-no" title="statement not covered" > # Get coverage report with 90% threshold</span>
-   * mcp-client get-test-coverage \
-   *   --testCategory all \
-   *   --format summary \
+   * ```bash<span class="cstat-no" title="statement not covered" ></span>
+   * # Get coverage report with 90% th<span class="cstat-no" title="statement not covered" >reshold</span>
+   * mcp-client get-test-coverage \<span class="cstat-no" title="statement not covered" ></span>
+   *   --testCategory all \<span class="cstat-no" title="statement not covered" ></span>
+   *   --format summ<span class="cstat-no" title="statement not covered" >ary \</span>
    *   --threshold 90 \
    *   --includeUncoveredFiles true
    * ```
-   */<span class="fstat-no" title="function not covered" ></span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'get-test-coverage',<span class="cstat-no" title="statement not covered" ></span>
-    descript<span class="cstat-no" title="statement not covered" >ion: 'Retrieve comprehensive test coverage reports with threshold analysis and file-level details',</span>
-    parameters: CoverageReportSchema,
+   */
+  server.addTool({
+    name: 'get-test-coverage',
+    description: 'Re<span class="cstat-no" title="statement not covered" >trieve comprehensive test coverage rep</span>orts with threshold analysis and file-level details',
+    parameters: Cove<span class="cstat-no" title="statement not covered" >rageReportSchema,</span>
     annotations: {
       title: 'Get Test Coverage',
-      readOnlyHint: true,
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: true,</span>
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute:<span class="cstat-no" title="statement not covered" > async (args, { log, reportProgress }) =&gt; {</span>
-      const { te<span class="cstat-no" title="statement not covered" >stCategory, format, threshold, includeUncover</span>edFiles, outputPath } = args;
-      const correlationId = ext<span class="cstat-no" title="statement not covered" >rac</span>tCorrelationId({});
-      <span class="cstat-no" title="statement not covered" ></span>
-      componentLogger.info('Retrievi<span class="cstat-no" title="statement not covered" >ng test coverage', { </span>
-        testCategory,<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (args, { log, report<span class="cstat-no" title="statement not covered" >Progress }) =&gt; {</span>
+      const { testCategory, format, t<span class="cstat-no" title="statement not covered" >hreshold, includeUncove</span>redFiles, outputPath } = args;
+      const correlat<span class="cstat-no" title="statement not covered" >ionId = extractCorrelationId({});</span>
+      
+      componentLogger.info('Retrieving test coverage', { 
+        testCategory,
         format,
-        threshol<span class="cstat-no" title="statement not covered" >d,</span>
-        correlationId <span class="cstat-no" title="statement not covered" ></span>
+        threshold,
+        correlationId 
       });<span class="cstat-no" title="statement not covered" ></span>
       <span class="cstat-no" title="statement not covered" ></span>
-      log?.info?.('R<span class="cstat-no" title="statement not covered" >etrieving test coverage', { testCategory, format, correlationId });</span>
+      log?.info?.('Retrieving test coverage', { testCategory, format, correlationId });
       
-      try {
-        reportProgress({ progress: 0, total: 100 });
-&nbsp;
-        // Run coverage command
-        const coverageCmd = ['run', 'test:coverage'];
-        if (testCate<span class="cstat-no" title="statement not covered" >gory !== 'all') {</span>
-          coverageCm<span class="cstat-no" title="statement not covered" >d[1] = `test:${testCategory}`;</span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        reportProgress({ progress: 0, <span class="cstat-no" title="statement not covered" >total: 100 </span>});
+<span class="cstat-no" title="statement not covered" ></span>
+        // Run coverage command<span class="cstat-no" title="statement not covered" ></span>
+        const covera<span class="cstat-no" title="statement not covered" >geCmd = ['run', 'test:coverage'];</span>
+        if (testCategory !== 'all') {
+          coverageCmd[1] = `test:${testCategory}`;
         }
         
-        reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 30, total: 100 });</span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        const { exitCode: _exitCode } =<span class="cstat-no" title="statement not covered" > await runCommand('np</span>m', coverageCmd);
-        <span class="cstat-no" title="statement not covered" ></span>
-        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress: 60, total: 100 });</span>
+        reportProgress({ progress: 30, total: 100 });
         
-        // Parse coverage from coverage-summary.json if exists
-        const coverageData: CoverageReport = {
-          overall: { lines: 0, functions: 0, branches: 0, statements: 0 },
-          files: [],
-          threshold: { met: false, required: threshold, actual: 0 },
-          uncoveredF<span class="cstat-no" title="statement not covered" >iles: [],</span>
-        };<span class="cstat-no" title="statement not covered" ></span>
+        const { exit<span class="cstat-no" title="statement not covered" >Code: _exitCode } = await runCommand('</span>npm', coverageCmd);
+        <span class="cstat-no" title="statement not covered" ></span>
+        reportProgress({ progress: 60, total: 100 });
+        
+        // Parse<span class="cstat-no" title="statement not covered" > coverage from coverage-summary.json if exists</span>
+        const coverageData: CoverageRe<span class="cstat-no" title="statement not covered" >port = {</span>
+          overall: { lines: 0, functions: 0, bran<span class="cstat-no" title="statement not covered" >ches: 0, statements: 0 },</span>
+          files: [],<span class="cstat-no" title="statement not covered" ></span>
+          threshold:<span class="cstat-no" title="statement not covered" > { met: false, required: threshold, actual: 0 },</span>
+          uncoveredFiles: [],
+        };
         
         const coverageSummaryPath = resolve('coverage/coverage-summary.json');
-        if (awai<span class="cstat-no" title="statement not covered" >t checkFileExists(coverageSummaryPath)) {</span>
-          try {<span class="cstat-no" title="statement not covered" ></span>
-            const summaryData = JSON.parse(readFi<span class="cstat-no" title="statement not covered" >leSync(coverageSummaryPath, 'utf8'));</span>
+        if (await checkFileExists(coverageSummaryPath)) {
+          try {
+            const su<span class="cstat-no" title="statement not covered" >mmaryData = JSON.parse(readFileSync(co</span>verageSummaryPath, 'utf8'));
             <span class="cstat-no" title="statement not covered" ></span>
-            if (summ<span class="cstat-no" title="statement not covered" >aryData.total) {</span>
+            if (summaryData.total) {
               coverageData.overall = {
-                lines: summaryData.total.lines.pct || 0,
-                functions: summaryData.total.functions.pct || 0,
-                branches: summaryData.total.branches.pct || 0,
-                statements: summaryData.total.statements.pct || 0,
-              };
+<span class="cstat-no" title="statement not covered" >                lines: summaryData.total.lines.pct || 0,</span>
+                functions: summaryData<span class="cstat-no" title="statement not covered" >.total.func</span>tions.pct || 0,
+                branches: summaryData.total<span class="cstat-no" title="statement not covered" >.branches.pct || 0,</span>
+                statements: summaryDa<span class="cstat-no" title="statement not covered" >ta.total.statements.pct</span> || 0,
+              };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
               <span class="cstat-no" title="statement not covered" ></span>
               covera<span class="cstat-no" title="statement not covered" >geData.threshold.actual = coverageData.overall.lines;</span>
               coverageData.threshold.met = coverageData.overall.lines &gt;= threshold;
             }
-            <span class="cstat-no" title="statement not covered" ></span>
-            // Extract file-level cove<span class="cstat-no" title="statement not covered" >rage</span>
-            for (const [filePath, fileData] of Ob<span class="cstat-no" title="statement not covered" >ject.entries(summaryData)) {</span>
-              if (filePath !== 'total<span class="cstat-no" title="statement not covered" >' &amp;&amp; typeof fileData ==</span>= 'object' &amp;&amp; fileData !== null) {
-                cons<span class="cstat-no" title="statement not covered" >t data = fileData as any;</span>
-                coverageData.files.push({
+            
+            // Extract file-level coverage
+            for (const [filePath, fileData] of Object.entries(summaryData)) {
+              if (filePath !== 'total' &amp;&amp; typeof fileData === 'object' &amp;&amp; fileData !== null) {
+                cons<span class="cstat-no" title="statement not covered" >t data = fileData as CoverageFileData;</span>
+                cove<span class="cstat-no" title="statement not covered" >rageData.files.push({</span>
                   path: filePath,
                   lines: data.lines?.pct || 0,
-                  functions: data.functions?.pct || 0,
-                  branches: data.branches?.pct || 0,
-                  statements: data.statements?.pct || 0,
+<span class="cstat-no" title="statement not covered" >                  functions: data.functions?.pct || 0,</span>
+                  branches: data.branc<span class="cstat-no" title="statement not covered" >hes?.pct ||</span> 0,
+                  statements: data.stat<span class="cstat-no" title="statement not covered" >ements?.pct || 0,</span>
                 });<span class="cstat-no" title="statement not covered" ></span>
               }<span class="cstat-no" title="statement not covered" ></span>
-            }
-          } catch (parseError) {
-            comp<span class="cstat-no" title="statement not covered" >onentLogger.warn('Failed to parse coverage summary', { parseError, correlationId });</span>
-          }<span class="cstat-no" title="statement not covered" ></span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        // Find uncovered files if requ<span class="cstat-no" title="statement not covered" >ested<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        if (includeUncoveredFiles) {<span class="cstat-no" title="statement not covered" ></span>
-          const { st<span class="cstat-no" title="statement not covered" >dout: findFiles } = await runCommand('find', ['src', '-name', '*.ts', '-not', '-path', '*/test*']);</span>
+            }<span class="cstat-no" title="statement not covered" ></span>
+          } catch (parseError) {<span class="cstat-no" title="statement not covered" ></span>
+            componentLog<span class="cstat-no" title="statement not covered" >ger.warn('Failed to parse coverage summary', { pa</span>rseError, correlationId });
+          }
+        }
+        
+        // Find uncovered files if requested
+        if (includeU<span class="cstat-no" title="statement not covered" >ncoveredFiles) {</span>
+          const { stdout: findFiles } = await runCommand('find', ['src', '-name', '*.ts', '-not', '-path', '*/test*']);
           const sourceFiles = findFiles.split('\n').filter(f =&gt; f.trim().length &gt; 0);
           const coveredFiles = coverageData.files.map(f =&gt; f.path);
           coverageData.uncoveredFiles = sourceFiles.filter(f =&gt; !coveredFiles.some(cf =&gt; cf.includes(f)));
         }
         
-        reportProgress({ progress: 100, total: 100 });
+        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress: 100, total: 100 });</span>
         <span class="cstat-no" title="statement not covered" ></span>
-        componentLog<span class="cstat-no" title="statement not covered" >ger.info('Coverage analysis completed', { </span>
+        componentLogger.info('Coverage analysis completed', { 
           testCategory,
-          overallCoverage: coverageData.overall.lines,
-          thresh<span class="cstat-no" title="statement not covered" >oldMet: coverageData.threshold.met,</span>
-          correlationId <span class="cstat-no" title="statement not covered" ></span>
+          overallCoverage: coverageDa<span class="cstat-no" title="statement not covered" >ta.overall.lin<span class="fstat-no" title="function not covered" >es</span>,<span class="cstat-no" title="statement not covered" ></span></span>
+          thresholdMet: coverageData.<span class="cstat-no" title="statement not covered" >threshold.met,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+          correlationId <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
         });<span class="cstat-no" title="statement not covered" ></span>
         <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
-          status: co<span class="cstat-no" title="statement not covered" >verageData.threshold.met ? 'passed' : 'failed',</span>
-          coverage: coverageData,<span class="cstat-no" title="statement not covered" ></span>
-          analysis: {<span class="cstat-no" title="statement not covered" ></span>
+        return JSON.stringify({
+          status: coverageData.threshold<span class="cstat-no" title="statement not covered" >.me</span>t ? 'passed' : 'failed',
+          covera<span class="cstat-no" title="statement not covered" >ge: coverageData,</span>
+          analysis: <span class="cstat-no" title="statement not covered" >{</span>
             grade: coverageData.overall.lines &gt;= 90 ? 'A' : 
-                   coverageData.overall.lines &gt;= 80 ? 'B' :
-                   coverageData.overall.lines &gt;= 70 ? 'C' :
+<span class="cstat-no" title="statement not covered" >                   coverageData.overall.lines &gt;= 80 ? 'B' :</span>
+                   c<span class="cstat-no" title="statement not covered" >overageData.overall.lines &gt;= 70 ? 'C' :</span>
                    coverageData.overall.lines &gt;= 60 ? 'D' : 'F',
-            recommen<span class="cstat-no" title="statement not covered" >dations: [</span>
-              ...(coverageData.overall.lines &lt; threshold ? [`Increase line coverage to meet ${threshold}% threshold`] : []),
-              ...(coverageData.uncoveredFiles.length &gt; 0 ? [`Add tests for ${coverageData.uncoveredFiles.length} uncovered files`] : []),
+            reco<span class="cstat-no" title="statement not covered" >mmendations: [</span>
+              ...(co<span class="cstat-no" title="statement not covered" >verageData.overall.lines &lt; threshold ? [`Increase line coverage to meet ${th</span>reshold}% threshold`] : []),
+              ...(co<span class="cstat-no" title="statement not covered" >verageData.uncoveredFiles.length &gt; 0 ? [`Add tests for ${coverageData.uncovered</span>Files.length} uncovered files`] : []),
               ...(coverageData.files.filter(f =&gt; f.lines &lt; 50).length &gt; 0 ? ['Focus on files with less than 50% coverage'] : []),
-            ],
+            ],<span class="cstat-no" title="statement not covered" ></span>
           },
           configuration: {
-            testCate<span class="cstat-no" title="statement not covered" >gory,</span>
-            format,<span class="cstat-no" title="statement not covered" ></span>
+            testCategory,
+            format,
             threshold,
             includeUncoveredFiles,
-            outputPath,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-          },<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        <span class="cstat-no" title="statement not covered" ></span>
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        componentLogger.error('Coverage <span class="cstat-no" title="statement not covered" >ana</span>lysis failed', { 
-          testCa<span class="cstat-no" title="statement not covered" >tegory,</span>
-          error: err<span class="cstat-no" title="statement not covered" >orMessage,</span>
+            outputPath,
+          },
+        }, null, 2);
+        
+      } catch (error: unknown) {
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.mes</span>sage : String(error);
+        componen<span class="cstat-no" title="statement not covered" >tLogger.error('Coverage analysis failed', { </span>
+          testCategory,
+          error: errorMessage,
           correlationId 
-        });<span class="cstat-no" title="statement not covered" ></span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        throw new Error(`Coverage analysis failed: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
+        });
+        
+        throw ne<span class="cstat-no" title="statement not covered" >w Error(`Coverage analysis failed: ${errorMessage}`);</span>
+      }
+    },
+  });
 &nbsp;
-  /**<span class="cstat-no" title="statement not covered" ></span>
+  /**
    * Validate Deployment Readiness Tool
    * Comprehensive pre-deployment validation with environment-specific checks
    * 
@@ -2889,15 +2961,15 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
    * @param includeSecurityChecks - Include security vulnerability scanning
    * @param includeDependencyCheck - Include dependency vulnerability check
    * @param strictMode - Enable strict mode (fail on warnings)
-   * @returns {o<span class="cstat-no" title="statement not covered" >bject} Deployment readiness assessment with act</span>ionable recommendations
-   * <span class="cstat-no" title="statement not covered" ></span>
-   * @example
-   * ```bash
+   * @returns {object} Deployment readiness assessment with actionable recommendations
+   * 
+   * @example<span class="cstat-no" title="statement not covered" ></span>
+   * ```bash<span class="cstat-no" title="statement not covered" ></span>
    * # Validate production deployment readiness
    * mcp-client validate-deployment-readiness \
    *   --environment production \
-   *   --strictM<span class="cstat-no" title="statement not covered" >ode true \</span>
-   *   --includeSecurityChecks true
+   *   --strictMode true \
+   *   --include<span class="cstat-no" title="statement not covered" >SecurityChecks true</span>
    * ```
    */
   server.addTool({
@@ -2915,259 +2987,259 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
         environment,
         strictMode,
         correlationId 
-      });<span class="cstat-no" title="statement not covered" ></span>
-      <span class="cstat-no" title="statement not covered" ></span>
+      });
+      
       log?.info?.('Validating deployment readiness', { environment, correlationId });
       
       try {
         reportProgress({ progress: 0, total: 100 });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         const checks: DeploymentCheck['checks'] = [];
-        let currentProgress = 0;
+<span class="cstat-no" title="statement not covered" >        let currentProgress = 0;</span>
         const totalChecks = [includeLinting, includeTypeCheck, includeTests, includeBuild, includeSecurityChecks, includeDependencyCheck].filter(Boolean).length;
         const progressIncrement = 90 / totalChecks;
         
         // Linting check
         if (includeLinting) {
           const startTime = Date.now();
-          const lintResult = await runLintCheck();
-          const duration = Date.now() - startTime;
-          
-          checks.push({
+          const l<span class="fstat-no" title="function not covered" >in</span>tResult = await runLintCheck();
+          const duration = Date.now() - startTime;<span class="cstat-no" title="statement not covered" ></span>
+          <span class="cstat-no" title="statement not covered" ></span>
+          ch<span class="cstat-no" title="statement not covered" >ecks.push({</span>
             name: 'Linting',
             status: lintResult.passed ? 'passed' : (strictMode ? 'failed' : 'warning'),
             message: lintResult.passed ? 'All linting checks passed' : `Found ${lintResult.issues} linting issues`,
             duration,
             details: { score: lintResult.score, issues: lintResult.issues },
           });
-          
-          currentProgress += progressIncrement;
-          reportProgress({ progress: currentProgress, total: 100 });
-        }
+          <span class="cstat-no" title="statement not covered" ></span>
+          cu<span class="cstat-no" title="statement not covered" >rrentProgress += progressIncrement;</span>
+          report<span class="cstat-no" title="statement not covered" >Progress({ progress: currentProgress, total: </span>100 });
+        }<span class="cstat-no" title="statement not covered" ></span>
         
-        // Type checking
+        // Type checking<span class="cstat-no" title="statement not covered" ></span>
         if (includeTypeCheck) {
-<span class="cstat-no" title="statement not covered" >          const startTime = Date.now();</span>
+          const startTime = Date.now();
           const typeResult = await runTypeCheck();
           const duration = Date.now() - startTime;
           
           checks.push({
             name: 'Type Checking',
             status: typeResult.passed ? 'passed' : 'failed',
-            messa<span class="fstat-no" title="function not covered" >ge</span>: typeResult.passed ? 'All type checks passed' : `Found ${typeResult.errors} type errors`,
-            duration,<span class="cstat-no" title="statement not covered" ></span>
-            details: { score: type<span class="cstat-no" title="statement not covered" >Result.score, errors: typeResult.errors },</span>
-          })<span class="cstat-no" title="statement not covered" >;</span>
+            message: typeResult.passed ? 'All type checks passed' : `Found ${typeResult.errors} type errors`,
+            duration,
+            details: { score: typeResult.score, errors: typeResult.errors },
+          });
           
           currentProgress += progressIncrement;
           reportProgress({ progress: currentProgress, total: 100 });
         }
         
         // Test execution
-        if (<span class="cstat-no" title="statement not covered" >includeTests) {</span>
-          co<span class="cstat-no" title="statement not covered" >nst startTime = Date.now();</span>
-          const <span class="cstat-no" title="statement not covered" >{ stdout, exitCode } = await runCommand('npm'</span>, ['run', 'test']);
-          const duration = Date.no<span class="cstat-no" title="statement not covered" >w() - start</span>Time;
+        if (includeTests) {
+          const startTime = Date.now();
+          const { stdout, exitCode } = await runCommand('npm', ['run', 'test']);
+          const duration = Date.now() - startTime;
           
-          checks.push({<span class="cstat-no" title="statement not covered" ></span>
+          checks.push({
             name: 'Test Execution',
             status: exitCode === 0 ? 'passed' : 'failed',
             message: exitCode === 0 ? 'All tests passed' : 'Some tests failed',
             duration,
             details: { exitCode, hasOutput: stdout.length &gt; 0 },
           });
-          
-          currentProgress += progressIncrement;
-          reportProgress({ progress: currentProgress, total: 100 });
-        }
+          <span class="cstat-no" title="statement not covered" ></span>
+          currentPro<span class="cstat-no" title="statement not covered" >gress += progressIncrement;</span>
+          reportProgress({ progress:<span class="cstat-no" title="statement not covered" > currentProgress, total: 1</span>00 });
+        }<span class="cstat-no" title="statement not covered" ></span>
         
         // Build verification
-        if (includeBuild) {
+        if (incl<span class="cstat-no" title="statement not covered" >udeBuild) {</span>
+          const star<span class="cstat-no" title="statement not covered" >tTime = Date.now();</span>
+          const { stderr, exitCode } = awai<span class="cstat-no" title="statement not covered" >t runComman</span>d('npm', ['run', 'build']);
+          const duration = Date.now() - s<span class="cstat-no" title="statement not covered" >tartTime;</span>
+          <span class="cstat-no" title="statement not covered" ></span>
+          checks.pus<span class="cstat-no" title="statement not covered" >h({</span>
+            name: 'B<span class="cstat-no" title="statement not covered" >uild Verification',</span>
+            status: exitCode === 0 ? 'passed' : 'failed',
+            message:<span class="cstat-no" title="statement not covered" > exitCode === 0 ? 'Build completed successfully' : 'Build failed',</span>
+            duration,<span class="cstat-no" title="statement not covered" ></span>
+            details: { exitCode, hasErrors: stderr.length &gt;<span class="cstat-no" title="statement not covered" > 0 },</span>
+          });<span class="cstat-no" title="statement not covered" ></span>
+          <span class="cstat-no" title="statement not covered" ></span>
+          currentProgress += progressIncremen<span class="cstat-no" title="statement not covered" >t;</span>
+          reportProgress({ progress: currentP<span class="cstat-no" title="statement not covered" >rogress, tota</span>l: 100 });
+        }<span class="cstat-no" title="statement not covered" ></span>
+        
+        // Security checks
+        if (includeSecurityChecks) {
           const startTime = Date.now();
-          const { stderr, exitCode } = await runCommand('npm', ['run', 'build']);
+          const securityResult = await runSecurityScan();
           const duration = Date.now() - startTime;
           
-          checks.push({
-            name: 'Build Verification',
-            status: exitCode === 0 ? 'passed' : 'failed',
-            message: exitCode === 0 ? 'Build completed successfully' : 'Build failed',
-            duration,
-            details: { exitCode, hasErrors: stderr.length &gt; 0 },
+          const totalVulns = Object.values(securityResult.vulnerabilities).reduce((sum, count) =&gt; sum + count, 0);
+          const <span class="cstat-no" title="statement not covered" >criticalIssues = securityResult.vulnerabilities.critical + securityResult.vulnerabilities.high;</span>
+          <span class="cstat-no" title="statement not covered" ></span>
+          checks.push({<span class="cstat-no" title="statement not covered" ></span>
+            name: 'Security Scan',
+            status: criticalIssues === 0 ? 'passed' : (strictMode ? 'failed' : 'warning'),
+            message: totalVulns === 0 ? 'No security vulnerabilities found' : `Found ${totalVulns} vulnerabilities`,
+            duration<span class="cstat-no" title="statement not covered" >,</span>
+            details:<span class="cstat-no" title="statement not covered" > { vulnerabilities: securityResult.vulnerabilities</span>, score: securityResult.score },
+          });
+          <span class="cstat-no" title="statement not covered" ></span>
+          currentProgress += progressIncremen<span class="cstat-no" title="statement not covered" >t;</span>
+          reportProgress<span class="cstat-no" title="statement not covered" >({ progress: currentProgress, total: 100 });</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+        <span class="cstat-no" title="statement not covered" ></span>
+        // Dependency check
+        if (includeDependencyCheck) {
+          const startTime = Date.now();
+          const { stdout } = await runCommand('npm', ['outdated', '--json']);
+          const duration = Date.now() - startTime;
+          
+          let outdatedPackages = 0;
+          try {<span class="cstat-no" title="statement not covered" ></span>
+            const ou<span class="cstat-no" title="statement not covered" >tdated = JSON.parse(stdout);</span>
+            outdatedPackages = Object.keys(<span class="cstat-no" title="statement not covered" >outdated).length;</span>
+          } catch {<span class="cstat-no" title="statement not covered" ></span>
+            // Handl<span class="cstat-no" title="statement not covered" >e JSON parse error</span>
+          }
+          
+          checks<span class="cstat-no" title="statement not covered" >.push({</span>
+            name: 'D<span class="cstat-no" title="statement not covered" >ependency Check',</span>
+            status: <span class="cstat-no" title="statement not covered" >outdatedPackages === 0 ? 'passed' : 'warning',</span>
+            message: outdatedPackages === 0<span class="cstat-no" title="statement not covered" > ? 'All dependencies up to date' : `${outdatedPa</span>ckages} outdated packages`,
+            duration,<span class="cstat-no" title="statement not covered" ></span>
+            details: { o<span class="cstat-no" title="statement not covered" >utdatedPackages },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
           });
           
           currentProgress += progressIncrement;
           reportProgress({ progress: currentProgress, total: 100 });
         }
         
-        // Security checks
-        if (incl<span class="cstat-no" title="statement not covered" >udeSecurityChecks) {</span>
-          const star<span class="cstat-no" title="statement not covered" >tTime = Date.now();</span>
-          const securityResult = awa<span class="cstat-no" title="statement not covered" >it runSecurityScan();</span>
-          const dura<span class="cstat-no" title="statement not covered" >tion = Date.now() - startTime;</span>
-          
-          const totalVulns = Object.values(securityResult.vulnerabilities).reduce((sum, count) =&gt; sum + count, 0);
-          const <span class="cstat-no" title="statement not covered" >criticalIssues = securityResult.vulnerabilities.critical + securityResult.vulnerabilities.high;</span>
-          <span class="cstat-no" title="statement not covered" ></span>
-          checks.push({<span class="cstat-no" title="statement not covered" ></span>
-            name: 'Security Scan',<span class="cstat-no" title="statement not covered" ></span>
-            status: criticalIssues ===<span class="cstat-no" title="statement not covered" > 0 ? 'passed' : (strictMode </span>? 'failed' : 'warning'),
-            message:<span class="cstat-no" title="statement not covered" > totalVulns === 0 ? 'No security vulnerabil</span>ities found' : `Found ${totalVulns} vulnerabilities`,
-            duration<span class="cstat-no" title="statement not covered" >,</span>
-            details: { vulnerabilities: securityResult.vulnerabilities, score: securityResult.score },
-          });<span class="cstat-no" title="statement not covered" ></span>
-          <span class="cstat-no" title="statement not covered" ></span>
-          currentProgress += progressIncrement;<span class="cstat-no" title="statement not covered" ></span>
-          reportProgress({ progress: currentPr<span class="cstat-no" title="statement not covered" >ogress, total: 100 });</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        // Dependency check<span class="cstat-no" title="statement not covered" ></span>
-        if (includeDependencyChe<span class="cstat-no" title="statement not covered" >ck) {</span>
-          const startTime = Date.now();
-          const { stdout } = await runCommand('npm', ['outdated', '--json']);
-          const duration = Date.now() - startTime;
-          
-          let outdatedPackages = 0;
-          try {
-            const outdated = JSON.parse(stdout);
-            outdatedPackages = Object.keys(outdated).length;
-          } catc<span class="cstat-no" title="statement not covered" >h {</span>
-            // Handl<span class="cstat-no" title="statement not covered" >e JSON parse error</span>
-          }<span class="cstat-no" title="statement not covered" ></span>
-          
-          checks.push({
-            name: 'Dependency Check',
-            status: <span class="cstat-no" title="statement not covered" >outdatedPackages === 0 ? 'passed' : 'warning',</span>
-            message:<span class="cstat-no" title="statement not covered" > outdatedPackages === 0 ? 'All dependencies up to </span>date' : `${outdatedPackages} outdated packages`,
-            duration,
-            details:<span class="cstat-no" title="statement not covered" > { outdatedPackages },</span>
-          });<span class="cstat-no" title="statement not covered" ></span>
-          <span class="cstat-no" title="statement not covered" ></span>
-          currentProgress += progressIncrement;<span class="cstat-no" title="statement not covered" ></span>
-          reportProgress({ p<span class="cstat-no" title="statement not covered" >rogress: currentProgress, total: 100 });</span>
-        }
-        
-        // Calculate summary
-        const passedChecks = checks.filter(c =&gt; c.status === 'passed').length;
-        const failedChecks = checks.filter(c =&gt; c.status === 'failed').length;
+        // Calculate summary<span class="cstat-no" title="statement not covered" ></span>
+        const pa<span class="cstat-no" title="statement not covered" >ssedChecks = checks.filter(c =&gt; c.status === 'passed').length;</span>
+        const failed<span class="cstat-no" title="statement not covered" >Checks = checks.filter(c =&gt; c.status === 'failed').length;</span>
         const warningChecks = checks.filter(c =&gt; c.status === 'warning').length;
         const overallPassed = failedChecks === 0 &amp;&amp; (strictMode ? warningChecks === 0 : true);
-        const ov<span class="cstat-no" title="statement not covered" >erallScore = Math.round((passedChecks / checks.length) * 100);</span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        // Generate recommendations<span class="cstat-no" title="statement not covered" ></span>
-        const recomm<span class="cstat-no" title="statement not covered" >endations: string[] = [];</span>
-        if (failedCh<span class="cstat-no" title="statement not covered" >ecks &gt; 0) {</span>
-          recommendations.push(`Fix ${failedChecks} failing checks before deployment`);
+        const overallScore = Math.round((passedChecks / checks.length) * 100);
+        
+        // Generate recommendations
+        const recommendations: string[] = [];
+        if (fail<span class="cstat-no" title="statement not covered" >edChecks &gt; 0) {</span>
+          recommenda<span class="cstat-no" title="statement not covered" >tions.push(`Fix ${failedChecks} failing checks before deployment`);</span>
         }
-        if (warn<span class="cstat-no" title="statement not covered" >ingChecks &gt; 0 &amp;&amp; strictMode) {</span>
-          recommenda<span class="cstat-no" title="statement not covered" >tions.push(`Address ${warningChecks} warnings </span>(strict mode enabled)`);
+        if (warningChecks &gt; 0 &amp;&amp; strictMode) {
+          recommendations.push(`Address ${warningChecks} warnings (strict mode enabled)`);
+        }
+        if (environment === 'production') {
+          recommendations.push('Ensure backup and rollback procedures are in place');
+          recomm<span class="cstat-no" title="statement not covered" >endations.push('Verify monitoring and alerting systems are configured');</span>
         }<span class="cstat-no" title="statement not covered" ></span>
-        if (environment === 'production') {<span class="cstat-no" title="statement not covered" ></span>
-          recommendations.push('Ensure ba<span class="cstat-no" title="statement not covered" >ckup and rollback p</span>rocedures are in place');
-          recommendation<span class="cstat-no" title="statement not covered" >s.push('Verify monitoring and alerting systems are configured');<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        }
         
         const deploymentCheck: DeploymentCheck = {
           passed: overallPassed,
           checks,
           summary: {
-            totalChecks: checks.length,<span class="cstat-no" title="statement not covered" ></span>
-            pass<span class="cstat-no" title="statement not covered" >edChecks,</span>
-            failedCh<span class="cstat-no" title="statement not covered" >ecks,</span>
-            warningChecks,
+            totalChecks: checks.length,
+            passedChecks,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+            fail<span class="cstat-no" title="statement not covered" >edChecks,</span>
+            warningC<span class="cstat-no" title="statement not covered" >hecks,</span>
             overallScore,
           },
           recommendations,
         };
         
-        reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 100, total: 100 });</span>
+        reportProgress({ progress: 100, total: 100 });
         <span class="cstat-no" title="statement not covered" ></span>
-        componentLogger.info('Deployment readiness validation completed', { 
+        componentLog<span class="cstat-no" title="statement not covered" >ger.info('Deployment readiness validation completed', { </span>
           environment,
           passed: overallPassed,
           score: overallScore,
           correlationId 
         });
-        <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.<span class="cstat-no" title="statement not covered" >stringify({</span>
-          status: overallPassed ? 'ready' : 'not_ready',
-          environment,
-          readiness: deploymentCheck,
+        
+        return J<span class="cstat-no" title="statement not covered" >SON.stringify({</span>
+          status<span class="cstat-no" title="statement not covered" >: overallPassed ? 'ready' : 'not_ready',</span>
+          enviro<span class="cstat-no" title="statement not covered" >nment,</span>
+          readin<span class="cstat-no" title="statement not covered" >ess: deploymentCheck,</span>
           configuration: {
             environment,
             strictMode,
-            enabledChecks: {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-              li<span class="cstat-no" title="statement not covered" >nting: includeLinting,</span>
-              typeCh<span class="cstat-no" title="statement not covered" >eck: includeTypeCheck,</span>
+            enabledChecks: {
+              linting: includeLinting,
+              ty<span class="cstat-no" title="statement not covered" >peCheck: includeTypeCheck,</span>
               tests: includeTests,
               build: includeBuild,
               security: includeSecurityChecks,
               dependencies: includeDependencyCheck,
             },
           },
-        }, null,<span class="cstat-no" title="statement not covered" > 2);</span>
-        <span class="cstat-no" title="statement not covered" ></span>
+        }, null, 2);
+        
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage = error instanceof Error ? error.<span class="fstat-no" title="function not covered" >me</span>ssa<span class="cstat-no" title="statement not covered" >ge : String(error);</span>
         componentLogger.error('Deployment readiness validation failed', { 
           environment,
           error: errorMessage,
           correlationId 
-        });<span class="cstat-no" title="statement not covered" ></span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        throw ne<span class="cstat-no" title="statement not covered" >w Error(`Deployment readiness validation failed</span>: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
+        });
+        
+        throw new Error(`Deployment readiness validation failed: ${errorMessage}`);
+      }
     },
   });
 &nbsp;
   /**
-   * Generate Build Report Tool
+   * Generate Build Report Tool<span class="cstat-no" title="statement not covered" ></span>
    * Comprehensi<span class="cstat-no" title="statement not covered" >ve build analysis with quality metrics and security assessment</span>
    * 
    * @param includeMetrics - Include build performance metrics
    * @param includeQualityScores - Include code quality scores
-   * @param includeDependencyAnalysis - Include dependency analysis
+   * @param incl<span class="cstat-no" title="statement not covered" >udeDependencyAnalysis - Include dependency analysis</span>
    * @param includeSecurityScan - Include security vulnerability scan
    * @param includeSizeAnalysis - Include bundle size analysis
    * @param outputFormat - Output format for build report
-   * @returns {object} Comprehensive build report with recommendations and quality scores
+   *<span class="cstat-no" title="statement not covered" > @returns {object} Comprehensive build report with recommendations a</span>nd quality scores
    * 
-   * @example<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-   * ```bash
-   * # Generate comprehensive build report
-   * mcp-client generate-build-report \
-   *   --includeMetrics true \
-   *   --includeQualityScores true \
-   *   --includeSecurityScan true \
-   *   --outputFormat json
-   * ```
-   */
-  server.addTool({
-    name: 'generate-build-report',
-    description: 'Generate comprehensive build analysis with quality metrics, security assessment, and performance insights',
-    parameters: BuildReportSchema,<span class="cstat-no" title="statement not covered" ></span>
-    annotations:<span class="cstat-no" title="statement not covered" > {</span>
+   * @exa<span class="fstat-no" title="function not covered" >mple</span>
+   * ```bash<span class="cstat-no" title="statement not covered" ></span>
+   * # Generate comprehens<span class="cstat-no" title="statement not covered" >ive build report</span>
+   * mcp-client generate-<span class="cstat-no" title="statement not covered" >build-report \</span>
+   *<span class="cstat-no" title="statement not covered" >   --includeMetrics true \</span>
+   *   -<span class="cstat-no" title="statement not covered" >-includeQual</span>ityScores true \
+   *<span class="cstat-no" title="statement not covered" >   --includeSecurityScan true \</span>
+   *   -<span class="cstat-no" title="statement not covered" >-outputForma</span>t json
+   *<span class="cstat-no" title="statement not covered" > ```</span>
+   */<span class="cstat-no" title="statement not covered" ></span>
+  se<span class="cstat-no" title="statement not covered" >rver.addTool({</span>
+    name<span class="cstat-no" title="statement not covered" >: 'generate-</span>build-report',
+<span class="cstat-no" title="statement not covered" >    description:</span> 'Generate comprehensive build analysis with quality metrics, security assessment, and performance insights',
+    parameters: BuildReportSchema,
+    annotations: {
       title: 'Generate Build Report',
     },
     execute: async (args, { log, reportProgress }) =&gt; {
-      const { in<span class="cstat-no" title="statement not covered" >cludeMetrics, includeQualityScores, includeDependencyAnalysis, inclu</span>deSecurityScan, includeSizeAnalysis, outputFormat } = args;
+      const { includeMetrics, includeQualityScores, includeDependencyAnalysis, includeSecurityScan, includeSizeAnalysis, outputFormat } = args;
       const correlationId = extractCorrelationId({});
       
       componentLogger.info('Generating build report', { 
-<span class="cstat-no" title="statement not covered" >        includeMetrics,</span>
+        includeMetrics,
         includeQualityScores,
-        i<span class="fstat-no" title="function not covered" >ncludeSecurityScan,</span>
-        outputFormat,<span class="cstat-no" title="statement not covered" ></span>
-        correlationId <span class="cstat-no" title="statement not covered" ></span>
-      });<span class="cstat-no" title="statement not covered" ></span>
-    <span class="cstat-no" title="statement not covered" >  </span>
-      lo<span class="cstat-no" title="statement not covered" >g?.info?.('G</span>enerating build report', { outputFormat, correlationId });
-    <span class="cstat-no" title="statement not covered" >  </span>
-      tr<span class="cstat-no" title="statement not covered" >y {</span>
-<span class="cstat-no" title="statement not covered" >        reportProgress({ progress: 0, total: 100 });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const startTime = Date.now();</span>
-        <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Initi</span>alize build report
+        includeSecurityScan,
+        outputFormat,
+        correlationId 
+      });
+      
+      log?.info?.('Generating build report', { outputFormat, correlationId });
+      
+      try {
+        reportProgress({ progress: 0, total: 100 });
+&nbsp;
+        const startTime = Date.now();
+        
+        // Initialize build report
         const buildReport: BuildReport = {
           buildInfo: {
             timestamp: new Date().toISOString(),
@@ -3394,7 +3466,7 @@ function calculateOverallGrade(report: BuildReport): string {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T07:34:56.308Z
+                at 2025-08-21T17:32:55.499Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

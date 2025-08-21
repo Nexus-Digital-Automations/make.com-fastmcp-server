@@ -23,7 +23,7 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
       openWorldHint: true,
     },
     execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      log?.info?.('Listing scenarios', { filters: args });
+      log?.info?.('Listing scenarios', JSON.stringify(args));
       reportProgress?.({ progress: 0, total: 100 });
 
       try {

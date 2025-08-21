@@ -25,7 +25,7 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
       openWorldHint: false,
     },
     execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      log?.info?.('Starting scenario troubleshooting', args);
+      log?.info?.('Starting scenario troubleshooting', JSON.stringify(args));
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -123,7 +123,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
       openWorldHint: false,
     },
     execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      log?.info?.('Generating comprehensive troubleshooting report', args);
+      log?.info?.('Generating comprehensive troubleshooting report', JSON.stringify(args));
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -160,7 +160,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
 
         log?.info?.('Fetched scenarios for report generation', { 
           scenarioCount: scenarios.length,
-          filters,
+          filters: JSON.stringify(filters),
           timeRangeHours 
         });
 
@@ -352,7 +352,7 @@ async function analyzeDependencies(scenarios: unknown[]): Promise<unknown> {
     totalScenarios: scenarios.length,
     dependencyMap: {},
     circularDependencies: [],
-    isolatedScenarios: scenarios.filter(s => !(s as any).dependencies?.length).length
+    isolatedScenarios: scenarios.filter(s => !((s as { dependencies?: unknown[] }).dependencies?.length)).length
   };
 }
 
@@ -392,7 +392,13 @@ function generateTroubleshootingInsights(_report: unknown, _scenarios: unknown[]
  * Format report for executive summary
  */
 function formatExecutiveReport(baseReport: unknown): unknown {
-  const _report = baseReport as any;
+  const _report = baseReport as { 
+    metadata?: unknown; 
+    executiveSummary?: unknown;
+    systemOverview?: unknown;
+    actionPlan?: { immediate?: unknown[] };
+    consolidatedFindings?: { securityRiskLevel?: string; criticalIssues?: number };
+  };
   return {
     metadata: _report.metadata,
     executiveSummary: _report.executiveSummary,
@@ -410,7 +416,9 @@ function formatExecutiveReport(baseReport: unknown): unknown {
  * Format report for technical audience
  */
 function formatTechnicalReport(baseReport: unknown, scenarios: unknown[]): unknown {
-  const report = baseReport as any;
+  const report = baseReport as Record<string, unknown> & { 
+    metadata?: { generatedAt?: unknown } 
+  };
   return {
     ...(baseReport as Record<string, unknown>),
     technicalDetails: {

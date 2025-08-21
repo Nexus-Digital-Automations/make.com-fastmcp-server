@@ -33,20 +33,24 @@ export const StreamLiveExecutionSchema = z.object({
   scenarioId: z.number().min(1).describe('Scenario ID to monitor'),
   executionId: z.string().optional().describe('Specific execution ID to monitor (leave empty for next execution)'),
   monitoring: z.object({
-    includeModuleProgress: z.boolean().default(true).describe('Include module-level progress'),
-    includeDataFlow: z.boolean().default(true).describe('Include data flow between modules'),
-    includePerformanceMetrics: z.boolean().default(true).describe('Include real-time performance metrics'),
     updateIntervalMs: z.number().min(100).max(10000).default(1000).describe('Update interval in milliseconds'),
+    maxDuration: z.number().min(1000).max(3600000).default(300000).describe('Maximum monitoring duration in milliseconds'),
+    includePerformanceMetrics: z.boolean().default(true).describe('Include real-time performance metrics'),
+    includeModuleDetails: z.boolean().default(true).describe('Include detailed module information'),
+    trackProgress: z.boolean().default(true).describe('Track execution progress'),
   }).default({}),
   alerts: z.object({
-    enableErrorAlerts: z.boolean().default(true).describe('Alert on errors'),
-    enablePerformanceAlerts: z.boolean().default(true).describe('Alert on performance issues'),
-    performanceThreshold: z.number().min(1000).max(300000).default(30000).describe('Performance alert threshold in milliseconds'),
+    enabled: z.boolean().default(true).describe('Enable alerts'),
     errorThreshold: z.number().min(1).max(10).default(3).describe('Number of errors before alert'),
+    performanceThreshold: z.number().min(1000).max(300000).default(30000).describe('Performance alert threshold in milliseconds'),
+    moduleFailureAlert: z.boolean().default(true).describe('Alert on module failures'),
+    executionTimeAlert: z.boolean().default(true).describe('Alert on execution time issues'),
+    customThresholds: z.record(z.string(), z.number()).optional().describe('Custom alert thresholds'),
   }).default({}),
   output: z.object({
-    format: z.enum(['detailed', 'summary', 'metrics-only']).default('detailed').describe('Output detail level'),
+    format: z.enum(['json', 'structured', 'streaming']).default('structured').describe('Output format'),
     includeVisualization: z.boolean().default(true).describe('Include ASCII visualization of execution flow'),
+    realTimeUpdate: z.boolean().default(true).describe('Enable real-time updates'),
   }).default({}),
 }).strict();
 

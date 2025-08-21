@@ -1230,7 +1230,28 @@
 <a name='L1165'></a><a href='#L1165'>1165</a>
 <a name='L1166'></a><a href='#L1166'>1166</a>
 <a name='L1167'></a><a href='#L1167'>1167</a>
-<a name='L1168'></a><a href='#L1168'>1168</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1168'></a><a href='#L1168'>1168</a>
+<a name='L1169'></a><a href='#L1169'>1169</a>
+<a name='L1170'></a><a href='#L1170'>1170</a>
+<a name='L1171'></a><a href='#L1171'>1171</a>
+<a name='L1172'></a><a href='#L1172'>1172</a>
+<a name='L1173'></a><a href='#L1173'>1173</a>
+<a name='L1174'></a><a href='#L1174'>1174</a>
+<a name='L1175'></a><a href='#L1175'>1175</a>
+<a name='L1176'></a><a href='#L1176'>1176</a>
+<a name='L1177'></a><a href='#L1177'>1177</a>
+<a name='L1178'></a><a href='#L1178'>1178</a>
+<a name='L1179'></a><a href='#L1179'>1179</a>
+<a name='L1180'></a><a href='#L1180'>1180</a>
+<a name='L1181'></a><a href='#L1181'>1181</a>
+<a name='L1182'></a><a href='#L1182'>1182</a>
+<a name='L1183'></a><a href='#L1183'>1183</a>
+<a name='L1184'></a><a href='#L1184'>1184</a>
+<a name='L1185'></a><a href='#L1185'>1185</a>
+<a name='L1186'></a><a href='#L1186'>1186</a>
+<a name='L1187'></a><a href='#L1187'>1187</a>
+<a name='L1188'></a><a href='#L1188'>1188</a>
+<a name='L1189'></a><a href='#L1189'>1189</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2001,6 +2022,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2070,10 +2098,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2100,6 +2135,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3167,22 +3209,22 @@ class RealTimeExecutionMonitor extends EventEmitter {
     if (state.performance.errorRate &gt; thresholds.performance.maxErrorRate) {
       alerts.push({
         id: `alert_${Date.now()}_error_rate`,
-        type: 'er<span class="fstat-no" title="function not covered" >ro</span>r',
-        severity: state.performance.errorRate &gt; 0.2 ? 'critical' : 'warning',<span class="cstat-no" title="statement not covered" ></span>
-        time<span class="cstat-no" title="statement not covered" >stamp,</span>
+        type: 'error',
+        severity: state.performance.errorRate &gt; 0.2 ? 'critical' : 'warning',
+        timestamp,
         message: `Error rate (${(state.performance.errorRate * 100).toFixed(1)}%) exceeds threshold (${(thresholds.performance.maxErrorRate * 100).toFixed(1)}%)`,
         details: {
           errorRate: state.performance.errorRate,
           threshold: thresholds.performance.maxErrorRate,
-          to<span class="cstat-no" title="statement not covered" >talErrors: Math.round(state.performance.errorRate * (state.progress.completedModules || 1)),</span>
+          totalEr<span class="fstat-no" title="function not covered" >ro</span>rs: Math.round(state.performance.errorRate * (state.progress.completedModules || 1)),
         },<span class="cstat-no" title="statement not covered" ></span>
-        resolved: false,
+        reso<span class="cstat-no" title="statement not covered" >lved: false,</span>
         actions: ['Review error patterns', 'Implement retry logic', 'Check external service availability'],
       });
     }
 &nbsp;
-    // Resource usage alerts
-    if (state.performance.memoryUsage &gt; thresholds.resource.maxMemoryUsage) {
+    // Resou<span class="cstat-no" title="statement not covered" >rce usage alerts</span>
+    if (state.performance.memor<span class="cstat-no" title="statement not covered" >yUsage &gt; thresholds.resource.maxMemoryUsage) {</span>
       alerts.push({
         id: `alert_${Date.now()}_memory_usage`,
         type: 'resource',
@@ -3207,18 +3249,18 @@ class RealTimeExecutionMonitor extends EventEmitter {
    */
   private estimateCompletion(
     startTime: string,
-    completionPercentage: number,<span class="cstat-no" title="statement not covered" ></span>
+    completionPercentage: number,
     _averageModuleDuration: number
-  ): Date | null<span class="cstat-no" title="statement not covered" > {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-    if (completionPercentage ==<span class="cstat-no" title="statement not covered" >= 0) return null;</span>
-<span class="cstat-no" title="statement not covered" ></span>
+  ): Date | null {
+    if (completionPercentage === 0) return null;
+&nbsp;
     const elapsed = Date.now() - new Date(startTime).getTime();
     const totalEstimated = (elapsed / completionPercentage) * 100;
-    const remaining = totalEstimated - elapsed;
+    const remaining = totalEstimat<span class="cstat-no" title="statement not covered" >ed - elapsed;</span>
 &nbsp;
-    return new Date(Date.now() + remaining);
-  }
-&nbsp;
+    return new D<span class="cstat-no" title="statement not covered" >ate(Date.now() + r<span class="fstat-no" title="function not covered" >em</span>aining);<span class="cstat-no" title="statement not covered" ></span></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
    * Create SSE connection for real-time updates
    */
@@ -3227,76 +3269,76 @@ class RealTimeExecutionMonitor extends EventEmitter {
       throw new Error('SSE transport not available');
     }
 &nbsp;
-    // This would typically be handle<span class="cstat-no" title="statement not covered" >d by the SSE transport layer</span>
-    // For now, <span class="cstat-no" title="statement not covered" >we'll return a mock connection ID</span>
-    const connec<span class="cstat-no" title="statement not covered" >tionId = `sse_${session.monitorId}_${Date.now()}`;</span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    this.compone<span class="cstat-no" title="statement not covered" >ntLogger.debug('SSE connection created for monitoring', {</span>
+    // This would typically be handled by the SSE transport layer
+    // For now, we'll return a mock connection ID
+    const connectionId = `sse_${session.monitorId}_${Date.now()}`;
+    
+    this.componentLogger.debug('SSE connection created for monitoring', {
       monitorId: session.monitorId,
       connectionId,
-    });
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    return connectionId;</span>
-  }
-&nbsp;
+    });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    return conne<span class="cstat-no" title="statement not covered" >ctionId;</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
-   * Format real-<span class="fstat-no" title="function not covered" >ti</span>me update for SSE streaming
-   */<span class="cstat-no" title="statement not covered" ></span>
-  private fo<span class="cstat-no" title="statement not covered" >rmatRealtimeUpdate(session: MonitoringSession, state: ExecutionS</span>tate): Record&lt;string, unknown&gt; {
-    return {<span class="cstat-no" title="statement not covered" ></span>
-      monitorId: session.monitor<span class="cstat-no" title="statement not covered" >Id,</span>
-      timestamp:<span class="cstat-no" title="statement not covered" > new Date().toISOString(),</span>
-      executionId: s<span class="cstat-no" title="statement not covered" >tate.executionId,</span>
+   * Format real-time update for SSE streaming
+   */
+  private formatRealtimeUpdate(session: MonitoringSession, state: ExecutionState): Record&lt;string, unknown&gt; {
+<span class="cstat-no" title="statement not covered" >    return {</span>
+      monitorId: session.monitorId,
+      timestamp: new Date().toISOString(),
+      executionId: state.executionId,
       scenarioId: state.scenarioId,
-      status: st<span class="cstat-no" title="statement not covered" >ate.status,</span>
+      status: state.status,
       progress: state.progress,
       performance: {
         duration: state.performance.totalDuration,
         throughput: state.performance.throughputOpsPerSec,
         errorRate: state.performance.errorRate,
-        completionPercentage: state.progress.completionPercentage,
-      },
-      alerts: state.alerts.filter(alert =&gt; !alert.resolved),
-      currentModule: state.progress.c<span class="cstat-no" title="statement not covered" >urrentModule,</span>
-      visualizat<span class="cstat-no" title="statement not covered" >ion: session.config.enableProgressVisualization ? </span>
+        completio<span class="fstat-no" title="function not covered" >nP</span>ercentage: state.progress.completionPercentage,
+      },<span class="cstat-no" title="statement not covered" ></span>
+      alerts<span class="cstat-no" title="statement not covered" >: state.alerts.filter(alert =&gt; !alert.resolved),</span>
+      curren<span class="cstat-no" title="statement not covered" >tModule: state.progress.currentModule,</span>
+      visualization: session.con<span class="cstat-no" title="statement not covered" >fig.enableProgressVisualization ? </span>
         this.gen<span class="cstat-no" title="statement not covered" >erateVisualization(state, session.config.visualization) : undefined,</span>
     };<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
+  }
+<span class="cstat-no" title="statement not covered" ></span>
   /**
    * Format session status
    */
-  pr<span class="cstat-no" title="statement not covered" >ivate formatSessionStatus(session: MonitoringSession): Record&lt;string, unknown&gt; {</span>
+  private formatSessionStatus(session: MonitoringSession): Record&lt;string, unknown&gt; {
     return {
       monitorId: session.monitorId,
       scenarioId: session.scenarioId,
-      executionId<span class="fstat-no" title="function not covered" >: </span>session.executionId,
-      startTime: session.startTime.toISOString(),<span class="cstat-no" title="statement not covered" ></span>
-      isActi<span class="cstat-no" title="statement not covered" >ve: session.isActive,</span>
-      update<span class="cstat-no" title="statement not covered" >Count: session.updateCount,</span>
-      errorCount: session.error<span class="cstat-no" title="statement not covered" >Count,</span>
+      executionId: session.executionId,
+      startTime: session.startTime.to<span class="cstat-no" title="statement not covered" >ISOString(),</span>
+      isActive: <span class="cstat-no" title="statement not covered" >session.isActive,</span>
+      updateCoun<span class="cstat-no" title="statement not covered" >t: session.updateCount,</span>
+      errorCount: se<span class="cstat-no" title="statement not covered" >ssion.errorCo</span>unt,
       lastUpdate<span class="cstat-no" title="statement not covered" >: session.lastUpdate.toISOString(),</span>
       config: session.config,
       state: session.state,
       sseConnected: !!session.sseConnection,
     };
-  }
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   /**
-   * Generate visualization based on <span class="cstat-no" title="statement not covered" >current state</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
-  private genera<span class="cstat-no" title="statement not covered" >teVisualization(state: ExecutionState, config: Record&lt;string, unknown&gt;): string {</span>
+   * Generate visualization based on current state
+   */
+  private generateVisualization(state: ExecutionState, config: Record&lt;string, unknown&gt;): string {
     const { format, colorEnabled } = config;
     
     if (format === 'ascii') {
-<span class="cstat-no" title="statement not covered" >      return this.generateASCIIVisualization(state, Boolean(colorEnabled));</span>
+      return this.generateASCIIVisualization(state, Boolean(colorEnabled));
     } else if (format === 'compact') {
-<span class="cstat-no" title="statement not covered" >      return this.generateCompactVisualization(sta</span>te);
-    } else {
-      return this.generateStructuredVisualization(state, config);
-    }
-  }
-&nbsp;
+      return this<span class="fstat-no" title="function not covered" >.g</span>enerateCompactVisualization(state);
+    } else {<span class="cstat-no" title="statement not covered" ></span>
+      return<span class="cstat-no" title="statement not covered" > this.generateStructuredVisualization(state, config);</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
    * Generate ASCII art visualization
    */
@@ -3304,15 +3346,15 @@ class RealTimeExecutionMonitor extends EventEmitter {
     const { progress } = state;
     const width = 50;
     const filled = Math.round((progress.completionPercentage / 100) * width);
-    const empty = width - filled;
-    
-    const progressBar = '█'.repeat(filled) + '░'.repeat(empty);
+    const empty = width - filled;<span class="cstat-no" title="statement not covered" ></span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    const progre<span class="cstat-no" title="statement not covered" >ssBar = '█'.repeat(filled) + '░'.repeat(empty);</span>
     const percentage = `${progress.completionPercentage.toFixed(1)}%`;
     
     let visualization = `
-┌─ Execution Progress ────────────────────────────────────┐
+┌─ E<span class="cstat-no" title="statement not covered" >xecution Progress ────────────────────────────────────┐</span>
 │ ${progressBar} ${percentage.padStart(6)} │
-│ Status: ${state.status.toUpperCase().padEnd(12)} Modules: ${progress.completedModules}/${progress.totalModules} │
+<span class="cstat-no" title="statement not covered" >│ Status: ${state.status.toUpperCase().padEnd(12)}</span> Modules: ${progress.completedModules}/${progress.totalModules} │
 └─────────────────────────────────────────────────────────┘
 `;
 &nbsp;
@@ -3425,6 +3467,13 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
     name: 'stream_live_execution',
     description: 'Start comprehensive real-time monitoring of Make.com scenario execution with advanced progress tracking, performance alerts, and SSE streaming',
     parameters: RealTimeMonitoringSchema,
+    annotations: {
+      title: 'Start Real-Time Execution Monitoring',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) =&gt; {
       const { scenarioId, executionId, monitoringConfig, alertThresholds, visualization } = input;
 &nbsp;
@@ -3504,6 +3553,13 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
     name: 'stop_monitoring',
     description: 'Stop an active real-time monitoring session',
     parameters: StopMonitoringSchema,
+    annotations: {
+      title: 'Stop Monitoring Session',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) =&gt; {
       const { monitorId, reason } = input;
 &nbsp;
@@ -3538,6 +3594,13 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
     name: 'get_monitoring_status',
     description: 'Get current status of monitoring sessions',
     parameters: GetMonitoringStatusSchema,
+    annotations: {
+      title: 'Get Monitoring Status',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) =&gt; {
       const { monitorId, includeHistory } = input;
 &nbsp;
@@ -3571,7 +3634,7 @@ export default { addRealTimeMonitoringTools };</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T07:34:56.308Z
+                at 2025-08-21T17:32:55.499Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

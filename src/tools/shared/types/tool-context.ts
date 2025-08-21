@@ -3,9 +3,10 @@
  * Standardized dependency injection interface for FastMCP tools
  */
 
-import { FastMCP } from 'fastmcp';
+import { FastMCP, type SerializableValue } from 'fastmcp';
 import { ZodSchema } from 'zod';
 import MakeApiClient from '../../../lib/make-api-client.js';
+import { Logger } from '../../../lib/logger.js';
 
 /**
  * Core dependency injection context for tools
@@ -13,7 +14,12 @@ import MakeApiClient from '../../../lib/make-api-client.js';
 export interface ToolContext {
   server: FastMCP;
   apiClient: MakeApiClient;
-  logger: any; // Using any to match existing logger type
+  logger: {
+    debug?: (message: string, data?: SerializableValue) => void;
+    info?: (message: string, data?: SerializableValue) => void;
+    warn?: (message: string, data?: SerializableValue) => void;
+    error?: (message: string, data?: SerializableValue) => void;
+  };
 }
 
 /**
@@ -31,13 +37,13 @@ export interface EnhancedToolContext extends ToolContext {
  */
 export interface ToolExecutionContext {
   log?: {
-    info?: (message: string, data?: any) => void;
-    warn?: (message: string, data?: any) => void;
-    error?: (message: string, data?: any) => void;
-    debug?: (message: string, data?: any) => void;
+    info?: (message: string, data?: SerializableValue) => void;
+    warn?: (message: string, data?: SerializableValue) => void;
+    error?: (message: string, data?: SerializableValue) => void;
+    debug?: (message: string, data?: SerializableValue) => void;
   };
   reportProgress?: (progress: { progress: number; total: number }) => void;
-  session?: any;
+  session?: Record<string, unknown>;
 }
 
 /**
@@ -81,8 +87,8 @@ export type ToolRegistrationFunction = (server: FastMCP, apiClient: MakeApiClien
  * Cache service interface
  */
 export interface CacheService {
-  get<T = any>(key: string): Promise<T | null>;
-  set<T = any>(key: string, value: T, ttl?: number): Promise<void>;
+  get<T = unknown>(key: string): Promise<T | null>;
+  set<T = unknown>(key: string, value: T, ttl?: number): Promise<void>;
   delete(key: string): Promise<void>;
   clear(): Promise<void>;
   has(key: string): Promise<boolean>;
@@ -102,10 +108,10 @@ export interface MetricsService {
  * Configuration service interface
  */
 export interface ConfigService {
-  get<T = any>(key: string, defaultValue?: T): T;
+  get<T = unknown>(key: string, defaultValue?: T): T;
   has(key: string): boolean;
-  set(key: string, value: any): void;
-  getAll(): Record<string, any>;
+  set(key: string, value: unknown): void;
+  getAll(): Record<string, unknown>;
 }
 
 /**
@@ -134,7 +140,7 @@ export interface ServiceHealth {
   healthy: boolean;
   message?: string;
   responseTime?: number;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**
@@ -171,6 +177,38 @@ export interface DiagnosticResult {
   category: 'performance' | 'security' | 'configuration' | 'connectivity';
   status: 'pass' | 'warn' | 'fail';
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   recommendations?: string[];
+}
+
+/**
+ * Convert Logger instance to ToolContext compatible logger
+ */
+export function createToolContextLogger(logger: Logger): ToolContext['logger'] {
+  return {
+    debug: (message: string, data?: SerializableValue): void => {
+      const logData = data && typeof data === 'object' && data !== null && !Array.isArray(data) 
+        ? data as Record<string, unknown>
+        : data !== undefined ? { data } : undefined;
+      logger.debug(message, logData);
+    },
+    info: (message: string, data?: SerializableValue): void => {
+      const logData = data && typeof data === 'object' && data !== null && !Array.isArray(data) 
+        ? data as Record<string, unknown>
+        : data !== undefined ? { data } : undefined;
+      logger.info(message, logData);
+    },
+    warn: (message: string, data?: SerializableValue): void => {
+      const logData = data && typeof data === 'object' && data !== null && !Array.isArray(data) 
+        ? data as Record<string, unknown>
+        : data !== undefined ? { data } : undefined;
+      logger.warn(message, logData);
+    },
+    error: (message: string, data?: SerializableValue): void => {
+      const logData = data && typeof data === 'object' && data !== null && !Array.isArray(data) 
+        ? data as Record<string, unknown>
+        : data !== undefined ? { data } : undefined;
+      logger.error(message, logData);
+    },
+  };
 }

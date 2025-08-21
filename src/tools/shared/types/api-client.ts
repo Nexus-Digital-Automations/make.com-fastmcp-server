@@ -8,7 +8,7 @@ import { z } from 'zod';
 /**
  * Common API response structure from Make.com
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   message?: string;
   status: 'success' | 'error';
@@ -28,7 +28,7 @@ export interface ApiError {
   code: string;
   message: string;
   field?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**
@@ -67,7 +67,7 @@ export interface ApiRequestOptions {
   timeout?: number;
   retries?: number;
   headers?: Record<string, string>;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
   validateResponse?: boolean;
 }
 
@@ -144,7 +144,7 @@ export const DateRangeSchema = z.object({
 /**
  * Common success response types
  */
-export type SuccessResponse<T = any> = ApiResponse<T> & {
+export type SuccessResponse<T = unknown> = ApiResponse<T> & {
   status: 'success';
 };
 
@@ -173,7 +173,7 @@ export type ItemResponse<T> = SuccessResponse<T>;
 /**
  * Common operation result types
  */
-export interface OperationResult<T = any> {
+export interface OperationResult<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;

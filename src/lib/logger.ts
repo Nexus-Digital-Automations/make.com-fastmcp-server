@@ -43,7 +43,7 @@ export interface LogContext {
   [key: string]: unknown; // Index signature for extensibility
 }
 
-class Logger {
+export class Logger {
   private static instance: Logger;
   private logLevel: LogLevel;
   private logLevels: Record<LogLevel, number> = {

@@ -7,12 +7,14 @@
  * @version 1.0.0
  */
 
+import { TroubleshootingReportData, PerformanceAnalysisResult } from '../types/report.js';
+
 // Type definitions for troubleshooting utilities
 export interface ScenarioAnalysis {
   scenarioId: string;
   scenarioName: string;
-  diagnosticReport: any; // TroubleshootingReport type would go here
-  performanceAnalysis?: any; // PerformanceAnalysisResult type would go here
+  diagnosticReport: TroubleshootingReportData;
+  performanceAnalysis?: PerformanceAnalysisResult;
   errors: string[];
 }
 
@@ -121,7 +123,12 @@ export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFin
     else if (health === 'warning') warningScenarios++;
     else if (health === 'critical') criticalScenarios++;
 
-    analysis.diagnosticReport.diagnostics?.forEach((diagnostic: any) => {
+    const diagnostics = (analysis.diagnosticReport as { diagnostics?: Array<{ 
+      severity?: string; 
+      category?: string; 
+      title?: string; 
+    }> }).diagnostics;
+    diagnostics?.forEach((diagnostic) => {
       totalIssues++;
       if (diagnostic.severity === 'critical' || diagnostic.severity === 'error') {
         criticalIssues++;
@@ -131,21 +138,21 @@ export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFin
       if (diagnostic.category === 'security') {
         totalSecurityIssues++;
         if (diagnostic.severity === 'critical') criticalSecurityIssues++;
-        securityIssues.add(diagnostic.title);
+        if (diagnostic.title) securityIssues.add(diagnostic.title);
       }
 
       // Aggregate common issues
-      const issueKey = `${diagnostic.category}:${diagnostic.title}`;
+      const issueKey = `${diagnostic.category || 'unknown'}:${diagnostic.title || 'unknown'}`;
       if (commonIssuesMap.has(issueKey)) {
         const issue = commonIssuesMap.get(issueKey)!;
         issue.count++;
         issue.affectedScenarios.push(analysis.scenarioId);
       } else {
         commonIssuesMap.set(issueKey, {
-          category: diagnostic.category,
-          title: diagnostic.title,
+          category: diagnostic.category || 'unknown',
+          title: diagnostic.title || 'unknown',
           count: 1,
-          severity: diagnostic.severity,
+          severity: diagnostic.severity || 'unknown',
           affectedScenarios: [analysis.scenarioId]
         });
       }
@@ -180,7 +187,7 @@ export function generateSystemOverview(
   _comparisonBaseline?: { compareToHistorical?: boolean; includeBenchmarks?: boolean }
 ): SystemOverview {
   const healthScores = analyses
-    .map(a => a.diagnosticReport?.summary?.performanceScore || 0)
+    .map(a => (a.diagnosticReport as { summary?: { performanceScore?: number } })?.summary?.performanceScore || 0)
     .filter(score => score > 0);
 
   const systemHealthScore = healthScores.length > 0 
@@ -345,7 +352,7 @@ export function formatAsMarkdown(report: Record<string, unknown>): string {
   
   if (report.executiveSummary) {
     markdown += '## Executive Summary\n\n';
-    const summary = report.executiveSummary as any;
+    const summary = report.executiveSummary as { keyFindings?: string[] };
     if (summary.keyFindings) {
       markdown += '### Key Findings\n\n';
       summary.keyFindings.forEach((finding: string) => {
@@ -394,7 +401,7 @@ export function formatAsPdfReady(report: Record<string, unknown>): string {
 
   if (report.executiveSummary) {
     html += '<div class="summary"><h2>Executive Summary</h2>';
-    const summary = report.executiveSummary as any;
+    const summary = report.executiveSummary as { keyFindings?: string[] };
     if (summary.keyFindings) {
       html += '<ul>';
       summary.keyFindings.forEach((finding: string) => {
@@ -425,13 +432,37 @@ export async function generateTroubleshootingReport(
   executiveSummary: string;
 }> {
   // Mock scenario analysis for now
-  const scenarioAnalyses: ScenarioAnalysis[] = scenarios.map((scenario: any, index) => ({
-    scenarioId: scenario?.id || `scenario-${index}`,
-    scenarioName: scenario?.name || `Scenario ${index + 1}`,
-    diagnosticReport: { status: 'healthy', issues: [] },
-    performanceAnalysis: includePerformanceAnalysis ? { avgExecutionTime: 1000, successRate: 95 } : undefined,
-    errors: []
-  }));
+  const scenarioAnalyses: ScenarioAnalysis[] = scenarios.map((scenario: unknown, index) => {
+    const typedScenario = scenario as { id?: string; name?: string } | null | undefined;
+    return {
+      scenarioId: typedScenario?.id || `scenario-${index}`,
+      scenarioName: typedScenario?.name || `Scenario ${index + 1}`,
+      diagnosticReport: { status: 'healthy', issues: [] },
+      performanceAnalysis: includePerformanceAnalysis ? {
+        analysisTimestamp: new Date().toISOString(),
+        targetType: 'scenario',
+        targetId: typedScenario?.id || `scenario-${index}`,
+        timeRange: {
+          startTime: new Date(Date.now() - timeRangeHours * 60 * 60 * 1000).toISOString(),
+          endTime: new Date().toISOString(),
+          durationHours: timeRangeHours
+        },
+        overallHealthScore: 85,
+        performanceGrade: 'B' as const,
+        bottlenecks: [],
+        metrics: {
+          responseTime: { average: 1000, p50: 850, p95: 1200, p99: 1500, trend: 'stable' as const },
+          throughput: { requestsPerSecond: 2.5, requestsPerMinute: 150, trend: 'stable' as const },
+          reliability: { uptime: 99.5, errorRate: 0.5, successRate: 99.5, trend: 'stable' as const },
+          resources: { cpuUsage: 45, memoryUsage: 60, networkUtilization: 30, trend: 'stable' as const }
+        },
+        trends: { performanceDirection: 'stable' as const, predictionConfidence: 0.85, projectedIssues: [] },
+        benchmarkComparison: { industryStandard: 'Above Average', currentPerformance: 'Good', gap: 'Minor', ranking: 'above_average' as const },
+        recommendations: { immediate: [], shortTerm: [], longTerm: [], estimatedImpact: 0.15 }
+      } : undefined,
+      errors: []
+    };
+  });
 
   const consolidatedFindings = aggregateFindings(scenarioAnalyses);
   const systemOverview = generateSystemOverview(scenarioAnalyses, { compareToHistorical: false });

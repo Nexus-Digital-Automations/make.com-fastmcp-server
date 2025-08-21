@@ -23,7 +23,7 @@ export interface ValidationError {
   field: string;
   message: string;
   code: string;
-  value?: any;
+  value?: unknown;
 }
 
 /**
@@ -288,8 +288,13 @@ export function isEmpty(value: unknown): boolean {
  * @param path - Path array
  * @returns Nested value
  */
-function getNestedValue(obj: any, path: (string | number)[]): any {
-  return path.reduce((current, key) => current?.[key], obj);
+function getNestedValue(obj: unknown, path: (string | number)[]): unknown {
+  return path.reduce((current, key) => {
+    if (current && typeof current === 'object' && key in current) {
+      return (current as Record<string | number, unknown>)[key];
+    }
+    return undefined;
+  }, obj);
 }
 
 /**

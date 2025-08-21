@@ -21,7 +21,7 @@
 import { FastMCP } from 'fastmcp';
 import MakeApiClient from '../../lib/make-api-client.js';
 import logger from '../../lib/logger.js';
-import { ToolContext } from '../shared/types/tool-context.js';
+import { ToolContext, createToolContextLogger } from '../shared/types/tool-context.js';
 
 // Import all available tool creators - CRUD operations
 import { createListScenariosTools } from './tools/list-scenarios.js';
@@ -65,7 +65,7 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
   const toolContext: ToolContext = { 
     server, 
     apiClient, 
-    logger: componentLogger 
+    logger: createToolContextLogger(componentLogger)
   };
 
   try {

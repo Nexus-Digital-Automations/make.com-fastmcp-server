@@ -19,6 +19,31 @@ import MakeApiClient from '../lib/make-api-client.js';
 import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
 
+// Import schemas from modular files
+import {
+  VaultServerConfigSchema,
+  SecretEngineConfigSchema,
+  KeyRotationPolicySchema,
+  DynamicSecretConfigSchema,
+  RBACPolicySchema,
+  HSMConfigSchema,
+  SecretScanningConfigSchema,
+  BreachDetectionConfigSchema,
+  AuditConfigSchema,
+  ComplianceReportSchema,
+} from './enterprise-secrets/schemas/index.js';
+
+// Import types from modular files
+import type {
+  VaultClusterInfo,
+  SecretEngineStatus,
+  KeyRotationStatus,
+  HSMStatus,
+  SecretLeakageAlert,
+  BreachIndicator,
+  ComplianceReport,
+} from './enterprise-secrets/types/index.js';
+
 const componentLogger = logger.child({ component: 'EnterpriseSecretsManagement' });
 const randomBytes = promisify(crypto.randomBytes);
 
@@ -41,410 +66,9 @@ interface FastMCPServer {
   addTool: (tool: EnterpriseSecretsTool) => void;
 }
 
-// ===== CORE SCHEMAS =====
+// ===== CORE SCHEMAS IMPORTED FROM MODULAR FILES =====
 
-// Vault Server Configuration Schema
-const VaultServerConfigSchema = z.object({
-  clusterId: z.string().min(1, 'Cluster ID is required'),
-  nodeId: z.string().min(1, 'Node ID is required'),
-  config: z.object({
-    storage: z.object({
-      type: z.enum(['consul', 'raft', 'postgresql', 'mysql']),
-      config: z.record(z.unknown()),
-    }),
-    listener: z.object({
-      type: z.enum(['tcp', 'unix']),
-      address: z.string(),
-      tlsConfig: z.object({
-        certFile: z.string(),
-        keyFile: z.string(),
-        caFile: z.string().optional(),
-        minVersion: z.string().optional().default('tls12'),
-      }),
-    }),
-    seal: z.object({
-      type: z.enum(['shamir', 'auto', 'hsm', 'cloud_kms']),
-      config: z.record(z.unknown()),
-    }),
-    telemetry: z.object({
-      prometheusEnabled: z.boolean().optional().default(true),
-      statsdAddress: z.string().optional(),
-      dogstatsdAddress: z.string().optional(),
-    }),
-  }),
-  highAvailability: z.object({
-    enabled: z.boolean().default(true),
-    redirectAddress: z.string(),
-    clusterAddress: z.string(),
-    replicationMode: z.enum(['dr', 'performance', 'both']).optional(),
-  }),
-});
-
-// HSM Configuration Schema
-const HSMConfigSchema = z.object({
-  provider: z.enum(['aws_cloudhsm', 'azure_keyvault', 'pkcs11', 'gemalto', 'thales', 'safenet']),
-  config: z.object({
-    // PKCS#11 Configuration
-    library: z.string().optional(),
-    slot: z.number().optional(),
-    pin: z.string().optional(),
-    keyLabel: z.string().optional(),
-    mechanism: z.string().optional(),
-    
-    // Azure Key Vault Configuration
-    tenantId: z.string().optional(),
-    clientId: z.string().optional(),
-    clientSecret: z.string().optional(),
-    vaultName: z.string().optional(),
-    keyName: z.string().optional(),
-    
-    // AWS CloudHSM Configuration
-    region: z.string().optional(),
-    endpoint: z.string().optional(),
-    accessKeyId: z.string().optional(),
-    secretAccessKey: z.string().optional(),
-    
-    // General HSM Configuration
-    encryptionAlgorithm: z.enum(['aes256-gcm', 'rsa-2048', 'rsa-4096', 'ecc-p256', 'ecc-p384']).optional(),
-    signingAlgorithm: z.enum(['rsa-pss', 'ecdsa-p256', 'ecdsa-p384']).optional(),
-  }),
-  compliance: z.object({
-    fipsLevel: z.enum(['level1', 'level2', 'level3', 'level4']).optional(),
-    commonCriteria: z.string().optional(),
-    certifications: z.array(z.string()).optional(),
-  }),
-});
-
-// Secret Engine Configuration Schema
-const SecretEngineConfigSchema = z.object({
-  engineType: z.enum(['kv', 'database', 'pki', 'transit', 'aws', 'azure', 'gcp', 'ssh', 'totp']),
-  path: z.string().min(1, 'Engine path is required'),
-  description: z.string().optional(),
-  config: z.object({
-    // KV Engine Configuration
-    version: z.number().optional(),
-    maxVersions: z.number().optional(),
-    casRequired: z.boolean().optional(),
-    deleteVersionAfter: z.string().optional(),
-    
-    // Database Engine Configuration
-    connectionUrl: z.string().optional(),
-    username: z.string().optional(),
-    password: z.string().optional(),
-    databaseType: z.enum(['postgresql', 'mysql', 'mongodb', 'mssql', 'oracle']).optional(),
-    
-    // PKI Engine Configuration
-    commonName: z.string().optional(),
-    organization: z.string().optional(),
-    country: z.string().optional(),
-    ttl: z.string().optional(),
-    keyType: z.enum(['rsa', 'ec']).optional(),
-    keyBits: z.number().optional(),
-    
-    // Transit Engine Configuration
-    convergentEncryption: z.boolean().optional(),
-    deletionAllowed: z.boolean().optional(),
-    derived: z.boolean().optional(),
-    exportable: z.boolean().optional(),
-    
-    // Cloud Provider Configuration
-    credentialsFile: z.string().optional(),
-    project: z.string().optional(),
-    region: z.string().optional(),
-  }),
-});
-
-// Key Rotation Policy Schema
-const KeyRotationPolicySchema = z.object({
-  policyName: z.string().min(1, 'Policy name is required'),
-  targetPaths: z.array(z.string()).min(1, 'At least one target path is required'),
-  rotationType: z.enum(['scheduled', 'usage_based', 'event_driven', 'compliance_driven']),
-  schedule: z.object({
-    cronExpression: z.string().optional(),
-    intervalHours: z.number().min(1).optional(),
-    rotationWindow: z.object({
-      start: z.string(),
-      end: z.string(),
-    }).optional(),
-  }),
-  rotationCriteria: z.object({
-    maxUsageCount: z.number().optional(),
-    maxAgeHours: z.number().optional(),
-    complianceRequirement: z.string().optional(),
-    securityEvents: z.array(z.string()).optional(),
-  }),
-  rotationStrategy: z.object({
-    strategy: z.enum(['graceful', 'immediate', 'versioned', 'blue_green']),
-    gracePeriodHours: z.number().optional(),
-    rollbackEnabled: z.boolean().optional().default(true),
-    notificationEnabled: z.boolean().optional().default(true),
-  }),
-});
-
-// Dynamic Secret Generation Schema
-const DynamicSecretConfigSchema = z.object({
-  secretType: z.enum(['database', 'aws', 'azure', 'gcp', 'ssh', 'certificate', 'api_token']),
-  name: z.string().min(1, 'Secret configuration name is required'),
-  config: z.object({
-    // Database Dynamic Secrets
-    connectionName: z.string().optional(),
-    creationStatements: z.array(z.string()).optional(),
-    revocationStatements: z.array(z.string()).optional(),
-    rollbackStatements: z.array(z.string()).optional(),
-    renewStatements: z.array(z.string()).optional(),
-    
-    // Cloud Provider Dynamic Secrets
-    roleArn: z.string().optional(),
-    credentialType: z.enum(['iam_user', 'assumed_role', 'federation_token', 'session_token']).optional(),
-    policyArns: z.array(z.string()).optional(),
-    
-    // Certificate Dynamic Secrets
-    role: z.string().optional(),
-    commonName: z.string().optional(),
-    altNames: z.array(z.string()).optional(),
-    ipSans: z.array(z.string()).optional(),
-    ttl: z.string().optional(),
-    
-    // SSH Dynamic Secrets
-    keyType: z.enum(['otp', 'ca']).optional(),
-    defaultUser: z.string().optional(),
-    cidrList: z.array(z.string()).optional(),
-  }),
-  leaseConfig: z.object({
-    defaultTtl: z.string().default('1h'),
-    maxTtl: z.string().default('24h'),
-    renewable: z.boolean().default(true),
-  }),
-});
-
-// RBAC Policy Schema
-const RBACPolicySchema = z.object({
-  policyName: z.string().min(1, 'Policy name is required'),
-  description: z.string().optional(),
-  rules: z.array(z.object({
-    path: z.string().min(1, 'Path is required'),
-    capabilities: z.array(z.enum(['create', 'read', 'update', 'delete', 'list', 'sudo', 'deny'])),
-    requiredParameters: z.array(z.string()).optional(),
-    allowedParameters: z.record(z.array(z.string())).optional(),
-    deniedParameters: z.array(z.string()).optional(),
-    minWrappingTtl: z.string().optional(),
-    maxWrappingTtl: z.string().optional(),
-  })),
-  metadata: z.object({
-    tenant: z.string().optional(),
-    environment: z.enum(['development', 'staging', 'production']).optional(),
-    department: z.string().optional(),
-    owner: z.string().optional(),
-  }).optional(),
-});
-
-// Secret Scanning Configuration Schema
-const SecretScanningConfigSchema = z.object({
-  scanType: z.enum(['repository', 'runtime', 'configuration', 'memory', 'network']),
-  targets: z.array(z.string()).min(1, 'At least one scan target is required'),
-  detectionRules: z.object({
-    entropyThreshold: z.number().min(0).max(8).optional().default(4.0),
-    patternMatching: z.boolean().optional().default(true),
-    customPatterns: z.array(z.object({
-      name: z.string(),
-      pattern: z.string(),
-      confidence: z.number().min(0).max(1),
-    })).optional(),
-    whitelistPatterns: z.array(z.string()).optional(),
-  }),
-  responseActions: z.object({
-    alertSeverity: z.enum(['low', 'medium', 'high', 'critical']).default('high'),
-    automaticRevocation: z.boolean().optional().default(false),
-    quarantineEnabled: z.boolean().optional().default(true),
-    notificationChannels: z.array(z.string()).optional(),
-  }),
-});
-
-// Breach Detection Schema
-const BreachDetectionConfigSchema = z.object({
-  detectionMethods: z.object({
-    anomalyDetection: z.boolean().default(true),
-    patternAnalysis: z.boolean().default(true),
-    threatIntelligence: z.boolean().default(true),
-    behavioralAnalysis: z.boolean().default(true),
-  }),
-  monitoringTargets: z.array(z.enum([
-    'secret_access_patterns',
-    'authentication_events',
-    'authorization_failures',
-    'unusual_api_usage',
-    'geographic_anomalies',
-    'time_based_anomalies'
-  ])),
-  responseConfig: z.object({
-    automaticContainment: z.boolean().default(true),
-    alertEscalation: z.boolean().default(true),
-    forensicCollection: z.boolean().default(true),
-    stakeholderNotification: z.boolean().default(true),
-  }),
-  thresholds: z.object({
-    accessFrequencyThreshold: z.number().default(100),
-    geographicVelocityKmh: z.number().default(1000),
-    failureRateThreshold: z.number().default(0.1),
-    anomalyScoreThreshold: z.number().default(0.8),
-  }),
-});
-
-// Audit Configuration Schema
-const AuditConfigSchema = z.object({
-  auditDevices: z.array(z.object({
-    type: z.enum(['file', 'syslog', 'socket', 'elasticsearch', 'splunk']),
-    path: z.string(),
-    config: z.record(z.unknown()),
-    format: z.enum(['json', 'jsonx']).optional().default('json'),
-    prefix: z.string().optional(),
-  })),
-  auditFilters: z.object({
-    excludeUnauthentic: z.boolean().optional().default(true),
-    excludeHealthChecks: z.boolean().optional().default(true),
-    sensitiveDataRedaction: z.boolean().optional().default(true),
-    customFilters: z.array(z.string()).optional(),
-  }),
-  retention: z.object({
-    retentionPeriodDays: z.number().min(1).default(2555), // 7 years default
-    compressionEnabled: z.boolean().optional().default(true),
-    encryptionEnabled: z.boolean().optional().default(true),
-    immutableStorage: z.boolean().optional().default(true),
-  }),
-  compliance: z.object({
-    frameworks: z.array(z.enum(['soc2', 'pci_dss', 'gdpr', 'hipaa', 'fisma', 'iso27001'])),
-    evidenceCollection: z.boolean().optional().default(true),
-    reportGeneration: z.boolean().optional().default(true),
-  }),
-});
-
-// ===== INTERFACES =====
-
-interface VaultClusterInfo {
-  clusterId: string;
-  nodes: Array<{
-    nodeId: string;
-    address: string;
-    status: 'active' | 'standby' | 'sealed' | 'uninitialized' | 'error';
-    version: string;
-    lastHeartbeat: Date;
-  }>;
-  leaderNode: string;
-  sealStatus: {
-    sealed: boolean;
-    threshold: number;
-    shares: number;
-    progress: number;
-  };
-  initializationStatus: boolean;
-  performanceMetrics: {
-    requestsPerSecond: number;
-    averageLatencyMs: number;
-    errorRate: number;
-    activeConnections: number;
-  };
-}
-
-interface HSMStatus {
-  provider: string;
-  connected: boolean;
-  certified: boolean;
-  fipsLevel: string;
-  keyCount: number;
-  operationsPerSecond: number;
-  lastHealthCheck: Date;
-  errorMessages: string[];
-  complianceStatus: {
-    fips140: boolean;
-    commonCriteria: boolean;
-    customCertifications: string[];
-  };
-}
-
-interface SecretEngineStatus {
-  path: string;
-  type: string;
-  version: string;
-  description: string;
-  uuid: string;
-  config: Record<string, unknown>;
-  local: boolean;
-  sealWrap: boolean;
-  externalEntropyAccess: boolean;
-  health: {
-    status: 'healthy' | 'degraded' | 'unhealthy';
-    lastCheck: Date;
-    metrics: {
-      operationsPerSecond: number;
-      averageLatencyMs: number;
-      errorRate: number;
-    };
-  };
-}
-
-interface KeyRotationStatus {
-  policyName: string;
-  lastRotation: Date;
-  nextScheduledRotation: Date;
-  rotationCount: number;
-  status: 'active' | 'paused' | 'failed' | 'pending';
-  affectedPaths: string[];
-  rotationHistory: Array<{
-    timestamp: Date;
-    triggerType: string;
-    success: boolean;
-    details: string;
-  }>;
-}
-
-interface SecretLeakageAlert {
-  alertId: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  detectionMethod: string;
-  location: string;
-  secretType: string;
-  confidence: number;
-  timestamp: Date;
-  status: 'open' | 'investigating' | 'confirmed' | 'false_positive' | 'resolved';
-  responseActions: string[];
-}
-
-interface BreachIndicator {
-  indicatorId: string;
-  type: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  description: string;
-  firstDetected: Date;
-  lastSeen: Date;
-  frequency: number;
-  relatedEvents: string[];
-  mitigation: string[];
-  resolved: boolean;
-}
-
-interface ComplianceReport {
-  framework: string;
-  reportId: string;
-  generatedAt: Date;
-  reportingPeriod: {
-    start: Date;
-    end: Date;
-  };
-  overallCompliance: number;
-  controlStatus: Array<{
-    controlId: string;
-    name: string;
-    status: 'compliant' | 'non_compliant' | 'not_applicable';
-    evidence: string[];
-    gaps: string[];
-  }>;
-  auditTrail: {
-    totalEvents: number;
-    criticalEvents: number;
-    complianceViolations: number;
-    evidenceIntegrity: boolean;
-  };
-}
+// ===== INTERFACES IMPORTED FROM MODULAR FILES =====
 
 // ===== UTILITY CLASSES =====
 
@@ -2142,9 +1766,7 @@ const createAuditConfigTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool
 const createComplianceReportTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool => ({
   name: 'generate_compliance_report',
   description: 'Generate comprehensive compliance reports for various regulatory frameworks',
-  parameters: z.object({
-    framework: z.enum(['soc2', 'pci_dss', 'gdpr', 'hipaa', 'fisma', 'iso27001']),
-  }),
+  parameters: ComplianceReportSchema,
   annotations: {
     title: 'Generate Comprehensive Compliance Reports',
     readOnlyHint: true,
@@ -2154,11 +1776,8 @@ const createComplianceReportTool = (_apiClient: MakeApiClient): EnterpriseSecret
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      // Validate input using the Zod schema
-      const inputSchema = z.object({
-        framework: z.enum(['soc2', 'pci_dss', 'gdpr', 'hipaa', 'fisma', 'iso27001']),
-      });
-      const validatedInput = inputSchema.parse(input);
+      // Validate input using the imported schema
+      const validatedInput = ComplianceReportSchema.parse(input);
       const report = await vaultManager.generateComplianceReport(validatedInput.framework);
       
       return JSON.stringify({

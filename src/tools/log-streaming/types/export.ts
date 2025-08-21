@@ -4,16 +4,27 @@
  */
 
 export interface DataTransformation {
+  type?: 'field_mapping' | 'aggregation' | 'filtering';
   operation?: 'rename' | 'format_date' | 'parse_json' | 'extract_regex' | 'convert_type' | 'filter_fields';
   field?: string;
   targetField?: string;
   parameters?: Record<string, unknown>;
+  config?: Record<string, unknown>;
 }
 
 export interface ExportConfig {
+  scenarioIds?: number[];
+  organizationId?: number;
+  timeRange?: {
+    start?: string;
+    end?: string;
+    startTime?: string;
+    endTime?: string;
+  };
   filtering?: {
     logLevels?: string[];
     modules?: string[];
+    moduleTypes?: string[];
     dateRange?: {
       start: string;
       end: string;
@@ -27,6 +38,8 @@ export interface ExportConfig {
     includeSuccessfulExecutions?: boolean;
     includeFailedExecutions?: boolean;
     performanceThreshold?: number;
+    correlationIds?: string[];
+    errorCodesOnly?: boolean;
   };
   format?: string;
   compression?: boolean;
@@ -37,13 +50,6 @@ export interface ExportConfig {
     batchSize?: number;
     intervalMs?: number;
     maxDuration?: number;
-  };
-  organizationId?: number;
-  timeRange?: {
-    start?: string;
-    end?: string;
-    startTime?: string;
-    endTime?: string;
   };
 }
 
@@ -65,6 +71,7 @@ export interface OutputConfig {
 export interface DestinationConfig {
   type?: 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook' | 'external-system' | 'stream' | 'download';
   path?: string;
+  webhookUrl?: string;
   credentials?: {
     accessKey?: string;
     secretKey?: string;
@@ -79,17 +86,52 @@ export interface DestinationConfig {
 export interface ExternalSystemConfig {
   type?: 'elasticsearch' | 'splunk' | 'datadog' | 'newrelic' | 'generic' | 'aws-cloudwatch' | 'azure-monitor' | 'gcp-logging';
   endpoint?: string;
+  connection?: {
+    url?: string;
+    apiKey?: string;
+    username?: string;
+    password?: string;
+    region?: string;
+    index?: string;
+    logGroup?: string;
+    workspace?: string;
+  };
   authentication?: {
     type?: 'bearer' | 'api-key' | 'basic' | 'api_key' | 'oauth2' | 'basic_auth' | 'oauth' | 'bearer_token';
     credentials?: Record<string, string>;
   };
   headers?: Record<string, string>;
+  retryPolicy?: {
+    maxRetries?: number;
+    retryDelayMs?: number;
+    backoffMultiplier?: number;
+  };
   options?: {
     timeout?: number;
     retries?: number;
     batchSize?: number;
     compression?: boolean;
   };
+}
+
+export interface AnalyticsConfig {
+  enabled: boolean;
+  performanceAnalysis?: boolean;
+  errorAnalysis?: boolean;
+  usagePatterns?: boolean;
+  trendAnalysis?: boolean;
+  features?: {
+    anomalyDetection?: boolean;
+    performanceAnalysis?: boolean;
+    errorCorrelation?: boolean;
+    predictiveInsights?: boolean;
+  };
+  customMetrics?: Array<{
+    name: string;
+    aggregation: 'count' | 'sum' | 'avg' | 'min' | 'max';
+    field: string;
+    filters?: Record<string, unknown>;
+  }>;
 }
 
 export interface LogExportResult {

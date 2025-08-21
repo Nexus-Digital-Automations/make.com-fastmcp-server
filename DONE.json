@@ -10304,9 +10304,112 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755796116764_4pcrqescg",
+      "title": "Refactor log-streaming.ts for better maintainability (Phase 2)",
+      "description": "Refactor log-streaming.ts (2,998 lines) using the proven modular architecture pattern from scenarios.ts refactoring. Extract utilities, types, schemas, and individual tools into focused modules.",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./src/tools/log-streaming.ts",
+        "./development/research-reports/typescript-refactoring-large-files-maintainability-comprehensive-research-2025.md"
+      ],
+      "success_criteria": [
+        "Reduce file size to <1000 lines",
+        "Maintain all existing functionality",
+        "Apply proven modular architecture",
+        "Extract streaming utilities",
+        "Organize external system integrations"
+      ],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T17:08:36.768Z",
+      "auto_research_created": true,
+      "assigned_agent": "development_session_1755796354251_1_general_15cd872b",
+      "started_at": "2025-08-21T17:17:20.212Z",
+      "claimed_by": "development_session_1755796354251_1_general_15cd872b",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755796354251_1_general_15cd872b",
+          "role": "primary",
+          "assignedAt": "2025-08-21T17:17:20.212Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T17:21:26.524Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T17:32:27.051Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T17:32:27.052Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755798004199_ucv5jg8lj",
+      "title": "Fix TypeScript compilation errors",
+      "description": "Fix 27 TypeScript compilation errors across log-streaming, scenarios, and shared utilities modules",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T17:40:04.199Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T17:40:09.084Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T17:47:11.579Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T17:47:11.580Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 239,
-  "last_completion": "2025-08-21T17:15:44.641Z",
+  "total_completed": 241,
+  "last_completion": "2025-08-21T17:47:11.580Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

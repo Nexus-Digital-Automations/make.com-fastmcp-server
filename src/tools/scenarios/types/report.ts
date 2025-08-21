@@ -107,7 +107,7 @@ export interface PerformanceAnalysisResult {
 export interface ScenarioAnalysis {
   scenarioId: string;
   scenarioName: string;
-  diagnosticReport: any; // Import from diagnostics.ts
+  diagnosticReport: TroubleshootingReportData;
   performanceAnalysis?: PerformanceAnalysisResult;
   errors: string[];
 }
@@ -282,7 +282,7 @@ export interface _TroubleshootingReportFormatted {
   };
   costAnalysis?: CostAnalysisReport;
   appendices: {
-    detailedDiagnostics: any[]; // TroubleshootingReport from diagnostics
+    detailedDiagnostics: TroubleshootingReportData[];
     performanceData: PerformanceAnalysisResult[];
     rawMetrics: unknown[];
     executionLogs: string[];

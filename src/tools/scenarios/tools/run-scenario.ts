@@ -102,13 +102,14 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
         // If waiting for completion, poll for status
         if (typedArgs.wait) {
           const startTime = Date.now();
-          const timeoutMs = typedArgs.timeout * 1000;
+          const timeoutSeconds = typedArgs.timeout || 300; // Default 5 minutes
+          const timeoutMs = timeoutSeconds * 1000;
           let attempts = 0;
-          const maxAttempts = Math.ceil(typedArgs.timeout / 2); // Check every 2 seconds
+          const maxAttempts = Math.ceil(timeoutSeconds / 2); // Check every 2 seconds
           
           log?.info?.('Waiting for scenario execution to complete', { 
             executionId: executionData.executionId,
-            timeoutSeconds: typedArgs.timeout 
+            timeoutSeconds: timeoutSeconds 
           });
           
           while (attempts < maxAttempts) {
@@ -156,7 +157,7 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
               if (Date.now() - startTime > timeoutMs) {
                 log?.warn?.('Scenario execution timeout reached', { 
                   executionId: executionData.executionId,
-                  timeoutSeconds: typedArgs.timeout
+                  timeoutSeconds: timeoutSeconds
                 });
                 finalResult.execution.status = 'timeout';
                 break;

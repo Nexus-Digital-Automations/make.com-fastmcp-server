@@ -92,6 +92,13 @@ export interface MakeLogEntry {
     apiCalls?: number;
     dataProcessed?: number;
   };
+  metrics?: {
+    processingTime?: number;
+    operations?: number;
+    dataSize?: number;
+    memoryUsage?: number;
+    apiCalls?: number;
+  };
   connection?: {
     connectionId: string;
     connectionName: string;

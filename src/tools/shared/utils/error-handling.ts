@@ -68,8 +68,8 @@ export interface ErrorInfo {
   code: ErrorCode;
   message: string;
   field?: string;
-  details?: Record<string, any>;
-  context?: Record<string, any>;
+  details?: Record<string, unknown>;
+  context?: Record<string, unknown>;
   timestamp?: Date;
   requestId?: string;
 }
@@ -81,8 +81,8 @@ export class FastMCPError extends UserError {
   public readonly category: ErrorCategory;
   public readonly code: ErrorCode;
   public readonly field?: string;
-  public readonly details?: Record<string, any>;
-  public readonly context?: Record<string, any>;
+  public readonly details?: Record<string, unknown>;
+  public readonly context?: Record<string, unknown>;
   public readonly timestamp: Date;
   public readonly requestId?: string;
 
@@ -118,7 +118,7 @@ export class FastMCPError extends UserError {
   /**
    * Convert to operation result format
    */
-  toOperationResult<T = any>(): OperationResult<T> {
+  toOperationResult<T = unknown>(): OperationResult<T> {
     return {
       success: false,
       error: this.message,
@@ -133,7 +133,7 @@ export class FastMCPError extends UserError {
 export function createValidationError(
   message: string,
   field?: string,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.VALIDATION,
@@ -150,7 +150,7 @@ export function createValidationError(
 export function createNotFoundError(
   resource: string,
   identifier?: string | number,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ): FastMCPError {
   const message = identifier 
     ? `${resource} with identifier '${identifier}' not found`
@@ -173,7 +173,7 @@ export function createNotFoundError(
  */
 export function createAuthenticationError(
   message: string = 'Authentication failed',
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.AUTHENTICATION,
@@ -190,7 +190,7 @@ export function createAuthorizationError(
   message: string = 'Access forbidden',
   resource?: string,
   action?: string,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.AUTHORIZATION,
@@ -209,7 +209,7 @@ export function createAuthorizationError(
  */
 export function createRateLimitError(
   resetTime?: number,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ): FastMCPError {
   const message = resetTime
     ? `Rate limit exceeded. Try again after ${new Date(resetTime * 1000).toISOString()}`
@@ -232,7 +232,7 @@ export function createRateLimitError(
 export function createNetworkError(
   message: string = 'Network error occurred',
   originalError?: Error,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.NETWORK,
@@ -251,7 +251,7 @@ export function createNetworkError(
 export function createTimeoutError(
   operation: string,
   timeout: number,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.TIMEOUT,
@@ -271,7 +271,7 @@ export function createTimeoutError(
 export function createInternalError(
   message: string = 'Internal server error',
   originalError?: Error,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.INTERNAL,
@@ -290,7 +290,7 @@ export function createInternalError(
  */
 export function handleError(
   error: unknown,
-  context?: Record<string, any>
+  context?: Record<string, unknown>
 ): FastMCPError {
   // Already a FastMCPError
   if (error instanceof FastMCPError) {
@@ -378,7 +378,7 @@ export function handleError(
  */
 export async function executeWithErrorHandling<T>(
   operation: () => Promise<T>,
-  context?: Record<string, any>
+  context?: Record<string, unknown>
 ): Promise<OperationResult<T>> {
   try {
     const data = await operation();
@@ -397,7 +397,7 @@ export async function executeWithErrorHandling<T>(
  */
 export async function executeOrThrow<T>(
   operation: () => Promise<T>,
-  context?: Record<string, any>
+  context?: Record<string, unknown>
 ): Promise<T> {
   try {
     return await operation();
@@ -424,7 +424,7 @@ export async function retryOperation<T>(
     baseDelay = 1000,
     maxDelay = 10000,
     backoffFactor = 2,
-    retryCondition = (error) => 
+    retryCondition = (error): boolean => 
       error.message.includes('network') || 
       error.message.includes('timeout') ||
       error.message.includes('503') ||
@@ -459,8 +459,11 @@ export async function retryOperation<T>(
  */
 export function logError(
   error: FastMCPError,
-  logger: any,
-  additionalContext?: Record<string, any>
+  logger: {
+    error?: (message: string, data?: Record<string, unknown>) => void;
+    warn?: (message: string, data?: Record<string, unknown>) => void;
+  },
+  additionalContext?: Record<string, unknown>
 ): void {
   const errorInfo = {
     category: error.category,
@@ -487,7 +490,7 @@ export function logError(
     
     case ErrorCategory.RATE_LIMIT:
     case ErrorCategory.QUOTA_EXCEEDED:
-      logger.info?.('Rate limit error occurred', errorInfo);
+      logger.warn?.('Rate limit error occurred', errorInfo);
       break;
     
     default:
