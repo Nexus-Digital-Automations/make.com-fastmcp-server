@@ -13,21 +13,20 @@
  * @see {@link https://docs.make.com/api} Make.com API Documentation
  */
 
-import { FastMCP, UserError } from 'fastmcp';
+import { FastMCP, UserError, type SerializableValue } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { EventEmitter } from 'events';
 // Import statement removed - ToolExecutionContext not used
 
-// Logger interface for proper typing - using Record<string, unknown> to avoid conflicts
-// Remove local SerializableValue interface to avoid conflicts with FastMCP
+// Logger interface for proper typing - using SerializableValue for FastMCP compatibility
 
 interface Logger {
-  debug: (message: string, data?: Record<string, unknown>) => void;
-  info: (message: string, data?: Record<string, unknown>) => void;
-  warn: (message: string, data?: Record<string, unknown>) => void;
-  error: (message: string, data?: Record<string, unknown>) => void;
+  debug: (message: string, data?: SerializableValue) => void;
+  info: (message: string, data?: SerializableValue) => void;
+  warn: (message: string, data?: SerializableValue) => void;
+  error: (message: string, data?: SerializableValue) => void;
 }
 
 // Export configuration interfaces
@@ -1277,10 +1276,10 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
 
         // Initialize enhanced export processing with logger adapter
         const loggerAdapter: Logger = {
-          debug: (message: string, data?: Record<string, unknown>) => log.debug(message, data as any),
-          info: (message: string, data?: Record<string, unknown>) => log.info(message, data as any),
-          warn: (message: string, data?: Record<string, unknown>) => log.warn(message, data as any),
-          error: (message: string, data?: Record<string, unknown>) => log.error(message, data as any)
+          debug: (message: string, data?: SerializableValue) => log.debug(message, data as SerializableValue),
+          info: (message: string, data?: SerializableValue) => log.info(message, data as SerializableValue),
+          warn: (message: string, data?: SerializableValue) => log.warn(message, data as SerializableValue),
+          error: (message: string, data?: SerializableValue) => log.error(message, data as SerializableValue)
         };
         const exportProcessor = new EnhancedLogExportProcessor(apiClient, exportMetadata, loggerAdapter);
         
@@ -1463,7 +1462,7 @@ class EnhancedLogExportProcessor {
       totalLogs: transformedLogs.length,
       format: outputConfig.format,
       external: destination.externalSystemConfig?.type,
-    });
+    } as SerializableValue);
 
     return JSON.stringify(result, null, 2);
   }
@@ -1585,7 +1584,7 @@ class EnhancedLogExportProcessor {
       streamId: streamingResults.streamId,
       totalBatches: streamingResults.batchesProcessed,
       totalLogs: streamingResults.totalLogsStreamed,
-    });
+    } as SerializableValue);
 
     return JSON.stringify(result, null, 2);
   }

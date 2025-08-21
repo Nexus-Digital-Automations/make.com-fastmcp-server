@@ -26,7 +26,7 @@ const randomBytes = promisify(crypto.randomBytes);
 interface EnterpriseSecretsTool {
   name: string;
   description: string;
-  parameters: z.ZodSchema<any>;
+  parameters: z.ZodSchema<unknown>;
   execute: (input: unknown) => Promise<string>;
 }
 
@@ -1766,7 +1766,7 @@ const createHSMIntegrationTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
     } catch (error) {
       componentLogger.error('HSM integration failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        provider: (input as any)?.provider || 'unknown',
+        provider: (input && typeof input === 'object' && 'provider' in input && typeof (input as {provider: unknown}).provider === 'string') ? (input as {provider: string}).provider : 'unknown',
       });
       
       return JSON.stringify({
@@ -1927,7 +1927,7 @@ path "${rule.path}" {
     } catch (error) {
       componentLogger.error('RBAC policy management failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        policyName: (input as any)?.policyName || 'unknown',
+        policyName: (input && typeof input === 'object' && 'policyName' in input && typeof (input as {policyName: unknown}).policyName === 'string') ? (input as {policyName: string}).policyName : 'unknown',
       });
       
       return JSON.stringify({
@@ -1967,7 +1967,7 @@ const createSecretScanningTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
     } catch (error) {
       componentLogger.error('Secret scanning failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        scanType: (input as any)?.scanType || 'unknown',
+        scanType: (input && typeof input === 'object' && 'scanType' in input && typeof (input as {scanType: unknown}).scanType === 'string') ? (input as {scanType: string}).scanType : 'unknown',
       });
       
       return JSON.stringify({
@@ -2104,7 +2104,7 @@ const createComplianceReportTool = (_apiClient: MakeApiClient): EnterpriseSecret
     } catch (error) {
       componentLogger.error('Compliance report generation failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        framework: (input as any)?.framework || 'unknown',
+        framework: (input && typeof input === 'object' && 'framework' in input && typeof (input as {framework: unknown}).framework === 'string') ? (input as {framework: string}).framework : 'unknown',
       });
       
       return JSON.stringify({
