@@ -9439,9 +9439,143 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755771804750_0ylkbto4s",
+      "title": "Implement tool wrapping in caching middleware",
+      "description": "Complete the remaining TODO: Re-implement tool wrapping when FastMCP API supports it. This was deferred from previous implementation as lower priority. Research shows this is Phase 2 with 2-3 hour complexity.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "medium",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./src/middleware/caching.ts",
+        "./development/research-reports/research-report-task_1755770075122_dythoqzrg.md",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/development/research-reports/fastmcp-tool-wrapping-caching-middleware-research-2025.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T10:23:24.753Z",
+      "auto_research_created": true,
+      "assigned_agent": "agent_implementation_continue_1755772000",
+      "started_at": "2025-08-21T10:30:01.760Z",
+      "claimed_by": "agent_implementation_continue_1755772000",
+      "agent_assignment_history": [
+        {
+          "agentId": "agent_implementation_continue_1755772000",
+          "role": "primary",
+          "assignedAt": "2025-08-21T10:30:01.760Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T10:34:11.192Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T10:34:11.192Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755772630094_7mk1dfm1d",
+      "title": "Comprehensive research on refactoring large TypeScript tool files for maintainability",
+      "description": "Research refactoring strategies for scenarios.ts (3,268 lines), log-streaming.ts (2,998 lines), and enterprise-secrets.ts (2,219 lines) to improve maintainability while maintaining FastMCP compatibility",
+      "mode": "DEVELOPMENT",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/scenarios.ts",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/log-streaming.ts",
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/tools/enterprise-secrets.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T10:37:10.094Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T10:37:16.169Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T16:34:19.170Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T16:34:19.171Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755794137057_qjx3pohtu",
+      "title": "Research: Create shared utilities architecture",
+      "description": "Research and analysis required for implementing: \"Create shared utilities architecture\"\n\n**Implementation Task Details:**\nImplement shared utilities infrastructure for tool refactoring with ToolContext interface, validation utilities, and error handling patterns\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755794137056_esdj3dsj2\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755794137057_qjx3pohtu.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755794137057_qjx3pohtu.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T16:35:37.057Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755794137056_esdj3dsj2",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T16:36:42.531Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T16:36:42.532Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 220,
-  "last_completion": "2025-08-21T10:29:54.657Z",
+  "total_completed": 223,
+  "last_completion": "2025-08-21T16:36:42.532Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

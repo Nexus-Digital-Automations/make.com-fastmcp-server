@@ -1,0 +1,56 @@
+/**
+ * @fileoverview Troubleshooting and diagnostic schemas
+ * @description Schema definitions for scenario troubleshooting and report generation operations
+ */
+
+import { z } from 'zod';
+
+/**
+ * Schema for troubleshooting individual scenarios
+ */
+export const TroubleshootScenarioSchema = z.object({
+  scenarioId: z.string().min(1).describe('Scenario ID to troubleshoot (required)'),
+  diagnosticTypes: z.array(z.enum([
+    'health', 'performance', 'connections', 'errors', 'security', 'all'
+  ])).default(['all']).describe('Types of diagnostics to run'),
+  includeRecommendations: z.boolean().default(true).describe('Include fix recommendations'),
+  includePerformanceHistory: z.boolean().default(true).describe('Include performance trend analysis'),
+  severityFilter: z.enum(['info', 'warning', 'error', 'critical']).optional().describe('Minimum severity level to report'),
+  autoFix: z.boolean().default(false).describe('Attempt automatic fixes for fixable issues'),
+  timeRange: z.object({
+    hours: z.number().min(1).max(720).default(24).describe('Hours of execution history to analyze')
+  }).optional().describe('Time range for historical analysis')
+}).strict();
+
+/**
+ * Schema for generating comprehensive troubleshooting reports
+ */
+export const GenerateTroubleshootingReportSchema = z.object({
+  scenarioIds: z.array(z.string().min(1)).optional().describe('Specific scenario IDs to analyze (optional - if not provided, analyzes all scenarios)'),
+  reportOptions: z.object({
+    includeExecutiveSummary: z.boolean().default(true).describe('Include executive summary with key findings'),
+    includeDetailedAnalysis: z.boolean().default(true).describe('Include detailed diagnostic analysis'),
+    includeActionPlan: z.boolean().default(true).describe('Include prioritized action plan'),
+    includePerformanceMetrics: z.boolean().default(true).describe('Include performance benchmarks and metrics'),
+    includeSecurityAssessment: z.boolean().default(true).describe('Include security and compliance assessment'),
+    includeCostAnalysis: z.boolean().default(false).describe('Include cost impact analysis'),
+    includeRecommendationTimeline: z.boolean().default(true).describe('Include timeline for implementing recommendations'),
+    formatType: z.enum(['json', 'markdown', 'pdf-ready']).default('json').describe('Output format for the report')
+  }).optional().describe('Report generation options'),
+  analysisFilters: z.object({
+    timeRangeHours: z.number().min(1).max(720).default(24).describe('Time range for analysis (hours)'),
+    severityThreshold: z.enum(['info', 'warning', 'error', 'critical']).default('info').describe('Minimum severity threshold'),
+    includeInactiveScenarios: z.boolean().default(false).describe('Include inactive scenarios in analysis'),
+    maxScenariosToAnalyze: z.number().min(1).max(100).default(25).describe('Maximum number of scenarios to analyze'),
+    prioritizeByUsage: z.boolean().default(true).describe('Prioritize scenarios by usage/execution frequency')
+  }).optional().describe('Analysis filtering and prioritization options'),
+  comparisonBaseline: z.object({
+    compareToHistorical: z.boolean().default(true).describe('Compare against historical performance'),
+    baselineTimeRangeHours: z.number().min(24).max(2160).default(168).describe('Baseline period for comparison (hours)'),
+    includeBenchmarks: z.boolean().default(true).describe('Include industry benchmarks')
+  }).optional().describe('Baseline comparison settings')
+}).strict();
+
+// Type exports for better TypeScript integration
+export type TroubleshootScenario = z.infer<typeof TroubleshootScenarioSchema>;
+export type GenerateTroubleshootingReport = z.infer<typeof GenerateTroubleshootingReportSchema>;
