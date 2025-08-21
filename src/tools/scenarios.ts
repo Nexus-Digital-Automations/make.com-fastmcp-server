@@ -172,6 +172,9 @@ interface ConsolidatedFindings {
   healthyScenarios: number;
   warningScenarios: number;
   criticalScenarios: number;
+  totalIssues: number;
+  criticalIssues: number;
+  securityRiskLevel: string;
   commonIssues: Array<{
     category: string;
     severity: string;
@@ -1767,7 +1770,13 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
         reportProgress({ progress: 80, total: 100 });
 
         // Phase 4: Generate action plan and recommendations
-        const actionPlan = generateActionPlan(consolidatedFindings, reportOptions.includeRecommendationTimeline);
+        const baseActionPlan = generateActionPlan(consolidatedFindings, reportOptions.includeRecommendationTimeline);
+        const actionPlan = {
+          ...baseActionPlan,
+          summary: {
+            criticalActions: baseActionPlan.immediate.filter(action => action.priority === 'critical').length
+          }
+        } as Record<string, unknown> & ActionPlan & { summary: { criticalActions: number } };
         
         // Phase 5: Generate cost analysis if requested
         let costAnalysis;
@@ -2305,6 +2314,9 @@ function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFindings {
     healthyScenarios: analyses.filter(a => !a.errors?.length).length,
     warningScenarios: analyses.filter(a => a.errors?.length && a.errors.length < 3).length,
     criticalScenarios: analyses.filter(a => a.errors?.length && a.errors.length >= 3).length,
+    totalIssues: _totalIssues,
+    criticalIssues: _criticalIssues,
+    securityRiskLevel: securityIssuesFound > 5 ? 'high' : securityIssuesFound > 0 ? 'medium' : 'low',
     commonIssues: topIssuePatterns.map(pattern => ({
       category: 'General',
       severity: pattern.severity,
@@ -2399,7 +2411,7 @@ function generateSystemOverview(
   };
 }
 
-function generateActionPlan(findings: ConsolidatedFindings, _includeTimeline: boolean): ActionPlan {
+function generateActionPlan(findings: ConsolidatedFindings, _includeTimeline: boolean): ActionPlan & { summary: { criticalActions: number } } {
   const immediateActions: Array<{ action: string; priority: 'critical' | 'high'; estimatedTime: string; impact: string; scenarioIds: string[] }> = [];
   const shortTermActions: Array<{ action: string; priority: 'medium' | 'high'; estimatedTime: string; impact: string; scenarioIds: string[] }> = [];
   const longTermActions: Array<{ action: string; priority: 'low' | 'medium'; estimatedTime: string; impact: string; scenarioIds: string[] }> = [];
@@ -2488,7 +2500,7 @@ function generateActionPlan(findings: ConsolidatedFindings, _includeTimeline: bo
     }
   );
 
-  const result: ActionPlan = {
+  const result: ActionPlan & { summary: { criticalActions: number } } = {
     immediate: immediateActions,
     shortTerm: shortTermActions,
     longTerm: longTermActions,
@@ -2497,6 +2509,9 @@ function generateActionPlan(findings: ConsolidatedFindings, _includeTimeline: bo
       phase2Duration: '1-4 weeks',
       phase3Duration: '1-3 months',
       totalDuration: '1-4 months'
+    },
+    summary: {
+      criticalActions: immediateActions.filter(action => action.priority === 'critical').length
     }
   };
 

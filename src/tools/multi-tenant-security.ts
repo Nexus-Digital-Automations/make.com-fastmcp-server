@@ -868,535 +868,7 @@ interface PolicyConfiguration {
 }
 
 // ===== TOOL IMPLEMENTATIONS =====
-
-/**
- * Tenant Provisioning Tool
- */
-const createTenantProvisioningTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof TenantProvisioningSchema; execute: (input: z.infer<typeof TenantProvisioningSchema>) => Promise<string> } => ({
-  name: 'provision_tenant',
-  description: 'Provision a new tenant with comprehensive security isolation, cryptographic keys, network segmentation, and compliance boundaries',
-  parameters: TenantProvisioningSchema,
-  execute: async (input: z.infer<typeof TenantProvisioningSchema>): Promise<string> => {
-    const securityEngine = MultiTenantSecurityEngine.getInstance();
-    
-    try {
-      const result = await securityEngine.provisionTenant(input);
-
-      // Log provisioning event
-      await auditLogger.logEvent({
-        level: 'info',
-        category: 'system',
-        action: 'tenant_provisioning',
-        userId: input.tenantId,
-        success: result.success,
-        details: {
-          tenantName: input.tenantName,
-          subscriptionTier: input.subscriptionTier,
-          complianceFrameworks: input.complianceFrameworks,
-          resourceQuotas: input.resourceQuotas,
-        },
-        riskLevel: 'low',
-      });
-
-      componentLogger.info('Tenant provisioning completed', {
-        tenantId: input.tenantId,
-        success: result.success,
-        frameworks: input.complianceFrameworks,
-      });
-
-      return JSON.stringify(result, null, 2);
-    } catch (error) {
-      componentLogger.error('Tenant provisioning failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        tenantId: input.tenantId,
-      });
-
-      return JSON.stringify({
-        success: false,
-        tenantId: input.tenantId,
-        error: 'Tenant provisioning service error',
-        provisioningDetails: {
-          cryptographicKeys: {},
-          networkConfiguration: {},
-          resourceAllocation: {},
-          policies: [],
-          complianceStatus: {},
-        },
-      }, null, 2);
-    }
-  },
-});
-
-/**
- * Cryptographic Isolation Tool
- */
-const createCryptographicIsolationTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof CryptographicIsolationSchema; execute: (input: z.infer<typeof CryptographicIsolationSchema>) => Promise<string> } => ({
-  name: 'manage_cryptographic_isolation',
-  description: 'Manage tenant-specific cryptographic isolation including key generation, rotation, encryption, and verification',
-  parameters: CryptographicIsolationSchema,
-  execute: async (input: z.infer<typeof CryptographicIsolationSchema>): Promise<string> => {
-    const securityEngine = MultiTenantSecurityEngine.getInstance();
-    
-    try {
-      const result = await securityEngine.manageCryptographicIsolation(input);
-
-      // Log cryptographic operation
-      await auditLogger.logEvent({
-        level: 'info',
-        category: 'security',
-        action: `cryptographic_${input.operation}`,
-        userId: input.tenantId,
-        success: result.success,
-        details: {
-          operation: input.operation,
-          keyType: input.keyType,
-          hsmEnabled: input.hsmConfiguration?.enabled,
-        },
-        riskLevel: 'medium',
-      });
-
-      componentLogger.info('Cryptographic isolation operation completed', {
-        tenantId: input.tenantId,
-        operation: input.operation,
-        success: result.success,
-      });
-
-      return JSON.stringify(result, null, 2);
-    } catch (error) {
-      componentLogger.error('Cryptographic isolation operation failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        tenantId: input.tenantId,
-        operation: input.operation,
-      });
-
-      return JSON.stringify({
-        success: false,
-        operation: input.operation,
-        tenantId: input.tenantId,
-        keyManagement: {},
-        error: 'Cryptographic isolation service error',
-      }, null, 2);
-    }
-  },
-});
-
-/**
- * Network Segmentation Tool
- */
-const createNetworkSegmentationTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof NetworkSegmentationSchema; execute: (input: z.infer<typeof NetworkSegmentationSchema>) => Promise<string> } => ({
-  name: 'configure_network_segmentation',
-  description: 'Configure tenant network segmentation with virtual isolation, microsegmentation, and traffic monitoring',
-  parameters: NetworkSegmentationSchema,
-  execute: async (input: z.infer<typeof NetworkSegmentationSchema>): Promise<string> => {
-    const securityEngine = MultiTenantSecurityEngine.getInstance();
-    
-    try {
-      const result = await securityEngine.configureNetworkSegmentation(input);
-
-      // Log network configuration
-      await auditLogger.logEvent({
-        level: 'info',
-        category: 'security',
-        action: `network_${input.operation}`,
-        userId: input.tenantId,
-        success: result.success,
-        details: {
-          operation: input.operation,
-          microsegmentation: input.networkConfig.microsegmentation?.enabled,
-          crossTenantPrevention: input.securityPolicies.crossTenantPrevention,
-        },
-        riskLevel: 'medium',
-      });
-
-      componentLogger.info('Network segmentation operation completed', {
-        tenantId: input.tenantId,
-        operation: input.operation,
-        success: result.success,
-        isolationScore: result.isolationMetrics.trafficIsolation,
-      });
-
-      return JSON.stringify(result, null, 2);
-    } catch (error) {
-      componentLogger.error('Network segmentation operation failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        tenantId: input.tenantId,
-        operation: input.operation,
-      });
-
-      return JSON.stringify({
-        success: false,
-        tenantId: input.tenantId,
-        networkConfiguration: {},
-        isolationMetrics: {
-          crossTenantBlocking: false,
-          trafficIsolation: 0,
-          policyCompliance: 0,
-        },
-        monitoring: {
-          activeMonitoring: false,
-          alertsConfigured: false,
-          anomalyDetection: false,
-        },
-        error: 'Network segmentation service error',
-      }, null, 2);
-    }
-  },
-});
-
-/**
- * Resource Quota Management Tool
- */
-const createResourceQuotaManagementTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof ResourceQuotaManagementSchema; execute: (input: z.infer<typeof ResourceQuotaManagementSchema>) => Promise<string> } => ({
-  name: 'manage_resource_quotas',
-  description: 'Manage tenant resource quotas, scaling policies, and resource optimization with real-time monitoring',
-  parameters: ResourceQuotaManagementSchema,
-  execute: async (input: z.infer<typeof ResourceQuotaManagementSchema>): Promise<string> => {
-    try {
-      // Simulate resource quota management
-      const result: ResourceQuotaResult = {
-        success: true,
-        tenantId: input.tenantId,
-        quotaConfiguration: {
-          compute: {
-            cpuCores: input.resourceQuotas.compute.cpuCores,
-            memoryGB: input.resourceQuotas.compute.memoryGB,
-            storageGB: input.resourceQuotas.compute.storageGB,
-          },
-          application: {
-            maxConcurrentUsers: input.resourceQuotas.application.maxConcurrentUsers,
-            maxActiveConnections: input.resourceQuotas.application.maxActiveConnections,
-            apiRequestsPerMinute: input.resourceQuotas.application.apiRequestsPerMinute,
-          },
-          data: {
-            maxDatabaseSize: input.resourceQuotas.data.maxDatabaseSize,
-            maxFileUploads: input.resourceQuotas.data.maxFileUploads,
-            retentionDays: input.resourceQuotas.data.retentionDays,
-          },
-        },
-        currentUsage: {
-          compute: {
-            cpuCores: input.resourceQuotas.compute.cpuCores * 0.7,
-            memoryGB: input.resourceQuotas.compute.memoryGB * 0.6,
-            storageGB: input.resourceQuotas.compute.storageGB * 0.4,
-          },
-          application: {
-            concurrentUsers: Math.floor(input.resourceQuotas.application.maxConcurrentUsers * 0.5),
-            activeConnections: Math.floor(input.resourceQuotas.application.maxActiveConnections * 0.3),
-            apiRequests: Math.floor(input.resourceQuotas.application.apiRequestsPerMinute * 0.8),
-          },
-          data: {
-            databaseSize: Math.floor(input.resourceQuotas.data.maxDatabaseSize * 0.6),
-            fileUploads: Math.floor(input.resourceQuotas.data.maxFileUploads * 0.4),
-            dataAge: Math.floor(input.resourceQuotas.data.retentionDays * 0.2),
-          },
-        },
-        utilizationMetrics: {
-          cpuUtilization: 70,
-          memoryUtilization: 60,
-          storageUtilization: 40,
-          apiUtilization: 80,
-        },
-        scalingStatus: {
-          autoScalingEnabled: input.scalingPolicies?.autoScaling || false,
-          lastScalingEvent: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          nextScalingCheck: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-        },
-      };
-
-      // Log resource quota operation
-      await auditLogger.logEvent({
-        level: 'info',
-        category: 'system',
-        action: `resource_quota_${input.operation}`,
-        userId: input.tenantId,
-        success: result.success,
-        details: {
-          operation: input.operation,
-          quotaConfiguration: result.quotaConfiguration,
-          utilizationMetrics: result.utilizationMetrics,
-        },
-        riskLevel: 'low',
-      });
-
-      componentLogger.info('Resource quota management completed', {
-        tenantId: input.tenantId,
-        operation: input.operation,
-        success: result.success,
-        utilizationMetrics: result.utilizationMetrics,
-      });
-
-      return JSON.stringify(result, null, 2);
-    } catch (error) {
-      componentLogger.error('Resource quota management failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        tenantId: input.tenantId,
-        operation: input.operation,
-      });
-
-      return JSON.stringify({
-        success: false,
-        tenantId: input.tenantId,
-        error: 'Resource quota management service error',
-        quotaConfiguration: {},
-        currentUsage: {},
-        utilizationMetrics: {},
-        scalingStatus: {},
-      }, null, 2);
-    }
-  },
-});
-
-/**
- * Governance Policy Tool
- */
-const createGovernancePolicyTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof GovernancePolicySchema; execute: (input: z.infer<typeof GovernancePolicySchema>) => Promise<string> } => ({
-  name: 'manage_governance_policies',
-  description: 'Manage tenant-specific governance policies, compliance frameworks, and automated policy enforcement',
-  parameters: GovernancePolicySchema,
-  execute: async (input: z.infer<typeof GovernancePolicySchema>): Promise<string> => {
-    try {
-      // Simulate governance policy management
-      const result: GovernancePolicyResult = {
-        success: true,
-        tenantId: input.tenantId,
-        policyManagement: {
-          policiesActive: input.policyConfig.rules.length,
-          policiesEnforced: input.policyConfig.enabled ? input.policyConfig.rules.length : 0,
-          violationsDetected: 0,
-          complianceScore: 95,
-        },
-        complianceStatus: {},
-        auditTrail: {
-          lastAudit: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          auditFrequency: input.complianceMapping?.reportingFrequency || 'monthly',
-          auditCoverage: 100,
-        },
-      };
-
-      // Generate compliance status for each framework
-      if (input.complianceMapping) {
-        for (const framework of input.complianceMapping.frameworks) {
-          result.complianceStatus[framework] = {
-            status: 'compliant',
-            lastAssessment: new Date().toISOString(),
-            nextAssessment: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            violations: [],
-          };
-        }
-      }
-
-      // Log governance policy operation
-      await auditLogger.logEvent({
-        level: 'info',
-        category: 'security',
-        action: `governance_${input.operation}`,
-        userId: input.tenantId,
-        success: result.success,
-        details: {
-          operation: input.operation,
-          policyType: input.policyConfig.policyType,
-          rulesCount: input.policyConfig.rules.length,
-          complianceFrameworks: input.complianceMapping?.frameworks,
-        },
-        riskLevel: 'medium',
-      });
-
-      componentLogger.info('Governance policy management completed', {
-        tenantId: input.tenantId,
-        operation: input.operation,
-        success: result.success,
-        complianceScore: result.policyManagement.complianceScore,
-      });
-
-      return JSON.stringify(result, null, 2);
-    } catch (error) {
-      componentLogger.error('Governance policy management failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        tenantId: input.tenantId,
-        operation: input.operation,
-      });
-
-      return JSON.stringify({
-        success: false,
-        tenantId: input.tenantId,
-        error: 'Governance policy management service error',
-        policyManagement: {},
-        complianceStatus: {},
-        auditTrail: {},
-      }, null, 2);
-    }
-  },
-});
-
-/**
- * Data Leakage Prevention Tool
- */
-const createDataLeakagePreventionTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof DataLeakagePreventionSchema; execute: (input: z.infer<typeof DataLeakagePreventionSchema>) => Promise<string> } => ({
-  name: 'prevent_data_leakage',
-  description: 'Implement comprehensive data leakage prevention with classification, monitoring, and threat detection',
-  parameters: DataLeakagePreventionSchema,
-  execute: async (input: z.infer<typeof DataLeakagePreventionSchema>): Promise<string> => {
-    try {
-      // Simulate data leakage prevention
-      const result: DataLeakagePreventionResult = {
-        success: true,
-        tenantId: input.tenantId,
-        dataProtection: {
-          classifiedData: 1000,
-          encryptedFields: 850,
-          protectedAssets: 500,
-          monitoredAccess: 1200,
-        },
-        threatDetection: {
-          activeMonitoring: input.protectionMechanisms.monitoring.realTimeAlerts,
-          anomaliesDetected: 0,
-          incidentsInvestigated: 0,
-          riskScore: input.dataClassification.sensitivityScore,
-        },
-        complianceStatus: {
-          dataGovernance: true,
-          accessControls: input.protectionMechanisms.accessControls.requireAuthorization,
-          auditTrails: input.protectionMechanisms.monitoring.logAccess,
-          incidentResponse: input.protectionMechanisms.monitoring.forensicsCapability,
-        },
-      };
-
-      // Log data leakage prevention operation
-      await auditLogger.logEvent({
-        level: 'info',
-        category: 'data_access',
-        action: `dlp_${input.operation}`,
-        userId: input.tenantId,
-        success: result.success,
-        details: {
-          operation: input.operation,
-          classificationLevel: input.dataClassification.classificationLevel,
-          dataTypes: input.dataClassification.dataTypes,
-          sensitivityScore: input.dataClassification.sensitivityScore,
-        },
-        riskLevel: input.dataClassification.sensitivityScore > 7 ? 'high' : 'medium',
-      });
-
-      componentLogger.info('Data leakage prevention completed', {
-        tenantId: input.tenantId,
-        operation: input.operation,
-        success: result.success,
-        riskScore: result.threatDetection.riskScore,
-      });
-
-      return JSON.stringify(result, null, 2);
-    } catch (error) {
-      componentLogger.error('Data leakage prevention failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        tenantId: input.tenantId,
-        operation: input.operation,
-      });
-
-      return JSON.stringify({
-        success: false,
-        tenantId: input.tenantId,
-        error: 'Data leakage prevention service error',
-        dataProtection: {},
-        threatDetection: {},
-        complianceStatus: {},
-      }, null, 2);
-    }
-  },
-});
-
-/**
- * Compliance Boundary Tool
- */
-const createComplianceBoundaryTool = (_apiClient: MakeApiClient): { name: string; description: string; parameters: typeof ComplianceBoundarySchema; execute: (input: z.infer<typeof ComplianceBoundarySchema>) => Promise<string> } => ({
-  name: 'manage_compliance_boundaries',
-  description: 'Establish and manage tenant-specific compliance boundaries for multiple regulatory frameworks',
-  parameters: ComplianceBoundarySchema,
-  execute: async (input: z.infer<typeof ComplianceBoundarySchema>): Promise<string> => {
-    try {
-      // Simulate compliance boundary management
-      const result: ComplianceBoundaryResult = {
-        success: true,
-        tenantId: input.tenantId,
-        complianceFramework: input.complianceFramework,
-        boundaryStatus: {
-          dataResidency: input.boundaryConfig.dataResidency.dataLocalization,
-          processingCompliance: input.boundaryConfig.processingLimitations.purposeLimitation,
-          accessControlCompliance: input.boundaryConfig.accessControls.roleBased,
-          auditCompliance: input.auditRequirements.continuousMonitoring,
-        },
-        complianceMetrics: {
-          overallScore: 98,
-          controlsImplemented: 45,
-          controlsTotal: 47,
-          lastAssessment: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-          nextAssessment: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        },
-        certificateStatus: {
-          certified: true,
-          expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-          renewalRequired: false,
-        },
-      };
-
-      // Log compliance boundary operation
-      await auditLogger.logEvent({
-        level: 'info',
-        category: 'security',
-        action: `compliance_${input.operation}`,
-        userId: input.tenantId,
-        success: result.success,
-        details: {
-          operation: input.operation,
-          framework: input.complianceFramework,
-          overallScore: result.complianceMetrics.overallScore,
-          dataResidency: input.boundaryConfig.dataResidency,
-        },
-        riskLevel: 'low',
-      });
-
-      componentLogger.info('Compliance boundary management completed', {
-        tenantId: input.tenantId,
-        operation: input.operation,
-        framework: input.complianceFramework,
-        success: result.success,
-        overallScore: result.complianceMetrics.overallScore,
-      });
-
-      return JSON.stringify(result, null, 2);
-    } catch (error) {
-      componentLogger.error('Compliance boundary management failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        tenantId: input.tenantId,
-        operation: input.operation,
-      });
-
-      return JSON.stringify({
-        success: false,
-        tenantId: input.tenantId,
-        complianceFramework: input.complianceFramework,
-        error: 'Compliance boundary management service error',
-        boundaryStatus: {},
-        complianceMetrics: {},
-        certificateStatus: {},
-      }, null, 2);
-    }
-  },
-});
-
-// ===== TOOL COLLECTION =====
-
-/**
- * All Multi-Tenant Security tools
- */
-export const multiTenantSecurityTools = [
-  createTenantProvisioningTool,
-  createCryptographicIsolationTool,
-  createNetworkSegmentationTool,
-  createResourceQuotaManagementTool,
-  createGovernancePolicyTool,
-  createDataLeakagePreventionTool,
-  createComplianceBoundaryTool,
-];
+// All tool implementations are now inline in addMultiTenantSecurityTools function
 
 /**
  * Add all Multi-Tenant Security tools to FastMCP server
@@ -1671,9 +1143,248 @@ export function addMultiTenantSecurityTools(server: FastMCP, apiClient: MakeApiC
     },
   });
 
+  // Governance Policy Tool
+  server.addTool({
+    name: 'manage_governance_policies',
+    description: 'Manage tenant-specific governance policies, compliance frameworks, and automated policy enforcement',
+    parameters: GovernancePolicySchema,
+    execute: async (input: z.infer<typeof GovernancePolicySchema>): Promise<string> => {
+      try {
+        // Simulate governance policy management
+        const result: GovernancePolicyResult = {
+          success: true,
+          tenantId: input.tenantId,
+          policyManagement: {
+            policiesActive: input.policyConfig.rules.length,
+            policiesEnforced: input.policyConfig.enabled ? input.policyConfig.rules.length : 0,
+            violationsDetected: 0,
+            complianceScore: 95,
+          },
+          complianceStatus: {},
+          auditTrail: {
+            lastAudit: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+            auditFrequency: input.complianceMapping?.reportingFrequency || 'monthly',
+            auditCoverage: 100,
+          },
+        };
+
+        // Generate compliance status for each framework
+        if (input.complianceMapping) {
+          for (const framework of input.complianceMapping.frameworks) {
+            result.complianceStatus[framework] = {
+              status: 'compliant',
+              lastAssessment: new Date().toISOString(),
+              nextAssessment: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              violations: [],
+            };
+          }
+        }
+
+        // Log governance policy operation
+        await auditLogger.logEvent({
+          level: 'info',
+          category: 'security',
+          action: `governance_${input.operation}`,
+          userId: input.tenantId,
+          success: result.success,
+          details: {
+            operation: input.operation,
+            policyType: input.policyConfig.policyType,
+            rulesCount: input.policyConfig.rules.length,
+            complianceFrameworks: input.complianceMapping?.frameworks,
+          },
+          riskLevel: 'medium',
+        });
+
+        componentLogger.info('Governance policy management completed', {
+          tenantId: input.tenantId,
+          operation: input.operation,
+          success: result.success,
+          complianceScore: result.policyManagement.complianceScore,
+        });
+
+        return JSON.stringify(result, null, 2);
+      } catch (error) {
+        componentLogger.error('Governance policy management failed', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          tenantId: input.tenantId,
+          operation: input.operation,
+        });
+
+        return JSON.stringify({
+          success: false,
+          tenantId: input.tenantId,
+          error: 'Governance policy management service error',
+          policyManagement: {},
+          complianceStatus: {},
+          auditTrail: {},
+        }, null, 2);
+      }
+    },
+  });
+
+  // Data Leakage Prevention Tool
+  server.addTool({
+    name: 'prevent_data_leakage',
+    description: 'Implement comprehensive data leakage prevention with classification, monitoring, and threat detection',
+    parameters: DataLeakagePreventionSchema,
+    execute: async (input: z.infer<typeof DataLeakagePreventionSchema>): Promise<string> => {
+      try {
+        // Simulate data leakage prevention
+        const result: DataLeakagePreventionResult = {
+          success: true,
+          tenantId: input.tenantId,
+          dataProtection: {
+            classifiedData: 1000,
+            encryptedFields: 850,
+            protectedAssets: 500,
+            monitoredAccess: 1200,
+          },
+          threatDetection: {
+            activeMonitoring: input.protectionMechanisms.monitoring.realTimeAlerts,
+            anomaliesDetected: 0,
+            incidentsInvestigated: 0,
+            riskScore: input.dataClassification.sensitivityScore,
+          },
+          complianceStatus: {
+            dataGovernance: true,
+            accessControls: input.protectionMechanisms.accessControls.requireAuthorization,
+            auditTrails: input.protectionMechanisms.monitoring.logAccess,
+            incidentResponse: input.protectionMechanisms.monitoring.forensicsCapability,
+          },
+        };
+
+        // Log data leakage prevention operation
+        await auditLogger.logEvent({
+          level: 'info',
+          category: 'data_access',
+          action: `dlp_${input.operation}`,
+          userId: input.tenantId,
+          success: result.success,
+          details: {
+            operation: input.operation,
+            classificationLevel: input.dataClassification.classificationLevel,
+            dataTypes: input.dataClassification.dataTypes,
+            sensitivityScore: input.dataClassification.sensitivityScore,
+          },
+          riskLevel: input.dataClassification.sensitivityScore > 7 ? 'high' : 'medium',
+        });
+
+        componentLogger.info('Data leakage prevention completed', {
+          tenantId: input.tenantId,
+          operation: input.operation,
+          success: result.success,
+          riskScore: result.threatDetection.riskScore,
+        });
+
+        return JSON.stringify(result, null, 2);
+      } catch (error) {
+        componentLogger.error('Data leakage prevention failed', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          tenantId: input.tenantId,
+          operation: input.operation,
+        });
+
+        return JSON.stringify({
+          success: false,
+          tenantId: input.tenantId,
+          error: 'Data leakage prevention service error',
+          dataProtection: {},
+          threatDetection: {},
+          complianceStatus: {},
+        }, null, 2);
+      }
+    },
+  });
+
+  // Compliance Boundary Tool
+  server.addTool({
+    name: 'manage_compliance_boundaries',
+    description: 'Establish and manage tenant-specific compliance boundaries for multiple regulatory frameworks',
+    parameters: ComplianceBoundarySchema,
+    execute: async (input: z.infer<typeof ComplianceBoundarySchema>): Promise<string> => {
+      try {
+        // Simulate compliance boundary management
+        const result: ComplianceBoundaryResult = {
+          success: true,
+          tenantId: input.tenantId,
+          complianceFramework: input.complianceFramework,
+          boundaryStatus: {
+            dataResidency: input.boundaryConfig.dataResidency.dataLocalization,
+            processingCompliance: input.boundaryConfig.processingLimitations.purposeLimitation,
+            accessControlCompliance: input.boundaryConfig.accessControls.roleBased,
+            auditCompliance: input.auditRequirements.continuousMonitoring,
+          },
+          complianceMetrics: {
+            overallScore: 98,
+            controlsImplemented: 45,
+            controlsTotal: 47,
+            lastAssessment: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+            nextAssessment: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+          certificateStatus: {
+            certified: true,
+            expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+            renewalRequired: false,
+          },
+        };
+
+        // Log compliance boundary operation
+        await auditLogger.logEvent({
+          level: 'info',
+          category: 'security',
+          action: `compliance_${input.operation}`,
+          userId: input.tenantId,
+          success: result.success,
+          details: {
+            operation: input.operation,
+            framework: input.complianceFramework,
+            overallScore: result.complianceMetrics.overallScore,
+            dataResidency: input.boundaryConfig.dataResidency,
+          },
+          riskLevel: 'low',
+        });
+
+        componentLogger.info('Compliance boundary management completed', {
+          tenantId: input.tenantId,
+          operation: input.operation,
+          framework: input.complianceFramework,
+          success: result.success,
+          overallScore: result.complianceMetrics.overallScore,
+        });
+
+        return JSON.stringify(result, null, 2);
+      } catch (error) {
+        componentLogger.error('Compliance boundary management failed', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          tenantId: input.tenantId,
+          operation: input.operation,
+        });
+
+        return JSON.stringify({
+          success: false,
+          tenantId: input.tenantId,
+          complianceFramework: input.complianceFramework,
+          error: 'Compliance boundary management service error',
+          boundaryStatus: {},
+          complianceMetrics: {},
+          certificateStatus: {},
+        }, null, 2);
+      }
+    },
+  });
+
   componentLogger.info('Multi-Tenant Security tools registered', {
-    toolCount: 5,
-    tools: ['provision_tenant', 'manage_cryptographic_isolation', 'configure_network_segmentation', 'manage_resource_quotas', 'manage_governance_policies'],
+    toolCount: 7,
+    tools: [
+      'provision_tenant', 
+      'manage_cryptographic_isolation', 
+      'configure_network_segmentation', 
+      'manage_resource_quotas', 
+      'manage_governance_policies',
+      'prevent_data_leakage',
+      'manage_compliance_boundaries'
+    ],
   });
 }
 

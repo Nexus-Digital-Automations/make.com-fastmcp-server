@@ -1275,8 +1275,14 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
           endpoint = `/organizations/${exportConfig.organizationId}/logs`;
         }
 
-        // Initialize enhanced export processing
-        const exportProcessor = new EnhancedLogExportProcessor(apiClient, exportMetadata, log);
+        // Initialize enhanced export processing with logger adapter
+        const loggerAdapter: Logger = {
+          debug: (message: string, data?: SerializableValue) => log.debug(message, data),
+          info: (message: string, data?: SerializableValue) => log.info(message, data),
+          warn: (message: string, data?: SerializableValue) => log.warn(message, data),
+          error: (message: string, data?: SerializableValue) => log.error(message, data)
+        };
+        const exportProcessor = new EnhancedLogExportProcessor(apiClient, exportMetadata, loggerAdapter);
         
         // Handle streaming vs batch export
         if (exportConfig.streaming?.enabled) {
@@ -1785,7 +1791,7 @@ class EnhancedLogExportProcessor {
     
     for (const part of parts) {
       if (value && typeof value === 'object' && part in value) {
-        value = value[part];
+        value = (value as Record<string, unknown>)[part];
       } else {
         return null;
       }
@@ -2349,7 +2355,7 @@ function generateExecutionSummary(executionData: Record<string, unknown>): Recor
   };
 }
 
-function generateExportSummary(logs: MakeLogEntry[], exportConfig: Record<string, unknown>): Record<string, unknown> {
+function generateExportSummary(logs: MakeLogEntry[], exportConfig: ExportConfig): Record<string, unknown> {
   return {
     totalLogsExported: logs.length,
     timeRange: exportConfig.timeRange || { startTime: new Date(0).toISOString(), endTime: new Date().toISOString() },
