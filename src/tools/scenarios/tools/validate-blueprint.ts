@@ -8,6 +8,12 @@ import { ValidateBlueprintSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { validateBlueprintStructure } from '../utils/blueprint-analysis.js';
 
+interface ValidateBlueprintArgs {
+  blueprint?: unknown;
+  strict?: boolean;
+  includeSecurityChecks?: boolean;
+}
+
 /**
  * Create validate blueprint tool configuration
  */
@@ -24,7 +30,7 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
       openWorldHint: false,
     },
     execute: async (args: unknown, { log }): Promise<string> => {
-      const typedArgs = args as any;
+      const typedArgs = args as ValidateBlueprintArgs;
       log?.info?.('Validating blueprint', { 
         hasBlueprint: !!typedArgs.blueprint,
         strict: typedArgs.strict,
@@ -62,8 +68,8 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
             ...validationResult.errors.map((error: string) => `Fix error: ${error}`),
             ...validationResult.warnings.map((warning: string) => `Consider: ${warning}`),
             ...(typedArgs.includeSecurityChecks ? validationResult.securityIssues
-              .filter((issue: any) => issue.severity === 'critical' || issue.severity === 'high')
-              .map((issue: any) => `Security: ${issue.description}`) : [])
+              .filter((issue: { severity: string }) => issue.severity === 'critical' || issue.severity === 'high')
+              .map((issue: { description: string }) => `Security: ${issue.description}`) : [])
           ].slice(0, 10)
         }, null, 2);
 

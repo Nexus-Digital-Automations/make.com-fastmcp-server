@@ -207,10 +207,10 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
         reportProgress?.({ progress: 100, total: 100 });
 
         log?.info?.('Troubleshooting report generated successfully', {
-          reportId: (finalReport as any).metadata?.reportId,
+          reportId: (finalReport as { metadata?: { reportId?: string } }).metadata?.reportId,
           formatType,
-          scenarioCount: (finalReport as any).metadata?.analysisScope?.scenarioCount,
-          totalIssues: (finalReport as any).consolidatedFindings?.totalIssues
+          scenarioCount: (finalReport as { metadata?: { analysisScope?: { scenarioCount?: number } } }).metadata?.analysisScope?.scenarioCount,
+          totalIssues: (finalReport as { consolidatedFindings?: { totalIssues?: number } }).consolidatedFindings?.totalIssues
         });
 
         return JSON.stringify(finalReport, null, 2);
@@ -232,7 +232,7 @@ async function fetchScenariosForTroubleshooting(
   scenarioIds: string[],
   teamId?: string
 ): Promise<unknown[]> {
-  const scenarios: any[] = [];
+  const scenarios: unknown[] = [];
   
   for (const scenarioId of scenarioIds) {
     try {

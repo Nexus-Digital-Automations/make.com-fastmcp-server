@@ -7,6 +7,12 @@ import { UserError } from 'fastmcp';
 import { RunScenarioSchema } from '../schemas/scenario-filters.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 
+interface RunScenarioArgs {
+  scenarioId: string;
+  wait?: boolean;
+  timeout?: number;
+}
+
 /**
  * Create run scenario tool configuration
  */
@@ -23,7 +29,7 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
       openWorldHint: false,
     },
     execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      const typedArgs = args as any;
+      const typedArgs = args as RunScenarioArgs;
       log?.info?.('Starting scenario execution', { 
         scenarioId: typedArgs.scenarioId,
         wait: typedArgs.wait,
@@ -84,7 +90,7 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
             startedAt: executionData.startedAt,
             completedAt: undefined as string | undefined,
             duration: undefined as number | undefined,
-            result: undefined as any
+            result: undefined as unknown
           },
           metadata: {
             waitForCompletion: typedArgs.wait,
@@ -121,8 +127,8 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
                   status: string;
                   startedAt: string;
                   completedAt?: string;
-                  result?: any;
-                  error?: any;
+                  result?: unknown;
+                  error?: unknown;
                 };
                 
                 finalResult.execution.status = statusData.status;
