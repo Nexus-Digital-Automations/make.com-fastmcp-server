@@ -11028,9 +11028,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755801909314_t5mnsm7nt",
+      "title": "Improve Jest test infrastructure and mocking configuration",
+      "description": "Enhance test infrastructure to resolve Jest mocking issues and improve test reliability:\n\n1. Investigate Jest class constructor invocation errors (diagnostic-rules.test.ts)\n2. Improve test mock factories for better API simulation\n3. Fix test helper functions for more reliable test execution\n4. Enhance test setup configuration for consistent test environments\n5. Review and optimize Jest configuration for better performance\n\nThis will support the agents working on test-error tasks by providing better test infrastructure.",
+      "mode": "DEVELOPMENT",
+      "category": "test-setup",
+      "priority": "medium",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T18:45:09.314Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755801797727_1_general_b2e281e1",
+      "started_at": "2025-08-21T18:45:16.018Z",
+      "claimed_by": "development_session_1755801797727_1_general_b2e281e1",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755801797727_1_general_b2e281e1",
+          "role": "primary",
+          "assignedAt": "2025-08-21T18:45:16.018Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T18:48:55.959Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T18:48:55.959Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 252,
-  "last_completion": "2025-08-21T18:38:53.195Z",
+  "total_completed": 253,
+  "last_completion": "2025-08-21T18:48:55.959Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

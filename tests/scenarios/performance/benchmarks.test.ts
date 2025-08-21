@@ -107,9 +107,9 @@ describe('Scenarios Module - Performance Benchmarks', () => {
       // Tool registration should be very fast (< 100ms)
       expect(registrationTime).toBeLessThan(100);
       
-      // Verify all tools are registered
+      // Verify all tools are registered (13 tools expected as of latest module)
       const toolNames = Array.from((server as any).tools.keys());
-      expect(toolNames.length).toBe(11);
+      expect(toolNames.length).toBe(13);
     });
 
     test('should handle multiple server instances efficiently', () => {
@@ -132,10 +132,10 @@ describe('Scenarios Module - Performance Benchmarks', () => {
       // Multiple registrations should scale well (< 500ms for 10 servers)
       expect(totalTime).toBeLessThan(500);
       
-      // Verify all servers have tools registered
+      // Verify all servers have tools registered (13 tools expected)
       servers.forEach(testServer => {
         const toolNames = Array.from((testServer as any).tools.keys());
-        expect(toolNames.length).toBe(11);
+        expect(toolNames.length).toBe(13);
       });
     });
   });

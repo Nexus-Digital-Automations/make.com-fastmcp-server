@@ -3,7 +3,7 @@
  * Provides encryption at rest, key derivation, and secure storage capabilities
  */
 
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 import { promisify } from 'util';
 import logger from '../lib/logger.js';
 
@@ -124,8 +124,8 @@ export class EncryptionService {
       // Derive key from master password
       const key = await this.deriveKey(masterPassword, salt);
       
-      // Create cipher
-      const cipher = crypto.createCipher(EncryptionService.ALGORITHM, key);
+      // Create cipher with IV
+      const cipher = crypto.createCipheriv(EncryptionService.ALGORITHM, key, iv);
       
       // Encrypt data
       let encrypted = cipher.update(plaintext, 'utf8', 'base64');
@@ -164,17 +164,20 @@ export class EncryptionService {
    */
   public async decrypt(encryptedData: EncryptedData, masterPassword: string): Promise<string> {
     try {
-      // Parse salt (IV not used with createDecipher)
+      // Parse salt and IV
       const salt = Buffer.from(encryptedData.salt, 'base64');
+      const iv = Buffer.from(encryptedData.iv, 'base64');
       
       // Derive key from master password
       const key = await this.deriveKey(masterPassword, salt);
       
-      // Parse encrypted data (tag not used with createDecipher)
-      const [encryptedText] = encryptedData.data.split(':');
+      // Parse encrypted data and authentication tag
+      const [encryptedText, tagB64] = encryptedData.data.split(':');
+      const tag = Buffer.from(tagB64, 'base64');
       
-      // Create decipher
-      const decipher = crypto.createDecipher(encryptedData.algorithm, key);
+      // Create decipher with IV
+      const decipher = crypto.createDecipheriv(encryptedData.algorithm, key, iv);
+      decipher.setAuthTag(tag);
       
       // Decrypt data
       let decrypted = decipher.update(encryptedText, 'base64', 'utf8');

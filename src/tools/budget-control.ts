@@ -851,6 +851,52 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
           }, null, 2);
         }
 
+        // Special handling for 'analyze' action - return analysis structure
+        if (action === 'analyze') {
+          reportProgress({ progress: 100, total: 100 });
+
+          log.info('Scenario analysis completed successfully', {
+            budgetId,
+            action,
+            scenariosAnalyzed: scenarios.length,
+            estimatedSavings: scenarioAnalysis.estimatedSavings,
+          });
+
+          return JSON.stringify({
+            analysis: {
+              totalScenarios: scenarios.length,
+              highCostScenarios: scenarios.length,
+              averageCost: scenarioAnalysis.estimatedSavings / scenarios.length / 30, // Daily average
+              topCostScenarios: scenarioAnalysis.scenarios.map(s => ({
+                scenarioId: s.id,
+                name: s.name,
+                dailyCost: s.currentCost,
+                monthlyProjection: s.currentCost * 30,
+                riskLevel: s.impact === 'high' ? 'high' : s.impact === 'medium' ? 'medium' : 'low'
+              }))
+            },
+            recommendations: [
+              'Consider optimizing high-cost scenario configurations',
+              'Review webhook timeout and retry settings',
+              'Implement cost-aware scheduling for non-critical scenarios',
+              'Monitor scenario execution patterns for optimization opportunities'
+            ],
+            controlActions: {
+              available: ['throttle', 'pause', 'resume'],
+              suggested: scenarioAnalysis.impact.level === 'high' ? 'throttle' : 'monitor',
+              estimatedSavings: scenarioAnalysis.estimatedSavings,
+              rollbackPlan: scenarioAnalysis.rollbackPlan
+            },
+            summary: {
+              action,
+              budgetId,
+              scenariosAnalyzed: scenarios.length,
+              executedAt: new Date().toISOString(),
+              riskLevel: scenarioAnalysis.impact.level,
+            },
+          }, null, 2);
+        }
+
         const executionResult = await executeScenarioControl(scenarios, action, reason);
 
         reportProgress({ progress: 100, total: 100 });
