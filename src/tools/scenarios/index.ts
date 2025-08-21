@@ -33,9 +33,11 @@ import { createCloneScenarioTool } from './tools/clone-scenario.js';
 
 // Import execution and analysis tools
 import { createTroubleshootScenarioTool, createGenerateTroubleshootingReportTool } from './tools/troubleshoot-scenario.js';
+import { createRunScenarioTool } from './tools/run-scenario.js';
 
 // Import blueprint tools
 import { createAnalyzeBlueprintTool } from './tools/analyze-blueprint.js';
+import { createValidateBlueprintTool } from './tools/validate-blueprint.js';
 import { createOptimizeBlueprintTool } from './tools/optimize-blueprint.js';
 
 // Import version information
@@ -80,20 +82,22 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
 
     // Register execution and analysis tools
     componentLogger.debug('Registering execution and analysis tools');
+    server.addTool(createRunScenarioTool(toolContext));
     server.addTool(createTroubleshootScenarioTool(toolContext));
     server.addTool(createGenerateTroubleshootingReportTool(toolContext));
 
     // Register blueprint tools
     componentLogger.debug('Registering blueprint manipulation tools');
     server.addTool(createAnalyzeBlueprintTool(toolContext));
+    server.addTool(createValidateBlueprintTool(toolContext));
     server.addTool(createOptimizeBlueprintTool(toolContext));
 
     componentLogger.info('Scenario management tools registered successfully', {
       toolsRegistered: [
         'list-scenarios', 'get-scenario', 'create-scenario',
         'update-scenario', 'delete-scenario', 'clone-scenario',
-        'troubleshoot-scenario', 'generate-troubleshooting-report',
-        'analyze-blueprint', 'validate-blueprint', 'extract-blueprint-connections', 'optimize-blueprint'
+        'run-scenario', 'troubleshoot-scenario', 'generate-troubleshooting-report',
+        'analyze-blueprint', 'validate-blueprint', 'optimize-blueprint'
       ],
       totalTools: 12,
       totalExpected: 12,

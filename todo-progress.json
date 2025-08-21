@@ -1,0 +1,7 @@
+[
+  {
+    "content": "Fix critical test infrastructure failures - SIGNIFICANT PROGRESS: Fixed tool registration import issues in scenarios module. All tool import and registration tests now passing. Remaining: budget control mock expectations, credential management tool registration, and cross-module integration tests.",
+    "status": "in_progress",
+    "id": "fix_test_infrastructure"
+  }
+]

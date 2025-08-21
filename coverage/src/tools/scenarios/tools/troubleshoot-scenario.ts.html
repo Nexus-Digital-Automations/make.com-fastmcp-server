@@ -510,7 +510,15 @@
 <a name='L445'></a><a href='#L445'>445</a>
 <a name='L446'></a><a href='#L446'>446</a>
 <a name='L447'></a><a href='#L447'>447</a>
-<a name='L448'></a><a href='#L448'>448</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L448'></a><a href='#L448'>448</a>
+<a name='L449'></a><a href='#L449'>449</a>
+<a name='L450'></a><a href='#L450'>450</a>
+<a name='L451'></a><a href='#L451'>451</a>
+<a name='L452'></a><a href='#L452'>452</a>
+<a name='L453'></a><a href='#L453'>453</a>
+<a name='L454'></a><a href='#L454'>454</a>
+<a name='L455'></a><a href='#L455'>455</a>
+<a name='L456'></a><a href='#L456'>456</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -525,8 +533,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -582,8 +590,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -815,6 +823,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -983,8 +999,8 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
       readOnlyHint: true,
       openWorldHint: false,
     },<span class="fstat-no" title="function not covered" ></span>
-    execute:<span class="cstat-no" title="statement not covered" > async (args: unknown, { log, reportProgress }): Promise</span>&lt;string&gt; =&gt; {
-      log?.i<span class="cstat-no" title="statement not covered" >nfo?.('Starting scenario troubleshooting', args</span>);
+    execute:<span class="cstat-no" title="statement not covered" > async (args: unknown, { log, reportProgress }): Promise&lt;string&gt; =&gt; {</span>
+      log?.i<span class="cstat-no" title="statement not covered" >nfo?.('Starting scenario troubleshooting', JSON</span>.stringify(args));
       report<span class="cstat-no" title="statement not covered" >Progress?.({ progress: 0, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span>
       try {<span class="cstat-no" title="statement not covered" ></span>
@@ -1082,7 +1098,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
       openWorldHint: false,
     },
     execute: async (args: unknown, { log, reportProgress }): Promise&lt;string&gt; =&gt; {
-      log?.info?.('Generating comprehensive troubleshooting report', args);
+      log?.info?.('Generating comprehensive troubleshooting report', JSON.stringify(args));
       reportProgress?.({ progress: 0, total: 100 });
 &nbsp;
       try {
@@ -1119,7 +1135,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
 &nbsp;
         log?.inf<span class="cstat-no" title="statement not covered" >o?.('Fetched scenarios for report generation', { </span>
           scenarioCount: scenarios.length,
-          filters,
+          filters: JSON.stringify(filters),
           timeRangeHours 
         });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
@@ -1311,7 +1327,7 @@ async function analyzeDependencies(scenarios: unknown[]): Promise&lt;unknown&gt;
     totalScenarios: scenarios.length,
     dependencyMap: {},
     circularDependencies: [],
-    isolatedScenarios: scenarios.filter(s =&gt; !(s as any).dependencies?.length).length
+    isolatedScenarios: scenarios.filter(s =&gt; !((s as { dependencies?: unknown[] }).dependencies?.length)).length
   };
 }
 &nbsp;
@@ -1351,7 +1367,13 @@ function generateTroubleshootingInsights(_report: unknown, _scenarios: unknown[]
  * Format report for executive summary
  */
 function formatExecutiveReport(baseReport: unknown): unknown {
-  const _report = baseReport as any;
+  const _report = baseReport as { 
+    metadata?: unknown; 
+    executiveSummary?: unknown;
+    systemOverview?: unknown;
+    actionPlan?: { immediate?: unknown[] };
+    consolidatedFindings?: { securityRiskLevel?: string; criticalIssues?: number };
+  };
   return {
     metadata: _report.metadata,
     executiveSummary: _report.executiveSummary,
@@ -1369,7 +1391,9 @@ function formatExecutiveReport(baseReport: unknown): unknown {
  * Format report for technical audience
  */
 function formatTechnicalReport(baseReport: unknown, scenarios: unknown[]): unknown {
-  const report = baseReport as any;
+  const report = baseReport as Record&lt;string, unknown&gt; &amp; { 
+    metadata?: { generatedAt?: unknown } 
+  };
   return {
     ...(baseReport as Record&lt;string, unknown&gt;),
     technicalDetails: {
@@ -1411,7 +1435,7 @@ async function generateSecurityAssessment(_scenarios: unknown[]): Promise&lt;unk
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T17:32:55.648Z
+                at 2025-08-21T18:14:56.826Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

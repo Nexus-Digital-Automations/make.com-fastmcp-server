@@ -559,7 +559,10 @@
 <a name='L494'></a><a href='#L494'>494</a>
 <a name='L495'></a><a href='#L495'>495</a>
 <a name='L496'></a><a href='#L496'>496</a>
-<a name='L497'></a><a href='#L497'>497</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L497'></a><a href='#L497'>497</a>
+<a name='L498'></a><a href='#L498'>498</a>
+<a name='L499'></a><a href='#L499'>499</a>
+<a name='L500'></a><a href='#L500'>500</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -957,6 +960,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1125,8 +1131,8 @@ export interface ErrorInfo {
   co<span class="cstat-no" title="statement not covered" >de: ErrorCode;</span>
   me<span class="cstat-no" title="statement not covered" >ssage: string;</span>
   field?: string;
-  details?: Record&lt;string, any&gt;;
-  context?: Record&lt;string, any&gt;;
+  details?: Record&lt;string, unknown&gt;;
+  context?: Record&lt;string, unknown&gt;;
   timestamp?: Date;
   requestId?: string;
 }
@@ -1138,8 +1144,8 @@ export class FastMCPError extends UserError {
   public readonly category: ErrorCategory;
   pu<span class="fstat-no" title="function not covered" >bl</span>ic readonly code: ErrorCode;
   public<span class="cstat-no" title="statement not covered" > readonly field?: string;</span>
-  public<span class="cstat-no" title="statement not covered" > readonly details?: Record&lt;stri</span>ng, any&gt;;
-  public<span class="cstat-no" title="statement not covered" > readonly context?: Rec</span>ord&lt;string, any&gt;;
+  public<span class="cstat-no" title="statement not covered" > readonly details?: Record&lt;stri</span>ng, unknown&gt;;
+  public<span class="cstat-no" title="statement not covered" > readonly context?: Rec</span>ord&lt;string, unknown&gt;;
   public<span class="cstat-no" title="statement not covered" > readonly timestamp: Date</span>;
   public<span class="cstat-no" title="statement not covered" > readonly requestId?: string;</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -1175,7 +1181,7 @@ export class FastMCPError extends UserError {
   /**
    * Convert to operation result format
 <span class="cstat-no" title="statement not covered" >   */</span>
-  toOperationResult&lt;T = any&gt;(): OperationResult&lt;T&gt; {
+  toOperationResult&lt;T = unknown&gt;(): OperationResult&lt;T&gt; {
     return {
       success: false,
       err<span class="fstat-no" title="function not covered" >or: this.message,</span>
@@ -1190,7 +1196,7 @@ export class FastMCPError extends UserError {
 export function createValidationError(
   message: string,
   field?: string,
-  details<span class="fstat-no" title="function not covered" >?: Record&lt;string, an</span>y&gt;
+  details<span class="fstat-no" title="function not covered" >?: Record&lt;string, un</span>known&gt;
 ): FastMCPError {<span class="cstat-no" title="statement not covered" ></span>
   return new FastMCPError({
     category: ErrorCategory.VALIDATION,
@@ -1207,7 +1213,7 @@ export function createValidationError(
 export function createNotFoundError(
   resource: string,
   identifier?: string | number,
-  details?: Record&lt;string, any&gt;
+  details?: Record&lt;string, unknown&gt;
 ): FastMC<span class="fstat-no" title="function not covered" >PError {<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
   co<span class="cstat-no" title="statement not covered" >nst message = identifier </span>
     ? `${resource} with identifier '${identifier}' not found`
@@ -1230,7 +1236,7 @@ export function createNotFoundError(
  */
 export function createAuthenticationError(
   message: string = 'Authentication failed',
-  details?: Record&lt;string, any&gt;
+  details?: Record&lt;string, unknown&gt;
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.AUTHENTICATION,
@@ -1247,7 +1253,7 @@ export function createAuthorizationError(
   message: string = 'Access forbidden',
   resource?: string,
   action?: string,
-  details?: Record&lt;string, any&gt;
+  details?: Record&lt;string, unknown&gt;
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.AUTHORIZATION,
@@ -1266,7 +1272,7 @@ export function createAuthorizationError(
  */
 export function createRateLimitError(
   resetTi<span class="fstat-no" title="function not covered" >me?: number,</span>
-  de<span class="cstat-no" title="statement not covered" >tails?: Record&lt;string, any&gt;</span>
+  de<span class="cstat-no" title="statement not covered" >tails?: Record&lt;string, unknown&gt;</span>
 ): FastMCPError {
   const message = resetTime
     ? `Rate limit exceeded. Try again after ${new Date(resetTime * 1000).toISOString()}`
@@ -1289,7 +1295,7 @@ export function createRateLimitError(
 export function createNetworkError(
   message: string = 'Network error occurred',
   originalError?: Error,
-  details?: Record&lt;string, any&gt;
+  details?: Record&lt;string, unknown&gt;
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.NETWORK,
@@ -1308,7 +1314,7 @@ export function createNetworkError(
 export function createTimeoutError(
   operation: string,
   timeout: number,
-  details?: Record&lt;string, any&gt;
+  details?: Record&lt;string, unknown&gt;
 ): FastMCPError {
   re<span class="cstat-no" title="statement not covered" >turn new FastMCPError({</span>
     category: ErrorCategory.TIMEOUT,
@@ -1328,7 +1334,7 @@ export function createTimeoutError(
 export function createInternalError(
   message: string = 'Internal server error',
   originalError?: Error,
-  detail<span class="cstat-no" title="statement not covered" >s?: Record&lt;string, any&gt;</span>
+  detail<span class="cstat-no" title="statement not covered" >s?: Record&lt;string, unknown&gt;</span>
 ): FastMCPEr<span class="cstat-no" title="statement not covered" >ror {</span>
   return new FastMCPError({
     category: ErrorCategory.INTERNAL,
@@ -1347,7 +1353,7 @@ export function createInternalError(
  */<span class="cstat-no" title="statement not covered" ></span>
 export funct<span class="cstat-no" title="statement not covered" >ion handleError(</span>
   error: unknown,
-  context?: Record&lt;string, any&gt;
+  context?: Record&lt;string, unknown&gt;
 ): FastMCPError {
   // Already a FastMCPError
   if (error instanceof FastMCPError) {
@@ -1435,7 +1441,7 @@ export funct<span class="cstat-no" title="statement not covered" >ion handleErro
  */
 export async function executeWithErrorHandling&lt;T&gt;(
   operation: () =&gt; Promise&lt;T&gt;,
-  context?: Record&lt;string, any&gt;
+  context?: Record&lt;string, unknown&gt;
 ): Promise&lt;OperationResult&lt;T&gt;&gt; {
   tr<span class="cstat-no" title="statement not covered" >y {</span>
     const data = await operation();
@@ -1454,7 +1460,7 @@ export async function executeWithErrorHandling&lt;T&gt;(
  */<span class="cstat-no" title="statement not covered" ></span>
 export async<span class="cstat-no" title="statement not covered" > functi</span>on executeOrThrow&lt;T&gt;(
   operation: () =&gt; Promise&lt;T&gt;,
-  context?: Record&lt;string, any&gt;
+  context?: Record&lt;string, unknown&gt;
 ): Promise&lt;T&gt; {
   try {
     return await operation();
@@ -1481,7 +1487,7 @@ export async function retryOperation&lt;T&gt;(
     baseDelay = 1000,
     maxDelay = 10000,
     backoffFactor = 2,
-    retryCondition = (error) =&gt; 
+    retryCondition = (error): boolean =&gt; 
       error.message.includes('network') || 
       error.message.includes('timeout') ||
       error.message.includes('503') ||
@@ -1516,8 +1522,11 @@ export async function retryOperation&lt;T&gt;(
  */
 export function logError(
   error: FastMCPError,
-  logger: any,
-  additionalContext?: Record&lt;string, any&gt;
+  logger: {
+    error?: (message: string, data?: Record&lt;string, unknown&gt;) =&gt; void;
+    warn?: (message: string, data?: Record&lt;string, unknown&gt;) =&gt; void;
+  },
+  additionalContext?: Record&lt;string, unknown&gt;
 ): void {
   const errorInfo = {
     category: error.category,
@@ -1544,7 +1553,7 @@ export function logError(
     
     case ErrorCategory.RATE_LIMIT:
     case ErrorCategory.QUOTA_EXCEEDED:
-      logger.info?.('Rate limit error occurred', errorInfo);
+      logger.warn?.('Rate limit error occurred', errorInfo);
       break;
     
     default:
@@ -1558,7 +1567,7 @@ export function logError(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T17:32:55.648Z
+                at 2025-08-21T18:14:56.826Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

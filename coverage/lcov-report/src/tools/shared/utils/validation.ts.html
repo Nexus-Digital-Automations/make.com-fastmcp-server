@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/81</span>
+                <span class='fraction'>0/83</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/55</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/77</span>
+                <span class='fraction'>0/80</span>
             </div>
         
             
@@ -419,7 +419,12 @@
 <a name='L354'></a><a href='#L354'>354</a>
 <a name='L355'></a><a href='#L355'>355</a>
 <a name='L356'></a><a href='#L356'>356</a>
-<a name='L357'></a><a href='#L357'>357</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -645,6 +650,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -800,7 +810,7 @@ export interface ValidationError {
   field: string;
   message: string;
   code: string;
-  value?: any;
+  value?: unknown;
 }
 <span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
@@ -1000,17 +1010,17 @@ expo<span class="cstat-no" title="statement not covered" >rt function va</span>l
     to: z.string().datetime(),
   }).refine(data =&gt; new Date(data.from) &lt; new Date(data.to), {
     messa<span class="fstat-no" title="function not covered" >ge: "From date </span>must be before to date",
-  })<span class="cstat-no" title="statement not covered" >;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-&nbsp;
-  return validateInputOrThrow(dateRangeSchema, params, {
+  })<span class="cstat-no" title="statement not covered" >;<span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  return val<span class="cstat-no" title="statement not covered" >idateInputOrThrow(dat</span>eRangeSchema, params, {
     context: 'Date range',
-  });
-<span class="cstat-no" title="statement not covered" >}</span>
+  });<span class="cstat-no" title="statement not covered" ></span>
+}
 &nbsp;
 /**
  * Convert validation errors to API errors
  * @param errors - Validation errors
- * @returns API errors
+<span class="cstat-no" title="statement not covered" > * @returns API errors</span>
  */
 export function validationErrorsToApiErrors(errors: ValidationError[]): ApiError[] {
   return errors.map(error =&gt; ({
@@ -1035,38 +1045,43 @@ export function formatValidationErrors(errors: ValidationError[]): string {
 }
 &nbsp;
 /**
- * Check if value is empty (null, u<span class="fstat-no" title="function not covered" >nd</span>efined, empty string, empty array, empty object)
- * @param va<span class="cstat-no" title="statement not covered" >lue - Value to check</span>
- * @returns True<span class="cstat-no" title="statement not covered" > if empty</span>
- */<span class="cstat-no" title="statement not covered" ></span>
-export function <span class="cstat-no" title="statement not covered" >isEmpty(value:</span> unknown): boolean {
-  if (value <span class="cstat-no" title="statement not covered" >=== null || value === undefined) {</span>
-    return true;
-  }
-&nbsp;
-  if (typeof value === 'string') {
-    return value.trim().length === 0;
+ * Check if value is empty (null, undefined, empty string, empty array, empty object)
+ * @param value - Value to check
+ * @returns True if empty
+ */
+export function isEmpty(value: unknown): boolean {
+  if (value === null || value === u<span class="fstat-no" title="function not covered" >nd</span>efined) {
+    return t<span class="cstat-no" title="statement not covered" >rue;</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  if (typeof val<span class="cstat-no" title="statement not covered" >ue === 'string</span>') {
+    return v<span class="cstat-no" title="statement not covered" >alue.trim().length === 0;</span>
   }
 &nbsp;
   if (Array.isArray(value)) {
     return value.length === 0;
-  }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  if (typeof<span class="cstat-no" title="statement not covered" > value === 'object') {</span>
+  }
+&nbsp;
+  if (typeof value === 'object') {
     return Object.keys(value).length === 0;
   }
-<span class="cstat-no" title="statement not covered" ></span>
-  return fal<span class="cstat-no" title="statement not covered" >se;</span>
-}
+<span class="fstat-no" title="function not covered" ></span>
+  return<span class="cstat-no" title="statement not covered" > false;</span>
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 /**
- * Get nested value from object using path array
- * @param obj - Object to get value from
+ * Get neste<span class="cstat-no" title="statement not covered" >d value from object using path array</span>
+ * @param ob<span class="cstat-no" title="statement not covered" >j - Object to get valu</span>e from
  * @param path - Path array
  * @returns Nested value
  */
-function getNestedValue(obj: any, path: (string | number)[]): any {
-  return path.reduce((current, key) =&gt; current?.[key], obj);
+function getNestedValue(obj: unknown, path: (string | number)[]): unknown {
+  return path.reduce((current, key) =&gt; {
+    if (current &amp;&amp; typeof current === 'object' &amp;&amp; key in current) {
+      return (current as Record&lt;string | number, unknown&gt;)[key];
+    }
+    return undefined;
+  }, obj);
 }
 &nbsp;
 /**
@@ -1138,7 +1153,7 @@ export const CommonSchemas = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T17:32:55.499Z
+                at 2025-08-21T18:14:56.683Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

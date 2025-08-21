@@ -7,7 +7,7 @@
 
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { UserError } from 'fastmcp';
-import { createMockServer, findTool, executeTool, expectValidZodParse, expectInvalidZodParse } from '../../utils/test-helpers.js';
+import { createMockServer, findTool, executeTool, expectValidZodParse, expectInvalidZodParse, extractToolConfigs } from '../../utils/test-helpers.js';
 import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
 import { testErrors, testScenarios } from '../../fixtures/test-data.js';
 
@@ -127,7 +127,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
 
   describe('Tool Registration and Import', () => {
     it('should successfully import and register scenario tools', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       
       // Should not throw an error
       expect(() => {
@@ -140,7 +140,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should export the expected scenario tools and functions', async () => {
-      const scenarioModule = await import('../../../src/tools/scenarios.js');
+      const scenarioModule = await import('../../../src/tools/scenarios/index.js');
       
       // Check that expected exports exist
       expect(scenarioModule.addScenarioTools).toBeDefined();
@@ -150,7 +150,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should register all core scenario management tools', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const expectedTools = [
@@ -163,8 +163,8 @@ describe('Scenario Management Tools - Basic Tests', () => {
         'run-scenario',
         'troubleshoot-scenario',
         'generate-troubleshooting-report',
+        'analyze-blueprint',
         'validate-blueprint',
-        'extract-blueprint-connections',
         'optimize-blueprint'
       ];
       
@@ -176,7 +176,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should register scenario lifecycle management tools', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const lifecycleTools = [
@@ -196,7 +196,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should register workflow execution and monitoring tools', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const executionTools = [
@@ -215,12 +215,12 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should register blueprint management and validation tools', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const blueprintTools = [
+        'analyze-blueprint',
         'validate-blueprint',
-        'extract-blueprint-connections',
         'optimize-blueprint'
       ];
       
@@ -236,7 +236,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
 
   describe('Tool Configuration Validation', () => {
     it('should have correct structure for list-scenarios tool', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'list-scenarios');
@@ -249,7 +249,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should have correct structure for scenario lifecycle tools', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       // Test create-scenario tool
@@ -275,7 +275,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should have correct structure for workflow execution tools', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       // Test run-scenario tool
@@ -294,7 +294,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should have correct structure for blueprint management tools', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       // Test validate-blueprint tool
@@ -322,7 +322,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
 
   describe('Schema Validation', () => {
     it('should validate list-scenarios schema with correct inputs', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'list-scenarios');
@@ -342,7 +342,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should reject invalid list-scenarios schema inputs', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'list-scenarios');
@@ -363,7 +363,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should validate create-scenario schema with different configurations', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-scenario');
@@ -402,7 +402,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should validate update-scenario schema with partial updates', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'update-scenario');
@@ -430,7 +430,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should validate blueprint schema with complex structures', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'validate-blueprint');
@@ -494,7 +494,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should validate troubleshooting schema with comprehensive options', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'troubleshoot-scenario');
@@ -515,7 +515,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should validate run scenario schema with execution parameters', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'run-scenario');
@@ -539,7 +539,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
         metadata: { total: 1, page: 1, limit: 10 }
       });
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'list-scenarios');
@@ -561,7 +561,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
         data: testScenario
       });
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'get-scenario');
@@ -590,7 +590,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
         data: newScenario
       });
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-scenario');
@@ -610,7 +610,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should execute validate-blueprint with detailed validation', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'validate-blueprint');
@@ -643,7 +643,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
         data: executionResult
       });
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'run-scenario');
@@ -690,7 +690,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
         data: testBlueprint
       });
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'troubleshoot-scenario');
@@ -712,7 +712,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     it('should handle API failures gracefully', async () => {
       mockApiClient.mockFailure('GET', '/scenarios', new Error('Scenario service unavailable'));
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'list-scenarios');
@@ -723,7 +723,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     it('should handle unauthorized access errors', async () => {
       mockApiClient.mockResponse('GET', '/scenarios', testErrors.unauthorized);
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'list-scenarios');
@@ -732,7 +732,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should validate required fields for scenario operations', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const createTool = findTool(mockTool, 'create-scenario');
@@ -744,7 +744,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should validate blueprint security and compliance', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'validate-blueprint');
@@ -780,7 +780,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     it('should enforce scenario lifecycle security controls', async () => {
       mockApiClient.mockResponse('DELETE', '/scenarios/2001', testErrors.unauthorized);
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'delete-scenario');
@@ -794,7 +794,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     it('should validate execution permissions and rate limits', async () => {
       mockApiClient.mockResponse('POST', '/scenarios/2001/run', testErrors.rateLimited);
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'run-scenario');
@@ -805,7 +805,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should handle blueprint optimization with performance analysis', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'optimize-blueprint');
@@ -842,7 +842,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
         data: clonedScenario
       });
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'clone-scenario');
@@ -900,7 +900,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
         data: [testScenario, { ...testScenario, id: 2002 }]
       });
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'generate-troubleshooting-report');
@@ -931,7 +931,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
     });
 
     it('should support blueprint connection analysis for migration planning', async () => {
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'extract-blueprint-connections');
@@ -998,7 +998,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
         data: updatedScenario
       });
 
-      const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+      const { addScenarioTools } = await import('../../../src/tools/scenarios/index.js');
       addScenarioTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'update-scenario');

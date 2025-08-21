@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/193</span>
+                <span class='fraction'>0/197</span>
             </div>
         
             
@@ -868,7 +868,10 @@
 <a name='L803'></a><a href='#L803'>803</a>
 <a name='L804'></a><a href='#L804'>804</a>
 <a name='L805'></a><a href='#L805'>805</a>
-<a name='L806'></a><a href='#L806'>806</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L806'></a><a href='#L806'>806</a>
+<a name='L807'></a><a href='#L807'>807</a>
+<a name='L808'></a><a href='#L808'>808</a>
+<a name='L809'></a><a href='#L809'>809</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -992,6 +995,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1797,12 +1803,12 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
           path: destination.webhookUrl || '/tmp/log-export',
           externalSystemConfig: desti<span class="cstat-no" title="statement not covered" >nation.externalSystemConfig ? {</span>
             type<span class="cstat-no" title="statement not covered" >: destination.externalSystemConfig.type,</span>
-            endp<span class="cstat-no" title="statement not covered" >oint: destination.externalSystemConfig.connection?.url,</span>
-            authenti<span class="cstat-no" title="statement not covered" >cation: desti</span>nation.externalSystemConfig.authentication ? {
-              ty<span class="cstat-no" title="statement not covered" >pe: destination.externalSystemConfig.authentication.type || 'api_key',</span>
-              credentials: destination.externalSystemConfig.authentication.credentials || {}
-            } : undefined,
-            options: {
+            endpoint: destination.externalSystemConfig.connection?.url,
+            authentication: destination.externalSystemConfig.authentication ? {
+              type: destination.externalSystemConfig.authentication.type || 'api_key',
+              cr<span class="cstat-no" title="statement not covered" >edentials: destination.externalSystemConfig.authentication.credentials || {}</span>
+            } : unde<span class="cstat-no" title="statement not covered" >fined,</span>
+            opti<span class="cstat-no" title="statement not covered" >ons: {</span>
               timeout: 30000,
               retries: destination.externalSystemConfig.retryPolicy?.maxRetries || 3,
               batchSize: 100,
@@ -1811,30 +1817,33 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
           } : undefined
         };
 &nbsp;
-<span class="fstat-no" title="function not covered" ></span>        // Handle streaming vs batch export
-<span class="cstat-no" title="statement not covered" >        if (normalizedExportConfig.s</span>treaming?.enabled) {
-<span class="cstat-no" title="statement not covered" >          return await exportProcessor.process</span>StreamingExport(
-<span class="cstat-no" title="statement not covered" >            endpoint,</span>
-            params,
-            normalizedExportConfig,
-            outputConfig,
-            normalizedDestination,
-<span class="fstat-no" title="function not covered" ></span>            analytics
-<span class="cstat-no" title="statement not covered" >          );</span>
-        } else {<span class="cstat-no" title="statement not covered" ></span>
-          return await<span class="cstat-no" title="statement not covered" > expo</span>rtProcessor.processBatchExport(
-            endpoint,<span class="cstat-no" title="statement not covered" ></span>
-            params,<span class="cstat-no" title="statement not covered" ></span>
-            normalizedExportConfig,
+        // Handle streaming vs batch export
+        if (normalizedExportConfig.streaming?.enabled) {
+          return await exportProcessor.processStreamingExport(
+<span class="fstat-no" title="function not covered" ></span>            endpoint,
+<span class="cstat-no" title="statement not covered" >            params,</span>
+<span class="cstat-no" title="statement not covered" >            normalizedExportConfig,</span>
 <span class="cstat-no" title="statement not covered" >            outputConfig,</span>
-<span class="cstat-no" title="statement not covered" >            normalizedDestination,</span>
-            analytics<span class="cstat-no" title="statement not covered" ></span>
-          );<span class="cstat-no" title="statement not covered" ></span>
+            normalizedDestination,
+            analytics
+          );
+        } else {
+<span class="fstat-no" title="function not covered" ></span>          return await exportProcessor.processBatchExport(
+<span class="cstat-no" title="statement not covered" >            endpoint,</span>
+            params,<span class="cstat-no" title="statement not covered" ></span>
+            normalized<span class="cstat-no" title="statement not covered" >Expor</span>tConfig,
+            outputCon<span class="cstat-no" title="statement not covered" >fi</span>g,
+            normalizedDestina<span class="cstat-no" title="statement not covered" >ti</span>on,
+            analytics
+<span class="cstat-no" title="statement not covered" >          );</span>
         }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-      } catch (error) {<span class="cstat-no" title="statement not covered" ></span>
-        cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : String(error);</span>
-        logger.e<span class="cstat-no" title="statement not covered" >rror?.('Error exp</span>orting logs for analysis', { exportConfig, error: errorMessage });
+<span class="cstat-no" title="statement not covered" ></span>
+      } catc<span class="cstat-no" title="statement not covered" >h (error) {</span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        logger.error?.('Error exporting logs for analysis', { 
+          exportConfig: J<span class="cstat-no" title="statement not covered" >SON.stringify(export</span>Config), 
+          er<span class="cstat-no" title="statement not covered" >ror: errorMessage </span>
+        });<span class="cstat-no" title="statement not covered" ></span>
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to export logs for analysis: ${errorMessage}`);
       }
@@ -1953,10 +1962,10 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
     };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
     this.logger.info?.('Batch export completed successfully', {
-      export<span class="cstat-no" title="statement not covered" >Id: this.exportMet<span class="fstat-no" title="function not covered" >ad</span>ata.expor<span class="cstat-no" title="statement not covered" >tId,</span></span>
+      export<span class="cstat-no" title="statement not covered" >Id: String(this.ex<span class="fstat-no" title="function not covered" >po</span>rtMetadat<span class="cstat-no" title="statement not covered" >a.exportId),</span></span>
       totalLogs: transformedLogs.length,
-      format: outputConfig.format,
-      ex<span class="cstat-no" title="statement not covered" >ternal: destination.externalSystemConfig?.type,</span>
+      format: outputConfig.format || 'json',
+      ex<span class="cstat-no" title="statement not covered" >ternal: destination.externalSystemConfig?.type || 'none',</span>
     });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
     retu<span class="cstat-no" title="statement not covered" >rn JSON.stringify(result, null, 2);</span>
@@ -2071,7 +2080,7 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
     };
 <span class="cstat-no" title="statement not covered" ></span>
     this.log<span class="cstat-no" title="statement not covered" >ger.info?.('Streaming export completed successful</span>ly', {
-      exportId: this.exportMetadata.exportId,
+      exportId: String(this.exportMetadata.exportId),
       to<span class="cstat-no" title="statement not covered" >talBatches: streamingResults.batchesProcessed,</span>
       totalL<span class="cstat-no" title="statement not covered" >ogs: streamingResults.totalLogsStreamed,</span>
     });
@@ -2485,7 +2494,7 @@ class ExternalSystemConnector {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T17:32:55.648Z
+                at 2025-08-21T18:14:56.826Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
