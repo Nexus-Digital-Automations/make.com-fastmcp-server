@@ -1,6 +1,6 @@
 /**
- * Mock factory functions for testing scenarios module
- * Provides reusable mock creation patterns for consistent testing
+ * Enhanced mock factory functions for testing all modules
+ * Provides reusable mock creation patterns for scenarios, log-streaming, and enterprise-secrets modules
  */
 
 import { jest } from '@jest/globals';
@@ -34,7 +34,7 @@ export function createMockLogger() {
 }
 
 /**
- * Create tool context with optional overrides
+ * Create tool context with optional overrides - supports all modules
  */
 export function createToolContext(overrides: Partial<ToolContext> = {}): ToolContext {
   return {
@@ -43,6 +43,49 @@ export function createToolContext(overrides: Partial<ToolContext> = {}): ToolCon
     logger: createMockLogger(),
     ...overrides
   };
+}
+
+/**
+ * Create enhanced tool context for specific modules
+ */
+export function createModularToolContext(module: 'scenarios' | 'log-streaming' | 'enterprise-secrets', overrides: Partial<ToolContext> = {}): ToolContext {
+  const baseContext = createToolContext(overrides);
+  
+  // Add module-specific enhancements
+  switch (module) {
+    case 'log-streaming':
+      baseContext.apiClient.get.mockImplementation((endpoint: string) => {
+        if (endpoint.includes('/executions') || endpoint.includes('/logs')) {
+          return Promise.resolve({ success: true, data: [] });
+        }
+        return Promise.resolve({ success: true, data: {} });
+      });
+      break;
+      
+    case 'enterprise-secrets':
+      baseContext.apiClient.get.mockImplementation((endpoint: string) => {
+        if (endpoint.includes('/vault') || endpoint.includes('/hsm')) {
+          return Promise.resolve({ success: true, data: { status: 'healthy' } });
+        }
+        return Promise.resolve({ success: true, data: {} });
+      });
+      baseContext.logger.audit = jest.fn();
+      baseContext.logger.security = jest.fn();
+      break;
+      
+    case 'scenarios':
+    default:
+      // Default scenarios module behavior
+      baseContext.apiClient.get.mockImplementation((endpoint: string) => {
+        if (endpoint.includes('/scenarios')) {
+          return Promise.resolve({ success: true, data: [] });
+        }
+        return Promise.resolve({ success: true, data: {} });
+      });
+      break;
+  }
+  
+  return baseContext;
 }
 
 /**
