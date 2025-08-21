@@ -1782,28 +1782,35 @@ class EnhancedLogExportProcessor {
     const results: Record<string, unknown> = {};
     
     for (const metric of metrics) {
+      // Skip metrics without required fields
+      if (!metric.name || !metric.field || !metric.aggregation) {
+        continue;
+      }
+
       const values: number[] = logs
         .filter(log => this.matchesFilters(log, metric.filters))
-        .map(log => this.extractFieldValue(log, metric.field))
+        .map(log => this.extractFieldValue(log, metric.field!))
         .filter(val => val !== null && val !== undefined)
         .map(val => Number(val));
 
+      // metric.name is guaranteed to be defined due to null check above
+      const metricName = metric.name;
       switch (metric.aggregation) {
         case 'count':
-          results[metric.name] = values.length;
+          results[metricName] = values.length;
           break;
         case 'sum':
-          results[metric.name] = values.reduce((sum, val) => sum + val, 0);
+          results[metricName] = values.reduce((sum, val) => sum + val, 0);
           break;
         case 'avg':
-          results[metric.name] = values.length > 0 ? 
+          results[metricName] = values.length > 0 ? 
             (values.reduce((sum, val) => sum + val, 0) / values.length) : 0;
           break;
         case 'min':
-          results[metric.name] = values.length > 0 ? Math.min(...values) : null;
+          results[metricName] = values.length > 0 ? Math.min(...values) : null;
           break;
         case 'max':
-          results[metric.name] = values.length > 0 ? Math.max(...values) : null;
+          results[metricName] = values.length > 0 ? Math.max(...values) : null;
           break;
       }
     }

@@ -873,7 +873,7 @@ interface PolicyConfiguration {
 /**
  * Add all Multi-Tenant Security tools to FastMCP server
  */
-export function addMultiTenantSecurityTools(server: FastMCP, apiClient: MakeApiClient): void {
+export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApiClient): void {
   // Tenant Provisioning Tool
   server.addTool({
     name: 'provision_tenant',

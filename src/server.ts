@@ -3,7 +3,7 @@
  * Main server implementation with authentication, error handling, and logging
  */
 
-import { FastMCP, UserError, FastMCPSession } from 'fastmcp';
+import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 
 // Define our custom session authentication type that extends the FastMCP type
