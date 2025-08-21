@@ -38,8 +38,8 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
         };
         
         const params: Record<string, unknown> = {
-          limit: argsTyped.limit,
-          offset: argsTyped.offset,
+          limit: argsTyped.limit ?? 10,
+          offset: argsTyped.offset ?? 0,
         };
 
         if (argsTyped.teamId) params.teamId = argsTyped.teamId;

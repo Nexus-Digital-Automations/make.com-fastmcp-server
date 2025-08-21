@@ -573,7 +573,19 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-template');
-      const result = await executeTool(tool, {
+      
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         name: 'Customer Onboarding Automation',
         description: 'Automated customer onboarding workflow',
         category: 'customer-management',
@@ -581,7 +593,7 @@ describe('Template Management Tools - Basic Tests', () => {
         tags: ['automation', 'customer'],
         organizationId: 67890,
         teamId: 12345
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -607,7 +619,19 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'list-templates');
-      const result = await executeTool(tool, {
+      
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         category: 'customer-management',
         tags: ['automation'],
         organizationId: 67890,
@@ -616,7 +640,7 @@ describe('Template Management Tools - Basic Tests', () => {
         limit: 50,
         sortBy: 'usage',
         sortOrder: 'desc'
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -641,13 +665,25 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'get-template');
-      const result = await executeTool(tool, {
+      
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         templateId: 2001,
         includeBlueprint: true,
         includeUsage: true,
         includeVersions: true,
         includeSharing: true
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -680,12 +716,24 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'update-template');
-      const result = await executeTool(tool, {
+      
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         templateId: 2001,
         name: 'Updated Customer Onboarding',
         description: 'Updated automation workflow with enhanced features',
         tags: ['automation', 'customer', 'enhanced']
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -707,7 +755,19 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'use-template');
-      const result = await executeTool(tool, {
+      
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         templateId: 2001,
         scenarioName: 'Customer Onboarding - Production',
         folderId: 3001,
@@ -721,7 +781,7 @@ describe('Template Management Tools - Basic Tests', () => {
         variableOverrides: {
           environment: 'production'
         }
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
