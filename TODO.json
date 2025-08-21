@@ -212,7 +212,7 @@
       "mode": "DEVELOPMENT",
       "category": "missing-test",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [
         "./src/tools/",
@@ -233,9 +233,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T10:35:44.463Z",
       "auto_research_created": false,
-      "started_at": null,
-      "claimed_by": null,
-      "assigned_agent": null,
+      "started_at": "2025-08-21T17:20:52.311Z",
+      "claimed_by": "development_session_1755795215359_1_general_a2d71673",
+      "assigned_agent": "development_session_1755795215359_1_general_a2d71673",
       "agent_assignment_history": [
         {
           "agent": "agent_1755795673664",
@@ -247,6 +247,13 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T17:16:54.922Z",
           "reason": "Task stale for 16 minutes"
+        },
+        {
+          "agentId": "development_session_1755795215359_1_general_a2d71673",
+          "role": "primary",
+          "assignedAt": "2025-08-21T17:20:52.311Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
     }
