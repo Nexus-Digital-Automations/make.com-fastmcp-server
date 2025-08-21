@@ -536,6 +536,13 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
     name: 'create-notification',
     description: 'Create and send a notification through multiple channels with scheduling support',
     parameters: NotificationCreateSchema,
+    annotations: {
+      title: 'Create Multi-Channel Notification',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false, // Each notification is unique with timestamp
+      openWorldHint: true, // External messaging services (email, SMS, Slack, etc.)
+    },
     execute: async (input, { log, reportProgress }) => {
       const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
 
@@ -650,6 +657,11 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       userId: z.number().min(1).optional().describe('User ID (defaults to current user)'),
       includeStats: z.boolean().default(false).describe('Include email statistics'),
     }),
+    annotations: {
+      title: 'Get Email Notification Preferences',
+      readOnlyHint: true,
+      openWorldHint: true, // May access external preference systems
+    },
     execute: async (input, { log }) => {
       const { userId, includeStats } = input;
 
@@ -720,6 +732,13 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
     name: 'update-email-preferences',
     description: 'Update user email notification preferences and subscription settings',
     parameters: EmailPreferencesSchema,
+    annotations: {
+      title: 'Update Email Notification Preferences',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true, // Same preferences produce same result
+      openWorldHint: true, // May update external preference systems
+    },
     execute: async (input, { log, reportProgress }) => {
       const { userId, preferences, timezone, language, unsubscribeAll } = input;
 
@@ -814,6 +833,13 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
     name: 'create-notification-template',
     description: 'Create a reusable notification template with variables and design',
     parameters: NotificationTemplateSchema,
+    annotations: {
+      title: 'Create Notification Template',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false, // Each template creation is unique
+      openWorldHint: false, // Internal template management
+    },
     execute: async (input, { log, reportProgress }) => {
       const { name, description, type, category, organizationId, template, design } = input;
 
@@ -908,6 +934,13 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
     name: 'create-data-structure',
     description: 'Create a custom data structure for validation and transformation',
     parameters: DataStructureSchema,
+    annotations: {
+      title: 'Create Custom Data Structure',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false, // Each structure creation is unique
+      openWorldHint: false, // Internal data structure management
+    },
     execute: async (input, { log, reportProgress }) => {
       const { name, description, type, organizationId, teamId, scope, structure, validation, transformation } = input;
 
@@ -1036,6 +1069,11 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       sortBy: z.enum(['createdAt', 'updatedAt', 'name', 'type']).default('createdAt').describe('Sort field'),
       sortOrder: z.enum(['asc', 'desc']).default('desc').describe('Sort order'),
     }),
+    annotations: {
+      title: 'List Custom Data Structures',
+      readOnlyHint: true,
+      openWorldHint: false, // Internal data structure listing
+    },
     execute: async (input, { log }) => {
       const { type, scope, organizationId, teamId, format, search, includeValidation, includeTransformation, limit, offset, sortBy, sortOrder } = input;
 
@@ -1138,6 +1176,11 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       includeValidationHistory: z.boolean().default(false).describe('Include validation history'),
       includeTransformationHistory: z.boolean().default(false).describe('Include transformation history'),
     }),
+    annotations: {
+      title: 'Get Data Structure Details',
+      readOnlyHint: true,
+      openWorldHint: false, // Internal data structure retrieval
+    },
     execute: async (input, { log, reportProgress }) => {
       const { dataStructureId, organizationId, teamId, includeUsageStats, includeValidationHistory, includeTransformationHistory } = input;
 
@@ -1272,6 +1315,13 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         })).optional().describe('Updated filters'),
       }).optional().describe('Updated transformation configuration'),
     }),
+    annotations: {
+      title: 'Update Data Structure Configuration',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true, // Same updates produce same result
+      openWorldHint: false, // Internal data structure management
+    },
     execute: async (input, { log, reportProgress }) => {
       const { dataStructureId, organizationId, teamId, name, description, structure, validation, transformation } = input;
 
@@ -1411,6 +1461,13 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       confirmationCode: z.string().optional().describe('Confirmation code for safety (if required)'),
       archiveBeforeDelete: z.boolean().default(true).describe('Create archive backup before deletion'),
     }),
+    annotations: {
+      title: 'Delete Data Structure',
+      readOnlyHint: false,
+      destructiveHint: true, // Permanently removes data structure
+      idempotentHint: true, // Multiple deletes of same structure have same effect
+      openWorldHint: false, // Internal data structure management
+    },
     execute: async (input, { log, reportProgress }) => {
       const { dataStructureId, organizationId, teamId, force, checkDependencies, confirmationCode, archiveBeforeDelete } = input;
 
@@ -1564,6 +1621,11 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       sortBy: z.enum(['createdAt', 'sentAt', 'priority', 'title']).default('createdAt').describe('Sort field'),
       sortOrder: z.enum(['asc', 'desc']).default('desc').describe('Sort order'),
     }),
+    annotations: {
+      title: 'List Notifications with Analytics',
+      readOnlyHint: true,
+      openWorldHint: true, // May query delivery status from external systems
+    },
     execute: async (input, { log }) => {
       const { type, status, priority, dateRange, includeDelivery, includeTracking, limit, offset, sortBy, sortOrder } = input;
 

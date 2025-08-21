@@ -139,6 +139,11 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'get-current-user',
     description: 'Get current user information and permissions',
     parameters: z.object({}),
+    annotations: {
+      title: 'Get Current User Profile',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       log.info('Getting current user information');
 
@@ -178,6 +183,11 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'list-users',
     description: 'List and filter users with role and permission information',
     parameters: UserFiltersSchema,
+    annotations: {
+      title: 'List Users and Roles',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { teamId, organizationId, role, isActive, search, limit, offset } = input;
 
@@ -253,6 +263,11 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     parameters: z.object({
       userId: z.number().min(1).describe('User ID to retrieve'),
     }),
+    annotations: {
+      title: 'Get User Details',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { userId } = input;
 
@@ -294,6 +309,13 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'update-user-role',
     description: 'Update user role and permissions',
     parameters: UpdateUserRoleSchema,
+    annotations: {
+      title: 'Update User Role and Permissions',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { userId, role, teamId, permissions } = input;
 
@@ -345,6 +367,11 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'list-teams',
     description: 'List and filter teams',
     parameters: TeamFiltersSchema,
+    annotations: {
+      title: 'List Teams',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { organizationId, search, limit, offset } = input;
 
@@ -411,6 +438,11 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     parameters: z.object({
       teamId: z.number().min(1).describe('Team ID to retrieve'),
     }),
+    annotations: {
+      title: 'Get Team Details',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { teamId } = input;
 
@@ -451,6 +483,12 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'create-team',
     description: 'Create a new team',
     parameters: CreateTeamSchema,
+    annotations: {
+      title: 'Create New Team',
+      readOnlyHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, description, organizationId } = input;
 
@@ -500,6 +538,12 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'update-team',
     description: 'Update team information',
     parameters: UpdateTeamSchema,
+    annotations: {
+      title: 'Update Team Information',
+      readOnlyHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { teamId, name, description } = input;
 
@@ -554,6 +598,13 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     parameters: z.object({
       teamId: z.number().min(1).describe('Team ID to delete'),
     }),
+    annotations: {
+      title: 'Delete Team',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { teamId } = input;
 
@@ -585,6 +636,11 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'list-organizations',
     description: 'List user organizations',
     parameters: OrganizationFiltersSchema,
+    annotations: {
+      title: 'List Organizations',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { search, limit, offset } = input;
 
@@ -644,6 +700,11 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     parameters: z.object({
       organizationId: z.number().min(1).describe('Organization ID to retrieve'),
     }),
+    annotations: {
+      title: 'Get Organization Details',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { organizationId } = input;
 
@@ -684,6 +745,12 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'create-organization',
     description: 'Create a new organization',
     parameters: CreateOrganizationSchema,
+    annotations: {
+      title: 'Create New Organization',
+      readOnlyHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, description } = input;
 
@@ -732,6 +799,12 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'update-organization',
     description: 'Update organization information',
     parameters: UpdateOrganizationSchema,
+    annotations: {
+      title: 'Update Organization Information',
+      readOnlyHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { organizationId, name, description } = input;
 
@@ -786,6 +859,13 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     parameters: z.object({
       organizationId: z.number().min(1).describe('Organization ID to delete'),
     }),
+    annotations: {
+      title: 'Delete Organization',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { organizationId } = input;
 
@@ -817,6 +897,12 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     name: 'invite-user',
     description: 'Invite a user to join a team or organization',
     parameters: InviteUserSchema,
+    annotations: {
+      title: 'Invite User to Team/Organization',
+      readOnlyHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { email, role, teamId, organizationId, permissions } = input;
 

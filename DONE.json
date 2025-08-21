@@ -8283,9 +8283,62 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755766251654_dzkmh8qzu",
+      "title": "Research: Implement FastMCP Tool Annotations for Core Platform Tools",
+      "description": "Research and analysis required for implementing: \"Implement FastMCP Tool Annotations for Core Platform Tools\"\n\n**Implementation Task Details:**\nBased on successful enterprise security tools implementation, extend FastMCP annotation coverage to core platform tools including billing.ts, notifications.ts, and permissions.ts. These are high-priority tools that handle financial operations and access control, requiring proper security annotations.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755766251654_tgrya10lb\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755766251654_dzkmh8qzu.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755766251654_dzkmh8qzu.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T08:50:51.655Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755766251654_tgrya10lb",
+      "assigned_agent": "main-agent",
+      "started_at": "2025-08-21T08:50:57.832Z",
+      "claimed_by": "main-agent",
+      "agent_assignment_history": [
+        {
+          "agentId": "main-agent",
+          "role": "primary",
+          "assignedAt": "2025-08-21T08:50:57.832Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T08:54:06.161Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T08:54:06.162Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 195,
-  "last_completion": "2025-08-21T08:50:39.013Z",
+  "total_completed": 196,
+  "last_completion": "2025-08-21T08:54:06.162Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

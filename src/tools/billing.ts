@@ -651,6 +651,11 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'get-billing-account',
     description: 'Get comprehensive billing account information including plan, usage, and payment details',
     parameters: BillingAccountSchema,
+    annotations: {
+      title: 'Get Billing Account Information',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { organizationId, includeUsage, includeHistory, includePaymentMethods } = input;
 
@@ -758,6 +763,11 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'list-invoices',
     description: 'List and filter invoices with payment status and detailed breakdown',
     parameters: InvoiceListSchema,
+    annotations: {
+      title: 'List Invoices and Payment History',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { organizationId, status, dateRange, includeLineItems, includePayments, limit, offset, sortBy, sortOrder } = input;
 
@@ -858,6 +868,11 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'get-usage-metrics',
     description: 'Get detailed usage metrics and cost breakdown with optimization recommendations',
     parameters: UsageMetricsSchema,
+    annotations: {
+      title: 'Get Usage Metrics and Cost Analysis',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { organizationId, period, customPeriod, breakdown, includeProjections, includeRecommendations } = input;
 
@@ -957,6 +972,12 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'add-payment-method',
     description: 'Add a new payment method for billing with secure processing',
     parameters: PaymentMethodSchema,
+    annotations: {
+      title: 'Add Payment Method',
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { organizationId, type, details, billingAddress, setAsDefault } = input;
 
@@ -1064,6 +1085,11 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'update-billing-info',
     description: 'Update billing contact information, tax details, and account settings',
     parameters: BillingUpdateSchema,
+    annotations: {
+      title: 'Update Billing Information',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { organizationId, contacts, taxInfo, autoRenewal } = input;
 
@@ -1156,6 +1182,11 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'set-budget',
     description: 'Establish operational budgets for teams/organizations with advanced cost control and alerting',
     parameters: SetBudgetSchema,
+    annotations: {
+      title: 'Set Budget with Cost Controls',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { organizationId, name, description, type, scope, budget, categories, thresholds } = input;
 
@@ -1272,6 +1303,11 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'create-cost-alert',
     description: 'Create advanced cost alerts with notifications when costs exceed thresholds',
     parameters: CreateCostAlertSchema,
+    annotations: {
+      title: 'Create Cost Alert',
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { organizationId, name, description, conditions, notifications, actions } = input;
 
@@ -1397,6 +1433,11 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'get-cost-projection',
     description: 'Generate detailed cost forecasts based on usage patterns with confidence intervals',
     parameters: GetCostProjectionSchema,
+    annotations: {
+      title: 'Generate Cost Projections',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { 
         organizationId, 
@@ -1564,6 +1605,12 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'pause-high-cost-scenarios',
     description: 'Automatically identify and pause scenarios that exceed cost thresholds for cost protection',
     parameters: PauseHighCostScenariosSchema,
+    annotations: {
+      title: 'Pause High Cost Scenarios',
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { organizationId, criteria, action, notification, dryRun } = input;
 
