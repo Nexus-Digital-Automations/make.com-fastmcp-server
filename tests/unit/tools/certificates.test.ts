@@ -125,11 +125,11 @@ class CertificateChaosMonkey {
 }
 
 describe('Certificates Tools', () => {
-  let server: FastMCPServer;
+  let server: FastMCP;
   let chaosMonkey: CertificateChaosMonkey;
 
   beforeAll(() => {
-    server = new FastMCPServer();
+    server = new FastMCP('certificates-test-server', '1.0.0');
     chaosMonkey = new CertificateChaosMonkey({ failureRate: 0.1 });
   });
 

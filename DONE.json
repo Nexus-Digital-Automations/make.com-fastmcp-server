@@ -5491,9 +5491,94 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755753023744_2qqvttzle",
+      "title": "Implement comprehensive test coverage for FastMCP tools",
+      "description": "Address critical test coverage issue - currently at 0.83% overall coverage. Implement comprehensive test suites for src/tools/ modules (30+ tools with 0% coverage), fix Jest worker process exceptions, and establish minimum coverage thresholds.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T05:10:23.744Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755752299727_1_general_19994190",
+      "started_at": "2025-08-21T05:10:29.763Z",
+      "claimed_by": "development_session_1755752299727_1_general_19994190",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755752299727_1_general_19994190",
+          "role": "primary",
+          "assignedAt": "2025-08-21T05:10:29.763Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T05:20:50.371Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T05:20:50.372Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755754730427_1yual3txc",
+      "title": "Fix failing test assertions in security test suites",
+      "description": "Fix test failures in multi-tenant-security-basic.test.ts and certificates.test.ts by updating error handling expectations and addressing missing dependencies",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T05:38:50.427Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T05:38:57.263Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T05:40:09.298Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T05:40:09.299Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 126,
-  "last_completion": "2025-08-21T05:04:51.130Z",
+  "total_completed": 128,
+  "last_completion": "2025-08-21T05:40:09.299Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
