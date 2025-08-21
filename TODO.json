@@ -2,23 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755816670815_z0o9xeukr",
-      "title": "Fix remaining TypeScript syntax error in template tests",
-      "description": "Fix the third malformed executeTool call around line 382-383 in templates.test.ts file",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T22:51:10.815Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755810188972_idrobhjkz",
       "title": "Fix critical test failures - destructuring errors and mock issues",
       "description": "Address systematic test failures preventing test execution:\n\n1. Fix destructuring errors in create-scenario.ts (Cannot destructure property log of undefined)\n2. Fix budget-control-basic.test.ts undefined analysis property expectations\n3. Fix mock promise rejection expectations in budget control tests\n4. Fix schema validation issues with test parameters\n5. Fix blueprint analysis connection extraction failures\n6. Fix template complexity property access errors\n7. Fix secure-config logger initialization failures\n\nThese infrastructure issues are blocking test coverage analysis and CI/CD pipeline.",
@@ -65,7 +48,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -74,9 +57,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T18:30:49.156Z",
       "auto_research_created": false,
-      "assigned_agent": "agent_1755815454502",
-      "started_at": "2025-08-21T22:30:54.502Z",
-      "claimed_by": "agent_1755815454502",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755801072537_1_general_8d033555",
@@ -106,6 +89,12 @@
           "agent": "agent_1755815454502",
           "action": "claimed",
           "timestamp": "2025-08-21T22:30:54.502Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T22:58:21.240Z",
+          "reason": "Task stale for 27 minutes"
         }
       ]
     },
@@ -116,7 +105,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -125,9 +114,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T21:51:38.304Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755814264541_1_general_8ec8559c",
-      "started_at": "2025-08-21T22:31:09.468Z",
-      "claimed_by": "development_session_1755814264541_1_general_8ec8559c",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755814264541_1_general_8ec8559c",
@@ -135,6 +124,12 @@
           "assignedAt": "2025-08-21T22:31:09.468Z",
           "reassignReason": null,
           "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T22:58:21.240Z",
+          "reason": "Task stale for 27 minutes"
         }
       ]
     },
@@ -204,6 +199,27 @@
       "maxConcurrentTasks": 5,
       "createdAt": "2025-08-21T22:43:45.411Z",
       "sessionId": "session_1755816225411",
+      "metadata": {}
+    },
+    "development_session_1755817107983_1_general_fada195a": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-21T22:58:27.983Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-21T22:58:27.983Z",
+      "sessionId": "session_1755817107983",
       "metadata": {}
     }
   },
