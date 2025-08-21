@@ -1,36 +1,6 @@
 {
   "project": "root_files",
-  "tasks": [
-    {
-      "id": "task_1755769198439_qqhpe9qfj",
-      "title": "Complete FastMCP annotations for remaining medium-priority tool files",
-      "description": "Complete FastMCP annotation implementation for analytics.ts, templates.ts, performance-analysis.ts, and caching.ts files with missing annotation properties. Apply consistent security-focused annotation patterns for enterprise compliance.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-21T09:39:58.442Z",
-      "auto_research_created": true,
-      "assigned_agent": "development_session_1755769173107_1_general_ed5ed8df",
-      "started_at": "2025-08-21T09:41:31.467Z",
-      "claimed_by": "development_session_1755769173107_1_general_ed5ed8df",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755769173107_1_general_ed5ed8df",
-          "role": "primary",
-          "assignedAt": "2025-08-21T09:41:31.467Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    }
-  ],
+  "tasks": [],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
