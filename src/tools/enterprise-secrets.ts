@@ -27,7 +27,7 @@ interface EnterpriseSecretsTool {
   name: string;
   description: string;
   parameters: z.ZodSchema<any>;
-  execute: (input: any) => Promise<string>;
+  execute: (input: unknown) => Promise<string>;
 }
 
 interface FastMCPServer {
@@ -1718,7 +1718,7 @@ const createVaultServerConfigTool = (_apiClient: MakeApiClient): EnterpriseSecre
   name: 'configure_vault_server',
   description: 'Configure and provision HashiCorp Vault server cluster with high availability and enterprise features',
   parameters: VaultServerConfigSchema,
-  execute: async (input: Record<string, unknown>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
     const validatedInput = VaultServerConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
@@ -1751,7 +1751,7 @@ const createHSMIntegrationTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
   name: 'configure_hsm_integration',
   description: 'Configure Hardware Security Module integration for enterprise-grade key protection',
   parameters: HSMConfigSchema,
-  execute: async (input: Record<string, unknown>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
     const validatedInput = HSMConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
@@ -1766,7 +1766,7 @@ const createHSMIntegrationTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
     } catch (error) {
       componentLogger.error('HSM integration failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        provider: input.provider,
+        provider: (input as any)?.provider || 'unknown',
       });
       
       return JSON.stringify({
@@ -1784,7 +1784,7 @@ const createSecretEngineManagementTool = (_apiClient: MakeApiClient): Enterprise
   name: 'manage_secret_engines',
   description: 'Mount and configure Vault secret engines for various secret types and integrations',
   parameters: SecretEngineConfigSchema,
-  execute: async (input: Record<string, unknown>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
     const validatedInput = SecretEngineConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
@@ -1818,7 +1818,7 @@ const createKeyRotationTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool
   name: 'configure_key_rotation',
   description: 'Configure automated key rotation policies with scheduled and event-driven triggers',
   parameters: KeyRotationPolicySchema,
-  execute: async (input: Record<string, unknown>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
     const validatedInput = KeyRotationPolicySchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
@@ -1851,7 +1851,7 @@ const createDynamicSecretTool = (_apiClient: MakeApiClient): EnterpriseSecretsTo
   name: 'generate_dynamic_secret',
   description: 'Generate just-in-time dynamic secrets for databases, cloud providers, and APIs',
   parameters: DynamicSecretConfigSchema,
-  execute: async (input: Record<string, unknown>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
     const validatedInput = DynamicSecretConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
@@ -1884,7 +1884,7 @@ const createRBACPolicyTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool 
   name: 'manage_rbac_policies',
   description: 'Create and manage fine-grained role-based access control policies for secret access',
   parameters: RBACPolicySchema,
-  execute: async (input: Record<string, unknown>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
     const validatedInput = RBACPolicySchema.parse(input);
     try {
       // Create HCL policy content
@@ -1927,7 +1927,7 @@ path "${rule.path}" {
     } catch (error) {
       componentLogger.error('RBAC policy management failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        policyName: input.policyName,
+        policyName: (input as any)?.policyName || 'unknown',
       });
       
       return JSON.stringify({
@@ -1945,7 +1945,7 @@ const createSecretScanningTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
   name: 'perform_secret_scanning',
   description: 'Perform comprehensive secret scanning for leakage detection and prevention',
   parameters: SecretScanningConfigSchema,
-  execute: async (input: Record<string, unknown>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
     const validatedInput = SecretScanningConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
@@ -1967,7 +1967,7 @@ const createSecretScanningTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
     } catch (error) {
       componentLogger.error('Secret scanning failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        scanType: input.scanType,
+        scanType: (input as any)?.scanType || 'unknown',
       });
       
       return JSON.stringify({
@@ -1985,7 +1985,7 @@ const createBreachDetectionTool = (_apiClient: MakeApiClient): EnterpriseSecrets
   name: 'configure_breach_detection',
   description: 'Configure comprehensive breach detection and automated response systems',
   parameters: BreachDetectionConfigSchema,
-  execute: async (input: Record<string, unknown>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
     const validatedInput = BreachDetectionConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
@@ -1995,10 +1995,10 @@ const createBreachDetectionTool = (_apiClient: MakeApiClient): EnterpriseSecrets
       return JSON.stringify({
         success: true,
         configuration: {
-          detectionMethods: input.detectionMethods,
-          monitoringTargets: input.monitoringTargets,
-          responseConfig: input.responseConfig,
-          thresholds: input.thresholds,
+          detectionMethods: validatedInput.detectionMethods,
+          monitoringTargets: validatedInput.monitoringTargets,
+          responseConfig: validatedInput.responseConfig,
+          thresholds: validatedInput.thresholds,
         },
         message: 'Breach detection configured successfully',
       }, null, 2);
@@ -2022,10 +2022,11 @@ const createAuditConfigTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool
   name: 'configure_audit_system',
   description: 'Configure comprehensive audit system for compliance and security monitoring',
   parameters: AuditConfigSchema,
-  execute: async (input: z.infer<typeof AuditConfigSchema>): Promise<string> => {
+  execute: async (input: unknown): Promise<string> => {
+    const validatedInput = AuditConfigSchema.parse(input);
     try {
       // Configure audit devices
-      const _auditDeviceConfigs = input.auditDevices.map(device => ({
+      const _auditDeviceConfigs = validatedInput.auditDevices.map(device => ({
         type: device.type,
         path: device.path,
         format: device.format,
@@ -2039,26 +2040,26 @@ const createAuditConfigTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool
         action: 'audit_system_configured',
         success: true,
         details: {
-          auditDevices: input.auditDevices.length,
-          retentionPeriodDays: input.retention.retentionPeriodDays,
-          complianceFrameworks: input.compliance.frameworks,
+          auditDevices: validatedInput.auditDevices.length,
+          retentionPeriodDays: validatedInput.retention.retentionPeriodDays,
+          complianceFrameworks: validatedInput.compliance.frameworks,
         },
         riskLevel: 'low',
       });
 
       componentLogger.info('Audit system configured successfully', {
-        auditDevices: input.auditDevices.length,
-        complianceFrameworks: input.compliance.frameworks.length,
+        auditDevices: validatedInput.auditDevices.length,
+        complianceFrameworks: validatedInput.compliance.frameworks.length,
       });
 
       return JSON.stringify({
         success: true,
         auditConfiguration: {
-          devicesConfigured: input.auditDevices.length,
-          retentionPeriod: input.retention.retentionPeriodDays,
-          complianceFrameworks: input.compliance.frameworks,
-          encryptionEnabled: input.retention.encryptionEnabled,
-          immutableStorage: input.retention.immutableStorage,
+          devicesConfigured: validatedInput.auditDevices.length,
+          retentionPeriod: validatedInput.retention.retentionPeriodDays,
+          complianceFrameworks: validatedInput.compliance.frameworks,
+          encryptionEnabled: validatedInput.retention.encryptionEnabled,
+          immutableStorage: validatedInput.retention.immutableStorage,
         },
         message: 'Audit system configured successfully',
       }, null, 2);
@@ -2088,17 +2089,18 @@ const createComplianceReportTool = (_apiClient: MakeApiClient): EnterpriseSecret
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      const report = await vaultManager.generateComplianceReport(input.framework);
+      const validatedInput = input as { framework: string };
+      const report = await vaultManager.generateComplianceReport(validatedInput.framework);
       
       return JSON.stringify({
         success: true,
         report,
-        message: `Compliance report for ${input.framework} generated successfully`,
+        message: `Compliance report for ${validatedInput.framework} generated successfully`,
       }, null, 2);
     } catch (error) {
       componentLogger.error('Compliance report generation failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        framework: input.framework,
+        framework: (input as any)?.framework || 'unknown',
       });
       
       return JSON.stringify({
