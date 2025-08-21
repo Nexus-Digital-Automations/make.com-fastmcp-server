@@ -536,7 +536,9 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
     });
 
     it('should validate input parameters with Zod schema', async () => {
+      console.log('=== Starting create-scenario validation test ===');
       const tool = findTool(mockTool, 'create-scenario');
+      console.log('Tool found:', tool ? tool.name : 'NO TOOL FOUND');
       setupCreateResponse(generateTestData.scenario());
       
       // Test valid parameters
@@ -577,6 +579,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       ];
       
       for (const args of invalidArgs) {
+        console.log('Testing create-scenario invalid args:', JSON.stringify(args, null, 2));
         await expect(executeTool(tool, args, { log: mockLog })).rejects.toThrow();
       }
     });
