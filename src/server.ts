@@ -3,7 +3,7 @@
  * Main server implementation with authentication, error handling, and logging
  */
 
-import { FastMCP, UserError } from 'fastmcp';
+import { FastMCP, UserError, FastMCPSessionAuth } from 'fastmcp';
 import { z } from 'zod';
 import configManager from './lib/config.js';
 import logger from './lib/logger.js';
@@ -42,7 +42,7 @@ import { addEnterpriseSecretsTools } from './tools/enterprise-secrets.js';
 import { addBlueprintCollaborationTools } from './tools/blueprint-collaboration.js';
 
 export class MakeServerInstance {
-  private server: FastMCP;
+  private server: FastMCP<FastMCPSessionAuth>;
   private apiClient: MakeApiClient;
   private componentLogger: ReturnType<typeof logger.child>;
 
@@ -55,13 +55,18 @@ export class MakeServerInstance {
     // Initialize API client
     this.apiClient = new MakeApiClient(configManager.getMakeConfig());
 
-    // Initialize FastMCP server
-    this.server = new FastMCP({
+    // Initialize FastMCP server with proper type annotations
+    this.server = new FastMCP<FastMCPSessionAuth>({
       name: configManager.getConfig().name,
       version: "1.0.0",
       instructions: this.getServerInstructions(),
       authenticate: configManager.isAuthEnabled() ? this.authenticate.bind(this) : undefined,
     });
+
+    // Verify server instance is properly initialized
+    if (!this.server || typeof this.server.addTool !== 'function') {
+      throw new Error('FastMCP server instance not properly initialized');
+    }
 
     this.setupServerEvents();
     this.addBasicTools();
@@ -611,10 +616,20 @@ ${configManager.isAuthEnabled() ?
     addCICDIntegrationTools(this.server, this.apiClient);
     
     // Add Zero Trust Authentication Framework tools
-    addZeroTrustAuthTools(this.server, this.apiClient);
+    try {
+      addZeroTrustAuthTools(this.server, this.apiClient);
+      this.componentLogger.debug('Zero Trust Authentication tools loaded successfully');
+    } catch (error) {
+      this.componentLogger.error('Failed to load Zero Trust Authentication tools', { error: error instanceof Error ? error.message : String(error) });
+    }
     
     // Add Multi-Tenant Security Architecture tools
-    addMultiTenantSecurityTools(this.server, this.apiClient);
+    try {
+      addMultiTenantSecurityTools(this.server, this.apiClient);
+      this.componentLogger.debug('Multi-Tenant Security tools loaded successfully');
+    } catch (error) {
+      this.componentLogger.error('Failed to load Multi-Tenant Security tools', { error: error instanceof Error ? error.message : String(error) });
+    }
     
     // Add Enterprise Secrets Management tools
     addEnterpriseSecretsTools(this.server, this.apiClient);

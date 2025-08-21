@@ -1906,23 +1906,23 @@ path "${rule.path}" {
         action: 'rbac_policy_created',
         success: true,
         details: {
-          policyName: input.policyName,
-          ruleCount: input.rules.length,
-          metadata: input.metadata,
+          policyName: validatedInput.policyName,
+          ruleCount: validatedInput.rules.length,
+          metadata: validatedInput.metadata,
         },
         riskLevel: 'low',
       });
 
       componentLogger.info('RBAC policy created successfully', {
-        policyName: input.policyName,
-        ruleCount: input.rules.length,
+        policyName: validatedInput.policyName,
+        ruleCount: validatedInput.rules.length,
       });
 
       return JSON.stringify({
         success: true,
-        policyName: input.policyName,
+        policyName: validatedInput.policyName,
         policyContent,
-        message: `RBAC policy ${input.policyName} created successfully`,
+        message: `RBAC policy ${validatedInput.policyName} created successfully`,
       }, null, 2);
     } catch (error) {
       componentLogger.error('RBAC policy management failed', {
@@ -1945,11 +1945,12 @@ const createSecretScanningTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
   name: 'perform_secret_scanning',
   description: 'Perform comprehensive secret scanning for leakage detection and prevention',
   parameters: SecretScanningConfigSchema,
-  execute: async (input: z.infer<typeof SecretScanningConfigSchema>): Promise<string> => {
+  execute: async (input: Record<string, unknown>): Promise<string> => {
+    const validatedInput = SecretScanningConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      const alerts = await vaultManager.performSecretScanning(input);
+      const alerts = await vaultManager.performSecretScanning(validatedInput);
       
       return JSON.stringify({
         success: true,
@@ -1984,11 +1985,12 @@ const createBreachDetectionTool = (_apiClient: MakeApiClient): EnterpriseSecrets
   name: 'configure_breach_detection',
   description: 'Configure comprehensive breach detection and automated response systems',
   parameters: BreachDetectionConfigSchema,
-  execute: async (input: z.infer<typeof BreachDetectionConfigSchema>): Promise<string> => {
+  execute: async (input: Record<string, unknown>): Promise<string> => {
+    const validatedInput = BreachDetectionConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      await vaultManager.configureBreachDetection(input);
+      await vaultManager.configureBreachDetection(validatedInput);
       
       return JSON.stringify({
         success: true,
