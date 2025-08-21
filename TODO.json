@@ -39,32 +39,6 @@
       ]
     },
     {
-      "id": "task_1755794136264_u6mjeced7",
-      "title": "Research: Extract TypeScript types from scenarios.ts into modular structure",
-      "description": "Research and analysis required for implementing: \"Extract TypeScript types from scenarios.ts into modular structure\"\n\n**Implementation Task Details:**\nExtract all type definitions, interfaces, and type aliases from scenarios.ts and organize them into blueprint.ts, report.ts, optimization.ts following the research plan\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755794136264_jvhoc53qe\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "./development/research-reports/research-report-task_1755794136264_u6mjeced7.md"
-      ],
-      "success_criteria": [
-        "Research methodology and approach documented",
-        "Key findings and recommendations provided",
-        "Implementation guidance and best practices identified",
-        "Risk assessment and mitigation strategies outlined",
-        "Research report created: ./development/research-reports/research-report-task_1755794136264_u6mjeced7.md"
-      ],
-      "estimate": "1-2 hours",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T16:35:36.264Z",
-      "created_by": "auto-research-system",
-      "auto_created_for": "task_1755794136264_jvhoc53qe"
-    },
-    {
       "id": "task_1755772553011_5hhqpuxvf",
       "title": "Research: Refactor large tool files for better maintainability",
       "description": "Research and analysis required for implementing: \"Refactor large tool files for better maintainability\"\n\n**Implementation Task Details:**\nRefactor oversized tool files to improve maintainability, readability, and performance: 1) scenarios.ts (3,213 lines) - split into modular components, 2) log-streaming.ts (2,998 lines) - extract reusable utilities, 3) enterprise-secrets.ts (2,219 lines) - separate concerns and create focused modules\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755772553011_ceuapaf63\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
@@ -109,6 +83,34 @@
       ]
     },
     {
+      "id": "task_1755794529952_rben97vs6",
+      "title": "Fix linting errors in scenarios module refactoring",
+      "description": "Fix TypeScript linting errors including unused variables, explicit return types, and any type usage in the newly created scenarios module files",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T16:42:09.952Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T16:42:22.772Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        }
+      ]
+    },
+    {
       "id": "task_1755794334098_l3up52bnd",
       "title": "Fix TypeScript compilation errors in scenarios refactoring",
       "description": "Fix import/export mismatches and missing tool files to ensure TypeScript compilation succeeds",
@@ -141,34 +143,6 @@
       "subtasks": [],
       "created_at": "2025-08-21T16:35:48.874Z",
       "auto_research_created": false
-    },
-    {
-      "id": "task_1755794137056_esdj3dsj2",
-      "title": "Create shared utilities architecture",
-      "description": "Implement shared utilities infrastructure for tool refactoring with ToolContext interface, validation utilities, and error handling patterns",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-21T16:35:37.060Z",
-      "auto_research_created": true,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-21T16:36:47.667Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
     },
     {
       "id": "task_1755770075122_b72wrjxm3",
@@ -238,7 +212,7 @@
       "mode": "DEVELOPMENT",
       "category": "refactor",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [
         "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/development/research-reports/typescript-refactoring-large-files-maintainability-comprehensive-research-2025.md",
@@ -258,6 +232,15 @@
           "details": {
             "oldStatus": "pending",
             "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T16:42:16.683Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "pending"
           }
         }
       ]
@@ -289,6 +272,32 @@
           }
         }
       ]
+    },
+    {
+      "id": "task_1755794136264_u6mjeced7",
+      "title": "Research: Extract TypeScript types from scenarios.ts into modular structure",
+      "description": "Research and analysis required for implementing: \"Extract TypeScript types from scenarios.ts into modular structure\"\n\n**Implementation Task Details:**\nExtract all type definitions, interfaces, and type aliases from scenarios.ts and organize them into blueprint.ts, report.ts, optimization.ts following the research plan\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755794136264_jvhoc53qe\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755794136264_u6mjeced7.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755794136264_u6mjeced7.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T16:35:36.264Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755794136264_jvhoc53qe"
     },
     {
       "id": "task_1755794143999_h30h3w37i",
@@ -382,25 +391,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "task_1755794136264_jvhoc53qe",
-      "title": "Extract TypeScript types from scenarios.ts into modular structure",
-      "description": "Extract all type definitions, interfaces, and type aliases from scenarios.ts and organize them into blueprint.ts, report.ts, optimization.ts following the research plan",
-      "mode": "DEVELOPMENT",
-      "category": "refactor",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [
-        "task_1755794136264_u6mjeced7"
-      ],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-21T16:35:36.268Z",
-      "auto_research_created": true
     },
     {
       "id": "task_1755772553011_ceuapaf63",

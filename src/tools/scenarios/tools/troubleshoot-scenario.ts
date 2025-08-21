@@ -23,7 +23,7 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }) => {
+    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
       log?.info?.('Starting scenario troubleshooting', args);
       reportProgress?.({ progress: 0, total: 100 });
 
@@ -34,7 +34,13 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
           timeRangeHours = 24,
           includePerformanceAnalysis = true,
           includeDependencyMapping = false
-        } = args as any;
+        } = args as {
+          scenarioIds?: string[];
+          teamId?: string;
+          timeRangeHours?: number;
+          includePerformanceAnalysis?: boolean;
+          includeDependencyMapping?: boolean;
+        };
 
         if (!scenarioIds || scenarioIds.length === 0) {
           throw new UserError('At least one scenario ID is required');
@@ -112,7 +118,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }) => {
+    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
       log?.info?.('Generating comprehensive troubleshooting report', args);
       reportProgress?.({ progress: 0, total: 100 });
 
@@ -124,7 +130,14 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
           includePerformanceAnalysis = true,
           includeSecurityAssessment = true,
           formatType = 'detailed'
-        } = args as any;
+        } = args as {
+          filters?: Record<string, unknown>;
+          timeRangeHours?: number;
+          includeExecutiveSummary?: boolean;
+          includePerformanceAnalysis?: boolean;
+          includeSecurityAssessment?: boolean;
+          formatType?: string;
+        };
 
         reportProgress?.({ progress: 10, total: 100 });
 

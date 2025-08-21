@@ -7,7 +7,38 @@
  * @version 1.0.0
  */
 
-import { ReportMetadata, TroubleshootingReportData, ConsolidatedFindings, ActionPlan } from './troubleshooting.js';
+import { ConsolidatedFindings, ActionPlan } from './troubleshooting.js';
+
+// Local interfaces for report formatting
+interface ReportMetadata {
+  reportId?: string;
+  generatedAt?: string;
+  analysisScope?: {
+    scenarioCount?: number;
+    timeRangeHours?: number;
+  };
+}
+
+interface TroubleshootingReportData {
+  metadata?: ReportMetadata;
+  executiveSummary?: {
+    keyFindings: string[];
+    criticalRecommendations: string[];
+    businessImpact: {
+      riskLevel: 'high' | 'medium' | 'low';
+      operationalReadiness: 'ready' | 'needs_attention';
+      recommendedActions: string;
+    };
+  };
+  systemOverview?: {
+    systemHealthScore: number;
+    performanceStatus: string;
+    overallStatus: string;
+  };
+  consolidatedFindings?: ConsolidatedFindings;
+  actionPlan?: ActionPlan;
+  [key: string]: unknown;
+}
 
 // Format report as Markdown
 export function formatAsMarkdown(report: Record<string, unknown>): string {

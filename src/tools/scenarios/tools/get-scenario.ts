@@ -4,7 +4,7 @@
  */
 
 import { UserError } from 'fastmcp';
-import { ScenarioDetailSchema } from '../schemas/scenario-crud.js';
+import { ScenarioDetailSchema } from '../schemas/scenario-filters.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 
 /**

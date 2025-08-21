@@ -7,6 +7,8 @@
  * @version 1.0.0
  */
 
+import { OptimizationRecommendation } from '../types/optimization.js';
+
 // Blueprint Analysis exports
 export {
   Blueprint,
@@ -31,13 +33,10 @@ export { OptimizationRecommendation } from '../types/optimization.js';
 // Troubleshooting exports
 export {
   ScenarioAnalysis,
-  PerformanceAnalysisResult,
   ConsolidatedFindings,
   ActionPlan,
   SystemOverview,
   CostAnalysisReport,
-  ReportMetadata,
-  TroubleshootingReportData,
   aggregateFindings,
   generateSystemOverview,
   generateActionPlan,
@@ -79,7 +78,7 @@ export type ConnectionExtractionResult = {
   dependencyMap: Record<string, number[]>;
 };
 
-export type OptimizationResult = {
+export type OptimizationResultType = {
   optimizationScore: number;
   recommendations: OptimizationRecommendation[];
   metrics: {

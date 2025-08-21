@@ -4,7 +4,7 @@
  */
 
 import { UserError } from 'fastmcp';
-import { UpdateScenarioSchema } from '../schemas/scenario-crud.js';
+import { UpdateScenarioSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 
 /**

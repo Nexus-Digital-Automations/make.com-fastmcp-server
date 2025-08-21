@@ -182,7 +182,7 @@ export function validateBlueprintStructure(blueprint: unknown, strict: boolean =
       }
 
       // Check for sequential module ID gaps (warning only)
-      const sortedIds = [...new Set(moduleIds as number[])].sort((a: number, b: number) => a - b);
+      const sortedIds = Array.from(new Set(moduleIds as number[])).sort((a: number, b: number) => a - b);
       for (let i = 1; i < sortedIds.length; i++) {
         if (sortedIds[i] - sortedIds[i - 1] > 1) {
           warnings.push(`Non-sequential module IDs detected (gap between ${sortedIds[i - 1]} and ${sortedIds[i]})`);

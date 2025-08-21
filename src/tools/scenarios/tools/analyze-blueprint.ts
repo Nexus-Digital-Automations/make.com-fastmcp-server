@@ -12,7 +12,7 @@ import { validateBlueprintStructure } from '../utils/blueprint-analysis.js';
  * Create analyze blueprint tool configuration
  */
 export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { logger } = context;
   
   return {
     name: 'analyze-blueprint',
@@ -23,12 +23,16 @@ export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }) => {
+    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
       log?.info?.('Analyzing blueprint', { hasBlueprint: !!(args as any).blueprint });
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
-        const { blueprint, strict = false, includeSecurityChecks = true } = args as any;
+        const { blueprint, strict = false, includeSecurityChecks = true } = args as {
+          blueprint?: unknown;
+          strict?: boolean;
+          includeSecurityChecks?: boolean;
+        };
         
         if (!blueprint) {
           throw new UserError('Blueprint is required for analysis');
@@ -89,7 +93,11 @@ export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition
 /**
  * Calculate overall validation score (0-100)
  */
-function calculateValidationScore(validationResult: any): number {
+function calculateValidationScore(validationResult: {
+  errors: string[];
+  warnings: string[];
+  securityIssues: Array<{ severity: string }>;
+}): number {
   let score = 100;
   
   // Deduct points for errors
@@ -122,7 +130,7 @@ function calculateValidationScore(validationResult: any): number {
 /**
  * Determine security level based on issues
  */
-function getSecurityLevel(securityIssues: any[]): string {
+function getSecurityLevel(securityIssues: Array<{ severity: string }>): string {
   if (securityIssues.some(issue => issue.severity === 'critical')) {
     return 'critical';
   }
@@ -141,7 +149,11 @@ function getSecurityLevel(securityIssues: any[]): string {
 /**
  * Generate blueprint-specific recommendations
  */
-function generateBlueprintRecommendations(validationResult: any, blueprint: any): string[] {
+function generateBlueprintRecommendations(validationResult: {
+  errors: string[];
+  warnings: string[];
+  securityIssues: Array<{ severity: string }>;
+}, blueprint: { metadata?: { scenario?: { dlq?: boolean } }; flow?: unknown[] }): string[] {
   const recommendations: string[] = [];
   
   // Error-based recommendations
@@ -157,7 +169,7 @@ function generateBlueprintRecommendations(validationResult: any, blueprint: any)
   // Security recommendations
   if (validationResult.securityIssues.length > 0) {
     recommendations.push('Review and resolve security issues');
-    if (validationResult.securityIssues.some((issue: any) => issue.severity === 'critical')) {
+    if (validationResult.securityIssues.some((issue) => issue.severity === 'critical')) {
       recommendations.push('URGENT: Address critical security vulnerabilities immediately');
     }
   }

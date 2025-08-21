@@ -1,11 +1,11 @@
 /**
  * @fileoverview Optimize Blueprint Tool Implementation
- * Single-responsibility tool for blueprint optimization analysis
+ * Blueprint optimization analysis with performance and cost recommendations
  */
 
 import { UserError } from 'fastmcp';
 import { OptimizeBlueprintSchema } from '../schemas/blueprint-update.js';
-import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { ToolContext, ToolDefinition } from '../types/tool-context.js';
 import { optimizeBlueprint } from '../utils/optimization.js';
 import { Blueprint } from '../types/blueprint.js';
 
@@ -17,266 +17,272 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
   
   return {
     name: 'optimize-blueprint',
-    description: 'Analyze blueprint for optimization opportunities and provide performance recommendations',
+    description: 'Analyze and optimize Make.com blueprints for performance, cost, and security improvements',
     parameters: OptimizeBlueprintSchema,
     annotations: {
       title: 'Optimize Blueprint',
       readOnlyHint: true,
-      openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }) => {
-      log?.info?.('Optimizing blueprint', { hasBlueprint: !!(args as any).blueprint });
-      reportProgress?.({ progress: 0, total: 100 });
+    execute: async (args, { log }) => {
+      log?.info('Starting blueprint optimization analysis', { 
+        hasBlueprint: !!args.blueprint,
+        optimizationType: args.optimizationType,
+        includeImplementationSteps: args.includeImplementationSteps
+      });
 
       try {
-        const { blueprint } = args as any;
-        
-        if (!blueprint) {
-          throw new UserError('Blueprint is required for optimization analysis');
+        // Validate blueprint structure first
+        if (!args.blueprint || typeof args.blueprint !== 'object') {
+          throw new UserError('Invalid blueprint provided - must be a valid JSON object');
         }
 
-        reportProgress?.({ progress: 25, total: 100 });
-
-        // Perform optimization analysis
-        const optimizationResult = optimizeBlueprint(blueprint as Blueprint);
+        const blueprint = args.blueprint as Blueprint;
         
-        reportProgress?.({ progress: 75, total: 100 });
+        // Run optimization analysis
+        const optimizationResult = optimizeBlueprint(blueprint);
 
-        // Prepare comprehensive optimization report
-        const optimizationReport = {
+        // Filter recommendations by optimization type
+        let filteredRecommendations = optimizationResult.recommendations;
+        if (args.optimizationType !== 'all') {
+          filteredRecommendations = optimizationResult.recommendations.filter(
+            rec => rec.category === args.optimizationType
+          );
+        }
+
+        // Generate detailed implementation guidance if requested
+        let implementationGuidance: Record<string, any> | undefined;
+        if (args.includeImplementationSteps && filteredRecommendations.length > 0) {
+          implementationGuidance = generateImplementationGuidance(
+            filteredRecommendations,
+            args.optimizationType
+          );
+        }
+
+        // Generate optimization summary
+        const optimizationSummary = {
+          currentScore: optimizationResult.optimizationScore,
+          potentialImprovement: Math.max(0, 100 - optimizationResult.optimizationScore),
+          priorityLevel: optimizationResult.optimizationScore < 70 ? 'high' : 
+                       optimizationResult.optimizationScore < 85 ? 'medium' : 'low',
+          focusAreas: getFocusAreas(filteredRecommendations),
+          estimatedImpact: calculateEstimatedImpact(filteredRecommendations)
+        };
+
+        // Build comprehensive response
+        const response = {
+          optimizationSummary,
           analysis: {
+            blueprintMetrics: optimizationResult.metrics,
             optimizationScore: optimizationResult.optimizationScore,
-            grade: getOptimizationGrade(optimizationResult.optimizationScore),
-            status: optimizationResult.optimizationScore >= 80 ? 'well-optimized' : 
-                    optimizationResult.optimizationScore >= 60 ? 'needs-improvement' : 'requires-optimization'
+            recommendationCount: filteredRecommendations.length,
+            categories: getCategoryBreakdown(filteredRecommendations)
           },
-          metrics: {
-            ...optimizationResult.metrics,
-            efficiency: {
-              moduleEfficiency: calculateModuleEfficiency(optimizationResult.metrics),
-              connectionEfficiency: calculateConnectionEfficiency(optimizationResult.metrics),
-              performanceRating: getPerformanceRating(optimizationResult.metrics)
-            }
-          },
-          recommendations: {
-            total: optimizationResult.recommendations.length,
-            byPriority: {
-              high: optimizationResult.recommendations.filter(r => r.priority === 'high').length,
-              medium: optimizationResult.recommendations.filter(r => r.priority === 'medium').length,
-              low: optimizationResult.recommendations.filter(r => r.priority === 'low').length
-            },
-            items: optimizationResult.recommendations.map(rec => ({
-              ...rec,
-              estimatedImplementationTime: getImplementationTime(rec),
-              potentialImpactScore: getImpactScore(rec)
-            }))
-          },
-          costAnalysis: {
-            estimatedMonthlyCost: estimateMonthlyCost(optimizationResult.metrics),
-            optimizationPotential: estimateOptimizationSavings(optimizationResult),
-            costEfficiencyRating: getCostEfficiencyRating(optimizationResult.metrics)
-          },
-          performanceProjections: {
-            currentPerformance: {
-              estimatedExecutionTime: `${optimizationResult.metrics.estimatedExecutionTime}ms`,
-              resourceUsage: `${optimizationResult.metrics.memoryUsage}KB`,
-              networkCalls: optimizationResult.metrics.networkCalls
-            },
-            optimizedPerformance: calculateOptimizedPerformance(optimizationResult)
-          },
-          implementationPlan: generateImplementationPlan(optimizationResult.recommendations),
-          analysisTimestamp: new Date().toISOString(),
-          blueprintInfo: {
-            moduleCount: optimizationResult.metrics.moduleCount,
-            complexityScore: optimizationResult.metrics.complexityScore,
-            connectionCount: optimizationResult.metrics.connectionCount
+          recommendations: filteredRecommendations.map(rec => ({
+            ...rec,
+            implementationSteps: args.includeImplementationSteps ? rec.implementationSteps : undefined
+          })),
+          ...(implementationGuidance && { implementationGuidance }),
+          metadata: {
+            analysisType: args.optimizationType,
+            blueprintName: blueprint.name || 'Unnamed Blueprint',
+            moduleCount: blueprint.flow?.length || 0,
+            analysisTimestamp: new Date().toISOString()
           }
         };
 
-        reportProgress?.({ progress: 100, total: 100 });
-
-        log?.info?.('Blueprint optimization analysis completed', {
-          optimizationScore: optimizationReport.analysis.optimizationScore,
-          grade: optimizationReport.analysis.grade,
-          recommendationCount: optimizationReport.recommendations.total,
-          highPriorityRecommendations: optimizationReport.recommendations.byPriority.high
+        log?.info('Blueprint optimization analysis completed', {
+          optimizationScore: optimizationResult.optimizationScore,
+          recommendationCount: filteredRecommendations.length,
+          priorityLevel: optimizationSummary.priorityLevel,
+          moduleCount: optimizationResult.metrics.moduleCount
         });
 
-        return JSON.stringify(optimizationReport, null, 2);
-        
+        return JSON.stringify(response, null, 2);
+
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Blueprint optimization failed', { error: errorMessage });
+        log?.error('Blueprint optimization failed', { error: errorMessage });
         throw new UserError(`Blueprint optimization failed: ${errorMessage}`);
       }
-    },
+    }
   };
 }
 
 /**
- * Get optimization grade based on score
+ * Generate detailed implementation guidance
  */
-function getOptimizationGrade(score: number): string {
-  if (score >= 90) return 'A+';
-  if (score >= 85) return 'A';
-  if (score >= 80) return 'B+';
-  if (score >= 75) return 'B';
-  if (score >= 70) return 'C+';
-  if (score >= 65) return 'C';
-  if (score >= 60) return 'D+';
-  if (score >= 55) return 'D';
-  return 'F';
-}
-
-/**
- * Calculate module efficiency ratio
- */
-function calculateModuleEfficiency(metrics: any): number {
-  // Higher efficiency means fewer modules achieving the same functionality
-  const baselineModules = 10; // Typical workflow size
-  const efficiency = Math.min(100, (baselineModules / Math.max(1, metrics.moduleCount)) * 100);
-  return Math.round(efficiency);
-}
-
-/**
- * Calculate connection efficiency ratio
- */
-function calculateConnectionEfficiency(metrics: any): number {
-  if (metrics.moduleCount === 0) return 100;
-  
-  const connectionRatio = metrics.connectionCount / metrics.moduleCount;
-  // Lower ratio generally means better efficiency (fewer external dependencies)
-  const efficiency = Math.max(0, 100 - (connectionRatio * 25));
-  return Math.round(efficiency);
-}
-
-/**
- * Get performance rating based on metrics
- */
-function getPerformanceRating(metrics: any): string {
-  if (metrics.estimatedExecutionTime < 1000 && metrics.memoryUsage < 500) return 'Excellent';
-  if (metrics.estimatedExecutionTime < 3000 && metrics.memoryUsage < 1000) return 'Good';
-  if (metrics.estimatedExecutionTime < 5000 && metrics.memoryUsage < 2000) return 'Fair';
-  return 'Needs Improvement';
-}
-
-/**
- * Get estimated implementation time for recommendation
- */
-function getImplementationTime(recommendation: any): string {
-  switch (recommendation.priority) {
-    case 'high':
-      return '2-4 hours';
-    case 'medium':
-      return '4-8 hours';
-    case 'low':
-      return '1-2 days';
-    default:
-      return '4-8 hours';
-  }
-}
-
-/**
- * Get impact score for recommendation
- */
-function getImpactScore(recommendation: any): number {
-  const categoryScores = {
-    performance: 85,
-    cost: 70,
-    reliability: 90,
-    security: 95,
-    maintainability: 60
-  };
-  
-  const priorityMultipliers = {
-    high: 1.0,
-    medium: 0.8,
-    low: 0.6
-  };
-  
-  const baseScore = categoryScores[recommendation.category] || 70;
-  const multiplier = priorityMultipliers[recommendation.priority] || 0.8;
-  
-  return Math.round(baseScore * multiplier);
-}
-
-/**
- * Estimate monthly cost based on metrics
- */
-function estimateMonthlyCost(metrics: any): number {
-  // Simplified cost estimation based on complexity and usage
-  const baseCost = 10; // Base monthly cost
-  const moduleCost = metrics.moduleCount * 0.5;
-  const connectionCost = metrics.connectionCount * 2;
-  const complexityCost = (metrics.complexityScore / 100) * 50;
-  
-  return Math.round(baseCost + moduleCost + connectionCost + complexityCost);
-}
-
-/**
- * Estimate optimization savings
- */
-function estimateOptimizationSavings(optimizationResult: any): number {
-  const currentCost = estimateMonthlyCost(optimizationResult.metrics);
-  const savingsPercentage = Math.min(50, (100 - optimizationResult.optimizationScore) * 0.5);
-  
-  return Math.round(currentCost * (savingsPercentage / 100));
-}
-
-/**
- * Get cost efficiency rating
- */
-function getCostEfficiencyRating(metrics: any): string {
-  const costPerModule = estimateMonthlyCost(metrics) / Math.max(1, metrics.moduleCount);
-  
-  if (costPerModule < 1) return 'Excellent';
-  if (costPerModule < 2) return 'Good';
-  if (costPerModule < 4) return 'Fair';
-  return 'Poor';
-}
-
-/**
- * Calculate optimized performance projections
- */
-function calculateOptimizedPerformance(optimizationResult: any) {
-  const currentMetrics = optimizationResult.metrics;
-  const improvementFactor = optimizationResult.optimizationScore / 100;
+function generateImplementationGuidance(
+  recommendations: Array<{ category: string; priority: string; title: string; implementationSteps?: string[] }>,
+  optimizationType: string
+): Record<string, any> {
+  const highPriorityRecs = recommendations.filter(rec => rec.priority === 'high');
+  const mediumPriorityRecs = recommendations.filter(rec => rec.priority === 'medium');
   
   return {
-    estimatedExecutionTime: `${Math.round(currentMetrics.estimatedExecutionTime * improvementFactor)}ms`,
-    resourceUsage: `${Math.round(currentMetrics.memoryUsage * improvementFactor)}KB`,
-    networkCalls: Math.max(1, Math.round(currentMetrics.networkCalls * improvementFactor)),
-    improvementPercentage: Math.round((1 - improvementFactor) * 100)
+    quickWins: highPriorityRecs.slice(0, 3).map(rec => ({
+      title: rec.title,
+      category: rec.category,
+      timeEstimate: getTimeEstimate(rec.category),
+      difficulty: getDifficulty(rec.category),
+      steps: rec.implementationSteps?.slice(0, 3) || []
+    })),
+    mediumTermActions: mediumPriorityRecs.slice(0, 3).map(rec => ({
+      title: rec.title,
+      category: rec.category,
+      timeEstimate: getTimeEstimate(rec.category, 'medium'),
+      difficulty: getDifficulty(rec.category, 'medium'),
+      steps: rec.implementationSteps || []
+    })),
+    implementationOrder: generateImplementationOrder(recommendations),
+    resourceRequirements: {
+      technicalSkills: getTechnicalSkills(optimizationType),
+      estimatedTime: calculateTotalTime(recommendations),
+      tools: getRequiredTools(optimizationType)
+    }
   };
 }
 
 /**
- * Generate implementation plan
+ * Get focus areas from recommendations
  */
-function generateImplementationPlan(recommendations: any[]) {
-  const highPriorityItems = recommendations.filter(r => r.priority === 'high');
-  const mediumPriorityItems = recommendations.filter(r => r.priority === 'medium');
-  const lowPriorityItems = recommendations.filter(r => r.priority === 'low');
+function getFocusAreas(recommendations: Array<{ category: string; priority: string }>): string[] {
+  const categoryCount: Record<string, number> = {};
   
-  return {
-    phase1: {
-      name: 'Critical Optimizations',
-      duration: '1-2 weeks',
-      items: highPriorityItems.slice(0, 3).map(item => item.title),
-      expectedImpact: 'Major performance and cost improvements'
-    },
-    phase2: {
-      name: 'Performance Enhancements',
-      duration: '2-3 weeks',
-      items: mediumPriorityItems.slice(0, 5).map(item => item.title),
-      expectedImpact: 'Moderate performance improvements'
-    },
-    phase3: {
-      name: 'Fine-tuning',
-      duration: '2-4 weeks',
-      items: lowPriorityItems.slice(0, 5).map(item => item.title),
-      expectedImpact: 'Incremental optimizations'
-    },
-    totalEstimatedDuration: '5-9 weeks'
+  recommendations.forEach(rec => {
+    categoryCount[rec.category] = (categoryCount[rec.category] || 0) + 1;
+  });
+  
+  return Object.entries(categoryCount)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 3)
+    .map(([category]) => category);
+}
+
+/**
+ * Calculate estimated impact from recommendations
+ */
+function calculateEstimatedImpact(recommendations: Array<{ priority: string; estimatedImpact?: string }>): {
+  performance: number;
+  cost: number;
+  security: number;
+  overall: number;
+} {
+  const impact = { performance: 0, cost: 0, security: 0, overall: 0 };
+  
+  recommendations.forEach(rec => {
+    const weight = rec.priority === 'high' ? 3 : rec.priority === 'medium' ? 2 : 1;
+    
+    // Parse estimated impact if available
+    if (rec.estimatedImpact?.includes('%')) {
+      const percentage = parseInt(rec.estimatedImpact.match(/(\d+)%/)?.[1] || '0');
+      impact.performance += percentage * weight;
+      impact.cost += percentage * weight;
+      impact.security += percentage * weight;
+    } else {
+      // Default impact values based on priority
+      impact.performance += weight * 5;
+      impact.cost += weight * 3;
+      impact.security += weight * 4;
+    }
+  });
+  
+  // Normalize and calculate overall
+  const maxImpact = recommendations.length * 3 * 15; // max possible impact
+  impact.performance = Math.min(100, Math.round((impact.performance / maxImpact) * 100));
+  impact.cost = Math.min(100, Math.round((impact.cost / maxImpact) * 100));
+  impact.security = Math.min(100, Math.round((impact.security / maxImpact) * 100));
+  impact.overall = Math.round((impact.performance + impact.cost + impact.security) / 3);
+  
+  return impact;
+}
+
+/**
+ * Get category breakdown of recommendations
+ */
+function getCategoryBreakdown(recommendations: Array<{ category: string; priority: string }>): Record<string, { total: number; high: number; medium: number; low: number }> {
+  const breakdown: Record<string, { total: number; high: number; medium: number; low: number }> = {};
+  
+  recommendations.forEach(rec => {
+    if (!breakdown[rec.category]) {
+      breakdown[rec.category] = { total: 0, high: 0, medium: 0, low: 0 };
+    }
+    
+    breakdown[rec.category].total++;
+    breakdown[rec.category][rec.priority as 'high' | 'medium' | 'low']++;
+  });
+  
+  return breakdown;
+}
+
+/**
+ * Helper functions for implementation guidance
+ */
+function getTimeEstimate(category: string, term: 'quick' | 'medium' = 'quick'): string {
+  const times: Record<string, Record<string, string>> = {
+    performance: { quick: '1-2 hours', medium: '1-2 days' },
+    cost: { quick: '30 minutes', medium: '4-8 hours' },
+    security: { quick: '1-3 hours', medium: '1-3 days' },
+    reliability: { quick: '2-4 hours', medium: '2-5 days' }
   };
+  
+  return times[category]?.[term] || '1-4 hours';
+}
+
+function getDifficulty(category: string, term: 'quick' | 'medium' = 'quick'): string {
+  const difficulties: Record<string, Record<string, string>> = {
+    performance: { quick: 'easy', medium: 'moderate' },
+    cost: { quick: 'easy', medium: 'easy' },
+    security: { quick: 'moderate', medium: 'moderate' },
+    reliability: { quick: 'moderate', medium: 'challenging' }
+  };
+  
+  return difficulties[category]?.[term] || 'moderate';
+}
+
+function generateImplementationOrder(recommendations: Array<{ category: string; priority: string; title: string }>): string[] {
+  // Sort by priority first, then by category importance
+  const priorityOrder = ['high', 'medium', 'low'];
+  const categoryOrder = ['security', 'performance', 'reliability', 'cost'];
+  
+  return recommendations
+    .sort((a, b) => {
+      const priorityDiff = priorityOrder.indexOf(a.priority) - priorityOrder.indexOf(b.priority);
+      if (priorityDiff !== 0) return priorityDiff;
+      
+      return categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category);
+    })
+    .map(rec => rec.title);
+}
+
+function getTechnicalSkills(optimizationType: string): string[] {
+  const skillMap: Record<string, string[]> = {
+    performance: ['Performance analysis', 'Blueprint optimization', 'Make.com advanced features'],
+    cost: ['Resource optimization', 'Usage analysis', 'Connection management'],
+    security: ['Security best practices', 'Data protection', 'Access control'],
+    all: ['Blueprint design', 'Make.com platform expertise', 'System optimization']
+  };
+  
+  return skillMap[optimizationType] || skillMap.all;
+}
+
+function calculateTotalTime(recommendations: Array<{ priority: string }>): string {
+  const timeWeights = { high: 3, medium: 2, low: 1 };
+  const totalWeight = recommendations.reduce((sum, rec) => 
+    sum + (timeWeights[rec.priority as keyof typeof timeWeights] || 1), 0
+  );
+  
+  if (totalWeight < 5) return '1-2 days';
+  if (totalWeight < 10) return '3-5 days';
+  return '1-2 weeks';
+}
+
+function getRequiredTools(optimizationType: string): string[] {
+  const toolMap: Record<string, string[]> = {
+    performance: ['Make.com scenario logs', 'Performance monitoring tools', 'Blueprint analyzer'],
+    cost: ['Make.com usage dashboard', 'Cost analysis tools', 'Resource optimizer'],
+    security: ['Security scanner', 'Compliance checker', 'Access audit tools'],
+    all: ['Make.com platform', 'Development environment', 'Monitoring tools']
+  };
+  
+  return toolMap[optimizationType] || toolMap.all;
 }
