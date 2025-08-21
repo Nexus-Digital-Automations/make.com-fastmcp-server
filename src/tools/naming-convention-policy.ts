@@ -614,6 +614,13 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
     name: 'create-naming-convention-policy',
     description: 'Create a comprehensive naming convention policy with flexible rules and enforcement',
     parameters: CreateNamingPolicySchema,
+    annotations: {
+      title: 'Create Naming Convention Policy',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       log.info('Creating naming convention policy', {
         name: input.name,
@@ -796,6 +803,13 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
     name: 'validate-names-against-policy',
     description: 'Validate resource names against naming convention policy rules',
     parameters: ValidateNamesSchema,
+    annotations: {
+      title: 'Validate Names Against Policy',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       log.info('Validating names against policy', {
         policyId: input.policyId,
@@ -971,6 +985,13 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
     name: 'list-naming-convention-policies',
     description: 'List and filter naming convention policies',
     parameters: PolicyFiltersSchema,
+    annotations: {
+      title: 'List Naming Convention Policies',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       log.info('Listing naming convention policies', {
         filters: input,
@@ -1077,6 +1098,13 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
     name: 'update-naming-convention-policy',
     description: 'Update an existing naming convention policy',
     parameters: UpdateNamingPolicySchema,
+    annotations: {
+      title: 'Update Naming Convention Policy',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       log.info('Updating naming convention policy', {
         policyId: input.policyId,
@@ -1234,6 +1262,13 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
       includeExamples: z.boolean().default(true).describe('Include usage examples'),
       includeRuleDetails: z.boolean().default(true).describe('Include detailed rule information'),
     }),
+    annotations: {
+      title: 'Get Naming Policy Templates',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       log.info('Retrieving naming policy templates', {
         category: input.category,
@@ -1341,6 +1376,13 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
       policyId: z.string().min(1).describe('Policy ID to delete'),
       confirmDeletion: z.boolean().default(false).describe('Confirm policy deletion'),
     }),
+    annotations: {
+      title: 'Delete Naming Convention Policy',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       log.info('Deleting naming convention policy', { policyId: input.policyId });
 

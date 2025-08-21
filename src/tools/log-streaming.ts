@@ -679,6 +679,13 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
     name: 'get_scenario_run_logs',
     description: 'Stream detailed execution logs for a Make.com scenario with real-time updates, advanced filtering, and multiple output formats',
     parameters: ScenarioRunLogsSchema,
+    annotations: {
+      title: 'Get Scenario Run Logs',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { scenarioId, executionId, streaming, filtering, output } = input;
 
@@ -835,6 +842,13 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
     name: 'query_logs_by_timerange',
     description: 'Advanced historical log search and analysis with comprehensive filtering, aggregation, trend analysis, and export capabilities',
     parameters: QueryLogsByTimeRangeSchema,
+    annotations: {
+      title: 'Query Logs by Time Range',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { 
         scenarioId, organizationId, teamId, executionId, timeRange, 
@@ -1021,6 +1035,13 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
     name: 'stream_live_execution',
     description: 'Monitor a Make.com scenario execution in real-time with progress tracking, performance metrics, and alerts',
     parameters: StreamLiveExecutionSchema,
+    annotations: {
+      title: 'Stream Live Execution',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { scenarioId, executionId, monitoring, alerts, output } = input;
 
@@ -1211,6 +1232,13 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
     name: 'export_logs_for_analysis',
     description: 'Advanced log export tool with multi-format output, real-time streaming, external analytics platform integration, and comprehensive delivery options',
     parameters: ExportLogsForAnalysisSchema,
+    annotations: {
+      title: 'Export Logs for Analysis',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { exportConfig, outputConfig, destination, analytics } = input;
 

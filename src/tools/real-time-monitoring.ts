@@ -1026,6 +1026,13 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
     name: 'stream_live_execution',
     description: 'Start comprehensive real-time monitoring of Make.com scenario execution with advanced progress tracking, performance alerts, and SSE streaming',
     parameters: RealTimeMonitoringSchema,
+    annotations: {
+      title: 'Start Real-Time Execution Monitoring',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { scenarioId, executionId, monitoringConfig, alertThresholds, visualization } = input;
 
@@ -1105,6 +1112,13 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
     name: 'stop_monitoring',
     description: 'Stop an active real-time monitoring session',
     parameters: StopMonitoringSchema,
+    annotations: {
+      title: 'Stop Monitoring Session',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { monitorId, reason } = input;
 
@@ -1139,6 +1153,13 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
     name: 'get_monitoring_status',
     description: 'Get current status of monitoring sessions',
     parameters: GetMonitoringStatusSchema,
+    annotations: {
+      title: 'Get Monitoring Status',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { monitorId, includeHistory } = input;
 

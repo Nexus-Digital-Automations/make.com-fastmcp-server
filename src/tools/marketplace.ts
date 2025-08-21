@@ -238,6 +238,13 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
     name: 'search-public-apps',
     description: 'Search and discover Make.com public apps with advanced filtering and GraphQL-style discovery capabilities',
     parameters: SearchPublicAppsSchema,
+    annotations: {
+      title: 'Search Public Apps',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { query, filters, sorting, pagination, includeMetadata, includePricing, includeUsageStats } = input;
 
@@ -357,6 +364,13 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
     name: 'get-public-app-details',
     description: 'Retrieve comprehensive details for a specific public app including specifications, requirements, and integration examples',
     parameters: GetPublicAppDetailsSchema,
+    annotations: {
+      title: 'Get Public App Details',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { appId, version, includeFullDetails, includeReviews, includeUsageExamples, includeCompatibilityInfo, includePricingDetails, includeComplianceInfo } = input;
 
@@ -490,6 +504,13 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
     name: 'list-popular-apps',
     description: 'Discover trending and popular apps with AI-powered recommendations and growth analytics',
     parameters: ListPopularAppsSchema,
+    annotations: {
+      title: 'List Popular Apps',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { timeframe, category, publisherType, metric, limit, includeGrowthMetrics, includeRecommendations, userContext } = input;
 
