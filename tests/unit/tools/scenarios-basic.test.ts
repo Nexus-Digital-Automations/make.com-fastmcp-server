@@ -165,6 +165,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
         'generate-troubleshooting-report',
         'analyze-blueprint',
         'validate-blueprint',
+        'extract-blueprint-connections',
         'optimize-blueprint'
       ];
       
@@ -221,6 +222,7 @@ describe('Scenario Management Tools - Basic Tests', () => {
       const blueprintTools = [
         'analyze-blueprint',
         'validate-blueprint',
+        'extract-blueprint-connections',
         'optimize-blueprint'
       ];
       
@@ -281,14 +283,14 @@ describe('Scenario Management Tools - Basic Tests', () => {
       // Test run-scenario tool
       const runTool = findTool(mockTool, 'run-scenario');
       expect(runTool.name).toBe('run-scenario');
-      expect(runTool.description).toContain('Execute a Make.com scenario');
+      expect(runTool.description).toContain('Execute Make.com scenarios');
       expect(runTool.parameters).toBeDefined();
       expect(runTool.annotations?.title).toBe('Run Scenario');
 
       // Test troubleshoot-scenario tool
       const troubleshootTool = findTool(mockTool, 'troubleshoot-scenario');
       expect(troubleshootTool.name).toBe('troubleshoot-scenario');
-      expect(troubleshootTool.description).toContain('Comprehensive Make.com scenario diagnostics');
+      expect(troubleshootTool.description).toContain('comprehensive troubleshooting analysis');
       expect(troubleshootTool.parameters).toBeDefined();
       expect(troubleshootTool.annotations?.title).toBe('Troubleshoot Scenario');
     });
@@ -304,17 +306,10 @@ describe('Scenario Management Tools - Basic Tests', () => {
       expect(validateTool.parameters).toBeDefined();
       expect(validateTool.annotations?.title).toBe('Validate Blueprint');
 
-      // Test extract-blueprint-connections tool
-      const extractTool = findTool(mockTool, 'extract-blueprint-connections');
-      expect(extractTool.name).toBe('extract-blueprint-connections');
-      expect(extractTool.description).toContain('Extract and analyze connection requirements');
-      expect(extractTool.parameters).toBeDefined();
-      expect(extractTool.annotations?.title).toBe('Extract Blueprint Connections');
-
       // Test optimize-blueprint tool
       const optimizeTool = findTool(mockTool, 'optimize-blueprint');
       expect(optimizeTool.name).toBe('optimize-blueprint');
-      expect(optimizeTool.description).toContain('Analyze Make.com blueprint and provide optimization');
+      expect(optimizeTool.description).toContain('Analyze and optimize Make.com blueprints');
       expect(optimizeTool.parameters).toBeDefined();
       expect(optimizeTool.annotations?.title).toBe('Optimize Blueprint');
     });
