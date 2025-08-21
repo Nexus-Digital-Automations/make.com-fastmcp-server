@@ -59,16 +59,16 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       const registeredTools = mockTool.mock.calls.map(call => call[0].name);
       const expectedToolNames = [
-        'configure_vault_server',
-        'configure_hsm_integration',
-        'manage_secret_engines',
-        'configure_key_rotation',
-        'generate_dynamic_secret',
-        'manage_rbac_policies',
-        'perform_secret_scanning',
-        'configure_breach_detection',
-        'configure_audit_system',
-        'generate_compliance_report'
+        'configure-vault-server',
+        'configure-hsm-integration',
+        'manage-secret-engines',
+        'configure-key-rotation',
+        'generate-dynamic-secrets',
+        'manage-rbac-policies',
+        'scan-secret-leakage',
+        'configure-breach-detection',
+        'configure-audit-system',
+        'generate-compliance-report'
       ];
       
       expectedToolNames.forEach(toolName => {
@@ -83,9 +83,9 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure_vault_server')?.[0];
+      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure-vault-server')?.[0];
       expect(vaultTool).toBeDefined();
-      expect(vaultTool.name).toBe('configure_vault_server');
+      expect(vaultTool.name).toBe('configure-vault-server');
       expect(vaultTool.description).toBeDefined();
       expect(vaultTool.description).toContain('HashiCorp Vault server cluster');
       expect(vaultTool.parameters).toBeDefined();
@@ -97,9 +97,9 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure_hsm_integration')?.[0];
+      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure-hsm-integration')?.[0];
       expect(hsmTool).toBeDefined();
-      expect(hsmTool.name).toBe('configure_hsm_integration');
+      expect(hsmTool.name).toBe('configure-hsm-integration');
       expect(hsmTool.description).toBeDefined();
       expect(hsmTool.description).toContain('Hardware Security Module');
       expect(hsmTool.parameters).toBeDefined();
@@ -111,9 +111,9 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate_dynamic_secret')?.[0];
+      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate-dynamic-secrets')?.[0];
       expect(dynamicSecretTool).toBeDefined();
-      expect(dynamicSecretTool.name).toBe('generate_dynamic_secret');
+      expect(dynamicSecretTool.name).toBe('generate-dynamic-secrets');
       expect(dynamicSecretTool.description).toBeDefined();
       expect(dynamicSecretTool.description).toContain('just-in-time dynamic secrets');
       expect(dynamicSecretTool.parameters).toBeDefined();
@@ -125,9 +125,9 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'perform_secret_scanning')?.[0];
+      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'scan-secret-leakage')?.[0];
       expect(scanningTool).toBeDefined();
-      expect(scanningTool.name).toBe('perform_secret_scanning');
+      expect(scanningTool.name).toBe('scan-secret-leakage');
       expect(scanningTool.description).toBeDefined();
       expect(scanningTool.description).toContain('secret scanning');
       expect(scanningTool.parameters).toBeDefined();
@@ -139,9 +139,9 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const complianceTool = mockTool.mock.calls.find(call => call[0].name === 'generate_compliance_report')?.[0];
+      const complianceTool = mockTool.mock.calls.find(call => call[0].name === 'generate-compliance-report')?.[0];
       expect(complianceTool).toBeDefined();
-      expect(complianceTool.name).toBe('generate_compliance_report');
+      expect(complianceTool.name).toBe('generate-compliance-report');
       expect(complianceTool.description).toBeDefined();
       expect(complianceTool.description).toContain('compliance reports');
       expect(complianceTool.parameters).toBeDefined();
@@ -155,7 +155,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure_vault_server')?.[0];
+      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure-vault-server')?.[0];
       const validConfig = {
         clusterId: 'test-cluster-001',
         nodeId: 'vault-node-1',
@@ -202,7 +202,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure_vault_server')?.[0];
+      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure-vault-server')?.[0];
       const invalidConfig = {
         clusterId: '', // Invalid: empty string
         nodeId: 'vault-node-1',
@@ -239,7 +239,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure_hsm_integration')?.[0];
+      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure-hsm-integration')?.[0];
       const validConfig = {
         provider: 'aws_cloudhsm',
         config: {
@@ -263,7 +263,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate_dynamic_secret')?.[0];
+      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate-dynamic-secrets')?.[0];
       const validConfig = {
         secretType: 'database',
         name: 'postgres-dynamic-creds',
@@ -292,7 +292,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'perform_secret_scanning')?.[0];
+      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'scan-secret-leakage')?.[0];
       const validConfig = {
         scanType: 'repository',
         targets: [
@@ -329,7 +329,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure_vault_server')?.[0];
+      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure-vault-server')?.[0];
       const input = {
         clusterId: 'test-cluster-001',
         nodeId: 'vault-node-1',
@@ -379,7 +379,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure_hsm_integration')?.[0];
+      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure-hsm-integration')?.[0];
       const input = {
         provider: 'pkcs11',
         config: {
@@ -411,7 +411,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate_dynamic_secret')?.[0];
+      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate-dynamic-secrets')?.[0];
       const input = {
         secretType: 'aws',
         name: 'aws-temp-access',
@@ -446,7 +446,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'perform_secret_scanning')?.[0];
+      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'scan-secret-leakage')?.[0];
       const input = {
         scanType: 'configuration',
         targets: ['/app/config', '/app/.env'],
@@ -485,7 +485,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const complianceTool = mockTool.mock.calls.find(call => call[0].name === 'generate_compliance_report')?.[0];
+      const complianceTool = mockTool.mock.calls.find(call => call[0].name === 'generate-compliance-report')?.[0];
       const input = {
         framework: 'soc2'
       };
@@ -509,7 +509,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const rbacTool = mockTool.mock.calls.find(call => call[0].name === 'manage_rbac_policies')?.[0];
+      const rbacTool = mockTool.mock.calls.find(call => call[0].name === 'manage-rbac-policies')?.[0];
       const input = {
         policyName: 'dev-team-policy',
         description: 'Policy for development team access',
@@ -553,7 +553,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const rotationTool = mockTool.mock.calls.find(call => call[0].name === 'configure_key_rotation')?.[0];
+      const rotationTool = mockTool.mock.calls.find(call => call[0].name === 'configure-key-rotation')?.[0];
       const input = {
         policyName: 'monthly-key-rotation',
         targetPaths: ['secret/database/*', 'secret/api-keys/*'],
@@ -596,7 +596,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure_vault_server')?.[0];
+      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure-vault-server')?.[0];
       const invalidInput = {
         clusterId: '',
         nodeId: '',
@@ -612,7 +612,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure_hsm_integration')?.[0];
+      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure-hsm-integration')?.[0];
       const invalidInput = {
         provider: 'invalid_provider',
         config: {},
@@ -628,7 +628,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate_dynamic_secret')?.[0];
+      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate-dynamic-secrets')?.[0];
       const invalidInput = {
         secretType: 'invalid_type',
         name: 'test',
@@ -649,7 +649,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'perform_secret_scanning')?.[0];
+      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'scan-secret-leakage')?.[0];
       const invalidInput = {
         scanType: 'repository',
         targets: [], // Empty targets array
@@ -666,7 +666,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const complianceTool = mockTool.mock.calls.find(call => call[0].name === 'generate_compliance_report')?.[0];
+      const complianceTool = mockTool.mock.calls.find(call => call[0].name === 'generate-compliance-report')?.[0];
       const invalidInput = {
         framework: 'invalid_framework'
       };
@@ -680,7 +680,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure_hsm_integration')?.[0];
+      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure-hsm-integration')?.[0];
       
       // Valid encryption algorithms should work
       const validConfig = {
@@ -710,7 +710,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure_hsm_integration')?.[0];
+      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure-hsm-integration')?.[0];
       
       // Valid FIPS levels
       const validFipsLevels = ['level1', 'level2', 'level3', 'level4'];
@@ -734,7 +734,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure_vault_server')?.[0];
+      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure-vault-server')?.[0];
       const input = {
         clusterId: 'test-cluster',
         nodeId: 'vault-node-1',
@@ -771,7 +771,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate_dynamic_secret')?.[0];
+      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate-dynamic-secrets')?.[0];
       const input = {
         secretType: 'database',
         name: 'postgres-creds',
@@ -800,7 +800,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const auditTool = mockTool.mock.calls.find(call => call[0].name === 'configure_audit_system')?.[0];
+      const auditTool = mockTool.mock.calls.find(call => call[0].name === 'configure-audit-system')?.[0];
       const secureConfig = {
         auditDevices: [
           {
@@ -841,7 +841,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'perform_secret_scanning')?.[0];
+      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'scan-secret-leakage')?.[0];
       const highSecurityConfig = {
         scanType: 'memory',
         targets: ['/proc/self/mem'],
@@ -881,7 +881,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const secretEngineTool = mockTool.mock.calls.find(call => call[0].name === 'manage_secret_engines')?.[0];
+      const secretEngineTool = mockTool.mock.calls.find(call => call[0].name === 'manage-secret-engines')?.[0];
       
       // Test different engine types
       const engineTypes = ['kv', 'database', 'pki', 'transit', 'aws'];
@@ -908,7 +908,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       
       addEnterpriseSecretsTools(mockServer, mockApiClient as any);
       
-      const breachDetectionTool = mockTool.mock.calls.find(call => call[0].name === 'configure_breach_detection')?.[0];
+      const breachDetectionTool = mockTool.mock.calls.find(call => call[0].name === 'configure-breach-detection')?.[0];
       const performanceConfig = {
         detectionMethods: {
           anomalyDetection: true,

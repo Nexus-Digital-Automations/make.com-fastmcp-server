@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -190,13 +190,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -219,7 +219,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -242,7 +242,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -273,7 +273,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -302,7 +302,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -312,13 +312,13 @@
  * Contains Zod schemas for secret scanning, breach detection, and audit configuration
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
+import { z } from 'zod';
+&nbsp;
+/**
  * Security Policy Configuration Schema
  */
 export const SecurityPolicySchema = z.object({
-<span class="cstat-no" title="statement not covered" >  passwordPolicy: z.object({</span>
+  passwordPolicy: z.object({
     minLength: z.number().min(8).optional().default(12),
     requireUppercase: z.boolean().optional().default(true),
     requireLowercase: z.boolean().optional().default(true),
@@ -341,7 +341,7 @@ export const SecurityPolicySchema = z.object({
 /**
  * Secret Scanning Configuration Schema
  */
-<span class="cstat-no" title="statement not covered" >export const SecretScanningConfigSchema = z.object({</span>
+export const SecretScanningConfigSchema = z.object({
   scanType: z.enum(['repository', 'runtime', 'configuration', 'memory', 'network']),
   targets: z.array(z.string()).min(1, 'At least one scan target is required'),
   detectionRules: z.object({
@@ -364,7 +364,7 @@ export const SecurityPolicySchema = z.object({
 &nbsp;
 /**
  * Breach Detection Configuration Schema
-<span class="cstat-no" title="statement not covered" > */</span>
+ */
 export const BreachDetectionConfigSchema = z.object({
   detectionMethods: z.object({
     anomalyDetection: z.boolean().default(true),
@@ -395,7 +395,7 @@ export const BreachDetectionConfigSchema = z.object({
 });
 &nbsp;
 /**
-<span class="cstat-no" title="statement not covered" > * Audit Configuration Schema</span>
+ * Audit Configuration Schema
  */
 export const AuditConfigSchema = z.object({
   auditDevices: z.array(z.object({
@@ -424,7 +424,7 @@ export const AuditConfigSchema = z.object({
   }),
 });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >/**</span>
+/**
  * Compliance Report Generation Schema
  */
 export const ComplianceReportSchema = z.object({
@@ -436,7 +436,7 @@ export const ComplianceReportSchema = z.object({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T23:37:46.527Z
+                at 2025-08-21T23:41:08.374Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

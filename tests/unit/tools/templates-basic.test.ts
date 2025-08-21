@@ -808,11 +808,22 @@ describe('Template Management Tools - Basic Tests', () => {
       
       const tool = findTool(mockTool, 'delete-template');
       
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
       // Should fail without force flag
-      await expect(executeTool(tool, {
+      await expect(tool.execute({
         templateId: 2001,
         force: false
-      })).rejects.toThrow(UserError);
+      }, mockContext)).rejects.toThrow(UserError);
     });
 
     it('should execute delete-template with force flag', async () => {
@@ -825,10 +836,22 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'delete-template');
-      const result = await executeTool(tool, {
+      
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         templateId: 2001,
         force: true
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -847,7 +870,18 @@ describe('Template Management Tools - Basic Tests', () => {
       
       const tool = findTool(mockTool, 'list-templates');
       
-      await expect(executeTool(tool, {})).rejects.toThrow(UserError);
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      await expect(tool.execute({}, mockContext)).rejects.toThrow(UserError);
     });
 
     it('should handle unauthorized access errors', async () => {
@@ -858,7 +892,18 @@ describe('Template Management Tools - Basic Tests', () => {
       
       const tool = findTool(mockTool, 'get-template');
       
-      await expect(executeTool(tool, { templateId: 2001 })).rejects.toThrow(UserError);
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      await expect(tool.execute({ templateId: 2001 }, mockContext)).rejects.toThrow(UserError);
     });
 
     it('should validate blueprint structure for template creation', async () => {
@@ -868,10 +913,21 @@ describe('Template Management Tools - Basic Tests', () => {
       const tool = findTool(mockTool, 'create-template');
       
       // Invalid blueprint should fail
-      await expect(executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      await expect(tool.execute({
         name: 'Invalid Template',
         blueprint: null
-      })).rejects.toThrow();
+      }, mockContext)).rejects.toThrow();
     });
 
     it('should handle template not found errors', async () => {
@@ -885,7 +941,18 @@ describe('Template Management Tools - Basic Tests', () => {
       
       const tool = findTool(mockTool, 'get-template');
       
-      await expect(executeTool(tool, { templateId: 999999 })).rejects.toThrow(UserError);
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      await expect(tool.execute({ templateId: 999999 }, mockContext)).rejects.toThrow(UserError);
     });
 
     it('should validate update data for template updates', async () => {
@@ -900,10 +967,21 @@ describe('Template Management Tools - Basic Tests', () => {
       const tool = findTool(mockTool, 'update-template');
       
       // Should fail with update validation error
-      await expect(executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      await expect(tool.execute({
         templateId: 2001,
         name: 'Updated Name'
-      })).rejects.toThrow(UserError);
+      }, mockContext)).rejects.toThrow(UserError);
     });
 
     it('should handle template usage failures', async () => {
@@ -917,10 +995,21 @@ describe('Template Management Tools - Basic Tests', () => {
       
       const tool = findTool(mockTool, 'use-template');
       
-      await expect(executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      await expect(tool.execute({
         templateId: 2001,
         scenarioName: 'Test Scenario'
-      })).rejects.toThrow(UserError);
+      }, mockContext)).rejects.toThrow(UserError);
     });
 
     it('should prevent deletion of templates with active scenarios', async () => {
@@ -934,10 +1023,21 @@ describe('Template Management Tools - Basic Tests', () => {
       
       const tool = findTool(mockTool, 'delete-template');
       
-      await expect(executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      await expect(tool.execute({
         templateId: 2001,
         force: false
-      })).rejects.toThrow('Template is currently in use');
+      }, mockContext)).rejects.toThrow('Template is currently in use');
     });
   });
 
@@ -969,7 +1069,18 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-template');
-      const result = await executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         name: 'Enterprise Security Template',
         description: 'Template with enhanced security controls',
         blueprint: testTemplate.blueprint,
@@ -979,7 +1090,7 @@ describe('Template Management Tools - Basic Tests', () => {
           teamVisible: false, // Restricted sharing
           specificShares: []
         }
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -1020,10 +1131,21 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'get-template');
-      const result = await executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         templateId: 2001,
         includeSharing: true
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -1070,7 +1192,18 @@ describe('Template Management Tools - Basic Tests', () => {
       
       const tool = findTool(mockTool, 'update-template');
       
-      await expect(executeTool(tool, suspiciousUpdate)).rejects.toThrow(UserError);
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      await expect(tool.execute(suspiciousUpdate, mockContext)).rejects.toThrow(UserError);
     });
 
     it('should validate secure template usage with compliance controls', async () => {
@@ -1101,14 +1234,25 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'use-template');
-      const result = await executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         templateId: 2001,
         scenarioName: 'Secure Enterprise Scenario',
         customizations: {
           securityLevel: 'enterprise',
           auditingEnabled: true
         }
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -1156,10 +1300,21 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'get-template');
-      const result = await executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         templateId: 2001,
         includeVersions: true
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -1183,11 +1338,22 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-template');
-      const result = await executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         name: 'Organization Template',
         blueprint: testTemplate.blueprint,
         organizationId: 67890
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -1206,11 +1372,22 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-template');
-      const result = await executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         name: 'Team Template',
         blueprint: testTemplate.blueprint,
         teamId: 12345
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -1252,10 +1429,21 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-template');
-      const result = await executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         name: 'Complex Enterprise Template',
         blueprint: complexBlueprint
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -1280,14 +1468,25 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'list-templates');
-      const result = await executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         searchQuery: 'onboarding',
         hasConnections: ['email', 'crm'],
         minUsage: 10,
         includeUsage: true,
         sortBy: 'usage',
         sortOrder: 'desc'
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -1334,10 +1533,21 @@ describe('Template Management Tools - Basic Tests', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'update-template');
-      const result = await executeTool(tool, {
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         templateId: 2001,
         blueprint: updatedBlueprint
-      });
+      }, mockContext);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
