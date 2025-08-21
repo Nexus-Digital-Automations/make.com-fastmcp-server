@@ -27,6 +27,13 @@ interface EnterpriseSecretsTool {
   name: string;
   description: string;
   parameters: z.ZodSchema<unknown>;
+  annotations: {
+    title: string;
+    readOnlyHint: boolean;
+    destructiveHint?: boolean;
+    idempotentHint?: boolean;
+    openWorldHint: boolean;
+  };
   execute: (input: unknown) => Promise<string>;
 }
 
@@ -1718,6 +1725,12 @@ const createVaultServerConfigTool = (_apiClient: MakeApiClient): EnterpriseSecre
   name: 'configure_vault_server',
   description: 'Configure and provision HashiCorp Vault server cluster with high availability and enterprise features',
   parameters: VaultServerConfigSchema,
+  annotations: {
+    title: 'Configure Vault Server Cluster with Enterprise Features',
+    readOnlyHint: false,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
   execute: async (input: unknown): Promise<string> => {
     const validatedInput = VaultServerConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
@@ -1751,6 +1764,12 @@ const createHSMIntegrationTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
   name: 'configure_hsm_integration',
   description: 'Configure Hardware Security Module integration for enterprise-grade key protection',
   parameters: HSMConfigSchema,
+  annotations: {
+    title: 'Configure Hardware Security Module Integration',
+    readOnlyHint: false,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
   execute: async (input: unknown): Promise<string> => {
     const validatedInput = HSMConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
@@ -1784,6 +1803,12 @@ const createSecretEngineManagementTool = (_apiClient: MakeApiClient): Enterprise
   name: 'manage_secret_engines',
   description: 'Mount and configure Vault secret engines for various secret types and integrations',
   parameters: SecretEngineConfigSchema,
+  annotations: {
+    title: 'Mount and Configure Vault Secret Engines',
+    readOnlyHint: false,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
   execute: async (input: unknown): Promise<string> => {
     const validatedInput = SecretEngineConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
@@ -1818,6 +1843,12 @@ const createKeyRotationTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool
   name: 'configure_key_rotation',
   description: 'Configure automated key rotation policies with scheduled and event-driven triggers',
   parameters: KeyRotationPolicySchema,
+  annotations: {
+    title: 'Configure Automated Key Rotation Policies',
+    readOnlyHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   execute: async (input: unknown): Promise<string> => {
     const validatedInput = KeyRotationPolicySchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
@@ -1851,6 +1882,12 @@ const createDynamicSecretTool = (_apiClient: MakeApiClient): EnterpriseSecretsTo
   name: 'generate_dynamic_secret',
   description: 'Generate just-in-time dynamic secrets for databases, cloud providers, and APIs',
   parameters: DynamicSecretConfigSchema,
+  annotations: {
+    title: 'Generate Just-in-Time Dynamic Secrets',
+    readOnlyHint: false,
+    idempotentHint: false,
+    openWorldHint: true,
+  },
   execute: async (input: unknown): Promise<string> => {
     const validatedInput = DynamicSecretConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
@@ -1884,6 +1921,12 @@ const createRBACPolicyTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool 
   name: 'manage_rbac_policies',
   description: 'Create and manage fine-grained role-based access control policies for secret access',
   parameters: RBACPolicySchema,
+  annotations: {
+    title: 'Create and Manage RBAC Access Control Policies',
+    readOnlyHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   execute: async (input: unknown): Promise<string> => {
     const validatedInput = RBACPolicySchema.parse(input);
     try {
@@ -1945,6 +1988,11 @@ const createSecretScanningTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
   name: 'perform_secret_scanning',
   description: 'Perform comprehensive secret scanning for leakage detection and prevention',
   parameters: SecretScanningConfigSchema,
+  annotations: {
+    title: 'Perform Comprehensive Secret Leakage Scanning',
+    readOnlyHint: true,
+    openWorldHint: false,
+  },
   execute: async (input: unknown): Promise<string> => {
     const validatedInput = SecretScanningConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
@@ -1985,6 +2033,12 @@ const createBreachDetectionTool = (_apiClient: MakeApiClient): EnterpriseSecrets
   name: 'configure_breach_detection',
   description: 'Configure comprehensive breach detection and automated response systems',
   parameters: BreachDetectionConfigSchema,
+  annotations: {
+    title: 'Configure Breach Detection and Response Systems',
+    readOnlyHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   execute: async (input: unknown): Promise<string> => {
     const validatedInput = BreachDetectionConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
@@ -2022,6 +2076,12 @@ const createAuditConfigTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool
   name: 'configure_audit_system',
   description: 'Configure comprehensive audit system for compliance and security monitoring',
   parameters: AuditConfigSchema,
+  annotations: {
+    title: 'Configure Comprehensive Audit and Compliance System',
+    readOnlyHint: false,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
   execute: async (input: unknown): Promise<string> => {
     const validatedInput = AuditConfigSchema.parse(input);
     try {
@@ -2085,6 +2145,11 @@ const createComplianceReportTool = (_apiClient: MakeApiClient): EnterpriseSecret
   parameters: z.object({
     framework: z.enum(['soc2', 'pci_dss', 'gdpr', 'hipaa', 'fisma', 'iso27001']),
   }),
+  annotations: {
+    title: 'Generate Comprehensive Compliance Reports',
+    readOnlyHint: true,
+    openWorldHint: false,
+  },
   execute: async (input: unknown): Promise<string> => {
     const vaultManager = EnterpriseVaultManager.getInstance();
     

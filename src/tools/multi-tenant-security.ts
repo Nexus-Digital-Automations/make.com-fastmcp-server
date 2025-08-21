@@ -879,6 +879,13 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
     name: 'provision_tenant',
     description: 'Provision a new tenant with comprehensive security isolation, cryptographic keys, network segmentation, and compliance boundaries',
     parameters: TenantProvisioningSchema,
+    annotations: {
+      title: 'Provision Multi-Tenant Security Environment with Isolation',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     execute: async (input: z.infer<typeof TenantProvisioningSchema>): Promise<string> => {
       const securityEngine = MultiTenantSecurityEngine.getInstance();
       
@@ -935,6 +942,13 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
     name: 'manage_cryptographic_isolation',
     description: 'Manage tenant-specific cryptographic isolation including key generation, rotation, encryption, and verification',
     parameters: CryptographicIsolationSchema,
+    annotations: {
+      title: 'Manage Tenant Cryptographic Keys and Data Isolation',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     execute: async (input: z.infer<typeof CryptographicIsolationSchema>): Promise<string> => {
       const securityEngine = MultiTenantSecurityEngine.getInstance();
       
@@ -986,6 +1000,13 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
     name: 'configure_network_segmentation',
     description: 'Configure tenant network segmentation with virtual isolation, microsegmentation, and traffic monitoring',
     parameters: NetworkSegmentationSchema,
+    annotations: {
+      title: 'Configure Network Isolation and Traffic Segmentation',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     execute: async (input: z.infer<typeof NetworkSegmentationSchema>): Promise<string> => {
       const securityEngine = MultiTenantSecurityEngine.getInstance();
       
@@ -1047,6 +1068,13 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
     name: 'manage_resource_quotas',
     description: 'Manage tenant resource quotas, scaling policies, and resource optimization with real-time monitoring',
     parameters: ResourceQuotaManagementSchema,
+    annotations: {
+      title: 'Manage Tenant Resource Limits and Scaling Policies',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     execute: async (input: z.infer<typeof ResourceQuotaManagementSchema>): Promise<string> => {
       try {
         // Simulate resource quota management
@@ -1148,6 +1176,13 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
     name: 'manage_governance_policies',
     description: 'Manage tenant-specific governance policies, compliance frameworks, and automated policy enforcement',
     parameters: GovernancePolicySchema,
+    annotations: {
+      title: 'Manage Governance Policies and Compliance Enforcement',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     execute: async (input: z.infer<typeof GovernancePolicySchema>): Promise<string> => {
       try {
         // Simulate governance policy management
@@ -1228,6 +1263,13 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
     name: 'prevent_data_leakage',
     description: 'Implement comprehensive data leakage prevention with classification, monitoring, and threat detection',
     parameters: DataLeakagePreventionSchema,
+    annotations: {
+      title: 'Prevent Data Leakage with Classification and Monitoring',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     execute: async (input: z.infer<typeof DataLeakagePreventionSchema>): Promise<string> => {
       try {
         // Simulate data leakage prevention
@@ -1302,6 +1344,13 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
     name: 'manage_compliance_boundaries',
     description: 'Establish and manage tenant-specific compliance boundaries for multiple regulatory frameworks',
     parameters: ComplianceBoundarySchema,
+    annotations: {
+      title: 'Manage Regulatory Compliance Boundaries and Auditing',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input: z.infer<typeof ComplianceBoundarySchema>): Promise<string> => {
       try {
         // Simulate compliance boundary management

@@ -1507,6 +1507,82 @@ export const zeroTrustAuthTools: ToolCreator[] = [
 ];
 
 /**
+ * Get security-focused annotations for Zero Trust Authentication tools
+ */
+function getToolAnnotations(toolName: string): {
+  title: string;
+  readOnlyHint: boolean;
+  destructiveHint?: boolean;
+  idempotentHint?: boolean;
+  openWorldHint: boolean;
+} {
+  const baseTitle = toolName.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  
+  switch (toolName) {
+    case 'zero_trust_authenticate':
+      return {
+        title: 'Zero Trust Multi-Factor Authentication',
+        readOnlyHint: false,
+        idempotentHint: false,
+        openWorldHint: true, // Integrates with external identity providers and services
+      };
+
+    case 'setup_mfa':
+      return {
+        title: 'Multi-Factor Authentication Setup',
+        readOnlyHint: false,
+        idempotentHint: true, // MFA setup can be run multiple times safely
+        openWorldHint: true, // Integrates with external MFA providers (TOTP, SMS, hardware)
+      };
+
+    case 'assess_device_trust':
+      return {
+        title: 'Device Trust Assessment',
+        readOnlyHint: true, // Only assesses and reads device information
+        openWorldHint: false, // Internal assessment, no external calls
+      };
+
+    case 'analyze_user_behavior':
+      return {
+        title: 'User Behavioral Analytics',
+        readOnlyHint: true, // Only analyzes and reads behavioral patterns
+        openWorldHint: false, // Internal analytics, uses stored behavioral baselines
+      };
+
+    case 'manage_session':
+      return {
+        title: 'Session Management & Validation',
+        readOnlyHint: false,
+        destructiveHint: true, // Can terminate sessions and lock users out
+        idempotentHint: false,
+        openWorldHint: false, // Internal session management
+      };
+
+    case 'identity_federation':
+      return {
+        title: 'Identity Federation & SSO',
+        readOnlyHint: false,
+        idempotentHint: true, // SSO operations can be retried safely
+        openWorldHint: true, // Integrates with external identity providers (Okta, Azure AD, Google)
+      };
+
+    case 'assess_authentication_risk':
+      return {
+        title: 'Authentication Risk Assessment',
+        readOnlyHint: true, // Only performs risk calculations and assessments
+        openWorldHint: false, // Internal risk scoring based on behavioral analytics
+      };
+
+    default:
+      return {
+        title: baseTitle,
+        readOnlyHint: false,
+        openWorldHint: false,
+      };
+  }
+}
+
+/**
  * Add all Zero Trust Authentication tools to FastMCP server
  */
 export function addZeroTrustAuthTools(server: FastMCP, apiClient: MakeApiClient): void {
@@ -1516,10 +1592,7 @@ export function addZeroTrustAuthTools(server: FastMCP, apiClient: MakeApiClient)
       name: tool.name,
       description: tool.description,
       parameters: tool.inputSchema,
-      annotations: {
-        title: tool.name.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        openWorldHint: false,
-      },
+      annotations: getToolAnnotations(tool.name),
       execute: async (args: unknown, { log }) => {
         log?.info?.(`Executing ${tool.name}`, { 
           toolName: tool.name,
