@@ -6261,9 +6261,174 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755045713680_6ffliyb1h",
+      "title": "Continue development and improvements",
+      "description": "Continue with the current development tasks, fix any issues, and improve the codebase quality.",
+      "mode": "DEVELOPMENT",
+      "priority": "medium",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "requires_research": false,
+      "created_at": "2025-08-13T00:41:53.680Z",
+      "subtasks": [],
+      "assigned_agent": "development_session_1755757588609_1_general_2948c188",
+      "started_at": "2025-08-21T06:34:37.932Z",
+      "claimed_by": "development_session_1755757588609_1_general_2948c188",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755667886196_1_general_8565d56d",
+          "role": "primary",
+          "assignedAt": "2025-08-20T05:36:03.150Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-20T05:52:33.043Z",
+          "reason": "Task stale for 16 minutes"
+        },
+        {
+          "agentId": "claude-agent",
+          "role": "primary",
+          "assignedAt": "2025-08-21T02:30:10.184Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T02:59:34.354Z",
+          "reason": "Task stale for 29 minutes"
+        },
+        {
+          "agent": "agent_1755752726796",
+          "action": "claimed",
+          "timestamp": "2025-08-21T05:05:26.796Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T05:21:04.459Z",
+          "reason": "Task stale for 16 minutes"
+        },
+        {
+          "agent": "agent_1755753684628",
+          "action": "claimed",
+          "timestamp": "2025-08-21T05:21:24.628Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T05:43:14.359Z",
+          "reason": "Task stale for 22 minutes"
+        },
+        {
+          "agent": "agent_1755755839135",
+          "action": "claimed",
+          "timestamp": "2025-08-21T05:57:19.135Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T06:26:23.593Z",
+          "reason": "Task stale for 29 minutes"
+        },
+        {
+          "agentId": "development_session_1755757588609_1_general_2948c188",
+          "role": "primary",
+          "assignedAt": "2025-08-21T06:34:37.932Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T05:05:36.528Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T07:09:44.906Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T07:09:44.907Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755758304908_dw9bly3da",
+      "title": "Research: Enhance notifications-basic.test.ts with comprehensive test coverage for missing notification tools",
+      "description": "Research and analysis required for implementing: \"Enhance notifications-basic.test.ts with comprehensive test coverage for missing notification tools\"\n\n**Implementation Task Details:**\nAdd comprehensive test coverage for create-notification, get-email-preferences, update-email-preferences, create-notification-template, and list-notifications tools. Include schema validation, error handling, multi-channel delivery, and template tests following existing patterns.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755758304907_umu6ug3lh\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755758304908_dw9bly3da.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755758304908_dw9bly3da.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T06:38:24.908Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755758304907_umu6ug3lh",
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755758356950",
+          "action": "claimed",
+          "timestamp": "2025-08-21T06:39:16.950Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T07:09:58.674Z",
+          "reason": "Task stale for 31 minutes"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T07:10:16.584Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T07:10:16.585Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 144,
-  "last_completion": "2025-08-21T07:06:35.773Z",
+  "total_completed": 146,
+  "last_completion": "2025-08-21T07:10:16.585Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
