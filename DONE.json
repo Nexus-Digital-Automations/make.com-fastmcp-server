@@ -6773,9 +6773,55 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755763366915_oc9choi9i",
+      "title": "Fix remaining 58 TypeScript linting warnings",
+      "description": "Fix remaining 58 TypeScript linting warnings in log-streaming.ts (28 warnings), performance-analysis.ts (11 warnings), and scenarios.ts (18 warnings) - all related to @typescript-eslint/no-explicit-any violations",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/log-streaming.ts",
+        "src/tools/performance-analysis.ts",
+        "src/tools/scenarios.ts",
+        "src/types/index.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T08:02:46.915Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T08:02:53.251Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T08:09:11.712Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T08:09:11.712Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 155,
-  "last_completion": "2025-08-21T08:07:32.554Z",
+  "total_completed": 156,
+  "last_completion": "2025-08-21T08:09:11.712Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

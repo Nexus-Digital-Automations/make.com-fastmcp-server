@@ -19,16 +19,20 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755763366915_oc9choi9i",
-      "title": "Fix remaining 58 TypeScript linting warnings",
-      "description": "Fix remaining 58 TypeScript linting warnings in log-streaming.ts (28 warnings), performance-analysis.ts (11 warnings), and scenarios.ts (18 warnings) - all related to @typescript-eslint/no-explicit-any violations",
+      "id": "task_1755763745318_d21bactxl",
+      "title": "Fix TypeScript compilation errors across multiple files",
+      "description": "Fix TypeScript compilation errors in server.ts, budget-control.ts, enterprise-secrets.ts, log-streaming.ts, multi-tenant-security.ts, performance-analysis.ts, and scenarios.ts. Errors include type assignment issues, missing properties, and incorrect type annotations.",
       "mode": "DEVELOPMENT",
-      "category": "linter-error",
+      "category": "error",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [
+        "src/server.ts",
+        "src/tools/budget-control.ts",
+        "src/tools/enterprise-secrets.ts",
         "src/tools/log-streaming.ts",
+        "src/tools/multi-tenant-security.ts",
         "src/tools/performance-analysis.ts",
         "src/tools/scenarios.ts",
         "src/types/index.ts"
@@ -37,19 +41,8 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-21T08:02:46.915Z",
-      "auto_research_created": false,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-21T08:02:53.251Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
+      "created_at": "2025-08-21T08:09:05.318Z",
+      "auto_research_created": false
     },
     {
       "id": "task_1755763416973_7m5fdcdoj",
