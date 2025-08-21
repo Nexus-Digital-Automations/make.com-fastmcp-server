@@ -63,7 +63,7 @@ export default {
   testTimeout: 30000,
   maxWorkers: '50%',
   verbose: false,
-  collectCoverage: false, // Temporarily disabled due to test infrastructure issues
+  collectCoverage: true, // Re-enabled with comprehensive test infrastructure
   forceExit: true,
   clearMocks: true,
   restoreMocks: true,

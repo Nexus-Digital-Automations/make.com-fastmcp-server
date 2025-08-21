@@ -385,7 +385,7 @@ class PerformanceAnalysisEngine {
           'system',
           undefined,
           { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true },
-          {},
+          { errorThreshold: 5, severityFilter: 'all' },
           apiClient
         );
         analyses.push(systemAnalysis);
@@ -397,7 +397,7 @@ class PerformanceAnalysisEngine {
           'api',
           undefined,
           { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true },
-          {},
+          { errorThreshold: 5, severityFilter: 'all' },
           apiClient
         );
         analyses.push(apiAnalysis);
@@ -409,7 +409,7 @@ class PerformanceAnalysisEngine {
           'webhook',
           undefined,
           { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true },
-          {},
+          { errorThreshold: 5, severityFilter: 'all' },
           apiClient
         );
         analyses.push(webhookAnalysis);
@@ -440,8 +440,8 @@ class PerformanceAnalysisEngine {
     options: PerformanceAnalysisOptions,
     progressCallback?: (update: LivePerformanceUpdate) => void
   ): Promise<LivePerformanceUpdate[]> {
-    const durationMs = options.durationMinutes * 60 * 1000;
-    const intervalMs = options.samplingIntervalSeconds * 1000;
+    const durationMs = (options.durationMinutes || 5) * 60 * 1000;
+    const intervalMs = (options.samplingIntervalSeconds || 10) * 1000;
     const updates: LivePerformanceUpdate[] = [];
     const startTime = Date.now();
 
@@ -452,7 +452,7 @@ class PerformanceAnalysisEngine {
 
     const monitoringInterval = setInterval(async () => {
       try {
-        const update = await this.collectLiveMetrics(options.alertThresholds);
+        const update = await this.collectLiveMetrics(options.alertThresholds || { errorRate: 5, responseTime: 1000, cpuUsage: 80, memoryUsage: 85 });
         updates.push(update);
 
         if (progressCallback) {
@@ -651,15 +651,18 @@ class PerformanceAnalysisEngine {
     const bottlenecks: PerformanceBottleneck[] = [];
 
     // Response time bottleneck detection
-    if (metrics.responseTime && metrics.responseTime > 1000) {
+    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
+                             (typeof metrics.responseTime === 'object' && metrics.responseTime ? metrics.responseTime.average : 0);
+    
+    if (responseTimeValue && responseTimeValue > 1000) {
       bottlenecks.push({
         type: 'response_time',
-        severity: metrics.responseTime > 5000 ? 'critical' : metrics.responseTime > 2000 ? 'high' : 'medium',
+        severity: responseTimeValue > 5000 ? 'critical' : responseTimeValue > 2000 ? 'high' : 'medium',
         description: 'High API response time detected',
         impact: 'Reduced user experience and workflow efficiency',
         affectedComponents: ['api', 'user_interface'],
         metrics: {
-          currentValue: metrics.responseTime,
+          currentValue: responseTimeValue,
           expectedValue: 500,
           unit: 'ms',
           trend: 'degrading'
@@ -680,15 +683,18 @@ class PerformanceAnalysisEngine {
     }
 
     // Memory usage bottleneck detection
-    if (metrics.memory && metrics.memory.utilization > 0.85) {
+    const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
+                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as any).utilization : 0);
+    
+    if (memoryUtilization && memoryUtilization > 0.85) {
       bottlenecks.push({
         type: 'resource_usage',
-        severity: metrics.memory.utilization > 0.95 ? 'critical' : 'high',
+        severity: memoryUtilization > 0.95 ? 'critical' : 'high',
         description: 'High memory utilization detected',
         impact: 'Potential system instability and performance degradation',
         affectedComponents: ['system', 'memory'],
         metrics: {
-          currentValue: metrics.memory.utilization,
+          currentValue: memoryUtilization,
           expectedValue: 0.7,
           unit: 'ratio',
           trend: 'degrading'
@@ -709,7 +715,7 @@ class PerformanceAnalysisEngine {
     }
 
     // Rate limiting bottleneck detection
-    if (metrics.rateLimiter && metrics.rateLimiter.remaining < 10) {
+    if (metrics.rateLimiter && metrics.rateLimiter.requestsRemaining < 10) {
       bottlenecks.push({
         type: 'rate_limiting',
         severity: 'high',
@@ -717,7 +723,7 @@ class PerformanceAnalysisEngine {
         impact: 'Request throttling and potential service interruption',
         affectedComponents: ['api', 'rate_limiter'],
         metrics: {
-          currentValue: metrics.rateLimiter.remaining,
+          currentValue: metrics.rateLimiter.requestsRemaining,
           expectedValue: 100,
           unit: 'requests',
           trend: 'degrading'
@@ -761,13 +767,16 @@ class PerformanceAnalysisEngine {
    * Compare performance to industry benchmarks
    */
   private compareToBenchmarks(metrics: PerformanceMetrics): BenchmarkComparison {
-    let responseTimeRanking = 'average';
-    if (metrics.responseTime) {
-      if (metrics.responseTime <= this.industryBenchmarks.responseTime.excellent) {
+    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
+                             (typeof metrics.responseTime === 'object' && metrics.responseTime ? metrics.responseTime.average : 0);
+    
+    let responseTimeRanking: 'below_average' | 'average' | 'above_average' | 'excellent' = 'average';
+    if (responseTimeValue) {
+      if (responseTimeValue <= this.industryBenchmarks.responseTime.excellent) {
         responseTimeRanking = 'excellent';
-      } else if (metrics.responseTime <= this.industryBenchmarks.responseTime.good) {
+      } else if (responseTimeValue <= this.industryBenchmarks.responseTime.good) {
         responseTimeRanking = 'above_average';
-      } else if (metrics.responseTime <= this.industryBenchmarks.responseTime.acceptable) {
+      } else if (responseTimeValue <= this.industryBenchmarks.responseTime.acceptable) {
         responseTimeRanking = 'average';
       } else {
         responseTimeRanking = 'below_average';
@@ -776,8 +785,8 @@ class PerformanceAnalysisEngine {
 
     return {
       industryStandard: '< 500ms response time, > 99.95% uptime, < 0.1% error rate',
-      currentPerformance: `${metrics.responseTime || 'N/A'}ms response time`,
-      gap: metrics.responseTime > 500 ? `${metrics.responseTime - 500}ms above target` : 'Within target',
+      currentPerformance: `${responseTimeValue || 'N/A'}ms response time`,
+      gap: responseTimeValue && responseTimeValue > 500 ? `${responseTimeValue - 500}ms above target` : 'Within target',
       ranking: responseTimeRanking
     };
   }
@@ -807,13 +816,19 @@ class PerformanceAnalysisEngine {
     }
 
     // Deduct points for poor response time
-    if (metrics.responseTime > 1000) {
-      score -= Math.min(20, (metrics.responseTime - 1000) / 100);
+    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
+                             (typeof metrics.responseTime === 'object' && metrics.responseTime ? metrics.responseTime.average : 0);
+    
+    if (responseTimeValue && responseTimeValue > 1000) {
+      score -= Math.min(20, (responseTimeValue - 1000) / 100);
     }
 
     // Deduct points for high resource usage
-    if (metrics.memory?.utilization > 0.8) {
-      score -= (metrics.memory.utilization - 0.8) * 50;
+    const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
+                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as any).utilization : 0);
+    
+    if (memoryUtilization && memoryUtilization > 0.8) {
+      score -= (memoryUtilization - 0.8) * 50;
     }
 
     return Math.max(0, Math.round(score));
@@ -850,11 +865,17 @@ class PerformanceAnalysisEngine {
     }
 
     // Add general recommendations based on metrics
-    if (metrics.responseTime > 500) {
+    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
+                             (typeof metrics.responseTime === 'object' && metrics.responseTime ? metrics.responseTime.average : 0);
+    
+    if (responseTimeValue && responseTimeValue > 500) {
       shortTerm.push('Implement response caching strategy');
     }
 
-    if (metrics.memory?.utilization > 0.7) {
+    const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
+                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as any).utilization : 0);
+    
+    if (memoryUtilization && memoryUtilization > 0.7) {
       longTerm.push('Consider memory optimization and monitoring');
     }
 
@@ -888,13 +909,16 @@ class PerformanceAnalysisEngine {
   /**
    * Format metrics for output
    */
-  private formatMetrics(metrics: PerformanceMetrics): PerformanceMetrics {
+  private formatMetrics(metrics: PerformanceMetrics): any {
+    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
+                             (typeof metrics.responseTime === 'object' ? metrics.responseTime.average : 0);
+    
     return {
       responseTime: {
-        average: metrics.responseTime || 0,
-        p50: metrics.responseTime || 0,
-        p95: (metrics.responseTime || 0) * 1.5,
-        p99: (metrics.responseTime || 0) * 2,
+        average: responseTimeValue,
+        p50: responseTimeValue,
+        p95: responseTimeValue * 1.5,
+        p99: responseTimeValue * 2,
         trend: 'stable' as const
       },
       throughput: {
@@ -909,8 +933,8 @@ class PerformanceAnalysisEngine {
         trend: 'stable' as const
       },
       resources: {
-        cpuUsage: metrics.cpu?.utilization || 0.3,
-        memoryUsage: metrics.memory?.utilization || 0.6,
+        cpuUsage: (typeof metrics.cpu === 'object' && metrics.cpu ? (metrics.cpu as any).utilization : 0) || 0.3,
+        memoryUsage: (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as any).utilization : metrics.memory) || 0.6,
         networkUtilization: 0.4,
         trend: 'stable' as const
       }
@@ -1177,7 +1201,13 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
         let progress = 0;
         const totalUpdates = (args.durationMinutes * 60) / args.samplingIntervalSeconds;
 
-        const monitoringResults = await analysisEngine.performLiveAnalysis(args, (update) => {
+        const monitoringResults = await analysisEngine.performLiveAnalysis({
+          timeRangeHours: args.durationMinutes / 60,
+          includeBottleneckDetection: true,
+          includePerformanceMetrics: true,
+          includeTrendAnalysis: true,
+          ...args
+        }, (update) => {
           updates.push(update);
           progress = Math.round((updates.length / totalUpdates) * 100);
           reportProgress?.({ progress, total: 100 });

@@ -628,7 +628,7 @@ class AIGovernanceEngine {
     ];
   }
 
-  private async detectPolicyConflicts(policies: any[], conflictTypes: string[]): Promise<PolicyConflict[]> {
+  private async detectPolicyConflicts(_policies: any[], _conflictTypes: string[]): Promise<PolicyConflict[]> {
     // Simulate conflict detection using AI
     return [
       {
@@ -684,7 +684,7 @@ class AIGovernanceEngine {
     ];
   }
 
-  private async performRiskAssessment(assessmentType: string, options: any): Promise<RiskAssessment[]> {
+  private async performRiskAssessment(_assessmentType: string, _options: any): Promise<RiskAssessment[]> {
     return [
       {
         riskId: 'risk_001',
@@ -723,7 +723,7 @@ class AIGovernanceEngine {
     ];
   }
 
-  private async generateRiskPredictions(assessments: RiskAssessment[]): Promise<any[]> {
+  private async generateRiskPredictions(_assessments: RiskAssessment[]): Promise<any[]> {
     return [
       {
         riskType: 'security',
@@ -1052,7 +1052,7 @@ class AIGovernanceEngine {
     };
   }
 
-  private async simulateOptimizations(changes: any[]): Promise<any> {
+  private async simulateOptimizations(_changes: any[]): Promise<any> {
     return {
       simulationId: 'sim_001',
       scenariosTested: 5,

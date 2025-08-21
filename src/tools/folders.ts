@@ -211,7 +211,7 @@ const MoveItemsSchema = z.object({
   copyInsteadOfMove: z.boolean().default(false).describe('Copy items instead of moving them'),
 }).strict();
 
-const DataStructureFieldSchema = z.object({
+const DataStructureFieldSchema: z.ZodType<any> = z.object({
   name: z.string().min(1).max(50).describe('Field name'),
   type: z.enum(['text', 'number', 'boolean', 'date', 'array', 'collection']).describe('Field data type'),
   required: z.boolean().default(false).describe('Whether field is required'),

@@ -16,7 +16,7 @@
  */
 
 import { z } from 'zod';
-import { FastMCP, UserError } from 'fastmcp';
+import { FastMCP } from 'fastmcp';
 import logger from '../lib/logger.js';
 import MakeApiClient from '../lib/make-api-client.js';
 import { extractCorrelationId } from '../utils/error-response.js';
@@ -811,7 +811,7 @@ class BlueprintCollaborationEngine {
         return { major: baseVersion.major, minor: baseVersion.minor + 1, patch: 0 };
       case 'patch':
         return { major: baseVersion.major, minor: baseVersion.minor, patch: baseVersion.patch + 1 };
-      case 'auto':
+      case 'auto': {
         // Analyze changes to determine version type
         const changeAnalysis = await this.analyzeChangeImpact(blueprintId, basedOnVersion);
         if (changeAnalysis.hasBreakingChanges) {
@@ -821,6 +821,7 @@ class BlueprintCollaborationEngine {
         } else {
           return { major: baseVersion.major, minor: baseVersion.minor, patch: baseVersion.patch + 1 };
         }
+      }
       default:
         return { major: baseVersion.major, minor: baseVersion.minor, patch: baseVersion.patch + 1 };
     }
@@ -837,7 +838,7 @@ class BlueprintCollaborationEngine {
     return versionString;
   }
 
-  private async generateChangeLog(blueprintId: string, basedOnVersion?: string): Promise<ChangeLogEntry[]> {
+  private async generateChangeLog(_blueprintId: string, _basedOnVersion?: string): Promise<ChangeLogEntry[]> {
     // Simulate change detection and changelog generation
     return [
       {
@@ -867,7 +868,7 @@ class BlueprintCollaborationEngine {
     ];
   }
 
-  private async analyzeDependencyChanges(blueprintId: string, basedOnVersion?: string): Promise<DependencyChange[]> {
+  private async analyzeDependencyChanges(_blueprintId: string, _basedOnVersion?: string): Promise<DependencyChange[]> {
     // Simulate dependency change analysis
     return [
       {
@@ -890,7 +891,7 @@ class BlueprintCollaborationEngine {
     ];
   }
 
-  private async analyzePerformanceImpact(blueprintId: string, changeLog: ChangeLogEntry[]): Promise<PerformanceImpact> {
+  private async analyzePerformanceImpact(_blueprintId: string, _changeLog: ChangeLogEntry[]): Promise<PerformanceImpact> {
     // Simulate performance impact analysis
     return {
       executionTimeChange: -150, // 150ms improvement
@@ -910,7 +911,7 @@ class BlueprintCollaborationEngine {
     };
   }
 
-  private async generateOptimizationOpportunities(blueprintId: string, changeLog: ChangeLogEntry[]): Promise<OptimizationOpportunity[]> {
+  private async generateOptimizationOpportunities(_blueprintId: string, _changeLog: ChangeLogEntry[]): Promise<OptimizationOpportunity[]> {
     return [
       {
         opportunityId: 'opt_001',
@@ -1037,7 +1038,7 @@ class BlueprintCollaborationEngine {
     return this.getVersion(versionId);
   }
 
-  private async analyzeChangeImpact(blueprintId: string, basedOnVersion?: string): Promise<{ hasBreakingChanges: boolean; hasNewFeatures: boolean }> {
+  private async analyzeChangeImpact(_blueprintId: string, _basedOnVersion?: string): Promise<{ hasBreakingChanges: boolean; hasNewFeatures: boolean }> {
     // Simulate change impact analysis
     return {
       hasBreakingChanges: false,
@@ -1068,7 +1069,7 @@ class BlueprintCollaborationEngine {
     return backupId;
   }
 
-  private async applyConflictResolution(conflict: BlueprintConflict, resolution: any, options: any): Promise<any> {
+  private async applyConflictResolution(conflict: BlueprintConflict, resolution: any, _options: any): Promise<any> {
     // Apply specific conflict resolution
     switch (resolution.resolution) {
       case 'keep_current':
@@ -1102,7 +1103,7 @@ class BlueprintCollaborationEngine {
     };
   }
 
-  private async validateResolvedBlueprint(blueprint: any): Promise<any> {
+  private async validateResolvedBlueprint(_blueprint: any): Promise<any> {
     // Validate the resolved blueprint
     return {
       valid: true,
@@ -1112,7 +1113,7 @@ class BlueprintCollaborationEngine {
     };
   }
 
-  private async buildDependencyGraph(blueprintId: string, versionId: string, options: any): Promise<DependencyGraph> {
+  private async buildDependencyGraph(_blueprintId: string, _versionId: string, _options: any): Promise<DependencyGraph> {
     // Build comprehensive dependency graph
     const nodes: DependencyNode[] = [
       {
@@ -1219,7 +1220,7 @@ class BlueprintCollaborationEngine {
     };
   }
 
-  private async detectCircularDependencies(graph: DependencyGraph): Promise<CircularDependency[]> {
+  private async detectCircularDependencies(_graph: DependencyGraph): Promise<CircularDependency[]> {
     // Implement cycle detection algorithm
     return [
       {
@@ -1241,7 +1242,7 @@ class BlueprintCollaborationEngine {
     ];
   }
 
-  private async generateDependencyOptimizations(graph: DependencyGraph): Promise<OptimizationOpportunity[]> {
+  private async generateDependencyOptimizations(_graph: DependencyGraph): Promise<OptimizationOpportunity[]> {
     return [
       {
         opportunityId: 'dep_opt_001',

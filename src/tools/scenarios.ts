@@ -2058,9 +2058,9 @@ export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): voi
 // Helper functions for report generation
 
 function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFindings {
-  let totalIssues = 0;
-  let criticalIssues = 0;
-  let fixableIssues = 0;
+  let _totalIssues = 0;
+  let _criticalIssues = 0;
+  let _fixableIssues = 0;
   const issuesByCategory: Record<string, number> = {};
   const issuesBySeverity: Record<string, number> = {};
   const issuePatterns = new Map<string, { frequency: number; severity: string }>();
@@ -2073,9 +2073,9 @@ function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFindings {
     if (!analysis.diagnosticReport || analysis.errors.length > 0) continue;
 
     const report = analysis.diagnosticReport;
-    totalIssues += report.summary.totalIssues;
-    criticalIssues += report.summary.criticalIssues;
-    fixableIssues += report.summary.fixableIssues;
+    _totalIssues += report.summary.totalIssues;
+    _criticalIssues += report.summary.criticalIssues;
+    _fixableIssues += report.summary.fixableIssues;
 
     // Aggregate by category
     Object.entries(report.summary.issuesByCategory).forEach(([category, count]) => {
@@ -2123,17 +2123,17 @@ function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFindings {
   }
 
   // Determine security risk level
-  let securityRiskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
+  let _securityRiskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
   if (securityIssuesFound > 0) {
     const criticalSecurityIssues = issuesBySeverity.critical || 0;
     const errorSecurityIssues = issuesBySeverity.error || 0;
     
     if (criticalSecurityIssues > 0) {
-      securityRiskLevel = 'critical';
+      _securityRiskLevel = 'critical';
     } else if (errorSecurityIssues > 2) {
-      securityRiskLevel = 'high';
+      _securityRiskLevel = 'high';
     } else if (securityIssuesFound > 3) {
-      securityRiskLevel = 'medium';
+      _securityRiskLevel = 'medium';
     }
   }
 
@@ -2148,7 +2148,7 @@ function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFindings {
     }));
 
   // Get common recommendations
-  const commonRecommendations = Array.from(recommendations.entries())
+  const _commonRecommendations = Array.from(recommendations.entries())
     .sort((a, b) => b[1].frequency - a[1].frequency)
     .slice(0, 15)
     .map(([recommendation, data]) => ({
@@ -2256,7 +2256,7 @@ function generateSystemOverview(
   };
 }
 
-function generateActionPlan(findings: ConsolidatedFindings, includeTimeline: boolean): ActionPlan {
+function generateActionPlan(findings: ConsolidatedFindings, _includeTimeline: boolean): ActionPlan {
   const immediateActions: Array<{ action: string; priority: 'critical' | 'high'; estimatedTime: string; impact: string; scenarioIds: string[] }> = [];
   const shortTermActions: Array<{ action: string; priority: 'medium' | 'high'; estimatedTime: string; impact: string; scenarioIds: string[] }> = [];
   const longTermActions: Array<{ action: string; priority: 'low' | 'medium'; estimatedTime: string; impact: string; scenarioIds: string[] }> = [];

@@ -346,7 +346,7 @@ export interface DataStructureTransformationHistoryItem {
 }
 
 export interface DataStructureWithStats extends MakeCustomDataStructure {
-  usage?: DataStructureUsageStats;
+  usage: DataStructureUsageStats;
   validationHistory?: DataStructureValidationHistoryItem[];
   transformationHistory?: DataStructureTransformationHistoryItem[];
 }
@@ -1259,8 +1259,8 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         filters: z.array(z.object({
           field: z.string().describe('Field to filter'),
           operator: z.enum(['equals', 'contains', 'startsWith', 'endsWith', 'gt', 'lt', 'gte', 'lte', 'in', 'notIn']).describe('Filter operator'),
-          value: z.any().describe('Filter value'),
-          caseSensitive: z.boolean().default(false).describe('Case sensitive comparison'),
+          value: z.unknown().describe('Filter value'),
+          caseSensitive: z.boolean().optional().describe('Case sensitive comparison'),
         })).optional().describe('Updated filters'),
       }).optional().describe('Updated transformation configuration'),
     }),
@@ -1315,7 +1315,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           updateData.transformation = {};
           if (transformation.enabled !== undefined) updateData.transformation.enabled = transformation.enabled;
           if (transformation.mappings) updateData.transformation.mappings = transformation.mappings;
-          if (transformation.filters) updateData.transformation.filters = transformation.filters;
+          if (transformation.filters) updateData.transformation.filters = transformation.filters.map(filter => ({
+            field: filter.field,
+            operator: filter.operator,
+            value: filter.value,
+            caseSensitive: filter.caseSensitive
+          }));
         }
 
         reportProgress({ progress: 30, total: 100 });

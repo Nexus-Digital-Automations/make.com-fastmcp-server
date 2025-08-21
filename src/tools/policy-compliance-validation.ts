@@ -1589,9 +1589,9 @@ export function addPolicyComplianceValidationTools(server: FastMCP, apiClient: M
 
         // Generate compliance breakdown across all targets
         const overallComplianceBreakdown = {
-          byFramework: {},
-          byPolicyType: {},
-          bySeverity: {},
+          byFramework: {} as Record<string, { score: number; violations: number; targets: number }>,
+          byPolicyType: {} as Record<string, { score: number; violations: number; targets: number }>,
+          bySeverity: {} as Record<string, number>,
         };
 
         results.forEach(result => {

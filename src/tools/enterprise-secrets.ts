@@ -15,7 +15,6 @@ import { z } from 'zod';
 import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { EventEmitter } from 'events';
-import { FastMCP } from 'fastmcp';
 import MakeApiClient from '../lib/make-api-client.js';
 import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
@@ -512,7 +511,7 @@ class EnterpriseVaultManager extends EventEmitter {
       const validatedConfig = VaultServerConfigSchema.parse(config);
 
       // Generate Vault configuration file
-      const vaultConfig = this.generateVaultConfig(validatedConfig);
+      const _vaultConfig = this.generateVaultConfig(validatedConfig);
       
       // Initialize cluster
       const clusterInfo: VaultClusterInfo = {
@@ -1218,7 +1217,7 @@ log_level = "info"
     }
   }
 
-  private async generateDatabaseCredentials(config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
+  private async generateDatabaseCredentials(_config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
     // Generate temporary database credentials
     const username = `vault_${Date.now()}_${Math.random().toString(36).substring(7)}`;
     const password = await this.generateSecurePassword(32);
@@ -1226,7 +1225,7 @@ log_level = "info"
     return { username, password };
   }
 
-  private async generateAWSCredentials(config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
+  private async generateAWSCredentials(_config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
     // Generate temporary AWS credentials
     const accessKeyId = `AKIA${Math.random().toString(36).substring(2, 18).toUpperCase()}`;
     const secretAccessKey = await this.generateSecurePassword(40);
@@ -1235,7 +1234,7 @@ log_level = "info"
     return { accessKeyId, secretAccessKey, sessionToken };
   }
 
-  private async generateAzureCredentials(config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
+  private async generateAzureCredentials(_config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
     // Generate temporary Azure credentials
     const clientId = crypto.randomUUID();
     const clientSecret = await this.generateSecurePassword(32);
@@ -1243,7 +1242,7 @@ log_level = "info"
     return { clientId, clientSecret };
   }
 
-  private async generateGCPCredentials(config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
+  private async generateGCPCredentials(_config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
     // Generate temporary GCP service account key
     const privateKeyId = crypto.randomUUID();
     const clientEmail = `vault-${Date.now()}@project.iam.gserviceaccount.com`;
@@ -1271,7 +1270,7 @@ log_level = "info"
     }
   }
 
-  private async generateAPIToken(config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
+  private async generateAPIToken(_config: z.infer<typeof DynamicSecretConfigSchema>): Promise<Record<string, string>> {
     // Generate API token
     const token = await this.generateSecureToken(64);
     return { token };
@@ -1294,7 +1293,7 @@ log_level = "info"
     return bytes.toString('base64url');
   }
 
-  private async generateX509Certificate(config: z.infer<typeof DynamicSecretConfigSchema>): Promise<string> {
+  private async generateX509Certificate(_config: z.infer<typeof DynamicSecretConfigSchema>): Promise<string> {
     // Generate X.509 certificate (simplified)
     return `-----BEGIN CERTIFICATE-----
 MIICertificateDataHere
@@ -1320,7 +1319,7 @@ PrivateKeyDataHere
 -----END OPENSSH PRIVATE KEY-----`;
   }
 
-  private async storeLease(leaseId: string, leaseData: Record<string, unknown>): Promise<void> {
+  private async storeLease(leaseId: string, _leaseData: Record<string, unknown>): Promise<void> {
     // Store lease information for management
     componentLogger.debug('Storing lease information', { leaseId });
   }
@@ -1343,7 +1342,7 @@ PrivateKeyDataHere
     return alerts;
   }
 
-  private async performEntropyAnalysis(target: string, threshold: number): Promise<SecretLeakageAlert[]> {
+  private async performEntropyAnalysis(target: string, _threshold: number): Promise<SecretLeakageAlert[]> {
     // Simplified entropy analysis implementation
     const alerts: SecretLeakageAlert[] = [];
     
@@ -1519,7 +1518,7 @@ PrivateKeyDataHere
     ];
   }
 
-  private async generateAuditTrailSummary(period: {start: Date; end: Date}): Promise<{
+  private async generateAuditTrailSummary(_period: {start: Date; end: Date}): Promise<{
     totalEvents: number;
     criticalEvents: number;
     complianceViolations: number;
@@ -2006,7 +2005,7 @@ const createAuditConfigTool = (_apiClient: MakeApiClient) => ({
   execute: async (input: z.infer<typeof AuditConfigSchema>): Promise<string> => {
     try {
       // Configure audit devices
-      const auditDeviceConfigs = input.auditDevices.map(device => ({
+      const _auditDeviceConfigs = input.auditDevices.map(device => ({
         type: device.type,
         path: device.path,
         format: device.format,
