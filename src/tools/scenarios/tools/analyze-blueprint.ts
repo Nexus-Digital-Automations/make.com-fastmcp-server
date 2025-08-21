@@ -25,7 +25,7 @@ export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition
       openWorldHint: false,
     },
     execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      log?.info?.('Analyzing blueprint', { hasBlueprint: !!(args as any).blueprint });
+      log?.info?.('Analyzing blueprint', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint });
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -108,7 +108,7 @@ function calculateValidationScore(validationResult: {
   score -= validationResult.warnings.length * 5;
   
   // Deduct points for security issues
-  validationResult.securityIssues.forEach((issue: any) => {
+  validationResult.securityIssues.forEach((issue: { severity: string }) => {
     switch (issue.severity) {
       case 'critical':
         score -= 25;

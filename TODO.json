@@ -2,37 +2,70 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755795871124_qp4u62qmz",
-      "title": "Fix TypeScript linting warnings in scenarios module",
-      "description": "Fix @typescript-eslint/no-explicit-any warnings in scenarios module files: schemas/index.ts, schemas/validate-schemas.ts, and tools/analyze-blueprint.ts. Replace explicit any types with proper TypeScript types for better type safety.",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
+      "id": "task_1755796116764_icpicdd7u",
+      "title": "Research: Refactor log-streaming.ts for better maintainability (Phase 2)",
+      "description": "Research and analysis required for implementing: \"Refactor log-streaming.ts for better maintainability (Phase 2)\"\n\n**Implementation Task Details:**\nRefactor log-streaming.ts (2,998 lines) using the proven modular architecture pattern from scenarios.ts refactoring. Extract utilities, types, schemas, and individual tools into focused modules.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755796116764_4pcrqescg\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
       "priority": "high",
       "status": "in_progress",
       "dependencies": [],
       "important_files": [
-        "./src/tools/scenarios/schemas/index.ts",
-        "./src/tools/scenarios/schemas/validate-schemas.ts",
-        "./src/tools/scenarios/tools/analyze-blueprint.ts"
+        "./development/research-reports/research-report-task_1755796116764_icpicdd7u.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755796116764_icpicdd7u.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T17:08:36.764Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755796116764_4pcrqescg",
+      "assigned_agent": "development_session_1755795215359_1_general_a2d71673",
+      "started_at": "2025-08-21T17:08:45.750Z",
+      "claimed_by": "development_session_1755795215359_1_general_a2d71673",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755795215359_1_general_a2d71673",
+          "role": "primary",
+          "assignedAt": "2025-08-21T17:08:45.750Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
+      "id": "task_1755796327382_9ujpzonn6",
+      "title": "Fix remaining TypeScript linting warnings in scenarios module",
+      "description": "Fix remaining 57 @typescript-eslint/no-explicit-any warnings in scenarios module files:\n- tools/run-scenario.ts (6 warnings)\n- tools/troubleshoot-scenario.ts (7 warnings) \n- tools/update-scenario.ts (2 warnings)\n- tools/validate-blueprint.ts (3 warnings)\n- types/report.ts (2 warnings)\n- utils/troubleshooting.ts (6 warnings)\n- shared/types/api-client.ts (5 warnings)\n- shared/types/tool-context.ts (13 warnings)\n- shared/utils/error-handling.ts (17 warnings)\n- shared/utils/validation.ts (3 warnings)\n\nReplace explicit any types with proper TypeScript types for better type safety.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./src/tools/scenarios/tools/run-scenario.ts",
+        "./src/tools/scenarios/tools/troubleshoot-scenario.ts",
+        "./src/tools/scenarios/tools/update-scenario.ts",
+        "./src/tools/scenarios/tools/validate-blueprint.ts",
+        "./src/tools/scenarios/types/report.ts",
+        "./src/tools/scenarios/utils/troubleshooting.ts",
+        "./src/tools/shared/types/api-client.ts",
+        "./src/tools/shared/types/tool-context.ts",
+        "./src/tools/shared/utils/error-handling.ts",
+        "./src/tools/shared/utils/validation.ts"
       ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-21T17:04:31.125Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755795313302_1_general_cf3d07a9",
-      "started_at": "2025-08-21T17:04:39.207Z",
-      "claimed_by": "development_session_1755795313302_1_general_cf3d07a9",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755795313302_1_general_cf3d07a9",
-          "role": "primary",
-          "assignedAt": "2025-08-21T17:04:39.207Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
+      "created_at": "2025-08-21T17:12:07.383Z",
+      "auto_research_created": false
     },
     {
       "id": "task_1755770075122_b72wrjxm3",
@@ -195,6 +228,34 @@
           "timestamp": "2025-08-21T17:01:13.664Z"
         }
       ]
+    },
+    {
+      "id": "task_1755796116764_4pcrqescg",
+      "title": "Refactor log-streaming.ts for better maintainability (Phase 2)",
+      "description": "Refactor log-streaming.ts (2,998 lines) using the proven modular architecture pattern from scenarios.ts refactoring. Extract utilities, types, schemas, and individual tools into focused modules.",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [
+        "task_1755796116764_icpicdd7u"
+      ],
+      "important_files": [
+        "./src/tools/log-streaming.ts",
+        "./development/research-reports/typescript-refactoring-large-files-maintainability-comprehensive-research-2025.md"
+      ],
+      "success_criteria": [
+        "Reduce file size to <1000 lines",
+        "Maintain all existing functionality",
+        "Apply proven modular architecture",
+        "Extract streaming utilities",
+        "Organize external system integrations"
+      ],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T17:08:36.768Z",
+      "auto_research_created": true
     }
   ],
   "current_mode": "DEVELOPMENT",

@@ -57,7 +57,7 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
         }
 
         // Generate detailed implementation guidance if requested
-        let implementationGuidance: Record<string, any> | undefined;
+        let implementationGuidance: Record<string, unknown> | undefined;
         if (typedArgs.includeImplementationSteps && filteredRecommendations.length > 0) {
           implementationGuidance = generateImplementationGuidance(
             filteredRecommendations,
@@ -121,7 +121,7 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
 function generateImplementationGuidance(
   recommendations: Array<{ category: string; priority: string; title: string; implementationSteps?: string[] }>,
   optimizationType: string
-): Record<string, any> {
+): Record<string, unknown> {
   const highPriorityRecs = recommendations.filter(rec => rec.priority === 'high');
   const mediumPriorityRecs = recommendations.filter(rec => rec.priority === 'medium');
   

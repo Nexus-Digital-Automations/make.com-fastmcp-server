@@ -116,14 +116,15 @@ export const SchemaValidation = {
   /**
    * Validate input against a specific schema
    */
-  validate<T>(schema: any, input: unknown): { success: true; data: T } | { success: false; error: string } {
+  validate<T>(schema: z.ZodSchema<T>, input: unknown): { success: true; data: T } | { success: false; error: string } {
     try {
       const result = schema.parse(input);
       return { success: true, data: result };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Validation failed';
       return { 
         success: false, 
-        error: error?.message || 'Validation failed'
+        error: errorMessage
       };
     }
   },
@@ -131,7 +132,7 @@ export const SchemaValidation = {
   /**
    * Safe parse that returns parsed result or null
    */
-  safeParse<T>(schema: any, input: unknown): T | null {
+  safeParse<T>(schema: z.ZodSchema<T>, input: unknown): T | null {
     try {
       return schema.parse(input);
     } catch {

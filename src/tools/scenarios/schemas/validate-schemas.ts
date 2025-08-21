@@ -126,7 +126,7 @@ interface ValidationResult {
   schema: string;
   success: boolean;
   error?: string;
-  data?: any;
+  data?: unknown;
 }
 
 /**
@@ -158,11 +158,12 @@ function runValidationTests(): ValidationResult[] {
         success: true,
         data: result,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       results.push({
         schema: test.schema,
         success: false,
-        error: error?.message || 'Unknown error',
+        error: errorMessage,
       });
     }
   }
