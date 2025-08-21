@@ -1507,7 +1507,9 @@ export const zeroTrustAuthTools: ToolCreator[] = [
 ];
 
 /**
- * Get security-focused annotations for Zero Trust Authentication tools
+ * Get comprehensive security-focused annotations for Zero Trust Authentication tools
+ * Following FastMCP TypeScript Protocol compliance standards (2025)
+ * Based on comprehensive research report patterns for enterprise security tools
  */
 function getToolAnnotations(toolName: string): {
   title: string;
@@ -1520,64 +1522,83 @@ function getToolAnnotations(toolName: string): {
   
   switch (toolName) {
     case 'zero_trust_authenticate':
+      // Category: Authentication Operations - External Identity Provider Integration
       return {
         title: 'Zero Trust Multi-Factor Authentication',
-        readOnlyHint: false,
-        idempotentHint: false,
-        openWorldHint: true, // Integrates with external identity providers and services
+        readOnlyHint: false, // Modifies authentication state and creates sessions
+        destructiveHint: false, // Non-destructive authentication operation
+        idempotentHint: false, // Each authentication attempt is unique with different risk factors
+        openWorldHint: true, // Integrates with external identity providers, MFA services, and threat intelligence
       };
 
     case 'setup_mfa':
+      // Category: Configuration Management - External MFA Provider Integration
       return {
         title: 'Multi-Factor Authentication Setup',
-        readOnlyHint: false,
-        idempotentHint: true, // MFA setup can be run multiple times safely
-        openWorldHint: true, // Integrates with external MFA providers (TOTP, SMS, hardware)
+        readOnlyHint: false, // Modifies MFA configuration and stores credentials
+        destructiveHint: false, // Non-destructive setup operation (creates/updates MFA settings)
+        idempotentHint: true, // MFA setup can be run multiple times safely with same result
+        openWorldHint: true, // Integrates with external MFA providers (TOTP, SMS gateways, hardware tokens)
       };
 
     case 'assess_device_trust':
+      // Category: Security Assessment - Internal Analysis with External Threat Intelligence
       return {
-        title: 'Device Trust Assessment',
-        readOnlyHint: true, // Only assesses and reads device information
-        openWorldHint: false, // Internal assessment, no external calls
+        title: 'Device Trust & Compliance Assessment',
+        readOnlyHint: true, // Only assesses and analyzes device information without modifications
+        destructiveHint: false, // Read-only assessment operation
+        idempotentHint: true, // Same device assessment yields same results
+        openWorldHint: true, // May integrate with external threat intelligence and device management systems
       };
 
     case 'analyze_user_behavior':
+      // Category: Behavioral Analytics - Internal Analysis with Learning
       return {
-        title: 'User Behavioral Analytics',
-        readOnlyHint: true, // Only analyzes and reads behavioral patterns
-        openWorldHint: false, // Internal analytics, uses stored behavioral baselines
+        title: 'User Behavioral Analytics & Anomaly Detection',
+        readOnlyHint: false, // Updates behavioral baselines and learning models
+        destructiveHint: false, // Non-destructive learning and analysis operation
+        idempotentHint: false, // Each analysis updates behavioral models and baselines
+        openWorldHint: false, // Internal analytics using stored behavioral baselines and patterns
       };
 
     case 'manage_session':
+      // Category: Session Control - DESTRUCTIVE (Can terminate sessions and lock users)
       return {
         title: 'Session Management & Validation',
-        readOnlyHint: false,
-        destructiveHint: true, // Can terminate sessions and lock users out
-        idempotentHint: false,
-        openWorldHint: false, // Internal session management
+        readOnlyHint: false, // Modifies session state, creates, validates, or terminates sessions
+        destructiveHint: true, // CRITICAL: Can terminate sessions and effectively lock users out of system
+        idempotentHint: false, // Session operations have time-sensitive and context-dependent effects
+        openWorldHint: false, // Internal session management within zero trust framework
       };
 
     case 'identity_federation':
+      // Category: External Identity Integration - SSO and Federation
       return {
-        title: 'Identity Federation & SSO',
-        readOnlyHint: false,
-        idempotentHint: true, // SSO operations can be retried safely
-        openWorldHint: true, // Integrates with external identity providers (Okta, Azure AD, Google)
+        title: 'Identity Federation & Single Sign-On',
+        readOnlyHint: false, // Processes authentication tokens and provisions user accounts
+        destructiveHint: false, // Non-destructive federation and user provisioning operations
+        idempotentHint: true, // SSO operations and user provisioning can be retried safely
+        openWorldHint: true, // Integrates extensively with external identity providers (Okta, Azure AD, Google, SAML)
       };
 
     case 'assess_authentication_risk':
+      // Category: Risk Analysis - Read-only Assessment
       return {
-        title: 'Authentication Risk Assessment',
-        readOnlyHint: true, // Only performs risk calculations and assessments
-        openWorldHint: false, // Internal risk scoring based on behavioral analytics
+        title: 'Authentication Risk Assessment & Scoring',
+        readOnlyHint: true, // Only performs risk calculations and assessments without state changes
+        destructiveHint: false, // Read-only risk assessment operation
+        idempotentHint: true, // Same risk factors yield same risk assessment results
+        openWorldHint: false, // Internal risk scoring based on behavioral analytics and device trust
       };
 
     default:
+      // Fallback for any unrecognized tools with conservative security settings
       return {
         title: baseTitle,
-        readOnlyHint: false,
-        openWorldHint: false,
+        readOnlyHint: false, // Conservative assumption - may modify state
+        destructiveHint: false, // Conservative assumption - avoid marking unknown tools as destructive
+        idempotentHint: false, // Conservative assumption - avoid assuming idempotency
+        openWorldHint: true, // Conservative assumption - may interact with external systems
       };
   }
 }
