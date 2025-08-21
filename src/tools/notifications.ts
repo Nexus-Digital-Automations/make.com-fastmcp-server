@@ -444,11 +444,19 @@ const EmailPreferencesSchema = z.object({
         surveys: z.boolean().describe('Survey invitations'),
       }).partial(),
     }).partial().optional(),
-  }).describe('Email preference settings'),
+  }).optional().describe('Email preference settings'),
   timezone: z.string().optional().describe('User timezone'),
   language: z.string().optional().describe('Preferred language'),
   unsubscribeAll: z.boolean().optional().describe('Unsubscribe from all emails'),
-}).strict();
+}).strict().refine(
+  (data) => {
+    // At least one field must be provided for updates
+    return !!(data.preferences || data.timezone || data.language || data.unsubscribeAll !== undefined);
+  },
+  {
+    message: "At least one field must be provided for update (preferences, timezone, language, or unsubscribeAll)",
+  }
+);
 
 const NotificationTemplateSchema = z.object({
   name: z.string().min(1).max(100).describe('Template name'),

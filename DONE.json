@@ -6040,9 +6040,81 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755758515666_q5a84uozt",
+      "title": "Create comprehensive test suite for connections.ts tool",
+      "description": "Create tests/unit/tools/connections-basic.test.ts with comprehensive test coverage for all connection management functions",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/connections.ts",
+        "tests/unit/tools/billing-basic.test.ts",
+        "tests/unit/tools/analytics-basic.test.ts",
+        "development/research-reports/comprehensive-enterprise-security-compliance-framework-research.md",
+        "development/reports/comprehensive-testing-validation-strategies-fastmcp-make-integration.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T06:41:55.666Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T06:47:43.449Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T06:47:43.450Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755758304907_umu6ug3lh",
+      "title": "Enhance notifications-basic.test.ts with comprehensive test coverage for missing notification tools",
+      "description": "Add comprehensive test coverage for create-notification, get-email-preferences, update-email-preferences, create-notification-template, and list-notifications tools. Include schema validation, error handling, multi-channel delivery, and template tests following existing patterns.",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [
+        "task_1755758304908_dw9bly3da"
+      ],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T06:38:24.911Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T06:48:34.197Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T06:48:34.198Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 138,
-  "last_completion": "2025-08-21T06:36:48.357Z",
+  "total_completed": 140,
+  "last_completion": "2025-08-21T06:48:34.198Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

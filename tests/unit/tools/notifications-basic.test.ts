@@ -12,6 +12,7 @@ import {
   findTool, 
   executeTool, 
   expectProgressReported,
+  expectValidZodParse,
   expectInvalidZodParse
 } from '../../utils/test-helpers.js';
 import type { 
@@ -385,28 +386,17 @@ describe('Notification Management Tools - Additional Coverage', () => {
         const tool = findTool(mockTool, 'list-data-structures');
         
         // Test invalid type
-        await expectInvalidZodParse(() => 
-          executeTool(tool, { type: 'invalid-type' }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, { type: 'invalid-type' });
         
         // Test invalid scope
-        await expectInvalidZodParse(() => 
-          executeTool(tool, { scope: 'invalid-scope' }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, { scope: 'invalid-scope' });
         
         // Test invalid limit
-        await expectInvalidZodParse(() => 
-          executeTool(tool, { limit: 0 }, { log: mockLog })
-        );
-        
-        await expectInvalidZodParse(() => 
-          executeTool(tool, { limit: 101 }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, { limit: 0 });
+        expectInvalidZodParse(tool.parameters, { limit: 101 });
         
         // Test invalid offset
-        await expectInvalidZodParse(() => 
-          executeTool(tool, { offset: -1 }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, { offset: -1 });
       });
     });
   });
@@ -530,25 +520,19 @@ describe('Notification Management Tools - Additional Coverage', () => {
         const tool = findTool(mockTool, 'get-data-structure');
         
         // Test invalid data structure ID
-        await expectInvalidZodParse(() => 
-          executeTool(tool, { dataStructureId: 0 }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, { dataStructureId: 0 });
         
         // Test invalid organization ID
-        await expectInvalidZodParse(() => 
-          executeTool(tool, { 
-            dataStructureId: 1,
-            organizationId: 0 
-          }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, { 
+          dataStructureId: 1,
+          organizationId: 0 
+        });
         
         // Test invalid team ID
-        await expectInvalidZodParse(() => 
-          executeTool(tool, { 
-            dataStructureId: 1,
-            teamId: 0 
-          }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, { 
+          dataStructureId: 1,
+          teamId: 0 
+        });
       });
     });
   });
@@ -801,40 +785,34 @@ describe('Notification Management Tools - Additional Coverage', () => {
         const tool = findTool(mockTool, 'update-data-structure');
         
         // Test invalid data structure ID
-        await expectInvalidZodParse(() => 
-          executeTool(tool, {
-            dataStructureId: 0,
-            name: 'Test'
-          }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, {
+          dataStructureId: 0,
+          name: 'Test'
+        });
         
         // Test invalid validation rule type
-        await expectInvalidZodParse(() => 
-          executeTool(tool, {
-            dataStructureId: 1,
-            validation: {
-              rules: [{
-                field: 'test',
-                type: 'invalid-type',
-                message: 'Error'
-              }]
-            }
-          }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, {
+          dataStructureId: 1,
+          validation: {
+            rules: [{
+              field: 'test',
+              type: 'invalid-type',
+              message: 'Error'
+            }]
+          }
+        });
         
         // Test invalid transformation filter operator
-        await expectInvalidZodParse(() => 
-          executeTool(tool, {
-            dataStructureId: 1,
-            transformation: {
-              filters: [{
-                field: 'test',
-                operator: 'invalid-operator',
-                value: 'test'
-              }]
-            }
-          }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, {
+          dataStructureId: 1,
+          transformation: {
+            filters: [{
+              field: 'test',
+              operator: 'invalid-operator',
+              value: 'test'
+            }]
+          }
+        });
       });
     });
   });
@@ -1060,25 +1038,19 @@ describe('Notification Management Tools - Additional Coverage', () => {
         const tool = findTool(mockTool, 'delete-data-structure');
         
         // Test invalid data structure ID
-        await expectInvalidZodParse(() => 
-          executeTool(tool, { dataStructureId: 0 }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, { dataStructureId: 0 });
         
         // Test invalid organization ID
-        await expectInvalidZodParse(() => 
-          executeTool(tool, {
-            dataStructureId: 1,
-            organizationId: 0
-          }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, {
+          dataStructureId: 1,
+          organizationId: 0
+        });
         
         // Test invalid team ID
-        await expectInvalidZodParse(() => 
-          executeTool(tool, {
-            dataStructureId: 1,
-            teamId: 0
-          }, { log: mockLog })
-        );
+        expectInvalidZodParse(tool.parameters, {
+          dataStructureId: 1,
+          teamId: 0
+        });
       });
     });
   });
@@ -1464,6 +1436,1165 @@ describe('Notification Management Tools - Additional Coverage', () => {
       expect(mockApiClient.getCallLog()[1].method).toBe('GET');
       expect(mockApiClient.getCallLog()[2].method).toBe('PATCH');
       expect(mockApiClient.getCallLog()[3].method).toBe('GET');
+    });
+  });
+
+  describe('Comprehensive Notification Management Tests', () => {
+    // Test data for notification tools
+    const testNotification = {
+      id: 1,
+      type: 'system',
+      category: 'info',
+      priority: 'medium',
+      title: 'Test Notification',
+      message: 'This is a test notification',
+      data: { userId: 123 },
+      recipients: {
+        users: [1, 2, 3],
+        teams: [1],
+        organizations: [1],
+        emails: ['test@example.com']
+      },
+      channels: {
+        email: true,
+        inApp: true,
+        sms: false,
+        webhook: false,
+        slack: false,
+        teams: false
+      },
+      status: 'sent',
+      delivery: {
+        sentAt: '2024-01-15T10:00:00Z',
+        deliveredAt: '2024-01-15T10:00:30Z',
+        totalRecipients: 5,
+        successfulDeliveries: 5,
+        failedDeliveries: 0,
+        errors: []
+      },
+      schedule: {},
+      template: {
+        id: 1,
+        variables: {}
+      },
+      tracking: {
+        opens: 0,
+        clicks: 0,
+        unsubscribes: 0,
+        complaints: 0
+      },
+      createdAt: '2024-01-15T10:00:00Z',
+      updatedAt: '2024-01-15T10:00:00Z',
+      createdBy: 1,
+      createdByName: 'Test User'
+    };
+
+    const testEmailPreferences = {
+      userId: 1,
+      organizationId: 123,
+      preferences: {
+        system: {
+          enabled: true,
+          frequency: 'immediate',
+          categories: {
+            updates: true,
+            maintenance: true,
+            security: true,
+            announcements: false
+          }
+        },
+        billing: {
+          enabled: true,
+          categories: {
+            invoices: true,
+            paymentReminders: true,
+            usageAlerts: true,
+            planChanges: true
+          }
+        },
+        scenarios: {
+          enabled: true,
+          frequency: 'hourly',
+          categories: {
+            failures: true,
+            completions: false,
+            warnings: true,
+            scheduleChanges: true
+          },
+          filters: {
+            onlyMyScenarios: false,
+            onlyImportantScenarios: true,
+            scenarioIds: [10, 20],
+            teamIds: [5]
+          }
+        },
+        team: {
+          enabled: true,
+          categories: {
+            invitations: true,
+            roleChanges: true,
+            memberChanges: false,
+            teamUpdates: true
+          }
+        },
+        marketing: {
+          enabled: false,
+          categories: {
+            productUpdates: false,
+            newsletters: false,
+            webinars: false,
+            surveys: false
+          }
+        },
+        customChannels: []
+      },
+      timezone: 'America/New_York',
+      language: 'en-US',
+      unsubscribeAll: false,
+      lastUpdated: '2024-01-15T10:00:00Z'
+    };
+
+    const testNotificationTemplate = {
+      id: 1,
+      name: 'System Alert Template',
+      description: 'Template for system alerts',
+      type: 'email',
+      category: 'system',
+      organizationId: 123,
+      isGlobal: false,
+      template: {
+        subject: 'System Alert: {{alertType}}',
+        body: '<h1>{{alertType}}</h1><p>{{alertMessage}}</p>',
+        format: 'html',
+        variables: [
+          {
+            name: 'alertType',
+            type: 'string',
+            required: true,
+            description: 'Type of alert'
+          },
+          {
+            name: 'alertMessage',
+            type: 'string',
+            required: true,
+            description: 'Alert message content'
+          }
+        ]
+      },
+      design: {
+        theme: 'default',
+        colors: { primary: '#007bff', secondary: '#6c757d' },
+        fonts: { body: 'Arial, sans-serif' },
+        layout: 'single-column'
+      },
+      testing: {
+        lastTested: '2024-01-15T09:00:00Z',
+        testResults: {
+          renderingTime: 250,
+          size: 1024,
+          errors: [],
+          warnings: []
+        }
+      },
+      usage: {
+        totalSent: 150,
+        lastUsed: '2024-01-15T08:00:00Z',
+        averageDeliveryTime: 2.5,
+        deliveryRate: 98.7
+      },
+      createdAt: '2024-01-01T10:00:00Z',
+      updatedAt: '2024-01-15T10:00:00Z',
+      createdBy: 1
+    };
+
+    describe('create-notification tool', () => {
+      it('should create notification with basic configuration', async () => {
+        mockApiClient.mockResponse('POST', '/notifications', {
+          success: true,
+          data: testNotification
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification');
+        const result = await executeTool(tool, {
+          type: 'system',
+          category: 'info',
+          priority: 'medium',
+          title: 'Test Notification',
+          message: 'This is a test notification',
+          recipients: {
+            users: [1, 2, 3],
+            teams: [1],
+            organizations: [1],
+            emails: ['test@example.com']
+          },
+          channels: {
+            email: true,
+            inApp: true
+          }
+        }, { log: mockLog, reportProgress: mockReportProgress });
+
+        expect(result).toContain('Test Notification');
+        expect(result).toContain('"status": "sent"');
+        expect(result).toContain('"totalRecipients": 5');
+        
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].endpoint).toBe('/notifications');
+        expect(calls[0].method).toBe('POST');
+        expect(calls[0].data.type).toBe('system');
+        expect(calls[0].data.title).toBe('Test Notification');
+
+        expectProgressReported(mockReportProgress, [
+          { progress: 0, total: 100 },
+          { progress: 50, total: 100 },
+          { progress: 100, total: 100 }
+        ]);
+      });
+
+      it('should create notification with scheduling', async () => {
+        const scheduledNotification = {
+          ...testNotification,
+          status: 'scheduled',
+          schedule: {
+            sendAt: '2024-01-16T10:00:00Z',
+            timezone: 'UTC'
+          }
+        };
+
+        mockApiClient.mockResponse('POST', '/notifications', {
+          success: true,
+          data: scheduledNotification
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification');
+        await executeTool(tool, {
+          type: 'marketing',
+          category: 'reminder',
+          priority: 'low',
+          title: 'Scheduled Marketing Email',
+          message: 'Don\'t forget about our sale!',
+          recipients: {
+            users: [1, 2, 3]
+          },
+          channels: {
+            email: true
+          },
+          schedule: {
+            sendAt: '2024-01-16T10:00:00Z',
+            timezone: 'UTC'
+          }
+        }, { log: mockLog, reportProgress: mockReportProgress });
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].data.schedule.sendAt).toBe('2024-01-16T10:00:00Z');
+        expect(calls[0].data.status).toBe('scheduled');
+      });
+
+      it('should create notification with template variables', async () => {
+        const templateNotification = {
+          ...testNotification,
+          template: {
+            id: 5,
+            variables: {
+              userName: 'John Doe',
+              planType: 'Premium',
+              expiryDate: '2024-02-15'
+            }
+          }
+        };
+
+        mockApiClient.mockResponse('POST', '/notifications', {
+          success: true,
+          data: templateNotification
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification');
+        await executeTool(tool, {
+          type: 'billing',
+          category: 'reminder',
+          title: 'Subscription Expiry Reminder',
+          message: 'Your subscription will expire soon',
+          recipients: {
+            users: [123]
+          },
+          channels: {
+            email: true,
+            inApp: true
+          },
+          templateId: 5,
+          templateVariables: {
+            userName: 'John Doe',
+            planType: 'Premium',
+            expiryDate: '2024-02-15'
+          }
+        }, { log: mockLog });
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].data.template.id).toBe(5);
+        expect(calls[0].data.template.variables.userName).toBe('John Doe');
+      });
+
+      it('should validate notification parameters', async () => {
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification');
+        
+        // Test invalid type
+        expectInvalidZodParse(tool.parameters, {
+          type: 'invalid-type',
+          category: 'info',
+          title: 'Test',
+          message: 'Test message',
+          recipients: { users: [1] },
+          channels: { email: true }
+        });
+        
+        // Test invalid category
+        expectInvalidZodParse(tool.parameters, {
+          type: 'system',
+          category: 'invalid-category',
+          title: 'Test',
+          message: 'Test message',
+          recipients: { users: [1] },
+          channels: { email: true }
+        });
+        
+        // Test empty title
+        expectInvalidZodParse(tool.parameters, {
+          type: 'system',
+          category: 'info',
+          title: '',
+          message: 'Test message',
+          recipients: { users: [1] },
+          channels: { email: true }
+        });
+        
+        // Test invalid email in recipients
+        expectInvalidZodParse(tool.parameters, {
+          type: 'system',
+          category: 'info',
+          title: 'Test',
+          message: 'Test message',
+          recipients: { emails: ['invalid-email'] },
+          channels: { email: true }
+        });
+      });
+
+      it('should handle notification creation errors', async () => {
+        mockApiClient.mockResponse('POST', '/notifications', {
+          success: false,
+          error: { message: 'Invalid recipient configuration' }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification');
+        
+        await expect(executeTool(tool, {
+          type: 'system',
+          category: 'info',
+          title: 'Test Notification',
+          message: 'Test message',
+          recipients: { users: [1] },
+          channels: { email: true }
+        }, { log: mockLog })).rejects.toThrow('Invalid recipient configuration');
+      });
+
+      it('should require at least one recipient', async () => {
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification');
+        
+        await expect(executeTool(tool, {
+          type: 'system',
+          category: 'info',
+          title: 'Test Notification',
+          message: 'Test message',
+          recipients: {
+            users: [],
+            teams: [],
+            organizations: [],
+            emails: []
+          },
+          channels: { email: true }
+        }, { log: mockLog })).rejects.toThrow('At least one recipient must be specified');
+      });
+
+      it('should require at least one enabled channel', async () => {
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification');
+        
+        await expect(executeTool(tool, {
+          type: 'system',
+          category: 'info',
+          title: 'Test Notification',
+          message: 'Test message',
+          recipients: { users: [1] },
+          channels: {
+            email: false,
+            inApp: false,
+            sms: false,
+            webhook: false,
+            slack: false,
+            teams: false
+          }
+        }, { log: mockLog })).rejects.toThrow('At least one delivery channel must be enabled');
+      });
+    });
+
+    describe('get-email-preferences tool', () => {
+      it('should get current user email preferences', async () => {
+        mockApiClient.mockResponse('GET', '/notifications/email-preferences', {
+          success: true,
+          data: testEmailPreferences
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'get-email-preferences');
+        const result = await executeTool(tool, {}, { log: mockLog });
+
+        expect(result).toContain('"userId": 1');
+        expect(result).toContain('"organizationId": 123');
+        expect(result).toContain('America/New_York');
+        expect(result).toContain('en-US');
+        
+        const parsed = JSON.parse(result);
+        expect(parsed.summary.categories.system).toBe(true);
+        expect(parsed.summary.categories.marketing).toBe(false);
+        expect(parsed.settings.systemFrequency).toBe('immediate');
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].endpoint).toBe('/notifications/email-preferences');
+        expect(calls[0].method).toBe('GET');
+      });
+
+      it('should get specific user email preferences', async () => {
+        const userId = 456;
+        mockApiClient.mockResponse('GET', `/users/${userId}/email-preferences`, {
+          success: true,
+          data: { ...testEmailPreferences, userId }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'get-email-preferences');
+        await executeTool(tool, { userId }, { log: mockLog });
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].endpoint).toBe(`/users/${userId}/email-preferences`);
+      });
+
+      it('should get email preferences with statistics', async () => {
+        mockApiClient.mockResponse('GET', '/notifications/email-preferences', {
+          success: true,
+          data: testEmailPreferences
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'get-email-preferences');
+        await executeTool(tool, { includeStats: true }, { log: mockLog });
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].data.includeStats).toBe(true);
+      });
+
+      it('should validate get email preferences parameters', async () => {
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'get-email-preferences');
+        
+        // Test valid parameters
+        expectValidZodParse(tool.parameters, {});
+        expectValidZodParse(tool.parameters, { userId: 1 });
+        expectValidZodParse(tool.parameters, { includeStats: true });
+        
+        // Test invalid userId
+        expectInvalidZodParse(tool.parameters, { userId: 0 });
+        expectInvalidZodParse(tool.parameters, { userId: -1 });
+      });
+
+      it('should handle email preferences not found error', async () => {
+        mockApiClient.mockResponse('GET', '/notifications/email-preferences', {
+          success: false,
+          error: { message: 'User preferences not found' }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'get-email-preferences');
+        
+        await expect(executeTool(tool, {}, { log: mockLog }))
+          .rejects.toThrow('User preferences not found');
+      });
+    });
+
+    describe('create-notification-template tool', () => {
+      it('should create basic email template', async () => {
+        mockApiClient.mockResponse('POST', '/notifications/templates', {
+          success: true,
+          data: testNotificationTemplate
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification-template');
+        const result = await executeTool(tool, {
+          name: 'System Alert Template',
+          type: 'email',
+          category: 'system',
+          template: {
+            subject: 'System Alert: {{alertType}}',
+            body: '<h1>{{alertType}}</h1><p>{{alertMessage}}</p>',
+            format: 'html',
+            variables: [
+              {
+                name: 'alertType',
+                type: 'string',
+                required: true,
+                description: 'Type of alert'
+              },
+              {
+                name: 'alertMessage',
+                type: 'string',
+                required: true,
+                description: 'Alert message content'
+              }
+            ]
+          }
+        }, { log: mockLog, reportProgress: mockReportProgress });
+
+        expect(result).toContain('System Alert Template');
+        expect(result).toContain('"variables": 2');
+        expect(result).toContain('testUrl');
+        expect(result).toContain('previewUrl');
+        
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].endpoint).toBe('/notifications/templates');
+        expect(calls[0].method).toBe('POST');
+        expect(calls[0].data.name).toBe('System Alert Template');
+        expect(calls[0].data.template.variables).toHaveLength(2);
+
+        expectProgressReported(mockReportProgress, [
+          { progress: 0, total: 100 },
+          { progress: 50, total: 100 },
+          { progress: 100, total: 100 }
+        ]);
+      });
+
+      it('should create organization-scoped template', async () => {
+        const orgTemplate = {
+          ...testNotificationTemplate,
+          organizationId: 456,
+          isGlobal: false
+        };
+
+        mockApiClient.mockResponse('POST', '/organizations/456/notifications/templates', {
+          success: true,
+          data: orgTemplate
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification-template');
+        await executeTool(tool, {
+          name: 'Org Template',
+          type: 'email',
+          category: 'team',
+          organizationId: 456,
+          template: {
+            body: 'Test template body'
+          }
+        }, { log: mockLog, reportProgress: mockReportProgress });
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].endpoint).toBe('/organizations/456/notifications/templates');
+        expect(calls[0].data.organizationId).toBe(456);
+        expect(calls[0].data.isGlobal).toBe(false);
+      });
+
+      it('should create template with design configuration', async () => {
+        const designTemplate = {
+          ...testNotificationTemplate,
+          design: {
+            theme: 'modern',
+            colors: { primary: '#ff0000', secondary: '#00ff00' },
+            fonts: { heading: 'Roboto, sans-serif', body: 'Open Sans, sans-serif' },
+            layout: 'two-column',
+            customCss: '.custom { color: blue; }'
+          }
+        };
+
+        mockApiClient.mockResponse('POST', '/notifications/templates', {
+          success: true,
+          data: designTemplate
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification-template');
+        await executeTool(tool, {
+          name: 'Styled Template',
+          type: 'email',
+          category: 'marketing',
+          template: {
+            body: 'Styled template body'
+          },
+          design: {
+            theme: 'modern',
+            colors: { primary: '#ff0000', secondary: '#00ff00' },
+            fonts: { heading: 'Roboto, sans-serif', body: 'Open Sans, sans-serif' },
+            layout: 'two-column',
+            customCss: '.custom { color: blue; }'
+          }
+        }, { log: mockLog, reportProgress: mockReportProgress });
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].data.design.theme).toBe('modern');
+        expect(calls[0].data.design.colors.primary).toBe('#ff0000');
+        expect(calls[0].data.design.customCss).toBe('.custom { color: blue; }');
+      });
+
+      it('should validate template parameters', async () => {
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification-template');
+        
+        // Test valid template
+        expectValidZodParse(tool.parameters, {
+          name: 'Test Template',
+          type: 'email',
+          category: 'system',
+          template: {
+            body: 'Template body'
+          }
+        });
+        
+        // Test invalid name (empty)
+        expectInvalidZodParse(tool.parameters, {
+          name: '',
+          type: 'email',
+          category: 'system',
+          template: { body: 'Body' }
+        });
+        
+        // Test invalid type
+        expectInvalidZodParse(tool.parameters, {
+          name: 'Test Template',
+          type: 'invalid-type',
+          category: 'system',
+          template: { body: 'Body' }
+        });
+        
+        // Test invalid category
+        expectInvalidZodParse(tool.parameters, {
+          name: 'Test Template',
+          type: 'email',
+          category: 'invalid-category',
+          template: { body: 'Body' }
+        });
+        
+        // Test missing body
+        expectInvalidZodParse(tool.parameters, {
+          name: 'Test Template',
+          type: 'email',
+          category: 'system',
+          template: {}
+        });
+      });
+
+      it('should handle template creation errors', async () => {
+        mockApiClient.mockResponse('POST', '/notifications/templates', {
+          success: false,
+          error: { message: 'Template name already exists' }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'create-notification-template');
+        
+        await expect(executeTool(tool, {
+          name: 'Duplicate Template',
+          type: 'email',
+          category: 'system',
+          template: {
+            body: 'Template body'
+          }
+        }, { log: mockLog })).rejects.toThrow('Template name already exists');
+      });
+    });
+
+    describe('list-notifications tool', () => {
+      const testNotificationsList = [
+        testNotification,
+        {
+          ...testNotification,
+          id: 2,
+          type: 'billing',
+          category: 'warning',
+          priority: 'high',
+          title: 'Payment Failed',
+          status: 'delivered'
+        },
+        {
+          ...testNotification,
+          id: 3,
+          type: 'security',
+          category: 'alert',
+          priority: 'critical',
+          title: 'Security Alert',
+          status: 'failed'
+        }
+      ];
+
+      it('should list notifications with default parameters', async () => {
+        mockApiClient.mockResponse('GET', '/notifications', {
+          success: true,
+          data: testNotificationsList,
+          metadata: { total: 3 }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'list-notifications');
+        const result = await executeTool(tool, {}, { log: mockLog });
+
+        expect(result).toContain('"total": 3');
+        expect(result).toContain('analytics');
+        expect(result).toContain('typeBreakdown');
+        expect(result).toContain('statusBreakdown');
+        expect(result).toContain('priorityBreakdown');
+        
+        const parsed = JSON.parse(result);
+        expect(parsed.notifications).toHaveLength(3);
+        expect(parsed.analytics.totalNotifications).toBe(3);
+        expect(parsed.analytics.typeBreakdown).toHaveProperty('system');
+        expect(parsed.analytics.typeBreakdown).toHaveProperty('billing');
+        expect(parsed.analytics.typeBreakdown).toHaveProperty('security');
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].endpoint).toBe('/notifications');
+        expect(calls[0].method).toBe('GET');
+        expect(calls[0].data.limit).toBe(20);
+        expect(calls[0].data.offset).toBe(0);
+      });
+
+      it('should list notifications with filtering', async () => {
+        const filteredNotifications = [testNotificationsList[2]]; // Only security alerts
+
+        mockApiClient.mockResponse('GET', '/notifications', {
+          success: true,
+          data: filteredNotifications,
+          metadata: { total: 1 }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'list-notifications');
+        await executeTool(tool, {
+          type: 'security',
+          priority: 'critical',
+          status: 'failed',
+          dateRange: {
+            startDate: '2024-01-01',
+            endDate: '2024-01-31'
+          },
+          limit: 10,
+          sortBy: 'priority',
+          sortOrder: 'desc'
+        }, { log: mockLog });
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].data.type).toBe('security');
+        expect(calls[0].data.priority).toBe('critical');
+        expect(calls[0].data.status).toBe('failed');
+        expect(calls[0].data.startDate).toBe('2024-01-01');
+        expect(calls[0].data.endDate).toBe('2024-01-31');
+        expect(calls[0].data.limit).toBe(10);
+        expect(calls[0].data.sortBy).toBe('priority');
+        expect(calls[0].data.sortOrder).toBe('desc');
+      });
+
+      it('should list notifications with delivery analytics', async () => {
+        const notificationsWithDelivery = testNotificationsList.map(n => ({
+          ...n,
+          delivery: {
+            ...n.delivery,
+            totalRecipients: 10,
+            successfulDeliveries: 8,
+            failedDeliveries: 2
+          }
+        }));
+
+        mockApiClient.mockResponse('GET', '/notifications', {
+          success: true,
+          data: notificationsWithDelivery,
+          metadata: { total: 3 }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'list-notifications');
+        const result = await executeTool(tool, {
+          includeDelivery: true,
+          includeTracking: true
+        }, { log: mockLog });
+
+        const parsed = JSON.parse(result);
+        expect(parsed.analytics.deliveryAnalytics).toBeDefined();
+        expect(parsed.analytics.deliveryAnalytics.totalRecipients).toBe(30);
+        expect(parsed.analytics.deliveryAnalytics.successfulDeliveries).toBe(24);
+        expect(parsed.analytics.deliveryAnalytics.failedDeliveries).toBe(6);
+        expect(parsed.analytics.deliveryAnalytics.averageDeliveryRate).toBeCloseTo(80);
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].data.includeDelivery).toBe(true);
+        expect(calls[0].data.includeTracking).toBe(true);
+      });
+
+      it('should validate list notifications parameters', async () => {
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'list-notifications');
+        
+        // Test valid parameters
+        expectValidZodParse(tool.parameters, {});
+        expectValidZodParse(tool.parameters, { type: 'system', limit: 50 });
+        expectValidZodParse(tool.parameters, {
+          dateRange: {
+            startDate: '2024-01-01',
+            endDate: '2024-01-31'
+          }
+        });
+        
+        // Test invalid type
+        expectInvalidZodParse(tool.parameters, { type: 'invalid-type' });
+        
+        // Test invalid status
+        expectInvalidZodParse(tool.parameters, { status: 'invalid-status' });
+        
+        // Test invalid priority
+        expectInvalidZodParse(tool.parameters, { priority: 'invalid-priority' });
+        
+        // Test invalid limit
+        expectInvalidZodParse(tool.parameters, { limit: 0 });
+        expectInvalidZodParse(tool.parameters, { limit: 101 });
+        
+        // Test invalid offset
+        expectInvalidZodParse(tool.parameters, { offset: -1 });
+        
+        // Test invalid sortBy
+        expectInvalidZodParse(tool.parameters, { sortBy: 'invalid-field' });
+      });
+
+      it('should handle empty notification list', async () => {
+        mockApiClient.mockResponse('GET', '/notifications', {
+          success: true,
+          data: [],
+          metadata: { total: 0 }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'list-notifications');
+        const result = await executeTool(tool, {}, { log: mockLog });
+
+        const parsed = JSON.parse(result);
+        expect(parsed.notifications).toHaveLength(0);
+        expect(parsed.analytics.totalNotifications).toBe(0);
+        expect(parsed.pagination.total).toBe(0);
+      });
+
+      it('should handle list notifications API errors', async () => {
+        mockApiClient.mockResponse('GET', '/notifications', {
+          success: false,
+          error: { message: 'Access denied' }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'list-notifications');
+        
+        await expect(executeTool(tool, {}, { log: mockLog }))
+          .rejects.toThrow('Access denied');
+      });
+    });
+
+    describe('update-email-preferences tool', () => {
+      it('should update email preferences with comprehensive settings', async () => {
+        const updatedPreferences = {
+          ...testEmailPreferences,
+          preferences: {
+            ...testEmailPreferences.preferences,
+            system: {
+              enabled: false,
+              frequency: 'daily',
+              categories: {
+                updates: false,
+                maintenance: true,
+                security: true,
+                announcements: true
+              }
+            },
+            marketing: {
+              enabled: true,
+              categories: {
+                productUpdates: true,
+                newsletters: true,
+                webinars: false,
+                surveys: false
+              }
+            }
+          },
+          timezone: 'Europe/London',
+          language: 'en-GB',
+          lastUpdated: '2024-01-16T10:00:00Z'
+        };
+
+        mockApiClient.mockResponse('PUT', '/notifications/email-preferences', {
+          success: true,
+          data: updatedPreferences
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'update-email-preferences');
+        const result = await executeTool(tool, {
+          preferences: {
+            system: {
+              enabled: false,
+              frequency: 'daily',
+              categories: {
+                updates: false,
+                maintenance: true,
+                security: true,
+                announcements: true
+              }
+            },
+            marketing: {
+              enabled: true,
+              categories: {
+                productUpdates: true,
+                newsletters: true,
+                webinars: false,
+                surveys: false
+              }
+            }
+          },
+          timezone: 'Europe/London',
+          language: 'en-GB'
+        }, { log: mockLog, reportProgress: mockReportProgress });
+
+        expect(result).toContain('Email preferences updated successfully');
+        expect(result).toContain('Europe/London');
+        expect(result).toContain('en-GB');
+        
+        const parsed = JSON.parse(result);
+        expect(parsed.changes.preferences).toBe(true);
+        expect(parsed.changes.timezone).toBe(true);
+        expect(parsed.changes.language).toBe(true);
+        expect(parsed.summary.enabledCategories).toContain('billing');
+        expect(parsed.summary.enabledCategories).toContain('scenarios');
+        expect(parsed.summary.enabledCategories).toContain('marketing');
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].endpoint).toBe('/notifications/email-preferences');
+        expect(calls[0].method).toBe('PUT');
+        expect(calls[0].data.preferences.system.enabled).toBe(false);
+        expect(calls[0].data.preferences.marketing.enabled).toBe(true);
+        expect(calls[0].data.timezone).toBe('Europe/London');
+
+        expectProgressReported(mockReportProgress, [
+          { progress: 0, total: 100 },
+          { progress: 50, total: 100 },
+          { progress: 100, total: 100 }
+        ]);
+      });
+
+      it('should update specific user email preferences', async () => {
+        const userId = 789;
+        const updatedPreferences = {
+          ...testEmailPreferences,
+          userId,
+          unsubscribeAll: true
+        };
+
+        mockApiClient.mockResponse('PUT', `/users/${userId}/email-preferences`, {
+          success: true,
+          data: updatedPreferences
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'update-email-preferences');
+        await executeTool(tool, {
+          userId,
+          unsubscribeAll: true
+        }, { log: mockLog, reportProgress: mockReportProgress });
+
+        const calls = mockApiClient.getCallLog();
+        expect(calls[0].endpoint).toBe(`/users/${userId}/email-preferences`);
+        expect(calls[0].data.unsubscribeAll).toBe(true);
+      });
+
+      it('should update custom channels configuration', async () => {
+        const customChannelsConfig = {
+          ...testEmailPreferences,
+          preferences: {
+            ...testEmailPreferences.preferences,
+            customChannels: [
+              {
+                name: 'Development Alerts',
+                type: 'slack',
+                enabled: true,
+                configuration: {
+                  webhook: 'https://hooks.slack.com/services/T123/B456/xyz789',
+                  channel: '#dev-alerts'
+                },
+                filters: {
+                  priority: ['high', 'critical'],
+                  types: ['system', 'security']
+                }
+              },
+              {
+                name: 'Management Reports',
+                type: 'webhook',
+                enabled: true,
+                configuration: {
+                  url: 'https://api.company.com/notifications',
+                  headers: { 'Authorization': 'Bearer token123' }
+                },
+                filters: {
+                  categories: ['billing', 'team']
+                }
+              }
+            ]
+          }
+        };
+
+        mockApiClient.mockResponse('PUT', '/notifications/email-preferences', {
+          success: true,
+          data: customChannelsConfig
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'update-email-preferences');
+        const result = await executeTool(tool, {
+          preferences: {
+            customChannels: customChannelsConfig.preferences.customChannels
+          }
+        }, { log: mockLog, reportProgress: mockReportProgress });
+
+        expect(result).toContain('Email preferences updated successfully');
+        
+        const calls = mockApiClient.getCallLog();
+        expect(calls).toHaveLength(1);
+        expect(calls[0].endpoint).toBe('/notifications/email-preferences');
+        expect(calls[0].method).toBe('PUT');
+        expect(calls[0].data).toBeDefined();
+        expect(calls[0].data.preferences).toBeDefined();
+      });
+
+      it('should validate update email preferences parameters', async () => {
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'update-email-preferences');
+        
+        // Test valid parameters
+        expectValidZodParse(tool.parameters, {
+          preferences: {
+            system: {
+              enabled: true,
+              frequency: 'immediate'
+            }
+          }
+        });
+        
+        expectValidZodParse(tool.parameters, {
+          userId: 1,
+          timezone: 'UTC',
+          language: 'en-US',
+          unsubscribeAll: false
+        });
+        
+        // Test invalid userId
+        expectInvalidZodParse(tool.parameters, { userId: 0 });
+        expectInvalidZodParse(tool.parameters, { userId: -1 });
+        
+        // Test invalid frequency
+        expectInvalidZodParse(tool.parameters, {
+          preferences: {
+            system: {
+              frequency: 'invalid-frequency'
+            }
+          }
+        });
+      });
+
+      it('should handle update email preferences errors', async () => {
+        mockApiClient.mockResponse('PUT', '/notifications/email-preferences', {
+          success: false,
+          error: { message: 'Invalid preference configuration' }
+        });
+
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'update-email-preferences');
+        
+        await expect(executeTool(tool, {
+          preferences: {
+            system: {
+              enabled: false
+            }
+          }
+        }, { log: mockLog })).rejects.toThrow('Invalid preference configuration');
+      });
+
+      it('should require at least one update parameter', async () => {
+        const { addNotificationTools } = await import('../../../src/tools/notifications.js');
+        addNotificationTools(mockServer, mockApiClient as any);
+        
+        const tool = findTool(mockTool, 'update-email-preferences');
+        
+        await expect(executeTool(tool, {}, { log: mockLog }))
+          .rejects.toThrow('At least one field must be provided for update');
+      });
     });
   });
 });
