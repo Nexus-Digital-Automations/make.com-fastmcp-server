@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/127</span>
+                <span class='fraction'>0/134</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/54</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/118</span>
+                <span class='fraction'>0/125</span>
             </div>
         
             
@@ -519,7 +519,20 @@
 <a name='L454'></a><a href='#L454'>454</a>
 <a name='L455'></a><a href='#L455'>455</a>
 <a name='L456'></a><a href='#L456'>456</a>
-<a name='L457'></a><a href='#L457'>457</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L457'></a><a href='#L457'>457</a>
+<a name='L458'></a><a href='#L458'>458</a>
+<a name='L459'></a><a href='#L459'>459</a>
+<a name='L460'></a><a href='#L460'>460</a>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a>
+<a name='L466'></a><a href='#L466'>466</a>
+<a name='L467'></a><a href='#L467'>467</a>
+<a name='L468'></a><a href='#L468'>468</a>
+<a name='L469'></a><a href='#L469'>469</a>
+<a name='L470'></a><a href='#L470'>470</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -563,7 +576,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -828,6 +853,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -981,7 +1007,7 @@
  */
 &nbsp;
 import { randomUUID } <span class="cstat-no" title="statement not covered" >from 'crypto';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { MakeServerError, ErrorContext } from './errors.js';</span>
+impo<span class="cstat-no" title="statement not covered" >rt { MakeServerError, ErrorContext, UserError, EnhancedUser</span>Error, getErrorCode, getErrorStatusCode, getErrorCorrelationId } from './errors.js';
 import logger from '../lib/logger.js';
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >export interface ErrorMetrics {</span>
@@ -1018,92 +1044,105 @@ export interface PerformanceMetrics {
   p99ResponseTime: number;
   throughput: number;
   concurrentRequests: number;
-  me<span class="fstat-no" title="function not covered" >mo</span>ryUsage: NodeJS.MemoryUsage;
-  cpuUsage: NodeJS.CpuUsage<span class="cstat-no" title="statement not covered" >;</span>
-}
-&nbsp;
-/**
+  memoryUsage: NodeJS.MemoryUsage;
+  cp<span class="fstat-no" title="function not covered" >uU</span>sage: NodeJS.CpuUsage;
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Error Analytics and Monitoring Service
  */
-export class ErrorAnalytics {
-  private static instance: ErrorAnalytics;
+export c<span class="cstat-no" title="statement not covered" >lass ErrorAnalytics {</span>
+  private st<span class="cstat-no" title="statement not covered" >atic instance: ErrorAnalytics;</span>
   private errors: ErrorEvent[] = [];
-  private performanceData: Array&lt;{ timestamp: number; duration: number }&gt; = [];
-  private readonly maxEvents = 1000;
+  private per<span class="cstat-no" title="statement not covered" >formanceData: Array&lt;{ timestamp: number; duration: number }&gt; = [];</span>
+  private re<span class="cstat-no" title="statement not covered" >adonly maxEvents = 1000;</span>
   private readonly componentLogger: ReturnType&lt;typeof logger.child&gt;;
-  private startTime = Date.now();
+  private startTime = Date.<span class="cstat-no" title="statement not covered" >now();</span>
 &nbsp;
   private constructor() {
-    this<span class="cstat-no" title="statement not covered" >.componentLogger = logger.chil</span>d({
+    this.componentLogger = logger.child({
       component: 'ErrorAnalytics',
-    });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+    });
+&nbsp;
     // Clean up old events periodically
-    setI<span class="cstat-no" title="statement not covered" >nterval(() =&gt; {</span>
+    setInterval(() =&gt; {
       this.cleanupOldEvents();
     }, 300000); // 5 minutes
   }
 &nbsp;
   public static getInstance(): ErrorAnalytics {
     if (!ErrorAnalytics.instance) {
-      ErrorAnalytics.instance = new ErrorAnalytics();
+      Er<span class="cstat-no" title="statement not covered" >rorAnalytics.instance = new Er</span>rorAnalytics();
     }
-    return ErrorAnalytics.instance;
-  }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  /**
+    retu<span class="cstat-no" title="statement not covered" >rn ErrorAnalytics.instance;</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  /**<span class="cstat-no" title="statement not covered" ></span>
    * Record an error event
+   * Now supports FastMCP UserError and maintains backward compatibility
    */
   public recordError(
-    error: Error | MakeServ<span class="cstat-no" title="statement not covered" >erError,</span>
-    cont<span class="cstat-no" title="statement not covered" >ext?: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    error: Error | MakeServerError | UserError,
+    context?: {
       component?: string;
       operation?: string;
       userId?: string;
-      sessionId?: string;
-<span class="fstat-no" title="function not covered" ></span>      duration?: number;
-      correlationId?: <span class="cstat-no" title="statement not covered" >string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="fstat-no" title="function not covered" ></span>      sessionId?: string;
+      du<span class="cstat-no" title="statement not covered" >ration?: number;</span>
+      correlationId?: string;
+    }
+  ): void {
+    const correlationId = context?.correlationId || getErrorCorrelationId(error) || randomUUID();
+    const code = getErrorCo<span class="cstat-no" title="statement not covered" >de(error);</span>
+    cons<span class="cstat-no" title="statement not covered" >t statusCode = getErrorStatusCode(error);<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    
+    // Get context from error if available
+    let errorContext: ErrorContext | undefined;
+    if (error instanceof MakeServerError) {
+<span class="fstat-no" title="function not covered" ></span>      errorContext = error.context;
+    } else if (error i<span class="cstat-no" title="statement not covered" >nstanceof UserErr<span class="fstat-no" title="function not covered" >or</span> &amp;&amp; '<span class="cstat-no" title="statement not covered" >context' in error</span>)</span> {
+      er<span class="cstat-no" title="statement not covered" >rorContext = (error as EnhancedUserError).context;</span>
     }<span class="cstat-no" title="statement not covered" ></span>
-  ): void {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
     const er<span class="cstat-no" title="statement not covered" >rorEvent: ErrorEvent = {</span>
-      id: ra<span class="cstat-no" title="statement not covered" >ndomUUID(),</span>
+      id: randomUUID(),
       timestamp: new Date().toISOString(),
-      correlationId: context?.correlationId || randomUUID(),
-      code: error instanceof MakeServerError ? error.code : 'UNKNOWN_ERROR',
+      correlationId,
+      code,
       message: error.message,
-      statusCode: error instanceof MakeServerError ? error.statusCode : 500,
+      statusCode,
       component: context?.component,
       operation: context?.operation,
       userId: context?.userId,
-      sessionId: context?.sessionId,
-<span class="fstat-no" title="function not covered" ></span>      duration: context?.duration,
-      context: error<span class="cstat-no" title="statement not covered" > instanceof</span> MakeServerError ? error.context : undefined,
-      resolved: false,<span class="cstat-no" title="statement not covered" ></span>
-    };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-&nbsp;
-    this.errors.push(errorEve<span class="cstat-no" title="statement not covered" >nt)</span>;
+<span class="fstat-no" title="function not covered" ></span>      sessionId: context?.sessionId,
+      duration: cont<span class="cstat-no" title="statement not covered" >ext?.durati</span>on,
+      context: errorContext<span class="cstat-no" title="statement not covered" >,</span>
+      resolved: false,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    };
 <span class="cstat-no" title="statement not covered" ></span>
-    // Keep only the most recent ev<span class="cstat-no" title="statement not covered" >ent</span>s
-    if (<span class="cstat-no" title="statement not covered" >this.errors.length &gt; <span class="fstat-no" title="function not covered" >th</span>is.maxEvents) {</span>
+    this.errors.push(errorEvent);<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    // K<span class="cstat-no" title="statement not covered" >eep only the most rec<span class="fstat-no" title="function not covered" >en</span>t events</span>
+    if (this<span class="cstat-no" title="statement not covered" >.errors.length &gt; this.maxEvents) {</span>
       this.e<span class="cstat-no" title="statement not covered" >rrors = this.errors.slice(-this.maxEvents);</span>
     }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     this.componentLogger.info('Error event recorded', {
-      errorId: errorEvent.id,
-      correl<span class="cstat-no" title="statement not covered" >ationId: errorEvent.correlationId,</span>
+      errorI<span class="cstat-no" title="statement not covered" >d: errorEvent.id,</span>
+      correlationId: errorEvent.correlationId,
       code: errorEvent.code,
       component: errorEvent.component,
-    });
-  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  /**
    * Record performance data
    */
-  public recordPerformance(duration: number): void {
-    this.performanceData.p<span class="cstat-no" title="statement not covered" >ush({</span>
-      timestamp: Date.now(),
-      duration,<span class="cstat-no" title="statement not covered" ></span>
-    });<span class="cstat-no" title="statement not covered" ></span>
+  public recordPerformance<span class="cstat-no" title="statement not covered" >(duration: number): void </span>{
+    this.performanceData.push({
+      timestamp: Date.n<span class="cstat-no" title="statement not covered" >ow(),</span>
+      du<span class="cstat-no" title="statement not covered" >ration,</span>
+    });
 &nbsp;
     // Keep only recent performance data (last hour)
     const oneHourAgo = Date.now() - 3600000;
@@ -1116,12 +1155,12 @@ export class ErrorAnalytics {
    * Mark an error as resolved
    */
   public resolveError(errorId: string): void {
-    const error = this.errors.find((e) =&gt; e.id === errorId);
-<span class="fstat-no" title="function not covered" >    if</span> (error &amp;&amp; !error.resolved) {
-      error.resolved = true<span class="cstat-no" title="statement not covered" >;</span>
-      error.resolvedAt = ne<span class="cstat-no" title="statement not covered" >w Date().toISOString();<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="fstat-no" title="function not covered" >    co</span>nst error = this.errors.find((e) =&gt; e.id === errorId);
+    if (error &amp;&amp; !error.res<span class="cstat-no" title="statement not covered" >olved) {</span>
+      error.resolved = true<span class="cstat-no" title="statement not covered" >;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      er<span class="cstat-no" title="statement not covered" >ror.resolvedAt = new Date().toISOString();</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      this.c<span class="cstat-no" title="statement not covered" >omponentLogger.info('Error marked as resolved', {</span>
+      this.componentLogger.info('Error marked as resolved', {
         errorId,
         correlationId: error.correlationId,
         code: error.code,
@@ -1131,19 +1170,19 @@ export class ErrorAnalytics {
 &nbsp;
   /**
    * Get comprehensive error metrics
-   */
-  public getErrorMetrics(): Erro<span class="cstat-no" title="statement not covered" >rMetrics {</span>
-    const now = D<span class="fstat-no" title="function not covered" >at</span>e.now();<span class="cstat-no" title="statement not covered" ></span>
-    const oneHourA<span class="fstat-no" title="function not covered" >go</span> = now -<span class="cstat-no" title="statement not covered" > 36000</span>00;
-    const recentErrors = this.errors<span class="cstat-no" title="statement not covered" >.filter(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      (error) =&gt; new Date(error.timestamp).getTime() &gt; oneHourAgo
+   */<span class="cstat-no" title="statement not covered" ></span>
+  public getError<span class="fstat-no" title="function not covered" >Me</span>trics():<span class="cstat-no" title="statement not covered" > ErrorMetrics </span>{
+    const now = Da<span class="fstat-no" title="function not covered" >te</span>.now();<span class="cstat-no" title="statement not covered" ></span>
+    const oneHourAgo = now - 3600000<span class="cstat-no" title="statement not covered" >;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    const recentErrors = this.errors.filter(
+      (error) =&gt; new Date<span class="cstat-no" title="statement not covered" >(error.timestamp).getTime() &gt; oneHourAgo</span>
     );<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
     // Calculate error counts by<span class="cstat-no" title="statement not covered" > different dimensions</span>
-    const errorsByCode: Record&lt;s<span class="cstat-no" title="statement not covered" >tring, number&gt; = {};</span>
-    const errorsByComponent: Record&lt;string, number&gt; = {};
-    const errorsByStatusCod<span class="cstat-no" title="statement not covered" >e: Record&lt;string, number&gt;</span> = {};
-<span class="cstat-no" title="statement not covered" ></span>
+    const errorsByCode: Record&lt;string, number&gt; = {};
+    const errorsByComponent<span class="cstat-no" title="statement not covered" >: Record&lt;string, number&gt; </span>= {};
+    cons<span class="cstat-no" title="statement not covered" >t errorsByStatusCode: Record&lt;string, number&gt; = {};</span>
+&nbsp;
     recentErrors.forEach((error) =&gt; {
       errorsByCode[error.code] = (errorsByCode[error.code] || 0) + 1;
       
@@ -1155,71 +1194,71 @@ export class ErrorAnalytics {
       errorsByStatusCode[error.statusCode.toString()] = 
         (errorsByStatusCode[error.statusCode.toString()] || 0) + 1;
     });
-&nbsp;
-<span class="fstat-no" title="function not covered" >    //</span> Calculate average response ti<span class="branch-0 cbranch-no" title="branch not covered" >me </span>from performance data
-    const recentPerf<span class="cstat-no" title="statement not covered" >ormanceData</span> = this.performanceData.filter(
-      (data) =&gt; data.timesta<span class="cstat-no" title="statement not covered" >mp &gt; oneHourAgo</span>
-    );<span class="cstat-no" title="statement not covered" ></span>
-    <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-    const averageResponseTime = recentPerformanceData.length &gt; 0
-      ? recentPerformanceData<span class="cstat-no" title="statement not covered" >.re</span>duce((sum, data) =&gt; sum + data.duration, 0) / 
-<span class="cstat-no" title="statement not covered" >        recentPerformanceData.l<span class="fstat-no" title="function not covered" >en</span>gth</span>
+<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+    // Calculate ave<span class="cstat-no" title="statement not covered" >rage respon</span>se time from performance data
+    const recentPerformanceD<span class="cstat-no" title="statement not covered" >ata = this.performanceDat</span>a.filter(
+      (data) =&gt; data.times<span class="cstat-no" title="statement not covered" >tamp &gt; oneHourAgo</span>
+    );<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    
+    const averageResponseTime<span class="cstat-no" title="statement not covered" > = </span>recentPerformanceData.length &gt; 0
+      ? <span class="cstat-no" title="statement not covered" >recentPerformanceData.r<span class="fstat-no" title="function not covered" >ed</span>uce((sum, data) =&gt; sum + data.duration, 0) / </span>
+        recentPerformanceData.<span class="cstat-no" title="statement not covered" >length</span>
       : 0;<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    // Calcu<span class="cstat-no" title="statement not covered" >late error rate (errors per minute)</span>
+    // Calculate error rate (errors per minute)
     const errorRate = recentErrors.length / 60;
-&nbsp;
-    // Calculate uptime<span class="cstat-no" title="statement not covered" ></span>
-    cons<span class="cstat-no" title="statement not covered" >t uptime = (n<span class="cstat-no" title="statement not covered" >ow</span> - this.startTime) / 1000;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    // C<span class="cstat-no" title="statement not covered" >alculate upti<span class="cstat-no" title="statement not covered" >me</span></span>
+    const uptime = (now - thi<span class="cstat-no" title="statement not covered" >s.startTime) / 1000;</span>
 <span class="cstat-no" title="statement not covered" ></span>
     return {<span class="cstat-no" title="statement not covered" ></span>
-      totalErrors: this.errors.<span class="cstat-no" title="statement not covered" >length,</span>
-      errorsByCode,<span class="cstat-no" title="statement not covered" ></span>
-      errors<span class="cstat-no" title="statement not covered" >ByComponent,</span>
+      totalErrors: this.errors<span class="cstat-no" title="statement not covered" >.length,</span>
+      errors<span class="cstat-no" title="statement not covered" >ByCode,</span>
+      errorsByComponent,
       errorsByStatusCode,
       recentErrors: recentErrors.slice(-50), // Last 50 recent errors
       averageResponseTime,
       errorRate,
-      uptime,
-    };<span class="cstat-no" title="statement not covered" ></span>
+      up<span class="cstat-no" title="statement not covered" >time,</span>
+    };
   }
 &nbsp;
   /**
-   * Get performance metrics
-   *<span class="fstat-no" title="function not covered" >/<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-  public getPerformanceMe<span class="cstat-no" title="statement not covered" >tri</span>cs(): PerformanceMetrics {
-    cons<span class="cstat-no" title="statement not covered" >t oneHourAgo = Date.<span class="fstat-no" title="function not covered" >no</span>w() - 3600000;</span>
-    const recentData = this.<span class="cstat-no" title="statement not covered" >performanceData.filter(</span>
-      (data)<span class="cstat-no" title="statement not covered" > =&gt; data.timestamp &gt; oneHourAgo</span>
-    );<span class="cstat-no" title="statement not covered" ></span>
+   *<span class="fstat-no" title="function not covered" > G</span>et performance metrics<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+   */<span class="cstat-no" title="statement not covered" ></span>
+  public<span class="cstat-no" title="statement not covered" > getPerformanceMetri<span class="fstat-no" title="function not covered" >cs</span>(): PerformanceMetrics {</span>
+    const oneHourAgo = Date.<span class="cstat-no" title="statement not covered" >now() - 3600000;</span>
+    const re<span class="cstat-no" title="statement not covered" >centData = this.performanceData.filter(</span>
+      (data) =&gt; <span class="cstat-no" title="statement not covered" >data.timestamp &gt; oneHourAgo</span>
+    );
 &nbsp;
     if (recentData.length === 0) {
       return {
         averageResponseTime: 0,
-        p95ResponseTime: 0,
+        p95R<span class="cstat-no" title="statement not covered" >esponseTime: 0,</span>
         p99R<span class="cstat-no" title="statement not covered" >esponseTime: 0,</span>
         thro<span class="cstat-no" title="statement not covered" >ughput: 0,</span>
-        conc<span class="cstat-no" title="statement not covered" >urrentRequests: 0,</span>
-        memoryUs<span class="cstat-no" title="statement not covered" >age: process.memoryUsage(),</span>
+        concurre<span class="cstat-no" title="statement not covered" >ntRequests: 0,</span>
+        memoryUsage: process.memoryUsage(),
         cpuUsage: process.cpuUsage(),
-      };
+      };<span class="cstat-no" title="statement not covered" ></span>
     }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // Sort durat<span class="fstat-no" title="function not covered" >io</span>ns for percentile ca<span class="cstat-no" title="statement not covered" >lculations</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    // Sort durations for percentile calculations
     const sortedDurations = recentData
       .map((data) =&gt; data.duration)
       .sort((a, b) =&gt; a - b);
 &nbsp;
     const averageResponseTime = 
-      sortedDurations.reduce((sum, duration) =&gt; sum + duration, 0) / 
-      sortedDurati<span class="fstat-no" title="function not covered" >on</span>s.length<span class="cstat-no" title="statement not covered" >;</span>
+      sortedDurati<span class="fstat-no" title="function not covered" >on</span>s.reduce<span class="cstat-no" title="statement not covered" >((sum, duration) =</span>&gt; sum + duration, 0) / 
+      sortedDurations.length;
 &nbsp;
     const p95Index = Math.floor(sortedDurations.length * 0.95);
     const p99Index = Math.floor(sortedDurations.length * 0.99);
 &nbsp;
-    const p95ResponseTime = sortedDurations[p95Index] || 0;
-<span class="fstat-no" title="function not covered" >    co</span>nst p99ResponseTime = sortedDurations[p99Index] || 0;
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" >    co</span>nst p95ResponseTime = sortedDurations[p95Index] || 0;
+    cons<span class="cstat-no" title="statement not covered" >t p99ResponseTime = sortedDurations[p99Index] || 0;</span>
+&nbsp;
     // Calculate throughput (requests per second)
     const throughput = recentData.length / 3600; // per hour, convert to per second
 &nbsp;
@@ -1229,14 +1268,14 @@ export class ErrorAnalytics {
       p99ResponseTime,
       throughput,
       concurrentRequests: 0, // This would need to be tracked separately
-      memoryUsage: process.memoryUsage(),
-<span class="fstat-no" title="function not covered" ></span>      cpuUsage: process.cpuUsage(),
+<span class="fstat-no" title="function not covered" ></span>      memoryUsage: process.memoryUsage(),
+      cpuUsage: process.cp<span class="cstat-no" title="statement not covered" >uUsage(),</span>
     };<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * Get<span class="cstat-no" title="statement not covered" > error trends over time</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
+   * Get err<span class="cstat-no" title="statement not covered" >or trends over time</span>
+   */
   public getErrorTrends(timeRangeHours = 24): Array&lt;{
     hour: string;
     errorCount: number;
@@ -1244,46 +1283,46 @@ export class ErrorAnalytics {
   }&gt; {
     const now = Date.now();
     const timeRangeMs = timeRangeHours * 3600000;
-    const startTime = now - timeRangeMs;
-<span class="fstat-no" title="function not covered" ></span>
-    cons<span class="cstat-no" title="statement not covered" >t relevantErrors =</span> this.errors.filter(
-      (e<span class="cstat-no" title="statement not covered" >rror) =&gt; new Date(error.tim</span>estamp).getTime() &gt; startTime
-    );<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" >    co</span>nst startTime = now - timeRangeMs;
 <span class="cstat-no" title="statement not covered" ></span>
+    cons<span class="cstat-no" title="statement not covered" >t relevantErrors = this.err</span>ors.filter(
+      (e<span class="cstat-no" title="statement not covered" >rror) =&gt; new Date(error.times</span>tamp).getTime() &gt; startTime
+    );<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     // Group errors by hour
-    const errorsByHour: Record&lt;string, number&gt; = {};
-<span class="cstat-no" title="statement not covered" >    </span>
+<span class="cstat-no" title="statement not covered" >    const errorsByHour: Record&lt;string, nu</span>mber&gt; = {};
+    
     relevantErrors.forEach((error) =&gt; {
       const errorTime = new Date(error.timestamp);
-      const hourKey = errorTime.toISOString().substring(0, 13) + ':00:00.000Z';
-<span class="cstat-no" title="statement not covered" >      errorsByHour[hourKey] = (errorsByHour[hourKey] ||</span> 0) + 1;
+<span class="cstat-no" title="statement not covered" >      const hourKey = errorTime.toISOString().substring</span>(0, 13) + ':00:00.000Z';
+      errorsByHour[hourKey] = (errorsByHour[hourKey] || 0) + 1;
     });
 &nbsp;
-    // Create time series data
-    const<span class="fstat-no" title="function not covered" > trends: Array&lt;{ hour: string; </span>errorCount: number; errorRate: number }&gt; = [];
-    <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    for <span class="cstat-no" title="statement not covered" >(let i = 0; i &lt; timeRangeHours; i++) {</span>
+    // Cr<span class="fstat-no" title="function not covered" >eate time series data</span>
+<span class="cstat-no" title="statement not covered" >    const t<span class="fstat-no" title="function not covered" >re</span>nds: Array&lt;{ hour: string; errorCount: number; errorRate: number }&gt; = [];</span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    for (let i = 0; i &lt; timeRangeHours; i++) {
       const hourTime = new Date(startTime + (i * 3600000));
       const hourKey = hourTime.toISOString().substring(0, 13) + ':00:00.000Z';
       const errorCount = errorsByHour[hourKey] || 0;
       const errorRate = errorCount / 60; // errors per minute
-&nbsp;
-      tre<span class="fstat-no" title="function not covered" >nds.push({</span>
-<span class="cstat-no" title="statement not covered" >        hour<span class="fstat-no" title="function not covered" >: </span>hourKey,</span>
-        errorCount,<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        errorRate,</span>
+<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      trends<span class="fstat-no" title="function not covered" >.p</span>ush({</span>
+        hour: hourKey,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        errorCount,</span>
+        errorRate,<span class="cstat-no" title="statement not covered" ></span>
       });<span class="cstat-no" title="statement not covered" ></span>
     }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    return t<span class="cstat-no" title="statement not covered" >rends;</span>
+    return trends;
   }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * Get top<span class="cstat-no" title="statement not covered" > error patterns</span>
+   * Get top error patterns
    */
   public getTopErrorPatterns(limit = 10): Array&lt;{
-    pattern: string;
-    count: n<span class="cstat-no" title="statement not covered" >umber;</span>
+    pattern:<span class="cstat-no" title="statement not covered" > string;</span>
+    count: number;
     percentage: number;
     lastOccurrence: string;
     components: string[];
@@ -1438,7 +1477,7 @@ export function monitorPerformance&lt;T extends (...args: unknown[]) =&gt; Promi
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T20:23:18.016Z
+                at 2025-08-21T05:19:49.008Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -10,15 +10,14 @@ import { MockMakeApiClient } from '../mocks/make-api-client.mock.js';
 /**
  * Create a mock FastMCP server instance for testing
  */
-export const createMockServer = (): { server: any; mockTool: any } => {
-  const mockTool = (...args: any[]) => {};
-  mockTool.mock = { calls: [] };
+export const createMockServer = (): { server: any; mockTool: jest.MockedFunction<any> } => {
+  const mockTool = jest.fn();
   
   const registeredTools = new Map();
   
   const server = {
     addTool: (...args: any[]) => { 
-      mockTool.mock.calls.push(args);
+      mockTool(...args);
       // Store tool for executeToolCall
       if (args[0] && args[0].name) {
         registeredTools.set(args[0].name, args[0]);
@@ -33,12 +32,12 @@ export const createMockServer = (): { server: any; mockTool: any } => {
       // Actually execute the tool implementation
       const mockContext = {
         log: {
-          info: (...args: any[]) => {},
-          error: (...args: any[]) => {},
-          warn: (...args: any[]) => {},
-          debug: (...args: any[]) => {},
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
         },
-        reportProgress: (...args: any[]) => {},
+        reportProgress: jest.fn(),
         session: { authenticated: true },
       };
       
@@ -49,9 +48,9 @@ export const createMockServer = (): { server: any; mockTool: any } => {
         throw error;
       }
     },
-    on: (...args: any[]) => {},
-    start: (...args: any[]) => {},
-    stop: (...args: any[]) => {},
+    on: jest.fn(),
+    start: jest.fn(),
+    stop: jest.fn(),
   };
   
   return { server, mockTool };

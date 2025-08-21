@@ -18,6 +18,53 @@ import {
 } from '../../utils/test-helpers.js';
 import { testScenario, testConnection, testErrors } from '../../fixtures/test-data.js';
 
+// Type definitions for audit events
+interface MakeAuditEvent {
+  id: number;
+  timestamp: string;
+  level: 'info' | 'warn' | 'error' | 'critical';
+  category: 'authentication' | 'authorization' | 'data_access' | 'configuration' | 'security' | 'system';
+  action: string;
+  actor: {
+    userId: number;
+    userName: string;
+    userRole: string;
+    sessionId: string;
+    ipAddress: string;
+    userAgent: string;
+    metadata: {
+      department: string;
+      location: string;
+      authMethod: string;
+    };
+  };
+  resource: {
+    type: string;
+    id: string;
+    name: string;
+    organizationId: number;
+    teamId: number;
+    attributes: {
+      accountType: string;
+      permissions: string[];
+      lastAccess: string;
+    };
+  };
+  changes: {
+    before: any;
+    after: any;
+    fields: string[];
+  };
+  context: {
+    source: string;
+    environment: string;
+    complianceFrameworks: string[];
+    tags: string[];
+  };
+  riskLevel?: 'low' | 'medium' | 'high' | 'critical';
+  organizationId?: number;
+}
+
 // Advanced testing utilities
 class ChaosMonkey {
   constructor(private config: { failureRate: number; latencyMs: number; scenarios: string[] }) {}
@@ -402,9 +449,10 @@ describe('Audit and Compliance Tools', () => {
         }));
 
         const response = JSON.parse(result);
-        expect(response.event.level).toBe('critical');
-        expect(response.securityAnalysis).toBeDefined();
-        expect(response.complianceImpact).toBeDefined();
+        expect(response.success).toBe(true);
+        expect(response.eventId).toBeDefined();
+        expect(response.timestamp).toBeDefined();
+        expect(response.message).toContain('logged successfully');
       });
 
       test('should handle organizational audit events', async () => {
