@@ -29,9 +29,9 @@
       ]
     },
     {
-      "id": "task_1755801812833_ggy1i74w8",
-      "title": "Fix systematic test failures in budget-control and integration tests",
-      "description": "Address critical test failures preventing test suite execution:\\n\\n1. Fix undefined property expectations in budget-control tests (analysis property undefined)\\n2. Fix mock promise rejection expectations - promises resolving instead of rejecting\\n3. Fix UserError vs Error type mismatches in test expectations\\n4. Fix circuit breaker state issues (expected closed, received open)\\n5. Fix workflow execution failures (expected completed, received failed)\\n6. Fix class constructor invocation errors in diagnostic rules\\n\\nTotal: Multiple test suite failures blocking coverage analysis and CI/CD pipeline.",
+      "id": "task_1755801049156_sfvjyejuu",
+      "title": "Fix critical test execution failures in budget control and diagnostic rules",
+      "description": "Address systematic test failures preventing proper test execution:\\n\\n1. Fix undefined property expectations in budget-control-basic.test.ts (alertThresholds percentage, analysis properties)\\n2. Fix mock promise rejection expectations - tests expect rejections but promises resolve\\n3. Fix Class constructor invocation errors in diagnostic-rules.test.ts\\n4. Fix circuit breaker state expectations (expected closed, received open)\\n5. Fix workflow execution status expectations (expected completed, received failed)\\n\\nThese infrastructure issues are preventing proper test coverage analysis and need immediate resolution.",
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
@@ -42,64 +42,11 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-21T18:43:32.833Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755814264541_1_general_8ec8559c",
-      "started_at": "2025-08-21T22:14:34.714Z",
-      "claimed_by": "development_session_1755814264541_1_general_8ec8559c",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755801819988_1_general_618xxr",
-          "role": "primary",
-          "assignedAt": "2025-08-21T18:43:39.990Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T19:05:55.202Z",
-          "reason": "Task stale for 22 minutes"
-        },
-        {
-          "agent": "agent_1755803172793",
-          "action": "claimed",
-          "timestamp": "2025-08-21T19:06:12.793Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T19:21:14.286Z",
-          "reason": "Task stale for 15 minutes"
-        },
-        {
-          "agentId": "development_session_1755814264541_1_general_8ec8559c",
-          "role": "primary",
-          "assignedAt": "2025-08-21T22:14:34.714Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
-      "id": "task_1755801049156_sfvjyejuu",
-      "title": "Fix critical test execution failures in budget control and diagnostic rules",
-      "description": "Address systematic test failures preventing proper test execution:\\n\\n1. Fix undefined property expectations in budget-control-basic.test.ts (alertThresholds percentage, analysis properties)\\n2. Fix mock promise rejection expectations - tests expect rejections but promises resolve\\n3. Fix Class constructor invocation errors in diagnostic-rules.test.ts\\n4. Fix circuit breaker state expectations (expected closed, received open)\\n5. Fix workflow execution status expectations (expected completed, received failed)\\n\\nThese infrastructure issues are preventing proper test coverage analysis and need immediate resolution.",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
       "created_at": "2025-08-21T18:30:49.156Z",
       "auto_research_created": false,
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
+      "assigned_agent": "agent_1755815454502",
+      "started_at": "2025-08-21T22:30:54.502Z",
+      "claimed_by": "agent_1755815454502",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755801072537_1_general_8d033555",
@@ -124,6 +71,11 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T19:09:39.462Z",
           "reason": "Task stale for 16 minutes"
+        },
+        {
+          "agent": "agent_1755815454502",
+          "action": "claimed",
+          "timestamp": "2025-08-21T22:30:54.502Z"
         }
       ]
     },
@@ -134,7 +86,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -142,7 +94,19 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-21T21:51:38.304Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755814264541_1_general_8ec8559c",
+      "started_at": "2025-08-21T22:31:09.468Z",
+      "claimed_by": "development_session_1755814264541_1_general_8ec8559c",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755814264541_1_general_8ec8559c",
+          "role": "primary",
+          "assignedAt": "2025-08-21T22:31:09.468Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
     },
     {
       "id": "task_1755802466555_ja43b913k",

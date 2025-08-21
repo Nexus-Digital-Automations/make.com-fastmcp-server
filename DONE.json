@@ -11421,9 +11421,77 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755801812833_ggy1i74w8",
+      "title": "Fix systematic test failures in budget-control and integration tests",
+      "description": "Address critical test failures preventing test suite execution:\\n\\n1. Fix undefined property expectations in budget-control tests (analysis property undefined)\\n2. Fix mock promise rejection expectations - promises resolving instead of rejecting\\n3. Fix UserError vs Error type mismatches in test expectations\\n4. Fix circuit breaker state issues (expected closed, received open)\\n5. Fix workflow execution failures (expected completed, received failed)\\n6. Fix class constructor invocation errors in diagnostic rules\\n\\nTotal: Multiple test suite failures blocking coverage analysis and CI/CD pipeline.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T18:43:32.833Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755814264541_1_general_8ec8559c",
+      "started_at": "2025-08-21T22:14:34.714Z",
+      "claimed_by": "development_session_1755814264541_1_general_8ec8559c",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755801819988_1_general_618xxr",
+          "role": "primary",
+          "assignedAt": "2025-08-21T18:43:39.990Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T19:05:55.202Z",
+          "reason": "Task stale for 22 minutes"
+        },
+        {
+          "agent": "agent_1755803172793",
+          "action": "claimed",
+          "timestamp": "2025-08-21T19:06:12.793Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T19:21:14.286Z",
+          "reason": "Task stale for 15 minutes"
+        },
+        {
+          "agentId": "development_session_1755814264541_1_general_8ec8559c",
+          "role": "primary",
+          "assignedAt": "2025-08-21T22:14:34.714Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T22:30:47.295Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T22:30:47.295Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 260,
-  "last_completion": "2025-08-21T22:16:31.889Z",
+  "total_completed": 261,
+  "last_completion": "2025-08-21T22:30:47.295Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

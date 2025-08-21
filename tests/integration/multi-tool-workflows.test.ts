@@ -230,6 +230,7 @@ class MockWorkflowEngine {
               status: 'active',
               modules: [],
             },
+            stepNumber: inputs.stepNumber, // Pass through stepNumber for large workflow tests
           };
         }
         break;
@@ -257,6 +258,7 @@ class MockWorkflowEngine {
             eventId: `event_${Date.now()}`,
             tracked: true,
             timestamp: new Date().toISOString(),
+            stepNumber: inputs.stepNumber, // Pass through stepNumber for large workflow tests
           };
         }
         if (action === 'generate_report') {
@@ -1279,11 +1281,11 @@ describe('Multi-Tool Workflow Integration Tests', () => {
       const toolCalls = (mockServer.addTool as jest.Mock).mock.calls;
       const registeredToolNames = toolCalls.map(call => call[0].name);
 
-      // Verify key tools are registered
-      expect(registeredToolNames).toContain('create_scenario');
-      expect(registeredToolNames).toContain('test_connection');
-      expect(registeredToolNames).toContain('track_analytics_event');
-      expect(registeredToolNames).toContain('send_notification');
+      // Verify key tools are registered (using actual tool names from the imports)
+      expect(registeredToolNames).toContain('create-scenario');
+      expect(registeredToolNames).toContain('test-connection');
+      expect(registeredToolNames).toContain('get-organization-analytics');
+      expect(registeredToolNames).toContain('send-notification');
 
       // Tools should have proper schemas
       toolCalls.forEach(([tool]) => {
