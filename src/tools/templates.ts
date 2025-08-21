@@ -196,11 +196,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
         }
 
         // Analyze blueprint complexity
-        const complexity = metadata.complexity || analyzeTemplateComplexity(blueprint);
-        const estimatedSetupTime = metadata.estimatedSetupTime || estimateSetupTime(blueprint);
+        const complexity = metadata.complexity || (blueprint ? analyzeTemplateComplexity(blueprint) : 'simple');
+        const estimatedSetupTime = metadata.estimatedSetupTime || (blueprint ? estimateSetupTime(blueprint) : 5);
         const requiredConnections = metadata.requiredConnections.length > 0 
           ? metadata.requiredConnections 
-          : extractRequiredConnections(blueprint);
+          : (blueprint ? extractRequiredConnections(blueprint) : []);
 
         const templateData = {
           name,

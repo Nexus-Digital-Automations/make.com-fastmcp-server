@@ -45,7 +45,7 @@
       "mode": "DEVELOPMENT",
       "category": "missing-test",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [
         "./src/middleware/",
@@ -67,9 +67,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T18:56:24.362Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755802525688_1_general_d994ffea",
-      "started_at": "2025-08-21T18:56:30.209Z",
-      "claimed_by": "development_session_1755802525688_1_general_d994ffea",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755802525688_1_general_d994ffea",
@@ -77,6 +77,12 @@
           "assignedAt": "2025-08-21T18:56:30.209Z",
           "reassignReason": null,
           "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T19:16:00.628Z",
+          "reason": "Task stale for 20 minutes"
         }
       ]
     },
@@ -150,13 +156,30 @@
       ]
     },
     {
+      "id": "task_1755810188972_idrobhjkz",
+      "title": "Fix critical test failures - destructuring errors and mock issues",
+      "description": "Address systematic test failures preventing test execution:\n\n1. Fix destructuring errors in create-scenario.ts (Cannot destructure property log of undefined)\n2. Fix budget-control-basic.test.ts undefined analysis property expectations\n3. Fix mock promise rejection expectations in budget control tests\n4. Fix schema validation issues with test parameters\n5. Fix blueprint analysis connection extraction failures\n6. Fix template complexity property access errors\n7. Fix secure-config logger initialization failures\n\nThese infrastructure issues are blocking test coverage analysis and CI/CD pipeline.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T21:03:08.972Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755801812833_ggy1i74w8",
       "title": "Fix systematic test failures in budget-control and integration tests",
       "description": "Address critical test failures preventing test suite execution:\\n\\n1. Fix undefined property expectations in budget-control tests (analysis property undefined)\\n2. Fix mock promise rejection expectations - promises resolving instead of rejecting\\n3. Fix UserError vs Error type mismatches in test expectations\\n4. Fix circuit breaker state issues (expected closed, received open)\\n5. Fix workflow execution failures (expected completed, received failed)\\n6. Fix class constructor invocation errors in diagnostic rules\\n\\nTotal: Multiple test suite failures blocking coverage analysis and CI/CD pipeline.",
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -165,9 +188,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T18:43:32.833Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755801819988_1_general_618xxr",
-      "started_at": "2025-08-21T18:43:39.990Z",
-      "claimed_by": "development_session_1755801819988_1_general_618xxr",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755801819988_1_general_618xxr",
@@ -175,6 +198,23 @@
           "assignedAt": "2025-08-21T18:43:39.990Z",
           "reassignReason": null,
           "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T19:05:55.202Z",
+          "reason": "Task stale for 22 minutes"
+        },
+        {
+          "agent": "agent_1755803172793",
+          "action": "claimed",
+          "timestamp": "2025-08-21T19:06:12.793Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T19:21:14.286Z",
+          "reason": "Task stale for 15 minutes"
         }
       ]
     },
@@ -185,7 +225,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -194,9 +234,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T18:30:49.156Z",
       "auto_research_created": false,
-      "assigned_agent": "agent_1755802404320",
-      "started_at": "2025-08-21T18:53:24.320Z",
-      "claimed_by": "agent_1755802404320",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755801072537_1_general_8d033555",
@@ -215,6 +255,12 @@
           "agent": "agent_1755802404320",
           "action": "claimed",
           "timestamp": "2025-08-21T18:53:24.320Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T19:09:39.462Z",
+          "reason": "Task stale for 16 minutes"
         }
       ]
     },
@@ -225,7 +271,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [
         "./tests/unit/tools/budget-control-basic.test.ts",
@@ -238,9 +284,9 @@
       "subtasks": [],
       "created_at": "2025-08-21T18:54:26.555Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755802391386_1_general_23141bf4",
-      "started_at": "2025-08-21T18:54:33.737Z",
-      "claimed_by": "development_session_1755802391386_1_general_23141bf4",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755802391386_1_general_23141bf4",
@@ -248,6 +294,12 @@
           "assignedAt": "2025-08-21T18:54:33.737Z",
           "reassignReason": null,
           "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T19:09:39.462Z",
+          "reason": "Task stale for 15 minutes"
         }
       ]
     }
@@ -258,71 +310,7 @@
   "review_strikes": 0,
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
-  "agents": {
-    "development_session_1755801797727_1_general_b2e281e1": {
-      "name": "development Agent",
-      "role": "development",
-      "specialization": [],
-      "status": "active",
-      "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T18:43:17.728Z",
-      "parentAgentId": null,
-      "capabilities": [
-        "file-operations",
-        "linting",
-        "testing",
-        "build-fixes",
-        "refactoring"
-      ],
-      "workload": 0,
-      "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T18:43:17.728Z",
-      "sessionId": "session_1755801797727",
-      "metadata": {}
-    },
-    "development_session_1755802391386_1_general_23141bf4": {
-      "name": "development Agent",
-      "role": "development",
-      "specialization": [],
-      "status": "active",
-      "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T18:53:11.387Z",
-      "parentAgentId": null,
-      "capabilities": [
-        "file-operations",
-        "linting",
-        "testing",
-        "build-fixes",
-        "refactoring"
-      ],
-      "workload": 0,
-      "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T18:53:11.387Z",
-      "sessionId": "session_1755802391386",
-      "metadata": {}
-    },
-    "development_session_1755802525688_1_general_d994ffea": {
-      "name": "development Agent",
-      "role": "development",
-      "specialization": [],
-      "status": "active",
-      "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T18:55:25.689Z",
-      "parentAgentId": null,
-      "capabilities": [
-        "file-operations",
-        "linting",
-        "testing",
-        "build-fixes",
-        "refactoring"
-      ],
-      "workload": 0,
-      "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T18:55:25.689Z",
-      "sessionId": "session_1755802525688",
-      "metadata": {}
-    }
-  },
+  "agents": {},
   "current_task_index": 0,
   "settings": {
     "auto_sort_enabled": true,

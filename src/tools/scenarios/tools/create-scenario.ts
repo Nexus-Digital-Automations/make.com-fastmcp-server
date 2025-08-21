@@ -22,7 +22,8 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
       readOnlyHint: false,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log, reportProgress } = context;
       const typedArgs = args as { 
         name: string; 
         teamId?: string; 

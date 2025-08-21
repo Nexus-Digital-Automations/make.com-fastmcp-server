@@ -546,10 +546,11 @@ describe('Budget Control Tools - Basic Tests', () => {
       const parsedResult = JSON.parse(result);
       expect(parsedResult.projection).toBeDefined();
       expect(parsedResult.projection.projectedSpend).toBeDefined();
-      // Note: Analysis property may not be available in test environment - investigation needed
-      if (parsedResult.analysis) {
-        expect(parsedResult.analysis).toBeDefined();
-      }
+      // Verify core projection structure
+      expect(parsedResult).toHaveProperty('projection');
+      expect(parsedResult.projection).toHaveProperty('projectedSpend');
+      
+      // Analysis may not be fully available in test environment
     });
 
     it('should execute control-high-cost-scenarios with cost analysis', async () => {
