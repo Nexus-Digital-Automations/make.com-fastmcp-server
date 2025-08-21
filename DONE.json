@@ -5576,9 +5576,133 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755754844845_gsahjxuyc",
+      "title": "Implement comprehensive test stability improvements",
+      "description": "Fix failing validation tests in scenarios.test.ts, permissions.test.ts, and procedures.test.ts, focusing on schema validation patterns and error handling",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T05:40:44.845Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T05:40:51.832Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T05:42:49.221Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T05:42:49.222Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755754977889_r0kkr2mjv",
+      "title": "Enhance overall test infrastructure and resolve remaining failing tests",
+      "description": "Address remaining test failures in scenarios.test.ts, certificates.test.ts, permissions.test.ts, and procedures.test.ts to improve overall test stability and coverage",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "medium",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T05:42:57.889Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T05:43:41.832Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T05:50:26.206Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T05:50:26.207Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755755201290_1wxuk5i6z",
+      "title": "Create comprehensive test suite for policy-compliance-validation tool",
+      "description": "Analyze policy-compliance-validation.ts and create comprehensive test file at tests/unit/tools/policy-compliance-validation-basic.test.ts with tool registration, configuration validation, execution testing, error handling, policy rule validation, compliance checking, violation detection, and automated remediation testing",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T05:46:41.290Z",
+      "auto_research_created": false,
+      "started_at": "2025-08-21T05:51:06.296Z",
+      "claimed_by": "agent_1755755466296",
+      "assigned_agent": "agent_1755755466296",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755755466296",
+          "action": "claimed",
+          "timestamp": "2025-08-21T05:51:06.296Z"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T05:54:02.605Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T05:54:02.606Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 128,
-  "last_completion": "2025-08-21T05:40:09.299Z",
+  "total_completed": 131,
+  "last_completion": "2025-08-21T05:54:02.606Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
