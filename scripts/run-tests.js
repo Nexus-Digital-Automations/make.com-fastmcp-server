@@ -13,6 +13,7 @@ const testTypes = {
   unit: 'tests/unit',
   integration: 'tests/integration', 
   e2e: 'tests/e2e',
+  performance: 'tests/**/performance',
   all: 'tests'
 };
 
@@ -20,6 +21,7 @@ const coverageTypes = {
   unit: ['src/tools/**', 'src/lib/**'],
   integration: ['src/lib/**', 'src/utils/**'],
   e2e: ['src/**'],
+  performance: ['src/tools/**', 'src/lib/**'],
   all: ['src/**']
 };
 

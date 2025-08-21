@@ -82,7 +82,10 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
             apiClient,
             logger
           }
-        );
+        ) as {
+          metadata?: { reportId?: string; analysisScope?: { scenarioCount?: number } };
+          consolidatedFindings?: { totalIssues?: number; criticalIssues?: number };
+        };
 
         reportProgress?.({ progress: 100, total: 100 });
 
@@ -189,7 +192,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
 
         // Add report metadata
         const finalReport = {
-          ...formattedReport,
+          ...(formattedReport as Record<string, unknown>),
           reportConfiguration: {
             formatType,
             includeExecutiveSummary,
@@ -204,10 +207,10 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
         reportProgress?.({ progress: 100, total: 100 });
 
         log?.info?.('Troubleshooting report generated successfully', {
-          reportId: finalReport.metadata?.reportId,
+          reportId: (finalReport as any).metadata?.reportId,
           formatType,
-          scenarioCount: finalReport.metadata?.analysisScope?.scenarioCount,
-          totalIssues: finalReport.consolidatedFindings?.totalIssues
+          scenarioCount: (finalReport as any).metadata?.analysisScope?.scenarioCount,
+          totalIssues: (finalReport as any).consolidatedFindings?.totalIssues
         });
 
         return JSON.stringify(finalReport, null, 2);
@@ -283,7 +286,7 @@ async function enhanceTroubleshootingReport(
     logger: unknown;
   }
 ): Promise<unknown> {
-  const enhancedReport = { ...baseReport };
+  const enhancedReport = { ...(baseReport as Record<string, unknown>) };
   
   // Add dependency mapping if requested
   if (options.includeDependencyMapping) {
@@ -318,14 +321,14 @@ async function formatTroubleshootingReport(
     logger: unknown;
   }
 ): Promise<unknown> {
-  let formattedReport = { ...baseReport };
+  let formattedReport = { ...(baseReport as Record<string, unknown>) };
   
   switch (options.formatType) {
     case 'executive':
-      formattedReport = formatExecutiveReport(baseReport);
+      formattedReport = formatExecutiveReport(baseReport) as Record<string, unknown>;
       break;
     case 'technical':
-      formattedReport = formatTechnicalReport(baseReport, scenarios);
+      formattedReport = formatTechnicalReport(baseReport, scenarios) as Record<string, unknown>;
       break;
     case 'detailed':
     default:
@@ -349,7 +352,7 @@ async function analyzeDependencies(scenarios: unknown[]): Promise<unknown> {
     totalScenarios: scenarios.length,
     dependencyMap: {},
     circularDependencies: [],
-    isolatedScenarios: scenarios.filter(s => !s.dependencies?.length).length
+    isolatedScenarios: scenarios.filter(s => !(s as any).dependencies?.length).length
   };
 }
 
@@ -389,15 +392,16 @@ function generateTroubleshootingInsights(report: unknown, _scenarios: unknown[])
  * Format report for executive summary
  */
 function formatExecutiveReport(baseReport: unknown): unknown {
+  const report = baseReport as any;
   return {
-    metadata: baseReport.metadata,
-    executiveSummary: baseReport.executiveSummary,
-    systemOverview: baseReport.systemOverview,
-    keyRecommendations: baseReport.actionPlan?.immediate?.slice(0, 5) || [],
+    metadata: report.metadata,
+    executiveSummary: report.executiveSummary,
+    systemOverview: report.systemOverview,
+    keyRecommendations: report.actionPlan?.immediate?.slice(0, 5) || [],
     riskAssessment: {
-      overallRisk: baseReport.consolidatedFindings?.securityRiskLevel || 'low',
-      criticalIssues: baseReport.consolidatedFindings?.criticalIssues || 0,
-      immediateActions: baseReport.actionPlan?.immediate?.length || 0
+      overallRisk: report.consolidatedFindings?.securityRiskLevel || 'low',
+      criticalIssues: report.consolidatedFindings?.criticalIssues || 0,
+      immediateActions: report.actionPlan?.immediate?.length || 0
     }
   };
 }
@@ -406,8 +410,9 @@ function formatExecutiveReport(baseReport: unknown): unknown {
  * Format report for technical audience
  */
 function formatTechnicalReport(baseReport: unknown, scenarios: unknown[]): unknown {
+  const report = baseReport as any;
   return {
-    ...baseReport,
+    ...(baseReport as Record<string, unknown>),
     technicalDetails: {
       analysisMethodology: 'Comprehensive scenario analysis using diagnostic engine',
       toolsUsed: ['DiagnosticEngine', 'Performance Monitor', 'Security Scanner'],
@@ -416,7 +421,7 @@ function formatTechnicalReport(baseReport: unknown, scenarios: unknown[]): unkno
     },
     rawData: {
       scenarioCount: scenarios.length,
-      analysisTimestamp: baseReport.metadata?.generatedAt
+      analysisTimestamp: report.metadata?.generatedAt
     }
   };
 }
