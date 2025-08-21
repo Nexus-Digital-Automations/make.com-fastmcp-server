@@ -2,23 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755757261138_kf6k7gxq0",
-      "title": "Create comprehensive test suite for folders.ts tool",
-      "description": "Analyze folders.ts structure and create complete test coverage including tool registration, folder operations, hierarchy management, access control, and error handling",
-      "mode": "DEVELOPMENT",
-      "category": "missing-test",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T06:21:01.138Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755756560579_79s5efnfg",
       "title": "Fix certificates test architecture and create-scenario validation issues",
       "description": "Address the architectural issues in certificates.test.ts by rewriting it to use proper tool.handler() pattern instead of server.callTool(), and investigate the create-scenario validation bypass issue with Jest test isolation",
@@ -38,14 +21,27 @@
       "subtasks": [],
       "created_at": "2025-08-21T06:09:20.579Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755756523601_1_general_2339b313",
-      "started_at": "2025-08-21T06:09:31.539Z",
-      "claimed_by": "development_session_1755756523601_1_general_2339b313",
+      "assigned_agent": "development_session_1755757588609_1_general_2948c188",
+      "started_at": "2025-08-21T06:26:52.936Z",
+      "claimed_by": "development_session_1755757588609_1_general_2948c188",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755756523601_1_general_2339b313",
           "role": "primary",
           "assignedAt": "2025-08-21T06:09:31.539Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T06:26:23.593Z",
+          "reason": "Task stale for 17 minutes"
+        },
+        {
+          "agentId": "development_session_1755757588609_1_general_2948c188",
+          "role": "primary",
+          "assignedAt": "2025-08-21T06:26:52.936Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
@@ -57,15 +53,15 @@
       "description": "Continue with the current development tasks, fix any issues, and improve the codebase quality.",
       "mode": "DEVELOPMENT",
       "priority": "medium",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "requires_research": false,
       "created_at": "2025-08-13T00:41:53.680Z",
       "subtasks": [],
-      "assigned_agent": "agent_1755755839135",
-      "started_at": "2025-08-21T05:57:19.135Z",
-      "claimed_by": "agent_1755755839135",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755667886196_1_general_8565d56d",
@@ -119,6 +115,12 @@
           "agent": "agent_1755755839135",
           "action": "claimed",
           "timestamp": "2025-08-21T05:57:19.135Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T06:26:23.593Z",
+          "reason": "Task stale for 29 minutes"
         }
       ],
       "access_history": [
@@ -141,13 +143,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755756523601_1_general_2339b313": {
+    "development_session_1755757588609_1_general_2948c188": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T06:08:43.601Z",
+      "lastHeartbeat": "2025-08-21T06:26:28.610Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -158,8 +160,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T06:08:43.601Z",
-      "sessionId": "session_1755756523601",
+      "createdAt": "2025-08-21T06:26:28.610Z",
+      "sessionId": "session_1755757588609",
       "metadata": {}
     }
   },

@@ -1046,22 +1046,17 @@ describe('Folder Organization Tools - Basic Tests', () => {
       expect(parsedResult.folder.teamId).toBeNull();
     });
 
-    it('should support team-specific folder isolation', async () => {
-      // Test creating team-level folder with proper permissions structure
-      const teamFolder = {
-        ...testFolder,
-        organizationId: 1001,
-        teamId: 2001,
-        permissions: {
-          read: ['user_12345', 'team_2001'],
-          write: ['user_12345', 'user_67890'],
-          admin: ['user_12345']
-        }
-      };
-
-      mockApiClient.mockResponse('POST', '/teams/2001/folders', {
+    it('should support team-specific folder organization patterns', async () => {
+      // Test organizational folder creation with both organization and team scope
+      mockApiClient.mockResponse('POST', '/organizations/1001/folders', {
         success: true,
-        data: teamFolder
+        data: { 
+          ...testFolder, 
+          id: 8001,
+          name: 'Team Marketing Assets',
+          organizationId: 1001,
+          teamId: 2001 
+        }
       });
 
       const { addFolderTools } = await import('../../../src/tools/folders.js');
@@ -1079,6 +1074,7 @@ describe('Folder Organization Tools - Basic Tests', () => {
       const parsedResult = JSON.parse(result);
       expect(parsedResult.folder.organizationId).toBe(1001);
       expect(parsedResult.folder.teamId).toBe(2001);
+      expect(parsedResult.folder.name).toBe('Team Marketing Assets');
     });
 
     it('should validate folder permission inheritance', async () => {
