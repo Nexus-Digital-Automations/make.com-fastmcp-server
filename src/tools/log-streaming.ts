@@ -18,6 +18,167 @@ import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { EventEmitter } from 'events';
+// Import statement removed - ToolExecutionContext not used
+
+// Logger interface for proper typing
+interface Logger {
+  debug: (message: string, data?: unknown) => void;
+  info: (message: string, data?: unknown) => void;
+  warn: (message: string, data?: unknown) => void;
+  error: (message: string, data?: unknown) => void;
+}
+
+// Export configuration interfaces
+interface ExportConfig {
+  filtering: {
+    logLevels?: string[];
+    modules?: string[];
+    dateRange?: {
+      start: string;
+      end: string;
+    };
+    executionIds?: string[];
+    scenarioIds?: number[];
+    organizations?: number[];
+    teams?: number[];
+    errorTypes?: string[];
+    customFilters?: Record<string, unknown>;
+  };
+  format?: string;
+  compression?: boolean;
+  includeMetadata?: boolean;
+  transformations?: DataTransformation[];
+  streaming?: {
+    enabled: boolean;
+    batchSize?: number;
+    intervalMs?: number;
+  };
+  organizationId?: number;
+}
+
+interface OutputConfig {
+  format: 'json' | 'csv' | 'xml' | 'parquet' | 'newrelic' | 'splunk' | 'elasticsearch' | 'datadog';
+  destination: string;
+  chunkSize: number;
+  compression?: boolean;
+  encryption?: {
+    enabled: boolean;
+    algorithm?: string;
+    key?: string;
+  };
+}
+
+interface DestinationConfig {
+  type: 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook';
+  path: string;
+  credentials?: {
+    accessKey?: string;
+    secretKey?: string;
+    token?: string;
+    username?: string;
+    password?: string;
+  };
+  options?: Record<string, unknown>;
+}
+
+interface AnalyticsConfig {
+  enabled: boolean;
+  includePerformanceMetrics?: boolean;
+  includePredictiveAnalysis?: boolean;
+  customMetrics?: CustomMetric[];
+  anomalyDetection?: {
+    enabled: boolean;
+    sensitivity: number;
+    algorithms: string[];
+  };
+}
+
+interface DataTransformation {
+  operation: 'rename' | 'format_date' | 'parse_json' | 'extract_regex' | 'convert_type' | 'filter_fields';
+  field: string;
+  targetField?: string;
+  parameters?: Record<string, unknown>;
+}
+
+interface CustomMetric {
+  name: string;
+  field: string;
+  aggregation: 'count' | 'sum' | 'avg' | 'min' | 'max' | 'distinct';
+  filters?: Record<string, unknown>;
+  timeWindow?: string;
+}
+
+interface ExternalSystemConfig {
+  type: 'elasticsearch' | 'splunk' | 'datadog' | 'newrelic' | 'generic';
+  endpoint: string;
+  authentication: {
+    type: 'bearer' | 'basic' | 'api_key' | 'oauth2';
+    credentials: Record<string, string>;
+  };
+  options?: {
+    timeout?: number;
+    retries?: number;
+    batchSize?: number;
+    compression?: boolean;
+  };
+}
+
+// Type definitions for better TypeScript support
+// (Logger interface already defined above)
+
+interface LogMetadata {
+  timestamp: string;
+  level: string;
+  scenarioId?: string;
+  executionId?: string;
+  [key: string]: unknown;
+}
+
+interface _StreamingLogEntry {
+  id: string;
+  timestamp: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  message: string;
+  scenarioId?: string;
+  executionId?: string;
+  metadata: LogMetadata;
+}
+
+interface _LogFilter {
+  level?: string[];
+  scenarioId?: string;
+  executionId?: string;
+  startTime?: string;
+  endTime?: string;
+  searchTerm?: string;
+}
+
+interface _LogExportResult {
+  success: boolean;
+  exportId?: string;
+  downloadUrl?: string;
+  error?: string;
+  totalRecords: number;
+  exportFormat: string;
+}
+
+interface _SystemOverview {
+  totalScenarios: number;
+  activeExecutions: number;
+  systemHealth: string;
+  performanceMetrics: Record<string, unknown>;
+}
+
+interface _ExecutionSummary {
+  executionId: string;
+  status: string;
+  duration: number;
+  stepsCompleted: number;
+  totalSteps: number;
+  errors: unknown[];
+}
+
+// Duplicate interface definitions removed - using the ones defined above
 
 // Enhanced log entry structure based on Make.com API research
 interface MakeLogEntry {
@@ -1130,9 +1291,9 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
 class EnhancedLogExportProcessor {
   private apiClient: MakeApiClient;
   private exportMetadata: Record<string, unknown>;
-  private logger: any;
+  private logger: Logger;
 
-  constructor(apiClient: MakeApiClient, exportMetadata: Record<string, unknown>, logger: any) {
+  constructor(apiClient: MakeApiClient, exportMetadata: Record<string, unknown>, logger: Logger) {
     this.apiClient = apiClient;
     this.exportMetadata = exportMetadata;
     this.logger = logger;
@@ -1144,10 +1305,10 @@ class EnhancedLogExportProcessor {
   async processBatchExport(
     endpoint: string,
     params: Record<string, unknown>,
-    exportConfig: any,
-    outputConfig: any,
-    destination: any,
-    analytics: any
+    exportConfig: ExportConfig,
+    outputConfig: OutputConfig,
+    destination: DestinationConfig,
+    analytics: AnalyticsConfig
   ): Promise<string> {
     this.logger.info('Starting batch export processing');
 
@@ -1250,10 +1411,10 @@ class EnhancedLogExportProcessor {
   async processStreamingExport(
     endpoint: string,
     params: Record<string, unknown>,
-    exportConfig: any,
-    outputConfig: any,
-    destination: any,
-    _analytics: any
+    exportConfig: ExportConfig,
+    outputConfig: OutputConfig,
+    destination: DestinationConfig,
+    _analytics: AnalyticsConfig
   ): Promise<string> {
     this.logger.info('Starting streaming export processing', {
       batchSize: exportConfig.streaming.batchSize,
@@ -1369,7 +1530,7 @@ class EnhancedLogExportProcessor {
   /**
    * Apply advanced filtering beyond basic parameters
    */
-  private applyAdvancedFiltering(logs: MakeLogEntry[], filtering: any): MakeLogEntry[] {
+  private applyAdvancedFiltering(logs: MakeLogEntry[], filtering: ExportConfig['filtering']): MakeLogEntry[] {
     let filteredLogs = logs;
 
     // Apply execution success/failure filtering
@@ -1387,7 +1548,7 @@ class EnhancedLogExportProcessor {
   /**
    * Apply data transformations based on configuration
    */
-  private applyDataTransformations(logs: MakeLogEntry[], transformations?: any[]): MakeLogEntry[] {
+  private applyDataTransformations(logs: MakeLogEntry[], transformations?: DataTransformation[]): MakeLogEntry[] {
     if (!transformations || transformations.length === 0) {
       return logs;
     }
@@ -1421,7 +1582,7 @@ class EnhancedLogExportProcessor {
    */
   private async performAdvancedAnalytics(
     logs: MakeLogEntry[],
-    analytics: any
+    analytics: AnalyticsConfig
   ): Promise<Record<string, unknown>> {
     const results: Record<string, unknown> = {};
 
@@ -1453,7 +1614,7 @@ class EnhancedLogExportProcessor {
    */
   private async formatLogsForExport(
     logs: MakeLogEntry[],
-    outputConfig: any,
+    outputConfig: OutputConfig,
     metadata: Record<string, unknown>,
     analytics?: Record<string, unknown>
   ): Promise<unknown> {
@@ -1471,7 +1632,7 @@ class EnhancedLogExportProcessor {
    */
   private async deliverToExternalSystem(
     data: unknown,
-    config: any,
+    config: AnalyticsConfig,
     format: string
   ): Promise<Record<string, unknown>> {
     const connector = new ExternalSystemConnector(config, this.logger);
@@ -1500,7 +1661,7 @@ class EnhancedLogExportProcessor {
   /**
    * Generate enhanced summary with advanced metrics
    */
-  private generateEnhancedSummary(logs: MakeLogEntry[], exportConfig: any): Record<string, unknown> {
+  private generateEnhancedSummary(logs: MakeLogEntry[], exportConfig: ExportConfig): Record<string, unknown> {
     return {
       ...generateExportSummary(logs, exportConfig),
       processingMetrics: {
@@ -1554,7 +1715,7 @@ class EnhancedLogExportProcessor {
     return { predictions: [], confidence: 0 };
   }
 
-  private calculateCustomMetrics(logs: MakeLogEntry[], metrics: any[]): Record<string, unknown> {
+  private calculateCustomMetrics(logs: MakeLogEntry[], metrics: CustomMetric[]): Record<string, unknown> {
     const results: Record<string, unknown> = {};
     
     for (const metric of metrics) {
@@ -1594,7 +1755,7 @@ class EnhancedLogExportProcessor {
 
   private extractFieldValue(log: MakeLogEntry, fieldPath: string): unknown {
     const parts = fieldPath.split('.');
-    let value: any = log;
+    let value: unknown = log;
     
     for (const part of parts) {
       if (value && typeof value === 'object' && part in value) {
@@ -1671,9 +1832,9 @@ class EnhancedExportFormatter {
     }
   }
 
-  private applyFieldMapping(logs: MakeLogEntry[], mapping: Record<string, string>): any[] {
+  private applyFieldMapping(logs: MakeLogEntry[], mapping: Record<string, string>): Record<string, unknown>[] {
     return logs.map(log => {
-      const mappedLog: any = {};
+      const mappedLog: Record<string, unknown> = {};
       
       // Apply field mappings
       for (const [originalField, mappedField] of Object.entries(mapping)) {
@@ -1694,11 +1855,11 @@ class EnhancedExportFormatter {
     });
   }
 
-  private getNestedValue(obj: any, path: string): any {
+  private getNestedValue(obj: Record<string, unknown>, path: string): unknown {
     return path.split('.').reduce((current, key) => current?.[key], obj);
   }
 
-  private setNestedValue(obj: any, path: string, value: any): void {
+  private setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
     const keys = path.split('.');
     const lastKey = keys.pop()!;
     
@@ -1860,11 +2021,11 @@ class EnhancedExportFormatter {
  * External System Connector for delivering exported logs
  */
 class ExternalSystemConnector {
-  private config: any;
-  private logger: any;
-  private connection: any;
+  private config: ExternalSystemConfig;
+  private logger: Logger;
+  private connection: unknown;
 
-  constructor(config: any, logger: any) {
+  constructor(config: ExternalSystemConfig, logger: Logger) {
     this.config = config;
     this.logger = logger;
   }

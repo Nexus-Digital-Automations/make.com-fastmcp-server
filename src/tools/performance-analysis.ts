@@ -9,6 +9,13 @@ import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import metrics from '../lib/metrics.js';
 import PerformanceMonitor from '../lib/performance-monitor.js';
+import { 
+  type SystemMemoryMetrics, 
+  type CpuMetrics,
+  type PerformanceAnalysisOptions,
+  type PerformanceAnalysisFilters,
+  type AlertThresholds
+} from '../types/index.js';
 
 // Performance analysis schemas
 const PerformanceAnalysisSchema = z.object({
@@ -54,6 +61,93 @@ const LiveAnalysisSchema = z.object({
 
 // Performance analysis interfaces
 
+// System metrics interfaces (imported from types/index.ts)
+
+interface SystemCpuMetrics {
+  user: number;
+  system: number;
+  utilization: number;
+}
+
+interface _SystemMetrics {
+  memory: SystemMemoryMetrics;
+  cpu: SystemCpuMetrics;
+  uptime: number;
+  timestamp: number;
+}
+
+interface _ApiMetrics {
+  responseTime: number;
+  healthy: boolean;
+  rateLimiter?: {
+    requestsRemaining: number;
+    resetTime: number;
+  };
+  error?: string;
+  timestamp: number;
+}
+
+interface _WebhookMetrics {
+  maxThroughput: number;
+  queueSize: number;
+  processingTime: number;
+  currentLoad: number;
+  timestamp: number;
+}
+
+interface _ScenarioExecutionMetrics {
+  averageExecutionTime: number;
+  successRate: number;
+  errorRate: number;
+}
+
+interface _ScenarioMetrics {
+  scenario?: Record<string, unknown>;
+  executionMetrics?: _ScenarioExecutionMetrics;
+  error?: string;
+  timestamp: number;
+}
+
+interface _OrganizationUsage {
+  operationsUsed: number;
+  operationsLimit: number;
+  utilizationRate: number;
+}
+
+interface _OrganizationMetrics {
+  organization?: Record<string, unknown>;
+  usage?: _OrganizationUsage;
+  error?: string;
+  timestamp: number;
+}
+
+interface MetricsFormattingResult {
+  responseTime: {
+    average: number;
+    p50: number;
+    p95: number;
+    p99: number;
+    trend: 'improving' | 'stable' | 'degrading';
+  };
+  throughput: {
+    requestsPerSecond: number;
+    requestsPerMinute: number;
+    trend: 'improving' | 'stable' | 'degrading';
+  };
+  reliability: {
+    uptime: number;
+    errorRate: number;
+    successRate: number;
+    trend: 'improving' | 'stable' | 'degrading';
+  };
+  resources: {
+    cpuUsage: number;
+    memoryUsage: number;
+    networkUtilization: number;
+    trend: 'improving' | 'stable' | 'degrading';
+  };
+}
+
 // Options and Filters interfaces
 interface PerformanceAnalysisOptions {
   timeRangeHours: number;
@@ -81,6 +175,13 @@ interface PerformanceAnalysisFilters {
   severityFilter: 'all' | 'warning' | 'error' | 'critical';
 }
 
+interface AlertThresholds {
+  responseTime: number;
+  errorRate: number;
+  cpuUsage: number;
+  memoryUsage: number;
+}
+
 interface PerformanceMetrics {
   responseTime?: {
     average: number;
@@ -106,7 +207,12 @@ interface PerformanceMetrics {
     networkUtilization: number;
     trend: 'improving' | 'stable' | 'degrading';
   };
-  memory?: number;
+  memory?: number | SystemMemoryMetrics;
+  cpu?: SystemCpuMetrics;
+  uptime?: number;
+  timestamp?: number;
+  healthy?: boolean;
+  error?: string;
   rateLimiter?: {
     requestsRemaining: number;
     resetTime: number;
@@ -140,12 +246,6 @@ interface CostAnalysis {
   recommendedActions: string[];
 }
 
-interface AlertThresholds {
-  responseTime: number;
-  errorRate: number;
-  cpuUsage: number;
-  memoryUsage: number;
-}
 
 interface PerformanceBottleneck {
   type: 'response_time' | 'throughput' | 'error_rate' | 'resource_usage' | 'rate_limiting' | 'webhook_queue';
@@ -512,7 +612,12 @@ class PerformanceAnalysisEngine {
   /**
    * Collect system-level metrics
    */
-  private async collectSystemMetrics(): Promise<any> {
+  private async collectSystemMetrics(): Promise<{
+    memory: SystemMemoryMetrics;
+    cpu: SystemCpuMetrics;
+    uptime: number;
+    timestamp: number;
+  }> {
     const memUsage = process.memoryUsage();
     const cpuUsage = process.cpuUsage();
     const uptime = process.uptime();
@@ -536,7 +641,16 @@ class PerformanceAnalysisEngine {
   /**
    * Collect API-level metrics
    */
-  private async collectApiMetrics(apiClient: MakeApiClient): Promise<any> {
+  private async collectApiMetrics(apiClient: MakeApiClient): Promise<{
+    responseTime: number;
+    healthy: boolean;
+    rateLimiter?: {
+      requestsRemaining: number;
+      resetTime: number;
+    };
+    timestamp: number;
+    error?: string;
+  }> {
     try {
       // Get rate limiter status
       const rateLimiterStatus = apiClient.getRateLimiterStatus();
@@ -565,7 +679,13 @@ class PerformanceAnalysisEngine {
   /**
    * Collect webhook-specific metrics
    */
-  private async collectWebhookMetrics(_apiClient: MakeApiClient): Promise<any> {
+  private async collectWebhookMetrics(_apiClient: MakeApiClient): Promise<{
+    maxThroughput: number;
+    queueSize: number;
+    processingTime: number;
+    currentLoad: number;
+    timestamp: number;
+  }> {
     // This would typically involve checking webhook queue status, processing times, etc.
     // For now, return estimated metrics based on Make.com documentation
     return {
@@ -580,7 +700,16 @@ class PerformanceAnalysisEngine {
   /**
    * Collect scenario-specific metrics
    */
-  private async collectScenarioMetrics(scenarioId: string | undefined, apiClient: MakeApiClient): Promise<any> {
+  private async collectScenarioMetrics(scenarioId: string | undefined, apiClient: MakeApiClient): Promise<{
+    scenario?: Record<string, unknown>;
+    executionMetrics?: {
+      averageExecutionTime: number;
+      successRate: number;
+      errorRate: number;
+    };
+    error?: string;
+    timestamp: number;
+  }> {
     if (!scenarioId) {
       throw new Error('Scenario ID required for scenario analysis');
     }
@@ -614,7 +743,16 @@ class PerformanceAnalysisEngine {
   /**
    * Collect organization-level metrics
    */
-  private async collectOrganizationMetrics(orgId: string | undefined, apiClient: MakeApiClient): Promise<any> {
+  private async collectOrganizationMetrics(orgId: string | undefined, apiClient: MakeApiClient): Promise<{
+    organization?: Record<string, unknown>;
+    usage?: {
+      operationsUsed: number;
+      operationsLimit: number;
+      utilizationRate: number;
+    };
+    error?: string;
+    timestamp: number;
+  }> {
     if (!orgId) {
       throw new Error('Organization ID required for organization analysis');
     }
@@ -684,7 +822,7 @@ class PerformanceAnalysisEngine {
 
     // Memory usage bottleneck detection
     const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as any).utilization : 0);
+                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : 0);
     
     if (memoryUtilization && memoryUtilization > 0.85) {
       bottlenecks.push({
@@ -825,7 +963,7 @@ class PerformanceAnalysisEngine {
 
     // Deduct points for high resource usage
     const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as any).utilization : 0);
+                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : 0);
     
     if (memoryUtilization && memoryUtilization > 0.8) {
       score -= (memoryUtilization - 0.8) * 50;
@@ -873,7 +1011,7 @@ class PerformanceAnalysisEngine {
     }
 
     const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as any).utilization : 0);
+                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : 0);
     
     if (memoryUtilization && memoryUtilization > 0.7) {
       longTerm.push('Consider memory optimization and monitoring');
@@ -909,7 +1047,7 @@ class PerformanceAnalysisEngine {
   /**
    * Format metrics for output
    */
-  private formatMetrics(metrics: PerformanceMetrics): any {
+  private formatMetrics(metrics: PerformanceMetrics): MetricsFormattingResult {
     const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
                              (typeof metrics.responseTime === 'object' ? metrics.responseTime.average : 0);
     
@@ -933,8 +1071,8 @@ class PerformanceAnalysisEngine {
         trend: 'stable' as const
       },
       resources: {
-        cpuUsage: (typeof metrics.cpu === 'object' && metrics.cpu ? (metrics.cpu as any).utilization : 0) || 0.3,
-        memoryUsage: (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as any).utilization : metrics.memory) || 0.6,
+        cpuUsage: (typeof metrics.cpu === 'object' && metrics.cpu ? (metrics.cpu as CpuMetrics).utilization : 0) || 0.3,
+        memoryUsage: (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : metrics.memory) || 0.6,
         networkUtilization: 0.4,
         trend: 'stable' as const
       }
