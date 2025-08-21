@@ -3,7 +3,7 @@
  * Main server implementation with authentication, error handling, and logging
  */
 
-import { FastMCP, UserError, FastMCPSessionAuth } from 'fastmcp';
+import { FastMCP, UserError, FastMCPSession } from 'fastmcp';
 import { z } from 'zod';
 import configManager from './lib/config.js';
 import logger from './lib/logger.js';
@@ -42,7 +42,7 @@ import { addEnterpriseSecretsTools } from './tools/enterprise-secrets.js';
 import { addBlueprintCollaborationTools } from './tools/blueprint-collaboration.js';
 
 export class MakeServerInstance {
-  private server: FastMCP<FastMCPSessionAuth>;
+  private server: FastMCP<FastMCPSession>;
   private apiClient: MakeApiClient;
   private componentLogger: ReturnType<typeof logger.child>;
 
@@ -56,7 +56,7 @@ export class MakeServerInstance {
     this.apiClient = new MakeApiClient(configManager.getMakeConfig());
 
     // Initialize FastMCP server with proper type annotations
-    this.server = new FastMCP<FastMCPSessionAuth>({
+    this.server = new FastMCP<FastMCPSession>({
       name: configManager.getConfig().name,
       version: "1.0.0",
       instructions: this.getServerInstructions(),
