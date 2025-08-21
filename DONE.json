@@ -6182,9 +6182,88 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755759299204_cisq19e41",
+      "title": "Create comprehensive test suite for templates.ts tool",
+      "description": "Create tests/unit/tools/templates-basic.test.ts with comprehensive test coverage for all template management functions",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/templates.ts",
+        "tests/unit/tools/permissions-basic.test.ts",
+        "tests/unit/tools/connections-basic.test.ts",
+        "development/research-reports/comprehensive-enterprise-security-compliance-framework-research.md",
+        "development/reports/comprehensive-testing-validation-strategies-fastmcp-make-integration.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T06:54:59.204Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T07:01:13.500Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T07:01:13.501Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755759620516_94xvk1eql",
+      "title": "Fix TypeScript linting warnings in blueprint-collaboration.ts",
+      "description": "Replace all `any` types with proper TypeScript interfaces to eliminate @typescript-eslint/no-explicit-any warnings",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-21T07:00:20.516Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T07:00:36.444Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-21T07:06:35.772Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-21T07:06:35.773Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 142,
-  "last_completion": "2025-08-21T06:58:45.494Z",
+  "total_completed": 144,
+  "last_completion": "2025-08-21T07:06:35.773Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
