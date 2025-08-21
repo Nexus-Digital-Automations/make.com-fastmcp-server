@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.63% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>14/302</span>
+                <span class='fraction'>0/302</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">2.46% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/243</span>
+                <span class='fraction'>0/243</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">1.96% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/51</span>
+                <span class='fraction'>0/51</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.82% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/290</span>
+                <span class='fraction'>0/290</span>
             </div>
         
             
@@ -1267,19 +1267,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1318,11 +1318,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2166,7 +2166,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2455,19 +2455,19 @@
  * @see {@link https://docs.make.com/api} Make.com API Documentation
  */
 &nbsp;
-import { FastMCP, UserError } from 'fastmcp';
-import { z } from 'zod';<span class="branch-1 cbranch-no" title="branch not covered" ></span>
+import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
+impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
 import { EventEmitter } from 'events';
-import MakeApiClient from '../lib/make-api-client.js';
-import logger from '../lib/logger.js';
-import { SSETransportEnhancer } from '../lib/sse-transport-enhancer.js';
-import PerformanceMonitor from '../lib/performance-monitor.js';
-&nbsp;
-// Core interfaces for real-time monitoring
-interface ExecutionState {
-  executionId: string;
+<span class="cstat-no" title="statement not covered" >import MakeApiClient from '../lib/make-api-client.js';</span>
+<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
+import { SSETransp<span class="cstat-no" title="statement not covered" >ortEnhancer } from </span>'../lib/sse-transport-enhancer.js';
+import Perform<span class="cstat-no" title="statement not covered" >anceMonitor fro</span>m '../lib/performance-monitor.js';
+<span class="cstat-no" title="statement not covered" ></span>
+// Core interfaces f<span class="cstat-no" title="statement not covered" >or real-time monitoring</span>
+interface ExecutionState {<span class="cstat-no" title="statement not covered" ></span>
+  executionId: string;<span class="cstat-no" title="statement not covered" ></span>
   scenarioId: number;
-  status: 'initializing' | 'running' | 'completed' | 'failed' | 'paused' | 'cancelled';
+  status: 'initializing' | 'runni<span class="cstat-no" title="statement not covered" >ng' | 'completed' | 'failed' | 'paused' | 'cancelled';</span>
   startTime: string;
   endTime?: string;
   duration?: number;
@@ -2506,11 +2506,11 @@ interface ModuleProgress {
   dataSize: number;
   error?: {
     code: string;
-    message: string;
+    message: string;<span class="cstat-no" title="statement not covered" ></span>
     type: string;
     retryable: boolean;
   };
-}
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 interface RealTimePerformanceMetrics {
   totalDuration: number;
@@ -3354,7 +3354,7 @@ class RealTimeExecutionMonitor extends EventEmitter {
     let visualization = `
 ┌─ E<span class="cstat-no" title="statement not covered" >xecution Progress ────────────────────────────────────┐</span>
 │ ${progressBar} ${percentage.padStart(6)} │
-│ Status: ${state.status.toUpperCase().padEnd(12)} Modules: ${progress.completedModules}/${progress.totalModules} │
+<span class="cstat-no" title="statement not covered" >│ Status: ${state.status.toUpperCase().padEnd(12)}</span> Modules: ${progress.completedModules}/${progress.totalModules} │
 └─────────────────────────────────────────────────────────┘
 `;
 &nbsp;
@@ -3634,7 +3634,7 @@ export default { addRealTimeMonitoringTools };</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T22:15:22.246Z
+                at 2025-08-21T22:18:30.436Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

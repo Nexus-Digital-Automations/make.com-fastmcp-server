@@ -554,35 +554,7 @@ describe('Budget Control Tools - Basic Tests', () => {
     });
 
     it('should execute control-high-cost-scenarios with cost analysis', async () => {
-      const costControlData = {
-        budgetId: 'budget_001',
-        analysis: {
-          totalScenarios: 25,
-          highCostScenarios: 5,
-          averageCost: 45.60,
-          topCostScenarios: [
-            {
-              scenarioId: 2001,
-              name: 'Data Processing Pipeline',
-              dailyCost: 150.30,
-              monthlyProjection: 4509,
-              riskLevel: 'high'
-            }
-          ]
-        },
-        recommendations: [
-          'Consider optimizing data processing batch sizes',
-          'Review webhook timeout configurations',
-          'Implement cost-aware scheduling'
-        ],
-        appliedActions: []
-      };
-
-      mockApiClient.mockResponse('POST', '/budget/budget_001/control', {
-        success: true,
-        data: costControlData
-      });
-
+      // Note: 'analyze' action is handled internally, no API mock needed
       const { addBudgetControlTools } = await import('../../../src/tools/budget-control.js');
       addBudgetControlTools(mockServer, mockApiClient as any);
       
