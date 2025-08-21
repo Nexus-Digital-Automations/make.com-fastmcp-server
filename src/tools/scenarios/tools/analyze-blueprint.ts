@@ -7,6 +7,7 @@ import { UserError } from 'fastmcp';
 import { ValidateBlueprintSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { validateBlueprintStructure } from '../utils/blueprint-analysis.js';
+import { Blueprint } from '../types/blueprint.js';
 
 /**
  * Create analyze blueprint tool configuration
@@ -29,7 +30,7 @@ export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition
 
       try {
         const { blueprint, strict = false, includeSecurityChecks = true } = args as {
-          blueprint?: unknown;
+          blueprint?: Blueprint;
           strict?: boolean;
           includeSecurityChecks?: boolean;
         };
@@ -58,7 +59,7 @@ export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition
             securityIssues: includeSecurityChecks ? validationResult.securityIssues : []
           },
           blueprintMetrics: {
-            moduleCount: blueprint.flow?.length || 0,
+            moduleCount: blueprint.flow?.length ?? 0,
             hasMetadata: !!blueprint.metadata,
             hasName: !!blueprint.name,
             securityLevel: getSecurityLevel(validationResult.securityIssues)
@@ -153,7 +154,7 @@ function generateBlueprintRecommendations(validationResult: {
   errors: string[];
   warnings: string[];
   securityIssues: Array<{ severity: string }>;
-}, blueprint: { metadata?: { scenario?: { dlq?: boolean } }; flow?: unknown[] }): string[] {
+}, blueprint: Blueprint): string[] {
   const recommendations: string[] = [];
   
   // Error-based recommendations
@@ -179,7 +180,7 @@ function generateBlueprintRecommendations(validationResult: {
     recommendations.push('Consider enabling Dead Letter Queue for better error handling');
   }
   
-  if (blueprint.flow?.length > 50) {
+  if (blueprint.flow && blueprint.flow.length > 50) {
     recommendations.push('Large blueprint detected - consider breaking into smaller workflows');
   }
   

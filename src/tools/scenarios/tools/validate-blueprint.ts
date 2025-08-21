@@ -5,7 +5,7 @@
 
 import { UserError } from 'fastmcp';
 import { ValidateBlueprintSchema } from '../schemas/blueprint-update.js';
-import { ToolContext, ToolDefinition } from '../types/tool-context.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { validateBlueprintStructure } from '../utils/blueprint-analysis.js';
 
 /**
@@ -21,21 +21,23 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
     annotations: {
       title: 'Validate Blueprint',
       readOnlyHint: true,
+      openWorldHint: false,
     },
-    execute: async (args, { log }) => {
+    execute: async (args: unknown, { log }): Promise<string> => {
+      const typedArgs = args as any;
       log?.info?.('Validating blueprint', { 
-        hasBlueprint: !!args.blueprint,
-        strict: args.strict,
-        includeSecurityChecks: args.includeSecurityChecks
+        hasBlueprint: !!typedArgs.blueprint,
+        strict: typedArgs.strict,
+        includeSecurityChecks: typedArgs.includeSecurityChecks
       });
 
       try {
         const validationResult = validateBlueprintStructure(
-          args.blueprint, 
-          args.strict
+          typedArgs.blueprint, 
+          typedArgs.strict
         );
 
-        log?.info('Blueprint validation completed', {
+        log?.info?.('Blueprint validation completed', {
           isValid: validationResult.isValid,
           errorCount: validationResult.errors.length,
           warningCount: validationResult.warnings.length,
@@ -49,25 +51,25 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
             totalWarnings: validationResult.warnings.length,
             totalSecurityIssues: validationResult.securityIssues.length,
             validationPassed: validationResult.isValid,
-            securityChecksPassed: args.includeSecurityChecks ? validationResult.securityIssues.length === 0 : true
+            securityChecksPassed: typedArgs.includeSecurityChecks ? validationResult.securityIssues.length === 0 : true
           },
           validation: {
             errors: validationResult.errors,
             warnings: validationResult.warnings,
-            securityIssues: args.includeSecurityChecks ? validationResult.securityIssues : []
+            securityIssues: typedArgs.includeSecurityChecks ? validationResult.securityIssues : []
           },
           recommendations: [
-            ...validationResult.errors.map(error => `Fix error: ${error}`),
-            ...validationResult.warnings.map(warning => `Consider: ${warning}`),
-            ...(args.includeSecurityChecks ? validationResult.securityIssues
-              .filter(issue => issue.severity === 'critical' || issue.severity === 'high')
-              .map(issue => `Security: ${issue.description}`) : [])
+            ...validationResult.errors.map((error: string) => `Fix error: ${error}`),
+            ...validationResult.warnings.map((warning: string) => `Consider: ${warning}`),
+            ...(typedArgs.includeSecurityChecks ? validationResult.securityIssues
+              .filter((issue: any) => issue.severity === 'critical' || issue.severity === 'high')
+              .map((issue: any) => `Security: ${issue.description}`) : [])
           ].slice(0, 10)
         }, null, 2);
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error('Blueprint validation failed', { error: errorMessage });
+        log?.error?.('Blueprint validation failed', { error: errorMessage });
         throw new UserError(`Blueprint validation failed: ${errorMessage}`);
       }
     }

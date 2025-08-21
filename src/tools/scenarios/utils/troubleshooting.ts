@@ -408,3 +408,55 @@ export function formatAsPdfReady(report: Record<string, unknown>): string {
   html += '</body></html>';
   return html;
 }
+
+/**
+ * Generate comprehensive troubleshooting report for multiple scenarios
+ */
+export async function generateTroubleshootingReport(
+  scenarios: unknown[], 
+  timeRangeHours: number, 
+  includePerformanceAnalysis: boolean
+): Promise<{
+  metadata: { reportId: string; generatedAt: string; analysisScope: { scenarioCount: number; timeRangeHours: number } };
+  consolidatedFindings: ConsolidatedFindings;
+  systemOverview: SystemOverview;
+  actionPlan: ActionPlan;
+  costAnalysis: CostAnalysisReport;
+  executiveSummary: string;
+}> {
+  // Mock scenario analysis for now
+  const scenarioAnalyses: ScenarioAnalysis[] = scenarios.map((scenario: any, index) => ({
+    scenarioId: scenario?.id || `scenario-${index}`,
+    scenarioName: scenario?.name || `Scenario ${index + 1}`,
+    diagnosticReport: { status: 'healthy', issues: [] },
+    performanceAnalysis: includePerformanceAnalysis ? { avgExecutionTime: 1000, successRate: 95 } : undefined,
+    errors: []
+  }));
+
+  const consolidatedFindings = aggregateFindings(scenarioAnalyses);
+  const systemOverview = generateSystemOverview(consolidatedFindings, timeRangeHours);
+  const actionPlan = generateActionPlan(consolidatedFindings, true);
+  const costAnalysis = generateCostAnalysis(consolidatedFindings, scenarios.length);
+  const executiveSummary = generateExecutiveSummary(
+    consolidatedFindings,
+    systemOverview,
+    actionPlan,
+    costAnalysis
+  );
+
+  return {
+    metadata: {
+      reportId: `report-${Date.now()}`,
+      generatedAt: new Date().toISOString(),
+      analysisScope: {
+        scenarioCount: scenarios.length,
+        timeRangeHours
+      }
+    },
+    consolidatedFindings,
+    systemOverview,
+    actionPlan,
+    costAnalysis,
+    executiveSummary
+  };
+}

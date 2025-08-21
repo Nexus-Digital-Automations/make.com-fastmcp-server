@@ -5,7 +5,7 @@
 
 import { UserError } from 'fastmcp';
 import { OptimizeBlueprintSchema } from '../schemas/blueprint-update.js';
-import { ToolContext, ToolDefinition } from '../types/tool-context.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { optimizeBlueprint } from '../utils/optimization.js';
 import { Blueprint } from '../types/blueprint.js';
 
@@ -13,7 +13,7 @@ import { Blueprint } from '../types/blueprint.js';
  * Create optimize blueprint tool configuration
  */
 export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { logger } = context;
   
   return {
     name: 'optimize-blueprint',
@@ -22,39 +22,46 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
     annotations: {
       title: 'Optimize Blueprint',
       readOnlyHint: true,
+      openWorldHint: false,
     },
-    execute: async (args, { log }) => {
-      log?.info('Starting blueprint optimization analysis', { 
-        hasBlueprint: !!args.blueprint,
-        optimizationType: args.optimizationType,
-        includeImplementationSteps: args.includeImplementationSteps
+    execute: async (args: unknown, { log }): Promise<string> => {
+      const typedArgs = args as {
+        blueprint?: Blueprint;
+        optimizationType?: string;
+        includeImplementationSteps?: boolean;
+      };
+      
+      log?.info?.('Starting blueprint optimization analysis', { 
+        hasBlueprint: !!typedArgs.blueprint,
+        optimizationType: typedArgs.optimizationType,
+        includeImplementationSteps: typedArgs.includeImplementationSteps
       });
 
       try {
         // Validate blueprint structure first
-        if (!args.blueprint || typeof args.blueprint !== 'object') {
+        if (!typedArgs.blueprint || typeof typedArgs.blueprint !== 'object') {
           throw new UserError('Invalid blueprint provided - must be a valid JSON object');
         }
 
-        const blueprint = args.blueprint as Blueprint;
+        const blueprint = typedArgs.blueprint;
         
         // Run optimization analysis
         const optimizationResult = optimizeBlueprint(blueprint);
 
         // Filter recommendations by optimization type
         let filteredRecommendations = optimizationResult.recommendations;
-        if (args.optimizationType !== 'all') {
+        if (typedArgs.optimizationType !== 'all') {
           filteredRecommendations = optimizationResult.recommendations.filter(
-            rec => rec.category === args.optimizationType
+            rec => rec.category === typedArgs.optimizationType
           );
         }
 
         // Generate detailed implementation guidance if requested
         let implementationGuidance: Record<string, any> | undefined;
-        if (args.includeImplementationSteps && filteredRecommendations.length > 0) {
+        if (typedArgs.includeImplementationSteps && filteredRecommendations.length > 0) {
           implementationGuidance = generateImplementationGuidance(
             filteredRecommendations,
-            args.optimizationType
+            typedArgs.optimizationType ?? 'all'
           );
         }
 
@@ -79,18 +86,18 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
           },
           recommendations: filteredRecommendations.map(rec => ({
             ...rec,
-            implementationSteps: args.includeImplementationSteps ? rec.implementationSteps : undefined
+            implementationSteps: typedArgs.includeImplementationSteps ? rec.implementationSteps : undefined
           })),
           ...(implementationGuidance && { implementationGuidance }),
           metadata: {
-            analysisType: args.optimizationType,
+            analysisType: typedArgs.optimizationType,
             blueprintName: blueprint.name || 'Unnamed Blueprint',
             moduleCount: blueprint.flow?.length || 0,
             analysisTimestamp: new Date().toISOString()
           }
         };
 
-        log?.info('Blueprint optimization analysis completed', {
+        log?.info?.('Blueprint optimization analysis completed', {
           optimizationScore: optimizationResult.optimizationScore,
           recommendationCount: filteredRecommendations.length,
           priorityLevel: optimizationSummary.priorityLevel,
@@ -101,7 +108,7 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error('Blueprint optimization failed', { error: errorMessage });
+        log?.error?.('Blueprint optimization failed', { error: errorMessage });
         throw new UserError(`Blueprint optimization failed: ${errorMessage}`);
       }
     }

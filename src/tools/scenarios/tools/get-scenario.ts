@@ -22,7 +22,7 @@ export function createGetScenarioTool(context: ToolContext): ToolDefinition {
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }) => {
+    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
       const typedArgs = args as { scenarioId: string; includeBlueprint?: boolean; includeExecutions?: boolean };
       log?.info?.('Getting scenario details', { scenarioId: typedArgs.scenarioId });
       reportProgress?.({ progress: 0, total: 100 });

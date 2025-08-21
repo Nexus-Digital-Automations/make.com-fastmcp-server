@@ -4,7 +4,7 @@
  */
 
 import { UserError } from 'fastmcp';
-import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema } from '../schemas/scenario-filters.js';
+import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema } from '../schemas/troubleshooting.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { generateTroubleshootingReport } from '../utils/troubleshooting.js';
 import type MakeApiClient from '../../../lib/make-api-client.js';
@@ -356,7 +356,7 @@ async function analyzeDependencies(scenarios: unknown[]): Promise<unknown> {
 /**
  * Analyze execution history
  */
-async function analyzeExecutionHistory(scenarios: unknown[], apiClient: MakeApiClient): Promise<unknown> {
+async function analyzeExecutionHistory(_scenarios: unknown[], _apiClient: MakeApiClient): Promise<unknown> {
   return {
     totalExecutions: 0,
     successRate: 100,
@@ -369,7 +369,7 @@ async function analyzeExecutionHistory(scenarios: unknown[], apiClient: MakeApiC
 /**
  * Generate troubleshooting insights
  */
-function generateTroubleshootingInsights(report: unknown, scenarios: unknown[]): unknown {
+function generateTroubleshootingInsights(report: unknown, _scenarios: unknown[]): unknown {
   return {
     keyInsights: [
       'System is operating within normal parameters',
@@ -424,7 +424,7 @@ function formatTechnicalReport(baseReport: unknown, scenarios: unknown[]): unkno
 /**
  * Generate security assessment
  */
-async function generateSecurityAssessment(scenarios: unknown[]): Promise<unknown> {
+async function generateSecurityAssessment(_scenarios: unknown[]): Promise<unknown> {
   return {
     overallSecurityScore: 85,
     securityIssuesFound: 0,

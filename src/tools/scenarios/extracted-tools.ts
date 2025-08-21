@@ -29,7 +29,6 @@ import {
   createUpdateScenarioTool,
   createDeleteScenarioTool,
   createCloneScenarioTool,
-  createRunScenarioTool,
 } from './tools/index.js';
 
 /**
@@ -61,18 +60,16 @@ export function addExtractedScenarioTools(server: FastMCP, apiClient: MakeApiCli
     server.addTool(createUpdateScenarioTool(toolContext));
     server.addTool(createDeleteScenarioTool(toolContext));
     server.addTool(createCloneScenarioTool(toolContext));
-    server.addTool(createRunScenarioTool(toolContext));
 
     componentLogger.info('Extracted scenario tools added successfully', {
-      toolCount: 7,
+      toolCount: 6,
       tools: [
         'list-scenarios',
         'get-scenario', 
         'create-scenario',
         'update-scenario',
         'delete-scenario',
-        'clone-scenario',
-        'run-scenario'
+        'clone-scenario'
       ],
       categories: ['CRUD', 'execution'],
       architecture: 'modular',

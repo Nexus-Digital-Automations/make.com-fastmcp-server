@@ -23,7 +23,7 @@ export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
       destructiveHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }) => {
+    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
       const typedArgs = args as { scenarioId: string; force?: boolean };
       
       log?.info?.('Deleting scenario', { scenarioId: typedArgs.scenarioId, force: typedArgs.force });

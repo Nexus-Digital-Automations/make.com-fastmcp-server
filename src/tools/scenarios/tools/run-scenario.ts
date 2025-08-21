@@ -1,10 +1,10 @@
 /**
  * @fileoverview Run Scenario Tool Implementation
- * Executes a Make.com scenario with monitoring and timeout options
+ * Execute Make.com scenarios with monitoring and timeout control
  */
 
 import { UserError } from 'fastmcp';
-import { RunScenarioSchema } from '../schemas/scenario-crud.js';
+import { RunScenarioSchema } from '../schemas/scenario-filters.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 
 /**
@@ -15,112 +15,185 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
   
   return {
     name: 'run-scenario',
-    description: 'Execute a Make.com scenario and optionally wait for completion',
+    description: 'Execute Make.com scenarios with monitoring, timeout control, and execution tracking',
     parameters: RunScenarioSchema,
     annotations: {
       title: 'Run Scenario',
-      readOnlyHint: false,
+      readOnlyHint: false, // Executes scenarios, not read-only
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }) => {
-      const typedArgs = args as {
-        scenarioId: string;
-        wait?: boolean;
-        timeout?: number;
-      };
-      
-      log?.info?.('Running scenario', { 
-        scenarioId: typedArgs.scenarioId, 
+    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
+      const typedArgs = args as any;
+      log?.info?.('Starting scenario execution', { 
+        scenarioId: typedArgs.scenarioId,
         wait: typedArgs.wait,
-        timeout: typedArgs.timeout 
+        timeout: typedArgs.timeout
       });
+      
       reportProgress?.({ progress: 0, total: 100 });
-
+      
       try {
-        // Start scenario execution
-        const response = await apiClient.post(`/scenarios/${typedArgs.scenarioId}/run`);
-        reportProgress?.({ progress: 25, total: 100 });
-
-        if (!response.success) {
-          throw new UserError(`Failed to start scenario execution: ${response.error?.message}`);
+        // Get scenario details first to validate existence
+        const scenarioResponse = await apiClient.get(`/scenarios/${typedArgs.scenarioId}`);
+        if (!scenarioResponse.success) {
+          throw new UserError(`Scenario not found: ${typedArgs.scenarioId}`);
         }
-
-        const execution = response.data;
         
-        // Type guard for execution object
-        const executionObj = execution as { id?: unknown; status?: unknown } | null | undefined;
-        
-        let result: Record<string, unknown> = {
-          scenarioId: typedArgs.scenarioId,
-          executionId: executionObj?.id,
-          status: executionObj?.status || 'started',
-          message: 'Scenario execution started',
-          timestamp: new Date().toISOString(),
+        const scenario = scenarioResponse.data as { 
+          id: string; 
+          name: string; 
+          active: boolean; 
+          team?: { id: string; name: string }; 
         };
-
-        // If wait is false, return immediately
-        if (!typedArgs.wait) {
-          reportProgress?.({ progress: 100, total: 100 });
-          log?.info?.('Scenario execution started (not waiting)', { 
-            scenarioId: typedArgs.scenarioId,
-            executionId: String(executionObj?.id ?? 'unknown')
-          });
-          return JSON.stringify(result, null, 2);
-        }
-
-        // Wait for completion
-        const startTime = Date.now();
-        const timeoutMs = (typedArgs.timeout || 60) * 1000;
         
-        while (Date.now() - startTime < timeoutMs) {
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+        reportProgress?.({ progress: 20, total: 100 });
+        
+        // Check if scenario is active
+        if (!scenario.active) {
+          throw new UserError(`Cannot execute inactive scenario: ${typedArgs.scenarioId}`);
+        }
+        
+        // Execute the scenario
+        log?.info?.('Executing scenario', { scenarioId: typedArgs.scenarioId, scenarioName: scenario.name });
+        const executionResponse = await apiClient.post(`/scenarios/${typedArgs.scenarioId}/run`, {
+          wait: typedArgs.wait
+        });
+        
+        if (!executionResponse.success) {
+          throw new UserError(`Failed to start scenario execution: ${executionResponse.error?.message || 'Unknown error'}`);
+        }
+        
+        reportProgress?.({ progress: 50, total: 100 });
+        
+        const executionData = executionResponse.data as {
+          executionId: string;
+          status: string;
+          startedAt: string;
+          scenario: { id: string; name: string };
+        };
+        
+        let finalResult = {
+          scenario: {
+            id: scenario.id,
+            name: scenario.name,
+            team: scenario.team
+          },
+          execution: {
+            id: executionData.executionId,
+            status: executionData.status,
+            startedAt: executionData.startedAt,
+            completedAt: undefined as string | undefined,
+            duration: undefined as number | undefined,
+            result: undefined as any
+          },
+          metadata: {
+            waitForCompletion: typedArgs.wait,
+            timeoutSeconds: typedArgs.timeout,
+            executionTimestamp: new Date().toISOString()
+          }
+        };
+        
+        // If waiting for completion, poll for status
+        if (typedArgs.wait) {
+          const startTime = Date.now();
+          const timeoutMs = typedArgs.timeout * 1000;
+          let attempts = 0;
+          const maxAttempts = Math.ceil(typedArgs.timeout / 2); // Check every 2 seconds
           
-          const statusResponse = await apiClient.get(`/scenarios/${typedArgs.scenarioId}/executions/${executionObj?.id}`);
-          if (statusResponse.success) {
-            const currentExecution = statusResponse.data;
+          log?.info?.('Waiting for scenario execution to complete', { 
+            executionId: executionData.executionId,
+            timeoutSeconds: typedArgs.timeout 
+          });
+          
+          while (attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+            attempts++;
             
-            // Type guard for current execution object
-            const currentExecutionObj = currentExecution as { status?: unknown } | null | undefined;
+            const progress = 50 + (attempts / maxAttempts) * 45;
+            reportProgress?.({ progress: Math.min(95, progress), total: 100 });
             
-            const progress = Math.min(25 + ((Date.now() - startTime) / timeoutMs) * 75, 99);
-            reportProgress?.({ progress, total: 100 });
-
-            if (currentExecutionObj?.status === 'success' || currentExecutionObj?.status === 'error') {
-              result = {
-                ...result,
-                status: currentExecutionObj.status,
-                execution: currentExecution,
-                duration: Date.now() - startTime,
-                message: `Scenario execution ${String(currentExecutionObj.status)}`,
-              };
-              break;
+            try {
+              const statusResponse = await apiClient.get(`/scenarios/${typedArgs.scenarioId}/executions/${executionData.executionId}`);
+              
+              if (statusResponse.success) {
+                const statusData = statusResponse.data as {
+                  id: string;
+                  status: string;
+                  startedAt: string;
+                  completedAt?: string;
+                  result?: any;
+                  error?: any;
+                };
+                
+                finalResult.execution.status = statusData.status;
+                finalResult.execution.completedAt = statusData.completedAt;
+                finalResult.execution.result = statusData.result;
+                
+                if (statusData.completedAt) {
+                  finalResult.execution.duration = Math.round(
+                    (new Date(statusData.completedAt).getTime() - new Date(statusData.startedAt).getTime()) / 1000
+                  );
+                }
+                
+                // Check if execution is complete
+                if (['completed', 'error', 'stopped', 'failed'].includes(statusData.status)) {
+                  log?.info?.('Scenario execution completed', {
+                    executionId: executionData.executionId,
+                    status: statusData.status,
+                    duration: finalResult.execution.duration
+                  });
+                  break;
+                }
+              }
+              
+              // Check timeout
+              if (Date.now() - startTime > timeoutMs) {
+                log?.warn?.('Scenario execution timeout reached', { 
+                  executionId: executionData.executionId,
+                  timeoutSeconds: typedArgs.timeout
+                });
+                finalResult.execution.status = 'timeout';
+                break;
+              }
+              
+            } catch (statusError) {
+              log?.warn?.('Failed to check execution status', { 
+                executionId: executionData.executionId,
+                error: statusError instanceof Error ? statusError.message : String(statusError)
+              });
+              // Continue polling despite status check errors
             }
           }
+          
+          if (attempts >= maxAttempts && !finalResult.execution.completedAt) {
+            finalResult.execution.status = 'timeout';
+            log?.warn?.('Maximum polling attempts reached', { 
+              executionId: executionData.executionId,
+              attempts: attempts
+            });
+          }
         }
-
+        
         reportProgress?.({ progress: 100, total: 100 });
-
-        if (result.status === 'started') {
-          result.message = 'Scenario execution timeout - check status manually';
-          result.timeout = true;
-        }
-
-        log?.info?.('Scenario execution completed', { 
+        
+        log?.info?.('Scenario execution request completed', {
           scenarioId: typedArgs.scenarioId,
-          executionId: String(executionObj?.id ?? 'unknown'),
-          status: String(result.status ?? 'unknown'),
-          duration: Number(result.duration ?? 0)
+          executionId: executionData.executionId,
+          finalStatus: finalResult.execution.status,
+          waitedForCompletion: typedArgs.wait,
+          duration: finalResult.execution.duration
         });
-
-        return JSON.stringify(result, null, 2);
+        
+        return JSON.stringify(finalResult, null, 2);
+        
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Failed to run scenario', { 
-          scenarioId: typedArgs.scenarioId, 
+        log?.error?.('Scenario execution failed', { 
+          scenarioId: typedArgs.scenarioId,
           error: errorMessage 
         });
-        throw new UserError(`Failed to run scenario: ${errorMessage}`);
+        throw new UserError(`Scenario execution failed: ${errorMessage}`);
       }
-    },
+    }
   };
 }

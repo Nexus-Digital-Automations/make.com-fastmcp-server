@@ -22,7 +22,7 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
       readOnlyHint: false,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }) => {
+    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
       const typedArgs = args as {
         scenarioId: string;
         name: string;
