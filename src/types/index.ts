@@ -701,8 +701,10 @@ export interface SystemMemoryMetrics {
   used: number;
   /** Total memory available in bytes */
   total: number;
-  /** Memory usage percentage */
+  /** Memory usage percentage (0-1) */
   percentage?: number;
+  /** Memory utilization ratio (0-1) - alias for percentage */
+  utilization?: number;
   /** Free memory in bytes */
   free?: number;
 }
@@ -715,8 +717,10 @@ export interface CpuMetrics {
   user: number;
   /** System CPU time */
   system: number;
-  /** CPU usage percentage */
+  /** CPU usage percentage (0-1) */
   percentage?: number;
+  /** CPU utilization ratio (0-1) - alias for percentage */
+  utilization?: number;
   /** Load average */
   loadAverage?: number[];
 }
