@@ -2,23 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755764805263_m1vf6bvog",
-      "title": "Fix TypeScript tool compatibility error in zero-trust-auth.ts line 1491",
-      "description": "Fix tool type compatibility issue where tool definition is not assignable to Tool<FastMCPSessionAuth, ToolParameters>",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:26:45.263Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755764792377_t62sujbht",
       "title": "Fix remaining TypeScript compilation errors in log-streaming.ts beyond line 1292",
       "description": "Run full TypeScript check on log-streaming.ts and fix any remaining SerializableValue type conflicts, missing imports, property access errors, or missing required properties beyond the ExportConfig issue being handled by another subagent",

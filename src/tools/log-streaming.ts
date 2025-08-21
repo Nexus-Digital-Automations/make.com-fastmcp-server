@@ -119,7 +119,7 @@ interface AnalyticsConfig {
 }
 
 interface ExternalSystemConfig {
-  type?: 'elasticsearch' | 'splunk' | 'datadog' | 'newrelic' | 'generic';
+  type?: 'elasticsearch' | 'splunk' | 'datadog' | 'newrelic' | 'generic' | 'aws-cloudwatch' | 'azure-monitor' | 'gcp-logging';
   endpoint?: string;
   authentication?: {
     type: 'bearer' | 'api-key' | 'basic' | 'api_key' | 'oauth2';
@@ -1295,6 +1295,12 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
           }
         };
         
+        // Normalize destination to match DestinationConfig interface
+        const normalizedDestination: DestinationConfig = {
+          ...destination,
+          path: destination.webhookUrl || '/tmp/log-export',
+        };
+
         // Handle streaming vs batch export
         if (normalizedExportConfig.streaming?.enabled) {
           return await exportProcessor.processStreamingExport(
@@ -1302,7 +1308,7 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
             params,
             normalizedExportConfig,
             outputConfig,
-            destination,
+            normalizedDestination,
             analytics
           );
         } else {
@@ -1311,7 +1317,7 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
             params,
             normalizedExportConfig,
             outputConfig,
-            destination,
+            normalizedDestination,
             analytics
           );
         }
