@@ -28,33 +28,6 @@
       ]
     },
     {
-      "id": "task_1755767214550_fh0usn7ge",
-      "title": "Implement comprehensive FastMCP annotations for Development & Operations Tools (56 tools across 8 files)",
-      "description": "Critical implementation task covering 56 tools across 8 files: certificates.ts (9), credential-management.ts (6), variables.ts (12), custom-apps.ts (14), procedures.ts (5), sdk.ts (7), audit-compliance.ts (3), ai-agents.ts (0). Apply standardized annotation patterns, security classifications, and ensure TypeScript/ESLint compliance.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "critical",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-21T09:06:54.553Z",
-      "auto_research_created": true,
-      "started_at": "2025-08-21T09:08:26.199Z",
-      "claimed_by": "agent_1755767306199",
-      "assigned_agent": "agent_1755767306199",
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755767306199",
-          "action": "claimed",
-          "timestamp": "2025-08-21T09:08:26.199Z"
-        }
-      ]
-    },
-    {
       "id": "task_1755766807868_cq53ecm1o",
       "title": "Implement FastMCP Tool Annotations for Development & Operations Tools",
       "description": "Based on successful core platform tools implementation, extend FastMCP annotation coverage to development & operations tools including ai-agents.ts, audit-compliance.ts, certificates.ts, credential-management.ts, custom-apps.ts, procedures.ts, variables.ts, and sdk.ts. These are medium-priority tools that handle development operations and compliance monitoring.",

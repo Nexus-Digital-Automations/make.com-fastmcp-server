@@ -416,6 +416,11 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       includeUsage: z.boolean().default(true).describe('Include detailed usage statistics'),
       includeHistory: z.boolean().default(false).describe('Include recent conversation history'),
     }),
+    annotations: {
+      title: 'Get AI Agent Details',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { agentId, includeUsage, includeHistory } = input;
 
@@ -502,6 +507,13 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'update-ai-agent',
     description: 'Update an existing AI agent configuration',
     parameters: AIAgentUpdateSchema,
+    annotations: {
+      title: 'Update AI Agent',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { agentId, name, description, configuration, context, capabilities, isPublic } = input;
 
@@ -580,6 +592,13 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       agentId: z.number().min(1).describe('AI agent ID to delete'),
       force: z.boolean().default(false).describe('Force delete even if agent is in use'),
     }),
+    annotations: {
+      title: 'Delete AI Agent',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { agentId, force } = input;
 
@@ -621,6 +640,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'test-ai-agent',
     description: 'Test an AI agent with various test scenarios and performance metrics',
     parameters: AgentTestSchema,
+    annotations: {
+      title: 'Test AI Agent',
+      readOnlyHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { agentId, testType, testInput, options } = input;
 
@@ -689,6 +714,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'create-llm-provider',
     description: 'Create a new LLM provider configuration',
     parameters: LLMProviderCreateSchema,
+    annotations: {
+      title: 'Create LLM Provider',
+      readOnlyHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, type, configuration, models, rateLimit } = input;
 
@@ -751,6 +782,11 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       status: z.enum(['active', 'inactive', 'error', 'all']).default('all').describe('Filter by provider status'),
       includeModels: z.boolean().default(true).describe('Include model information'),
     }),
+    annotations: {
+      title: 'List LLM Providers',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { type, status, includeModels } = input;
 
