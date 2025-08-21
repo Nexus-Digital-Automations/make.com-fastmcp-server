@@ -63,8 +63,10 @@ interface ExportConfig {
   };
   organizationId?: number;
   timeRange?: {
-    start: string;
-    end: string;
+    start?: string;
+    end?: string;
+    startTime?: string;
+    endTime?: string;
   };
 }
 
@@ -117,13 +119,19 @@ interface AnalyticsConfig {
 }
 
 interface ExternalSystemConfig {
+  type?: 'elasticsearch' | 'splunk' | 'datadog' | 'newrelic' | 'generic';
   endpoint: string;
   authentication?: {
-    type: 'bearer' | 'api-key' | 'basic';
+    type: 'bearer' | 'api-key' | 'basic' | 'api_key' | 'oauth2';
     credentials: Record<string, string>;
   };
   headers?: Record<string, string>;
-  timeout?: number;
+  options?: {
+    timeout?: number;
+    retries?: number;
+    batchSize?: number;
+    compression?: boolean;
+  };
 }
 
 interface DataTransformation {
@@ -139,21 +147,6 @@ interface CustomMetric {
   aggregation: 'count' | 'sum' | 'avg' | 'min' | 'max' | 'distinct';
   filters?: Record<string, unknown>;
   timeWindow?: string;
-}
-
-interface ExternalSystemConfig {
-  type: 'elasticsearch' | 'splunk' | 'datadog' | 'newrelic' | 'generic';
-  endpoint: string;
-  authentication: {
-    type: 'bearer' | 'basic' | 'api_key' | 'oauth2';
-    credentials: Record<string, string>;
-  };
-  options?: {
-    timeout?: number;
-    retries?: number;
-    batchSize?: number;
-    compression?: boolean;
-  };
 }
 
 // Type definitions for better TypeScript support
@@ -1223,7 +1216,7 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
       const { exportConfig, outputConfig, destination, analytics } = input;
 
       log.info('Starting enhanced log export for analysis', {
-        timeRange: `${exportConfig.timeRange?.start || 'earliest'} to ${exportConfig.timeRange?.end || 'latest'}`,
+        timeRange: `${exportConfig.timeRange?.start || exportConfig.timeRange?.startTime || 'earliest'} to ${exportConfig.timeRange?.end || exportConfig.timeRange?.endTime || 'latest'}`,
         format: outputConfig.format,
         streaming: exportConfig.streaming?.enabled || false,
         external: destination.externalSystemConfig?.type,
@@ -1245,8 +1238,8 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
 
         // Enhanced query parameters for log retrieval
         const params: Record<string, unknown> = {
-          startDate: exportConfig.timeRange?.start,
-          endDate: exportConfig.timeRange?.end,
+          startDate: exportConfig.timeRange?.start || exportConfig.timeRange?.startTime,
+          endDate: exportConfig.timeRange?.end || exportConfig.timeRange?.endTime,
           limit: outputConfig.chunkSize,
           offset: 0,
           sortBy: 'timestamp',
@@ -1465,7 +1458,7 @@ class EnhancedLogExportProcessor {
       deliveryResults: [] as Record<string, unknown>[],
     };
 
-    let lastLogTimestamp = exportConfig.timeRange?.start || new Date(0).toISOString();
+    let lastLogTimestamp = exportConfig.timeRange?.start || exportConfig.timeRange?.startTime || new Date(0).toISOString();
     const streamEndTime = Date.now() + ((exportConfig.streaming?.maxDuration || 300) * 1000);
 
     // Initialize external system connection if needed
@@ -2359,7 +2352,7 @@ function generateExecutionSummary(executionData: Record<string, unknown>): Recor
 function generateExportSummary(logs: MakeLogEntry[], exportConfig: Record<string, unknown>): Record<string, unknown> {
   return {
     totalLogsExported: logs.length,
-    timeRange: exportConfig.timeRange || { start: new Date(0).toISOString(), end: new Date().toISOString() },
+    timeRange: exportConfig.timeRange || { startTime: new Date(0).toISOString(), endTime: new Date().toISOString() },
     scenariosCovered: new Set(logs.map(log => log.scenarioId)).size,
     modulesCovered: new Set(logs.map(log => log.module.name)).size,
     errorRate: logs.filter(log => log.error).length / logs.length * 100,

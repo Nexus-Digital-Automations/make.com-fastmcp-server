@@ -1208,7 +1208,11 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
             performanceBenchmarking: analysisOptions.performanceBenchmarking,
             detailedBreakdown: analysisOptions.detailedBreakdown
           } as PerformanceAnalysisOptions,
-          filters,
+          { 
+            errorThreshold: filters.errorThreshold || 0.05,
+            severityFilter: filters.severityFilter || 'all',
+            minExecutionTime: filters.minExecutionTime
+          } as PerformanceAnalysisFilters,
           apiClient
         );
 

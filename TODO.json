@@ -120,23 +120,6 @@
       ]
     },
     {
-      "id": "task_1755764050294_n3zlecmof",
-      "title": "Fix critical TypeScript session type compatibility errors in src/server.ts",
-      "description": "Fix FastMCPSession<FastMCPSessionAuth> vs FastMCPSessionAuth incompatibility, type constraint violations, and tool registration type mismatches",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T08:14:10.294Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755763915098_ybnapatgl",
       "title": "Fix TypeScript compilation error in src/tools/zero-trust-auth.ts",
       "description": "Fix Tool type compatibility issue on line 1491 where tool definition is not assignable to Tool<FastMCPSessionAuth, ToolParameters>",

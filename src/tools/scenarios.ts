@@ -2636,19 +2636,20 @@ function formatAsMarkdown(report: Record<string, unknown>): string {
   const consolidatedFindings = report.consolidatedFindings as ConsolidatedFindings;
   if (consolidatedFindings) {
     markdown += `## Consolidated Findings\n\n`;
-    markdown += `- **Total Issues:** ${consolidatedFindings.totalIssues}\n`;
-    markdown += `- **Critical Issues:** ${consolidatedFindings.criticalIssues}\n`;
-    markdown += `- **Security Risk Level:** ${consolidatedFindings.securityRiskLevel}\n\n`;
+    markdown += `- **Total Issues:** ${consolidatedFindings.commonIssues.length}\n`;
+    markdown += `- **Critical Issues:** ${consolidatedFindings.securitySummary.criticalSecurityIssues}\n`;
+    markdown += `- **Critical Scenarios:** ${consolidatedFindings.criticalScenarios}\n\n`;
   }
 
-  if (report.actionPlan) {
+  const actionPlan = report.actionPlan as ActionPlan;
+  if (actionPlan) {
     markdown += `## Action Plan\n\n`;
     markdown += `### Immediate Actions (0-24 hours)\n`;
-    report.actionPlan.immediate.forEach((action: ActionPlan['immediate'][0]) => {
+    actionPlan.immediate?.forEach((action: ActionPlan['immediate'][0]) => {
       markdown += `- **[${action.priority.toUpperCase()}]** ${action.action}\n`;
     });
     markdown += `\n### Short Term Actions (1-4 weeks)\n`;
-    report.actionPlan.shortTerm.forEach((action: ActionPlan['shortTerm'][0]) => {
+    actionPlan.shortTerm?.forEach((action: ActionPlan['shortTerm'][0]) => {
       markdown += `- ${action.action}\n`;
     });
     markdown += `\n`;
@@ -2682,23 +2683,27 @@ function formatAsPdfReady(report: Record<string, unknown>): string {
   html += `<p><strong>Generated:</strong> ${metadata?.generatedAt || 'N/A'}</p>`;
   html += `<p><strong>Scenarios Analyzed:</strong> ${metadata?.analysisScope?.scenarioCount || 0}</p>`;
 
-  if (report.executiveSummary) {
+  const executiveSummary = report.executiveSummary as TroubleshootingReportData['executiveSummary'];
+  if (executiveSummary) {
     html += `<div class="summary-box">`;
     html += `<h2>Executive Summary</h2>`;
     html += `<h3>Key Findings</h3><ul>`;
-    report.executiveSummary.keyFindings.forEach((finding: string) => {
+    executiveSummary.keyFindings?.forEach((finding: string) => {
       html += `<li>${finding}</li>`;
     });
     html += `</ul><h3>Critical Recommendations</h3><ul>`;
-    report.executiveSummary.criticalRecommendations.forEach((rec: string) => {
+    executiveSummary.criticalRecommendations?.forEach((rec: string) => {
       html += `<li class="critical">${rec}</li>`;
     });
     html += `</ul></div>`;
   }
 
-  html += `<h2>System Overview</h2>`;
-  html += `<div class="metric">System Health Score: <span class="score">${report.systemOverview.systemHealthScore}/100</span></div>`;
-  html += `<div class="metric">Performance Status: <strong>${report.systemOverview.performanceStatus}</strong></div>`;
+  const systemOverview = report.systemOverview as TroubleshootingReportData['systemOverview'];
+  if (systemOverview) {
+    html += `<h2>System Overview</h2>`;
+    html += `<div class="metric">System Health Score: <span class="score">${systemOverview.systemHealthScore}/100</span></div>`;
+    html += `<div class="metric">Performance Status: <strong>${systemOverview.performanceStatus}</strong></div>`;
+  }
 
   html += `</body></html>`;
   
