@@ -224,6 +224,11 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       limit: z.number().min(1).max(100).default(20).describe('Maximum results to return'),
       offset: z.number().min(0).default(0).describe('Results offset for pagination'),
     }),
+    annotations: {
+      title: 'Search SDK Apps in Marketplace',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { query, category, publisher, verified, rating, features, compatibility, sortBy, sortOrder, limit, offset } = input;
 
@@ -349,6 +354,13 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
     name: 'install-sdk-app',
     description: 'Install an SDK app with configuration and permission management',
     parameters: SDKAppInstallSchema,
+    annotations: {
+      title: 'Install SDK Application',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { appId, version, organizationId, teamId, configuration, permissions, autoUpdate, skipValidation } = input;
 
@@ -483,6 +495,11 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       limit: z.number().min(1).max(1000).default(100).describe('Maximum apps to return'),
       offset: z.number().min(0).default(0).describe('Apps to skip for pagination'),
     }),
+    annotations: {
+      title: 'List Installed SDK Apps',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { organizationId, teamId, status, category, includeUsage, includeConfiguration, sortBy, sortOrder, limit, offset } = input;
 
@@ -586,6 +603,13 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
     name: 'update-sdk-app',
     description: 'Update an installed SDK app to a newer version with rollback support',
     parameters: SDKAppUpdateSchema,
+    annotations: {
+      title: 'Update SDK Application',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { appId, version, force, backup, rollbackOnFailure } = input;
 
@@ -698,6 +722,13 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
     name: 'configure-sdk-app',
     description: 'Configure an installed SDK app settings, permissions, and integrations',
     parameters: SDKAppConfigureSchema,
+    annotations: {
+      title: 'Configure SDK Application',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { appId, configuration, permissions, integrations } = input;
 
@@ -789,6 +820,13 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
     name: 'install-workflow',
     description: 'Install a pre-built workflow template from an SDK app',
     parameters: WorkflowInstallSchema,
+    annotations: {
+      title: 'Install Workflow Template',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { workflowId, name, teamId, folderId, configuration, autoStart, installDependencies } = input;
 

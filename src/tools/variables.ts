@@ -145,6 +145,13 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
     name: 'create-custom-variable',
     description: 'Create a new custom variable at organization, team, or scenario level',
     parameters: VariableCreateSchema,
+    annotations: {
+      title: 'Create Custom Variable',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, value, type, scope, organizationId, teamId, scenarioId, description, tags, isEncrypted } = input;
 
@@ -224,6 +231,11 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
     name: 'list-custom-variables',
     description: 'List and filter custom variables with comprehensive search capabilities',
     parameters: VariableListSchema,
+    annotations: {
+      title: 'List Custom Variables',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { scope, organizationId, teamId, scenarioId, namePattern, tags, type, isEncrypted, limit, offset, sortBy, sortOrder } = input;
 
@@ -324,6 +336,11 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       variableId: z.number().min(1).describe('Variable ID to retrieve'),
       includeUsage: z.boolean().default(false).describe('Include usage statistics'),
     }),
+    annotations: {
+      title: 'Get Custom Variable Details',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { variableId, includeUsage } = input;
 
@@ -387,6 +404,13 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
     name: 'update-custom-variable',
     description: 'Update an existing custom variable',
     parameters: VariableUpdateSchema,
+    annotations: {
+      title: 'Update Custom Variable',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { variableId, name, value, type, description, tags, isEncrypted } = input;
 
@@ -458,6 +482,13 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       variableId: z.number().min(1).describe('Variable ID to delete'),
       force: z.boolean().default(false).describe('Force delete even if variable is in use'),
     }),
+    annotations: {
+      title: 'Delete Custom Variable',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { variableId, force } = input;
 
@@ -499,6 +530,13 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
     name: 'bulk-variable-operations',
     description: 'Perform bulk operations on multiple custom variables',
     parameters: VariableBulkOperationSchema,
+    annotations: {
+      title: 'Bulk Variable Operations',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { operation, variableIds, operationData } = input;
 
@@ -558,6 +596,11 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
     name: 'export-custom-variables',
     description: 'Export custom variables in various formats for backup or migration',
     parameters: VariableExportSchema,
+    annotations: {
+      title: 'Export Custom Variables',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { scope, organizationId, teamId, scenarioId, format, includeEncrypted, includeMetadata } = input;
 
@@ -639,6 +682,11 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }).describe('Context for variable resolution'),
       includeInheritance: z.boolean().default(true).describe('Show inheritance chain'),
     }),
+    annotations: {
+      title: 'Test Variable Resolution',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { variableName, context, includeInheritance } = input;
 
@@ -711,6 +759,13 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       limit: z.number().min(1).max(100).default(20).describe('Maximum number of executions to return'),
       offset: z.number().min(0).default(0).describe('Number of executions to skip for pagination'),
     }),
+    annotations: {
+      title: 'List Incomplete Executions with Recovery Options',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { scenarioId, organizationId, teamId, status, ageHours, canResume, includeRecoveryPlan, limit, offset } = input;
 
@@ -831,6 +886,13 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }).default({}).describe('Bulk operation options'),
       reason: z.string().max(500).optional().describe('Reason for bulk resolution'),
     }),
+    annotations: {
+      title: 'Bulk Resolve Incomplete Executions',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { executionIds, action, options, reason } = input;
 
@@ -940,6 +1002,13 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       includeRecommendations: z.boolean().default(true).describe('Include improvement recommendations'),
       groupBy: z.enum(['scenario', 'module', 'error_type', 'time']).default('scenario').describe('How to group failure analysis'),
     }),
+    annotations: {
+      title: 'Analyze Execution Failure Patterns',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { organizationId, teamId, timeRange, includeRecommendations, groupBy } = input;
 
@@ -1061,6 +1130,13 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       isActive: z.boolean().default(true).describe('Whether rule is active'),
       priority: z.number().min(1).max(100).default(50).describe('Rule priority (1-100, higher = more priority)'),
     }),
+    annotations: {
+      title: 'Create Recovery Automation Rule',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, description, conditions, actions, isActive, priority } = input;
 

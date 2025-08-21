@@ -307,6 +307,13 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
     name: 'create-custom-app',
     description: 'Create a new custom app for Make.com platform with comprehensive configuration',
     parameters: CustomAppCreateSchema,
+    annotations: {
+      title: 'Create Custom App',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { name, description, type, runtime, organizationId, teamId, configuration, deployment, permissions } = input;
 
@@ -445,6 +452,13 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       sortBy: z.enum(['name', 'createdAt', 'usage', 'status', 'type']).default('name').describe('Sort field'),
       sortOrder: z.enum(['asc', 'desc']).default('asc').describe('Sort order'),
     }),
+    annotations: {
+      title: 'List Custom Apps',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { type, status, runtime, organizationId, teamId, includeUsage, includeConfig, limit, offset, sortBy, sortOrder } = input;
 
@@ -562,6 +576,13 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
     name: 'create-hook',
     description: 'Create a webhook or polling hook for custom app event handling',
     parameters: HookCreateSchema,
+    annotations: {
+      title: 'Create Custom Hook',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { name, description, appId, type, configuration, events, logs } = input;
 
@@ -667,6 +688,13 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
     name: 'create-custom-function',
     description: 'Create a custom function for data transformation, validation, or processing',
     parameters: CustomFunctionCreateSchema,
+    annotations: {
+      title: 'Create Custom Function',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { name, description, appId, type, language, code, interface: functionInterface, testCases, deployment } = input;
 
@@ -776,6 +804,13 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       includePerformance: z.boolean().default(false).describe('Include performance testing'),
       timeout: z.number().min(30).max(600).default(120).describe('Test timeout in seconds'),
     }),
+    annotations: {
+      title: 'Test Custom App',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { appId, testType, environment, includePerformance, timeout } = input;
 

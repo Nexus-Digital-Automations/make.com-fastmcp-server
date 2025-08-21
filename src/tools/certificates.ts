@@ -220,6 +220,13 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
     name: 'create-certificate',
     description: 'Create and store a new certificate with optional private key',
     parameters: CertificateCreateSchema,
+    annotations: {
+      title: 'Create Certificate',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { name, description, type, format, organizationId, teamId, certificateData, privateKeyData, password, chainCertificates, validateCertificate, autoRotation } = input;
 
@@ -340,6 +347,11 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
     name: 'list-certificates',
     description: 'List and filter certificates with comprehensive information and security analysis',
     parameters: CertificateListSchema,
+    annotations: {
+      title: 'List Certificates',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { type, status, organizationId, teamId, expiringDays, searchQuery, includePrivateKeys, includeChain, limit, offset, sortBy, sortOrder } = input;
 
@@ -465,6 +477,11 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       includeUsage: z.boolean().default(true).describe('Include usage statistics'),
       performSecurityCheck: z.boolean().default(true).describe('Perform security vulnerability check'),
     }),
+    annotations: {
+      title: 'Get Certificate Details',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { certificateId, includePrivateKey, includeChain, includeUsage, performSecurityCheck } = input;
 
@@ -547,6 +564,11 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
     name: 'validate-certificate',
     description: 'Validate certificate data, chain, and configuration',
     parameters: CertificateValidateSchema,
+    annotations: {
+      title: 'Validate Certificate',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { certificateData, privateKeyData, chainCertificates, checkRevocation, checkHostname, customValidations } = input;
 
@@ -617,6 +639,13 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
     name: 'create-key',
     description: 'Create or import a cryptographic key for signing, encryption, or authentication',
     parameters: KeyCreateSchema,
+    annotations: {
+      title: 'Create Cryptographic Key',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { name, description, type, usage, format, organizationId, teamId, keyMaterial, metadata, rotation, permissions } = input;
 
@@ -742,6 +771,13 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       reason: z.string().max(500).describe('Reason for rotation'),
       notifyUsers: z.boolean().default(true).describe('Notify users about the rotation'),
     }),
+    annotations: {
+      title: 'Rotate Certificate or Key',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { resourceId, resourceType, rotationMethod, newData, backupOldVersion, reason, notifyUsers } = input;
 

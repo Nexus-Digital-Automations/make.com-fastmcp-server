@@ -327,6 +327,13 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
     name: 'create-remote-procedure',
     description: 'Create a new remote procedure for webhook, API call, script execution, or other operations',
     parameters: RemoteProcedureCreateSchema,
+    annotations: {
+      title: 'Create Remote Procedure',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { name, description, type, category, organizationId, teamId, configuration, input: inputSpec, output: outputSpec, monitoring, security } = input;
 
@@ -464,6 +471,11 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       sortBy: z.enum(['name', 'createdAt', 'lastRun', 'successRate', 'totalRuns']).default('name').describe('Sort field'),
       sortOrder: z.enum(['asc', 'desc']).default('asc').describe('Sort order'),
     }),
+    annotations: {
+      title: 'List Remote Procedures',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { type, category, status, organizationId, teamId, includeStats, includeMonitoring, limit, offset, sortBy, sortOrder } = input;
 
@@ -587,6 +599,13 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
     name: 'execute-remote-procedure',
     description: 'Execute a remote procedure with input data and monitoring',
     parameters: ProcedureExecuteSchema,
+    annotations: {
+      title: 'Execute Remote Procedure',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { procedureId, input: inputData, options, metadata } = input;
 
@@ -667,6 +686,13 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
     name: 'create-device',
     description: 'Register a new device for incoming/outgoing connections and procedure execution',
     parameters: DeviceCreateSchema,
+    annotations: {
+      title: 'Register Device',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { name, type, category, organizationId, teamId, configuration } = input;
 
@@ -798,6 +824,13 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       sortBy: z.enum(['name', 'type', 'status', 'lastSeen', 'createdAt']).default('name').describe('Sort field'),
       sortOrder: z.enum(['asc', 'desc']).default('asc').describe('Sort order'),
     }),
+    annotations: {
+      title: 'List Registered Devices',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { type, category, status, organizationId, teamId, includeHealth, includeAlerts, limit, offset, sortBy, sortOrder } = input;
 
@@ -919,6 +952,13 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       timeout: z.number().min(1000).max(60000).default(10000).describe('Test timeout in milliseconds'),
       includePerformance: z.boolean().default(true).describe('Include performance metrics in test'),
     }),
+    annotations: {
+      title: 'Test Device Connectivity',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log, reportProgress }) => {
       const { deviceId, testType, timeout, includePerformance } = input;
 

@@ -470,6 +470,13 @@ export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClien
     name: logAuditEventTool.name,
     description: logAuditEventTool.description,
     parameters: logAuditEventTool.inputSchema,
+    annotations: {
+      title: 'Log Security Audit Event',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: logAuditEventTool.handler,
   });
 
@@ -478,6 +485,13 @@ export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClien
     name: generateComplianceReportTool.name,
     description: generateComplianceReportTool.description,
     parameters: generateComplianceReportTool.inputSchema,
+    annotations: {
+      title: 'Generate Compliance Report',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: generateComplianceReportTool.handler,
   });
 
@@ -486,6 +500,13 @@ export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClien
     name: performAuditMaintenanceTool.name,
     description: performAuditMaintenanceTool.description,
     parameters: performAuditMaintenanceTool.inputSchema,
+    annotations: {
+      title: 'Perform Audit Maintenance',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: performAuditMaintenanceTool.handler,
   });
 
@@ -494,6 +515,13 @@ export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClien
     name: getAuditConfigurationTool.name,
     description: getAuditConfigurationTool.description,
     parameters: getAuditConfigurationTool.inputSchema,
+    annotations: {
+      title: 'Get Audit Configuration',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: getAuditConfigurationTool.handler,
   });
 
@@ -502,6 +530,13 @@ export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClien
     name: securityHealthCheckTool.name,
     description: securityHealthCheckTool.description,
     parameters: securityHealthCheckTool.inputSchema,
+    annotations: {
+      title: 'Security Health Check',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
     execute: securityHealthCheckTool.handler,
   });
 
@@ -510,6 +545,13 @@ export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClien
     name: createSecurityIncidentTool.name,
     description: createSecurityIncidentTool.description,
     parameters: createSecurityIncidentTool.inputSchema,
+    annotations: {
+      title: 'Create Security Incident Report',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: createSecurityIncidentTool.handler,
   });
 }

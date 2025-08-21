@@ -193,6 +193,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'create-ai-agent',
     description: 'Create a new AI agent with LLM configuration and context management',
     parameters: AIAgentCreateSchema,
+    annotations: {
+      title: 'Create AI Agent',
+      readOnlyHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { name, description, type, configuration, context, capabilities, organizationId, teamId, scenarioId, isPublic } = input;
 
@@ -295,6 +301,11 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
     name: 'list-ai-agents',
     description: 'List and filter AI agents with comprehensive search capabilities',
     parameters: AIAgentListSchema,
+    annotations: {
+      title: 'List AI Agents',
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     execute: async (input, { log }) => {
       const { type, status, provider, organizationId, teamId, scenarioId, isPublic, includeUsage, limit, offset, sortBy, sortOrder } = input;
 

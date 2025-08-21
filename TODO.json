@@ -2,43 +2,74 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755766251654_tgrya10lb",
-      "title": "Implement FastMCP Tool Annotations for Core Platform Tools",
-      "description": "Based on successful enterprise security tools implementation, extend FastMCP annotation coverage to core platform tools including billing.ts, notifications.ts, and permissions.ts. These are high-priority tools that handle financial operations and access control, requiring proper security annotations.",
+      "id": "task_1755767403275_te8ekv3l5",
+      "title": "Implement FastMCP annotations for remaining 11 tool files without annotations",
+      "description": "Critical implementation for 11 remaining tool files that completely lack FastMCP annotations: ai-agents.ts, audit-compliance.ts, compliance-templates.ts, custom-apps.ts, log-streaming.ts, marketplace.ts, naming-convention-policy.ts, procedures.ts, real-time-monitoring.ts, sdk.ts, variables.ts. Apply security-focused annotation patterns following established standards.",
       "mode": "DEVELOPMENT",
-      "category": "enhancement",
-      "priority": "high",
+      "category": "missing-feature",
+      "priority": "critical",
       "status": "in_progress",
       "dependencies": [],
-      "important_files": [
-        "src/tools/billing.ts",
-        "src/tools/notifications.ts",
-        "src/tools/permissions.ts",
-        "src/types/index.ts",
-        "./development/research-reports/fastmcp-tool-annotations-typescript-protocol-compliance-comprehensive-research-2025.md"
-      ],
-      "success_criteria": [
-        "All core platform tools have complete FastMCP annotations",
-        "Financial operations in billing.ts properly marked as destructive",
-        "Permission operations properly classified for security",
-        "Notification tools have appropriate external/internal markings",
-        "Consistent annotation patterns with enterprise security tools"
-      ],
+      "important_files": [],
+      "success_criteria": [],
       "estimate": "",
       "requires_research": true,
       "subtasks": [],
-      "created_at": "2025-08-21T08:50:51.657Z",
+      "created_at": "2025-08-21T09:10:03.278Z",
       "auto_research_created": true,
-      "started_at": "2025-08-21T08:51:44.067Z",
-      "claimed_by": "agent_1755766304067",
-      "assigned_agent": "agent_1755766304067",
+      "started_at": "2025-08-21T09:15:00.505Z",
       "agent_assignment_history": [
         {
-          "agent": "agent_1755766304067",
-          "action": "claimed",
-          "timestamp": "2025-08-21T08:51:44.067Z"
+          "role": "primary",
+          "assignedAt": "2025-08-21T09:15:00.505Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
+    },
+    {
+      "id": "task_1755767214550_fh0usn7ge",
+      "title": "Implement comprehensive FastMCP annotations for Development & Operations Tools (56 tools across 8 files)",
+      "description": "Critical implementation task covering 56 tools across 8 files: certificates.ts (9), credential-management.ts (6), variables.ts (12), custom-apps.ts (14), procedures.ts (5), sdk.ts (7), audit-compliance.ts (3), ai-agents.ts (0). Apply standardized annotation patterns, security classifications, and ensure TypeScript/ESLint compliance.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T09:06:54.553Z",
+      "auto_research_created": true,
+      "started_at": "2025-08-21T09:08:26.199Z",
+      "claimed_by": "agent_1755767306199",
+      "assigned_agent": "agent_1755767306199",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755767306199",
+          "action": "claimed",
+          "timestamp": "2025-08-21T09:08:26.199Z"
+        }
+      ]
+    },
+    {
+      "id": "task_1755766807868_cq53ecm1o",
+      "title": "Implement FastMCP Tool Annotations for Development & Operations Tools",
+      "description": "Based on successful core platform tools implementation, extend FastMCP annotation coverage to development & operations tools including ai-agents.ts, audit-compliance.ts, certificates.ts, credential-management.ts, custom-apps.ts, procedures.ts, variables.ts, and sdk.ts. These are medium-priority tools that handle development operations and compliance monitoring.",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-21T09:00:07.872Z",
+      "auto_research_created": true
     }
   ],
   "current_mode": "DEVELOPMENT",
@@ -48,13 +79,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755765417743_1_general_1632d7c7": {
+    "development_session_1755766750859_1_general_903d7e25": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T08:36:57.743Z",
+      "lastHeartbeat": "2025-08-21T08:59:10.860Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -65,8 +96,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T08:36:57.743Z",
-      "sessionId": "session_1755765417743",
+      "createdAt": "2025-08-21T08:59:10.860Z",
+      "sessionId": "session_1755766750859",
       "metadata": {}
     }
   },
