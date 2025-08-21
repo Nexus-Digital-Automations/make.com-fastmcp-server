@@ -97,6 +97,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     annotations: {
       title: 'Organization Analytics',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
@@ -165,6 +167,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     annotations: {
       title: 'List Audit Logs',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
@@ -246,6 +250,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     annotations: {
       title: 'Get Audit Log Details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: z.object({
@@ -292,6 +298,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     annotations: {
       title: 'Get Scenario Logs',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: ScenarioLogFiltersSchema,
@@ -371,6 +379,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     annotations: {
       title: 'Execution History',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: ExecutionHistoryFiltersSchema,
@@ -464,6 +474,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     annotations: {
       title: 'Incomplete Executions',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: IncompleteExecutionFiltersSchema,
@@ -541,6 +553,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     description: 'Resolve or retry an incomplete execution',
     annotations: {
       title: 'Resolve Incomplete Execution',
+      readOnlyHint: false,
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
@@ -594,6 +608,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     annotations: {
       title: 'Get Webhook Logs',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: HookLogFiltersSchema,
@@ -673,6 +689,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     annotations: {
       title: 'Export Analytics Data',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: ExportDataSchema,
@@ -733,6 +751,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     annotations: {
       title: 'Performance Metrics',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: z.object({

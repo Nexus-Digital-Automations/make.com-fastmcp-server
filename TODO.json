@@ -2,9 +2,9 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755768736155_2bl312o3e",
-      "title": "Complete FastMCP annotations for remaining tool files with incomplete annotations",
-      "description": "Several tool files have incomplete FastMCP annotations or are missing critical annotation properties. Files identified with missing or incomplete annotations: src/middleware/caching.ts, src/tools/scenario-archival-policy.ts (missing complete annotations), src/tools/folders.ts (missing readOnlyHint/destructiveHint), src/tools/analytics.ts (missing destructiveHint/idempotentHint), src/tools/performance-analysis.ts (missing readOnlyHint/destructiveHint/idempotentHint), src/tools/templates.ts (missing readOnlyHint/destructiveHint), src/tools/budget-control.ts (missing complete annotations), and others. Apply consistent security-focused annotation patterns.",
+      "id": "task_1755769198439_qqhpe9qfj",
+      "title": "Complete FastMCP annotations for remaining medium-priority tool files",
+      "description": "Complete FastMCP annotation implementation for analytics.ts, templates.ts, performance-analysis.ts, and caching.ts files with missing annotation properties. Apply consistent security-focused annotation patterns for enterprise compliance.",
       "mode": "DEVELOPMENT",
       "category": "missing-feature",
       "priority": "high",
@@ -15,16 +15,16 @@
       "estimate": "",
       "requires_research": true,
       "subtasks": [],
-      "created_at": "2025-08-21T09:32:16.158Z",
+      "created_at": "2025-08-21T09:39:58.442Z",
       "auto_research_created": true,
-      "assigned_agent": "development_session_1755768221401_1_general_78975474",
-      "started_at": "2025-08-21T09:34:01.063Z",
-      "claimed_by": "development_session_1755768221401_1_general_78975474",
+      "assigned_agent": "development_session_1755769173107_1_general_ed5ed8df",
+      "started_at": "2025-08-21T09:41:31.467Z",
+      "claimed_by": "development_session_1755769173107_1_general_ed5ed8df",
       "agent_assignment_history": [
         {
-          "agentId": "development_session_1755768221401_1_general_78975474",
+          "agentId": "development_session_1755769173107_1_general_ed5ed8df",
           "role": "primary",
-          "assignedAt": "2025-08-21T09:34:01.063Z",
+          "assignedAt": "2025-08-21T09:41:31.467Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
@@ -38,13 +38,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755768221401_1_general_78975474": {
+    "development_session_1755769173107_1_general_ed5ed8df": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T09:23:41.401Z",
+      "lastHeartbeat": "2025-08-21T09:39:33.108Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -55,8 +55,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T09:23:41.401Z",
-      "sessionId": "session_1755768221401",
+      "createdAt": "2025-08-21T09:39:33.108Z",
+      "sessionId": "session_1755769173107",
       "metadata": {}
     }
   },

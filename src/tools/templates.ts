@@ -174,6 +174,8 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     parameters: TemplateCreateSchema,
     annotations: {
       title: 'Create Template',
+      readOnlyHint: false,
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
@@ -282,6 +284,8 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     annotations: {
       title: 'List Templates',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
@@ -389,6 +393,8 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     annotations: {
       title: 'Get Template Details',
       readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: z.object({
@@ -477,6 +483,8 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     parameters: TemplateUpdateSchema,
     annotations: {
       title: 'Update Template',
+      readOnlyHint: false,
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
@@ -551,6 +559,8 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     parameters: TemplateUseSchema,
     annotations: {
       title: 'Use Template',
+      readOnlyHint: false,
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
@@ -617,7 +627,9 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
     description: 'Delete a template',
     annotations: {
       title: 'Delete Template',
+      readOnlyHint: false,
       destructiveHint: true,
+      idempotentHint: true,
       openWorldHint: true,
     },
     parameters: z.object({

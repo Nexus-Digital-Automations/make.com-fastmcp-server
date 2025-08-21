@@ -1162,6 +1162,9 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
     parameters: PerformanceAnalysisSchema,
     annotations: {
       title: 'Performance Bottleneck Analysis',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (args, { log, reportProgress }) => {
@@ -1262,6 +1265,9 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
     parameters: ComprehensiveAnalysisSchema,
     annotations: {
       title: 'Comprehensive Performance Analysis',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (args, { log, reportProgress }) => {
@@ -1315,6 +1321,9 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
     parameters: LiveAnalysisSchema,
     annotations: {
       title: 'Live Performance Monitoring',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (args, { log, reportProgress }) => {
