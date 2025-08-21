@@ -23,6 +23,140 @@ import { extractCorrelationId } from '../utils/error-response.js';
 
 // ==================== INTERFACES & TYPES ====================
 
+// Blueprint data structure interfaces
+interface BlueprintValue {
+  content: unknown;
+  type: string;
+  version?: string;
+  timestamp?: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface BlueprintPreview {
+  previewId: string;
+  content: unknown;
+  type: string;
+  timestamp: string;
+  author?: string;
+  description?: string;
+}
+
+interface SuggestedCode {
+  language: string;
+  content: string;
+  lineNumbers?: number[];
+  fileName?: string;
+  description?: string;
+}
+
+interface NodeMetadata {
+  category?: string;
+  tags?: string[];
+  created?: string;
+  updated?: string;
+  owner?: string;
+  [key: string]: unknown;
+}
+
+interface EdgeMetadata {
+  required?: boolean;
+  optional?: boolean;
+  weight?: number;
+  created?: string;
+  [key: string]: unknown;
+}
+
+interface RealTimeConfiguration {
+  websocketEndpoint: string;
+  heartbeatInterval: number;
+  reconnectAttempts: number;
+  operationalTransform: boolean;
+  conflictDetection: boolean;
+  cursorTracking: boolean;
+  [key: string]: unknown;
+}
+
+interface ConflictResolutionOptions {
+  resolutionStrategy: string;
+  conflictResolutions: ConflictResolutionRequest[];
+  preserveUserIntent: boolean;
+  validateResult: boolean;
+  createBackup: boolean;
+}
+
+interface ConflictResolutionRequest {
+  conflictId: string;
+  resolution: string;
+  customResolution?: BlueprintValue;
+  reasoning?: string;
+}
+
+interface ResolutionResult {
+  conflictId: string;
+  status: 'resolved' | 'failed';
+  appliedResolution?: string;
+  result?: ConflictResolutionOutput;
+  error?: string;
+}
+
+interface ConflictResolutionOutput {
+  action: string;
+  value: BlueprintValue;
+  timestamp?: string;
+  appliedBy?: string;
+}
+
+interface ResolvedBlueprint {
+  blueprintId: string;
+  resolvedAt: string;
+  resolutions: ResolutionResult[];
+  status: string;
+  content?: unknown;
+  version?: string;
+}
+
+interface ValidationResults {
+  valid: boolean;
+  issues?: string[];
+  warnings?: string[];
+  recommendations?: string[];
+  score?: number;
+}
+
+interface DependencyAnalysisResult {
+  summary: {
+    totalNodes: number;
+    totalEdges: number;
+    clusters: number;
+    criticalPaths: number;
+    circularDependencies: number;
+  };
+  complexity: {
+    overall: number;
+    mostComplex: DependencyNode;
+    leastComplex: DependencyNode;
+  };
+  performance: {
+    bottlenecks: string[];
+    optimizationPotential: number;
+  };
+  recommendations: string[];
+}
+
+interface ImpactAssessment {
+  changeImpact: {
+    highImpactNodes: DependencyNode[];
+    cascadeEffects: DependencyEdge[];
+    isolatedComponents: DependencyCluster[];
+  };
+  riskAssessment: {
+    overallRisk: string;
+    criticalDependencies: number;
+    singlePointsOfFailure: DependencyNode[];
+  };
+  recommendations: string[];
+}
+
 interface BlueprintVersion {
   versionId: string;
   blueprintId: string;
@@ -169,9 +303,9 @@ interface BlueprintConflict {
   modulePath: string;
   description: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
-  baseValue: any;
-  currentValue: any;
-  incomingValue: any;
+  baseValue: BlueprintValue;
+  currentValue: BlueprintValue;
+  incomingValue: BlueprintValue;
   userIntentAnalysis: UserIntentAnalysis;
   resolutionOptions: ResolutionOption[];
   autoResolvable: boolean;
@@ -191,7 +325,7 @@ interface ResolutionOption {
   optionId: string;
   description: string;
   strategy: 'keep_current' | 'accept_incoming' | 'merge' | 'custom';
-  preview: any;
+  preview: BlueprintPreview;
   impact: ConflictImpact;
   aiRecommended: boolean;
   userRecommended: boolean;
@@ -214,7 +348,7 @@ interface AIResolutionSuggestion {
   confidence: number;
   preservesUserIntent: boolean;
   automationSafe: boolean;
-  suggestedCode?: any;
+  suggestedCode?: SuggestedCode;
   alternativeOptions: string[];
 }
 
@@ -257,7 +391,7 @@ interface DependencyNode {
   performanceImpact: number;
   isExternal: boolean;
   isCritical: boolean;
-  metadata: Record<string, any>;
+  metadata: NodeMetadata;
 }
 
 interface DependencyEdge {
@@ -269,7 +403,7 @@ interface DependencyEdge {
   bidirectional: boolean;
   conditional: boolean;
   conditions?: string[];
-  metadata: Record<string, any>;
+  metadata: EdgeMetadata;
 }
 
 interface DependencyCluster {
@@ -358,7 +492,7 @@ const ResolveConflictsSchema = z.object({
   conflictResolutions: z.array(z.object({
     conflictId: z.string().min(1),
     resolution: z.enum(['keep_current', 'accept_incoming', 'merge', 'custom']),
-    customResolution: z.any().optional(),
+    customResolution: z.record(z.unknown()).optional(),
     reasoning: z.string().optional(),
   })).default([]).describe('Specific conflict resolutions'),
   preserveUserIntent: z.boolean().default(true).describe('Prioritize preserving user intent'),
@@ -526,7 +660,7 @@ class BlueprintCollaborationEngine {
     session: CollaborationSession;
     inviteLinks: Record<string, string>;
     permissions: SessionPermissions;
-    realTimeConfig: any;
+    realTimeConfig: RealTimeConfiguration;
   }> {
     const sessionId = `session_${blueprintId}_${Date.now()}`;
     const versionId = options.versionId || await this.getLatestVersionId(blueprintId);
@@ -624,7 +758,7 @@ class BlueprintCollaborationEngine {
       conflictResolutions: Array<{
         conflictId: string;
         resolution: string;
-        customResolution?: any;
+        customResolution?: BlueprintValue;
         reasoning?: string;
       }>;
       preserveUserIntent: boolean;
@@ -632,9 +766,9 @@ class BlueprintCollaborationEngine {
       createBackup: boolean;
     }
   ): Promise<{
-    resolutionResults: any[];
-    resolvedBlueprint: any;
-    validationResults: any;
+    resolutionResults: ResolutionResult[];
+    resolvedBlueprint: ResolvedBlueprint;
+    validationResults: ValidationResults;
     backupCreated: boolean;
     unresolvedConflicts: BlueprintConflict[];
   }> {
@@ -652,7 +786,7 @@ class BlueprintCollaborationEngine {
       backupCreated = true;
     }
 
-    const resolutionResults: any[] = [];
+    const resolutionResults: ResolutionResult[] = [];
     const unresolvedConflicts: BlueprintConflict[] = [];
 
     // Process each conflict resolution
@@ -724,10 +858,10 @@ class BlueprintCollaborationEngine {
     }
   ): Promise<{
     dependencyGraph: DependencyGraph;
-    analysis: any;
+    analysis: DependencyAnalysisResult;
     circularDependencies: CircularDependency[];
     optimizationOpportunities: OptimizationOpportunity[];
-    impactAssessment: any;
+    impactAssessment: ImpactAssessment | null;
   }> {
     const versionId = options.versionId || await this.getLatestVersionId(blueprintId);
     const cacheKey = `${blueprintId}_${versionId}_${options.analysisDepth}`;
@@ -1069,7 +1203,7 @@ class BlueprintCollaborationEngine {
     return backupId;
   }
 
-  private async applyConflictResolution(conflict: BlueprintConflict, resolution: any, _options: any): Promise<any> {
+  private async applyConflictResolution(conflict: BlueprintConflict, resolution: ConflictResolutionRequest, _options: ConflictResolutionOptions): Promise<ConflictResolutionOutput> {
     // Apply specific conflict resolution
     switch (resolution.resolution) {
       case 'keep_current':
@@ -1079,21 +1213,27 @@ class BlueprintCollaborationEngine {
       case 'merge':
         return { action: 'merged', value: this.mergeValues(conflict.currentValue, conflict.incomingValue) };
       case 'custom':
-        return { action: 'custom', value: resolution.customResolution };
+        return { action: 'custom', value: resolution.customResolution || { content: null, type: 'custom' } };
       default:
         throw new Error(`Unknown resolution strategy: ${resolution.resolution}`);
     }
   }
 
-  private mergeValues(current: any, incoming: any): any {
+  private mergeValues(current: BlueprintValue, incoming: BlueprintValue): BlueprintValue {
     // Implement intelligent value merging
-    if (typeof current === 'object' && typeof incoming === 'object') {
-      return { ...current, ...incoming };
+    if (current.type === incoming.type) {
+      return {
+        content: incoming.content,
+        type: current.type,
+        version: incoming.version || current.version,
+        timestamp: new Date().toISOString(),
+        metadata: { ...current.metadata, ...incoming.metadata },
+      };
     }
-    return incoming; // Default to incoming value
+    return incoming; // Default to incoming value when types differ
   }
 
-  private async generateResolvedBlueprint(sessionId: string, resolutionResults: any[]): Promise<any> {
+  private async generateResolvedBlueprint(sessionId: string, resolutionResults: ResolutionResult[]): Promise<ResolvedBlueprint> {
     // Generate the resolved blueprint based on conflict resolutions
     return {
       blueprintId: `resolved_${sessionId}`,
@@ -1103,7 +1243,7 @@ class BlueprintCollaborationEngine {
     };
   }
 
-  private async validateResolvedBlueprint(_blueprint: any): Promise<any> {
+  private async validateResolvedBlueprint(_blueprint: ResolvedBlueprint): Promise<ValidationResults> {
     // Validate the resolved blueprint
     return {
       valid: true,
@@ -1113,7 +1253,14 @@ class BlueprintCollaborationEngine {
     };
   }
 
-  private async buildDependencyGraph(_blueprintId: string, _versionId: string, _options: any): Promise<DependencyGraph> {
+  private async buildDependencyGraph(_blueprintId: string, _versionId: string, _options: {
+    analysisDepth: string;
+    includeExternal: boolean;
+    includeOptimizations: boolean;
+    detectCircular: boolean;
+    generateGraph: boolean;
+    impactAnalysis: boolean;
+  }): Promise<DependencyGraph> {
     // Build comprehensive dependency graph
     const nodes: DependencyNode[] = [
       {
@@ -1126,7 +1273,7 @@ class BlueprintCollaborationEngine {
         performanceImpact: 3,
         isExternal: false,
         isCritical: true,
-        metadata: { category: 'core' },
+        metadata: { category: 'core' } as NodeMetadata,
       },
       {
         nodeId: 'node_002',
@@ -1138,7 +1285,7 @@ class BlueprintCollaborationEngine {
         performanceImpact: 7,
         isExternal: false,
         isCritical: true,
-        metadata: { category: 'processing' },
+        metadata: { category: 'processing' } as NodeMetadata,
       },
       {
         nodeId: 'node_003',
@@ -1150,7 +1297,7 @@ class BlueprintCollaborationEngine {
         performanceImpact: 4,
         isExternal: false,
         isCritical: false,
-        metadata: { category: 'integration' },
+        metadata: { category: 'integration' } as NodeMetadata,
       },
     ];
 
@@ -1163,7 +1310,7 @@ class BlueprintCollaborationEngine {
         strength: 8,
         bidirectional: false,
         conditional: false,
-        metadata: { required: true },
+        metadata: { required: true } as EdgeMetadata,
       },
       {
         edgeId: 'edge_002',
@@ -1174,7 +1321,7 @@ class BlueprintCollaborationEngine {
         bidirectional: false,
         conditional: true,
         conditions: ['webhook_enabled'],
-        metadata: { optional: true },
+        metadata: { optional: true } as EdgeMetadata,
       },
     ];
 
@@ -1261,7 +1408,7 @@ class BlueprintCollaborationEngine {
     ];
   }
 
-  private async generateDependencyAnalysis(graph: DependencyGraph): Promise<any> {
+  private async generateDependencyAnalysis(graph: DependencyGraph): Promise<DependencyAnalysisResult> {
     return {
       summary: {
         totalNodes: graph.nodes.length,
@@ -1287,7 +1434,7 @@ class BlueprintCollaborationEngine {
     };
   }
 
-  private async generateImpactAssessment(graph: DependencyGraph): Promise<any> {
+  private async generateImpactAssessment(graph: DependencyGraph): Promise<ImpactAssessment> {
     return {
       changeImpact: {
         highImpactNodes: graph.nodes.filter(node => node.isCritical),
@@ -1456,7 +1603,11 @@ Blueprint version created successfully with comprehensive change tracking and op
         const result = await engine.createCollaborationSession(args.blueprintId, {
           versionId: args.versionId,
           sessionType: args.sessionType,
-          inviteUsers: args.inviteUsers,
+          inviteUsers: args.inviteUsers.map(user => ({
+            userId: user.userId || '',
+            role: user.role || 'viewer',
+            permissions: user.permissions
+          })),
           maxUsers: args.maxUsers,
           sessionTimeout: args.sessionTimeout,
           lockStrategy: args.lockStrategy,
@@ -1557,7 +1708,16 @@ Real-time collaboration session is now active with intelligent conflict resoluti
       try {
         const result = await engine.resolveConflicts(args.sessionId, {
           resolutionStrategy: args.resolutionStrategy,
-          conflictResolutions: args.conflictResolutions,
+          conflictResolutions: args.conflictResolutions.map(res => ({
+            conflictId: res.conflictId,
+            resolution: res.resolution,
+            customResolution: res.customResolution ? {
+              content: res.customResolution,
+              type: 'custom',
+              timestamp: new Date().toISOString()
+            } as BlueprintValue : undefined,
+            reasoning: res.reasoning
+          })),
           preserveUserIntent: args.preserveUserIntent,
           validateResult: args.validateResult,
           createBackup: args.createBackup,
@@ -1606,17 +1766,17 @@ ${result.unresolvedConflicts.map(conflict => `
 
 ## ✅ Validation Results
 ${result.validationResults.valid ? '✅ Blueprint validation passed' : '❌ Blueprint validation failed'}
-${result.validationResults.issues?.length > 0 ? `
+${result.validationResults.issues && result.validationResults.issues.length > 0 ? `
 **Issues Found**:
-${result.validationResults.issues.map((issue: any) => `- ${issue}`).join('\n')}
+${result.validationResults.issues.map((issue: string) => `- ${issue}`).join('\n')}
 ` : ''}
-${result.validationResults.warnings?.length > 0 ? `
+${result.validationResults.warnings && result.validationResults.warnings.length > 0 ? `
 **Warnings**:
-${result.validationResults.warnings.map((warning: any) => `- ${warning}`).join('\n')}
+${result.validationResults.warnings.map((warning: string) => `- ${warning}`).join('\n')}
 ` : ''}
-${result.validationResults.recommendations?.length > 0 ? `
+${result.validationResults.recommendations && result.validationResults.recommendations.length > 0 ? `
 **Recommendations**:
-${result.validationResults.recommendations.map((rec: any) => `- ${rec}`).join('\n')}
+${result.validationResults.recommendations.map((rec: string) => `- ${rec}`).join('\n')}
 ` : ''}
 
 ## 📋 Resolved Blueprint
@@ -1763,7 +1923,7 @@ ${result.optimizationOpportunities.map(opt => `
 **Total Optimization Potential**: ${result.analysis.performance?.optimizationPotential || 0}
 
 **Recommendations**:
-${result.analysis.recommendations?.map((rec: any) => `- ${rec}`).join('\n') || 'No specific recommendations'}
+${result.analysis.recommendations?.map((rec: string) => `- ${rec}`).join('\n') || 'No specific recommendations'}
 
 ${result.impactAssessment ? `
 ## 🎯 Impact Assessment
@@ -1776,7 +1936,7 @@ ${result.impactAssessment ? `
 **Isolated Components**: ${result.impactAssessment.changeImpact?.isolatedComponents?.length || 0}
 
 **Impact Assessment Recommendations**:
-${result.impactAssessment.recommendations?.map((rec: any) => `- ${rec}`).join('\n') || 'No specific recommendations'}
+${result.impactAssessment.recommendations?.map((rec: string) => `- ${rec}`).join('\n') || 'No specific recommendations'}
 ` : ''}
 
 Comprehensive dependency analysis completed with graph generation and optimization opportunities identified.`,
