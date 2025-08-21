@@ -15,12 +15,32 @@ import {
   expectValidZodParse,
   expectInvalidZodParse
 } from '../../utils/test-helpers.js';
-import { testConnection, testWebhook, testErrors } from '../../fixtures/test-data.js';
+import { testConnections, testErrors } from '../../fixtures/test-data.js';
 
 describe('Connection and Webhook Management Tools - Comprehensive Test Suite', () => {
   let mockServer: any;
   let mockApiClient: MockMakeApiClient;
   let mockTool: jest.MockedFunction<any>;
+
+  // Use the test connection from fixtures
+  const testConnection = testConnections.gmail;
+
+  // Create test webhook object since it's not in fixtures
+  const testWebhook = {
+    id: 5001,
+    name: 'Test Order Webhook',
+    url: 'https://api.company.com/webhooks/orders',
+    method: 'POST' as const,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer test-token'
+    },
+    connectionId: 4001,
+    scenarioId: 2001,
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-15T10:30:00Z'
+  };
 
   beforeEach(() => {
     const serverSetup = createMockServer();
@@ -82,8 +102,8 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
         expect(result).toContain('pagination');
         
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params.limit).toBe(20);
-        expect(calls[0].params.offset).toBe(0);
+        expect(calls[0].data.limit).toBe(20);
+        expect(calls[0].data.offset).toBe(0);
       });
 
       it('should filter connections by service, status, and search', async () => {
@@ -106,11 +126,11 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
         });
 
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params.service).toBe('slack');
-        expect(calls[0].params.valid).toBe(true);
-        expect(calls[0].params.search).toBe('production');
-        expect(calls[0].params.limit).toBe(50);
-        expect(calls[0].params.offset).toBe(10);
+        expect(calls[0].data.service).toBe('slack');
+        expect(calls[0].data.valid).toBe(true);
+        expect(calls[0].data.search).toBe('production');
+        expect(calls[0].data.limit).toBe(50);
+        expect(calls[0].data.offset).toBe(10);
       });
 
       it('should handle pagination with hasMore flag', async () => {
@@ -162,7 +182,7 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
         });
         
         expectInvalidZodParse(tool.parameters, {
-          status: 'invalid' // Invalid status
+          status: 'unknown' // Invalid status - must be 'valid', 'invalid', or 'all'
         });
       });
     });
@@ -564,8 +584,8 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
         expect(result).toContain('pagination');
         
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params.limit).toBe(20);
-        expect(calls[0].params.offset).toBe(0);
+        expect(calls[0].data.limit).toBe(20);
+        expect(calls[0].data.offset).toBe(0);
       });
 
       it('should filter webhooks by connection, scenario, and status', async () => {
@@ -588,11 +608,11 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
         });
 
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params.connectionId).toBe(12345);
-        expect(calls[0].params.scenarioId).toBe(67890);
-        expect(calls[0].params.active).toBe(true);
-        expect(calls[0].params.limit).toBe(50);
-        expect(calls[0].params.offset).toBe(5);
+        expect(calls[0].data.connectionId).toBe(12345);
+        expect(calls[0].data.scenarioId).toBe(67890);
+        expect(calls[0].data.active).toBe(true);
+        expect(calls[0].data.limit).toBe(50);
+        expect(calls[0].data.offset).toBe(5);
       });
 
       it('should handle inactive status filter', async () => {
@@ -611,7 +631,7 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
         });
 
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params.active).toBe(false);
+        expect(calls[0].data.active).toBe(false);
       });
     });
 
@@ -935,10 +955,20 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
       addConnectionTools(mockServer, mockApiClient as any);
 
       for (const { name, params } of toolsToTest) {
-        mockApiClient.mockResponse('GET', '/mock-endpoint', {
-          success: false,
-          error: testErrors.apiError
-        });
+        // Mock appropriate endpoint based on tool
+        if (name === 'list-connections') {
+          mockApiClient.mockResponse('GET', '/connections', { success: false, error: testErrors.apiError });
+        } else if (name === 'get-connection') {
+          mockApiClient.mockResponse('GET', '/connections/12345', { success: false, error: testErrors.apiError });
+        } else if (name === 'create-connection') {
+          mockApiClient.mockResponse('POST', '/connections', { success: false, error: testErrors.apiError });
+        } else if (name === 'test-connection') {
+          mockApiClient.mockResponse('POST', '/connections/12345/test', { success: false, error: testErrors.apiError });
+        } else if (name === 'list-webhooks') {
+          mockApiClient.mockResponse('GET', '/webhooks', { success: false, error: testErrors.apiError });
+        } else if (name === 'create-webhook') {
+          mockApiClient.mockResponse('POST', '/webhooks', { success: false, error: testErrors.apiError });
+        }
 
         const tool = findTool(mockTool, name);
         await expect(executeTool(tool, params))
@@ -949,7 +979,7 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
     });
 
     it('should handle network errors', async () => {
-      mockApiClient.mockNetworkError();
+      mockApiClient.mockFailure('GET', '/connections', new Error('Network error'));
 
       const { addConnectionTools } = await import('../../../src/tools/connections.js');
       addConnectionTools(mockServer, mockApiClient as any);
@@ -1092,7 +1122,8 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
       const testTool = findTool(mockTool, 'test-connection');
       const testResult = await executeTool(testTool, { connectionId: 12345 });
       
-      expect(testResult).toContain('"isValid":true');
+      const parsedTestResult = JSON.parse(testResult);
+      expect(parsedTestResult.isValid).toBe(true);
 
       // 3. Update connection
       mockApiClient.mockResponse('PATCH', '/connections/12345', {

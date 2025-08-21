@@ -22,7 +22,7 @@ jest.mock('path', () => ({
   dirname: jest.fn((p) => p.split('/').slice(0, -1).join('/')),
 }));
 
-jest.mock('../../../src/lib/logger.js', () => ({
+jest.mock('../../../src/lib/logger.ts', () => ({
   default: {
     child: jest.fn(() => ({
       info: jest.fn(),

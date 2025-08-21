@@ -2,60 +2,25 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755810188972_idrobhjkz",
-      "title": "Fix critical test failures - destructuring errors and mock issues",
-      "description": "Address systematic test failures preventing test execution:\n\n1. Fix destructuring errors in create-scenario.ts (Cannot destructure property log of undefined)\n2. Fix budget-control-basic.test.ts undefined analysis property expectations\n3. Fix mock promise rejection expectations in budget control tests\n4. Fix schema validation issues with test parameters\n5. Fix blueprint analysis connection extraction failures\n6. Fix template complexity property access errors\n7. Fix secure-config logger initialization failures\n\nThese infrastructure issues are blocking test coverage analysis and CI/CD pipeline.",
+      "id": "task_1755818241696_u6ldqgwbl",
+      "title": "Fix secure-config module test failures",
+      "description": "Apply budget-control successful patterns to fix test failures in security-related modules",
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-21T21:03:08.972Z",
-      "auto_research_created": false,
-      "started_at": "2025-08-21T23:12:52.191Z",
-      "claimed_by": "agent_1755817972191",
-      "assigned_agent": "agent_1755817972191",
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755814456319",
-          "action": "claimed",
-          "timestamp": "2025-08-21T22:14:16.319Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T22:43:40.158Z",
-          "reason": "Task stale for 29 minutes"
-        },
-        {
-          "agentId": "development_session_1755816225411_1_general_fd537e6c",
-          "role": "primary",
-          "assignedAt": "2025-08-21T22:44:07.527Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T23:06:46.765Z",
-          "reason": "Task stale for 23 minutes"
-        },
-        {
-          "agent": "agent_1755817972191",
-          "action": "claimed",
-          "timestamp": "2025-08-21T23:12:52.191Z"
-        }
-      ]
+      "created_at": "2025-08-21T23:17:21.696Z",
+      "auto_research_created": false
     },
     {
-      "id": "task_1755813098303_vrewkwqhe",
-      "title": "Fix critical test failures across multiple modules",
-      "description": "Address systematic test failures in budget-control, scenarios, templates, connections, and secure-config modules. Key issues: undefined property access, mock configuration, schema validation failures, and middleware integration problems.",
+      "id": "task_1755818240745_vqkb1v8kx",
+      "title": "Fix scenarios module test failures using budget-control patterns",
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "high",
@@ -66,11 +31,28 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
+      "created_at": "2025-08-21T23:17:20.745Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755813098303_vrewkwqhe",
+      "title": "Fix critical test failures across multiple modules",
+      "description": "Address systematic test failures in budget-control, scenarios, templates, connections, and secure-config modules. Key issues: undefined property access, mock configuration, schema validation failures, and middleware integration problems.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
       "created_at": "2025-08-21T21:51:38.304Z",
       "auto_research_created": false,
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
+      "assigned_agent": "development_session_1755818116980_1_general_475446fb",
+      "started_at": "2025-08-21T23:15:38.869Z",
+      "claimed_by": "development_session_1755818116980_1_general_475446fb",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755814264541_1_general_8ec8559c",
@@ -97,6 +79,13 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-21T23:15:11.451Z",
           "reason": "Task stale for 16 minutes"
+        },
+        {
+          "agentId": "development_session_1755818116980_1_general_475446fb",
+          "role": "primary",
+          "assignedAt": "2025-08-21T23:15:38.869Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
     },
