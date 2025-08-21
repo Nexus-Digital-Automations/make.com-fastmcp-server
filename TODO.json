@@ -17,14 +17,27 @@
       "subtasks": [],
       "created_at": "2025-08-21T21:03:08.972Z",
       "auto_research_created": false,
-      "started_at": "2025-08-21T22:14:16.319Z",
-      "claimed_by": "agent_1755814456319",
-      "assigned_agent": "agent_1755814456319",
+      "started_at": "2025-08-21T22:44:07.527Z",
+      "claimed_by": "development_session_1755816225411_1_general_fd537e6c",
+      "assigned_agent": "development_session_1755816225411_1_general_fd537e6c",
       "agent_assignment_history": [
         {
           "agent": "agent_1755814456319",
           "action": "claimed",
           "timestamp": "2025-08-21T22:14:16.319Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-21T22:43:40.158Z",
+          "reason": "Task stale for 29 minutes"
+        },
+        {
+          "agentId": "development_session_1755816225411_1_general_fd537e6c",
+          "role": "primary",
+          "assignedAt": "2025-08-21T22:44:07.527Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
     },
@@ -155,13 +168,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755814264541_1_general_8ec8559c": {
+    "development_session_1755816225411_1_general_fd537e6c": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T22:11:04.541Z",
+      "lastHeartbeat": "2025-08-21T22:43:45.411Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -172,8 +185,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T22:11:04.541Z",
-      "sessionId": "session_1755814264541",
+      "createdAt": "2025-08-21T22:43:45.411Z",
+      "sessionId": "session_1755816225411",
       "metadata": {}
     }
   },

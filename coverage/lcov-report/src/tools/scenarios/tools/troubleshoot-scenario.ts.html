@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.09% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/99</span>
+                <span class='fraction'>0/99</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.11% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/18</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.09% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/99</span>
+                <span class='fraction'>0/99</span>
             </div>
         
             
@@ -602,17 +602,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -713,8 +713,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1136,17 +1136,17 @@
  * Single-responsibility tool for scenario troubleshooting and diagnostics
  */
 &nbsp;
-import { UserError } from 'fastmcp';
-import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema } from '../schemas/troubleshooting.js';
-import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
-import { generateTroubleshootingReport as _generateTroubleshootingReport } from '../utils/troubleshooting.js';
-import type MakeApiClient from '../../../lib/make-api-client.js';
+<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
+<span class="cstat-no" title="statement not covered" >import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema </span>} from '../schemas/troubleshooting.js';
+<span class="cstat-no" title="statement not covered" >import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';</span>
+import { generateT<span class="cstat-no" title="statement not covered" >roubleshootingRepor</span>t as _generateTroubleshootingReport } from '../utils/troubleshooting.js';
+import type MakeApiClient fro<span class="cstat-no" title="statement not covered" >m '../../../lib/make-api-client.js';</span>
 &nbsp;
 /**
  * Create troubleshoot scenario tool configuration
- */
-export function createTroubleshootScenarioTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+ */<span class="fstat-no" title="function not covered" ></span>
+export function createTroubleshoot<span class="cstat-no" title="statement not covered" >Scenario</span>Tool(context: ToolContext): ToolDefinition {
+  co<span class="cstat-no" title="statement not covered" >nst { apiClient, logger } = context;</span>
   
   return {
     name: 'troubleshoot-scenario',
@@ -1246,9 +1246,9 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
  */
 async function fetchScenarioForTroubleshooting(
   apiClient: MakeApiClient, 
-  scenarioId: string
-): Promise&lt;unknown&gt; {
-  const response = await apiClient.get(`/scenarios/${scenarioId}`);
+  scenari<span class="fstat-no" title="function not covered" >oId: string</span>
+): Promise&lt;unknown&gt; {<span class="cstat-no" title="statement not covered" ></span>
+  co<span class="cstat-no" title="statement not covered" >nst response = await apiClient.get(`/scenarios/${scenarioId}`);</span>
   if (!response.success) {
     throw new Error(`Failed to fetch scenario ${scenarioId}`);
   }
@@ -1672,7 +1672,7 @@ async function generateSecurityAssessment(_scenarios: unknown[]): Promise&lt;unk
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T22:42:52.149Z
+                at 2025-08-21T22:47:29.160Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

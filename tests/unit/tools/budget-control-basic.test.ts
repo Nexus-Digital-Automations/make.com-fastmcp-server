@@ -565,6 +565,10 @@ describe('Budget Control Tools - Basic Tests', () => {
         reason: 'Budget threshold analysis'
       });
       
+      console.log('Test: control-high-cost-scenarios result type:', typeof result);
+      console.log('Test: control-high-cost-scenarios result defined:', result !== undefined);
+      console.log('Test: control-high-cost-scenarios result:', result ? result.substring(0, 200) : 'undefined');
+      
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
       expect(parsedResult.analysis).toBeDefined();

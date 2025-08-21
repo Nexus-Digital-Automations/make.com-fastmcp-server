@@ -789,6 +789,21 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
               action,
               scenariosEvaluated: 0,
               reason: 'All scenarios within acceptable cost thresholds',
+              totalScenarios: 0,
+              highCostScenarios: 0,
+              averageCost: 0,
+              topCostScenarios: []
+            },
+            recommendations: [
+              'All scenarios are currently within acceptable cost thresholds',
+              'Continue monitoring for cost optimization opportunities',
+              'Review budget allocation for potential adjustments'
+            ],
+            controlActions: {
+              available: ['monitor'],
+              suggested: 'monitor',
+              estimatedSavings: 0,
+              rollbackPlan: { available: false, timeframe: 'n/a' }
             },
           }, null, 2);
         }
@@ -882,14 +897,15 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
             analysis: {
               totalScenarios: scenarios.length,
               highCostScenarios: scenarios.length,
-              averageCost: scenarioAnalysis.estimatedSavings / scenarios.length / 30, // Daily average
-              topCostScenarios: scenarioAnalysis.scenarios.map(s => ({
+              averageCost: scenarios.length > 0 && scenarioAnalysis.estimatedSavings ? 
+                (scenarioAnalysis.estimatedSavings / scenarios.length / 30) : 0, // Daily average
+              topCostScenarios: scenarioAnalysis.scenarios?.map(s => ({
                 scenarioId: s.id,
                 name: s.name,
                 dailyCost: s.currentCost,
                 monthlyProjection: s.currentCost * 30,
                 riskLevel: s.impact === 'high' ? 'high' : s.impact === 'medium' ? 'medium' : 'low'
-              }))
+              })) || []
             },
             recommendations: [
               'Consider optimizing high-cost scenario configurations',
