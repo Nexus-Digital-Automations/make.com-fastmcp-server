@@ -69,11 +69,11 @@ interface ExportConfig {
 }
 
 interface OutputConfig {
-  format: 'json' | 'csv' | 'parquet' | 'newrelic' | 'splunk' | 'elasticsearch' | 'datadog' | 'prometheus' | 'aws-cloudwatch' | 'azure-monitor' | 'gcp-logging';
-  destination: string;
-  chunkSize: number;
-  compression: 'none' | 'gzip' | 'brotli';
-  includeMetadata: boolean;
+  format?: 'json' | 'csv' | 'parquet' | 'newrelic' | 'splunk' | 'elasticsearch' | 'datadog' | 'prometheus' | 'aws-cloudwatch' | 'azure-monitor' | 'gcp-logging';
+  destination?: string;
+  chunkSize?: number;
+  compression?: 'none' | 'gzip' | 'brotli' | 'zip';
+  includeMetadata?: boolean;
   fieldMapping?: Record<string, string>;
   transformations?: DataTransformation[];
   encryption?: {
@@ -84,8 +84,8 @@ interface OutputConfig {
 }
 
 interface DestinationConfig {
-  type: 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook' | 'external-system';
-  path: string;
+  type?: 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook' | 'external-system' | 'stream' | 'download';
+  path?: string;
   credentials?: {
     accessKey?: string;
     secretKey?: string;
@@ -120,7 +120,7 @@ interface AnalyticsConfig {
 
 interface ExternalSystemConfig {
   type?: 'elasticsearch' | 'splunk' | 'datadog' | 'newrelic' | 'generic';
-  endpoint: string;
+  endpoint?: string;
   authentication?: {
     type: 'bearer' | 'api-key' | 'basic' | 'api_key' | 'oauth2';
     credentials: Record<string, string>;
@@ -135,8 +135,8 @@ interface ExternalSystemConfig {
 }
 
 interface DataTransformation {
-  operation: 'rename' | 'format_date' | 'parse_json' | 'extract_regex' | 'convert_type' | 'filter_fields';
-  field: string;
+  operation?: 'rename' | 'format_date' | 'parse_json' | 'extract_regex' | 'convert_type' | 'filter_fields';
+  field?: string;
   targetField?: string;
   parameters?: Record<string, unknown>;
 }
@@ -1253,19 +1253,19 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
         if (exportConfig.organizationId) {
           params.organizationId = exportConfig.organizationId;
         }
-        if (exportConfig.filtering.logLevels?.length > 0) {
+        if (exportConfig.filtering?.logLevels?.length > 0) {
           params.level = exportConfig.filtering.logLevels.join(',');
         }
-        if (exportConfig.filtering.moduleTypes?.length) {
+        if (exportConfig.filtering?.moduleTypes?.length) {
           params.moduleTypes = exportConfig.filtering.moduleTypes.join(',');
         }
-        if (exportConfig.filtering.correlationIds?.length) {
+        if (exportConfig.filtering?.correlationIds?.length) {
           params.correlationIds = exportConfig.filtering.correlationIds.join(',');
         }
-        if (exportConfig.filtering.errorCodesOnly) {
+        if (exportConfig.filtering?.errorCodesOnly) {
           params.errorsOnly = true;
         }
-        if (exportConfig.filtering.performanceThreshold) {
+        if (exportConfig.filtering?.performanceThreshold) {
           params.minProcessingTime = exportConfig.filtering.performanceThreshold;
         }
 
@@ -1284,12 +1284,23 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
         };
         const exportProcessor = new EnhancedLogExportProcessor(apiClient, exportMetadata, loggerAdapter);
         
+        // Ensure streaming configuration has proper defaults
+        const normalizedExportConfig: ExportConfig = {
+          ...exportConfig,
+          streaming: {
+            enabled: exportConfig.streaming?.enabled ?? false,
+            batchSize: exportConfig.streaming?.batchSize ?? 50,
+            intervalMs: exportConfig.streaming?.intervalMs ?? 5000,
+            maxDuration: exportConfig.streaming?.maxDuration ?? 3600
+          }
+        };
+        
         // Handle streaming vs batch export
-        if (exportConfig.streaming?.enabled) {
+        if (normalizedExportConfig.streaming?.enabled) {
           return await exportProcessor.processStreamingExport(
             endpoint,
             params,
-            exportConfig,
+            normalizedExportConfig,
             outputConfig,
             destination,
             analytics
@@ -1298,7 +1309,7 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
           return await exportProcessor.processBatchExport(
             endpoint,
             params,
-            exportConfig,
+            normalizedExportConfig,
             outputConfig,
             destination,
             analytics
@@ -1368,7 +1379,7 @@ class EnhancedLogExportProcessor {
         const filteredLogs = this.applyAdvancedFiltering(logs, exportConfig.filtering);
         allLogs.push(...filteredLogs);
         totalProcessed += logs.length;
-        offset += outputConfig.chunkSize;
+        offset += outputConfig.chunkSize || 1000;
 
         // Check if we've reached the end
         const metadata = response.metadata;
@@ -1408,7 +1419,7 @@ class EnhancedLogExportProcessor {
       deliveryResults = await this.deliverToExternalSystem(
         exportData,
         destination.externalSystemConfig,
-        outputConfig.format
+        outputConfig.format || 'json'
       );
     }
 
@@ -1506,7 +1517,7 @@ class EnhancedLogExportProcessor {
 
               // Deliver batch to external system
               if (externalConnector) {
-                const deliveryResult = await externalConnector.sendBatch(batchData, outputConfig.format);
+                const deliveryResult = await externalConnector.sendBatch(batchData, outputConfig.format || 'json');
                 streamingResults.deliveryResults.push(deliveryResult);
               }
 
@@ -1566,11 +1577,11 @@ class EnhancedLogExportProcessor {
     let filteredLogs = logs;
 
     // Apply execution success/failure filtering
-    if (!filtering.includeSuccessfulExecutions) {
+    if (filtering && !filtering.includeSuccessfulExecutions) {
       filteredLogs = filteredLogs.filter(log => log.level !== 'info' || log.error);
     }
 
-    if (!filtering.includeFailedExecutions) {
+    if (filtering && !filtering.includeFailedExecutions) {
       filteredLogs = filteredLogs.filter(log => !log.error);
     }
 
@@ -1651,7 +1662,7 @@ class EnhancedLogExportProcessor {
     analytics?: Record<string, unknown>
   ): Promise<unknown> {
     const formatter = new EnhancedExportFormatter();
-    return formatter.format(logs, outputConfig.format, {
+    return formatter.format(logs, outputConfig.format || 'json', {
       metadata,
       analytics,
       compression: outputConfig.compression,
@@ -1751,27 +1762,28 @@ class EnhancedLogExportProcessor {
     const results: Record<string, unknown> = {};
     
     for (const metric of metrics) {
-      const values = logs
+      const values: number[] = logs
         .filter(log => this.matchesFilters(log, metric.filters))
         .map(log => this.extractFieldValue(log, metric.field))
-        .filter(val => val !== null && val !== undefined);
+        .filter(val => val !== null && val !== undefined)
+        .map(val => Number(val));
 
       switch (metric.aggregation) {
         case 'count':
           results[metric.name] = values.length;
           break;
         case 'sum':
-          results[metric.name] = values.reduce((sum, val) => Number(sum) + Number(val), 0);
+          results[metric.name] = values.reduce((sum, val) => sum + val, 0);
           break;
         case 'avg':
           results[metric.name] = values.length > 0 ? 
-            (values.reduce((sum, val) => Number(sum) + Number(val), 0) / values.length) : 0;
+            (values.reduce((sum, val) => sum + val, 0) / values.length) : 0;
           break;
         case 'min':
-          results[metric.name] = values.length > 0 ? Math.min(...values.map(Number)) : null;
+          results[metric.name] = values.length > 0 ? Math.min(...values) : null;
           break;
         case 'max':
-          results[metric.name] = values.length > 0 ? Math.max(...values.map(Number)) : null;
+          results[metric.name] = values.length > 0 ? Math.max(...values) : null;
           break;
       }
     }
