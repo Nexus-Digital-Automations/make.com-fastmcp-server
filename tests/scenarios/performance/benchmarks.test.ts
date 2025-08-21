@@ -26,9 +26,11 @@ import {
   OptimizeBlueprintSchema
 } from '../../../src/tools/scenarios/schemas/blueprint-update.js';
 import {
-  ScenarioFiltersSchema,
-  GenerateTroubleshootingReportSchema
+  ScenarioFiltersSchema
 } from '../../../src/tools/scenarios/schemas/scenario-filters.js';
+import {
+  GenerateTroubleshootingReportSchema
+} from '../../../src/tools/scenarios/schemas/troubleshooting.js';
 import type MakeApiClient from '../../../src/lib/make-api-client.js';
 
 // Mock the logger

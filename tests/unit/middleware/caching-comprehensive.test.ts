@@ -41,18 +41,35 @@ const mockCacheInstance = {
 };
 
 // Mock dependencies with enhanced functionality
-jest.mock('../../../src/lib/cache.js', () => ({
-  default: jest.fn().mockImplementation(() => mockCacheInstance),
-  defaultCacheConfig: {
-    host: 'localhost',
-    port: 6379,
-    keyPrefix: 'fastmcp:',
-    ttl: 1800,
-    compression: true,
-    serialization: 'json',
-    maxMemoryPolicy: 'allkeys-lru'
-  }
-}));
+jest.mock('../../../src/lib/cache.js', () => {
+  const MockRedisCache = jest.fn().mockImplementation(() => mockCacheInstance);
+  return {
+    default: MockRedisCache,
+    RedisCache: MockRedisCache,
+    defaultCacheConfig: {
+      redis: {
+        host: 'localhost',
+        port: 6379,
+        maxRetriesPerRequest: 3,
+        enableReadyCheck: true
+      },
+      compression: {
+        enabled: true,
+        threshold: 1024,
+        level: 6
+      },
+      ttl: {
+        default: 1800,
+        short: 300,
+        medium: 1800,
+        long: 7200
+      },
+      keyPrefix: 'fastmcp:',
+      maxMemory: '100mb',
+      evictionPolicy: 'allkeys-lru'
+    }
+  };
+});
 
 jest.mock('../../../src/lib/logger.js', () => ({
   default: {

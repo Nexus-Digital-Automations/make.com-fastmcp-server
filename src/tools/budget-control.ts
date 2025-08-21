@@ -635,6 +635,15 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
         const currentTime = new Date();
         const projectionEnd = new Date(currentTime.getTime() + projectionDays * 24 * 60 * 60 * 1000);
 
+        // Ensure all required data is available before constructing projection
+        if (!baseProjection || typeof baseProjection.currentSpend !== 'number' || typeof baseProjection.projected !== 'number') {
+          throw new UserError('Failed to generate projection: invalid base projection data');
+        }
+        
+        if (!confidence || typeof confidence.overall !== 'number') {
+          throw new UserError('Failed to generate projection: invalid confidence data');
+        }
+
         const projection: CostProjection = {
           budgetId,
           tenantId: 'default',
@@ -644,11 +653,11 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
             daysTotal: projectionDays,
             daysRemaining: projectionDays,
           },
-          currentSpend: baseProjection.currentSpend,
+          currentSpend: baseProjection.currentSpend || 0,
           projectedSpend: {
-            conservative: baseProjection.projected * 0.8,
-            expected: baseProjection.projected,
-            optimistic: baseProjection.projected * 1.2,
+            conservative: (baseProjection.projected || 0) * 0.8,
+            expected: baseProjection.projected || 0,
+            optimistic: (baseProjection.projected || 0) * 1.2,
           },
           confidence: {
             overall: confidence.overall,
@@ -704,19 +713,24 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
           dataPoints: projection.methodology.dataPoints,
         });
 
-        return JSON.stringify({
+        // Final validation of projection object before returning
+        if (!projection || !projection.projectedSpend) {
+          throw new UserError('Failed to construct valid projection object');
+        }
+
+        const result = {
           projection,
           analysis: {
-            summary: `${projectionDays}-day cost projection: $${projection.projectedSpend.expected.toFixed(2)} (${(projection.confidence.overall * 100).toFixed(1)}% confidence)`,
+            summary: `${projectionDays}-day cost projection: $${(projection.projectedSpend.expected || 0).toFixed(2)} (${((projection.confidence.overall || 0) * 100).toFixed(1)}% confidence)`,
             trends: {
-              spending: baseProjection.projected > baseProjection.currentSpend * 2 ? 'increasing' : 'stable',
+              spending: (baseProjection.projected || 0) > (baseProjection.currentSpend || 0) * 2 ? 'increasing' : 'stable',
               seasonality: seasonalPatterns ? 'detected' : 'not_detected',
-              volatility: confidence.trendStability > 0.8 ? 'low' : confidence.trendStability > 0.6 ? 'medium' : 'high',
+              volatility: (confidence.trendStability || 0) > 0.8 ? 'low' : (confidence.trendStability || 0) > 0.6 ? 'medium' : 'high',
             },
             riskFactors: [
-              ...(projection.confidence.overall < 0.7 ? ['Low prediction confidence due to insufficient data'] : []),
-              ...(projection.projectedSpend.expected > projection.currentSpend * 3 ? ['Unusually high projected growth rate'] : []),
-              ...(confidence.trendStability < 0.6 ? ['High spending volatility detected'] : []),
+              ...((projection.confidence.overall || 0) < 0.7 ? ['Low prediction confidence due to insufficient data'] : []),
+              ...((projection.projectedSpend.expected || 0) > (projection.currentSpend || 0) * 3 ? ['Unusually high projected growth rate'] : []),
+              ...((confidence.trendStability || 0) < 0.6 ? ['High spending volatility detected'] : []),
             ],
           },
           actionItems: [
@@ -725,7 +739,9 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
             'Update budget thresholds based on projections',
             'Schedule regular projection reviews',
           ],
-        }, null, 2);
+        };
+
+        return JSON.stringify(result, null, 2);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error generating cost projection', { budgetId, error: errorMessage });

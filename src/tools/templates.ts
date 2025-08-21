@@ -195,10 +195,10 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
           throw new UserError('Blueprint must be a valid scenario configuration object');
         }
 
-        // Analyze blueprint complexity
-        const complexity = metadata.complexity || (blueprint ? analyzeTemplateComplexity(blueprint) : 'simple');
-        const estimatedSetupTime = metadata.estimatedSetupTime || (blueprint ? estimateSetupTime(blueprint) : 5);
-        const requiredConnections = metadata.requiredConnections.length > 0 
+        // Analyze blueprint complexity with safe property access
+        const complexity = metadata?.complexity || (blueprint ? analyzeTemplateComplexity(blueprint) : 'simple');
+        const estimatedSetupTime = metadata?.estimatedSetupTime || (blueprint ? estimateSetupTime(blueprint) : 5);
+        const requiredConnections = (metadata?.requiredConnections && metadata.requiredConnections.length > 0) 
           ? metadata.requiredConnections 
           : (blueprint ? extractRequiredConnections(blueprint) : []);
 
@@ -248,23 +248,23 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
           templateId: template.id,
           name: template.name,
           category: template.category,
-          complexity: template.metadata.complexity,
+          complexity: template.metadata?.complexity || 'simple',
         });
 
         return JSON.stringify({
           template,
           message: `Template "${name}" created successfully`,
           analysis: {
-            complexity: template.metadata.complexity,
-            estimatedSetupTime: `${template.metadata.estimatedSetupTime} minutes`,
-            requiredConnections: template.metadata.requiredConnections,
+            complexity: template.metadata?.complexity || 'simple',
+            estimatedSetupTime: `${template.metadata?.estimatedSetupTime || 5} minutes`,
+            requiredConnections: template.metadata?.requiredConnections || [],
             tags: template.tags,
           },
           sharing: {
-            isPublic: template.sharing.isPublic,
-            organizationVisible: template.sharing.organizationVisible,
-            teamVisible: template.sharing.teamVisible,
-            specificShares: template.sharing.sharedWith.length,
+            isPublic: template.sharing?.isPublic || false,
+            organizationVisible: template.sharing?.organizationVisible || false,
+            teamVisible: template.sharing?.teamVisible || false,
+            specificShares: template.sharing?.sharedWith?.length || 0,
           },
         }, null, 2);
       } catch (error: unknown) {
@@ -344,20 +344,20 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
             return acc;
           }, {}),
           complexityBreakdown: {
-            simple: templates.filter(t => t.metadata.complexity === 'simple').length,
-            moderate: templates.filter(t => t.metadata.complexity === 'moderate').length,
-            complex: templates.filter(t => t.metadata.complexity === 'complex').length,
+            simple: templates.filter(t => t.metadata?.complexity === 'simple').length,
+            moderate: templates.filter(t => t.metadata?.complexity === 'moderate').length,
+            complex: templates.filter(t => t.metadata?.complexity === 'complex').length,
           },
           visibilityBreakdown: {
-            public: templates.filter(t => t.sharing.isPublic).length,
-            organization: templates.filter(t => t.sharing.organizationVisible && !t.sharing.isPublic).length,
-            team: templates.filter(t => t.sharing.teamVisible && !t.sharing.organizationVisible && !t.sharing.isPublic).length,
-            private: templates.filter(t => !t.sharing.isPublic && !t.sharing.organizationVisible && !t.sharing.teamVisible).length,
+            public: templates.filter(t => t.sharing?.isPublic).length,
+            organization: templates.filter(t => t.sharing?.organizationVisible && !t.sharing?.isPublic).length,
+            team: templates.filter(t => t.sharing?.teamVisible && !t.sharing?.organizationVisible && !t.sharing?.isPublic).length,
+            private: templates.filter(t => !t.sharing?.isPublic && !t.sharing?.organizationVisible && !t.sharing?.teamVisible).length,
           },
           mostUsedTemplates: includeUsage ? templates
-            .sort((a, b) => b.usage.totalUses - a.usage.totalUses)
+            .sort((a, b) => (b.usage?.totalUses || 0) - (a.usage?.totalUses || 0))
             .slice(0, 5)
-            .map(t => ({ id: t.id, name: t.name, uses: t.usage.totalUses })) : undefined,
+            .map(t => ({ id: t.id, name: t.name, uses: t.usage?.totalUses || 0 })) : undefined,
           popularTags: [...new Set(templates.flatMap(t => t.tags))]
             .map(tag => ({
               tag,
@@ -457,13 +457,13 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         responseData.metadata = {
           canEdit: true, // This would be determined by user permissions
-          canDelete: template.usage.activeScenarios === 0,
+          canDelete: template.usage?.activeScenarios === 0,
           canUse: true,
           canShare: true,
           lastModified: template.updatedAt,
-          complexity: template.metadata.complexity,
-          estimatedSetupTime: template.metadata.estimatedSetupTime,
-          requiredConnections: template.metadata.requiredConnections,
+          complexity: template.metadata?.complexity || 'simple',
+          estimatedSetupTime: template.metadata?.estimatedSetupTime || 5,
+          requiredConnections: template.metadata?.requiredConnections || [],
         };
 
         return JSON.stringify(responseData, null, 2);

@@ -845,6 +845,7 @@ describe('Connection Management Tools - Basic Tests', () => {
     it('should implement secure credential handling patterns', async () => {
       const secureConnection = {
         ...testConnection,
+        name: 'Secure Enterprise Connection',
         credentials: {
           encrypted_token: 'encrypted-value',
           key_id: 'hsm-key-123',

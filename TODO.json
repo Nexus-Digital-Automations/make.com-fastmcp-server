@@ -2,131 +2,25 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755812894103_akthb1wba",
-      "title": "Expand test coverage for enterprise secrets and log streaming modules",
-      "description": "Create comprehensive test coverage for the newly implemented enterprise secrets management and log streaming modules:\n\n1. Enterprise secrets module comprehensive testing\n2. Log streaming functionality testing\n3. HSM integration testing\n4. Vault configuration testing\n5. Audit system testing\n6. Security compliance validation testing\n\nTarget: Achieve 80%+ coverage for these critical security modules",
+      "id": "task_1755814105510_beh2ltir9",
+      "title": "Fix critical test failures blocking coverage analysis",
+      "description": "Address multiple systematic test failures preventing test suite execution and coverage analysis:\n\n1. Fix connections-basic.test.ts assertion failures (expecting different connection names)\n2. Fix templates-basic.test.ts undefined property access errors\n3. Fix secure-config.test.ts logger initialization failures\n4. Fix diagnostic-rules.test.ts class constructor invocation errors\n5. Fix circuit breaker state expectation issues\n6. Fix workflow execution failures in multi-tool-workflows.test.ts\n\nThese critical issues are blocking test coverage analysis and preventing CI/CD validation.",
       "mode": "DEVELOPMENT",
-      "category": "missing-test",
-      "priority": "high",
-      "status": "pending",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-21T21:48:14.103Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755802584362_9fmkng8c6",
-      "title": "Expand test coverage for core FastMCP server components",
-      "description": "Building on the resolved Jest infrastructure issues, expand test coverage for critical server components:\\n\\n1. Implement comprehensive unit tests for middleware components\\n2. Create integration tests for API client functionality\\n3. Add end-to-end tests for tool registration and execution\\n4. Expand test coverage for error handling and edge cases\\n5. Create performance tests for high-load scenarios\\n\\nTarget: Achieve 60%+ test coverage (currently ~20%) by focusing on core components with highest business value.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-test",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "./src/middleware/",
-        "./src/lib/",
-        "./tests/",
-        "./jest.config.js",
-        "./coverage/",
-        "./development/reports/comprehensive-testing-validation-strategies-fastmcp-make-integration.md"
-      ],
-      "success_criteria": [
-        "Achieve 60%+ total test coverage",
-        "All middleware components have unit tests",
-        "API client has comprehensive integration tests",
-        "Tool execution has e2e test coverage",
-        "Performance tests validate high-load scenarios"
-      ],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T18:56:24.362Z",
+      "created_at": "2025-08-21T22:08:25.510Z",
       "auto_research_created": false,
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755802525688_1_general_d994ffea",
-          "role": "primary",
-          "assignedAt": "2025-08-21T18:56:30.209Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T19:16:00.628Z",
-          "reason": "Task stale for 20 minutes"
-        }
-      ]
-    },
-    {
-      "id": "task_1755772544463_kewye1muj",
-      "title": "Create comprehensive test suite for Make.com FastMCP server",
-      "description": "Implement comprehensive test coverage for the FastMCP server. Current coverage is only 1.36% with zero coverage for all tool files. Need to create unit tests, integration tests, and end-to-end tests for all major components including tools, middleware, API client, and server functionality.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-test",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "./src/tools/",
-        "./src/middleware/",
-        "./src/lib/",
-        "./tests/",
-        "./package.json"
-      ],
-      "success_criteria": [
-        "Achieve >80% test coverage",
-        "Test all tool files",
-        "Integration tests for middleware",
-        "API client tests",
-        "Error handling tests"
-      ],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T10:35:44.463Z",
-      "auto_research_created": false,
-      "started_at": null,
-      "claimed_by": null,
-      "assigned_agent": null,
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755795673664",
-          "action": "claimed",
-          "timestamp": "2025-08-21T17:01:13.664Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T17:16:54.922Z",
-          "reason": "Task stale for 16 minutes"
-        },
-        {
-          "agentId": "development_session_1755795215359_1_general_a2d71673",
-          "role": "primary",
-          "assignedAt": "2025-08-21T17:20:52.311Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T17:47:52.666Z",
-          "reason": "Task stale for 27 minutes"
-        }
-      ],
       "access_history": [
         {
           "agentId": "system",
-          "timestamp": "2025-08-21T17:50:28.359Z",
+          "timestamp": "2025-08-21T22:08:44.394Z",
           "action": "status_change",
           "details": {
             "oldStatus": "pending",

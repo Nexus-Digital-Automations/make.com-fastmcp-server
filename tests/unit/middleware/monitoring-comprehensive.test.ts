@@ -38,7 +38,9 @@ const mockMetricsInstance = {
 
 // Mock dependencies with enhanced monitoring capabilities
 jest.mock('../../../src/lib/metrics.js', () => ({
-  default: mockMetricsInstance
+  default: mockMetricsInstance,
+  // Ensure both named and default exports are mocked
+  ...mockMetricsInstance
 }));
 
 jest.mock('../../../src/lib/logger.js', () => ({
