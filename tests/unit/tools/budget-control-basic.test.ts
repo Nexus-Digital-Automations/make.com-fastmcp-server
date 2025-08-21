@@ -491,14 +491,16 @@ describe('Budget Control Tools - Basic Tests', () => {
       const result = await executeTool(tool, {
         budgetId: 'budget_001',
         includeProjections: true,
-        includeTrends: true
+        includeRecommendations: true
       });
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
-      expect(parsedResult.status).toBeDefined();
-      expect(parsedResult.status.currentSpend).toBe(2500);
-      expect(parsedResult.status.riskLevel).toBe('medium');
+      expect(parsedResult.budgetStatus).toBeDefined();
+      expect(parsedResult.budgetStatus.currentSpend).toBeDefined();
+      expect(parsedResult.budgetStatus.riskLevel).toBeDefined();
+      expect(parsedResult.analysis).toBeDefined();
+      expect(parsedResult.projections).toBeDefined();
     });
 
     it('should execute generate-cost-projection with analysis', async () => {

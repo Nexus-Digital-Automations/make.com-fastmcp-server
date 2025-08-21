@@ -6,7 +6,7 @@
 import { UserError } from 'fastmcp';
 import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema } from '../schemas/troubleshooting.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
-import { generateTroubleshootingReport } from '../utils/troubleshooting.js';
+import { generateTroubleshootingReport as _generateTroubleshootingReport } from '../utils/troubleshooting.js';
 import type MakeApiClient from '../../../lib/make-api-client.js';
 
 /**
@@ -306,7 +306,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
 /**
  * Fetch scenarios for troubleshooting analysis
  */
-async function fetchScenariosForTroubleshooting(
+async function _fetchScenariosForTroubleshooting(
   apiClient: MakeApiClient,
   scenarioIds: string[],
   teamId?: string
@@ -334,7 +334,7 @@ async function fetchScenariosForTroubleshooting(
 /**
  * Fetch scenarios based on filters
  */
-async function fetchScenariosWithFilters(
+async function _fetchScenariosWithFilters(
   apiClient: MakeApiClient,
   filters: Record<string, unknown>
 ): Promise<unknown[]> {
@@ -355,7 +355,7 @@ async function fetchScenariosWithFilters(
 /**
  * Enhance troubleshooting report with additional analysis
  */
-async function enhanceTroubleshootingReport(
+async function _enhanceTroubleshootingReport(
   baseReport: unknown,
   scenarios: unknown[],
   options: {
@@ -387,7 +387,7 @@ async function enhanceTroubleshootingReport(
 /**
  * Format troubleshooting report based on requested type
  */
-async function formatTroubleshootingReport(
+async function _formatTroubleshootingReport(
   baseReport: unknown,
   scenarios: unknown[],
   options: {

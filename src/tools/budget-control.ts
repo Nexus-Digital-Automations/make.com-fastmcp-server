@@ -416,64 +416,75 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        // Simulate budget status calculation (in real implementation, query database and API)
+        // Get budget status from API
+        const statusResponse = await apiClient.get(`/budget/${budgetId}/status`);
+        if (!statusResponse.success) {
+          throw new UserError(`Failed to get budget status for ${budgetId}`);
+        }
+
+        reportProgress({ progress: 25, total: 100 });
+
+        // Use API data or simulate if not available
+        const apiData = statusResponse.data;
         const currentTime = new Date();
         const _periodStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), 1);
         const daysInMonth = new Date(currentTime.getFullYear(), currentTime.getMonth() + 1, 0).getDate();
         const daysElapsed = currentTime.getDate();
         const daysRemaining = daysInMonth - daysElapsed;
 
-        reportProgress({ progress: 25, total: 100 });
-
-        // Simulate current spending calculation
-        const mockCurrentSpend = Math.random() * 800 + 100; // $100-$900
-        const monthlyLimit = 1000; // $1000 budget
-        const percentUsed = (mockCurrentSpend / monthlyLimit) * 100;
-
         reportProgress({ progress: 50, total: 100 });
 
-        // Calculate trend and projection
-        const dailyAverage = mockCurrentSpend / daysElapsed;
-        const projectedSpend = mockCurrentSpend + (dailyAverage * daysRemaining);
-        const percentProjected = (projectedSpend / monthlyLimit) * 100;
+        // Use mock data or simulate current spending calculation
+        const currentSpend = apiData?.currentSpend || Math.random() * 800 + 100; // $100-$900
+        const monthlyLimit = apiData?.budgetLimit || 1000; // $1000 budget
+        const percentUsed = (currentSpend / monthlyLimit) * 100;
 
         reportProgress({ progress: 75, total: 100 });
 
-        // Determine risk level
-        let riskLevel: 'minimal' | 'low' | 'medium' | 'high' | 'critical' = 'minimal';
-        if (percentProjected > 120) riskLevel = 'critical';
-        else if (percentProjected > 100) riskLevel = 'high';
-        else if (percentProjected > 80) riskLevel = 'medium';
-        else if (percentProjected > 60) riskLevel = 'low';
+        // Calculate trend and projection
+        const dailyAverage = currentSpend / daysElapsed;
+        const projectedSpend = currentSpend + (dailyAverage * daysRemaining);
+        const percentProjected = (projectedSpend / monthlyLimit) * 100;
 
-        // Simulate triggered thresholds
-        const triggeredThresholds = [];
-        if (percentUsed >= 50) {
-          triggeredThresholds.push({
-            thresholdId: `threshold_${budgetId}_0`,
-            percentage: 50,
-            severity: 'info',
-            triggeredAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-          });
+        // Determine risk level
+        let riskLevel: 'minimal' | 'low' | 'medium' | 'high' | 'critical' = apiData?.riskLevel || 'minimal';
+        if (!apiData?.riskLevel) {
+          if (percentProjected > 120) riskLevel = 'critical';
+          else if (percentProjected > 100) riskLevel = 'high';
+          else if (percentProjected > 80) riskLevel = 'medium';
+          else if (percentProjected > 60) riskLevel = 'low';
         }
-        if (percentUsed >= 75) {
-          triggeredThresholds.push({
-            thresholdId: `threshold_${budgetId}_1`,
-            percentage: 75,
-            severity: 'warning',
-            triggeredAt: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
-          });
+
+        // Use existing triggered thresholds or simulate
+        const triggeredThresholds = apiData?.triggeredThresholds || [];
+        if (!apiData?.triggeredThresholds) {
+          if (percentUsed >= 50) {
+            triggeredThresholds.push({
+              thresholdId: `threshold_${budgetId}_0`,
+              percentage: 50,
+              severity: 'info',
+              triggeredAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+            });
+          }
+          if (percentUsed >= 75) {
+            triggeredThresholds.push({
+              thresholdId: `threshold_${budgetId}_1`,
+              percentage: 75,
+              severity: 'warning',
+              triggeredAt: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
+            });
+          }
         }
 
         const budgetStatus: BudgetStatus = {
           budgetId,
-          tenantId: 'default',
-          currentSpend: mockCurrentSpend,
+          tenantId: apiData?.tenantId || 'default',
+          currentSpend,
           projectedSpend,
           budgetLimit: monthlyLimit,
           percentUsed: Math.round(percentUsed * 100) / 100,
           percentProjected: Math.round(percentProjected * 100) / 100,
-          remainingBudget: monthlyLimit - mockCurrentSpend,
+          remainingBudget: monthlyLimit - currentSpend,
           daysRemaining,
           confidence: 0.85,
           lastUpdated: currentTime.toISOString(),

@@ -2,65 +2,21 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755799747751_2th8j7n66",
-      "title": "Optimize test infrastructure for modular architectures",
-      "description": "Improve the test infrastructure to better support the newly refactored modular architectures (scenarios, log-streaming, enterprise-secrets). Create focused test helpers, mock factories, and utilities that leverage the modular structure for more efficient and maintainable testing. Include test optimization for individual modules and integration testing improvements.",
+      "id": "task_1755801464997_7y6iddsjp",
+      "title": "Fix TypeScript compilation errors in budget-control.ts and troubleshoot-scenario.ts",
+      "description": "Address TypeScript type errors preventing compilation:\\n\\n1. Fix property access errors in budget-control.ts:\\n   - currentSpend, budgetLimit, riskLevel, triggeredThresholds, tenantId properties on empty object type\\n2. Fix unknown type issues in troubleshoot-scenario.ts:\\n   - scenario type unknown access error\\n   - unknown not assignable to any[] error\\n\\nTotal: 9 TypeScript compilation errors blocking build process.",
       "mode": "DEVELOPMENT",
-      "category": "enhancement",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "./src/tools/scenarios/",
-        "./src/tools/log-streaming/",
-        "./src/tools/enterprise-secrets/",
-        "./tests/",
-        "./jest.config.js"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-21T18:09:07.755Z",
-      "auto_research_created": true,
-      "assigned_agent": "development_session_1755800059082_1_general_5e1d04",
-      "started_at": "2025-08-21T18:14:19.083Z",
-      "claimed_by": "development_session_1755800059082_1_general_5e1d04",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755800059082_1_general_5e1d04",
-          "role": "primary",
-          "assignedAt": "2025-08-21T18:14:19.083Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
-      "id": "task_1755800104901_f3zdg63d9",
-      "title": "Research: Optimize test infrastructure for modular architectures with 3 concurrent specialists",
-      "description": "Research and analysis required for implementing: \"Optimize test infrastructure for modular architectures with 3 concurrent specialists\"\n\n**Implementation Task Details:**\nCreate comprehensive test infrastructure across 3 modules: log-streaming (missing entirely), enterprise-secrets (26 files), and cross-module integration. Deploy 3 specialized concurrent agents for simultaneous development.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755800104901_ldg28a9pw\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
+      "category": "error",
+      "priority": "critical",
       "status": "pending",
       "dependencies": [],
-      "important_files": [
-        "./development/research-reports/research-report-task_1755800104901_f3zdg63d9.md"
-      ],
-      "success_criteria": [
-        "Research methodology and approach documented",
-        "Key findings and recommendations provided",
-        "Implementation guidance and best practices identified",
-        "Risk assessment and mitigation strategies outlined",
-        "Research report created: ./development/research-reports/research-report-task_1755800104901_f3zdg63d9.md"
-      ],
-      "estimate": "1-2 hours",
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-21T18:15:04.901Z",
-      "created_by": "auto-research-system",
-      "auto_created_for": "task_1755800104901_ldg28a9pw"
+      "created_at": "2025-08-21T18:37:44.997Z",
+      "auto_research_created": false
     },
     {
       "id": "task_1755794138881_zv7sw22oe",
@@ -175,7 +131,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "critical",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -183,7 +139,19 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-21T18:30:49.156Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755801072537_1_general_8d033555",
+      "started_at": "2025-08-21T18:31:53.197Z",
+      "claimed_by": "development_session_1755801072537_1_general_8d033555",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755801072537_1_general_8d033555",
+          "role": "primary",
+          "assignedAt": "2025-08-21T18:31:53.197Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
     }
   ],
   "current_mode": "DEVELOPMENT",
@@ -193,13 +161,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755799702196_1_general_89c6cf1e": {
+    "development_session_1755801072537_1_general_8d033555": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T18:08:22.196Z",
+      "lastHeartbeat": "2025-08-21T18:31:12.538Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -210,8 +178,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T18:08:22.196Z",
-      "sessionId": "session_1755799702196",
+      "createdAt": "2025-08-21T18:31:12.538Z",
+      "sessionId": "session_1755801072537",
       "metadata": {}
     }
   },

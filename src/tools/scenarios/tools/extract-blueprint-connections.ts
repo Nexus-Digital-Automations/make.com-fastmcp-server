@@ -12,7 +12,7 @@ import { extractBlueprintConnections } from '../utils/blueprint-analysis.js';
  * Create extract blueprint connections tool configuration
  */
 export function createExtractBlueprintConnectionsTool(context: ToolContext): ToolDefinition {
-  const { logger } = context;
+  const { logger: _logger } = context;
   
   return {
     name: 'extract-blueprint-connections',
