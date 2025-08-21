@@ -20,21 +20,19 @@ import logger from '../lib/logger.js';
 import { EventEmitter } from 'events';
 // Import statement removed - ToolExecutionContext not used
 
-// Logger interface for proper typing - aligned with SerializableValue
-interface SerializableValue {
-  [key: string]: unknown;
-}
+// Logger interface for proper typing - using Record<string, unknown> to avoid conflicts
+// Remove local SerializableValue interface to avoid conflicts with FastMCP
 
 interface Logger {
-  debug: (message: string, data?: SerializableValue) => void;
-  info: (message: string, data?: SerializableValue) => void;
-  warn: (message: string, data?: SerializableValue) => void;
-  error: (message: string, data?: SerializableValue) => void;
+  debug: (message: string, data?: Record<string, unknown>) => void;
+  info: (message: string, data?: Record<string, unknown>) => void;
+  warn: (message: string, data?: Record<string, unknown>) => void;
+  error: (message: string, data?: Record<string, unknown>) => void;
 }
 
 // Export configuration interfaces
 interface ExportConfig {
-  filtering: {
+  filtering?: {
     logLevels?: string[];
     modules?: string[];
     dateRange?: {
@@ -113,6 +111,8 @@ interface AnalyticsConfig {
     realTimeAnalysis?: boolean;
     predictiveInsights?: boolean;
     anomalyDetection?: boolean;
+    performanceAnalysis?: boolean;
+    errorCorrelation?: boolean;
     performanceOptimization?: boolean;
   };
   type?: 'standard' | 'advanced' | 'enterprise';
@@ -1216,7 +1216,7 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
       const { exportConfig, outputConfig, destination, analytics } = input;
 
       log.info('Starting enhanced log export for analysis', {
-        timeRange: `${exportConfig.timeRange?.start || exportConfig.timeRange?.startTime || 'earliest'} to ${exportConfig.timeRange?.end || exportConfig.timeRange?.endTime || 'latest'}`,
+        timeRange: `${exportConfig.timeRange?.startTime || 'earliest'} to ${exportConfig.timeRange?.endTime || 'latest'}`,
         format: outputConfig.format,
         streaming: exportConfig.streaming?.enabled || false,
         external: destination.externalSystemConfig?.type,
@@ -1238,8 +1238,8 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
 
         // Enhanced query parameters for log retrieval
         const params: Record<string, unknown> = {
-          startDate: exportConfig.timeRange?.start || exportConfig.timeRange?.startTime,
-          endDate: exportConfig.timeRange?.end || exportConfig.timeRange?.endTime,
+          startDate: exportConfig.timeRange?.startTime,
+          endDate: exportConfig.timeRange?.endTime,
           limit: outputConfig.chunkSize,
           offset: 0,
           sortBy: 'timestamp',
@@ -1277,10 +1277,10 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
 
         // Initialize enhanced export processing with logger adapter
         const loggerAdapter: Logger = {
-          debug: (message: string, data?: SerializableValue) => log.debug(message, data),
-          info: (message: string, data?: SerializableValue) => log.info(message, data),
-          warn: (message: string, data?: SerializableValue) => log.warn(message, data),
-          error: (message: string, data?: SerializableValue) => log.error(message, data)
+          debug: (message: string, data?: Record<string, unknown>) => log.debug(message, data as any),
+          info: (message: string, data?: Record<string, unknown>) => log.info(message, data as any),
+          warn: (message: string, data?: Record<string, unknown>) => log.warn(message, data as any),
+          error: (message: string, data?: Record<string, unknown>) => log.error(message, data as any)
         };
         const exportProcessor = new EnhancedLogExportProcessor(apiClient, exportMetadata, loggerAdapter);
         
@@ -1618,19 +1618,19 @@ class EnhancedLogExportProcessor {
   ): Promise<Record<string, unknown>> {
     const results: Record<string, unknown> = {};
 
-    if (analytics.features.anomalyDetection) {
+    if (analytics.features?.anomalyDetection) {
       results.anomalies = this.detectAnomalies(logs);
     }
 
-    if (analytics.features.performanceAnalysis) {
+    if (analytics.features?.performanceAnalysis) {
       results.performanceInsights = this.analyzePerformance(logs);
     }
 
-    if (analytics.features.errorCorrelation) {
+    if (analytics.features?.errorCorrelation) {
       results.errorCorrelations = this.correlateErrors(logs);
     }
 
-    if (analytics.features.predictiveInsights) {
+    if (analytics.features?.predictiveInsights) {
       results.predictions = this.generatePredictions(logs);
     }
 
@@ -1664,7 +1664,7 @@ class EnhancedLogExportProcessor {
    */
   private async deliverToExternalSystem(
     data: unknown,
-    config: AnalyticsConfig,
+    config: ExternalSystemConfig,
     format: string
   ): Promise<Record<string, unknown>> {
     const connector = new ExternalSystemConnector(config, this.logger);
@@ -1761,11 +1761,11 @@ class EnhancedLogExportProcessor {
           results[metric.name] = values.length;
           break;
         case 'sum':
-          results[metric.name] = values.reduce((sum: number, val) => sum + Number(val), 0);
+          results[metric.name] = values.reduce((sum, val) => Number(sum) + Number(val), 0);
           break;
         case 'avg':
           results[metric.name] = values.length > 0 ? 
-            (values.reduce((sum: number, val) => sum + Number(val), 0) / values.length) : 0;
+            (values.reduce((sum, val) => Number(sum) + Number(val), 0) / values.length) : 0;
           break;
         case 'min':
           results[metric.name] = values.length > 0 ? Math.min(...values.map(Number)) : null;

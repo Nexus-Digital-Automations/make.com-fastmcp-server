@@ -1492,7 +1492,9 @@ export function addZeroTrustAuthTools(server: FastMCP, apiClient: MakeApiClient)
       name: tool.name,
       description: tool.description,
       parameters: tool.inputSchema,
-      execute: tool.execute
+      execute: async (args: unknown) => {
+        return await tool.execute(args as any);
+      }
     });
   });
 
