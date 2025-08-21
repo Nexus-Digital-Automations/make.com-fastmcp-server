@@ -1787,6 +1787,9 @@ class EnhancedExportFormatter {
 
     // Apply field mapping if provided
     const mappedLogs = fieldMapping ? this.applyFieldMapping(logs, fieldMapping) : logs;
+    
+    // Type assertion for mapped logs when field mapping is applied
+    const typedMappedLogs = mappedLogs as MakeLogEntry[];
 
     switch (format) {
       case 'json':
@@ -1794,38 +1797,38 @@ class EnhancedExportFormatter {
           metadata,
           analytics,
           logs: mappedLogs,
-          summary: generateLogSummary(mappedLogs),
+          summary: generateLogSummary(typedMappedLogs),
         };
 
       case 'csv':
-        return convertLogsToCSV(mappedLogs);
+        return convertLogsToCSV(typedMappedLogs);
 
       case 'parquet':
-        return this.convertToParquet(mappedLogs, metadata);
+        return this.convertToParquet(typedMappedLogs, metadata);
 
       case 'elasticsearch':
-        return convertLogsToElasticsearch(mappedLogs, metadata || {});
+        return convertLogsToElasticsearch(typedMappedLogs, metadata || {});
 
       case 'splunk':
-        return convertLogsToSplunk(mappedLogs, metadata || {});
+        return convertLogsToSplunk(typedMappedLogs, metadata || {});
 
       case 'datadog':
-        return convertLogsToDatadog(mappedLogs, metadata || {});
+        return convertLogsToDatadog(typedMappedLogs, metadata || {});
 
       case 'newrelic':
-        return this.convertToNewRelic(mappedLogs, metadata);
+        return this.convertToNewRelic(typedMappedLogs, metadata);
 
       case 'prometheus':
-        return this.convertToPrometheus(mappedLogs, metadata);
+        return this.convertToPrometheus(typedMappedLogs, metadata);
 
       case 'aws-cloudwatch':
-        return this.convertToCloudWatch(mappedLogs, metadata);
+        return this.convertToCloudWatch(typedMappedLogs, metadata);
 
       case 'azure-monitor':
-        return this.convertToAzureMonitor(mappedLogs, metadata);
+        return this.convertToAzureMonitor(typedMappedLogs, metadata);
 
       case 'gcp-logging':
-        return this.convertToGCPLogging(mappedLogs, metadata);
+        return this.convertToGCPLogging(typedMappedLogs, metadata);
 
       default:
         throw new Error(`Unsupported export format: ${format}`);
@@ -1838,14 +1841,14 @@ class EnhancedExportFormatter {
       
       // Apply field mappings
       for (const [originalField, mappedField] of Object.entries(mapping)) {
-        const value = this.getNestedValue(log, originalField);
+        const value = this.getNestedValue(log as unknown as Record<string, unknown>, originalField);
         if (value !== undefined) {
           this.setNestedValue(mappedLog, mappedField, value);
         }
       }
       
       // Include unmapped fields
-      for (const [key, value] of Object.entries(log)) {
+      for (const [key, value] of Object.entries(log as unknown as Record<string, unknown>)) {
         if (!mapping[key]) {
           mappedLog[key] = value;
         }
@@ -1856,7 +1859,11 @@ class EnhancedExportFormatter {
   }
 
   private getNestedValue(obj: Record<string, unknown>, path: string): unknown {
-    return path.split('.').reduce((current, key) => current?.[key], obj);
+    return path.split('.').reduce((current: unknown, key: string) => {
+      return current && typeof current === 'object' && !Array.isArray(current) 
+        ? (current as Record<string, unknown>)[key] 
+        : undefined;
+    }, obj);
   }
 
   private setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
@@ -1866,7 +1873,7 @@ class EnhancedExportFormatter {
     let current = obj;
     for (const key of keys) {
       if (!current[key]) current[key] = {};
-      current = current[key];
+      current = current[key] as Record<string, unknown>;
     }
     
     current[lastKey] = value;

@@ -4,6 +4,7 @@
  * device trust assessment, behavioral analytics, session management, and identity federation
  */
 
+import { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { authenticator } from 'otplib';
 import * as crypto from 'crypto';
@@ -1484,7 +1485,7 @@ export const zeroTrustAuthTools = [
 /**
  * Add all Zero Trust Authentication tools to FastMCP server
  */
-export function addZeroTrustAuthTools(server: { addTool: (tool: unknown) => void }, apiClient: MakeApiClient): void {
+export function addZeroTrustAuthTools(server: FastMCP, apiClient: MakeApiClient): void {
   zeroTrustAuthTools.forEach(createTool => {
     const tool = createTool(apiClient);
     server.addTool(tool);

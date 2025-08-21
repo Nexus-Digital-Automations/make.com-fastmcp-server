@@ -4,6 +4,7 @@
  * governance policies, data leakage prevention, and compliance boundaries
  */
 
+import { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import * as crypto from 'crypto';
 import { promisify } from 'util';
@@ -1410,7 +1411,7 @@ export const multiTenantSecurityTools = [
 /**
  * Add all Multi-Tenant Security tools to FastMCP server
  */
-export function addMultiTenantSecurityTools(server: { addTool: (tool: unknown) => void }, apiClient: MakeApiClient): void {
+export function addMultiTenantSecurityTools(server: FastMCP, apiClient: MakeApiClient): void {
   multiTenantSecurityTools.forEach(createTool => {
     const tool = createTool(apiClient);
     server.addTool(tool);

@@ -313,19 +313,33 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
           organizationId,
           name,
           description,
-          budgetLimits,
+          budgetLimits: {
+            monthly: budgetLimits.monthly || 1000,
+            daily: budgetLimits.daily,
+            perScenario: budgetLimits.perScenario,
+            credits: budgetLimits.credits,
+          },
           budgetPeriod: {
-            ...budgetPeriod,
+            type: budgetPeriod.type || 'monthly',
+            startDate: budgetPeriod.startDate,
+            endDate: budgetPeriod.endDate,
             timezone: budgetPeriod.timezone || 'UTC',
           },
           alertThresholds: alertThresholds.map((threshold, index) => ({
             id: `threshold_${budgetId}_${index}`,
-            ...threshold,
+            percentage: threshold.percentage || 80,
+            type: threshold.type || 'actual',
+            severity: threshold.severity || 'warning',
+            channels: threshold.channels || ['email'],
+            cooldownMinutes: threshold.cooldownMinutes || 60,
             isEnabled: true,
           })),
           automatedActions: automatedActions?.map((action, index) => ({
             id: `action_${budgetId}_${index}`,
-            ...action,
+            trigger: action.trigger || 'threshold_90',
+            action: action.action || 'notify',
+            parameters: action.parameters,
+            requiresApproval: action.requiresApproval || false,
             isEnabled: true,
           })) || [],
           scope,
@@ -619,7 +633,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
           },
           methodology: {
             model: projectionModel,
-            dataPoints: historicalData.dataPoints,
+            dataPoints: historicalData.dataPoints.length,
             trainingPeriod: '90 days',
             features: [
               'historical_spend',
@@ -849,20 +863,64 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
 }
 
 // Helper functions for simulating ML-powered operations
-async function simulateHistoricalDataCollection(_budgetId: string): Promise<{ dataPoints: number; quality: number }> {
+async function simulateHistoricalDataCollection(budgetId: string): Promise<HistoricalBudgetData> {
   // Simulate data collection delay
   await new Promise(resolve => setTimeout(resolve, 100));
+  const dataPointCount = Math.floor(Math.random() * 100) + 50; // 50-150 data points
+  
+  // Generate mock historical data points
+  const dataPoints = [];
+  const baseSpend = Math.random() * 500 + 200; // $200-$700 base spend
+  
+  for (let i = 0; i < Math.min(dataPointCount, 30); i++) {
+    const daysAgo = dataPointCount - i;
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    
+    dataPoints.push({
+      date: date.toISOString().split('T')[0],
+      spend: baseSpend * (0.8 + Math.random() * 0.4), // Vary by ±20%
+      usage: Math.floor(Math.random() * 1000) + 100,
+      scenarios: Math.floor(Math.random() * 20) + 5
+    });
+  }
+  
+  const totalSpend = dataPoints.reduce((sum, dp) => sum + dp.spend, 0);
+  
   return {
-    dataPoints: Math.floor(Math.random() * 100) + 50, // 50-150 data points
-    quality: Math.random() * 0.3 + 0.7, // 0.7-1.0 quality score
+    budgetId,
+    tenantId: 'default',
+    dataPoints,
+    aggregatedBy: 'daily' as const,
+    totalDays: dataPoints.length,
+    averageDailySpend: totalSpend / dataPoints.length,
+    seasonalFactors: {
+      january: 1.2,
+      february: 0.9,
+      march: 1.1,
+      april: 1.0
+    },
+    trendMetrics: {
+      slope: Math.random() * 0.1 - 0.05, // -0.05 to 0.05
+      volatility: Math.random() * 0.3 + 0.1, // 0.1 to 0.4
+      correlation: Math.random() * 0.4 + 0.6 // 0.6 to 1.0
+    }
   };
 }
 
-async function simulateCurrentUsageAnalysis(_budgetId: string): Promise<{ currentSpend: number; velocity: number }> {
+async function simulateCurrentUsageAnalysis(budgetId: string): Promise<CurrentUsageData> {
   await new Promise(resolve => setTimeout(resolve, 50));
+  const currentSpend = Math.random() * 800 + 100; // $100-$900
+  const dailySpend = Math.random() * 50 + 10; // $10-$60 per day
+  
   return {
-    currentSpend: Math.random() * 800 + 100, // $100-$900
-    velocity: Math.random() * 50 + 10, // $10-$60 per day
+    budgetId,
+    currentSpend,
+    dailySpend,
+    scenarioCount: Math.floor(Math.random() * 50) + 5,
+    operationCount: Math.floor(Math.random() * 10000) + 1000,
+    velocity: dailySpend,
+    lastUpdated: new Date().toISOString()
   };
 }
 
@@ -885,18 +943,25 @@ async function simulateTrendAnalysis(_historicalData: HistoricalBudgetData): Pro
 }
 
 async function simulateProjectionGeneration(
-  _historicalData: HistoricalBudgetData,
+  historicalData: HistoricalBudgetData,
   currentUsage: CurrentUsageData,
   projectionDays: number,
   model: string
-): Promise<{ currentSpend: number; projected: number }> {
+): Promise<ProjectionData> {
   await new Promise(resolve => setTimeout(resolve, 150));
   const dailyAverage = currentUsage.velocity;
   const modelMultiplier = model === 'ml_ensemble' ? 1.1 : model === 'seasonal' ? 1.05 : 1.0;
+  const projected = currentUsage.currentSpend + (dailyAverage * projectionDays * modelMultiplier);
   
   return {
+    budgetId: currentUsage.budgetId,
     currentSpend: currentUsage.currentSpend,
-    projected: currentUsage.currentSpend + (dailyAverage * projectionDays * modelMultiplier),
+    projected,
+    confidence: Math.random() * 0.3 + 0.7, // 0.7-1.0
+    model,
+    dataQuality: Math.random() * 0.3 + 0.7, // 0.7-1.0
+    trendStability: historicalData.trendMetrics.correlation,
+    historicalAccuracy: Math.random() * 0.2 + 0.8 // 0.8-1.0
   };
 }
 
@@ -907,7 +972,7 @@ async function simulateConfidenceCalculation(
 ): Promise<ConfidenceMetrics> {
   await new Promise(resolve => setTimeout(resolve, 50));
   
-  const dataQuality = Math.min(1.0, historicalData.dataPoints / 100);
+  const dataQuality = Math.min(1.0, historicalData.dataPoints.length / 100);
   const historicalAccuracy = Math.random() * 0.3 + 0.6; // 0.6-0.9
   const trendStability = Math.random() * 0.4 + 0.6; // 0.6-1.0
   

@@ -26,8 +26,8 @@ const randomBytes = promisify(crypto.randomBytes);
 interface EnterpriseSecretsTool {
   name: string;
   description: string;
-  parameters: z.ZodSchema<Record<string, unknown>>;
-  execute: (input: Record<string, unknown>) => Promise<string>;
+  parameters: z.ZodSchema<any>;
+  execute: (input: any) => Promise<string>;
 }
 
 interface FastMCPServer {
@@ -1718,21 +1718,22 @@ const createVaultServerConfigTool = (_apiClient: MakeApiClient): EnterpriseSecre
   name: 'configure_vault_server',
   description: 'Configure and provision HashiCorp Vault server cluster with high availability and enterprise features',
   parameters: VaultServerConfigSchema,
-  execute: async (input: z.infer<typeof VaultServerConfigSchema>): Promise<string> => {
+  execute: async (input: Record<string, unknown>): Promise<string> => {
+    const validatedInput = VaultServerConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      const clusterInfo = await vaultManager.configureVaultCluster(input);
+      const clusterInfo = await vaultManager.configureVaultCluster(validatedInput);
       
       return JSON.stringify({
         success: true,
         clusterInfo,
-        message: `Vault cluster ${input.clusterId} configured successfully`,
+        message: `Vault cluster ${validatedInput.clusterId} configured successfully`,
       }, null, 2);
     } catch (error) {
       componentLogger.error('Vault server configuration failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        clusterId: input.clusterId,
+        clusterId: validatedInput.clusterId,
       });
       
       return JSON.stringify({
@@ -1750,16 +1751,17 @@ const createHSMIntegrationTool = (_apiClient: MakeApiClient): EnterpriseSecretsT
   name: 'configure_hsm_integration',
   description: 'Configure Hardware Security Module integration for enterprise-grade key protection',
   parameters: HSMConfigSchema,
-  execute: async (input: z.infer<typeof HSMConfigSchema>): Promise<string> => {
+  execute: async (input: Record<string, unknown>): Promise<string> => {
+    const validatedInput = HSMConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      const hsmStatus = await vaultManager.configureHSM(input);
+      const hsmStatus = await vaultManager.configureHSM(validatedInput);
       
       return JSON.stringify({
         success: true,
         hsmStatus,
-        message: `HSM integration with ${input.provider} configured successfully`,
+        message: `HSM integration with ${validatedInput.provider} configured successfully`,
       }, null, 2);
     } catch (error) {
       componentLogger.error('HSM integration failed', {
@@ -1782,22 +1784,23 @@ const createSecretEngineManagementTool = (_apiClient: MakeApiClient): Enterprise
   name: 'manage_secret_engines',
   description: 'Mount and configure Vault secret engines for various secret types and integrations',
   parameters: SecretEngineConfigSchema,
-  execute: async (input: z.infer<typeof SecretEngineConfigSchema>): Promise<string> => {
+  execute: async (input: Record<string, unknown>): Promise<string> => {
+    const validatedInput = SecretEngineConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      const engineStatus = await vaultManager.mountSecretEngine(input);
+      const engineStatus = await vaultManager.mountSecretEngine(validatedInput);
       
       return JSON.stringify({
         success: true,
         engineStatus,
-        message: `Secret engine ${input.engineType} mounted at ${input.path} successfully`,
+        message: `Secret engine ${validatedInput.engineType} mounted at ${validatedInput.path} successfully`,
       }, null, 2);
     } catch (error) {
       componentLogger.error('Secret engine management failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        path: input.path,
-        engineType: input.engineType,
+        path: validatedInput.path,
+        engineType: validatedInput.engineType,
       });
       
       return JSON.stringify({
@@ -1815,21 +1818,22 @@ const createKeyRotationTool = (_apiClient: MakeApiClient): EnterpriseSecretsTool
   name: 'configure_key_rotation',
   description: 'Configure automated key rotation policies with scheduled and event-driven triggers',
   parameters: KeyRotationPolicySchema,
-  execute: async (input: z.infer<typeof KeyRotationPolicySchema>): Promise<string> => {
+  execute: async (input: Record<string, unknown>): Promise<string> => {
+    const validatedInput = KeyRotationPolicySchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      const rotationStatus = await vaultManager.configureKeyRotation(input);
+      const rotationStatus = await vaultManager.configureKeyRotation(validatedInput);
       
       return JSON.stringify({
         success: true,
         rotationStatus,
-        message: `Key rotation policy ${input.policyName} configured successfully`,
+        message: `Key rotation policy ${validatedInput.policyName} configured successfully`,
       }, null, 2);
     } catch (error) {
       componentLogger.error('Key rotation configuration failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        policyName: input.policyName,
+        policyName: validatedInput.policyName,
       });
       
       return JSON.stringify({
@@ -1847,21 +1851,22 @@ const createDynamicSecretTool = (_apiClient: MakeApiClient): EnterpriseSecretsTo
   name: 'generate_dynamic_secret',
   description: 'Generate just-in-time dynamic secrets for databases, cloud providers, and APIs',
   parameters: DynamicSecretConfigSchema,
-  execute: async (input: z.infer<typeof DynamicSecretConfigSchema>): Promise<string> => {
+  execute: async (input: Record<string, unknown>): Promise<string> => {
+    const validatedInput = DynamicSecretConfigSchema.parse(input);
     const vaultManager = EnterpriseVaultManager.getInstance();
     
     try {
-      const secret = await vaultManager.generateDynamicSecret(input);
+      const secret = await vaultManager.generateDynamicSecret(validatedInput);
       
       return JSON.stringify({
         success: true,
         secret,
-        message: `Dynamic ${input.secretType} secret generated successfully`,
+        message: `Dynamic ${validatedInput.secretType} secret generated successfully`,
       }, null, 2);
     } catch (error) {
       componentLogger.error('Dynamic secret generation failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        secretType: input.secretType,
+        secretType: validatedInput.secretType,
       });
       
       return JSON.stringify({
