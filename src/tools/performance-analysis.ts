@@ -148,39 +148,7 @@ interface MetricsFormattingResult {
   };
 }
 
-// Options and Filters interfaces
-interface PerformanceAnalysisOptions {
-  timeRangeHours: number;
-  includeBottleneckDetection?: boolean;
-  includePerformanceMetrics?: boolean;
-  includeTrendAnalysis?: boolean;
-  includeOptimizationRecommendations?: boolean;
-  includeCostAnalysis?: boolean;
-  performanceBenchmarking?: boolean;
-  detailedBreakdown?: boolean;
-  includeSystemMetrics?: boolean;
-  includeApiMetrics?: boolean;
-  includeWebhookMetrics?: boolean;
-  includeScenarioMetrics?: boolean;
-  generateRecommendations?: boolean;
-  benchmarkComparison?: boolean;
-  durationMinutes?: number;
-  samplingIntervalSeconds?: number;
-  alertThresholds?: AlertThresholds;
-}
-
-interface PerformanceAnalysisFilters {
-  minExecutionTime?: number;
-  errorThreshold: number;
-  severityFilter: 'all' | 'warning' | 'error' | 'critical';
-}
-
-interface AlertThresholds {
-  responseTime: number;
-  errorRate: number;
-  cpuUsage: number;
-  memoryUsage: number;
-}
+// Options and Filters interfaces imported from types/index.ts
 
 interface PerformanceMetrics {
   responseTime?: {
