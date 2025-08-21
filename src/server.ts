@@ -3,7 +3,8 @@
  * Main server implementation with authentication, error handling, and logging
  */
 
-import { FastMCP, UserError } from 'fastmcp';
+import { FastMCP, UserError, FastMCPSession } from 'fastmcp';
+import { z } from 'zod';
 
 // Define our custom session authentication type that extends the FastMCP type
 type MakeSessionAuth = {
@@ -11,7 +12,6 @@ type MakeSessionAuth = {
   timestamp: string;
   correlationId: string;
 };
-import { z } from 'zod';
 import configManager from './lib/config.js';
 import logger from './lib/logger.js';
 import MakeApiClient from './lib/make-api-client.js';
