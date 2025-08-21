@@ -98,7 +98,7 @@ interface DestinationConfig {
 }
 
 interface AnalyticsConfig {
-  enabled: boolean;
+  enabled?: boolean;
   includePerformanceMetrics?: boolean;
   includePredictiveAnalysis?: boolean;
   customMetrics?: CustomMetric[];
@@ -122,8 +122,8 @@ interface ExternalSystemConfig {
   type?: 'elasticsearch' | 'splunk' | 'datadog' | 'newrelic' | 'generic' | 'aws-cloudwatch' | 'azure-monitor' | 'gcp-logging';
   endpoint?: string;
   authentication?: {
-    type: 'bearer' | 'api-key' | 'basic' | 'api_key' | 'oauth2';
-    credentials: Record<string, string>;
+    type?: 'bearer' | 'api-key' | 'basic' | 'api_key' | 'oauth2' | 'basic_auth' | 'oauth' | 'bearer_token';
+    credentials?: Record<string, string>;
   };
   headers?: Record<string, string>;
   options?: {
@@ -142,9 +142,9 @@ interface DataTransformation {
 }
 
 interface CustomMetric {
-  name: string;
-  field: string;
-  aggregation: 'count' | 'sum' | 'avg' | 'min' | 'max' | 'distinct';
+  name?: string;
+  field?: string;
+  aggregation?: 'count' | 'sum' | 'avg' | 'min' | 'max' | 'distinct';
   filters?: Record<string, unknown>;
   timeWindow?: string;
 }
@@ -1297,8 +1297,22 @@ export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient):
         
         // Normalize destination to match DestinationConfig interface
         const normalizedDestination: DestinationConfig = {
-          ...destination,
+          type: destination.type as 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook' | 'external-system' | 'stream' | 'download',
           path: destination.webhookUrl || '/tmp/log-export',
+          externalSystemConfig: destination.externalSystemConfig ? {
+            type: destination.externalSystemConfig.type,
+            endpoint: destination.externalSystemConfig.connection?.url,
+            authentication: destination.externalSystemConfig.authentication ? {
+              type: destination.externalSystemConfig.authentication.type || 'api_key',
+              credentials: destination.externalSystemConfig.authentication.credentials || {}
+            } : undefined,
+            options: {
+              timeout: 30000,
+              retries: destination.externalSystemConfig.retryPolicy?.maxRetries || 3,
+              batchSize: 100,
+              compression: true
+            }
+          } : undefined
         };
 
         // Handle streaming vs batch export
