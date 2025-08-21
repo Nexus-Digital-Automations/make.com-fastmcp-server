@@ -1482,7 +1482,7 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool => (
 interface ZeroTrustTool {
   name: string;
   description: string;
-  inputSchema: z.ZodType<any>;
+  inputSchema: z.ZodType<unknown>;
   execute: (input: unknown) => Promise<string>;
 }
 
