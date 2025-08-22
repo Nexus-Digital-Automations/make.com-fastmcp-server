@@ -249,9 +249,8 @@ describe('Template Management Tools', () => {
       scenarios: ['latency', 'error', 'timeout'],
     });
 
-    // Import and add template tools
-    const { addTemplateTools } = await import('../../../src/tools/templates.js');
-    addTemplateTools(mockServer, mockApiClient as any);
+    // Clear previous mock calls
+    mockTool.mockClear();
   });
 
   afterEach(() => {
@@ -259,8 +258,23 @@ describe('Template Management Tools', () => {
   });
 
   describe('Tool Registration', () => {
-    test('should register all template management tools', () => {
-      const tools = mockServer.getTools();
+    test('should register all template management tools', async () => {
+      const { addTemplateTools } = await import('../../../src/tools/templates.js');
+      
+      // Should not throw an error
+      expect(() => {
+        addTemplateTools(mockServer, mockApiClient as any);
+      }).not.toThrow();
+      
+      // Should call addTool for each template tool
+      expect(mockTool).toHaveBeenCalled();
+      expect(mockTool.mock.calls.length).toBeGreaterThan(0);
+    });
+
+    test('should have correct tool schemas', async () => {
+      const { addTemplateTools } = await import('../../../src/tools/templates.js');
+      addTemplateTools(mockServer, mockApiClient as any);
+      
       const expectedTools = [
         'create_template',
         'list_templates',
@@ -271,19 +285,11 @@ describe('Template Management Tools', () => {
       ];
 
       expectedTools.forEach(toolName => {
-        expect(tools).toHaveProperty(toolName);
+        const tool = findTool(mockTool, toolName);
+        expect(tool).toBeDefined();
+        expect(tool.parameters).toBeDefined();
+        expect(typeof tool.execute).toBe('function');
       });
-    });
-
-    test('should have correct tool schemas', () => {
-      const tools = mockServer.getTools();
-      
-      expect(tools['create_template'].parameters).toBeDefined();
-      expect(tools['list_templates'].parameters).toBeDefined();
-      expect(tools['get_template'].parameters).toBeDefined();
-      expect(tools['update_template'].parameters).toBeDefined();
-      expect(tools['use_template'].parameters).toBeDefined();
-      expect(tools['delete_template'].parameters).toBeDefined();
     });
   });
 
