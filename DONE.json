@@ -14846,9 +14846,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755848848310_0a0vh8osy",
+      "title": "Fix error-recovery logger mocking failures",
+      "description": "error-recovery.test.ts failing with TypeError: logger_js_1.default.child is not a function - identical to previous logger mocking issues.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T07:47:28.310Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755848784527_1_general_7f9a8740",
+      "started_at": "2025-08-22T07:47:35.161Z",
+      "claimed_by": "development_session_1755848784527_1_general_7f9a8740",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755848784527_1_general_7f9a8740",
+          "role": "primary",
+          "assignedAt": "2025-08-22T07:47:35.161Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T07:49:25.150Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T07:49:25.150Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 333,
-  "last_completion": "2025-08-22T07:45:50.850Z",
+  "total_completed": 334,
+  "last_completion": "2025-08-22T07:49:25.150Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

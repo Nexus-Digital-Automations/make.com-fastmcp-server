@@ -1,6 +1,41 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1755848842075_c8b1m0abb",
+      "title": "Fix notifications-basic test failures",
+      "description": "Multiple tests in notifications-basic.test.ts failing with same patterns as previous fixes. Complex assertions and mocking issues.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T07:47:22.075Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755848806808_ml6ec9wgk",
+      "title": "Fix variables-basic test JSON assertion failures",
+      "description": "Multiple tests in variables-basic.test.ts failing with expect().toContain() errors - receiving complex objects instead of expected strings. Complex JSON assertion pattern needs fixing.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T07:46:46.808Z",
+      "auto_research_created": false
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
@@ -8,13 +43,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755847510133_1_general_7c3ee381": {
+    "development_session_1755848784527_1_general_7f9a8740": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T07:25:10.133Z",
+      "lastHeartbeat": "2025-08-22T07:46:24.528Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -25,8 +60,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T07:25:10.133Z",
-      "sessionId": "session_1755847510133",
+      "createdAt": "2025-08-22T07:46:24.528Z",
+      "sessionId": "session_1755848784527",
       "metadata": {}
     }
   },
