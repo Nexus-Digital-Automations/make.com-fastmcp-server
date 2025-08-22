@@ -2,12 +2,40 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755862685584_p4vxvpi2s",
-      "title": "Fix Zod schema TypeScript compilation errors",
-      "description": "Fix remaining TypeScript compilation errors related to Zod schema default values and function arguments. Issues in certificates.ts, compliance-policy.ts, custom-apps.ts and other files with Zod configuration problems.",
+      "id": "task_1755865422755_57sj9rlrl",
+      "title": "Fix ESLint TypeScript any type warnings in src/tools/folders.ts",
+      "description": "Replace any types with proper TypeScript types in the createToolContext function parameters",
       "mode": "DEVELOPMENT",
-      "category": "build-error",
+      "category": "linter-error",
       "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T12:23:42.756Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T12:23:49.401Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        }
+      ]
+    },
+    {
+      "id": "task_1755865396648_8cn6aab3z",
+      "title": "Fix ESLint warnings for TypeScript any types",
+      "description": "Address the 28 ESLint warnings about unexpected any types across AI governance engine, folders.ts, and validation.ts. Replace any types with proper TypeScript types for better type safety.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
       "status": "pending",
       "dependencies": [],
       "important_files": [],
@@ -15,26 +43,25 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-22T11:38:05.585Z",
-      "auto_research_created": false,
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755862399561_1_general_3e9980cc",
-          "role": "primary",
-          "assignedAt": "2025-08-22T11:38:14.940Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-22T11:53:15.887Z",
-          "reason": "Task stale for 15 minutes"
-        }
-      ]
+      "created_at": "2025-08-22T12:23:16.649Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755865389564_h4udh7ny1",
+      "title": "Investigate test performance and optimization opportunities",
+      "description": "Tests are taking longer than expected to run. Investigate test performance, identify slow tests, and optimize test execution time for better developer experience.",
+      "mode": "DEVELOPMENT",
+      "category": "test-performance",
+      "priority": "medium",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T12:23:09.564Z",
+      "auto_research_created": false
     }
   ],
   "current_mode": "DEVELOPMENT",
@@ -43,7 +70,29 @@
   "review_strikes": 0,
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
-  "agents": {},
+  "agents": {
+    "development_session_1755865339304_1_general_9961d16e": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-22T12:22:19.304Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-22T12:22:19.304Z",
+      "sessionId": "session_1755865339304",
+      "metadata": {}
+    }
+  },
   "current_task_index": 0,
   "settings": {
     "auto_sort_enabled": true,

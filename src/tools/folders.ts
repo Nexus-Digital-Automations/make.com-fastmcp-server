@@ -7,6 +7,7 @@ import { FastMCP } from 'fastmcp';
 import { MakeApiClient } from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { z } from 'zod';
+import type { ToolExecutionContext } from '../types/index.js';
 
 // Import the modular tools from the refactored folders module
 import { foldersTools } from './folders/tools/index.js';
@@ -21,7 +22,18 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
   componentLogger.info('Adding modular folder organization and data store tools');
 
   // Create context for tools
-  const createToolContext = (executionContext: { log: any; reportProgress: any }): any => ({
+  const createToolContext = (executionContext: ToolExecutionContext): {
+    server: FastMCP;
+    apiClient: MakeApiClient;
+    logger: typeof componentLogger;
+    log: ToolExecutionContext['log'];
+    reportProgress: ToolExecutionContext['reportProgress'];
+    config: {
+      enabled: boolean;
+      maxRetries: number;
+      timeout: number;
+    };
+  } => ({
     server,
     apiClient,
     logger: componentLogger,
