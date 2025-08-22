@@ -18241,9 +18241,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755886773831_4sthv1hyc",
+      "title": "Address complexity violations and continue large function refactoring",
+      "description": "Address high complexity warnings (28-34 complexity, max 25) and continue refactoring large functions. Previous work reduced problems from 101→94 (7% improvement). Focus on complexity violations in execute methods and remaining large functions: addFolderTools (464 lines), addBlueprintCollaborationTools (412 lines), addAIGovernanceEngineTools (220 lines), createQueryLogsByTimeRangeTool (217 lines).",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T18:19:33.831Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755886464723_1_general_5af1ca81",
+      "started_at": "2025-08-22T18:19:41.492Z",
+      "claimed_by": "development_session_1755886464723_1_general_5af1ca81",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755886464723_1_general_5af1ca81",
+          "role": "primary",
+          "assignedAt": "2025-08-22T18:19:41.492Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T18:22:13.966Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T18:22:13.967Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 418,
-  "last_completion": "2025-08-22T18:17:57.653Z",
+  "total_completed": 419,
+  "last_completion": "2025-08-22T18:22:13.967Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

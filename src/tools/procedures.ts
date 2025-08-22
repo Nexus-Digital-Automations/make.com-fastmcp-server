@@ -9,6 +9,50 @@ import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { formatSuccessResponse } from '../utils/response-formatter.js';
 
+// Helper functions for reducing complexity
+function validateProcedureConfiguration(type: string, configuration: Record<string, unknown>): void {
+  if (type === 'webhook' || type === 'api_call') {
+    if (!('endpoint' in configuration)) {
+      throw new UserError(`Endpoint configuration required for ${type} procedures`);
+    }
+  } else if (type === 'script_execution') {
+    if (!('script' in configuration)) {
+      throw new UserError('Script configuration required for script_execution procedures');
+    }
+  }
+}
+
+function buildProcedureMonitoring(monitoring: Record<string, unknown>): Record<string, unknown> {
+  return {
+    healthCheck: { 
+      ...((monitoring.healthCheck as Record<string, unknown>) || {}), 
+      enabled: (monitoring.healthCheck as Record<string, unknown>)?.enabled ?? false, 
+      interval: (monitoring.healthCheck as Record<string, unknown>)?.interval ?? 300 
+    },
+    alerts: (monitoring.alerts as unknown[]) || [],
+    logging: { 
+      ...((monitoring.logging as Record<string, unknown>) || {}), 
+      level: (monitoring.logging as Record<string, unknown>)?.level ?? 'basic', 
+      retentionDays: (monitoring.logging as Record<string, unknown>)?.retentionDays ?? 30, 
+      includePayload: (monitoring.logging as Record<string, unknown>)?.includePayload ?? false 
+    },
+  };
+}
+
+function buildProcedureSecurity(security: Record<string, unknown>): Record<string, unknown> {
+  return {
+    rateLimiting: { 
+      ...((security.rateLimiting as Record<string, unknown>) || {}), 
+      enabled: (security.rateLimiting as Record<string, unknown>)?.enabled ?? false, 
+      maxRequests: (security.rateLimiting as Record<string, unknown>)?.maxRequests ?? 100, 
+      windowMs: (security.rateLimiting as Record<string, unknown>)?.windowMs ?? 60000 
+    },
+    ipWhitelist: security.ipWhitelist,
+    requiresApproval: security.requiresApproval || false,
+    encryptPayload: security.encryptPayload || false,
+  };
+}
+
 // Remote procedure and device management types
 export interface MakeRemoteProcedure {
   id: number;
@@ -384,15 +428,7 @@ function addCreateRemoteProcedureTool(server: FastMCP, apiClient: MakeApiClient)
         }
 
         // Validate configuration based on procedure type
-        if (type === 'webhook' || type === 'api_call') {
-          if (!('endpoint' in configuration)) {
-            throw new UserError(`Endpoint configuration required for ${type} procedures`);
-          }
-        } else if (type === 'script_execution') {
-          if (!('script' in configuration)) {
-            throw new UserError('Script configuration required for script_execution procedures');
-          }
-        }
+        validateProcedureConfiguration(type, configuration);
 
         reportProgress({ progress: 25, total: 100 });
 
@@ -406,17 +442,8 @@ function addCreateRemoteProcedureTool(server: FastMCP, apiClient: MakeApiClient)
           configuration,
           input: inputSpec,
           output: outputSpec,
-          monitoring: {
-            healthCheck: { ...monitoring.healthCheck, enabled: monitoring.healthCheck?.enabled ?? false, interval: monitoring.healthCheck?.interval ?? 300 },
-            alerts: monitoring.alerts || [],
-            logging: { ...monitoring.logging, level: monitoring.logging?.level ?? 'basic', retentionDays: monitoring.logging?.retentionDays ?? 30, includePayload: monitoring.logging?.includePayload ?? false },
-          },
-          security: {
-            rateLimiting: { ...security.rateLimiting, enabled: security.rateLimiting?.enabled ?? false, maxRequests: security.rateLimiting?.maxRequests ?? 100, windowMs: security.rateLimiting?.windowMs ?? 60000 },
-            ipWhitelist: security.ipWhitelist,
-            requiresApproval: security.requiresApproval || false,
-            encryptPayload: security.encryptPayload || false,
-          },
+          monitoring: buildProcedureMonitoring(monitoring),
+          security: buildProcedureSecurity(security),
           status: 'active',
         };
 
