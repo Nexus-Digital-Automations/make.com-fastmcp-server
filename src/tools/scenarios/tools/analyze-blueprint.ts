@@ -26,7 +26,7 @@ export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition
       openWorldHint: false,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       if (log && log.info) { log.info('Analyzing blueprint', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint }); }
       reportProgress?.({ progress: 0, total: 100 });
 

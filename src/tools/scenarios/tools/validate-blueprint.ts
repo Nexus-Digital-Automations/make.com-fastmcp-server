@@ -31,7 +31,7 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
       openWorldHint: false,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const typedArgs = args as ValidateBlueprintArgs;
       if (log && log.info) { log.info('Validating blueprint', { 
         hasBlueprint: !!typedArgs.blueprint,

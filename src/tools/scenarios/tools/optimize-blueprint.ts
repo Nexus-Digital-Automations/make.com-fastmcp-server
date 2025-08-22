@@ -26,7 +26,7 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
       openWorldHint: false,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const typedArgs = args as {
         blueprint?: Blueprint;
         optimizationType?: string;

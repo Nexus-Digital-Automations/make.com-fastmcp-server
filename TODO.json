@@ -2,6 +2,23 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755837392893_lv8kro05q",
+      "title": "Fix 197 TypeScript ESLint explicit-function-return-type warnings",
+      "description": "Fix all @typescript-eslint/explicit-function-return-type violations across 17 files by adding appropriate return types to functions",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T04:36:32.894Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755835004565_tombr0y7x",
       "title": "Fix 197 TypeScript linter warnings - missing return types",
       "description": "Fix @typescript-eslint/explicit-function-return-type warnings across 17 files. These are warnings (not errors) but should be addressed for code quality.",
@@ -17,41 +34,25 @@
       "subtasks": [],
       "created_at": "2025-08-22T03:56:44.567Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T03:58:13.456Z",
-      "claimed_by": "agent_1755835093456",
-      "assigned_agent": "agent_1755835093456",
+      "started_at": "2025-08-22T04:35:40.161Z",
+      "claimed_by": "development_session_1755837294086_1_general_7c6c032b",
+      "assigned_agent": "development_session_1755837294086_1_general_7c6c032b",
       "agent_assignment_history": [
         {
           "agent": "agent_1755835093456",
           "action": "claimed",
           "timestamp": "2025-08-22T03:58:13.456Z"
-        }
-      ]
-    },
-    {
-      "id": "task_1755835822283_8u66aeefz",
-      "title": "Fix monitoring middleware test suite failure",
-      "description": "Test suite failed to run: TypeError: logger_js_1.default.child is not a function in monitoring.ts:18. This appears to be an import/module issue with the logger.",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T04:10:22.283Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755834942304_1_general_29fee924",
-      "started_at": "2025-08-22T04:10:30.527Z",
-      "claimed_by": "development_session_1755834942304_1_general_29fee924",
-      "agent_assignment_history": [
+        },
         {
-          "agentId": "development_session_1755834942304_1_general_29fee924",
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T04:34:47.864Z",
+          "reason": "Task stale for 37 minutes"
+        },
+        {
+          "agentId": "development_session_1755837294086_1_general_7c6c032b",
           "role": "primary",
-          "assignedAt": "2025-08-22T04:10:30.527Z",
+          "assignedAt": "2025-08-22T04:35:40.161Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
@@ -65,13 +66,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755834942304_1_general_29fee924": {
+    "development_session_1755837294086_1_general_7c6c032b": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T03:55:42.306Z",
+      "lastHeartbeat": "2025-08-22T04:34:54.092Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -82,8 +83,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T03:55:42.306Z",
-      "sessionId": "session_1755834942304",
+      "createdAt": "2025-08-22T04:34:54.092Z",
+      "sessionId": "session_1755837294086",
       "metadata": {}
     }
   },

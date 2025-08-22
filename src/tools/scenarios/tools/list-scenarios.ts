@@ -24,7 +24,7 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
       openWorldHint: true,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       if (log && log.info) { log.info('Listing scenarios', JSON.stringify(args)); }
       reportProgress?.({ progress: 0, total: 100 });
 

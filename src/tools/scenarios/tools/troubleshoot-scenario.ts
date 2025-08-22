@@ -26,7 +26,7 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
       openWorldHint: false,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       if (log && log.info) { log.info('Starting scenario troubleshooting', JSON.stringify(args)); }
       reportProgress?.({ progress: 0, total: 100 });
 
@@ -182,7 +182,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
       openWorldHint: false,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       if (log && log.info) { log.info('Generating comprehensive troubleshooting report', JSON.stringify(args)); }
       reportProgress?.({ progress: 0, total: 100 });
 

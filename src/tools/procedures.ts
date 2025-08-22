@@ -335,8 +335,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: false,
       openWorldHint: true,
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { name, description, type, category, organizationId, teamId, configuration, input: inputSpec, output: outputSpec, monitoring, security } = input;
 
       if (log && log.info) {
@@ -491,7 +491,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWorldHint: true,
     },
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { type, category, status, organizationId, teamId, includeStats, includeMonitoring, limit, offset, sortBy, sortOrder } = input;
 
       if (log && log.info) {
@@ -627,8 +627,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: false,
       openWorldHint: true,
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { procedureId, input: inputData, options, metadata } = input;
 
       if (log && log.info) {
@@ -721,8 +721,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { name, type, category, organizationId, teamId, configuration } = input;
 
       if (log && log.info) {
@@ -867,7 +867,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWorldHint: true,
     },
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { type, category, status, organizationId, teamId, includeHealth, includeAlerts, limit, offset, sortBy, sortOrder } = input;
 
       if (log && log.info) {
@@ -1001,8 +1001,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { deviceId, testType, timeout, includePerformance } = input;
 
       if (log && log.info) {

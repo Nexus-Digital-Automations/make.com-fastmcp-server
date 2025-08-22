@@ -544,8 +544,8 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: false, // Each notification is unique with timestamp
       openWorldHint: true, // External messaging services (email, SMS, Slack, etc.)
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
 
       if (log && log.info) {
@@ -677,7 +677,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       openWorldHint: true, // May access external preference systems
     },
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} } } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} } } = context || {};
       const { userId, includeStats } = input;
 
       if (log && log.info) {
@@ -760,8 +760,8 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: true, // Same preferences produce same result
       openWorldHint: true, // May update external preference systems
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { userId, preferences, timezone, language, unsubscribeAll } = input;
 
       if (log && log.info) {
@@ -874,8 +874,8 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: false, // Each template creation is unique
       openWorldHint: false, // Internal template management
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { name, description, type, category, organizationId, template, design } = input;
 
       if (log && log.info) {
@@ -988,8 +988,8 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: false, // Each structure creation is unique
       openWorldHint: false, // Internal data structure management
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { name, description, type, organizationId, teamId, scope, structure, validation, transformation } = input;
 
       if (log && log.info) {
@@ -1135,7 +1135,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       openWorldHint: false, // Internal data structure listing
     },
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} } } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} } } = context || {};
       const { type, scope, organizationId, teamId, format, search, includeValidation, includeTransformation, limit, offset, sortBy, sortOrder } = input;
 
       if (log && log.info) {
@@ -1248,8 +1248,8 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       readOnlyHint: true,
       openWorldHint: false, // Internal data structure retrieval
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { dataStructureId, organizationId, teamId, includeUsageStats, includeValidationHistory, includeTransformationHistory } = input;
 
       if (log && log.info) {
@@ -1402,8 +1402,8 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: true, // Same updates produce same result
       openWorldHint: false, // Internal data structure management
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { dataStructureId, organizationId, teamId, name, description, structure, validation, transformation } = input;
 
       if (log && log.info) {
@@ -1563,8 +1563,8 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: true, // Multiple deletes of same structure have same effect
       openWorldHint: false, // Internal data structure management
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { dataStructureId, organizationId, teamId, force, checkDependencies, confirmationCode, archiveBeforeDelete } = input;
 
       if (log && log.info) {
@@ -1739,7 +1739,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       openWorldHint: true, // May query delivery status from external systems
     },
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} } } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} } } = context || {};
       const { type, status, priority, dateRange, includeDelivery, includeTracking, limit, offset, sortBy, sortOrder } = input;
 
       if (log && log.info) {

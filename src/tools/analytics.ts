@@ -103,7 +103,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWorldHint: true,
     },
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { organizationId, startDate, endDate, period, includeUsage, includePerformance, includeBilling } = input;
 
       if (log && log.info) {
@@ -180,7 +180,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWorldHint: true,
     },
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { organizationId, teamId, userId, action, resource, startDate, endDate, limit, offset } = input;
 
       if (log && log.info) {
@@ -273,7 +273,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       logId: z.number().min(1).describe('Audit log ID to retrieve'),
     }),
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { logId } = input;
 
       if (log && log.info) {
@@ -326,7 +326,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },
     parameters: ScenarioLogFiltersSchema,
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { scenarioId, executionId, level, startDate, endDate, limit, offset } = input;
 
       if (log && log.info) {
@@ -414,7 +414,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },
     parameters: ExecutionHistoryFiltersSchema,
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { scenarioId, organizationId, teamId, status, startDate, endDate, limit, offset } = input;
 
       if (log && log.info) {
@@ -516,7 +516,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },
     parameters: IncompleteExecutionFiltersSchema,
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { scenarioId, organizationId, status, canResume, limit, offset } = input;
 
       if (log && log.info) {
@@ -607,7 +607,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       reason: z.string().optional().describe('Reason for the resolution action'),
     }),
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { executionId, action, reason } = input;
 
       if (log && log.info) {
@@ -663,7 +663,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },
     parameters: HookLogFiltersSchema,
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { hookId, success, method, startDate, endDate, limit, offset } = input;
 
       if (log && log.info) {
@@ -751,7 +751,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },
     parameters: ExportDataSchema,
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { organizationId, dataType, format, startDate, endDate, includeDetails } = input;
 
       if (log && log.info) {
@@ -825,7 +825,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       endDate: z.string().optional().describe('End date for metrics (ISO format)'),
     }),
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { organizationId, metric, period, startDate, endDate } = input;
 
       if (log && log.info) {

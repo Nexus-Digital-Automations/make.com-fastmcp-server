@@ -657,8 +657,8 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+    execute: async (input, context): Promise<string> => {
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { organizationId, includeUsage, includeHistory, includePaymentMethods } = input;
 
       if (log && log.info) {
@@ -782,7 +782,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log }) => {
+    execute: async (input, { log }): Promise<string> => {
       const { organizationId, status, dateRange, includeLineItems, includePayments, limit, offset, sortBy, sortOrder } = input;
 
       log.info('Listing invoices', {
@@ -887,7 +887,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, { log, reportProgress }): Promise<string> => {
       const { organizationId, period, customPeriod, breakdown, includeProjections, includeRecommendations } = input;
 
       log.info('Getting usage metrics', {
@@ -992,7 +992,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, { log, reportProgress }): Promise<string> => {
       const { organizationId, type, details, billingAddress, setAsDefault } = input;
 
       log.info('Adding payment method', {
@@ -1103,7 +1103,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, { log, reportProgress }): Promise<string> => {
       const { organizationId, contacts, taxInfo, autoRenewal } = input;
 
       log.info('Updating billing information', {
@@ -1199,7 +1199,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, { log, reportProgress }): Promise<string> => {
       const { organizationId, name, description, type, scope, budget, categories, thresholds } = input;
 
       log.info('Setting budget', {
@@ -1319,7 +1319,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, { log, reportProgress }): Promise<string> => {
       const { organizationId, name, description, conditions, notifications, actions } = input;
 
       log.info('Creating cost alert', {
@@ -1448,7 +1448,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, { log, reportProgress }): Promise<string> => {
       const { 
         organizationId, 
         period, 
@@ -1621,7 +1621,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, { log, reportProgress }): Promise<string> => {
       const { organizationId, criteria, action, notification, dryRun } = input;
 
       log.info('Evaluating high cost scenarios for pausing', {

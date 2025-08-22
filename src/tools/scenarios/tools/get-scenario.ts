@@ -24,7 +24,7 @@ export function createGetScenarioTool(context: ToolContext): ToolDefinition {
       openWorldHint: false,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const typedArgs = args as { scenarioId: string; includeBlueprint?: boolean; includeExecutions?: boolean };
       if (log && log.info) { log.info('Getting scenario details', { scenarioId: typedArgs.scenarioId }); }
       reportProgress?.({ progress: 0, total: 100 });
