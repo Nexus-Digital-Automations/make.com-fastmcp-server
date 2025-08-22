@@ -102,6 +102,10 @@ export function validateInputOrThrow<T>(
     throw new UserError(`${context}${errorMessages}`);
   }
   
+  if (result.data === undefined) {
+    throw new UserError('Validation succeeded but no data was returned');
+  }
+  
   return result.data;
 }
 

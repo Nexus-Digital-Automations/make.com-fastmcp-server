@@ -455,12 +455,14 @@ export class Bulkhead {
   private processQueue(): void {
     if (this.queue.length > 0 && this.activeRequests < this.maxConcurrency) {
       const next = this.queue.shift();
-      this.executeImmediate(
-        next.operation as () => Promise<unknown>,
-        next.resolve,
-        next.reject,
-        next.correlationId
-      );
+      if (next) {
+        this.executeImmediate(
+          next.operation as () => Promise<unknown>,
+          next.resolve,
+          next.reject,
+          next.correlationId
+        );
+      }
     }
   }
 
@@ -492,7 +494,11 @@ export class CircuitBreakerFactory {
     if (!this.breakers.has(name)) {
       this.breakers.set(name, new CircuitBreaker(name, options));
     }
-    return this.breakers.get(name);
+    const breaker = this.breakers.get(name);
+    if (!breaker) {
+      throw new Error(`Failed to create or retrieve circuit breaker: ${name}`);
+    }
+    return breaker;
   }
 
   static getAllStats(): Record<string, ReturnType<CircuitBreaker['getStats']>> {
@@ -522,7 +528,11 @@ export class BulkheadFactory {
         new Bulkhead(name, maxConcurrency, maxQueue, timeout)
       );
     }
-    return this.bulkheads.get(name);
+    const bulkhead = this.bulkheads.get(name);
+    if (!bulkhead) {
+      throw new Error(`Failed to create or retrieve bulkhead: ${name}`);
+    }
+    return bulkhead;
   }
 
   static getAllStats(): Record<string, ReturnType<Bulkhead['getStats']>> {

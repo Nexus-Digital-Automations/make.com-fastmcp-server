@@ -431,7 +431,7 @@ export async function retryOperation<T>(
       error.message.includes('502'),
   } = options;
 
-  let lastError: Error;
+  let lastError: Error = new Error('No attempts made');
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {

@@ -135,8 +135,9 @@ class PerformanceMonitor {
     
     // Get all metrics for this name and category
     const relevantMetrics = this.completedMetrics
-      .filter(m => m.name === metric.name && m.category === metric.category && m.duration)
-      .map(m => m.duration);
+      .filter(m => m.name === metric.name && m.category === metric.category && m.duration !== undefined)
+      .map(m => m.duration!)
+      .filter((duration): duration is number => duration !== undefined);
 
     if (relevantMetrics.length >= 5) { // Need at least 5 samples for meaningful baseline
       const sorted = relevantMetrics.sort((a, b) => a - b);
@@ -155,12 +156,12 @@ class PerformanceMonitor {
         name: metric.name,
         category: metric.category,
         averageDuration: average,
-        minDuration: sorted[0],
-        maxDuration: sorted[sorted.length - 1],
+        minDuration: sorted[0] ?? 0,
+        maxDuration: sorted[sorted.length - 1] ?? 0,
         samples: sorted.length,
         standardDeviation,
-        p95: sorted[p95Index],
-        p99: sorted[p99Index],
+        p95: sorted[p95Index] ?? 0,
+        p99: sorted[p99Index] ?? 0,
       };
 
       this.baselines.set(baselineKey, baseline);
