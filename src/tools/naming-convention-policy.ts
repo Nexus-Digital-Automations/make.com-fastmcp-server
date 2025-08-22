@@ -115,7 +115,7 @@ const PolicyTemplateSchema = z.object({
   description: z.string().describe('Template description'),
   category: z.string().describe('Template category (enterprise, startup, government, etc.)'),
   rules: z.array(NamingRuleSchema).describe('Predefined rules in this template'),
-  metadata: z.record(z.unknown()).optional().describe('Additional template metadata'),
+  metadata: z.record(z.string(), z.unknown()).optional().describe('Additional template metadata'),
 }).strict();
 
 /**
@@ -140,7 +140,7 @@ const CreateNamingPolicySchema = z.object({
     notifyOnUpdate: z.boolean().default(false).describe('Send notifications on policy updates'),
     recipients: z.array(z.string()).optional().describe('Notification recipient emails'),
   }).optional().describe('Notification configuration'),
-  metadata: z.record(z.unknown()).optional().describe('Additional policy metadata'),
+  metadata: z.record(z.string(), z.unknown()).optional().describe('Additional policy metadata'),
 }).strict();
 
 /**
@@ -152,7 +152,7 @@ const ValidateNamesSchema = z.object({
     resourceType: z.nativeEnum(ResourceType).describe('Type of resource'),
     name: z.string().min(1).describe('Name to validate'),
     resourceId: z.string().optional().describe('Resource identifier'),
-    metadata: z.record(z.unknown()).optional().describe('Additional resource metadata'),
+    metadata: z.record(z.string(), z.unknown()).optional().describe('Additional resource metadata'),
   })).min(1).describe('Names to validate'),
   returnDetails: z.boolean().default(true).describe('Return detailed validation results'),
 }).strict();
@@ -174,7 +174,7 @@ const UpdateNamingPolicySchema = z.object({
     notifyOnUpdate: z.boolean().optional(),
     recipients: z.array(z.string()).optional(),
   }).optional().describe('Updated notification settings'),
-  metadata: z.record(z.unknown()).optional().describe('Updated metadata'),
+  metadata: z.record(z.string(), z.unknown()).optional().describe('Updated metadata'),
 }).strict();
 
 /**

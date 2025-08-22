@@ -194,10 +194,10 @@ const CustomAppCreateSchema = z.object({
   teamId: z.number().min(1).optional().describe('Team ID (for team apps)'),
   configuration: z.object({
     environment: z.object({
-      variables: z.record(z.string()).default({}).describe('Environment variables'),
+      variables: z.record(z.string(), z.string()).default(() => ({})).describe('Environment variables'),
       secrets: z.array(z.string()).default([]).describe('Secret names to be injected'),
-      dependencies: z.record(z.string()).default({}).describe('Package dependencies'),
-    }).default({}).describe('Environment configuration'),
+      dependencies: z.record(z.string(), z.string()).default(() => ({})).describe('Package dependencies'),
+    }).default(() => ({ variables: {}, secrets: [], dependencies: {} })).describe('Environment configuration'),
     endpoints: z.array(z.object({
       name: z.string().min(1).describe('Endpoint name'),
       method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']).describe('HTTP method'),
@@ -208,14 +208,14 @@ const CustomAppCreateSchema = z.object({
     })).default([]).describe('API endpoints'),
     authentication: z.object({
       type: z.enum(['none', 'api_key', 'oauth2', 'basic_auth', 'custom']).describe('Authentication type'),
-      configuration: z.record(z.any()).default({}).describe('Auth configuration'),
+      configuration: z.record(z.string(), z.any()).default(() => ({})).describe('Auth configuration'),
     }).default({ type: 'none', configuration: {} }).describe('Authentication settings'),
     ui: z.object({
       icon: z.string().optional().describe('App icon URL or identifier'),
       color: z.string().optional().describe('App theme color'),
       description: z.string().optional().describe('UI description'),
       category: z.string().optional().describe('App category'),
-    }).default({}).describe('UI configuration'),
+    }).default(() => ({})).describe('UI configuration'),
   }).describe('App configuration'),
   deployment: z.object({
     source: z.enum(['git', 'zip', 'inline']).describe('Source type'),
@@ -228,8 +228,8 @@ const CustomAppCreateSchema = z.object({
   permissions: z.object({
     scopes: z.array(z.string()).default([]).describe('Permission scopes'),
     roles: z.array(z.string()).default([]).describe('Required roles'),
-    restrictions: z.record(z.any()).default({}).describe('Access restrictions'),
-  }).default({}).describe('App permissions'),
+    restrictions: z.record(z.string(), z.any()).default(() => ({})).describe('Access restrictions'),
+  }).default(() => ({ scopes: [], roles: [], restrictions: {} })).describe('App permissions'),
 }).strict();
 
 const HookCreateSchema = z.object({
@@ -240,28 +240,28 @@ const HookCreateSchema = z.object({
   configuration: z.object({
     endpoint: z.string().url().describe('Hook endpoint URL'),
     method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']).default('POST').describe('HTTP method'),
-    headers: z.record(z.string()).default({}).describe('HTTP headers'),
+    headers: z.record(z.string(), z.string()).default(() => ({})).describe('HTTP headers'),
     authentication: z.object({
       type: z.enum(['none', 'api_key', 'bearer', 'basic', 'oauth2']).describe('Authentication type'),
-      configuration: z.record(z.any()).default({}).describe('Auth configuration'),
+      configuration: z.record(z.string(), z.any()).default(() => ({})).describe('Auth configuration'),
     }).describe('Authentication settings'),
     polling: z.object({
       interval: z.number().min(1).max(1440).default(5).describe('Polling interval in minutes'),
       strategy: z.enum(['incremental', 'full_scan', 'timestamp_based']).describe('Polling strategy'),
-      parameters: z.record(z.any()).default({}).describe('Polling parameters'),
+      parameters: z.record(z.string(), z.any()).default(() => ({})).describe('Polling parameters'),
     }).optional().describe('Polling configuration (for polling hooks)'),
   }).describe('Hook configuration'),
   events: z.array(z.object({
     name: z.string().min(1).describe('Event name'),
     description: z.string().optional().describe('Event description'),
     schema: z.any().describe('JSON Schema for event data'),
-    filters: z.record(z.any()).optional().describe('Event filters'),
+    filters: z.record(z.string(), z.any()).optional().describe('Event filters'),
   })).min(1).describe('Events this hook can handle'),
   logs: z.object({
     retention: z.number().min(1).max(365).default(30).describe('Log retention in days'),
     level: z.enum(['debug', 'info', 'warn', 'error']).default('info').describe('Log level'),
     destinations: z.array(z.enum(['console', 'file', 'webhook', 'external'])).default(['console']).describe('Log destinations'),
-  }).default({}).describe('Logging configuration'),
+  }).default(() => ({ retention: 30, level: 'info', destinations: ['console'] })).describe('Logging configuration'),
 }).strict();
 
 const CustomFunctionCreateSchema = z.object({
@@ -272,15 +272,15 @@ const CustomFunctionCreateSchema = z.object({
   language: z.enum(['javascript', 'python', 'php', 'custom']).default('javascript').describe('Programming language'),
   code: z.object({
     source: z.string().min(1).describe('Function source code'),
-    dependencies: z.record(z.string()).default({}).describe('Package dependencies'),
-    environment: z.record(z.string()).default({}).describe('Environment variables'),
+    dependencies: z.record(z.string(), z.string()).default(() => ({})).describe('Package dependencies'),
+    environment: z.record(z.string(), z.string()).default(() => ({})).describe('Environment variables'),
     timeout: z.number().min(1).max(300).default(30).describe('Execution timeout in seconds'),
     memoryLimit: z.number().min(64).max(2048).default(256).describe('Memory limit in MB'),
   }).describe('Code configuration'),
   interface: z.object({
     input: z.any().describe('JSON Schema for input parameters'),
     output: z.any().describe('JSON Schema for output format'),
-    parameters: z.record(z.any()).default({}).describe('Additional parameters'),
+    parameters: z.record(z.string(), z.any()).default(() => ({})).describe('Additional parameters'),
   }).describe('Function interface'),
   testCases: z.array(z.object({
     name: z.string().min(1).describe('Test case name'),
@@ -292,7 +292,7 @@ const CustomFunctionCreateSchema = z.object({
     environment: z.enum(['development', 'staging', 'production']).default('development').describe('Deployment environment'),
     instances: z.number().min(1).max(10).default(1).describe('Number of instances'),
     autoScale: z.boolean().default(false).describe('Enable auto-scaling'),
-  }).default({}).describe('Deployment settings'),
+  }).default(() => ({ environment: 'development', instances: 1, autoScale: false })).describe('Deployment settings'),
 }).strict();
 
 /**

@@ -185,10 +185,10 @@ const RemoteProcedureCreateSchema = z.object({
       endpoint: z.object({
         url: z.string().url().describe('Endpoint URL'),
         method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']).describe('HTTP method'),
-        headers: z.record(z.string()).default({}).describe('HTTP headers'),
+        headers: z.record(z.string(), z.string()).default(() => ({})).describe('HTTP headers'),
         authentication: z.object({
           type: z.enum(['none', 'api_key', 'bearer_token', 'basic_auth', 'oauth2', 'certificate']).describe('Authentication type'),
-          credentials: z.record(z.any()).optional().describe('Authentication credentials'),
+          credentials: z.record(z.string(), z.any()).optional().describe('Authentication credentials'),
         }).describe('Authentication configuration'),
         timeout: z.number().min(1000).max(300000).default(30000).describe('Timeout in milliseconds'),
         retries: z.number().min(0).max(5).default(3).describe('Number of retries'),
@@ -200,7 +200,7 @@ const RemoteProcedureCreateSchema = z.object({
         language: z.enum(['javascript', 'python', 'bash', 'powershell']).describe('Script language'),
         code: z.string().min(1).describe('Script code'),
         runtime: z.string().describe('Runtime version'),
-        environment: z.record(z.string()).default({}).describe('Environment variables'),
+        environment: z.record(z.string(), z.string()).default(() => ({})).describe('Environment variables'),
         workingDirectory: z.string().optional().describe('Working directory'),
       }).describe('Script configuration'),
     }),
@@ -210,7 +210,7 @@ const RemoteProcedureCreateSchema = z.object({
         protocol: z.enum(['ftp', 'sftp', 'scp', 'http', 's3']).describe('Transfer protocol'),
         source: z.string().min(1).describe('Source path or URL'),
         destination: z.string().min(1).describe('Destination path or URL'),
-        credentials: z.record(z.any()).describe('Transfer credentials'),
+        credentials: z.record(z.string(), z.any()).describe('Transfer credentials'),
         encryption: z.boolean().default(true).describe('Enable encryption'),
       }).describe('File transfer configuration'),
     }),
@@ -220,7 +220,7 @@ const RemoteProcedureCreateSchema = z.object({
         type: z.enum(['mysql', 'postgresql', 'mongodb', 'redis', 'sqlite']).describe('Database type'),
         connectionString: z.string().min(1).describe('Database connection string'),
         query: z.string().min(1).describe('SQL query or operation'),
-        parameters: z.record(z.any()).default({}).describe('Query parameters'),
+        parameters: z.record(z.string(), z.any()).default(() => ({})).describe('Query parameters'),
       }).describe('Database configuration'),
     }),
   ]).describe('Procedure configuration'),
@@ -239,7 +239,7 @@ const RemoteProcedureCreateSchema = z.object({
       interval: z.number().min(60).max(3600).default(300).describe('Health check interval in seconds'),
       endpoint: z.string().url().optional().describe('Health check endpoint'),
       expectedResponse: z.any().optional().describe('Expected health check response'),
-    }).default({}).describe('Health check configuration'),
+    }).default(() => ({})).describe('Health check configuration'),
     alerts: z.array(z.object({
       type: z.enum(['failure_rate', 'response_time', 'availability', 'error_pattern']).describe('Alert type'),
       threshold: z.number().min(0).describe('Alert threshold'),
@@ -250,18 +250,18 @@ const RemoteProcedureCreateSchema = z.object({
       level: z.enum(['none', 'basic', 'detailed', 'verbose']).default('basic').describe('Logging level'),
       retentionDays: z.number().min(1).max(365).default(30).describe('Log retention in days'),
       includePayload: z.boolean().default(false).describe('Include request/response payload in logs'),
-    }).default({}).describe('Logging configuration'),
-  }).default({}).describe('Monitoring configuration'),
+    }).default(() => ({})).describe('Logging configuration'),
+  }).default(() => ({})).describe('Monitoring configuration'),
   security: z.object({
     rateLimiting: z.object({
       enabled: z.boolean().default(false).describe('Enable rate limiting'),
       maxRequests: z.number().min(1).default(100).describe('Maximum requests per window'),
       windowMs: z.number().min(1000).default(60000).describe('Rate limit window in milliseconds'),
-    }).default({}).describe('Rate limiting configuration'),
+    }).default(() => ({})).describe('Rate limiting configuration'),
     ipWhitelist: z.array(z.string()).optional().describe('IP whitelist for procedure access'),
     requiresApproval: z.boolean().default(false).describe('Require approval before execution'),
     encryptPayload: z.boolean().default(false).describe('Encrypt procedure payload'),
-  }).default({}).describe('Security configuration'),
+  }).default(() => ({})).describe('Security configuration'),
 }).strict();
 
 const DeviceCreateSchema = z.object({
@@ -280,7 +280,7 @@ const DeviceCreateSchema = z.object({
     }).describe('Connection configuration'),
     authentication: z.object({
       type: z.enum(['none', 'api_key', 'certificate', 'ssh_key', 'username_password']).describe('Authentication type'),
-      credentials: z.record(z.any()).optional().describe('Authentication credentials'),
+      credentials: z.record(z.string(), z.any()).optional().describe('Authentication credentials'),
     }).describe('Authentication configuration'),
     capabilities: z.object({
       canReceive: z.boolean().default(true).describe('Can receive data/commands'),
@@ -288,14 +288,14 @@ const DeviceCreateSchema = z.object({
       canExecute: z.boolean().default(false).describe('Can execute procedures'),
       supportedFormats: z.array(z.string()).default(['json']).describe('Supported data formats'),
       maxPayloadSize: z.number().min(1024).default(1048576).describe('Maximum payload size in bytes'),
-    }).default({}).describe('Device capabilities'),
+    }).default(() => ({})).describe('Device capabilities'),
     environment: z.object({
       os: z.string().optional().describe('Operating system'),
       version: z.string().optional().describe('OS/software version'),
       architecture: z.string().optional().describe('System architecture'),
       runtime: z.string().optional().describe('Runtime environment'),
-      customProperties: z.record(z.any()).default({}).describe('Custom device properties'),
-    }).default({}).describe('Device environment'),
+      customProperties: z.record(z.string(), z.any()).default(() => ({})).describe('Custom device properties'),
+    }).default(() => ({})).describe('Device environment'),
   }).describe('Device configuration'),
 }).strict();
 
@@ -307,12 +307,12 @@ const ProcedureExecuteSchema = z.object({
     timeout: z.number().min(1000).max(600000).optional().describe('Execution timeout in milliseconds'),
     retries: z.number().min(0).max(5).optional().describe('Number of retries on failure'),
     priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal').describe('Execution priority'),
-  }).default({}).describe('Execution options'),
+  }).default(() => ({})).describe('Execution options'),
   metadata: z.object({
     correlationId: z.string().optional().describe('Correlation ID for tracking'),
     source: z.string().optional().describe('Source of the execution request'),
-    tags: z.record(z.string()).default({}).describe('Execution tags for categorization'),
-  }).default({}).describe('Execution metadata'),
+    tags: z.record(z.string(), z.string()).default(() => ({})).describe('Execution tags for categorization'),
+  }).default(() => ({})).describe('Execution metadata'),
 }).strict();
 
 /**

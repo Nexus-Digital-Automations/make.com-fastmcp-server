@@ -155,10 +155,10 @@ const SDKAppInstallSchema = z.object({
   version: z.string().optional().describe('Specific version to install (defaults to latest)'),
   organizationId: z.number().min(1).optional().describe('Organization ID to install for'),
   teamId: z.number().min(1).optional().describe('Team ID to install for'),
-  configuration: z.record(z.any()).default({}).describe('App configuration settings'),
+  configuration: z.record(z.string(), z.any()).default({}).describe('App configuration settings'),
   permissions: z.object({
     autoGrant: z.boolean().default(false).describe('Automatically grant requested permissions'),
-    restrictions: z.record(z.any()).default({}).describe('Permission restrictions'),
+    restrictions: z.record(z.string(), z.any()).default({}).describe('Permission restrictions'),
   }).default({}).describe('Permission settings'),
   autoUpdate: z.boolean().default(true).describe('Enable automatic updates'),
   skipValidation: z.boolean().default(false).describe('Skip compatibility validation'),
@@ -174,7 +174,7 @@ const SDKAppUpdateSchema = z.object({
 
 const SDKAppConfigureSchema = z.object({
   appId: z.number().min(1).describe('SDK app ID to configure'),
-  configuration: z.record(z.any()).describe('New configuration settings'),
+  configuration: z.record(z.string(), z.any()).describe('New configuration settings'),
   permissions: z.object({
     grant: z.array(z.string()).default([]).describe('Permissions to grant'),
     revoke: z.array(z.string()).default([]).describe('Permissions to revoke'),
@@ -182,7 +182,7 @@ const SDKAppConfigureSchema = z.object({
   integrations: z.object({
     enable: z.array(z.string()).default([]).describe('Integrations to enable'),
     disable: z.array(z.string()).default([]).describe('Integrations to disable'),
-    configure: z.record(z.any()).default({}).describe('Integration configurations'),
+    configure: z.record(z.string(), z.any()).default({}).describe('Integration configurations'),
   }).optional().describe('Integration settings'),
 }).strict();
 
@@ -191,7 +191,7 @@ const WorkflowInstallSchema = z.object({
   name: z.string().min(1).max(100).describe('Name for the installed workflow'),
   teamId: z.number().min(1).optional().describe('Team ID to install workflow in'),
   folderId: z.number().min(1).optional().describe('Folder ID to organize workflow'),
-  configuration: z.record(z.any()).default({}).describe('Workflow configuration overrides'),
+  configuration: z.record(z.string(), z.any()).default({}).describe('Workflow configuration overrides'),
   autoStart: z.boolean().default(false).describe('Automatically start workflow after installation'),
   installDependencies: z.boolean().default(true).describe('Install required app dependencies'),
 }).strict();

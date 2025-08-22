@@ -160,7 +160,7 @@ const GovernancePolicySchema = z.object({
       ruleId: z.string(),
       condition: z.string(),
       action: z.string(),
-      parameters: z.record(z.unknown()).optional(),
+      parameters: z.record(z.string(), z.unknown()).optional(),
     })),
   }),
   complianceMapping: z.object({

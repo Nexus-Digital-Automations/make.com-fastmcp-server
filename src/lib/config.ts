@@ -187,7 +187,7 @@ class ConfigManager {
 
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const validationMessages = error.errors.map(err => 
+        const validationMessages = error.issues.map(err => 
           `${err.path.join('.')}: ${err.message}`
         ).join(', ');
         throw new ValidationError(`Configuration validation failed: ${validationMessages}`);

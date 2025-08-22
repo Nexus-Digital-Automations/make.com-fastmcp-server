@@ -85,7 +85,7 @@ const AIAgentCreateSchema = z.object({
   configuration: z.object({
     model: z.string().min(1).describe('Model identifier (e.g., gpt-4, claude-3)'),
     provider: z.string().min(1).describe('LLM provider name'),
-    parameters: z.record(z.any()).default({}).describe('Model-specific parameters'),
+    parameters: z.record(z.string(), z.any()).default(() => ({})).describe('Model-specific parameters'),
     systemPrompt: z.string().optional().describe('System prompt for the agent'),
     temperature: z.number().min(0).max(2).optional().describe('Sampling temperature (0-2)'),
     maxTokens: z.number().min(1).max(200000).optional().describe('Maximum tokens in response'),
@@ -98,7 +98,7 @@ const AIAgentCreateSchema = z.object({
     memoryType: z.enum(['none', 'conversation', 'semantic', 'hybrid']).default('conversation').describe('Memory management type'),
     memorySize: z.number().min(0).optional().describe('Memory size limit (MB)'),
     instructions: z.string().optional().describe('Additional context instructions'),
-  }).default({}).describe('Context and memory configuration'),
+  }).default(() => ({ maxHistoryLength: 10, memoryType: 'conversation' as const })).describe('Context and memory configuration'),
   capabilities: z.array(z.string()).default([]).describe('Agent capabilities (function names, tools)'),
   organizationId: z.number().min(1).optional().describe('Organization ID (for organization-scoped agents)'),
   teamId: z.number().min(1).optional().describe('Team ID (for team-scoped agents)'),
@@ -113,7 +113,7 @@ const AIAgentUpdateSchema = z.object({
   configuration: z.object({
     model: z.string().min(1).optional(),
     provider: z.string().min(1).optional(),
-    parameters: z.record(z.any()).optional(),
+    parameters: z.record(z.string(), z.any()).optional(),
     systemPrompt: z.string().optional(),
     temperature: z.number().min(0).max(2).optional(),
     maxTokens: z.number().min(1).max(200000).optional(),
@@ -154,7 +154,7 @@ const LLMProviderCreateSchema = z.object({
     baseUrl: z.string().url().optional().describe('Custom API base URL'),
     apiVersion: z.string().optional().describe('API version (for Azure/custom)'),
     organization: z.string().optional().describe('Organization ID (for OpenAI)'),
-    customHeaders: z.record(z.string()).optional().describe('Custom HTTP headers'),
+    customHeaders: z.record(z.string(), z.string()).optional().describe('Custom HTTP headers'),
   }).describe('Provider configuration'),
   models: z.array(z.object({
     id: z.string().min(1).describe('Model ID'),
@@ -167,7 +167,7 @@ const LLMProviderCreateSchema = z.object({
   rateLimit: z.object({
     requestsPerMinute: z.number().min(1).default(60).describe('Requests per minute limit'),
     tokensPerMinute: z.number().min(1).default(60000).describe('Tokens per minute limit'),
-  }).default({}).describe('Rate limiting configuration'),
+  }).default(() => ({ requestsPerMinute: 60, tokensPerMinute: 60000 })).describe('Rate limiting configuration'),
 }).strict();
 
 const AgentTestSchema = z.object({
@@ -178,7 +178,7 @@ const AgentTestSchema = z.object({
     includeMetrics: z.boolean().default(true).describe('Include performance metrics'),
     timeout: z.number().min(1000).max(60000).default(30000).describe('Test timeout in milliseconds'),
     validateResponse: z.boolean().default(true).describe('Validate response format'),
-  }).default({}).describe('Test options'),
+  }).default(() => ({ includeMetrics: true, timeout: 30000, validateResponse: true })).describe('Test options'),
 }).strict();
 
 /**

@@ -14,7 +14,7 @@ export const VaultServerConfigSchema = z.object({
   config: z.object({
     storage: z.object({
       type: z.enum(['consul', 'raft', 'postgresql', 'mysql']),
-      config: z.record(z.unknown()),
+      config: z.record(z.string(), z.unknown()),
     }),
     listener: z.object({
       type: z.enum(['tcp', 'unix']),
@@ -28,7 +28,7 @@ export const VaultServerConfigSchema = z.object({
     }),
     seal: z.object({
       type: z.enum(['shamir', 'auto', 'hsm', 'cloud_kms']),
-      config: z.record(z.unknown()),
+      config: z.record(z.string(), z.unknown()),
     }),
     telemetry: z.object({
       prometheusEnabled: z.boolean().optional().default(true),

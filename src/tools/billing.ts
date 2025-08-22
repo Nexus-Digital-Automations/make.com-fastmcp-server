@@ -592,7 +592,7 @@ const CreateCostAlertSchema = z.object({
   }).describe('Notification configuration'),
   actions: z.array(z.object({
     type: z.enum(['pause_scenarios', 'restrict_operations', 'notify_only', 'webhook']).describe('Action type'),
-    configuration: z.record(z.unknown()).describe('Action configuration'),
+    configuration: z.record(z.string(), z.unknown()).describe('Action configuration'),
     delay: z.number().min(0).describe('Action delay (minutes)'),
   })).describe('Alert actions'),
 }).strict();

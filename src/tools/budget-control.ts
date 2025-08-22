@@ -208,7 +208,7 @@ const AlertThresholdSchema = z.object({
 const AutomatedActionSchema = z.object({
   trigger: z.enum(['threshold_50', 'threshold_75', 'threshold_90', 'threshold_100']).describe('Action trigger condition'),
   action: z.enum(['notify', 'throttle', 'pause_non_critical', 'pause_all', 'custom']).describe('Action to execute'),
-  parameters: z.record(z.unknown()).optional().describe('Action-specific parameters'),
+  parameters: z.record(z.string(), z.unknown()).optional().describe('Action-specific parameters'),
   requiresApproval: z.boolean().default(false).describe('Requires manual approval'),
 });
 

@@ -33,7 +33,7 @@ const AuthenticationRequestSchema = z.object({
     platform: z.string(),
     hardwareInfo: z.string().optional(),
   }),
-  ipAddress: z.string().ip(),
+  ipAddress: z.string().regex(/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/, 'Invalid IP address'),
   geolocation: z.object({
     latitude: z.number().optional(),
     longitude: z.number().optional(),
@@ -112,7 +112,7 @@ const BehavioralAnalyticsSchema = z.object({
     }),
   }),
   contextualData: z.object({
-    ipAddress: z.string().ip(),
+    ipAddress: z.string().regex(/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/, 'Invalid IP address'),
     geolocation: z.object({
       latitude: z.number().optional(),
       longitude: z.number().optional(),
@@ -146,7 +146,7 @@ const SessionManagementSchema = z.object({
     expiresAt: z.string().optional(),
     riskScore: z.number().min(0).max(100).optional(),
     securityLevel: z.enum(['low', 'medium', 'high', 'critical']).optional(),
-    attributes: z.record(z.unknown()).optional(),
+    attributes: z.record(z.string(), z.unknown()).optional(),
   }).optional(),
   continuousValidation: z.object({
     behaviorCheck: z.boolean().optional().default(true),
@@ -167,7 +167,7 @@ const IdentityFederationSchema = z.object({
     scopes: z.array(z.string()).optional(),
     token: z.string().optional(),
     assertions: z.string().optional(),
-    claims: z.record(z.unknown()).optional(),
+    claims: z.record(z.string(), z.unknown()).optional(),
     userAttributes: z.object({
       email: z.string().email().optional(),
       firstName: z.string().optional(),

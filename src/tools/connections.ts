@@ -92,16 +92,16 @@ const CreateConnectionSchema = z.object({
   name: z.string().min(1).max(100).describe('Connection name'),
   service: z.string().min(1).describe('Service identifier (e.g., "slack", "gmail")'),
   accountName: z.string().min(1).max(100).describe('Account name or identifier'),
-  credentials: z.record(z.any()).describe('Service-specific credentials'),
-  metadata: z.record(z.any()).optional().describe('Additional connection metadata'),
+  credentials: z.record(z.string(), z.any()).describe('Service-specific credentials'),
+  metadata: z.record(z.string(), z.any()).optional().describe('Additional connection metadata'),
 }).strict();
 
 const UpdateConnectionSchema = z.object({
   connectionId: z.number().min(1).describe('Connection ID to update'),
   name: z.string().min(1).max(100).optional().describe('New connection name'),
   accountName: z.string().min(1).max(100).optional().describe('New account name'),
-  credentials: z.record(z.any()).optional().describe('Updated credentials'),
-  metadata: z.record(z.any()).optional().describe('Updated metadata'),
+  credentials: z.record(z.string(), z.any()).optional().describe('Updated credentials'),
+  metadata: z.record(z.string(), z.any()).optional().describe('Updated metadata'),
 }).strict();
 
 const WebhookFiltersSchema = z.object({
@@ -116,7 +116,7 @@ const CreateWebhookSchema = z.object({
   name: z.string().min(1).max(100).describe('Webhook name'),
   url: z.string().url().describe('Webhook endpoint URL'),
   method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).default('POST').describe('HTTP method'),
-  headers: z.record(z.string()).optional().describe('HTTP headers to include'),
+  headers: z.record(z.string(), z.string()).optional().describe('HTTP headers to include'),
   connectionId: z.number().min(1).optional().describe('Associated connection ID'),
   scenarioId: z.number().min(1).optional().describe('Associated scenario ID'),
   isActive: z.boolean().default(true).describe('Whether webhook is active'),
@@ -127,7 +127,7 @@ const UpdateWebhookSchema = z.object({
   name: z.string().min(1).max(100).optional().describe('New webhook name'),
   url: z.string().url().optional().describe('New webhook URL'),
   method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional().describe('New HTTP method'),
-  headers: z.record(z.string()).optional().describe('Updated headers'),
+  headers: z.record(z.string(), z.string()).optional().describe('Updated headers'),
   isActive: z.boolean().optional().describe('Update webhook status'),
 }).strict();
 

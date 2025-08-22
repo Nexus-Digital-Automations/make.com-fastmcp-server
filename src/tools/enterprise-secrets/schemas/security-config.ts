@@ -92,7 +92,7 @@ export const AuditConfigSchema = z.object({
   auditDevices: z.array(z.object({
     type: z.enum(['file', 'syslog', 'socket', 'elasticsearch', 'splunk']),
     path: z.string(),
-    config: z.record(z.unknown()),
+    config: z.record(z.string(), z.unknown()),
     format: z.enum(['json', 'jsonx']).optional().default('json'),
     prefix: z.string().optional(),
   })),

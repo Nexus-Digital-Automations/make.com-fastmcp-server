@@ -61,7 +61,7 @@ const AutomatedCheckSchema = z.object({
   description: z.string().min(1).max(1000).describe('Detailed check description'),
   checkType: z.enum(['scenario_validation', 'connection_compliance', 'data_flow_monitoring', 'access_control', 'encryption_validation']).describe('Type of automated check'),
   schedule: z.enum(['real-time', 'hourly', 'daily', 'weekly']).describe('Check execution schedule'),
-  criteria: z.record(z.unknown()).describe('Check criteria and parameters'),
+  criteria: z.record(z.string(), z.unknown()).describe('Check criteria and parameters'),
   actions: z.array(z.string()).describe('Actions to take when check fails'),
   enabled: z.boolean().default(true).describe('Whether the check is active'),
 }).strict();
@@ -72,14 +72,14 @@ const EnforcementActionSchema = z.object({
   type: z.enum(['block', 'alert', 'quarantine', 'escalate', 'remediate']).describe('Type of enforcement action'),
   description: z.string().min(1).max(1000).describe('Detailed action description'),
   automated: z.boolean().describe('Whether action is executed automatically'),
-  parameters: z.record(z.unknown()).optional().describe('Action-specific parameters'),
+  parameters: z.record(z.string(), z.unknown()).optional().describe('Action-specific parameters'),
   approvalRequired: z.boolean().default(false).describe('Whether action requires manual approval'),
 }).strict();
 
 const EscalationRuleSchema = z.object({
   ruleId: z.string().min(1).describe('Unique escalation rule identifier'),
   name: z.string().min(1).max(200).describe('Human-readable rule name'),
-  conditions: z.record(z.unknown()).describe('Conditions that trigger escalation'),
+  conditions: z.record(z.string(), z.unknown()).describe('Conditions that trigger escalation'),
   escalationPath: z.array(z.string()).describe('Ordered list of escalation recipients'),
   timeframes: z.record(z.number()).describe('Time limits for each escalation level'),
   actions: z.array(z.string()).describe('Actions to take at each escalation level'),
@@ -106,7 +106,7 @@ const CompliancePolicySchema = z.object({
     dataTypes: z.object({
       sensitiveData: z.array(z.string()).optional().describe('Data classifications covered'),
       dataProcessing: z.array(z.string()).optional().describe('Processing activities governed'),
-      retentionPolicies: z.record(z.string()).optional().describe('Data retention requirements'),
+      retentionPolicies: z.record(z.string(), z.string()).optional().describe('Data retention requirements'),
     }).optional(),
   }).strict(),
 
@@ -167,7 +167,7 @@ const CompliancePolicySchema = z.object({
     createdBy: z.string().optional().describe('Policy creator'),
     approvedBy: z.string().optional().describe('Policy approval authority'),
     reviewDate: z.string().optional().describe('Next review date'),
-    customFields: z.record(z.unknown()).optional().describe('Custom metadata fields'),
+    customFields: z.record(z.string(), z.unknown()).optional().describe('Custom metadata fields'),
   }).optional(),
 }).strict();
 

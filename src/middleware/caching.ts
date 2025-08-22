@@ -295,7 +295,7 @@ export class CachingMiddleware {
       },
       parameters: z.object({
         trigger: z.string().min(1).describe('Invalidation trigger (e.g., scenario:update)'),
-        context: z.record(z.string()).optional().describe('Optional context for pattern expansion')
+        context: z.record(z.string(), z.string()).optional().describe('Optional context for pattern expansion')
       }),
       execute: async (args) => {
         try {

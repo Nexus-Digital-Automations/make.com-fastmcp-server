@@ -43,7 +43,7 @@ const ValidationTargetSchema = z.object({
   targetType: z.enum(['scenario', 'connection', 'template', 'folder', 'user', 'data_flow', 'organization', 'team']).describe('Type of target to validate'),
   targetId: z.string().min(1).describe('Unique identifier of target'),
   targetName: z.string().optional().describe('Human-readable name of target'),
-  metadata: z.record(z.unknown()).optional().describe('Additional target metadata for validation context'),
+  metadata: z.record(z.string(), z.unknown()).optional().describe('Additional target metadata for validation context'),
 }).strict();
 
 /**

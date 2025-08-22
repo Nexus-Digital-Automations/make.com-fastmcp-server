@@ -64,7 +64,7 @@ const VariableListSchema = z.object({
 const VariableBulkOperationSchema = z.object({
   operation: z.enum(['delete', 'update_tags', 'change_scope', 'bulk_encrypt']).describe('Bulk operation type'),
   variableIds: z.array(z.number().min(1)).min(1).max(100).describe('Array of variable IDs (max 100)'),
-  operationData: z.record(z.any()).optional().describe('Operation-specific data'),
+  operationData: z.record(z.string(), z.any()).optional().describe('Operation-specific data'),
 }).strict();
 
 const VariableExportSchema = z.object({
@@ -884,7 +884,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
         skipFailedModules: z.boolean().default(false).describe('Skip failed modules during retry'),
         preserveState: z.boolean().default(true).describe('Preserve execution state where possible'),
         notifyOnCompletion: z.boolean().default(false).describe('Send notification when batch completes'),
-      }).default({}).describe('Bulk operation options'),
+      }).default(() => ({ retryWithModifications: false, skipFailedModules: false, preserveState: true, notifyOnCompletion: false })).describe('Bulk operation options'),
       reason: z.string().max(500).optional().describe('Reason for bulk resolution'),
     }),
     annotations: {

@@ -91,13 +91,13 @@ const TemplateCreateSchema = z.object({
       id: z.number().min(1),
       permissions: z.array(z.enum(['view', 'use', 'edit', 'admin'])).default(['view', 'use']),
     })).default([]).describe('Specific sharing permissions'),
-  }).default({}).describe('Sharing configuration'),
+  }).default(() => ({ organizationVisible: false, teamVisible: false, specificShares: [] })).describe('Sharing configuration'),
   metadata: z.object({
     estimatedSetupTime: z.number().min(0).optional().describe('Estimated setup time in minutes'),
     requiredConnections: z.array(z.string()).default([]).describe('Required connection types'),
     supportedRegions: z.array(z.string()).optional().describe('Supported regions'),
     complexity: z.enum(['simple', 'moderate', 'complex']).optional().describe('Template complexity level'),
-  }).default({}).describe('Template metadata'),
+  }).default(() => ({ requiredConnections: [] })).describe('Template metadata'),
 }).strict();
 
 const TemplateUpdateSchema = z.object({
@@ -150,9 +150,9 @@ const TemplateUseSchema = z.object({
   templateId: z.number().min(1).describe('Template ID to use'),
   scenarioName: z.string().min(1).max(100).describe('Name for the new scenario'),
   folderId: z.number().min(1).optional().describe('Folder to place the new scenario'),
-  customizations: z.record(z.any()).default({}).describe('Customizations to apply to the template'),
-  connectionMappings: z.record(z.number().min(1)).default({}).describe('Map template connections to existing connections'),
-  variableOverrides: z.record(z.any()).default({}).describe('Override template variables'),
+  customizations: z.record(z.string(), z.any()).default(() => ({})).describe('Customizations to apply to the template'),
+  connectionMappings: z.record(z.string(), z.number().min(1)).default(() => ({})).describe('Map template connections to existing connections'),
+  variableOverrides: z.record(z.string(), z.any()).default(() => ({})).describe('Override template variables'),
   schedulingOverride: z.object({
     type: z.enum(['immediate', 'indefinitely', 'on-demand']).optional(),
     interval: z.number().min(60).optional(),

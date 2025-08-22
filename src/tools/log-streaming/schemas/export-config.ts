@@ -34,11 +34,11 @@ export const ExportLogsForAnalysisSchema = z.object({
     compression: z.enum(['none', 'gzip', 'zip', 'brotli']).default('gzip').describe('Compression format'),
     chunkSize: z.number().min(100).max(10000).default(1000).describe('Number of logs per chunk'),
     includeMetadata: z.boolean().default(true).describe('Include export metadata'),
-    fieldMapping: z.record(z.string()).optional().describe('Custom field name mapping'),
+    fieldMapping: z.record(z.string(), z.string()).optional().describe('Custom field name mapping'),
     transformations: z.array(z.object({
       field: z.string(),
       operation: z.enum(['rename', 'format_date', 'parse_json', 'extract_regex']),
-      parameters: z.record(z.unknown()).optional(),
+      parameters: z.record(z.string(), z.unknown()).optional(),
     })).optional().describe('Data transformation rules'),
   }).default({}),
   destination: z.object({
@@ -58,7 +58,7 @@ export const ExportLogsForAnalysisSchema = z.object({
       }).optional(),
       authentication: z.object({
         type: z.enum(['api_key', 'oauth', 'basic_auth', 'bearer_token']).optional(),
-        credentials: z.record(z.string()).optional(),
+        credentials: z.record(z.string(), z.string()).optional(),
       }).optional(),
       retryPolicy: z.object({
         maxRetries: z.number().min(0).max(10).default(3),
@@ -85,7 +85,7 @@ export const ExportLogsForAnalysisSchema = z.object({
       name: z.string(),
       aggregation: z.enum(['count', 'sum', 'avg', 'min', 'max']),
       field: z.string(),
-      filters: z.record(z.unknown()).optional(),
+      filters: z.record(z.string(), z.unknown()).optional(),
     })).optional().describe('Custom metrics to calculate'),
   }).default({}),
 }).strict();

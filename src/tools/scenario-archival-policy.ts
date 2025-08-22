@@ -208,7 +208,7 @@ const CreateScenarioArchivalPolicySchema = z.object({
     channels: z.array(z.enum(['email', 'webhook', 'api'])).default(['email']).describe('Notification channels'),
   }).optional().describe('Notification configuration'),
   
-  metadata: z.record(z.unknown()).optional().describe('Additional policy metadata'),
+  metadata: z.record(z.string(), z.unknown()).optional().describe('Additional policy metadata'),
 }).strict();
 
 /**
@@ -253,7 +253,7 @@ const UpdateArchivalPolicySchema = z.object({
   active: z.boolean().optional().describe('Policy activation status'),
   effectiveFrom: z.string().optional().describe('New effective date'),
   effectiveUntil: z.string().optional().describe('New expiration date'),
-  metadata: z.record(z.unknown()).optional().describe('Updated metadata'),
+  metadata: z.record(z.string(), z.unknown()).optional().describe('Updated metadata'),
 }).strict();
 
 const PolicyFiltersSchema = z.object({

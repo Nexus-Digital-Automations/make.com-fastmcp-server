@@ -359,7 +359,7 @@ const NotificationCreateSchema = z.object({
   priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium').describe('Notification priority'),
   title: z.string().min(1).max(200).describe('Notification title'),
   message: z.string().min(1).max(2000).describe('Notification message content'),
-  data: z.record(z.any()).optional().describe('Additional structured data'),
+  data: z.record(z.string(), z.any()).optional().describe('Additional structured data'),
   recipients: z.object({
     users: z.array(z.number()).default([]).describe('User IDs to notify'),
     teams: z.array(z.number()).default([]).describe('Team IDs to notify'),
@@ -386,7 +386,7 @@ const NotificationCreateSchema = z.object({
     }).optional().describe('Recurring schedule configuration'),
   }).optional().describe('Scheduling options'),
   templateId: z.number().optional().describe('Template ID to use'),
-  templateVariables: z.record(z.any()).default({}).describe('Template variable values'),
+  templateVariables: z.record(z.string(), z.any()).default({}).describe('Template variable values'),
 }).strict();
 
 const EmailPreferencesSchema = z.object({
@@ -479,8 +479,8 @@ const NotificationTemplateSchema = z.object({
   }).describe('Template configuration'),
   design: z.object({
     theme: z.string().optional().describe('Design theme'),
-    colors: z.record(z.string()).optional().describe('Color scheme'),
-    fonts: z.record(z.string()).optional().describe('Font configuration'),
+    colors: z.record(z.string(), z.string()).optional().describe('Color scheme'),
+    fonts: z.record(z.string(), z.string()).optional().describe('Font configuration'),
     layout: z.string().optional().describe('Layout template'),
     customCss: z.string().optional().describe('Custom CSS'),
   }).optional().describe('Design configuration'),

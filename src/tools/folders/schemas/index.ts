@@ -8,7 +8,7 @@ import { z } from 'zod';
 // Base schemas
 export const foldersConfigSchema = z.object({
   enabled: z.boolean(),
-  settings: z.record(z.unknown()),
+  settings: z.record(z.string(), z.unknown()),
   metadata: z.object({
     version: z.string(),
     createdAt: z.date(),

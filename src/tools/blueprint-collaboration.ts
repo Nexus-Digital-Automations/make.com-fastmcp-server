@@ -492,7 +492,7 @@ const ResolveConflictsSchema = z.object({
   conflictResolutions: z.array(z.object({
     conflictId: z.string().min(1),
     resolution: z.enum(['keep_current', 'accept_incoming', 'merge', 'custom']),
-    customResolution: z.record(z.unknown()).optional(),
+    customResolution: z.record(z.string(), z.unknown()).optional(),
     reasoning: z.string().optional(),
   })).default([]).describe('Specific conflict resolutions'),
   preserveUserIntent: z.boolean().default(true).describe('Prioritize preserving user intent'),

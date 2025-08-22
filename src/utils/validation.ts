@@ -111,7 +111,7 @@ export const secureScenarioCreateSchema = z.object({
     interval: z.number().int().positive().max(86400).optional(), // Max 24 hours
   }),
   isActive: z.boolean().default(true),
-  metadata: z.record(z.unknown())
+  metadata: z.record(z.string(), z.unknown())
     .refine((val) => Object.keys(val).length <= 50, {
       message: 'Too many metadata fields'
     })
@@ -139,7 +139,7 @@ export const secureScenarioUpdateSchema = z.object({
     interval: z.number().int().positive().max(86400).optional(),
   }).optional(),
   isActive: z.boolean().optional(),
-  metadata: z.record(z.unknown())
+  metadata: z.record(z.string(), z.unknown())
     .refine((val) => Object.keys(val).length <= 50)
     .optional()
 }).strict();
@@ -154,12 +154,12 @@ export const secureConnectionCreateSchema = z.object({
     .refine((val) => /^[a-zA-Z0-9_-]+$/.test(val), {
       message: 'Service name can only contain alphanumeric characters, underscores, and hyphens'
     }),
-  credentials: z.record(z.unknown())
+  credentials: z.record(z.string(), z.unknown())
     .refine((val) => Object.keys(val).length <= 20, {
       message: 'Too many credential fields'
     })
     .optional(),
-  metadata: z.record(z.unknown())
+  metadata: z.record(z.string(), z.unknown())
     .refine((val) => Object.keys(val).length <= 30)
     .optional()
 }).strict();
@@ -169,10 +169,10 @@ export const connectionCreateSchema = secureConnectionCreateSchema;
 export const secureConnectionUpdateSchema = z.object({
   name: secureStringSchema.optional(),
   accountName: createSecureStringSchema(255).optional(),
-  credentials: z.record(z.unknown())
+  credentials: z.record(z.string(), z.unknown())
     .refine((val) => Object.keys(val).length <= 20)
     .optional(),
-  metadata: z.record(z.unknown())
+  metadata: z.record(z.string(), z.unknown())
     .refine((val) => Object.keys(val).length <= 30)
     .optional()
 }).strict();
@@ -221,7 +221,7 @@ export const webhookCreateSchema = z.object({
   name: nameSchema,
   url: urlSchema,
   method: z.enum(['GET', 'POST', 'PUT', 'DELETE']).default('POST'),
-  headers: z.record(z.string()).optional(),
+  headers: z.record(z.string(), z.string()).optional(),
   scenarioId: z.number().int().positive().optional(),
   isActive: z.boolean().default(true),
 });
@@ -230,7 +230,7 @@ export const webhookUpdateSchema = z.object({
   name: nameSchema.optional(),
   url: urlSchema.optional(),
   method: z.enum(['GET', 'POST', 'PUT', 'DELETE']).optional(),
-  headers: z.record(z.string()).optional(),
+  headers: z.record(z.string(), z.string()).optional(),
   isActive: z.boolean().optional(),
 });
 

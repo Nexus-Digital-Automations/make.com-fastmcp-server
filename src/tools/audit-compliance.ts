@@ -25,7 +25,7 @@ const LogAuditEventSchema = z.object({
   sessionId: z.string().optional(),
   requestId: z.string().optional(),
   success: z.boolean(),
-  details: z.record(z.unknown()).optional().default({}),
+  details: z.record(z.string(), z.unknown()).optional().default(() => ({})),
   riskLevel: z.enum(['low', 'medium', 'high', 'critical']),
 });
 
