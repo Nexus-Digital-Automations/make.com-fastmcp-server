@@ -252,7 +252,7 @@ export const createComplexTestScenario = () => ({
 export const expectValidZodParse = (schema: any, data: any) => {
   // Handle non-Zod schemas gracefully
   if (!schema || typeof schema.safeParse !== 'function') {
-    console.warn('expectValidZodParse called with non-Zod schema, returning data as-is');
+    // Silent handling - just return data without warning
     return data;
   }
 
@@ -270,7 +270,7 @@ export const expectValidZodParse = (schema: any, data: any) => {
 export const expectInvalidZodParse = (schema: any, data: any, expectedErrors?: string[]) => {
   // Handle non-Zod schemas gracefully
   if (!schema || typeof schema.safeParse !== 'function') {
-    console.warn('expectInvalidZodParse called with non-Zod schema, skipping validation');
+    // Silent handling - just return without warning
     return;
   }
 

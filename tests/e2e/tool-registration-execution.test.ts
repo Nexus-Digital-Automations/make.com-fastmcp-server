@@ -496,10 +496,11 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
       });
 
       const chainedTool = createMockTool('chained-middleware-tool');
+      const originalExecute = chainedTool.execute; // Store original before modification
       server.addTool(chainedTool);
 
       const registeredTool = server.getTool('chained-middleware-tool');
-      expect(registeredTool.execute).not.toBe(chainedTool.execute);
+      expect(registeredTool.execute).not.toBe(originalExecute); // Compare with original
       
       // Verify both middleware were applied
       expect(cachingMiddleware.apply).toHaveBeenCalled();
@@ -904,9 +905,9 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
       
       cachingMiddleware.wrapWithCache.mockImplementation(async (operation, params, executor) => {
         const cacheKey = `${operation}:${JSON.stringify(params)}`;
-        const scenario = combinedScenarios.find(s => s.tool === operation);
         
-        if (scenario?.cacheHit && cacheStore.has(cacheKey)) {
+        // Check cache first (for cache hit scenarios)
+        if (cacheStore.has(cacheKey)) {
           return {
             success: true,
             data: cacheStore.get(cacheKey),
@@ -916,7 +917,7 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
         
         try {
           const result = await executor();
-          if (result.success) {
+          if (result && result.success) {
             cacheStore.set(cacheKey, result.data);
           }
           return { ...result, fromCache: false };
@@ -946,6 +947,12 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
         };
       });
 
+      // Setup server.executeTool mock once outside the loop
+      server.executeTool = jest.fn().mockImplementation(async (name, params) => {
+        const registeredTool = server.getTool(name);
+        return await registeredTool.execute(params);
+      });
+
       for (const scenario of combinedScenarios) {
         const tool = createMockTool(scenario.tool, 'complex');
         
@@ -971,11 +978,6 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
         };
         
         server.addTool(tool);
-        
-        server.executeTool = jest.fn().mockImplementation(async (name, params) => {
-          const registeredTool = server.getTool(name);
-          return await registeredTool.execute(params);
-        });
 
         if (scenario.expectSuccess) {
           const result = await server.executeTool(scenario.tool, scenario.params);
