@@ -134,14 +134,9 @@ function formatVariableValue(value: unknown, type: string): unknown {
 }
 
 /**
- * Add custom variable management tools to FastMCP server
+ * Add create custom variable tool
  */
-export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'VariableTools' });
-  
-  componentLogger.info('Adding custom variable management tools');
-
-  // Create custom variable
+function addCreateCustomVariableTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-custom-variable',
     description: 'Create a new custom variable at organization, team, or scenario level',
@@ -226,8 +221,39 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // List custom variables
+/**
+ * Add custom variable management tools to FastMCP server
+ */
+export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'VariableTools' });
+  
+  componentLogger.info('Adding custom variable management tools');
+
+  // Add core variable tools
+  addCreateCustomVariableTool(server, apiClient);
+  addListCustomVariablesTool(server, apiClient);
+  addGetCustomVariableTool(server, apiClient);
+  addUpdateCustomVariableTool(server, apiClient);
+  addDeleteCustomVariableTool(server, apiClient);
+  addBulkVariableOperationsTool(server, apiClient);
+  addExportCustomVariablesTool(server, apiClient);
+  addTestVariableResolutionTool(server, apiClient);
+  
+  // Add execution recovery tools
+  addListIncompleteExecutionsTool(server, apiClient);
+  addBulkResolveIncompleteExecutionsTool(server, apiClient);
+  addAnalyzeExecutionFailurePatternsTool(server, apiClient);
+  addCreateRecoveryAutomationRuleTool(server, apiClient);
+  
+  componentLogger.info('Custom variable management and incomplete execution recovery tools added successfully');
+}
+
+/**
+ * Add list custom variables tool
+ */
+function addListCustomVariablesTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-custom-variables',
     description: 'List and filter custom variables with comprehensive search capabilities',
@@ -328,8 +354,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Get custom variable details
+/**
+ * Add get custom variable tool
+ */
+function addGetCustomVariableTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-custom-variable',
     description: 'Get detailed information about a specific custom variable',
@@ -399,8 +429,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Update custom variable
+/**
+ * Add update custom variable tool
+ */
+function addUpdateCustomVariableTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'update-custom-variable',
     description: 'Update an existing custom variable',
@@ -474,8 +508,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Delete custom variable
+/**
+ * Add delete custom variable tool
+ */
+function addDeleteCustomVariableTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'delete-custom-variable',
     description: 'Delete a custom variable',
@@ -525,8 +563,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Bulk operations on variables
+/**
+ * Add bulk variable operations tool
+ */
+function addBulkVariableOperationsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'bulk-variable-operations',
     description: 'Perform bulk operations on multiple custom variables',
@@ -591,8 +633,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Export variables
+/**
+ * Add export custom variables tool
+ */
+function addExportCustomVariablesTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'export-custom-variables',
     description: 'Export custom variables in various formats for backup or migration',
@@ -669,8 +715,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Test variable resolution
+/**
+ * Add test variable resolution tool
+ */
+function addTestVariableResolutionTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'test-variable-resolution',
     description: 'Test variable resolution and scope inheritance for debugging',
@@ -742,10 +792,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Incomplete execution recovery tools
-  
-  // List incomplete executions with recovery options
+/**
+ * Add list incomplete executions tool
+ */
+function addListIncompleteExecutionsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-incomplete-executions-with-recovery',
     description: 'List incomplete executions with detailed recovery analysis and options',
@@ -871,8 +923,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Bulk resolve incomplete executions
+/**
+ * Add bulk resolve incomplete executions tool
+ */
+function addBulkResolveIncompleteExecutionsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'bulk-resolve-incomplete-executions',
     description: 'Resolve multiple incomplete executions with batch operations',
@@ -988,8 +1044,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Analyze execution failure patterns
+/**
+ * Add analyze execution failure patterns tool
+ */
+function addAnalyzeExecutionFailurePatternsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'analyze-execution-failure-patterns',
     description: 'Analyze patterns in incomplete executions to identify systemic issues',
@@ -1100,8 +1160,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
+}
 
-  // Create recovery automation rules
+/**
+ * Add create recovery automation rule tool
+ */
+function addCreateRecoveryAutomationRuleTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-recovery-automation-rule',
     description: 'Create automated recovery rules for common failure scenarios',
@@ -1192,8 +1256,6 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       }
     },
   });
-
-  componentLogger.info('Custom variable management and incomplete execution recovery tools added successfully');
 }
 
 export default addVariableTools;
