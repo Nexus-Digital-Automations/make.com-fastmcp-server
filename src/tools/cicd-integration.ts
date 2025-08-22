@@ -310,9 +310,7 @@ async function runSecurityScan(): Promise<{ vulnerabilities: { critical: number;
 
 // ==================== TOOL IMPLEMENTATIONS ====================
 
-export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'CICDIntegration' });
-
+function addRunTestSuiteTool(server: FastMCP, componentLogger: typeof logger): void {
   /**
    * Run Test Suite Tool
    * Execute specific test categories with comprehensive configuration options
@@ -469,7 +467,9 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
       }
     },
   });
+}
 
+function addGetTestCoverageTool(server: FastMCP, componentLogger: typeof logger): void {
   /**
    * Get Test Coverage Tool
    * Retrieve comprehensive test coverage reports with threshold analysis
@@ -622,7 +622,9 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
       }
     },
   });
+}
 
+function addValidateDeploymentReadinessTool(server: FastMCP, componentLogger: typeof logger): void {
   /**
    * Validate Deployment Readiness Tool
    * Comprehensive pre-deployment validation with environment-specific checks
@@ -864,7 +866,9 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
       }
     },
   });
+}
 
+function addGenerateBuildReportTool(server: FastMCP, componentLogger: typeof logger): void {
   /**
    * Generate Build Report Tool
    * Comprehensive build analysis with quality metrics and security assessment
@@ -1119,6 +1123,16 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
       }
     },
   });
+}
+
+export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'CICDIntegration' });
+
+  // Add all CI/CD integration tools
+  addRunTestSuiteTool(server, componentLogger);
+  addGetTestCoverageTool(server, componentLogger);
+  addValidateDeploymentReadinessTool(server, componentLogger);
+  addGenerateBuildReportTool(server, componentLogger);
 
   componentLogger.info('CI/CD integration tools added successfully');
 }

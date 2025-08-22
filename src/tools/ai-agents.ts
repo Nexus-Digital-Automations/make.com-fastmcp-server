@@ -182,14 +182,9 @@ const AgentTestSchema = z.object({
 }).strict();
 
 /**
- * Add AI agent management tools to FastMCP server
+ * Add create AI agent tool
  */
-export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'AIAgentTools' });
-  
-  componentLogger.info('Adding AI agent management tools');
-
-  // Create AI agent
+function addCreateAIAgentTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-ai-agent',
     description: 'Create a new AI agent with LLM configuration and context management',
@@ -296,8 +291,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       }
     },
   });
+}
 
-  // List AI agents
+/**
+ * Add list AI agents tool
+ */
+function addListAIAgentsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-ai-agents',
     description: 'List and filter AI agents with comprehensive search capabilities',
@@ -407,8 +406,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       }
     },
   });
+}
 
-  // Get AI agent details
+/**
+ * Add get AI agent tool
+ */
+function addGetAIAgentTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-ai-agent',
     description: 'Get detailed information about a specific AI agent',
@@ -502,8 +505,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       }
     },
   });
+}
 
-  // Update AI agent
+/**
+ * Add update AI agent tool
+ */
+function addUpdateAIAgentTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'update-ai-agent',
     description: 'Update an existing AI agent configuration',
@@ -584,8 +591,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       }
     },
   });
+}
 
-  // Delete AI agent
+/**
+ * Add delete AI agent tool
+ */
+function addDeleteAIAgentTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'delete-ai-agent',
     description: 'Delete an AI agent',
@@ -635,8 +646,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       }
     },
   });
+}
 
-  // Test AI agent
+/**
+ * Add test AI agent tool
+ */
+function addTestAIAgentTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'test-ai-agent',
     description: 'Test an AI agent with various test scenarios and performance metrics',
@@ -709,8 +724,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       }
     },
   });
+}
 
-  // Create LLM provider
+/**
+ * Add create LLM provider tool
+ */
+function addCreateLLMProviderTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-llm-provider',
     description: 'Create a new LLM provider configuration',
@@ -773,8 +792,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       }
     },
   });
+}
 
-  // List LLM providers
+/**
+ * Add list LLM providers tool
+ */
+function addListLLMProvidersTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-llm-providers',
     description: 'List available LLM providers and their models',
@@ -843,6 +866,25 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       }
     },
   });
+}
+
+/**
+ * Add AI agent management tools to FastMCP server
+ */
+export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'AIAgentTools' });
+  
+  componentLogger.info('Adding AI agent management tools');
+
+  // Add all AI agent tools
+  addCreateAIAgentTool(server, apiClient);
+  addListAIAgentsTool(server, apiClient);
+  addGetAIAgentTool(server, apiClient);
+  addUpdateAIAgentTool(server, apiClient);
+  addDeleteAIAgentTool(server, apiClient);
+  addTestAIAgentTool(server, apiClient);
+  addCreateLLMProviderTool(server, apiClient);
+  addListLLMProvidersTool(server, apiClient);
 
   componentLogger.info('AI agent management tools added successfully');
 }

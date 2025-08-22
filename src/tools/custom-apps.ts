@@ -296,14 +296,9 @@ const CustomFunctionCreateSchema = z.object({
 }).strict();
 
 /**
- * Add custom app development and management tools to FastMCP server
+ * Add create custom app tool
  */
-export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'CustomAppTools' });
-  
-  componentLogger.info('Adding custom app development and management tools');
-
-  // Create custom app
+function addCreateCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-custom-app',
     description: 'Create a new custom app for Make.com platform with comprehensive configuration',
@@ -435,8 +430,12 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // List custom apps
+/**
+ * Add list custom apps tool
+ */
+function addListCustomAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-custom-apps',
     description: 'List and filter custom apps with development status and usage statistics',
@@ -571,8 +570,12 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Create hook
+/**
+ * Add create hook tool
+ */
+function addCreateHookTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-hook',
     description: 'Create a webhook or polling hook for custom app event handling',
@@ -683,8 +686,12 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Create custom function
+/**
+ * Add create custom function tool
+ */
+function addCreateCustomFunctionTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-custom-function',
     description: 'Create a custom function for data transformation, validation, or processing',
@@ -793,8 +800,12 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Test custom app
+/**
+ * Add test custom app tool
+ */
+function addTestCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'test-custom-app',
     description: 'Run tests for a custom app including endpoints, functions, and hooks',
@@ -874,6 +885,22 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
+
+/**
+ * Add custom app development and management tools to FastMCP server
+ */
+export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'CustomAppTools' });
+  
+  componentLogger.info('Adding custom app development and management tools');
+
+  // Add all custom app tools
+  addCreateCustomAppTool(server, apiClient);
+  addListCustomAppsTool(server, apiClient);
+  addCreateHookTool(server, apiClient);
+  addCreateCustomFunctionTool(server, apiClient);
+  addTestCustomAppTool(server, apiClient);
 
   componentLogger.info('Custom app development and management tools added successfully');
 }

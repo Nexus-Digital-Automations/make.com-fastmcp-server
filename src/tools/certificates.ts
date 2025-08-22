@@ -209,14 +209,9 @@ const CertificateValidateSchema = z.object({
 }).strict();
 
 /**
- * Add certificate and key management tools to FastMCP server
+ * Add create certificate tool
  */
-export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'CertificateTools' });
-  
-  componentLogger.info('Adding certificate and key management tools');
-
-  // Create certificate
+function addCreateCertificateTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-certificate',
     description: 'Create and store a new certificate with optional private key',
@@ -342,8 +337,12 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       }
     },
   });
+}
 
-  // List certificates
+/**
+ * Add list certificates tool
+ */
+function addListCertificatesTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-certificates',
     description: 'List and filter certificates with comprehensive information and security analysis',
@@ -466,8 +465,12 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       }
     },
   });
+}
 
-  // Get certificate details
+/**
+ * Add get certificate tool
+ */
+function addGetCertificateTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-certificate',
     description: 'Get detailed information about a specific certificate',
@@ -559,8 +562,12 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       }
     },
   });
+}
 
-  // Validate certificate
+/**
+ * Add validate certificate tool
+ */
+function addValidateCertificateTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'validate-certificate',
     description: 'Validate certificate data, chain, and configuration',
@@ -634,8 +641,12 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       }
     },
   });
+}
 
-  // Create cryptographic key
+/**
+ * Add create key tool
+ */
+function addCreateKeyTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-key',
     description: 'Create or import a cryptographic key for signing, encryption, or authentication',
@@ -750,8 +761,12 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       }
     },
   });
+}
 
-  // Rotate certificate or key
+/**
+ * Add rotate certificate tool
+ */
+function addRotateCertificateTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'rotate-certificate',
     description: 'Rotate a certificate or key with optional backup of the old version',
@@ -847,6 +862,23 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       }
     },
   });
+}
+
+/**
+ * Add certificate and key management tools to FastMCP server
+ */
+export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'CertificateTools' });
+  
+  componentLogger.info('Adding certificate and key management tools');
+
+  // Add all certificate tools
+  addCreateCertificateTool(server, apiClient);
+  addListCertificatesTool(server, apiClient);
+  addGetCertificateTool(server, apiClient);
+  addValidateCertificateTool(server, apiClient);
+  addCreateKeyTool(server, apiClient);
+  addRotateCertificateTool(server, apiClient);
 
   componentLogger.info('Certificate and key management tools added successfully');
 }
