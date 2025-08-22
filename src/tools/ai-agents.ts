@@ -648,6 +648,39 @@ function addDeleteAIAgentTool(server: FastMCP, apiClient: MakeApiClient): void {
   });
 }
 
+// Helper function to safely extract metrics from test result
+function extractPerformanceMetrics(testResult: Record<string, unknown>, totalTime: number): Record<string, unknown> {
+  const metrics = testResult.metrics as Record<string, unknown> | undefined;
+  return {
+    totalTime: `${totalTime}ms`,
+    agentResponseTime: metrics?.responseTime,
+    tokenUsage: metrics?.tokens,
+    cost: metrics?.cost,
+  };
+}
+
+// Helper function to safely extract validation info from test result
+function extractValidationInfo(testResult: Record<string, unknown>): Record<string, unknown> {
+  const validation = testResult.validation as Record<string, unknown> | undefined;
+  const errors = validation?.errors as unknown[] | undefined;
+  
+  return {
+    responseFormat: validation?.format || 'valid',
+    contentQuality: validation?.quality || 'good',
+    errorCount: errors?.length || 0,
+  };
+}
+
+// Helper function to create test summary
+function createTestSummary(testType: string, testResult: Record<string, unknown>): Record<string, unknown> {
+  return {
+    testType,
+    success: testResult?.success || false,
+    message: testResult?.message || 'Test completed',
+    timestamp: new Date().toISOString(),
+  };
+}
+
 /**
  * Add test AI agent tool
  */
@@ -692,29 +725,15 @@ function addTestAIAgentTool(server: FastMCP, apiClient: MakeApiClient): void {
         log.info('Successfully tested AI agent', {
           agentId,
           testType,
-          success: (testResult)?.success as boolean,
+          success: testResult?.success as boolean,
           responseTime: totalTime,
         });
 
         return formatSuccessResponse({
           testResult,
-          performance: {
-            totalTime: `${totalTime}ms`,
-            agentResponseTime: ((testResult)?.metrics as Record<string, unknown>)?.responseTime,
-            tokenUsage: ((testResult)?.metrics as Record<string, unknown>)?.tokens,
-            cost: ((testResult)?.metrics as Record<string, unknown>)?.cost,
-          },
-          validation: {
-            responseFormat: ((testResult)?.validation as Record<string, unknown>)?.format || 'valid',
-            contentQuality: ((testResult)?.validation as Record<string, unknown>)?.quality || 'good',
-            errorCount: (((testResult)?.validation as Record<string, unknown>)?.errors as unknown[])?.length || 0,
-          },
-          summary: {
-            testType,
-            success: testResult?.success || false,
-            message: testResult?.message || 'Test completed',
-            timestamp: new Date().toISOString(),
-          },
+          performance: extractPerformanceMetrics(testResult, totalTime),
+          validation: extractValidationInfo(testResult),
+          summary: createTestSummary(testType, testResult),
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
