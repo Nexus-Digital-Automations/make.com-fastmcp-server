@@ -1225,7 +1225,10 @@ class PolicyComplianceValidator {
           if (!frameworkViolations.has(v.framework)) {
             frameworkViolations.set(v.framework, []);
           }
-          frameworkViolations.get(v.framework).push(v);
+          const frameworkArray = frameworkViolations.get(v.framework);
+          if (frameworkArray) {
+            frameworkArray.push(v);
+          }
         }
       });
 
@@ -1247,7 +1250,10 @@ class PolicyComplianceValidator {
         if (!policyTypeViolations.has(v.policyType)) {
           policyTypeViolations.set(v.policyType, []);
         }
-        policyTypeViolations.get(v.policyType).push(v);
+        const policyTypeArray = policyTypeViolations.get(v.policyType);
+        if (policyTypeArray) {
+          policyTypeArray.push(v);
+        }
       });
 
       policyTypeViolations.forEach((violations, policyType) => {

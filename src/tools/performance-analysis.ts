@@ -1088,7 +1088,13 @@ class PerformanceAnalysisEngine {
       memoryUsage: memUsage.heapUsed / memUsage.heapTotal
     };
 
-    const alerts = [];
+    const alerts: Array<{
+      type: string;
+      severity: 'warning' | 'error' | 'critical';
+      message: string;
+      threshold: number;
+      currentValue: number;
+    }> = [];
     let status: 'healthy' | 'warning' | 'critical' = 'healthy';
 
     // Check alert thresholds
