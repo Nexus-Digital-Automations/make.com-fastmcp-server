@@ -776,7 +776,7 @@ function extractCurrentVersion(currentInstallation: unknown): string {
 /**
  * Build SDK app update data payload
  */
-function buildSdkAppUpdateData(input: any, currentVersion: string): any {
+function buildSdkAppUpdateData(input: z.infer<typeof SDKAppUpdateSchema>, currentVersion: string): Record<string, unknown> {
   const { appId, version, force, backup, rollbackOnFailure } = input;
   
   return {
@@ -838,7 +838,7 @@ function extractChangelogData(updateResultData: Record<string, unknown>): {
 /**
  * Format SDK app update response
  */
-function formatSdkAppUpdateResponse(updateResult: unknown, input: any, currentVersion: string): any {
+function formatSdkAppUpdateResponse(updateResult: unknown, input: z.infer<typeof SDKAppUpdateSchema>, currentVersion: string): import('../utils/response-formatter.js').ToolResponse {
   const { appId, backup } = input;
   const { toVersion, success: _success, appName, updatedAt, breaking, backupId } = extractUpdateResultData(updateResult);
   const updateResultData = updateResult && typeof updateResult === 'object' ? updateResult as Record<string, unknown> : {};
@@ -944,7 +944,7 @@ function addUpdateSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
 /**
  * Build SDK app configuration data payload
  */
-function buildSdkAppConfigData(input: any): any {
+function buildSdkAppConfigData(input: z.infer<typeof SDKAppConfigureSchema>): Record<string, unknown> {
   const { appId, configuration, permissions, integrations } = input;
   
   return {
@@ -986,7 +986,7 @@ function extractConfigResultData(configResult: unknown): {
 /**
  * Format SDK app configuration response
  */
-function formatSdkAppConfigResponse(configResult: unknown, input: any): any {
+function formatSdkAppConfigResponse(configResult: unknown, input: z.infer<typeof SDKAppConfigureSchema>): import('../utils/response-formatter.js').ToolResponse {
   const { appId, configuration, permissions, integrations } = input;
   const {
     configurationApplied,
@@ -1108,7 +1108,7 @@ function prepareWorkflowTemplate(workflowTemplate: unknown): {
 /**
  * Build install workflow data payload
  */
-function buildInstallWorkflowData(input: any, workflowTemplate: unknown): any {
+function buildInstallWorkflowData(input: z.infer<typeof WorkflowInstallSchema>, workflowTemplate: unknown): Record<string, unknown> {
   const { workflowId, name, teamId, folderId, configuration, autoStart, installDependencies } = input;
   const { defaultConfiguration, requirements } = prepareWorkflowTemplate(workflowTemplate);
 
@@ -1134,7 +1134,7 @@ function buildInstallWorkflowData(input: any, workflowTemplate: unknown): any {
 /**
  * Format install workflow response
  */
-function formatInstallWorkflowResponse(installation: unknown, workflowTemplate: unknown, input: any): any {
+function formatInstallWorkflowResponse(installation: unknown, workflowTemplate: unknown, input: z.infer<typeof WorkflowInstallSchema>): import('../utils/response-formatter.js').ToolResponse {
   const { workflowId, name, autoStart } = input;
   
   // Type guard for installation object
