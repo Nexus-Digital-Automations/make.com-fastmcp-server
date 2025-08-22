@@ -97,7 +97,7 @@ export async function monitorCompliance(context: FastMCPToolContext, args: Recor
     }
 
     const data = result.data;
-    if (data == null) {
+    if (data === null || data === undefined) {
       return {
         error: 'No data returned from compliance monitoring',
         details: 'Result data is undefined'
@@ -202,7 +202,7 @@ export async function analyzePolicyConflicts(context: FastMCPToolContext, args: 
     }
 
     const data = result.data;
-    if (data == null) {
+    if (data === null || data === undefined) {
       return {
         error: 'No data returned from policy conflict analysis',
         details: 'Result data is undefined'
@@ -304,7 +304,7 @@ export async function assessRisk(context: FastMCPToolContext, args: Record<strin
     }
 
     const data = result.data;
-    if (data == null) {
+    if (data === null || data === undefined) {
       return {
         error: 'No data returned from risk assessment',
         details: 'Result data is undefined'
@@ -399,7 +399,7 @@ export async function configureAutomatedRemediation(context: FastMCPToolContext,
     }
 
     const data = result.data;
-    if (data == null) {
+    if (data === null || data === undefined) {
       return {
         error: 'No data returned from automated remediation configuration',
         details: 'Result data is undefined'
@@ -499,7 +499,7 @@ export async function generateGovernanceInsights(context: FastMCPToolContext, ar
     }
 
     const data = result.data;
-    if (data == null) {
+    if (data === null || data === undefined) {
       return {
         error: 'No data returned from governance insights generation',
         details: 'Result data is undefined'
@@ -599,7 +599,7 @@ export async function generateGovernanceDashboard(context: FastMCPToolContext, a
     }
 
     const dashboard = result.data;
-    if (dashboard == null) {
+    if (dashboard === null || dashboard === undefined) {
       return {
         error: 'No data returned from governance dashboard generation',
         details: 'Result data is undefined'
@@ -705,7 +705,7 @@ export async function optimizePolicies(context: FastMCPToolContext, args: Record
     }
 
     const data = result.data;
-    if (data == null) {
+    if (data === null || data === undefined) {
       return {
         error: 'No data returned from policy optimization',
         details: 'Result data is undefined'

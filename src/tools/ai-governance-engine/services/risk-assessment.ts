@@ -206,7 +206,7 @@ export class RiskAssessmentService {
       // Check prediction cache first
       if (this.predictionCache.has(cacheKey)) {
         const cached = this.predictionCache.get(cacheKey);
-        if (cached != null) {
+        if (cached !== null && cached !== undefined) {
           predictions.push({
             category,
             predictedScore: parseFloat(cached.prediction),
