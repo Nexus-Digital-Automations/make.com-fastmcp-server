@@ -109,7 +109,7 @@ const NamingRuleSchema = z.object({
 /**
  * Policy template definition schema
  */
-const PolicyTemplateSchema = z.object({
+const _PolicyTemplateSchema = z.object({
   id: z.string().min(1).describe('Template identifier'),
   name: z.string().min(1).describe('Template name'),
   description: z.string().describe('Template description'),
@@ -194,7 +194,7 @@ const PolicyFiltersSchema = z.object({
 /**
  * Built-in policy templates
  */
-const POLICY_TEMPLATES: Record<string, z.infer<typeof PolicyTemplateSchema>> = {
+const POLICY_TEMPLATES: Record<string, z.infer<typeof _PolicyTemplateSchema>> = {
   'enterprise-standard': {
     id: 'enterprise-standard',
     name: 'Enterprise Standard Naming',
@@ -488,7 +488,7 @@ class NamingConventionValidator {
         if (suggestion && !suggestions.includes(suggestion)) {
           suggestions.push(suggestion);
         }
-      } catch (error) {
+      } catch {
         // Skip invalid patterns
       }
     }

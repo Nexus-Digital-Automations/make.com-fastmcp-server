@@ -665,7 +665,7 @@ export class PolicyOptimizationService {
     };
   }
 
-  private async performEnsembleOptimization(policies: Policy[], goals: OptimizationGoal[]): Promise<OptimizationResult[]> {
+  private async performEnsembleOptimization(policies: Policy[], _goals: OptimizationGoal[]): Promise<OptimizationResult[]> {
     // Simulate ensemble optimization that looks at policy interactions
     const ensembleResults: OptimizationResult[] = [];
 
@@ -747,7 +747,7 @@ export class PolicyOptimizationService {
            Math.random() > 0.7; // 30% chance of conflict
   }
 
-  private async generateResolutionStrategy(conflict: PolicyConflict, policies: Policy[]): Promise<PolicyResolutionPlan> {
+  private async generateResolutionStrategy(conflict: PolicyConflict, _policies: Policy[]): Promise<PolicyResolutionPlan> {
     return {
       conflictId: conflict.conflictId,
       strategy: 'consolidate_and_prioritize',
@@ -801,7 +801,7 @@ export class PolicyOptimizationService {
     };
   }
 
-  private async generateDomainSpecificPolicies(domain: string, requirements: string[]): Promise<any[]> {
+  private async generateDomainSpecificPolicies(domain: string, _requirements: string[]): Promise<any[]> {
     const policyTemplates: Record<string, any> = {
       'data_security': {
         name: 'Data Security Framework',
@@ -834,7 +834,7 @@ export class PolicyOptimizationService {
     return policyTemplates[domain] ? [policyTemplates[domain]] : [];
   }
 
-  private createImplementationPlan(policies: any[]): string[] {
+  private createImplementationPlan(_policies: any[]): string[] {
     return [
       'Assess current policy landscape',
       'Identify stakeholders and approval processes',
@@ -847,7 +847,7 @@ export class PolicyOptimizationService {
     ];
   }
 
-  private identifyRelevantFrameworks(domain: string, requirements: string[]): string[] {
+  private identifyRelevantFrameworks(domain: string, _requirements: string[]): string[] {
     const frameworkMap: Record<string, string[]> = {
       'data_security': ['GDPR', 'CCPA', 'SOC2', 'ISO27001'],
       'cloud_security': ['SOC2', 'ISO27001', 'NIST', 'CSA'],
@@ -861,7 +861,7 @@ export class PolicyOptimizationService {
   private async simulateScenario(
     scenario: string, 
     optimizations: OptimizationResult[], 
-    goals: OptimizationGoal[]
+    _goals: OptimizationGoal[]
   ): Promise<SimulationResult> {
     const scenarioMultipliers: Record<string, any> = {
       'aggressive_implementation': {

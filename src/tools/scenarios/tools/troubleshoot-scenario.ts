@@ -326,7 +326,7 @@ async function _fetchScenariosForTroubleshooting(
       } else {
         // Warning: Failed to fetch scenario (scenarioId, error: response.error)
       }
-    } catch (error) {
+    } catch {
       // Warning: Error fetching scenario (scenarioId, error)
     }
   }
@@ -349,7 +349,7 @@ async function _fetchScenariosWithFilters(
     }
     
     return [];
-  } catch (error) {
+  } catch {
     // Warning: Error fetching scenarios with filters (error)
     return [];
   }

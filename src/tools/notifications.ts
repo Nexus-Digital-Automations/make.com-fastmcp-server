@@ -1012,7 +1012,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (structure.schema && typeof structure.schema === 'object') {
           try {
             JSON.stringify(structure.schema);
-          } catch (error) {
+          } catch {
             throw new UserError('Invalid JSON Schema provided');
           }
         }
@@ -1430,7 +1430,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (structure?.schema && typeof structure.schema === 'object') {
           try {
             JSON.stringify(structure.schema);
-          } catch (error) {
+          } catch {
             throw new UserError('Invalid JSON Schema provided in update');
           }
         }

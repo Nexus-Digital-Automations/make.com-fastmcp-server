@@ -72,7 +72,7 @@ export function getProjectRoot(): string {
         return rootPath;
       }
     }
-  } catch (error) {
+  } catch {
     // Emergency fallback
     const emergencyPath = '/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server';
     if (fs.existsSync(emergencyPath)) {
