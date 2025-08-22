@@ -16675,9 +16675,73 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755865389564_h4udh7ny1",
+      "title": "Investigate test performance and optimization opportunities",
+      "description": "Tests are taking longer than expected to run. Investigate test performance, identify slow tests, and optimize test execution time for better developer experience.",
+      "mode": "DEVELOPMENT",
+      "category": "test-performance",
+      "priority": "medium",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T12:23:09.564Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T13:17:46.558Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T13:17:46.558Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755867316385_hzu3v9qhc",
+      "title": "Fix test failures - logging and validation errors",
+      "description": "Fix multiple test failures: 1) log.info is not a function errors in permissions.ts, 2) JSON parsing errors in custom-apps tests, 3) Zod validation issues in test helpers",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T12:55:16.385Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T13:17:56.466Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T13:17:56.466Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 378,
-  "last_completion": "2025-08-22T13:16:29.499Z",
+  "total_completed": 380,
+  "last_completion": "2025-08-22T13:17:56.466Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

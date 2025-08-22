@@ -25,7 +25,12 @@ import { formatSuccessResponse } from '../utils/response-formatter.js';
  * Universal logging helper that works with both function-based and object-based loggers
  * Handles different test and production logging patterns
  */
-const logMessage = (log: any, level: 'info' | 'error' | 'warn' | 'debug', message: string, data?: any) => {
+const logMessage = (
+  log: ((level: string, message: string, data?: unknown) => void) | { [key: string]: (message: string, data?: unknown) => void } | undefined,
+  level: 'info' | 'error' | 'warn' | 'debug',
+  message: string,
+  data?: unknown
+): void => {
   if (!log) return;
   
   if (typeof log === 'function') {

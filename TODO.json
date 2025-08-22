@@ -2,28 +2,11 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755865389564_h4udh7ny1",
-      "title": "Investigate test performance and optimization opportunities",
-      "description": "Tests are taking longer than expected to run. Investigate test performance, identify slow tests, and optimize test execution time for better developer experience.",
+      "id": "task_1755868729547_qzlxzyjkb",
+      "title": "Fix remaining ESLint warnings in permissions.ts",
+      "description": "Fix 3 remaining ESLint warnings in permissions.ts: 2 any types and 1 missing return type annotation on the logMessage helper function.",
       "mode": "DEVELOPMENT",
-      "category": "test-performance",
-      "priority": "medium",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T12:23:09.564Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755867316385_hzu3v9qhc",
-      "title": "Fix test failures - logging and validation errors",
-      "description": "Fix multiple test failures: 1) log.info is not a function errors in permissions.ts, 2) JSON parsing errors in custom-apps tests, 3) Zod validation issues in test helpers",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
+      "category": "linter-error",
       "priority": "high",
       "status": "pending",
       "dependencies": [],
@@ -32,7 +15,7 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-22T12:55:16.385Z",
+      "created_at": "2025-08-22T13:18:49.548Z",
       "auto_research_created": false
     }
   ],
@@ -43,13 +26,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755865339304_1_general_9961d16e": {
+    "development_session_1755868700885_1_general_aa083af0": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T12:22:19.304Z",
+      "lastHeartbeat": "2025-08-22T13:18:20.886Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -60,8 +43,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T12:22:19.304Z",
-      "sessionId": "session_1755865339304",
+      "createdAt": "2025-08-22T13:18:20.886Z",
+      "sessionId": "session_1755868700885",
       "metadata": {}
     }
   },
