@@ -115,7 +115,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
     ]
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const serverSetup = createMockServer();
     mockServer = serverSetup.server;
     mockTool = serverSetup.mockTool;
@@ -127,6 +127,13 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
       debug: (...args: any[]) => {},
     };
     mockReportProgress = (...args: any[]) => {};
+    
+    // Clear previous mock calls
+    mockTool.mockClear();
+    
+    // Register variable tools using the budget-control pattern
+    const { addVariableTools } = await import('../../../src/tools/variables.js');
+    addVariableTools(mockServer, mockApiClient as any);
   });
 
   afterEach(() => {
@@ -136,8 +143,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
 
   describe('Tool Registration and Configuration', () => {
     it('should register all variable management and execution recovery tools with correct configuration', async () => {
-      const { addVariableTools } = await import('../../../src/tools/variables.js');
-      addVariableTools(mockServer, mockApiClient as any);
       
       const expectedTools = [
         'create-custom-variable',
@@ -172,8 +177,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: testCustomVariable
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'create-custom-variable');
         const result = await executeTool(tool, {
@@ -205,8 +208,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: testJsonVariable
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'create-custom-variable');
         const result = await executeTool(tool, {
@@ -241,8 +242,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: testEncryptedVariable
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'create-custom-variable');
         const result = await executeTool(tool, {
@@ -267,8 +266,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
       });
 
       it('should validate scope consistency requirements', async () => {
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'create-custom-variable');
         
@@ -301,8 +298,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
       });
 
       it('should format variable values according to type', async () => {
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'create-custom-variable');
         
@@ -344,8 +339,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
       });
 
       it('should validate input parameters with Zod schema', async () => {
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'create-custom-variable');
         
@@ -399,8 +392,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           metadata: { total: 4 }
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'list-custom-variables');
         const result = await executeTool(tool, {}, { log: mockLog });
@@ -436,8 +427,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           metadata: { total: 1 }
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'list-custom-variables');
         await executeTool(tool, {
@@ -470,8 +459,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           metadata: { total: 1 }
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'list-custom-variables');
         await executeTool(tool, {
@@ -491,7 +478,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           metadata: { total: 1 }
         });
         
-        addVariableTools(mockServer, mockApiClient as any);
         
         await executeTool(tool, {
           scope: 'scenario',
@@ -525,8 +511,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: usageStats
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'get-custom-variable');
         const result = await executeTool(tool, {
@@ -552,8 +536,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: testEncryptedVariable
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'get-custom-variable');
         const result = await executeTool(tool, {
@@ -572,8 +554,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: null
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'get-custom-variable');
         
@@ -604,8 +584,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: updatedVariable
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'update-custom-variable');
         const result = await executeTool(tool, {
@@ -637,8 +615,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: updatedVariable
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'update-custom-variable');
         await executeTool(tool, {
@@ -653,8 +629,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
       });
 
       it('should require at least one update parameter', async () => {
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'update-custom-variable');
         
@@ -676,8 +650,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: {}
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'delete-custom-variable');
         const result = await executeTool(tool, {
@@ -700,8 +672,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: { usageCount: 5 }
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'delete-custom-variable');
         
@@ -717,8 +687,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: {}
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'delete-custom-variable');
         const result = await executeTool(tool, {
@@ -748,8 +716,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: bulkResult
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'bulk-variable-operations');
         const result = await executeTool(tool, {
@@ -780,8 +746,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: bulkResult
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'bulk-variable-operations');
         const result = await executeTool(tool, {
@@ -802,8 +766,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
       });
 
       it('should validate bulk operation parameters', async () => {
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'bulk-variable-operations');
         
@@ -849,8 +811,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: exportResult
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'export-custom-variables');
         const result = await executeTool(tool, {
@@ -890,8 +850,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             }
           });
 
-          const { addVariableTools } = await import('../../../src/tools/variables.js');
-          addVariableTools(mockServer, mockApiClient as any);
           
           const tool = findTool(mockTool, 'export-custom-variables');
           await executeTool(tool, {
@@ -926,8 +884,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: resolutionResult
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'test-variable-resolution');
         const result = await executeTool(tool, {
@@ -968,8 +924,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: resolutionResult
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'test-variable-resolution');
         const result = await executeTool(tool, {
@@ -1013,8 +967,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           });
         }
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'list-incomplete-executions-with-recovery');
         const result = await executeTool(tool, {
@@ -1049,8 +1001,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           metadata: { total: 1 }
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'list-incomplete-executions-with-recovery');
         await executeTool(tool, {
@@ -1095,8 +1045,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           });
         }
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'bulk-resolve-incomplete-executions');
         const result = await executeTool(tool, {
@@ -1147,8 +1095,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             }
           });
 
-          const { addVariableTools } = await import('../../../src/tools/variables.js');
-          addVariableTools(mockServer, mockApiClient as any);
           
           const tool = findTool(mockTool, 'bulk-resolve-incomplete-executions');
           await executeTool(tool, {
@@ -1164,8 +1110,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
       });
 
       it('should validate bulk resolution parameters', async () => {
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'bulk-resolve-incomplete-executions');
         
@@ -1243,8 +1187,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: analysisResult
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'analyze-execution-failure-patterns');
         const result = await executeTool(tool, {
@@ -1294,8 +1236,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             }
           });
 
-          const { addVariableTools } = await import('../../../src/tools/variables.js');
-          addVariableTools(mockServer, mockApiClient as any);
           
           const tool = findTool(mockTool, 'analyze-execution-failure-patterns');
           await executeTool(tool, {
@@ -1341,8 +1281,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           data: automationRule
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'create-recovery-automation-rule');
         const result = await executeTool(tool, {
@@ -1415,8 +1353,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             data: { id: 1, ...config, isActive: true, priority: 50 }
           });
 
-          const { addVariableTools } = await import('../../../src/tools/variables.js');
-          addVariableTools(mockServer, mockApiClient as any);
           
           const tool = findTool(mockTool, 'create-recovery-automation-rule');
           await executeTool(tool, {
@@ -1436,8 +1372,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
       });
 
       it('should validate automation rule parameters', async () => {
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'create-recovery-automation-rule');
         
@@ -1495,8 +1429,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           error: { message: 'Service temporarily unavailable' }
         });
 
-        const { addVariableTools } = await import('../../../src/tools/variables.js');
-        addVariableTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, toolName);
         
@@ -1548,8 +1480,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
     it('should handle network errors', async () => {
       mockApiClient.mockError('POST', '/organizations/123/variables', new Error('Network timeout'));
 
-      const { addVariableTools } = await import('../../../src/tools/variables.js');
-      addVariableTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-custom-variable');
       
@@ -1568,8 +1498,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         data: testCustomVariable
       });
 
-      const { addVariableTools } = await import('../../../src/tools/variables.js');
-      addVariableTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-custom-variable');
       await executeTool(tool, {
@@ -1608,8 +1536,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         metadata: { total: 2 }
       });
 
-      const { addVariableTools } = await import('../../../src/tools/variables.js');
-      addVariableTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'list-custom-variables');
       const result = await executeTool(tool, {}, { log: mockLog });
@@ -1623,8 +1549,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
     });
 
     it('should handle variable formatting validation errors', async () => {
-      const { addVariableTools } = await import('../../../src/tools/variables.js');
-      addVariableTools(mockServer, mockApiClient as any);
       
       const tool = findTool(mockTool, 'create-custom-variable');
       
