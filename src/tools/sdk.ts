@@ -542,7 +542,7 @@ function formatSdkAppInstallResponse(
   const appName = typeof installation.appName === 'string' ? installation.appName : 'unknown';
   const installedAt = typeof installation.installedAt === 'string' ? installation.installedAt : new Date().toISOString();
   const installedVersion = typeof installation.version === 'string' ? installation.version : 'unknown';
-  const installationPermissions = installation.permissions && typeof installation.permissions === 'object' ? installation.permissions as Record<string, unknown> : {};
+  const installationPermissions = installation.permissions && typeof installation.permissions === 'object' ? installation.permissions : {};
   const granted = Array.isArray(installationPermissions.granted) ? installationPermissions.granted : [];
 
   return formatSuccessResponse({
