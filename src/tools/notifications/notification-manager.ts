@@ -349,7 +349,7 @@ function addCreateNotificationTool(server: FastMCP, apiClient: MakeApiClient, _c
     },
     execute: async (input, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
+      const { type, category, priority, title, recipients, channels, schedule } = input;
 
       if (log?.info) {
         log.info('Creating notification', {
@@ -366,34 +366,11 @@ function addCreateNotificationTool(server: FastMCP, apiClient: MakeApiClient, _c
           reportProgress({ progress: 0, total: 100 });
         }
 
-        // Validate recipients
-        const totalRecipients = recipients.users.length + recipients.teams.length + recipients.organizations.length + recipients.emails.length;
-        if (totalRecipients === 0) {
-          throw new UserError('At least one recipient must be specified');
-        }
+        // Validate recipients and channels
+        validateNotificationRecipients(recipients);
+        validateNotificationChannels(channels);
 
-        // Validate channels
-        const enabledChannels = Object.values(channels).filter(Boolean);
-        if (enabledChannels.length === 0) {
-          throw new UserError('At least one delivery channel must be enabled');
-        }
-
-        const notificationData = {
-          type,
-          category,
-          priority,
-          title,
-          message,
-          data,
-          recipients,
-          channels,
-          schedule: schedule || {},
-          template: templateId ? {
-            id: templateId,
-            variables: templateVariables,
-          } : undefined,
-          status: schedule?.sendAt ? 'scheduled' : 'draft',
-        };
+        const notificationData = buildNotificationData(input);
 
         if (reportProgress) {
           reportProgress({ progress: 50, total: 100 });
@@ -423,38 +400,7 @@ function addCreateNotificationTool(server: FastMCP, apiClient: MakeApiClient, _c
           });
         }
 
-        return formatSuccessResponse({
-          notification: {
-            ...notification,
-            // Mask sensitive recipient data
-            recipients: {
-              userCount: notification.recipients.users.length,
-              teamCount: notification.recipients.teams.length,
-              organizationCount: notification.recipients.organizations.length,
-              emailCount: notification.recipients.emails.length,
-            },
-          },
-          message: `Notification "${title}" created successfully`,
-          summary: {
-            id: notification.id,
-            type: notification.type,
-            category: notification.category,
-            priority: notification.priority,
-            status: notification.status,
-            channels: Object.entries(notification.channels)
-              .filter(([, enabled]) => enabled)
-              .map(([channel]) => channel),
-            totalRecipients: notification.delivery.totalRecipients,
-            scheduled: !!schedule?.sendAt,
-            scheduledFor: schedule?.sendAt,
-          },
-          delivery: {
-            status: notification.status,
-            sentAt: notification.delivery.sentAt,
-            successfulDeliveries: notification.delivery.successfulDeliveries,
-            failedDeliveries: notification.delivery.failedDeliveries,
-          },
-        }).content[0].text;
+        return formatCreateNotificationResponse(notification, title, schedule).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log?.error) {
@@ -793,6 +739,194 @@ function addCreateNotificationTemplateTool(server: FastMCP, apiClient: MakeApiCl
 }
 
 /**
+ * Build query parameters for notifications API call
+ */
+function buildNotificationQueryParams(
+  type: string, 
+  status: string, 
+  priority: string, 
+  dateRange: any, 
+  limit: number, 
+  offset: number, 
+  sortBy: string, 
+  sortOrder: string, 
+  includeDelivery: boolean, 
+  includeTracking: boolean
+): Record<string, unknown> {
+  const params: Record<string, unknown> = {
+    limit,
+    offset,
+    sortBy,
+    sortOrder,
+    includeDelivery,
+    includeTracking,
+  };
+
+  if (type !== 'all') {params.type = type;}
+  if (status !== 'all') {params.status = status;}
+  if (priority !== 'all') {params.priority = priority;}
+  if (dateRange?.startDate) {params.startDate = dateRange.startDate;}
+  if (dateRange?.endDate) {params.endDate = dateRange.endDate;}
+
+  return params;
+}
+
+/**
+ * Generate delivery analytics from notifications
+ */
+function generateDeliveryAnalytics(notifications: any[]): any {
+  return {
+    totalRecipients: notifications.reduce((sum, n) => sum + n.delivery.totalRecipients, 0),
+    successfulDeliveries: notifications.reduce((sum, n) => sum + n.delivery.successfulDeliveries, 0),
+    failedDeliveries: notifications.reduce((sum, n) => sum + n.delivery.failedDeliveries, 0),
+    averageDeliveryRate: notifications.length > 0 ? 
+      notifications.reduce((sum, n) => sum + (n.delivery.successfulDeliveries / Math.max(n.delivery.totalRecipients, 1)), 0) / notifications.length * 100 : 0,
+  };
+}
+
+/**
+ * Generate channel usage analytics from notifications
+ */
+function generateChannelUsage(notifications: any[]): Record<string, number> {
+  return notifications.reduce((acc: Record<string, number>, notif) => {
+    Object.entries(notif.channels).forEach(([channel, enabled]) => {
+      if (enabled) {
+        acc[channel] = (acc[channel] || 0) + 1;
+      }
+    });
+    return acc;
+  }, {});
+}
+
+/**
+ * Generate comprehensive analytics for notifications
+ */
+function generateNotificationAnalytics(notifications: any[], metadata: any, includeDelivery: boolean): any {
+  return {
+    totalNotifications: metadata?.total || notifications.length,
+    typeBreakdown: notifications.reduce((acc: Record<string, number>, notif) => {
+      acc[notif.type] = (acc[notif.type] || 0) + 1;
+      return acc;
+    }, {}),
+    statusBreakdown: notifications.reduce((acc: Record<string, number>, notif) => {
+      acc[notif.status] = (acc[notif.status] || 0) + 1;
+      return acc;
+    }, {}),
+    priorityBreakdown: notifications.reduce((acc: Record<string, number>, notif) => {
+      acc[notif.priority] = (acc[notif.priority] || 0) + 1;
+      return acc;
+    }, {}),
+    deliveryAnalytics: includeDelivery ? generateDeliveryAnalytics(notifications) : undefined,
+    channelUsage: generateChannelUsage(notifications),
+  };
+}
+
+/**
+ * Format notifications list response with privacy protection
+ */
+function formatNotificationsListResponse(notifications: any[], analytics: any, metadata: any, limit: number, offset: number): any {
+  return formatSuccessResponse({
+    notifications: notifications.map(notif => ({
+      ...notif,
+      recipients: {
+        total: notif.delivery.totalRecipients,
+        // Hide specific recipient details for privacy
+      },
+    })),
+    analytics,
+    pagination: {
+      total: metadata?.total || notifications.length,
+      limit,
+      offset,
+      hasMore: (metadata?.total || 0) > (offset + notifications.length),
+    },
+  });
+}
+
+/**
+ * Validate notification recipients
+ */
+function validateNotificationRecipients(recipients: any): void {
+  const totalRecipients = recipients.users.length + recipients.teams.length + recipients.organizations.length + recipients.emails.length;
+  if (totalRecipients === 0) {
+    throw new UserError('At least one recipient must be specified');
+  }
+}
+
+/**
+ * Validate notification channels
+ */
+function validateNotificationChannels(channels: any): void {
+  const enabledChannels = Object.values(channels).filter(Boolean);
+  if (enabledChannels.length === 0) {
+    throw new UserError('At least one delivery channel must be enabled');
+  }
+}
+
+/**
+ * Build notification data payload
+ */
+function buildNotificationData(input: any): any {
+  const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
+  
+  return {
+    type,
+    category,
+    priority,
+    title,
+    message,
+    data,
+    recipients,
+    channels,
+    schedule: schedule || {},
+    template: templateId ? {
+      id: templateId,
+      variables: templateVariables,
+    } : undefined,
+    status: schedule?.sendAt ? 'scheduled' : 'draft',
+  };
+}
+
+/**
+ * Format create notification response
+ */
+function formatCreateNotificationResponse(notification: any, title: string, schedule: any): any {
+  return formatSuccessResponse({
+    notification: {
+      ...notification,
+      // Mask sensitive recipient data
+      recipients: {
+        userCount: notification.recipients.users.length,
+        teamCount: notification.recipients.teams.length,
+        organizationCount: notification.recipients.organizations.length,
+        emailCount: notification.recipients.emails.length,
+      },
+    },
+    message: `Notification "${title}" created successfully`,
+    summary: {
+      id: notification.id,
+      type: notification.type,
+      category: notification.category,
+      priority: notification.priority,
+      status: notification.status,
+      channels: Object.entries(notification.channels)
+        .filter(([, enabled]) => enabled)
+        .map(([channel]) => channel),
+      totalRecipients: notification.delivery.totalRecipients,
+      scheduled: !!schedule?.sendAt,
+      scheduledFor: schedule?.sendAt,
+    },
+    delivery: {
+      status: notification.status,
+      sentAt: notification.delivery.sentAt,
+      successfulDeliveries: notification.delivery.successfulDeliveries,
+      failedDeliveries: notification.delivery.failedDeliveries,
+    },
+  });
+}
+
+
+/**
  * Add list notifications tool
  */
 function addListNotificationsTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
@@ -821,7 +955,7 @@ function addListNotificationsTool(server: FastMCP, apiClient: MakeApiClient, _co
     },
     execute: async (input, context) => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} } } = context || {};
-      const { type, status, priority, dateRange, includeDelivery, includeTracking, limit, offset, sortBy, sortOrder } = input;
+      const { type, status, priority, dateRange, includeDelivery, limit, offset } = input;
 
       if (log?.info) {
         log.info('Listing notifications', {
@@ -835,21 +969,7 @@ function addListNotificationsTool(server: FastMCP, apiClient: MakeApiClient, _co
       }
 
       try {
-        const params: Record<string, unknown> = {
-          limit,
-          offset,
-          sortBy,
-          sortOrder,
-          includeDelivery,
-          includeTracking,
-        };
-
-        if (type !== 'all') {params.type = type;}
-        if (status !== 'all') {params.status = status;}
-        if (priority !== 'all') {params.priority = priority;}
-        if (dateRange?.startDate) {params.startDate = dateRange.startDate;}
-        if (dateRange?.endDate) {params.endDate = dateRange.endDate;}
-
+        const params = buildNotificationQueryParams(input);
         const response = await apiClient.get('/notifications', { params });
 
         if (!response.success) {
@@ -866,54 +986,10 @@ function addListNotificationsTool(server: FastMCP, apiClient: MakeApiClient, _co
           });
         }
 
-        // Create notification analytics
-        const analytics = {
-          totalNotifications: metadata?.total || notifications.length,
-          typeBreakdown: notifications.reduce((acc: Record<string, number>, notif) => {
-            acc[notif.type] = (acc[notif.type] || 0) + 1;
-            return acc;
-          }, {}),
-          statusBreakdown: notifications.reduce((acc: Record<string, number>, notif) => {
-            acc[notif.status] = (acc[notif.status] || 0) + 1;
-            return acc;
-          }, {}),
-          priorityBreakdown: notifications.reduce((acc: Record<string, number>, notif) => {
-            acc[notif.priority] = (acc[notif.priority] || 0) + 1;
-            return acc;
-          }, {}),
-          deliveryAnalytics: includeDelivery ? {
-            totalRecipients: notifications.reduce((sum, n) => sum + n.delivery.totalRecipients, 0),
-            successfulDeliveries: notifications.reduce((sum, n) => sum + n.delivery.successfulDeliveries, 0),
-            failedDeliveries: notifications.reduce((sum, n) => sum + n.delivery.failedDeliveries, 0),
-            averageDeliveryRate: notifications.length > 0 ? 
-              notifications.reduce((sum, n) => sum + (n.delivery.successfulDeliveries / Math.max(n.delivery.totalRecipients, 1)), 0) / notifications.length * 100 : 0,
-          } : undefined,
-          channelUsage: notifications.reduce((acc: Record<string, number>, notif) => {
-            Object.entries(notif.channels).forEach(([channel, enabled]) => {
-              if (enabled) {
-                acc[channel] = (acc[channel] || 0) + 1;
-              }
-            });
-            return acc;
-          }, {}),
-        };
+        // Create notification analytics using helper functions
+        const analytics = generateNotificationAnalytics(notifications, metadata, includeDelivery);
 
-        return formatSuccessResponse({
-          notifications: notifications.map(notif => ({
-            ...notif,
-            recipients: {
-              total: notif.delivery.totalRecipients,
-              // Hide specific recipient details for privacy
-            },
-          })),
-          analytics,
-          pagination: {
-            total: metadata?.total || notifications.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) > (offset + notifications.length),
-          },
-        });
+        return formatNotificationsListResponse(notifications, analytics, metadata, limit, offset);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log?.error) {
