@@ -14,20 +14,11 @@ export function getProjectRoot(): string {
   }
   
   // CRITICAL: For MCP server runtime from Claude Desktop
-  // First check if we can resolve based on the script location (__dirname equivalent)
+  // First check if we can resolve based on the script location
   try {
     
-    // Get the directory where this script is located (should be in dist/utils/)
-    let scriptDir: string;
-    
-    // Use import.meta.url in ES module context
-    if (typeof import.meta !== 'undefined' && import.meta.url) {
-      const scriptUrl = new URL(import.meta.url);
-      scriptDir = path.dirname(scriptUrl.pathname);
-    } else {
-      // Fallback to process.cwd() if import.meta is not available
-      scriptDir = process.cwd();
-    }
+    // Get the directory where this script is located - use process.cwd() for Jest compatibility
+    let scriptDir = process.cwd();
     
     // If we're in dist/utils, go up two levels to get project root
     if (scriptDir.includes('/dist/utils') || scriptDir.includes('\\dist\\utils')) {

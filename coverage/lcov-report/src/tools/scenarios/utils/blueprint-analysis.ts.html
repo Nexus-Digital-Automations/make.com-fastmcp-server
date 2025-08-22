@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">6.54% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/102</span>
+                <span class='fraction'>7/107</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">6.86% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/97</span>
+                <span class='fraction'>7/102</span>
             </div>
         
             
@@ -368,13 +368,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -577,11 +582,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -664,219 +664,219 @@
  */
 &nbsp;
 import { z } from 'zod';
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 // Blueprint type definitions
 export interface BlueprintModule {
   id: number;
   module: string;
-  version: number;<span class="cstat-no" title="statement not covered" ></span>
+  version: number;
   parameters?: Record&lt;string, unknown&gt;;
   connection?: number;
   metadata?: Record&lt;string, unknown&gt;;
 }
 &nbsp;
-export interface<span class="fstat-no" title="function not covered" > Blueprint {<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-  name?: string;<span class="cstat-no" title="statement not covered" ></span>
-  metadata?: {<span class="cstat-no" title="statement not covered" ></span>
-    version?: number;<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    scenario?: {</span>
-      roundtrips?: number;
-      ma<span class="cstat-no" title="statement not covered" >xErrors?: number;</span>
-      autoCo<span class="cstat-no" title="statement not covered" >mmit?: boolean;</span>
-      sequen<span class="cstat-no" title="statement not covered" >tial?: boolean;</span>
-      confidential?: boolean;
-      dlq?: boolean<span class="cstat-no" title="statement not covered" >;</span>
-    };
+export interface Blueprint {
+  name?: string;
+  metadata?: {
+    version?: number;
+    scenario?: {
+      rou<span class="fstat-no" title="function not covered" >ndtrips?: number;<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+      maxErrors?: n<span class="cstat-no" title="statement not covered" >umb</span>er;
+      autoCommit?: bo<span class="cstat-no" title="statement not covered" >ole</span>an;
+      sequential?: boolean;<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      confidential?: boolean;</span>
+      dlq?: boolean;
+    };<span class="cstat-no" title="statement not covered" ></span>
   };<span class="cstat-no" title="statement not covered" ></span>
   flow?: Blu<span class="cstat-no" title="statement not covered" >eprintModule[];</span>
   [key: string]: unknown;
 }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-// Zod schemas for validation
-export c<span class="cstat-no" title="statement not covered" >onst ValidateBlueprintSchema = z.object({</span>
-  blueprint:<span class="cstat-no" title="statement not covered" > z.any().describe('Blueprint JSON to validate against </span>Make.com schema'),
-  strict: z.boolean().default(false).describe('Whether to apply strict validation mode'),
-  includeSecurityChecks: z.boolean().default(true).describe('Include security validation checks'),
+&nbsp;
+// Zod s<span class="cstat-no" title="statement not covered" >chemas for validation</span>
+export const<span class="cstat-no" title="statement not covered" > ValidateBlueprintSchema = z.object({</span>
+  blueprint: z.any().describe('Blueprint JSON to validate against Make.com schema'),
+  strict<span class="cstat-no" title="statement not covered" >: z.boolean().default(false).describe('Whether to apply strict validation mode'),</span>
+  includeSec<span class="cstat-no" title="statement not covered" >urityChecks: z.boolean().default(true).describe('Include security validation checks</span>'),
 });
 <span class="cstat-no" title="statement not covered" ></span>
-export const Ext<span class="cstat-no" title="statement not covered" >ractBlueprintConnectionsSchema = z.object({</span>
+export const<span class="cstat-no" title="statement not covered" > ExtractBlueprintConnectionsSchema = z.object({</span>
   blueprint: z.any().describe('Blueprint JSON to extract connections from'),
-  includeOpt<span class="cstat-no" title="statement not covered" >ional: z.boolean().default(false).describe('Include optional connections in results'),</span>
-  groupByModule:<span class="cstat-no" title="statement not covered" > z.boolean().default(true).describe('Group connections by module type')</span>,
-});
-&nbsp;
-// Blueprint validation function<span class="cstat-no" title="statement not covered" ></span>
-export function validateBlueprintStructure(blueprint: unknown, strict: boolean = false): { 
+  includeOptional: z.boolean().default(false).describe('Include optional connections in results'),
+  groupByModule: z.boolean().default(true).describe('Group connections by module type'),
+});<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+// Blueprint validation function
+export funct<span class="cstat-no" title="statement not covered" >ion validateBlueprintStructure(blueprint: unknown, strict: boolean = false): { </span>
   isValid: boole<span class="cstat-no" title="statement not covered" >an; </span>
-  errors: string[]; <span class="cstat-no" title="statement not covered" ></span>
+  errors: string[]; 
   warnings: string[]; 
-  securityIssues<span class="cstat-no" title="statement not covered" >: Array&lt;{ type: string; description: string; severity: 'low' | 'medium' | 'high' | 'critical' }&gt;; </span>
-} {<span class="cstat-no" title="statement not covered" ></span>
-  const errors: string[] = [];
-  const warnings<span class="cstat-no" title="statement not covered" >: string[] = [];</span>
-  const securityIssu<span class="cstat-no" title="statement not covered" >es: Array&lt;{ type: string; description: string; severity: 'low' |</span> 'medium' | 'high' | 'critical' }&gt; = [];
-&nbsp;
+  securityIssues: Array&lt;{ type: s<span class="cstat-no" title="statement not covered" >tring; description: s</span>tring; severity: 'low' | 'medium' | 'high' | 'critical' }&gt;; 
+} {
+  const errors: <span class="cstat-no" title="statement not covered" >string[] = [];</span>
+  const warnings: st<span class="cstat-no" title="statement not covered" >ring[] = [];</span>
+  const securityIssues: Array&lt;{ type: string; description: string; severity: 'low' | 'medium' | 'high' | 'critical' }&gt; = [];
+<span class="cstat-no" title="statement not covered" ></span>
   try {<span class="cstat-no" title="statement not covered" ></span>
-    // Check if blue<span class="cstat-no" title="statement not covered" >print is an object</span>
-    if (!blueprint || typeof blueprint !== 'object') {
-      errors.pus<span class="cstat-no" title="statement not covered" >h('Blueprint must be a valid JSON object');</span>
-      return { isVal<span class="cstat-no" title="statement not covered" >id: false, errors, warnings, securityIssues };</span>
+    // Check if blueprint is an object
+    if (!bluepri<span class="cstat-no" title="statement not covered" >nt || typeof blueprint !== 'object') {</span>
+      errors.push('B<span class="cstat-no" title="statement not covered" >lueprint must be a valid JSON object');</span>
+      return { isValid: false, errors, warnings, securityIssues };
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    const bp = blueprint as Blueprint;
+<span class="cstat-no" title="statement not covered" ></span>
+    // Validate requ<span class="cstat-no" title="statement not covered" >ired top-level properties</span>
+    if (!bp.name || typeof bp.name !== 'string') {
+      errors.push('Blueprint must have a name property of type string');
     }
 &nbsp;
-    const bp = blueprint as Blueprint;
-&nbsp;
-    // V<span class="cstat-no" title="statement not covered" >alidate required top-level properties</span>
-    if (!bp.<span class="cstat-no" title="statement not covered" >name || typeof b<span class="fstat-no" title="function not covered" >p.</span>name !== 'string') {</span>
-      errors.pus<span class="cstat-no" title="statement not covered" >h('Blueprint must have a name property of type string');</span>
+    if (<span class="cstat-no" title="statement not covered" >!bp.flow || !Array.isArray(bp.flow)) {</span>
+      errors<span class="cstat-no" title="statement not covered" >.push('Blueprint<span class="fstat-no" title="function not covered" > m</span>ust have a flow property containing an array of modules');</span>
     }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    if (!bp.flow || !Array.isArray(bp.flow)) {
-      errors.pus<span class="cstat-no" title="statement not covered" >h('Blueprint must have a flow property containing an array of modules');</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+    if (!bp.metadata<span class="cstat-no" title="statement not covered" > || type</span>of bp.metadata !== 'object') {
+      errors.push('Blueprint must have metadata property');
+    } else {<span class="cstat-no" title="statement not covered" ></span>
+      // Validate me<span class="cstat-no" title="statement not covered" >tadata structure</span>
+      if (typeof bp.metadata.version !== 'number') {
+        errors.p<span class="cstat-no" title="statement not covered" >ush('Blueprint metadata must include version number');</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-    if (!bp.meta<span class="cstat-no" title="statement not covered" >data || typeof bp.metadata !== 'object') {</span>
-      errors.push('B<span class="cstat-no" title="statement not covered" >lueprint must have metadata property');</span>
-    } else {
-      // Validat<span class="cstat-no" title="statement not covered" >e metadata structure</span>
-      if (typeof bp.<span class="cstat-no" title="statement not covered" >metadata.version !== 'number') {</span>
-        errors.push('Blueprint metadata must include version number');
-      }
-<span class="cstat-no" title="statement not covered" ></span>
-      if (!bp.metadata.scenario || ty<span class="cstat-no" title="statement not covered" >peof bp.metadata.scenario !== 'object') {</span>
-        errors.push('Blueprint metadata must include scenario configuration');
-      } else {<span class="cstat-no" title="statement not covered" ></span>
-        const scenar<span class="cstat-no" title="statement not covered" >io = bp.metadata.scenar<span class="fstat-no" title="function not covered" >io</span>;</span>
+      if (!bp.me<span class="cstat-no" title="statement not covered" >tadata.scenario || typeof bp.metadata.scenario !== 'object') {</span>
+        errors.push(<span class="cstat-no" title="statement not covered" >'Blueprint metadata must include scenario configuration');</span>
+      } else {
+        const scenario = bp.metadata.scenario;
         <span class="cstat-no" title="statement not covered" ></span>
-        // Check critical sc<span class="cstat-no" title="statement not covered" >enario settings</span>
+        // Check critical scenario se<span class="cstat-no" title="statement not covered" >ttings</span>
         if (typeof scenario.roundtrips !== 'number' || scenario.roundtrips &lt; 1) {
-          warnings.push('Scenario roundtrips should be a positive number');
-        }
-        
-        if (typeof scenario.maxErrors !== 'number' || scenario.maxErrors &lt; 0) {
+          warnings.push('Scenario roundtrip<span class="cstat-no" title="statement not covered" >s should be a positive number');</span>
+        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        <span class="cstat-no" title="statement not covered" ></span>
+        if (typeof scenario.<span class="cstat-no" title="statement not covered" >maxErrors !== 'number' || scenario.maxErrors &lt; 0) {</span>
           warnings.push('Scenario maxErrors should be a non-negative number');
         }
-<span class="cstat-no" title="statement not covered" ></span>
-        if (typeof s<span class="cstat-no" title="statement not covered" >cenario.autoCommit !== 'boolean') {</span>
-          warnings.push(<span class="cstat-no" title="statement not covered" >'Scenario autoCommit should be a boolean value');</span>
+&nbsp;
+        if (typeof scenario.autoCommit !== 'boolean') {
+          warnings.push('Scenario autoCommit should be a boolean value');
         }
 &nbsp;
-        if (typeof scenario.sequential !== 'boolean') {
-          warnings.push('Scenario sequential should be a boolean value');
-        }
+        if (typeof scenario.sequential !== 'boolean') <span class="cstat-no" title="statement not covered" >{</span>
+          warnings.p<span class="cstat-no" title="statement not covered" >ush('Scenario sequential should be a boolean value');</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         if (typeof scenario.confidential !== 'boolean') {
-          warnin<span class="cstat-no" title="statement not covered" >gs.push('Scenario confidential should be a boolean value');</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-      }<span class="cstat-no" title="statement not covered" ></span>
-    }
-<span class="cstat-no" title="statement not covered" ></span>
-    // Validate flow mod<span class="cstat-no" title="statement not covered" >ules</span>
-    if (bp.flow &amp;&amp; Array.isArray(bp.flow)) {
-      bp.flow.forEach((module: BlueprintModule, index: number) =&gt; {
-        if (!module || typeof module !== 'object') {
-          errors.push(`Module at index ${index} must be an object`);
-          return;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
-        }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (type<span class="cstat-no" title="statement not covered" >of module.id !== 'number' || module.id &lt; 1) {</span>
-          errors.push(`Module at index ${index} must have a positive numeric id`);
+          warnings.push('Scenario confidential should be a boolean value');
         }
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        if (<span class="cstat-no" title="statement not covered" >!module.modul<span class="cstat-no" title="statement not covered" >e </span>|| typeof module.module !== 'string') {</span>
-          errors<span class="cstat-no" title="statement not covered" >.push(`Module at index ${index} must have a module type string`);</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (typeof module.version !== 'number' || module.version &lt; 1) {
-          errors.push(`Module at index ${index} must have a positive version number`);
+      }
+    }
+&nbsp;
+    // Validate <span class="cstat-no" title="statement not covered" >flow modules</span>
+    if (bp.flow &amp;&amp; A<span class="cstat-no" title="statement not covered" >rray.isArray(bp.flow)) {</span>
+      bp.flow.forEach((m<span class="cstat-no" title="statement not covered" >odule: BlueprintModule, index: number) =&gt; {</span>
+        if (!module || typeof module !== 'object') {
+          errors.pus<span class="cstat-no" title="statement not covered" >h(`Module at index ${index} must be an object`);</span>
+          return;<span class="cstat-no" title="statement not covered" ></span>
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        // Security checks</span>
-        if (<span class="cstat-no" title="statement not covered" >module.parameters) {</span>
+        if (typeof module.id !== 'number' || module.id &lt; 1) {
+          errors.push(`Module at index ${index} must have a positive numeric id`);
+        }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        if (<span class="cstat-no" title="statement not covered" >!module.module || typeof module.module !== 'string') {</span>
+          errors<span class="cstat-no" title="statement not covered" >.push(`Module at index ${index} must have a module type string`);</span>
+        }
+&nbsp;
+        if (typeof module.vers<span class="cstat-no" title="statement not covered" >ion !== 'number' || module.version &lt;<span class="fstat-no" title="function not covered" > 1</span>) {<span class="cstat-no" title="statement not covered" ></span></span>
+          er<span class="cstat-no" title="statement not covered" >rors.push(`Mo<span class="cstat-no" title="statement not covered" >du</span>le at index ${index} must have a positive version number`);</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        // Security <span class="cstat-no" title="statement not covered" >checks</span>
+        if (module.parameters) {
           const paramStr = JSON.stringify(module.parameters).toLowerCase();
           
           // Check for potential hardcoded secrets
-          const secretPatterns = ['password', 'secret', 'token', 'apikey', 'api_key', 'key'];
-          secretPatterns.forEach(pattern =&gt; {
-<span class="cstat-no" title="statement not covered" >            if (paramStr.includes(pattern) &amp;&amp; paramStr.includes('=')) {</span>
-<span class="cstat-no" title="statement not covered" >              securityIssues.push({</span>
+<span class="cstat-no" title="statement not covered" >          const secretPatterns = ['password', 'secret', 'token', 'apikey', 'api_key', 'key'];</span>
+          se<span class="cstat-no" title="statement not covered" >cretPatterns.forEach(pattern =&gt; {</span>
+            if (paramStr.includes(pattern) &amp;&amp; paramStr.includes('=')) {
+              securityIssues.push({
                 type: 'potential_hardcoded_secret',
                 description: `Module ${module.id} may contain hardcoded secrets in parameters`,
                 severity: 'high'
 <span class="cstat-no" title="statement not covered" >              });</span>
-            }
-<span class="cstat-no" title="statement not covered" >          });</span>
+<span class="cstat-no" title="statement not covered" >            }</span>
+          });
 &nbsp;
           // Check for URLs with credentials
-          const urlWithCredentialsPattern = /https?:\/\/[^:/\s]+:[^@/\s]+@/;
+<span class="cstat-no" title="statement not covered" >          const urlWithCredentialsPattern = /https?:\/\/[^:/\s]+:[^@/\s]+@/;</span>
           if (urlWithCredentialsPattern.test(paramStr)) {
-            securityIssues.push({
+<span class="cstat-no" title="statement not covered" >            securityIssues.push({</span>
               type: 'credentials_in_url',
               description: `Module ${module.id} contains credentials in URL parameters`,
-              se<span class="fstat-no" title="function not covered" >verity: 'critical'<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-            });<span class="cstat-no" title="statement not covered" ></span>
-          }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        // P<span class="cstat-no" title="statement not covered" >erformance warnings</span>
-        if (strict) {
-          if (!modu<span class="cstat-no" title="statement not covered" >le.metadat</span>a) {
-<span class="cstat-no" title="statement not covered" >            warnings.push(`Module ${module.id} is missing metadata (recommended for better performance)`);</span>
-          }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >          if (module.con<span class="fstat-no" title="function not covered" >ne</span>ction &amp;&amp; typeof module.connection !== 'number') {</span>
-<span class="cstat-no" title="statement not covered" >            warnings.push(`Module ${module.id} has invalid connection reference`);</span>
-          }<span class="cstat-no" title="statement not covered" ></span>
+              severity: 'critical'
+            });
+          }
         }
-      });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-      // Check for duplicate module IDs<span class="cstat-no" title="statement not covered" ></span>
-      const moduleIds = bp.flow.map((m: BlueprintModule) =&gt; m.id).filter((id: number | undefined): id is number =&gt; typeof id === 'number');
+        /<span class="fstat-no" title="function not covered" >/ Performance warnings<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+        if (strict) {<span class="cstat-no" title="statement not covered" ></span>
+          if (!module.m<span class="cstat-no" title="statement not covered" >etadata) {</span>
+<span class="cstat-no" title="statement not covered" >            warnings.push(`Module ${module.id} is missing metadata (recommended for better performance)`);</span>
+<span class="cstat-no" title="statement not covered" >          }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+          if (module.connection &amp;&amp; typeof module.connection !== 'number') {
+            warning<span class="cstat-no" title="statement not covered" >s.push(`Mo</span>dule ${module.id} has invalid connection reference`);
+<span class="cstat-no" title="statement not covered" >          }</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+      });
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      // Che<span class="cstat-no" title="statement not covered" >ck for duplicate module IDs</span>
+      const modu<span class="cstat-no" title="statement not covered" >leIds = </span>bp.flow.map((m: BlueprintModule) =&gt; m.id).filter((id: number | undefined): id is number =&gt; typeof id === 'number');
       const duplicateIds = moduleIds.filter((id: number, index: number) =&gt; moduleIds.indexOf(id) !== index);
-      if (duplicateIds.length &gt; 0) {
+      if (duplicateIds.length &gt;<span class="cstat-no" title="statement not covered" > 0) {</span>
         errors.push(`Duplicate module IDs found: ${duplicateIds.join(', ')}`);
       }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
       // Check for sequential module ID gaps (warning only)
       const sortedIds = Array.from(new Set(moduleIds as number[])).sort((a: number, b: number) =&gt; a - b);
       for (let i = 1; i &lt; sortedIds.length; i++) {
-        if (sortedIds[i] - sortedIds[i - 1] &gt; 1) {
-          warnings.push(`Non-sequential module IDs detected (gap between ${sortedIds[i - 1]} and ${sortedIds[i]})`);
+        if (<span class="cstat-no" title="statement not covered" >sortedIds[i] - sortedIds[i - 1] &gt; 1) {</span>
+          warnings.push(`Non-sequen<span class="cstat-no" title="statement not covered" >tial module IDs detected (gap between ${sortedIds[i - 1]} and ${sortedIds[i]})`);</span>
           break;
         }
-      }<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-    // Additional security checks
-    if (bp.metad<span class="cstat-no" title="statement not covered" >ata?.scenario?.confidential === false) {</span>
-      securityIssues<span class="cstat-no" title="statement not covered" >.push({</span>
-        type: 'non_confi<span class="cstat-no" title="statement not covered" >dential_scenario',</span>
-        description: 'Scenario is not marked as confidential - consider security implications',
-        severity: 'l<span class="cstat-no" title="statement not covered" >ow'</span>
-      });
+      }
     }
 &nbsp;
-    if (bp.metadata?.scenario?.dlq === false) {
-      warnings.push('Dead Lett<span class="cstat-no" title="statement not covered" >er </span>Queue is disabled - failed executions may be lost');
-    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    // Additional security checks
+    if (bp.metadata?.scenario?.confidential === false) {
+      securityIs<span class="cstat-no" title="statement not covered" >sues.push({</span>
+        type: 'non_c<span class="cstat-no" title="statement not covered" >onfidential_scenario',</span>
+        description: 'Scenario is not marked as confidential - consider security implications',
+        severity: 'low'
+      });<span class="cstat-no" title="statement not covered" ></span>
+    }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  } catch (error) {
-    erro<span class="cstat-no" title="statement not covered" >rs.push(`Blueprint validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);</span>
-  }
+    if (bp.metadata?.scenario?.dlq === false) {
+      warnings.push(<span class="cstat-no" title="statement not covered" >'Dead Letter Queue is disabled - failed executions m</span>ay be lost');
+    }
 &nbsp;
-  return {
+  } catch (error) {
+    errors.push(`Blueprint validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  return {<span class="cstat-no" title="statement not covered" ></span>
     isValid: errors.length === 0,
-    errors,
+    erro<span class="cstat-no" title="statement not covered" >rs,</span>
     warnings,
     securityIssues
   };
 }
 &nbsp;
-// Conne<span class="cstat-no" title="statement not covered" >ction extraction function</span>
+// Connection extraction function
 export function extractBlueprintConnections(blueprint: unknown, includeOptional: boolean = false): {
   requiredConnections: Array&lt;{ moduleId: number; moduleType: string; connectionId?: number; service?: string; required: boolean }&gt;;
   connectionSummary: { totalModules: number; modulesRequiringConnections: number; uniqueServices: string[] };
   dependencyMap: Record&lt;string, number[]&gt;;
-} {
+} {<span class="cstat-no" title="statement not covered" ></span>
   const connections: Array&lt;{ moduleId: number; moduleType: string; connectionId?: number; service?: string; required: boolean }&gt; = [];
   const serviceMap = new Map&lt;string, number[]&gt;();
 &nbsp;
@@ -955,7 +955,7 @@ export function extractBlueprintConnections(blueprint: unknown, includeOptional:
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:24:27.629Z
+                at 2025-08-22T07:26:59.401Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>4/8</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>4/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -178,15 +178,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -210,14 +207,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -226,7 +222,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -290,7 +290,7 @@
 &nbsp;
 // Import types for internal use
 import type {
-  BlueprintModule,<span class="cstat-no" title="statement not covered" ></span>
+  BlueprintModule,
   Blueprint,
 } from './blueprint.js';
 &nbsp;
@@ -320,23 +320,23 @@ export type {
   BlueprintModule,
   Blueprint,
   ReportMetadata,
-  TroubleshootingReportDat<span class="cstat-no" title="statement not covered" >a,</span>
-  Pe<span class="fstat-no" title="function not covered" >rf</span>ormanceAnalysisResult,
-  Scenar<span class="cstat-no" title="statement not covered" >ioAnalysis,</span>
+  TroubleshootingReportData,
+  PerformanceAnalysisResult,
+  ScenarioAnalysis,
   ConsolidatedFindings,
-  ActionPlan,
-  Sy<span class="fstat-no" title="function not covered" >st</span>emOverview,
-  CostAn<span class="cstat-no" title="statement not covered" >alysisReport,</span>
+  Ac<span class="fstat-no" title="function not covered" >ti</span>onPlan,
+  System<span class="cstat-no" title="statement not covered" >Overview,</span>
+  CostAnalysisReport,
   _TroubleshootingReportFormatted,
   Op<span class="fstat-no" title="function not covered" >ti</span>mizationRecommendation,
   Optimi<span class="cstat-no" title="statement not covered" >zationAnalysis,</span>
   BlueprintOptimizationResult,
-  PerformanceOptimizationMetrics,
-  Op<span class="fstat-no" title="function not covered" >ti</span>mizationStrategy,
-  AutoOp<span class="cstat-no" title="statement not covered" >timizationConfig,</span>
+  Pe<span class="fstat-no" title="function not covered" >rf</span>ormanceOptimizationMetrics,
+  Optimi<span class="cstat-no" title="statement not covered" >zationStrategy,</span>
+  AutoOptimizationConfig,
 };
-&nbsp;
-/**
+<span class="fstat-no" title="function not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Collections of related types for easy access
  */
 export const ScenarioTypes = {
@@ -400,7 +400,7 @@ export const TypeGuards = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:24:27.629Z
+                at 2025-08-22T07:26:59.401Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
