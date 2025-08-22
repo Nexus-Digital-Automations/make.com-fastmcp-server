@@ -11,6 +11,8 @@ import MakeApiClient from '../../lib/make-api-client.js';
 import logger from '../../lib/logger.js';
 import { formatSuccessResponse } from '../../utils/response-formatter.js';
 
+// ==================== HELPER FUNCTIONS ====================
+
 // Re-export notification types for external usage
 export interface MakeNotification {
   id: number;
@@ -331,21 +333,9 @@ const NotificationTemplateSchema = z.object({
 }).strict();
 
 /**
- * Add notification management tools to FastMCP server
- * 
- * This function adds the core notification tools:
- * - create-notification
- * - get-email-preferences
- * - update-email-preferences
- * - create-notification-template
- * - list-notifications
+ * Add create notification tool
  */
-export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'NotificationManager' });
-  
-  componentLogger.info('Adding notification management tools');
-
-  // Create notification
+function addCreateNotificationTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   server.addTool({
     name: 'create-notification',
     description: 'Create and send a notification through multiple channels with scheduling support',
@@ -475,8 +465,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       }
     },
   });
+}
 
-  // Get email preferences
+/**
+ * Add get email preferences tool
+ */
+function addGetEmailPreferencesTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   server.addTool({
     name: 'get-email-preferences',
     description: 'Get user email notification preferences and subscription settings',
@@ -560,8 +554,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       }
     },
   });
+}
 
-  // Update email preferences
+/**
+ * Add update email preferences tool
+ */
+function addUpdateEmailPreferencesTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   server.addTool({
     name: 'update-email-preferences',
     description: 'Update user email notification preferences and subscription settings',
@@ -674,8 +672,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       }
     },
   });
+}
 
-  // Create notification template
+/**
+ * Add create notification template tool
+ */
+function addCreateNotificationTemplateTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   server.addTool({
     name: 'create-notification-template',
     description: 'Create a reusable notification template with variables and design',
@@ -788,8 +790,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       }
     },
   });
+}
 
-  // List notifications
+/**
+ * Add list notifications tool
+ */
+function addListNotificationsTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   server.addTool({
     name: 'list-notifications',
     description: 'List and filter notifications with delivery status and analytics',
@@ -918,6 +924,29 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       }
     },
   });
+}
+
+/**
+ * Add notification management tools to FastMCP server
+ * 
+ * This function adds the core notification tools:
+ * - create-notification
+ * - get-email-preferences
+ * - update-email-preferences
+ * - create-notification-template
+ * - list-notifications
+ */
+export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'NotificationManager' });
+  
+  componentLogger.info('Adding notification management tools');
+
+  // Add core notification tools
+  addCreateNotificationTool(server, apiClient, componentLogger);
+  addGetEmailPreferencesTool(server, apiClient, componentLogger);
+  addUpdateEmailPreferencesTool(server, apiClient, componentLogger);
+  addCreateNotificationTemplateTool(server, apiClient, componentLogger);
+  addListNotificationsTool(server, apiClient, componentLogger);
 
   componentLogger.info('Notification management tools added successfully');
 }

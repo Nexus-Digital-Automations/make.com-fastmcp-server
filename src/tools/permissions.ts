@@ -113,58 +113,9 @@ const InviteUserSchema = z.object({
 }).strict();
 
 /**
- * Adds comprehensive user permission and role management tools to the FastMCP server
- * 
- * @param {FastMCP} server - The FastMCP server instance
- * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and authentication
- * @returns {void}
- * 
- * @example
- * ```typescript
- * import { addPermissionTools } from './tools/permissions.js';
- * 
- * const server = new FastMCP();
- * const apiClient = new MakeApiClient(config);
- * addPermissionTools(server, apiClient);
- * ```
+ * Add get current user tool
  */
-export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'PermissionTools' });
-  
-  componentLogger.info('Adding user permission management tools');
-
-  /**
-   * Get current user information and permissions for the authenticated session
-   * 
-   * Retrieves comprehensive user profile information including roles, permissions,
-   * team memberships, organization associations, and session details.
-   * 
-   * @tool get-current-user
-   * @category User Management
-   * @permission authenticated
-   * 
-   * @param {Object} args - No parameters required
-   * 
-   * @returns {Promise<string>} JSON response containing:
-   * - user: Complete user object with profile information
-   * - roles: Array of assigned roles with scope information
-   * - permissions: List of granted permissions
-   * - teams: Team memberships with role details
-   * - organizations: Organization associations
-   * - preferences: User preferences and settings
-   * - lastLoginAt: ISO timestamp of last login
-   * - createdAt: ISO timestamp of account creation
-   * 
-   * @throws {UserError} When authentication fails or user not found
-   * 
-   * @example
-   * ```bash
-   * # Get current user information
-   * mcp-client get-current-user
-   * ```
-   * 
-   * @see {@link https://docs.make.com/api/users#current} Make.com Current User API
-   */
+function addGetCurrentUserTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   server.addTool({
     name: 'get-current-user',
     description: 'Get current user information and permissions',
@@ -207,7 +158,12 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       }
     },
   });
+}
 
+/**
+ * Add user management tools
+ */
+function addUserManagementTools(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // List users with filtering
   server.addTool({
     name: 'list-users',
@@ -391,7 +347,12 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       }
     },
   });
+}
 
+/**
+ * Add team management tools
+ */
+function addTeamManagementTools(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // List teams
   server.addTool({
     name: 'list-teams',
@@ -660,7 +621,12 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       }
     },
   });
+}
 
+/**
+ * Add organization management tools
+ */
+function addOrganizationManagementTools(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // List organizations
   server.addTool({
     name: 'list-organizations',
@@ -921,7 +887,12 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       }
     },
   });
+}
 
+/**
+ * Add user invitation tool
+ */
+function addUserInvitationTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // Invite user to team or organization
   server.addTool({
     name: 'invite-user',
@@ -984,6 +955,22 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       }
     },
   });
+}
+
+/**
+ * Adds comprehensive user permission and role management tools to the FastMCP server
+ */
+export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'PermissionTools' });
+  
+  componentLogger.info('Adding user permission management tools');
+
+  // Add core permission management tools
+  addGetCurrentUserTool(server, apiClient, componentLogger);
+  addUserManagementTools(server, apiClient, componentLogger);
+  addTeamManagementTools(server, apiClient, componentLogger);
+  addOrganizationManagementTools(server, apiClient, componentLogger);
+  addUserInvitationTool(server, apiClient, componentLogger);
 
   componentLogger.info('User permission management tools added successfully');
 }
