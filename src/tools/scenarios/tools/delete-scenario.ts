@@ -28,7 +28,7 @@ export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const typedArgs = args as { scenarioId: string; force?: boolean };
       
-      if (log && log.info) { log.info('Deleting scenario', { scenarioId: typedArgs.scenarioId, force: typedArgs.force }); }
+      if (log?.info) { log.info('Deleting scenario', { scenarioId: typedArgs.scenarioId, force: typedArgs.force }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -65,7 +65,7 @@ export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
           timestamp: new Date().toISOString(),
         };
 
-        if (log && log.info) { log.info('Scenario deleted successfully', { 
+        if (log?.info) { log.info('Scenario deleted successfully', { 
           scenarioId: typedArgs.scenarioId,
           force: typedArgs.force 
         }); }
@@ -73,7 +73,7 @@ export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) { log.error('Failed to delete scenario', { 
+        if (log?.error) { log.error('Failed to delete scenario', { 
           scenarioId: typedArgs.scenarioId, 
           error: errorMessage 
         }); }

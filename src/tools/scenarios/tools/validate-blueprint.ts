@@ -33,7 +33,7 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
     execute: async (args: unknown, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const typedArgs = args as ValidateBlueprintArgs;
-      if (log && log.info) { log.info('Validating blueprint', { 
+      if (log?.info) { log.info('Validating blueprint', { 
         hasBlueprint: !!typedArgs.blueprint,
         strict: typedArgs.strict,
         includeSecurityChecks: typedArgs.includeSecurityChecks
@@ -45,7 +45,7 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
           typedArgs.strict
         );
 
-        if (log && log.info) { log.info('Blueprint validation completed', {
+        if (log?.info) { log.info('Blueprint validation completed', {
           isValid: validationResult.isValid,
           errorCount: validationResult.errors.length,
           warningCount: validationResult.warnings.length,
@@ -77,7 +77,7 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) { log.error('Blueprint validation failed', { error: errorMessage }); }
+        if (log?.error) { log.error('Blueprint validation failed', { error: errorMessage }); }
         throw new UserError(`Blueprint validation failed: ${errorMessage}`);
       }
     }

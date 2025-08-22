@@ -27,7 +27,7 @@ export function createAnalyzeBlueprintTool(_context: ToolContext): ToolDefinitio
     },
     execute: async (args: unknown, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      if (log && log.info) { log.info('Analyzing blueprint', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint }); }
+      if (log?.info) { log.info('Analyzing blueprint', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -74,7 +74,7 @@ export function createAnalyzeBlueprintTool(_context: ToolContext): ToolDefinitio
 
         reportProgress?.({ progress: 100, total: 100 });
 
-        if (log && log.info) { log.info('Blueprint analysis completed', {
+        if (log?.info) { log.info('Blueprint analysis completed', {
           isValid: analysisResult.validationSummary.isValid,
           score: analysisResult.validationSummary.score,
           errorCount: analysisResult.issues.errors.length,
@@ -86,7 +86,7 @@ export function createAnalyzeBlueprintTool(_context: ToolContext): ToolDefinitio
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) { log.error('Blueprint analysis failed', { error: errorMessage }); }
+        if (log?.error) { log.error('Blueprint analysis failed', { error: errorMessage }); }
         throw new UserError(`Blueprint analysis failed: ${errorMessage}`);
       }
     },

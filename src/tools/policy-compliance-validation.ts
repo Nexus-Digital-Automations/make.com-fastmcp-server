@@ -528,7 +528,7 @@ class PolicyComplianceValidator {
             continue;
           }
           
-          if (policySelection.excludePolicyIds && policySelection.excludePolicyIds.includes(String(policyData.id || policyData.policyId))) {
+          if (policySelection.excludePolicyIds?.includes(String(policyData.id || policyData.policyId))) {
             continue;
           }
 

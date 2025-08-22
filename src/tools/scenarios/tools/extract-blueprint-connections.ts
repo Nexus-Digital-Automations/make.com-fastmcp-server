@@ -26,7 +26,7 @@ export function createExtractBlueprintConnectionsTool(context: ToolContext): Too
     },
     execute: async (args: unknown, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      if (log && log.info) { log.info('Extracting blueprint connections', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint }); }
+      if (log?.info) { log.info('Extracting blueprint connections', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -72,7 +72,7 @@ export function createExtractBlueprintConnectionsTool(context: ToolContext): Too
           ]
         };
 
-        if (log && log.info) { log.info('Blueprint connection extraction completed', {
+        if (log?.info) { log.info('Blueprint connection extraction completed', {
           totalConnections: result.connectionAnalysis.totalConnections,
           uniqueServices: result.migrationPlanning.uniqueServices.length
         }); }
@@ -81,7 +81,7 @@ export function createExtractBlueprintConnectionsTool(context: ToolContext): Too
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error during connection extraction';
-        if (log && log.error) { log.error('Blueprint connection extraction failed', { error: errorMessage }); }
+        if (log?.error) { log.error('Blueprint connection extraction failed', { error: errorMessage }); }
         throw new UserError(`Failed to extract blueprint connections: ${errorMessage}`);
       }
     }

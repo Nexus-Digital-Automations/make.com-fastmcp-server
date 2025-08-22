@@ -25,7 +25,7 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
     },
     execute: async (args: unknown, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      if (log && log.info) { log.info('Listing scenarios', JSON.stringify(args)); }
+      if (log?.info) { log.info('Listing scenarios', JSON.stringify(args)); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -78,7 +78,7 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
           timestamp: new Date().toISOString(),
         };
 
-        if (log && log.info) { log.info('Scenarios listed successfully', { 
+        if (log?.info) { log.info('Scenarios listed successfully', { 
           count: result.scenarios.length,
           total: result.pagination.total 
         }); }
@@ -86,7 +86,7 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) { log.error('Failed to list scenarios', { error: errorMessage }); }
+        if (log?.error) { log.error('Failed to list scenarios', { error: errorMessage }); }
         throw new UserError(`Failed to list scenarios: ${errorMessage}`);
       }
     },

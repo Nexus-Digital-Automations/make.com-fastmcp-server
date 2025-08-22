@@ -26,7 +26,7 @@ export function createGetScenarioTool(context: ToolContext): ToolDefinition {
     execute: async (args: unknown, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const typedArgs = args as { scenarioId: string; includeBlueprint?: boolean; includeExecutions?: boolean };
-      if (log && log.info) { log.info('Getting scenario details', { scenarioId: typedArgs.scenarioId }); }
+      if (log?.info) { log.info('Getting scenario details', { scenarioId: typedArgs.scenarioId }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -63,7 +63,7 @@ export function createGetScenarioTool(context: ToolContext): ToolDefinition {
 
         reportProgress?.({ progress: 100, total: 100 });
 
-        if (log && log.info) { log.info('Scenario details retrieved successfully', { 
+        if (log?.info) { log.info('Scenario details retrieved successfully', { 
           scenarioId: typedArgs.scenarioId,
           includeBlueprint: typedArgs.includeBlueprint,
           includeExecutions: typedArgs.includeExecutions 
@@ -72,7 +72,7 @@ export function createGetScenarioTool(context: ToolContext): ToolDefinition {
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) { log.error('Failed to get scenario details', { 
+        if (log?.error) { log.error('Failed to get scenario details', { 
           scenarioId: typedArgs.scenarioId, 
           error: errorMessage 
         }); }

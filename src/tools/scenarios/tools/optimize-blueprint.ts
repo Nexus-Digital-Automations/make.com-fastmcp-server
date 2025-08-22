@@ -33,7 +33,7 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
         includeImplementationSteps?: boolean;
       };
       
-      if (log && log.info) { log.info('Starting blueprint optimization analysis', { 
+      if (log?.info) { log.info('Starting blueprint optimization analysis', { 
         hasBlueprint: !!typedArgs.blueprint,
         optimizationType: typedArgs.optimizationType,
         includeImplementationSteps: typedArgs.includeImplementationSteps
@@ -99,7 +99,7 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
           }
         };
 
-        if (log && log.info) { log.info('Blueprint optimization analysis completed', {
+        if (log?.info) { log.info('Blueprint optimization analysis completed', {
           optimizationScore: optimizationResult.optimizationScore,
           recommendationCount: filteredRecommendations.length,
           priorityLevel: optimizationSummary.priorityLevel,
@@ -110,7 +110,7 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) { log.error('Blueprint optimization failed', { error: errorMessage }); }
+        if (log?.error) { log.error('Blueprint optimization failed', { error: errorMessage }); }
         throw new UserError(`Blueprint optimization failed: ${errorMessage}`);
       }
     }

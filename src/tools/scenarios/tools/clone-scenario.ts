@@ -33,7 +33,7 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
         active?: boolean;
       };
       
-      if (log && log.info) { log.info('Cloning scenario', { 
+      if (log?.info) { log.info('Cloning scenario', { 
         sourceId: typedArgs.scenarioId, 
         newName: typedArgs.name 
       }); }
@@ -80,7 +80,7 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
         // Type guard for cloned scenario
         const clonedScenarioObj = clonedScenario as { id?: unknown } | null | undefined;
         
-        if (log && log.info) { log.info('Scenario cloned successfully', { 
+        if (log?.info) { log.info('Scenario cloned successfully', { 
           sourceId: typedArgs.scenarioId,
           cloneId: String(clonedScenarioObj?.id ?? 'unknown'),
           name: typedArgs.name 
@@ -89,7 +89,7 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) { log.error('Failed to clone scenario', { 
+        if (log?.error) { log.error('Failed to clone scenario', { 
           scenarioId: typedArgs.scenarioId, 
           error: errorMessage 
         }); }
