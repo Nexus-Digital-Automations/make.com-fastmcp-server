@@ -19485,9 +19485,67 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755897120463_eia5ot3fn",
+      "title": "Refactor scenario-archival-policy.ts evaluateSingleCondition function - complexity 46 violation",
+      "description": "Break down the 46-complexity evaluateSingleCondition function in scenario-archival-policy.ts (line 330). Extract helper functions to reduce complexity below 25. This is now the highest complexity violation after run-scenario.ts success.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T21:12:00.463Z",
+      "auto_research_created": false,
+      "assigned_agent": "agent_1755897215373",
+      "started_at": "2025-08-22T21:13:35.373Z",
+      "claimed_by": "agent_1755897215373",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755896144071_1_general_53bdbd23",
+          "role": "primary",
+          "assignedAt": "2025-08-22T21:12:07.184Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "agent_1755897215373",
+          "action": "claimed",
+          "timestamp": "2025-08-22T21:13:35.373Z"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T21:13:13.064Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "pending"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T21:15:54.577Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T21:15:54.578Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 444,
-  "last_completion": "2025-08-22T21:11:22.181Z",
+  "total_completed": 445,
+  "last_completion": "2025-08-22T21:15:54.578Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

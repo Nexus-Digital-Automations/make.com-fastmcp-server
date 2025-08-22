@@ -325,112 +325,205 @@ class ScenarioArchivalPolicyEngine {
   }
 
   /**
+   * Evaluate inactivity condition
+   */
+  private evaluateInactivityCondition(
+    scenario: ScenarioUsageMetrics,
+    condition: z.infer<typeof ArchivalConditionSchema>
+  ): { met: boolean; score: number; reason: string } {
+    if (!condition.inactivityPeriodDays) {
+      return { met: false, score: 0, reason: 'No inactivity period defined' };
+    }
+
+    const now = new Date();
+    const lastExecution = scenario.lastExecution ? new Date(scenario.lastExecution) : null;
+    const daysSinceLastExecution = lastExecution 
+      ? Math.floor((now.getTime() - lastExecution.getTime()) / (1000 * 60 * 60 * 24))
+      : Infinity;
+      
+    const met = daysSinceLastExecution >= condition.inactivityPeriodDays;
+    const score = Math.min(daysSinceLastExecution / condition.inactivityPeriodDays, 2) * (condition.weight || 1);
+    const reason = `Inactive for ${daysSinceLastExecution} days (threshold: ${condition.inactivityPeriodDays})`;
+    
+    return { met, score, reason };
+  }
+
+  /**
+   * Evaluate resource usage condition
+   */
+  private evaluateResourceUsageCondition(
+    scenario: ScenarioUsageMetrics,
+    condition: z.infer<typeof ArchivalConditionSchema>
+  ): { met: boolean; score: number; reason: string } {
+    let resourceViolations = 0;
+    const resourceReasons: string[] = [];
+
+    if (condition.maxCpuUsage !== undefined && scenario.resourceUsage.cpu > condition.maxCpuUsage) {
+      resourceViolations++;
+      resourceReasons.push(`CPU usage ${scenario.resourceUsage.cpu} > ${condition.maxCpuUsage}`);
+    }
+    if (condition.maxMemoryUsage !== undefined && scenario.resourceUsage.memory > condition.maxMemoryUsage) {
+      resourceViolations++;
+      resourceReasons.push(`Memory usage ${scenario.resourceUsage.memory} > ${condition.maxMemoryUsage}`);
+    }
+    if (condition.maxOperationsPerExecution !== undefined && scenario.resourceUsage.operations > condition.maxOperationsPerExecution) {
+      resourceViolations++;
+      resourceReasons.push(`Operations ${scenario.resourceUsage.operations} > ${condition.maxOperationsPerExecution}`);
+    }
+
+    const met = resourceViolations > 0;
+    const score = (resourceViolations / 3) * (condition.weight || 1);
+    const reason = resourceReasons.join(', ') || 'Resource usage within limits';
+    
+    return { met, score, reason };
+  }
+
+  /**
+   * Evaluate dependency condition
+   */
+  private evaluateDependencyCondition(
+    scenario: ScenarioUsageMetrics,
+    condition: z.infer<typeof ArchivalConditionSchema>
+  ): { met: boolean; score: number; reason: string } {
+    if (!condition.requireActiveDependencies) {
+      return { met: false, score: 0, reason: 'No dependency requirements defined' };
+    }
+
+    const hasDependencies = scenario.dependencies.incoming.length > 0 || scenario.dependencies.outgoing.length > 0;
+    const met = !hasDependencies;
+    const score = met ? 1 * (condition.weight || 1) : 0;
+    const reason = met ? 'No active dependencies' : 'Has active dependencies';
+    
+    return { met, score, reason };
+  }
+
+  /**
+   * Evaluate custom function condition
+   */
+  private evaluateCustomCondition(
+    scenario: ScenarioUsageMetrics,
+    condition: z.infer<typeof ArchivalConditionSchema>
+  ): { met: boolean; score: number; reason: string } {
+    if (!condition.customEvaluationFunction) {
+      return { met: false, score: 0, reason: 'No custom evaluation function defined' };
+    }
+
+    try {
+      if (!this.isSafeCustomFunction(condition.customEvaluationFunction)) {
+        throw new Error('Custom function contains unsafe operations');
+      }
+      
+      const customResult = this.evaluateCustomFunction(condition.customEvaluationFunction, scenario, condition);
+      
+      if (typeof customResult === 'boolean') {
+        const met = customResult;
+        const score = customResult ? 1 * (condition.weight || 1) : 0;
+        const reason = customResult ? 'Custom condition met' : 'Custom condition not met';
+        return { met, score, reason };
+      } else if (typeof customResult === 'object' && customResult !== null) {
+        const met = Boolean(customResult.met);
+        const score = Number(customResult.score || (met ? 1 : 0)) * (condition.weight || 1);
+        const reason = String(customResult.reason || 'Custom evaluation');
+        return { met, score, reason };
+      }
+      
+      return { met: false, score: 0, reason: 'Invalid custom function return type' };
+    } catch (error) {
+      const reason = `Custom evaluation error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      return { met: false, score: 0, reason };
+    }
+  }
+
+  /**
+   * Evaluate low success rate condition
+   */
+  private evaluateLowSuccessRateCondition(
+    scenario: ScenarioUsageMetrics,
+    condition: z.infer<typeof ArchivalConditionSchema>
+  ): { met: boolean; score: number; reason: string } {
+    if (condition.successRateThreshold === undefined) {
+      return { met: false, score: 0, reason: 'No success rate threshold defined' };
+    }
+
+    const met = scenario.successRate < condition.successRateThreshold;
+    const score = met ? (1 - scenario.successRate / 100) * (condition.weight || 1) : 0;
+    const reason = `Success rate ${scenario.successRate}% (threshold: ${condition.successRateThreshold}%)`;
+    
+    return { met, score, reason };
+  }
+
+  /**
+   * Evaluate no executions condition
+   */
+  private evaluateNoExecutionsCondition(
+    scenario: ScenarioUsageMetrics,
+    condition: z.infer<typeof ArchivalConditionSchema>
+  ): { met: boolean; score: number; reason: string } {
+    const met = scenario.totalExecutions === 0;
+    const score = met ? 1 * (condition.weight || 1) : 0;
+    const reason = met ? 'Never executed' : 'Has executions';
+    
+    return { met, score, reason };
+  }
+
+  /**
    * Evaluate a single condition against a scenario
    */
   private async evaluateSingleCondition(
     scenario: ScenarioUsageMetrics,
     condition: z.infer<typeof ArchivalConditionSchema>
   ): Promise<{ condition: string; met: boolean; score: number; reason: string }> {
-    const now = new Date();
-    const result = { condition: condition.name, met: false, score: 0, reason: '' };
-
     try {
+      let evaluationResult: { met: boolean; score: number; reason: string };
+
+      // Use coordinator pattern to delegate to specific evaluation functions
       switch (condition.trigger) {
-        case ArchivalTrigger.INACTIVITY: {
-          if (condition.inactivityPeriodDays) {
-            const lastExecution = scenario.lastExecution ? new Date(scenario.lastExecution) : null;
-            const daysSinceLastExecution = lastExecution 
-              ? Math.floor((now.getTime() - lastExecution.getTime()) / (1000 * 60 * 60 * 24))
-              : Infinity;
-              
-            result.met = daysSinceLastExecution >= condition.inactivityPeriodDays;
-            result.score = Math.min(daysSinceLastExecution / condition.inactivityPeriodDays, 2) * (condition.weight || 1);
-            result.reason = `Inactive for ${daysSinceLastExecution} days (threshold: ${condition.inactivityPeriodDays})`;
-          }
+        case ArchivalTrigger.INACTIVITY:
+          evaluationResult = this.evaluateInactivityCondition(scenario, condition);
           break;
-        }
 
         case ArchivalTrigger.NO_EXECUTIONS:
-          result.met = scenario.totalExecutions === 0;
-          result.score = result.met ? 1 * (condition.weight || 1) : 0;
-          result.reason = result.met ? 'Never executed' : 'Has executions';
+          evaluationResult = this.evaluateNoExecutionsCondition(scenario, condition);
           break;
 
         case ArchivalTrigger.LOW_SUCCESS_RATE:
-          if (condition.successRateThreshold !== undefined) {
-            result.met = scenario.successRate < condition.successRateThreshold;
-            result.score = result.met ? (1 - scenario.successRate / 100) * (condition.weight || 1) : 0;
-            result.reason = `Success rate ${scenario.successRate}% (threshold: ${condition.successRateThreshold}%)`;
-          }
+          evaluationResult = this.evaluateLowSuccessRateCondition(scenario, condition);
           break;
 
-        case ArchivalTrigger.RESOURCE_USAGE: {
-          let resourceViolations = 0;
-          const resourceReasons: string[] = [];
-
-          if (condition.maxCpuUsage !== undefined && scenario.resourceUsage.cpu > condition.maxCpuUsage) {
-            resourceViolations++;
-            resourceReasons.push(`CPU usage ${scenario.resourceUsage.cpu} > ${condition.maxCpuUsage}`);
-          }
-          if (condition.maxMemoryUsage !== undefined && scenario.resourceUsage.memory > condition.maxMemoryUsage) {
-            resourceViolations++;
-            resourceReasons.push(`Memory usage ${scenario.resourceUsage.memory} > ${condition.maxMemoryUsage}`);
-          }
-          if (condition.maxOperationsPerExecution !== undefined && scenario.resourceUsage.operations > condition.maxOperationsPerExecution) {
-            resourceViolations++;
-            resourceReasons.push(`Operations ${scenario.resourceUsage.operations} > ${condition.maxOperationsPerExecution}`);
-          }
-
-          result.met = resourceViolations > 0;
-          result.score = (resourceViolations / 3) * (condition.weight || 1);
-          result.reason = resourceReasons.join(', ') || 'Resource usage within limits';
+        case ArchivalTrigger.RESOURCE_USAGE:
+          evaluationResult = this.evaluateResourceUsageCondition(scenario, condition);
           break;
-        }
 
         case ArchivalTrigger.DEPENDENCY:
-          if (condition.requireActiveDependencies) {
-            // This would require checking if dependencies are active
-            // For now, we'll check if there are any dependencies
-            const hasDependencies = scenario.dependencies.incoming.length > 0 || scenario.dependencies.outgoing.length > 0;
-            result.met = !hasDependencies;
-            result.score = result.met ? 1 * (condition.weight || 1) : 0;
-            result.reason = result.met ? 'No active dependencies' : 'Has active dependencies';
-          }
+          evaluationResult = this.evaluateDependencyCondition(scenario, condition);
           break;
 
         case ArchivalTrigger.CUSTOM:
-          if (condition.customEvaluationFunction) {
-            try {
-              // Use safer evaluation - validate input is safe JavaScript expression
-              // In production, this should use a sandboxed VM or predefined functions
-              if (!this.isSafeCustomFunction(condition.customEvaluationFunction)) {
-                throw new Error('Custom function contains unsafe operations');
-              }
-              const customResult = this.evaluateCustomFunction(condition.customEvaluationFunction, scenario, condition);
-              
-              if (typeof customResult === 'boolean') {
-                result.met = customResult;
-                result.score = customResult ? 1 * (condition.weight || 1) : 0;
-                result.reason = customResult ? 'Custom condition met' : 'Custom condition not met';
-              } else if (typeof customResult === 'object' && customResult !== null) {
-                result.met = Boolean(customResult.met);
-                result.score = Number(customResult.score || (result.met ? 1 : 0)) * (condition.weight || 1);
-                result.reason = String(customResult.reason || 'Custom evaluation');
-              }
-            } catch (error) {
-              result.reason = `Custom evaluation error: ${error instanceof Error ? error.message : 'Unknown error'}`;
-            }
-          }
+          evaluationResult = this.evaluateCustomCondition(scenario, condition);
           break;
 
         default:
-          result.reason = `Unsupported trigger type: ${condition.trigger}`;
+          evaluationResult = {
+            met: false,
+            score: 0,
+            reason: `Unsupported trigger type: ${condition.trigger}`
+          };
       }
-    } catch (error) {
-      result.reason = `Evaluation error: ${error instanceof Error ? error.message : 'Unknown error'}`;
-    }
 
-    return result;
+      return {
+        condition: condition.name,
+        met: evaluationResult.met,
+        score: evaluationResult.score,
+        reason: evaluationResult.reason
+      };
+    } catch (error) {
+      return {
+        condition: condition.name,
+        met: false,
+        score: 0,
+        reason: `Evaluation error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      };
+    }
   }
 
   /**
