@@ -1154,15 +1154,13 @@ class PerformanceAnalysisEngine {
 }
 
 /**
- * Add performance analysis tools to FastMCP server
+ * Add performance bottleneck analysis tool
  */
-export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'PerformanceAnalysisTools' });
-  const analysisEngine = new PerformanceAnalysisEngine();
-  
-  componentLogger.info('Adding performance analysis tools');
-
-  // Main performance bottleneck analysis tool
+function addPerformanceBottleneckAnalysisTool(
+  server: FastMCP,
+  apiClient: MakeApiClient,
+  analysisEngine: PerformanceAnalysisEngine
+): void {
   server.addTool({
     name: 'analyze-performance-bottlenecks',
     description: 'Comprehensive performance analysis with bottleneck detection, trend analysis, and optimization recommendations',
@@ -1264,8 +1262,16 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
       }
     },
   });
+}
 
-  // Comprehensive system-wide analysis tool
+/**
+ * Add comprehensive performance analysis tool
+ */
+function addComprehensivePerformanceAnalysisTool(
+  server: FastMCP,
+  apiClient: MakeApiClient,
+  analysisEngine: PerformanceAnalysisEngine
+): void {
   server.addTool({
     name: 'comprehensive-performance-analysis',
     description: 'System-wide performance analysis covering all components (API, webhooks, scenarios, system metrics)',
@@ -1320,8 +1326,16 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
       }
     },
   });
+}
 
-  // Live performance monitoring tool
+/**
+ * Add live performance monitoring tool
+ */
+function addLivePerformanceMonitoringTool(
+  server: FastMCP,
+  _apiClient: MakeApiClient,
+  analysisEngine: PerformanceAnalysisEngine
+): void {
   server.addTool({
     name: 'live-performance-monitoring',
     description: 'Real-time performance monitoring with configurable alerting and sampling intervals',
@@ -1409,6 +1423,21 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
       }
     },
   });
+}
+
+/**
+ * Add performance analysis tools to FastMCP server
+ */
+export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'PerformanceAnalysisTools' });
+  const analysisEngine = new PerformanceAnalysisEngine();
+  
+  componentLogger.info('Adding performance analysis tools');
+
+  // Add core performance analysis tools
+  addPerformanceBottleneckAnalysisTool(server, apiClient, analysisEngine);
+  addComprehensivePerformanceAnalysisTool(server, apiClient, analysisEngine);
+  addLivePerformanceMonitoringTool(server, apiClient, analysisEngine);
 
   componentLogger.info('Performance analysis tools added successfully');
 }
