@@ -661,7 +661,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { organizationId, includeUsage, includeHistory, includePaymentMethods } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Getting billing account information', {
           organizationId,
           includeUsage,
@@ -705,7 +705,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           reportProgress({ progress: 100, total: 100 });
         }
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved billing account', {
             organizationId: account.organizationId,
             plan: account.billingPlan.name,
@@ -735,7 +735,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
               currency: account.billingPlan.currency,
               cycle: account.billingPlan.billingCycle,
             },
-            usage: includeUsage && account.usage && account.usage.currentPeriod ? {
+            usage: includeUsage && account.usage?.currentPeriod ? {
               operations: {
                 used: account.usage.currentPeriod.operations?.used || 0,
                 limit: account.usage.currentPeriod.operations?.limit || 0,
@@ -763,7 +763,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
         }, "Billing account information retrieved successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error getting billing account', { organizationId, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}

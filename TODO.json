@@ -28,6 +28,23 @@
       "auto_created_for": "task_1755871773159_nxdykhwrk"
     },
     {
+      "id": "task_1755873793300_atn0222b6",
+      "title": "Fix @typescript-eslint/prefer-optional-chain violations in billing.ts, budget-control.ts, and blueprint-collaboration.ts",
+      "description": "Convert logical AND (&&) patterns to optional chaining (?.) operator for improved code readability",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T14:43:13.300Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755871906956_gre3lehm1",
       "title": "Fix TypeScript strict mode errors in AI governance engine module",
       "description": "Fix compilation errors in insights.ts, policy-optimization.ts, risk-assessment.ts, and tools/index.ts - including array push errors, undefined property access, and type assignment issues",
@@ -62,44 +79,13 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755871139350_ov219p2oe",
-      "title": "Enable TypeScript strict mode with proper null safety",
-      "description": "Implement TypeScript strictNullChecks and strict mode to improve type safety. Address the 291 compilation errors that arise when strict null checking is enabled. This will enable the prefer-nullish-coalescing ESLint rule and significantly improve code quality.",
-      "mode": "DEVELOPMENT",
-      "category": "enhancement",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "development/research-reports/comprehensive-code-quality-infrastructure-optimization-research-2025.md"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T13:58:59.350Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755870479853_1_general_a2aee26e",
-      "started_at": "2025-08-22T13:59:06.625Z",
-      "claimed_by": "development_session_1755870479853_1_general_a2aee26e",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755870479853_1_general_a2aee26e",
-          "role": "primary",
-          "assignedAt": "2025-08-22T13:59:06.625Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1755871057174_8ztv1nuhj",
       "title": "Complete optional-chain ESLint style improvements",
       "description": "Fix remaining 107 @typescript-eslint/prefer-optional-chain violations. Convert patterns like obj && obj.prop to obj?.prop for improved code style and readability. Non-blocking quality improvements.",
       "mode": "DEVELOPMENT",
       "category": "enhancement",
       "priority": "low",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -108,14 +94,20 @@
       "subtasks": [],
       "created_at": "2025-08-22T13:57:37.174Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T13:57:57.883Z",
-      "claimed_by": "agent_1755871077883",
-      "assigned_agent": "agent_1755871077883",
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
       "agent_assignment_history": [
         {
           "agent": "agent_1755871077883",
           "action": "claimed",
           "timestamp": "2025-08-22T13:57:57.883Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T14:42:05.036Z",
+          "reason": "Task stale for 44 minutes"
         }
       ]
     },
@@ -126,7 +118,7 @@
       "mode": "DEVELOPMENT",
       "category": "refactor",
       "priority": "medium",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -135,9 +127,9 @@
       "subtasks": [],
       "created_at": "2025-08-22T13:21:25.035Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T14:06:00.255Z",
-      "claimed_by": "agent_1755871560255",
-      "assigned_agent": "agent_1755871560255",
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
       "agent_assignment_history": [
         {
           "agent": "agent_1755869109000",
@@ -165,6 +157,12 @@
           "agent": "agent_1755871560255",
           "action": "claimed",
           "timestamp": "2025-08-22T14:06:00.255Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T14:42:05.036Z",
+          "reason": "Task stale for 36 minutes"
         }
       ]
     },
@@ -175,7 +173,7 @@
       "mode": "DEVELOPMENT",
       "category": "research",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -184,9 +182,9 @@
       "subtasks": [],
       "created_at": "2025-08-22T13:35:26.475Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T14:09:23.730Z",
-      "claimed_by": "agent_1755871763730",
-      "assigned_agent": "agent_1755871763730",
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
       "agent_assignment_history": [
         {
           "agent": "agent_1755870755191",
@@ -203,6 +201,12 @@
           "agent": "agent_1755871763730",
           "action": "claimed",
           "timestamp": "2025-08-22T14:09:23.730Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T14:42:05.036Z",
+          "reason": "Task stale for 33 minutes"
         }
       ]
     },
@@ -233,13 +237,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755871519068_1_general_f3872890": {
+    "development_session_1755873732979_1_general_d4e7dfef": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T14:05:19.068Z",
+      "lastHeartbeat": "2025-08-22T14:42:12.980Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -250,8 +254,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T14:05:19.068Z",
-      "sessionId": "session_1755871519068",
+      "createdAt": "2025-08-22T14:42:12.980Z",
+      "sessionId": "session_1755873732979",
       "metadata": {}
     }
   },
