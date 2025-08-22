@@ -564,6 +564,119 @@ function addGetCertificateTool(server: FastMCP, apiClient: MakeApiClient): void 
   });
 }
 
+// Types for certificate validation refactoring
+interface ValidationDataPayload {
+  certificateData: string;
+  privateKeyData?: string;
+  chainCertificates?: string[];
+  checkRevocation: boolean;
+  checkHostname?: string;
+  customValidations: string[];
+}
+
+interface ValidationResult {
+  isValid?: boolean;
+  certificateInfo?: unknown;
+  errors?: unknown[];
+  warnings?: unknown[];
+  checks?: Record<string, unknown>;
+}
+
+interface ValidationSummary {
+  isValid: boolean;
+  certificateInfo: unknown;
+  errors: unknown[];
+  warnings: unknown[];
+  checksSummary: ChecksSummary;
+}
+
+interface ChecksSummary {
+  syntaxValid: boolean;
+  keyPairMatch: boolean;
+  chainValid: boolean;
+  revocationStatus: string;
+  hostnameMatch: boolean;
+  customValidationsPassed: number;
+}
+
+// Helper functions for certificate validation complexity reduction
+
+/**
+ * Prepare validation data payload from input parameters
+ */
+function prepareValidationData(input: {
+  certificateData: string;
+  privateKeyData?: string;
+  chainCertificates?: string[];
+  checkRevocation: boolean;
+  checkHostname?: string;
+  customValidations?: string[];
+}): ValidationDataPayload {
+  const { certificateData, privateKeyData, chainCertificates, checkRevocation, checkHostname, customValidations } = input;
+  
+  return {
+    certificateData,
+    privateKeyData,
+    chainCertificates,
+    checkRevocation,
+    checkHostname,
+    customValidations: customValidations || ['key_usage', 'extended_key_usage', 'basic_constraints'],
+  };
+}
+
+/**
+ * Execute validation API call with error handling
+ */
+async function executeValidationApiCall(apiClient: MakeApiClient, validationData: ValidationDataPayload): Promise<{ success: boolean; data?: unknown; error?: { message?: string } }> {
+  const response = await apiClient.post('/certificates/validate', validationData);
+  
+  if (!response.success) {
+    throw new UserError(`Certificate validation failed: ${response.error?.message || 'Unknown error'}`);
+  }
+  
+  return response;
+}
+
+/**
+ * Build checks summary from validation checks object
+ */
+function buildChecksSummary(checks: Record<string, unknown>): ChecksSummary {
+  return {
+    syntaxValid: Boolean(checks?.syntax),
+    keyPairMatch: Boolean(checks?.keyPairMatch),
+    chainValid: Boolean(checks?.chainValid),
+    revocationStatus: String(checks?.revocationStatus || 'not_checked'),
+    hostnameMatch: Boolean(checks?.hostnameMatch),
+    customValidationsPassed: Number(checks?.customValidations || 0),
+  };
+}
+
+/**
+ * Build validation summary from validation result
+ */
+function buildValidationSummary(validationResult: ValidationResult): ValidationSummary {
+  const checks = (validationResult?.checks as Record<string, unknown>) || {};
+  
+  return {
+    isValid: validationResult?.isValid || false,
+    certificateInfo: validationResult?.certificateInfo,
+    errors: validationResult?.errors || [],
+    warnings: validationResult?.warnings || [],
+    checksSummary: buildChecksSummary(checks),
+  };
+}
+
+/**
+ * Log validation results with structured information
+ */
+function logValidationResults(log: { info: (message: string, data?: unknown) => void }, validationResult: ValidationResult): void {
+  log.info('Successfully validated certificate', {
+    isValid: Boolean(validationResult?.isValid),
+    errorCount: (validationResult?.errors as unknown[])?.length || 0,
+    warningCount: (validationResult?.warnings as unknown[])?.length || 0,
+  });
+}
+
 /**
  * Add validate certificate tool
  */
@@ -578,7 +691,7 @@ function addValidateCertificateTool(server: FastMCP, apiClient: MakeApiClient): 
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { certificateData, privateKeyData, chainCertificates, checkRevocation, checkHostname, customValidations } = input;
+      const { privateKeyData, chainCertificates, checkRevocation, checkHostname } = input;
 
       log.info('Validating certificate', {
         hasPrivateKey: !!privateKeyData,
@@ -589,49 +702,19 @@ function addValidateCertificateTool(server: FastMCP, apiClient: MakeApiClient): 
 
       try {
         reportProgress({ progress: 0, total: 100 });
-
-        const validationData = {
-          certificateData,
-          privateKeyData,
-          chainCertificates,
-          checkRevocation,
-          checkHostname,
-          customValidations: customValidations || ['key_usage', 'extended_key_usage', 'basic_constraints'],
-        };
-
+        
+        const validationData = prepareValidationData(input);
         reportProgress({ progress: 25, total: 100 });
-
-        const response = await apiClient.post('/certificates/validate', validationData);
-
-        if (!response.success) {
-          throw new UserError(`Certificate validation failed: ${response.error?.message || 'Unknown error'}`);
-        }
-
-        const validationResult = response.data as Record<string, unknown>;
+        
+        const response = await executeValidationApiCall(apiClient, validationData);
+        const validationResult = response.data as ValidationResult;
         reportProgress({ progress: 100, total: 100 });
-
-        log.info('Successfully validated certificate', {
-          isValid: Boolean(validationResult?.isValid),
-          errorCount: (validationResult?.errors as unknown[])?.length || 0,
-          warningCount: (validationResult?.warnings as unknown[])?.length || 0,
-        });
-
+        
+        logValidationResults(log, validationResult);
+        
         return formatSuccessResponse({
           validation: validationResult,
-          summary: {
-            isValid: validationResult?.isValid || false,
-            certificateInfo: validationResult?.certificateInfo,
-            errors: validationResult?.errors || [],
-            warnings: validationResult?.warnings || [],
-            checksSummary: {
-              syntaxValid: Boolean((validationResult?.checks as Record<string, unknown>)?.syntax),
-              keyPairMatch: Boolean((validationResult?.checks as Record<string, unknown>)?.keyPairMatch),
-              chainValid: Boolean((validationResult?.checks as Record<string, unknown>)?.chainValid),
-              revocationStatus: String((validationResult?.checks as Record<string, unknown>)?.revocationStatus || 'not_checked'),
-              hostnameMatch: Boolean((validationResult?.checks as Record<string, unknown>)?.hostnameMatch),
-              customValidationsPassed: Number((validationResult?.checks as Record<string, unknown>)?.customValidations || 0),
-            },
-          },
+          summary: buildValidationSummary(validationResult),
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
