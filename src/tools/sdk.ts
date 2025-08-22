@@ -322,7 +322,7 @@ function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
-      const { query, category, publisher, verified, rating, features, compatibility, sortBy, sortOrder, limit, offset } = input;
+      const { query, category, publisher, verified, _rating, _features, _compatibility, _sortBy, _sortOrder, limit, offset } = input;
 
       log.info('Searching SDK apps', {
         query,
@@ -436,7 +436,7 @@ function formatSdkAppInstallResponse(installation: any, input: any): any {
   const { appId, autoUpdate, configuration } = input;
   
   // Type guards for installation data
-  const installationId = typeof installation.id === 'string' || typeof installation.id === 'number' ? installation.id : 'unknown';
+  const _installationId = typeof installation.id === 'string' || typeof installation.id === 'number' ? installation.id : 'unknown';
   const appName = typeof installation.appName === 'string' ? installation.appName : 'unknown';
   const installedAt = typeof installation.installedAt === 'string' ? installation.installedAt : new Date().toISOString();
   const installedVersion = typeof installation.version === 'string' ? installation.version : 'unknown';
@@ -485,7 +485,7 @@ function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { appId, version, organizationId, teamId, configuration, permissions, autoUpdate, skipValidation } = input;
+      const { appId, version, organizationId, teamId, _configuration, _permissions, autoUpdate, skipValidation } = input;
 
       log.info('Installing SDK app', {
         appId,
@@ -738,7 +738,7 @@ function extractChangelogData(updateResultData: Record<string, unknown>): {
  */
 function formatSdkAppUpdateResponse(updateResult: unknown, input: any, currentVersion: string): any {
   const { appId, backup } = input;
-  const { toVersion, success, appName, updatedAt, breaking, backupId } = extractUpdateResultData(updateResult);
+  const { toVersion, success: _success, appName, updatedAt, breaking, backupId } = extractUpdateResultData(updateResult);
   const updateResultData = updateResult && typeof updateResult === 'object' ? updateResult as Record<string, unknown> : {};
   const changelog = extractChangelogData(updateResultData);
 
@@ -780,7 +780,7 @@ function addUpdateSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { appId, version, force, backup, rollbackOnFailure } = input;
+      const { appId, version, force, backup, _rollbackOnFailure } = input;
 
       log.info('Updating SDK app', {
         appId,
@@ -1100,7 +1100,7 @@ function addInstallWorkflowTool(server: FastMCP, apiClient: MakeApiClient): void
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { workflowId, name, teamId, folderId, configuration, autoStart, installDependencies } = input;
+      const { workflowId, name, teamId, folderId, _configuration, autoStart, installDependencies } = input;
 
       log.info('Installing workflow template', {
         workflowId,
