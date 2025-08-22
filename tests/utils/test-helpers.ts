@@ -87,7 +87,10 @@ export const executeTool = async (
     const validationResult = tool.parameters.safeParse(input);
     if (!validationResult.success) {
       console.debug(`[DEBUG] Validation failed for ${tool.name}:`, validationResult.error.issues);
-      throw new Error(`Parameter validation failed: ${validationResult.error.issues.map(i => i.message).join(', ')}`);
+      const errorMessages = validationResult.error.issues.map(issue => 
+        `${issue.path.join('.')}: ${issue.message}`
+      ).join(', ');
+      throw new Error(`Parameter validation failed: ${errorMessages}`);
     }
     // Use validated data
     input = validationResult.data;
@@ -272,8 +275,12 @@ export const expectValidZodParse = (schema: any, data: any) => {
   const result = schema.safeParse(data);
   if (!result.success) {
     console.error('Zod validation errors:', result.error.issues);
+    // Provide more helpful error message
+    const errorMessages = result.error.issues.map(issue => 
+      `${issue.path.join('.')}: ${issue.message}`
+    ).join(', ');
+    throw new Error(`Schema validation failed: ${errorMessages}`);
   }
-  expect(result.success).toBe(true);
   return result.data;
 };
 
@@ -284,6 +291,7 @@ export const expectInvalidZodParse = (schema: any, data: any, expectedErrors?: s
   // Handle non-Zod schemas gracefully
   if (!schema || typeof schema.safeParse !== 'function') {
     // Silent handling - just return without warning
+    console.warn('Non-Zod schema passed to expectInvalidZodParse - skipping validation');
     return;
   }
 
