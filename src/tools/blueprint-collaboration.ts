@@ -23,41 +23,22 @@ import { extractCorrelationId } from '../utils/error-response.js';
 import { 
   BlueprintVersionManager, 
   type BlueprintVersion, 
-  type SemanticVersion, 
-  type ChangeLogEntry, 
-  type DependencyChange, 
   type PerformanceImpact, 
-  type OptimizationOpportunity, 
-  type Reviewer, 
-  type ReviewComment 
+  type OptimizationOpportunity 
 } from './blueprint-collaboration/version-manager.js';
 import {
   BlueprintConflictResolver,
   type BlueprintValue,
   type BlueprintConflict,
   type ConflictResolution,
-  type ConflictResolutionOptions,
-  type ConflictResolutionRequest,
   type ResolutionResult,
-  type ConflictResolutionOutput,
   type ResolvedBlueprint,
-  type ValidationResults,
-  type UserIntentAnalysis,
-  type ResolutionOption,
-  type ConflictImpact,
-  type AIResolutionSuggestion,
-  type SuggestedCode,
-  type BlueprintPreview
+  type ValidationResults
 } from './blueprint-collaboration/conflict-resolver.js';
 import {
   BlueprintDependencyAnalyzer,
   type DependencyGraph,
-  type DependencyNode,
-  type DependencyEdge,
-  type DependencyCluster,
-  type CriticalPath,
   type CircularDependency,
-  type BreakSuggestion,
   type DependencyAnalysisResult,
   type ImpactAssessment
 } from './blueprint-collaboration/dependency-analyzer.js';
@@ -66,23 +47,6 @@ import {
 
 // Blueprint data structure interfaces (some moved to conflict-resolver.ts)
 // BlueprintValue, BlueprintPreview, and SuggestedCode are now imported from conflict-resolver.ts
-
-interface NodeMetadata {
-  category?: string;
-  tags?: string[];
-  created?: string;
-  updated?: string;
-  owner?: string;
-  [key: string]: unknown;
-}
-
-interface EdgeMetadata {
-  required?: boolean;
-  optional?: boolean;
-  weight?: number;
-  created?: string;
-  [key: string]: unknown;
-}
 
 interface RealTimeConfiguration {
   websocketEndpoint: string;

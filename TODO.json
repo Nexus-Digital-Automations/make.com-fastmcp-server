@@ -8,7 +8,7 @@
       "mode": "RESEARCH",
       "category": "research",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [
         "./development/research-reports/research-report-task_1755871773159_0tpy0buzs.md"
@@ -25,41 +25,17 @@
       "subtasks": [],
       "created_at": "2025-08-22T14:09:33.159Z",
       "created_by": "auto-research-system",
-      "auto_created_for": "task_1755871773159_nxdykhwrk"
-    },
-    {
-      "id": "task_1755871906956_gre3lehm1",
-      "title": "Fix TypeScript strict mode errors in AI governance engine module",
-      "description": "Fix compilation errors in insights.ts, policy-optimization.ts, risk-assessment.ts, and tools/index.ts - including array push errors, undefined property access, and type assignment issues",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T14:11:46.956Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755872009450_wkdji2fwc",
-      "title": "Fix MCP server timeout and connection issues",
-      "description": "MCP server is timing out after 60 seconds during initialization. Server disconnects unexpectedly with timeout errors. Need to investigate and fix the connection stability issues.",
-      "mode": "DEVELOPMENT",
-      "category": "error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T14:13:29.450Z",
-      "auto_research_created": false
+      "auto_created_for": "task_1755871773159_nxdykhwrk",
+      "started_at": "2025-08-22T16:17:23.617Z",
+      "claimed_by": "agent_1755879443617",
+      "assigned_agent": "agent_1755879443617",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755879443617",
+          "action": "claimed",
+          "timestamp": "2025-08-22T16:17:23.617Z"
+        }
+      ]
     },
     {
       "id": "task_1755869726475_je0c80mix",
@@ -132,13 +108,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755877522923_1_general_a45d8dd9": {
+    "development_session_1755879304121_1_general_b45f438f": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T15:45:22.924Z",
+      "lastHeartbeat": "2025-08-22T16:15:04.122Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -149,8 +125,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T15:45:22.924Z",
-      "sessionId": "session_1755877522923",
+      "createdAt": "2025-08-22T16:15:04.122Z",
+      "sessionId": "session_1755879304121",
       "metadata": {}
     }
   },

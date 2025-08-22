@@ -345,7 +345,7 @@ export class BlueprintConflictResolver {
           appliedBy: 'conflict_resolver',
         };
 
-      case 'merge':
+      case 'merge': {
         this.componentLogger.debug('Merging values', { 
           conflictId: conflict.conflictId 
         });
@@ -356,6 +356,7 @@ export class BlueprintConflictResolver {
           timestamp,
           appliedBy: 'conflict_resolver',
         };
+      }
 
       case 'custom':
         this.componentLogger.debug('Applying custom resolution', { 

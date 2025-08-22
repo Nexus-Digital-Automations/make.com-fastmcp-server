@@ -776,8 +776,12 @@ export class BlueprintDependencyAnalyzer {
     const hasCriticalNodes = cycleNodes.some(node => node.isCritical);
     const avgComplexity = cycleNodes.reduce((sum, node) => sum + node.complexity, 0) / cycleNodes.length;
 
-    if (hasCriticalNodes && avgComplexity > 8) return 'critical';
-    if (hasCriticalNodes || avgComplexity > 6) return 'error';
+    if (hasCriticalNodes && avgComplexity > 8) {
+      return 'critical';
+    }
+    if (hasCriticalNodes || avgComplexity > 6) {
+      return 'error';
+    }
     return 'warning';
   }
 
@@ -833,7 +837,9 @@ export class BlueprintDependencyAnalyzer {
     
     // Find nodes with similar functionality (same module type and similar complexity)
     const nodesByType = graph.nodes.reduce((acc, node) => {
-      if (!acc[node.moduleType]) acc[node.moduleType] = [];
+      if (!acc[node.moduleType]) {
+        acc[node.moduleType] = [];
+      }
       acc[node.moduleType].push(node);
       return acc;
     }, {} as Record<string, DependencyNode[]>);
@@ -973,8 +979,12 @@ export class BlueprintDependencyAnalyzer {
   private assessOverallRisk(criticalDeps: number, totalNodes: number, circularDeps: number): string {
     const riskScore = (criticalDeps / totalNodes) * 0.4 + (circularDeps / totalNodes) * 0.6;
     
-    if (riskScore > 0.5) return 'high';
-    if (riskScore > 0.3) return 'medium';
+    if (riskScore > 0.5) {
+      return 'high';
+    }
+    if (riskScore > 0.3) {
+      return 'medium';
+    }
     return 'low';
   }
 

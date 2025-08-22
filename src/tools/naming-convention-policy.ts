@@ -409,9 +409,11 @@ class NamingConventionValidator {
       // Custom validation function
       if (rule.customValidationFunction) {
         try {
-          // Safely evaluate custom function (in production, this would be more secure)
-          const customFunction = new Function('name', 'rule', rule.customValidationFunction);
-          const customResult = customFunction(name, rule);
+          // Use safer evaluation approach instead of Function constructor
+          if (!this.isSafeCustomFunction(rule.customValidationFunction)) {
+            throw new Error('Custom validation function contains unsafe operations');
+          }
+          const customResult = this.evaluateCustomValidationFunction(rule.customValidationFunction, name, rule);
           if (customResult !== true && typeof customResult === 'string') {
             errors.push(`Custom validation failed: ${customResult}`);
           }
@@ -541,6 +543,83 @@ class NamingConventionValidator {
       default:
         return text;
     }
+  }
+
+  /**
+   * Check if custom function contains only safe operations
+   */
+  private isSafeCustomFunction(functionCode: string): boolean {
+    const unsafePatterns = [
+      /eval\(/,
+      /Function\(/,
+      /setTimeout\(/,
+      /setInterval\(/,
+      /require\(/,
+      /import\(/,
+      /process\./,
+      /global\./,
+      /window\./,
+      /document\./,
+      /__proto__/,
+      /constructor/,
+      /prototype/,
+    ];
+    
+    return !unsafePatterns.some(pattern => pattern.test(functionCode));
+  }
+
+  /**
+   * Safely evaluate custom validation function using predefined operations
+   */
+  private evaluateCustomValidationFunction(functionCode: string, name: string, _rule: any): boolean | string {
+    // Instead of dynamic evaluation, provide safe predefined operations
+    // Support basic naming validation patterns
+    
+    // Check for length validation
+    if (functionCode.includes('name.length')) {
+      const lengthCheck = functionCode.match(/name\.length\s*([<>]=?)\s*(\d+)/);
+      if (lengthCheck) {
+        const operator = lengthCheck[1];
+        const value = parseInt(lengthCheck[2]);
+        
+        switch (operator) {
+          case '<':
+            return name.length < value;
+          case '<=':
+            return name.length <= value;
+          case '>':
+            return name.length > value;
+          case '>=':
+            return name.length >= value;
+        }
+      }
+    }
+    
+    // Check for pattern matching
+    if (functionCode.includes('name.includes(')) {
+      const includesCheck = functionCode.match(/name\.includes\(['"]([^'"]+)['"]\)/);
+      if (includesCheck) {
+        return name.includes(includesCheck[1]);
+      }
+    }
+    
+    // Check for starts/ends with
+    if (functionCode.includes('name.startsWith(')) {
+      const startsCheck = functionCode.match(/name\.startsWith\(['"]([^'"]+)['"]\)/);
+      if (startsCheck) {
+        return name.startsWith(startsCheck[1]);
+      }
+    }
+    
+    if (functionCode.includes('name.endsWith(')) {
+      const endsCheck = functionCode.match(/name\.endsWith\(['"]([^'"]+)['"]\)/);
+      if (endsCheck) {
+        return name.endsWith(endsCheck[1]);
+      }
+    }
+    
+    // Default: return validation failure message for unsupported operations
+    return 'Custom validation not supported for this function';
   }
 }
 
