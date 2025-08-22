@@ -13528,9 +13528,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755836117474_fkui1hrrb",
+      "title": "CRITICAL: Fix path resolution causing ENOENT mkdir /logs error",
+      "description": "Server failing to start with ENOENT: no such file or directory, mkdir \"/logs\". Path resolver returning absolute /logs instead of relative logs/. This is breaking MCP server startup.",
+      "mode": "DEVELOPMENT",
+      "category": "start-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T04:15:17.475Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755834942304_1_general_29fee924",
+      "started_at": "2025-08-22T04:15:25.299Z",
+      "claimed_by": "development_session_1755834942304_1_general_29fee924",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755834942304_1_general_29fee924",
+          "role": "primary",
+          "assignedAt": "2025-08-22T04:15:25.299Z",
+          "reassignReason": null,
+          "claimPriority": "urgent"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T04:22:48.318Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T04:22:48.319Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 302,
-  "last_completion": "2025-08-22T04:08:29.359Z",
+  "total_completed": 303,
+  "last_completion": "2025-08-22T04:22:48.319Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
