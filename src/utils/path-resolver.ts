@@ -14,7 +14,7 @@ export function getProjectRoot(): string {
   
   // For MCP server runtime, look for package.json to find project root
   // Start from current directory and walk up the directory tree
-  let currentDir = process.cwd();
+  const currentDir = process.cwd();
   
   // If we're likely running from a different directory, try some heuristics
   try {
