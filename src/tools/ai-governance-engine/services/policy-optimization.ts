@@ -12,7 +12,7 @@ import type {
   PolicyResolutionPlan,
   ConflictImpactAnalysis,
   MLModelType,
-  PredictionCacheEntry,
+  _PredictionCacheEntry,
   GovernanceMetrics
 } from '../types/index.js';
 import type { PolicyOptimizationRequest } from '../schemas/index.js';
@@ -76,7 +76,7 @@ export class PolicyOptimizationService {
   /**
    * Optimizes policies using ML algorithms and best practices
    */
-  async optimizePolicies(request: PolicyOptimizationRequest): Promise<{
+  async optimizePolicies(_request: PolicyOptimizationRequest): Promise<{
     success: boolean;
     message?: string;
     data?: {
@@ -90,29 +90,29 @@ export class PolicyOptimizationService {
   }> {
     try {
       this.componentLogger.info('Starting policy optimization', {
-        optimizationType: request.optimizationType,
-        goals: request.optimizationGoals,
-        mlOptimization: request.mlOptimization
+        optimizationType: _request.optimizationType,
+        goals: _request.optimizationGoals,
+        mlOptimization: _request.mlOptimization
       });
 
       const startTime = Date.now();
 
       // Parse optimization goals
-      const goals = this.parseOptimizationGoals(request);
+      const goals = this.parseOptimizationGoals(_request);
 
       // Analyze current policy landscape
-      const currentPolicies = await this.getCurrentPolicies(request);
+      const currentPolicies = await this.getCurrentPolicies(_request);
 
       // Perform ML-driven optimization if enabled
-      const optimizationResults = request.mlOptimization ? 
-        await this.performMLOptimization(currentPolicies, goals, request) :
-        await this.performRuleBasedOptimization(currentPolicies, goals, request);
+      const optimizationResults = _request.mlOptimization ? 
+        await this.performMLOptimization(_currentPolicies, _goals, _request) :
+        await this.performRuleBasedOptimization(_currentPolicies, _goals, _request);
 
       // Run impact analysis
       const impactAnalysis = await this.analyzeOptimizationImpact(optimizationResults, currentPolicies);
 
-      // Perform simulation if requested
-      const simulationResults = request.simulationMode ? 
+      // Perform simulation if _requested
+      const simulationResults = _request.simulationMode ? 
         await this.runOptimizationSimulation(optimizationResults, goals) : [];
 
       // Generate comprehensive recommendations
@@ -123,7 +123,7 @@ export class PolicyOptimizationService {
       );
 
       // Calculate overall confidence score
-      const confidenceScore = this.calculateOverallConfidence(optimizationResults, request);
+      const confidenceScore = this.calculateOverallConfidence(optimizationResults, _request);
 
       const processingTime = Date.now() - startTime;
       this.componentLogger.info('Policy optimization completed successfully', {
@@ -387,7 +387,7 @@ export class PolicyOptimizationService {
     this.componentLogger.info('Initialized policy registry', { count: samplePolicies.length });
   }
 
-  private parseOptimizationGoals(request: PolicyOptimizationRequest): OptimizationGoal[] {
+  private parseOptimizationGoals(_request: PolicyOptimizationRequest): OptimizationGoal[] {
     const goalMap: Record<string, OptimizationGoal> = {
       'reduce_conflicts': {
         type: 'conflict_reduction',
@@ -415,12 +415,12 @@ export class PolicyOptimizationService {
       }
     };
 
-    return request.optimizationGoals
+    return _request.optimizationGoals
       .map(goal => goalMap[goal])
       .filter(Boolean);
   }
 
-  private async getCurrentPolicies(request: PolicyOptimizationRequest): Promise<Policy[]> {
+  private async getCurrentPolicies(_request: PolicyOptimizationRequest): Promise<Policy[]> {
     // In a real implementation, this would query the policy database
     return Array.from(this.policyRegistry.values());
   }
@@ -428,7 +428,7 @@ export class PolicyOptimizationService {
   private async performMLOptimization(
     policies: Policy[], 
     goals: OptimizationGoal[], 
-    request: PolicyOptimizationRequest
+    _request: PolicyOptimizationRequest
   ): Promise<OptimizationResult[]> {
     const optimizationResults: OptimizationResult[] = [];
     const model = this.mlModels.get('policy_optimization');
@@ -439,7 +439,7 @@ export class PolicyOptimizationService {
 
     for (const policy of policies) {
       // Use ML model to analyze policy and suggest optimizations
-      const optimization = await this.analyzePolicyWithML(policy, goals, model);
+      const optimization = await this.analyzePolicyWithML(policy, _goals, model);
       
       if (optimization.confidenceScore > 70) { // Only include high-confidence results
         optimizationResults.push(optimization);
@@ -447,7 +447,7 @@ export class PolicyOptimizationService {
     }
 
     // Apply ensemble optimization across related policies
-    const ensembleOptimizations = await this.performEnsembleOptimization(policies, goals);
+    const ensembleOptimizations = await this.performEnsembleOptimization(_policies, goals);
     optimizationResults.push(...ensembleOptimizations);
 
     return optimizationResults;
@@ -456,7 +456,7 @@ export class PolicyOptimizationService {
   private async performRuleBasedOptimization(
     policies: Policy[], 
     goals: OptimizationGoal[], 
-    request: PolicyOptimizationRequest
+    _request: PolicyOptimizationRequest
   ): Promise<OptimizationResult[]> {
     const optimizationResults: OptimizationResult[] = [];
 
@@ -577,7 +577,7 @@ export class PolicyOptimizationService {
 
   private calculateOverallConfidence(
     optimizations: OptimizationResult[], 
-    request: PolicyOptimizationRequest
+    _request: PolicyOptimizationRequest
   ): number {
     if (optimizations.length === 0) return 0;
 
@@ -586,11 +586,11 @@ export class PolicyOptimizationService {
     // Adjust based on optimization type and ML usage
     let adjustedConfidence = avgConfidence;
     
-    if (request.mlOptimization) {
+    if (_request.mlOptimization) {
       adjustedConfidence *= 1.1; // ML increases confidence
     }
     
-    if (request.optimizationType === 'comprehensive') {
+    if (_request.optimizationType === 'comprehensive') {
       adjustedConfidence *= 1.05; // Comprehensive analysis increases confidence
     }
 
@@ -690,16 +690,16 @@ export class PolicyOptimizationService {
     
     for (const policy of policies) {
       if (!categoryGroups.has(policy.category)) {
-        categoryGroups.set(policy.category, []);
+        categoryGroups.set(policy._category, []);
       }
       categoryGroups.get(policy.category)!.push(policy);
     }
 
     const mergeCandidates: Policy[][] = [];
     
-    for (const [category, groupPolicies] of Array.from(categoryGroups.entries())) {
+    for (const [_category, groupPolicies] of Array.from(categoryGroups.entries())) {
       if (groupPolicies.length > 2) {
-        // If more than 2 policies in same category, they might be mergeable
+        // If more than 2 policies in same _category, they might be mergeable
         mergeCandidates.push(groupPolicies.slice(0, 2)); // Take first 2 as example
       }
     }

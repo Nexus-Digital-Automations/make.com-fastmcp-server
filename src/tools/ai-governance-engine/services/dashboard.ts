@@ -61,9 +61,9 @@ export class DashboardService {
   }
 
   /**
-   * Generates a comprehensive governance dashboard based on request parameters
+   * Generates a comprehensive governance dashboard based on _request parameters
    */
-  async generateDashboard(request: GovernanceDashboardRequest): Promise<{
+  async generateDashboard(_request: GovernanceDashboardRequest): Promise<{
     success: boolean;
     message?: string;
     data?: {
@@ -77,43 +77,43 @@ export class DashboardService {
   }> {
     try {
       this.componentLogger.info('Generating governance dashboard', {
-        dashboardType: request.dashboardType,
-        metricsLevel: request.metricsLevel,
-        includeRealTime: request.includeRealTime
+        dashboardType: _request.dashboardType,
+        metricsLevel: _request.metricsLevel,
+        includeRealTime: _request.includeRealTime
       });
 
       const startTime = Date.now();
 
       // Get or create dashboard configuration
-      const dashboardConfig = await this.createDashboardConfig(request);
+      const dashboardConfig = await this.createDashboardConfig(_request);
 
       // Generate widget data
-      const widgetData = await this.generateWidgetData(dashboardConfig, request);
+      const widgetData = await this.generateWidgetData(dashboardConfig, _request);
 
-      // Get real-time metrics if requested
-      const realTimeMetrics = request.includeRealTime ? 
-        await this.getRealTimeMetrics(request) : this.getStaticMetrics();
+      // Get real-time metrics if _requested
+      const realTimeMetrics = _request.includeRealTime ? 
+        await this.getRealTimeMetrics(_request) : this.getStaticMetrics();
 
       // Configure alerts
-      const alertConfig = await this.generateAlertConfiguration(request);
+      const alertConfig = await this.generateAlertConfiguration(_request);
 
       // Get system health status
       const systemStatus = await this.getSystemHealth();
 
       // Cache the dashboard
-      const dashboardId = `dashboard_${request.dashboardType}_${Date.now()}`;
+      const dashboardId = `dashboard_${_request.dashboardType}_${Date.now()}`;
       this.activeDashboards.set(dashboardId, dashboardConfig);
 
       const processingTime = Date.now() - startTime;
       this.componentLogger.info('Dashboard generated successfully', {
-        dashboardType: request.dashboardType,
+        dashboardType: _request.dashboardType,
         widgetCount: widgetData.length,
         processingTime
       });
 
       return {
         success: true,
-        message: `${request.dashboardType} dashboard generated with ${widgetData.length} widgets`,
+        message: `${_request.dashboardType} dashboard generated with ${widgetData.length} widgets`,
         data: {
           dashboardConfig,
           widgetData,
@@ -427,7 +427,7 @@ export class DashboardService {
         riskScore: 20 + (Math.random() * 30), // 20-50
         activeIncidents: Math.floor(Math.random() * 10), // 0-10
         systemHealth: Math.random() > 0.9 ? 'degraded' : 'healthy',
-        throughput: 1000 + (Math.random() * 500), // 1000-1500 requests/sec
+        throughput: 1000 + (Math.random() * 500), // 1000-1500 _requests/sec
         responseTime: 100 + (Math.random() * 200) // 100-300ms
       };
 
@@ -442,36 +442,36 @@ export class DashboardService {
     this.componentLogger.info('Started real-time data collection');
   }
 
-  private async createDashboardConfig(request: GovernanceDashboardRequest): Promise<DashboardConfig> {
-    const template = this.dashboardTemplates.get(request.dashboardType);
+  private async createDashboardConfig(_request: GovernanceDashboardRequest): Promise<DashboardConfig> {
+    const template = this.dashboardTemplates.get(_request.dashboardType);
     if (!template) {
-      throw new Error(`Unknown dashboard type: ${request.dashboardType}`);
+      throw new Error(`Unknown dashboard type: ${_request.dashboardType}`);
     }
 
     const config: DashboardConfig = {
-      userId: request.organizationId || 'default',
+      userId: _request.organizationId || 'default',
       layout: template.layout,
       widgets: [...template.defaultWidgets], // Deep copy
-      refreshInterval: request.refreshInterval,
-      alertSettings: this.getDefaultAlertSettings(request.dashboardType)
+      refreshInterval: _request.refreshInterval,
+      alertSettings: this.getDefaultAlertSettings(_request.dashboardType)
     };
 
     // Customize based on metrics level
-    if (request.metricsLevel === 'summary') {
+    if (_request.metricsLevel === 'summary') {
       config.widgets = config.widgets.filter(w => w.type === 'metric');
-    } else if (request.metricsLevel === 'granular') {
+    } else if (_request.metricsLevel === 'granular') {
       config.widgets.push(...this.getGranularWidgets());
     }
 
     return config;
   }
 
-  private async generateWidgetData(config: DashboardConfig, request: GovernanceDashboardRequest): Promise<WidgetData[]> {
+  private async generateWidgetData(config: DashboardConfig, _request: GovernanceDashboardRequest): Promise<WidgetData[]> {
     const widgetData: WidgetData[] = [];
 
     for (const widget of config.widgets) {
       try {
-        const data = await this.generateDataForWidget(widget, request);
+        const data = await this.generateDataForWidget(widget, _request);
         
         widgetData.push({
           widgetId: widget.id,
@@ -503,12 +503,12 @@ export class DashboardService {
     return widgetData;
   }
 
-  private async generateDataForWidget(widget: DashboardWidget, _request: GovernanceDashboardRequest): Promise<Record<string, unknown>> {
+  private async generateDataForWidget(widget: DashboardWidget, __request: GovernanceDashboardRequest): Promise<Record<string, unknown>> {
     switch (widget.type) {
       case 'metric':
         return this.generateMetricData(widget);
       case 'chart':
-        return this.generateChartData(widget, _request);
+        return this.generateChartData(widget, __request);
       case 'table':
         return this.generateTableData(widget);
       case 'alert':
@@ -552,7 +552,7 @@ export class DashboardService {
     return metrics[metricName] || { value: 'N/A', unit: '', trend: 'stable', change: 0 };
   }
 
-  private generateChartData(widget: DashboardWidget, _request: GovernanceDashboardRequest): Record<string, unknown> {
+  private generateChartData(widget: DashboardWidget, __request: GovernanceDashboardRequest): Record<string, unknown> {
     const dataPoints = 20;
     const data = [];
 
@@ -622,7 +622,7 @@ export class DashboardService {
     };
   }
 
-  private async getRealTimeMetrics(request: GovernanceDashboardRequest): Promise<RealTimeData> {
+  private async getRealTimeMetrics(_request: GovernanceDashboardRequest): Promise<RealTimeData> {
     const latestMetrics = this.realTimeDataStream[this.realTimeDataStream.length - 1];
     
     if (!latestMetrics) {
@@ -636,7 +636,7 @@ export class DashboardService {
       'System performance degraded'
     ].filter(() => Math.random() > 0.7); // Randomly include alerts
 
-    const forecasts = request.includeForecasting ? 
+    const forecasts = _request.includeForecasting ? 
       await this.generateQuickForecasts() : [];
 
     return {
@@ -670,7 +670,7 @@ export class DashboardService {
     };
   }
 
-  private async generateAlertConfiguration(request: GovernanceDashboardRequest): Promise<AlertConfiguration[]> {
+  private async generateAlertConfiguration(_request: GovernanceDashboardRequest): Promise<AlertConfiguration[]> {
     return [
       {
         metric: 'complianceScore',

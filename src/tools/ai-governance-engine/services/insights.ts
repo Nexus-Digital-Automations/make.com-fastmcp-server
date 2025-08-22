@@ -10,9 +10,9 @@ import type { GovernanceContext } from '../types/context.js';
 import type {
   GovernanceInsight,
   TrendAnalysis,
-  GovernanceMetrics,
-  ComplianceStatus,
-  RiskAssessment,
+  _GovernanceMetrics,
+  _ComplianceStatus,
+  _RiskAssessment,
   MLModelType,
   PredictionCacheEntry
 } from '../types/index.js';
@@ -56,9 +56,9 @@ export class InsightsService {
   }
 
   /**
-   * Generates comprehensive governance insights based on request parameters
+   * Generates comprehensive governance insights based on _request parameters
    */
-  async generateInsights(request: GovernanceInsightsRequest): Promise<{
+  async generateInsights(_request: GovernanceInsightsRequest): Promise<{
     success: boolean;
     message?: string;
     data?: {
@@ -72,21 +72,21 @@ export class InsightsService {
   }> {
     try {
       this.componentLogger.info('Generating governance insights', {
-        timeframe: request.timeframe,
-        insightTypes: request.insightTypes,
-        mlAnalysis: request.mlAnalysis
+        timeframe: _request.timeframe,
+        insightTypes: _request.insightTypes,
+        mlAnalysis: _request.mlAnalysis
       });
 
       const startTime = Date.now();
 
       // Create analysis context
-      const context = this.createInsightContext(request);
+      const context = this.createInsightContext(_request);
 
       // Gather and analyze data
       const analyticsData = await this.gatherAnalyticsData(context);
 
       // Generate insights by type
-      const insights = await this.generateInsightsByType(request.insightTypes, analyticsData, context);
+      const insights = await this.generateInsightsByType(_request.insightTypes, analyticsData, context);
 
       // Perform trend analysis
       const trendAnalysis = await this.performTrendAnalysis(analyticsData, context);
@@ -98,7 +98,7 @@ export class InsightsService {
       const confidenceScore = this.calculateConfidenceScore(insights, context);
 
       // Determine next analysis schedule
-      const nextAnalysis = this.calculateNextAnalysisTime(request.timeframe);
+      const nextAnalysis = this.calculateNextAnalysisTime(_request.timeframe);
 
       const processingTime = Date.now() - startTime;
       this.componentLogger.info('Insights generation completed successfully', {
@@ -328,12 +328,12 @@ export class InsightsService {
     this.componentLogger.info('Initialized ML models for insights');
   }
 
-  private createInsightContext(request: GovernanceInsightsRequest): InsightContext {
+  private createInsightContext(_request: GovernanceInsightsRequest): InsightContext {
     return {
-      timeframe: request.timeframe,
-      dataPoints: this.getDataPointsForTimeframe(request.timeframe),
-      analysisDepth: request.mlAnalysis ? 'deep' : 'comprehensive',
-      includeML: request.mlAnalysis
+      timeframe: _request.timeframe,
+      dataPoints: this.getDataPointsForTimeframe(_request.timeframe),
+      analysisDepth: _request.mlAnalysis ? 'deep' : 'comprehensive',
+      includeML: _request.mlAnalysis
     };
   }
 
@@ -392,7 +392,7 @@ export class InsightsService {
     const insights: GovernanceInsight[] = [];
 
     for (const type of types) {
-      const typeInsights = await this.generateInsightsForType(type, data, context);
+      const typeInsights = await this.generateInsightsForType(type, _data, context);
       insights.push(...typeInsights);
     }
 
@@ -409,16 +409,16 @@ export class InsightsService {
 
     switch (type) {
       case 'trend':
-        insights.push(...await this.generateTrendInsights(data, context));
+        insights.push(...await this.generateTrendInsights(_data, context));
         break;
       case 'anomaly':
-        insights.push(...await this.generateAnomalyInsights(data, context));
+        insights.push(...await this.generateAnomalyInsights(_data, context));
         break;
       case 'prediction':
-        insights.push(...await this.generatePredictionInsights(data, context));
+        insights.push(...await this.generatePredictionInsights(_data, context));
         break;
       case 'recommendation':
-        insights.push(...await this.generateRecommendationInsights(data, context));
+        insights.push(...await this.generateRecommendationInsights(_data, context));
         break;
     }
 
@@ -472,7 +472,7 @@ export class InsightsService {
     const insights: GovernanceInsight[] = [];
 
     if (context.includeML) {
-      const predictions = await this.generateMLPredictions(data, context);
+      const predictions = await this.generateMLPredictions(_data, context);
 
       for (const prediction of predictions) {
         insights.push({
@@ -494,7 +494,7 @@ export class InsightsService {
   private async generateRecommendationInsights(data: AnalyticsData, context: InsightContext): Promise<GovernanceInsight[]> {
     const insights: GovernanceInsight[] = [];
 
-    const recommendations = await this.generateSmartRecommendations(data, context);
+    const recommendations = await this.generateSmartRecommendations(_data, context);
 
     for (const rec of recommendations) {
       insights.push({
@@ -785,7 +785,7 @@ export class InsightsService {
     return actions[trend.metric]?.[trend.direction] || ['Monitor trend', 'Analyze root causes'];
   }
 
-  private async getHistoricalValues(metric: keyof GovernanceMetrics, timeframe: string): Promise<number[]> {
+  private async getHistoricalValues(metric: keyof _GovernanceMetrics, timeframe: string): Promise<number[]> {
     // Simulate historical data
     const count = Math.min(this.getDataPointsForTimeframe(timeframe), 50);
     const values = [];

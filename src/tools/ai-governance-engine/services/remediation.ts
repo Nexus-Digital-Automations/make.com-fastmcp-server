@@ -57,7 +57,7 @@ export class RemediationService {
   /**
    * Configures automated remediation workflows based on trigger conditions
    */
-  async configureAutomatedRemediation(request: AutomatedRemediationRequest): Promise<{
+  async configureAutomatedRemediation(_request: AutomatedRemediationRequest): Promise<{
     success: boolean;
     message?: string;
     data?: {
@@ -70,18 +70,18 @@ export class RemediationService {
   }> {
     try {
       this.componentLogger.info('Configuring automated remediation', {
-        triggers: request.triggerConditions,
-        severity: request.severity,
-        automationLevel: request.automationLevel
+        triggers: _request.triggerConditions,
+        severity: _request.severity,
+        automationLevel: _request.automationLevel
       });
 
       const startTime = Date.now();
 
       // Create remediation context
-      const context = await this.createRemediationContext(request);
+      const context = await this.createRemediationContext(_request);
 
       // Generate workflows for each trigger condition
-      const workflows = await this.generateWorkflows(request, context);
+      const workflows = await this.generateWorkflows(_request, context);
 
       // Calculate total execution time
       const estimatedExecutionTime = workflows.reduce(
@@ -90,24 +90,24 @@ export class RemediationService {
       );
 
       // Handle dry run mode
-      const dryRunResults = request.dryRun ? 
+      const dryRunResults = _request.dryRun ? 
         await this.performDryRun(workflows, context) : undefined;
 
       const processingTime = Date.now() - startTime;
       this.componentLogger.info('Automated remediation configured successfully', {
         workflowCount: workflows.length,
         estimatedExecutionTime,
-        requiresApproval: request.approvalRequired,
+        requiresApproval: _request.approvalRequired,
         processingTime
       });
 
       return {
         success: true,
-        message: `Configured ${workflows.length} remediation workflows for ${request.triggerConditions.length} trigger conditions`,
+        message: `Configured ${workflows.length} remediation workflows for ${_request.triggerConditions.length} trigger conditions`,
         data: {
           workflows,
           estimatedExecutionTime,
-          requiresApproval: request.approvalRequired,
+          requiresApproval: _request.approvalRequired,
           dryRunResults
         }
       };
@@ -437,23 +437,23 @@ export class RemediationService {
     this.componentLogger.info('Initialized workflow templates', { count: templates.length });
   }
 
-  private async createRemediationContext(request: AutomatedRemediationRequest): Promise<RemediationContext> {
+  private async createRemediationContext(_request: AutomatedRemediationRequest): Promise<RemediationContext> {
     return {
-      triggeredBy: request.triggerConditions.join(', '),
-      severity: request.severity,
-      targetSystems: await this.identifyTargetSystems(request.triggerConditions),
-      affectedResources: await this.identifyAffectedResources(request.triggerConditions),
-      requiredApprovals: request.approvalRequired ? ['security_approval', 'manager_approval'] : []
+      triggeredBy: _request.triggerConditions.join(', '),
+      severity: _request.severity,
+      targetSystems: await this.identifyTargetSystems(_request.triggerConditions),
+      affectedResources: await this.identifyAffectedResources(_request.triggerConditions),
+      requiredApprovals: _request.approvalRequired ? ['security_approval', 'manager_approval'] : []
     };
   }
 
   private async generateWorkflows(
-    request: AutomatedRemediationRequest,
+    _request: AutomatedRemediationRequest,
     context: RemediationContext
   ): Promise<RemediationWorkflow[]> {
     const workflows: RemediationWorkflow[] = [];
 
-    for (const trigger of request.triggerConditions) {
+    for (const trigger of _request.triggerConditions) {
       const template = this.findBestTemplate(trigger);
       if (!template) {
         this.componentLogger.warn('No suitable template found for trigger', { trigger });
@@ -472,7 +472,7 @@ export class RemediationService {
           level: index + 1,
           ...escalation
         })),
-        automatedExecution: request.automationLevel === 'fully-automated',
+        automatedExecution: _request.automationLevel === 'fully-automated',
         estimatedDuration: template.estimatedDuration,
         successCriteria: this.generateSuccessCriteria(template, context)
       };
@@ -695,7 +695,7 @@ export class RemediationService {
 
     const systems = new Set<string>();
     for (const trigger of _triggers) {
-      for (const [category, categorySystemsq] of Object.entries(systemMap)) {
+      for (const [_category, categorySystemsq] of Object.entries(systemMap)) {
         if (trigger.toLowerCase().includes(category)) {
           categorySystemsq.forEach(system => systems.add(system));
         }

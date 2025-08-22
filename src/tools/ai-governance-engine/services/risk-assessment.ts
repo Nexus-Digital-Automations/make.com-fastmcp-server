@@ -44,9 +44,9 @@ export class RiskAssessmentService {
   }
 
   /**
-   * Performs comprehensive risk assessment based on request parameters
+   * Performs comprehensive risk assessment based on _request parameters
    */
-  async assessRisk(request: RiskAssessmentRequest): Promise<{
+  async assessRisk(_request: RiskAssessmentRequest): Promise<{
     success: boolean;
     message?: string;
     data?: OverallRiskAssessment;
@@ -54,28 +54,28 @@ export class RiskAssessmentService {
   }> {
     try {
       this.componentLogger.info('Starting comprehensive risk assessment', {
-        assessmentType: request.assessmentType,
-        timeframe: request.timeframe,
-        categories: request.riskCategories
+        assessmentType: _request.assessmentType,
+        timeframe: _request.timeframe,
+        categories: _request.riskCategories
       });
 
       const startTime = Date.now();
 
       // Perform core risk assessment
-      const riskAssessment = await this.performRiskAssessment(request);
+      const riskAssessment = await this.performRiskAssessment(_request);
       
       // Calculate overall risk score with ML enhancement
-      const overallScore = await this.calculateOverallRisk(riskAssessment, request);
+      const overallScore = await this.calculateOverallRisk(riskAssessment, _request);
       
       // Generate risk trends analysis
-      const trends = await this.generateRiskTrends(request.riskCategories, request.timeframe);
+      const trends = await this.generateRiskTrends(_request.riskCategories, _request.timeframe);
       
       // Create ML-based predictions if enabled
-      const predictions = request.mlPrediction ? 
-        await this.generateRiskPredictions(request.riskCategories, request.timeframe) : [];
+      const predictions = _request.mlPrediction ? 
+        await this.generateRiskPredictions(_request.riskCategories, _request.timeframe) : [];
       
       // Develop mitigation plans
-      const mitigationPlans = await this.generateMitigationPlans(riskAssessment, request);
+      const mitigationPlans = await this.generateMitigationPlans(riskAssessment, _request);
 
       const result: OverallRiskAssessment = {
         totalRiskScore: overallScore,
@@ -88,13 +88,13 @@ export class RiskAssessmentService {
       const processingTime = Date.now() - startTime;
       this.componentLogger.info('Risk assessment completed successfully', {
         totalRiskScore: overallScore,
-        categoriesAnalyzed: request.riskCategories.length,
+        categoriesAnalyzed: _request.riskCategories.length,
         processingTime
       });
 
       return {
         success: true,
-        message: `Risk assessment completed for ${request.riskCategories.length} categories with score ${overallScore.toFixed(2)}`,
+        message: `Risk assessment completed for ${_request.riskCategories.length} categories with score ${overallScore.toFixed(2)}`,
         data: result
       };
 
@@ -111,18 +111,18 @@ export class RiskAssessmentService {
   /**
    * Performs detailed risk assessment for specified categories
    */
-  private async performRiskAssessment(request: RiskAssessmentRequest): Promise<RiskAssessment[]> {
-    const riskCategories = this.getRiskCategories(request.riskCategories);
+  private async performRiskAssessment(_request: RiskAssessmentRequest): Promise<RiskAssessment[]> {
+    const riskCategories = this.getRiskCategories(_request.riskCategories);
     const assessments: RiskAssessment[] = [];
 
     for (const category of riskCategories) {
-      const riskData = await this.assessCategoryRisk(category, request);
+      const riskData = await this.assessCategoryRisk(category, _request);
       
       const assessment: RiskAssessment = {
         riskId: `risk_${category.name.toLowerCase()}_${Date.now()}`,
         category: category.name,
         severity: this.determineSeverity(riskData.score),
-        probability: this.calculateProbability(riskData, request.timeframe),
+        probability: this.calculateProbability(riskData, _request.timeframe),
         impact: this.calculateImpact(riskData, category),
         riskScore: riskData.score,
         indicators: riskData.factors,
@@ -142,7 +142,7 @@ export class RiskAssessmentService {
    */
   private async calculateOverallRisk(
     assessments: RiskAssessment[], 
-    request: RiskAssessmentRequest
+    _request: RiskAssessmentRequest
   ): Promise<number> {
     if (assessments.length === 0) return 0;
 
@@ -159,7 +159,7 @@ export class RiskAssessmentService {
     }, 0) / totalWeight;
 
     // Apply ML enhancement if enabled
-    if (request.mlPrediction && this.mlModels.has('risk_prediction')) {
+    if (_request.mlPrediction && this.mlModels.has('risk_prediction')) {
       const mlModel = this.mlModels.get('risk_prediction');
       const mlEnhancement = await this.applyMLEnhancement(weightedScore, assessments);
       const enhancedScore = weightedScore + (mlEnhancement * (mlModel?.accuracy || 0.9));
@@ -236,7 +236,7 @@ export class RiskAssessmentService {
    */
   private async generateMitigationPlans(
     assessments: RiskAssessment[], 
-    request: RiskAssessmentRequest
+    _request: RiskAssessmentRequest
   ): Promise<MitigationPlan[]> {
     const plans: MitigationPlan[] = [];
 
@@ -271,7 +271,7 @@ export class RiskAssessmentService {
     } as any);
   }
 
-  private getRiskCategories(requestedCategories: string[]): RiskCategory[] {
+  private getRiskCategories(_requestedCategories: string[]): RiskCategory[] {
     const allCategories: Record<string, RiskCategory> = {
       security: {
         name: 'security',
@@ -299,19 +299,19 @@ export class RiskAssessmentService {
       }
     };
 
-    return requestedCategories
+    return _requestedCategories
       .map(category => allCategories[category])
       .filter(Boolean);
   }
 
-  private async assessCategoryRisk(category: RiskCategory, request: RiskAssessmentRequest): Promise<RiskCalculationResult> {
+  private async assessCategoryRisk(category: RiskCategory, _request: RiskAssessmentRequest): Promise<RiskCalculationResult> {
     // Simulate risk calculation based on category indicators
     const baseScore = Math.random() * 100; // In real implementation, this would analyze actual data
     const factors = category.indicators;
     const confidence = 0.85 + (Math.random() * 0.15); // 85-100% confidence
 
     // Apply timeframe adjustment
-    const timeframeMultiplier = this.getTimeframeMultiplier(request.timeframe);
+    const timeframeMultiplier = this.getTimeframeMultiplier(_request.timeframe);
     const adjustedScore = baseScore * timeframeMultiplier;
 
     return {
