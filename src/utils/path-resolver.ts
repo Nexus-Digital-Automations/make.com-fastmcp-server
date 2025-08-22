@@ -2,6 +2,7 @@
  * Path resolution utility that works in both runtime and test environments
  */
 import path from 'path';
+import fs from 'fs';
 
 /**
  * Get the project root directory - works for both runtime and testing
@@ -12,15 +13,40 @@ export function getProjectRoot(): string {
     return process.cwd();
   }
   
-  // For MCP server runtime, look for package.json to find project root
-  // Start from current directory and walk up the directory tree
-  const currentDir = process.cwd();
-  
-  // If we're likely running from a different directory, try some heuristics
+  // CRITICAL: For MCP server runtime from Claude Desktop
+  // First check if we can resolve based on the script location (__dirname equivalent)
   try {
-    const fs = require('fs');
     
-    // First, try current working directory
+    // Get the directory where this script is located (should be in dist/utils/)
+    let scriptDir: string;
+    
+    // Use import.meta.url in ES module context
+    if (typeof import.meta !== 'undefined' && import.meta.url) {
+      const scriptUrl = new URL(import.meta.url);
+      scriptDir = path.dirname(scriptUrl.pathname);
+    } else {
+      // Fallback to process.cwd() if import.meta is not available
+      scriptDir = process.cwd();
+    }
+    
+    // If we're in dist/utils, go up two levels to get project root
+    if (scriptDir.includes('/dist/utils') || scriptDir.includes('\\dist\\utils')) {
+      const projectRoot = path.resolve(scriptDir, '../../');
+      if (fs.existsSync(path.join(projectRoot, 'package.json'))) {
+        return projectRoot;
+      }
+    }
+    
+    // If we're in dist/, go up one level
+    if (scriptDir.includes('/dist') || scriptDir.includes('\\dist')) {
+      const projectRoot = path.resolve(scriptDir, '../');
+      if (fs.existsSync(path.join(projectRoot, 'package.json'))) {
+        return projectRoot;
+      }
+    }
+    
+    // Try current working directory
+    const currentDir = process.cwd();
     if (fs.existsSync(path.join(currentDir, 'package.json'))) {
       return currentDir;
     }
@@ -36,24 +62,35 @@ export function getProjectRoot(): string {
       searchDir = parentDir;
     }
     
-    // Fallback: check some common locations
-    const possibleRoots = [
-      '/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server',
-      path.resolve(process.cwd(), '..'),
-      process.cwd()
+    // ABSOLUTE FALLBACK: Use known project location
+    const knownProjectPath = '/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server';
+    if (fs.existsSync(path.join(knownProjectPath, 'package.json'))) {
+      return knownProjectPath;
+    }
+    
+    // If all else fails, try relative to script location
+    const fallbackPaths = [
+      path.resolve(scriptDir, '../../'),  // from dist/utils
+      path.resolve(scriptDir, '../'),     // from dist
+      scriptDir,                          // current script dir
+      currentDir,                         // current working dir
     ];
     
-    for (const rootPath of possibleRoots) {
+    for (const rootPath of fallbackPaths) {
       if (fs.existsSync(path.join(rootPath, 'package.json'))) {
         return rootPath;
       }
     }
   } catch (error) {
-    // Ignore errors and use fallback
+    // Emergency fallback
+    const emergencyPath = '/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server';
+    if (fs.existsSync(emergencyPath)) {
+      return emergencyPath;
+    }
   }
   
-  // Final fallback
-  return process.cwd();
+  // Absolute final fallback
+  return '/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server';
 }
 
 /**
