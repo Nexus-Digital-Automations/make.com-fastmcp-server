@@ -1,6 +1,24 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1755838778409_l1fk5janr",
+      "title": "Fix multiple test failures in scenarios and enterprise-secrets test suites",
+      "description": "Address test failures including: 1) Logger mock issues in scenarios test (logger.child not being called), 2) Performance test timing issues, 3) Audit event property validation failures, 4) Security test assertion failures",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T04:59:38.410Z",
+      "auto_research_created": false
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
