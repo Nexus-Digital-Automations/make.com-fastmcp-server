@@ -196,7 +196,7 @@ const KeyCreateSchema = z.object({
     read: z.array(z.string()).default([]).describe('User/team IDs with read access'),
     use: z.array(z.string()).default([]).describe('User/team IDs with usage access'),
     admin: z.array(z.string()).default([]).describe('User/team IDs with admin access'),
-  }).default({}).describe('Key permissions'),
+  }).default({ read: [], use: [], admin: [] }).describe('Key permissions'),
 }).strict();
 
 const CertificateValidateSchema = z.object({
