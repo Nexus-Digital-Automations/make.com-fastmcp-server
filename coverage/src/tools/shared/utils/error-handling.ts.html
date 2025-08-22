@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/119</span>
+                <span class='fraction'>0/102</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/117</span>
+                <span class='fraction'>0/100</span>
             </div>
         
             
@@ -567,22 +567,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -681,7 +665,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -960,6 +943,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1066,92 +1066,92 @@
  * Standardized error handling patterns and utilities
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { ApiError, OperationResult } from '../types/api-client.js';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >/**</span>
-<span class="cstat-no" title="statement not covered" > * Standard error categories</span>
-<span class="cstat-no" title="statement not covered" > */</span>
-<span class="cstat-no" title="statement not covered" >export enum ErrorCategory {</span>
-<span class="cstat-no" title="statement not covered" >  VALIDATION = 'validation',</span>
-<span class="cstat-no" title="statement not covered" >  AUTHENTICATION = 'authentication',</span>
-<span class="cstat-no" title="statement not covered" >  AUTHORIZATION = 'authorization',</span>
-<span class="cstat-no" title="statement not covered" >  NOT_FOUND = 'not_found',</span>
-<span class="cstat-no" title="statement not covered" >  CONFLICT = 'conflict',</span>
-<span class="cstat-no" title="statement not covered" >  RATE_LIMIT = 'rate_limit',</span>
-<span class="cstat-no" title="statement not covered" >  INTERNAL = 'internal',</span>
-<span class="cstat-no" title="statement not covered" >  NETWORK = 'network',</span>
-  TIMEOUT = 'timeo<span class="cstat-no" title="statement not covered" >ut',</span>
+import { UserError } from 'fastmcp';
+import { ApiError, OperationResult } from '../types/api-client.js';
+&nbsp;
+/**
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > * </span>Standard error categories</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+expo<span class="cstat-no" title="statement not covered" >rt enum ErrorCategory {</span>
+  VA<span class="cstat-no" title="statement not covered" >LIDATION = 'validation',</span>
+  AU<span class="cstat-no" title="statement not covered" >THENTICATION = 'authentication',</span>
+  AU<span class="cstat-no" title="statement not covered" >THORIZATION = 'authorization',</span>
+  NO<span class="cstat-no" title="statement not covered" >T_FOUND = 'not_found',</span>
+  CO<span class="cstat-no" title="statement not covered" >NFLICT = 'conflict',</span>
+  RA<span class="cstat-no" title="statement not covered" >TE_LIMIT = 'rate_limit',</span>
+  IN<span class="cstat-no" title="statement not covered" >TERNAL = 'internal',</span>
+  NE<span class="cstat-no" title="statement not covered" >TWORK = 'network',</span>
+  TI<span class="cstat-no" title="statement not covered" >MEOUT = 'timeout',</span>
   QUOTA_EXCEEDED = 'quota_exceeded',
   INTEGRATION = 'integration',
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >/<span class="fstat-no" title="function not covered" >**</span></span>
- * S<span class="cstat-no" title="statement not covered" >tandard error codes</span>
- */<span class="cstat-no" title="statement not covered" ></span>
+/**
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > * </span>Standard error codes</span>
+ */
 expo<span class="cstat-no" title="statement not covered" >rt enum ErrorCode {</span>
   //<span class="cstat-no" title="statement not covered" > Validation errors</span>
   IN<span class="cstat-no" title="statement not covered" >VALID_INPUT = 'invalid_input',</span>
-  MI<span class="cstat-no" title="statement not covered" >SSING_REQUIRED_FIELD = 'missing_required_fie</span>ld',
-  IN<span class="cstat-no" title="statement not covered" >VALID_FORMAT = 'invalid_format',</span>
-  VA<span class="cstat-no" title="statement not covered" >LUE_OUT_OF_RANGE = 'value_out_of_range</span>',
+  MI<span class="cstat-no" title="statement not covered" >SSING_REQUIRED_FIELD = 'missing_required_field',</span>
+  INVALID_FORMAT = 'invalid_format',
+  VA<span class="cstat-no" title="statement not covered" >LUE_OUT_OF_RANGE = 'value_out_of_range',</span>
 <span class="cstat-no" title="statement not covered" ></span>
   //<span class="cstat-no" title="statement not covered" > Authentication errors</span>
   IN<span class="cstat-no" title="statement not covered" >VALID_TOKEN = 'invalid_token',</span>
   TOKEN_EXPIRED = 'token_expired',
-  UNAUTHORIZED = 'unauthorized',
-  FORBIDDEN = 'forbidden',
-&nbsp;
-  // Resource errors
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  R</span>ESOURCE_NOT_FOUND = 'resource_not_found',</span>
-  RESOURCE_ALREADY_EXISTS = 'resource_already_exists',
+  UN<span class="cstat-no" title="statement not covered" >AUTHORIZED = 'unauthorized',</span>
+  FO<span class="cstat-no" title="statement not covered" >RBIDDEN = 'forbidden',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+  //<span class="cstat-no" title="statement not covered" > Resource errors</span>
+  RESOURCE_NOT_FOUND = 'resource_not_found',
+  RE<span class="cstat-no" title="statement not covered" >SOURCE_ALREADY_EXISTS = 'resource_already_exists',</span>
   RE<span class="cstat-no" title="statement not covered" >SOURCE_LOCKED = 'resource_locked',</span>
-  RE<span class="cstat-no" title="statement not covered" >SOURCE_DELETED = 'resource_deleted',</span>
+  RESOURCE_DELETED = 'resource_deleted',
 <span class="cstat-no" title="statement not covered" ></span>
   //<span class="cstat-no" title="statement not covered" > Rate limiting</span>
-  RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',
-  QU<span class="cstat-no" title="statement not covered" >OTA_EXCEEDED = 'quota_exceeded',</span>
+  RA<span class="cstat-no" title="statement not covered" >TE_LIMIT_EXCEEDED = 'rate_limit_exceeded',</span>
+  QUOTA_EXCEEDED = 'quota_exceeded',
 <span class="cstat-no" title="statement not covered" ></span>
   //<span class="cstat-no" title="statement not covered" > Network errors</span>
   NE<span class="cstat-no" title="statement not covered" >TWORK_ERROR = 'network_error',</span>
   TIMEOUT = 'timeout',
-  SE<span class="cstat-no" title="statement not covered" >RVICE_UNAVAILABLE = 'service_unavailable',</span>
-<span class="cstat-no" title="statement not covered" ></span>
-  //<span class="cstat-no" title="statement not covered" > Internal errors</span>
-  IN<span class="cstat-no" title="statement not covered" >TERNAL_ERROR = 'internal_error',</span>
-  DATABASE_ERROR = 'database_error',
-  CO<span class="cstat-no" title="statement not covered" >NFIGURATION_ERROR = 'configuration_error',</span>
-}<span class="cstat-no" title="statement not covered" ></span>
+  SERVICE_UNAVAILABLE = 'service_unavailable',
 &nbsp;
-/**<span class="cstat-no" title="statement not covered" ></span>
- * S<span class="cstat-no" title="statement not covered" >tructured error information</span>
- */<span class="cstat-no" title="statement not covered" ></span>
-export interface ErrorInfo {
-  ca<span class="cstat-no" title="statement not covered" >tegory: ErrorCategory;</span>
-  co<span class="cstat-no" title="statement not covered" >de: ErrorCode;</span>
-  me<span class="cstat-no" title="statement not covered" >ssage: string;</span>
-  field?: string;
-  details?: Record&lt;string, unknown&gt;;
-  context?: Record&lt;string, unknown&gt;;
-  timestamp?: Date;
-  requestId?: string;
+  // Internal errors
+  INTERNAL_ERROR = 'internal_error',
+  DATABASE_ERROR = 'database_error',
+  CONFIGURATION_ERROR = 'configuration_error',
 }
+&nbsp;
+/**
+ * Structured error information
+ */
+expo<span class="fstat-no" title="function not covered" >rt</span> interface ErrorInfo {
+  catego<span class="cstat-no" title="statement not covered" >ry: ErrorCategory;</span>
+  code: <span class="cstat-no" title="statement not covered" >ErrorCode;</span>
+  messag<span class="cstat-no" title="statement not covered" >e: string;</span>
+  field?<span class="cstat-no" title="statement not covered" >: string;</span>
+  detail<span class="cstat-no" title="statement not covered" >s?: Record&lt;string, unknown&gt;;</span>
+  contex<span class="cstat-no" title="statement not covered" >t?: Record&lt;string, unknown&gt;;</span>
+  timest<span class="cstat-no" title="statement not covered" >amp?: Date;</span>
+  reques<span class="cstat-no" title="statement not covered" >tId?: string;</span>
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 /**
  * Extended UserError with additional context
  */
-export class FastMCPError extends UserError {
-  public readonly category: ErrorCategory;
-  pu<span class="fstat-no" title="function not covered" >bl</span>ic readonly code: ErrorCode;
-  public<span class="cstat-no" title="statement not covered" > readonly field?: string;</span>
-  public<span class="cstat-no" title="statement not covered" > readonly details?: Record&lt;stri</span>ng, unknown&gt;;
-  public<span class="cstat-no" title="statement not covered" > readonly context?: Rec</span>ord&lt;string, unknown&gt;;
-  public<span class="cstat-no" title="statement not covered" > readonly timestamp: Date</span>;
-  public<span class="cstat-no" title="statement not covered" > readonly requestId?: string;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-  constr<span class="cstat-no" title="statement not covered" >uctor(info: ErrorInfo, cause?: Error) {</span>
-    supe<span class="cstat-no" title="statement not covered" >r(info.message, { cause });</span>
-    this<span class="cstat-no" title="statement not covered" >.category = info.category;</span>
+expo<span class="fstat-no" title="function not covered" >rt</span> class FastMCPError extends UserError {
+  public<span class="cstat-no" title="statement not covered" > readonly category: ErrorCategory;</span>
+  public readonly code: ErrorCode;
+  public readonly field?: string;
+  public readonly details?: Record&lt;string, unknown&gt;;
+  public readonly context?: Record&lt;string, unknown&gt;;
+  public readonly timestamp: Date;
+  public readonly requestId?: string;
+&nbsp;
+  constructor(info: ErrorInfo, cause?: Error) {
+    super(info.message, { cause });
+    this.category = info.category;
     this.code = info.code;
     this.field = info.field;
     this.details = info.details;
@@ -1167,25 +1167,25 @@ export class FastMCPError extends UserError {
   toApiError(): ApiError {
     return {
       code: this.code,
-      message: this.message,
-      field: this.field,
+      message: t<span class="fstat-no" title="function not covered" >his.message,</span>
+<span class="cstat-no" title="statement not covered" >      field: this.field,</span>
       details: {
         category: this.category,
         timestamp: this.timestamp.toISOString(),
-<span class="fstat-no" title="function not covered" ></span>        requestId: this.requestId,
-<span class="cstat-no" title="statement not covered" >        ...this.details,</span>
+        requestId: this.requestId,
+        ...this.details,
       },
     };
   }
 &nbsp;
   /**
-   * Convert to operation result format
-<span class="cstat-no" title="statement not covered" >   */</span>
+   * Convert to <span class="fstat-no" title="function not covered" >operation result for</span>mat
+   */<span class="cstat-no" title="statement not covered" ></span>
   toOperationResult&lt;T = unknown&gt;(): OperationResult&lt;T&gt; {
     return {
-      success: false,
-      err<span class="fstat-no" title="function not covered" >or: this.message,</span>
-<span class="cstat-no" title="statement not covered" >      errors: [this.toApiError()],</span>
+<span class="cstat-no" title="statement not covered" >      success: false,</span>
+      error: this.message,
+      errors: [this.toApiError()],
     };
   }
 }
@@ -1196,11 +1196,11 @@ export class FastMCPError extends UserError {
 export function createValidationError(
   message: string,
   field?: string,
-  details<span class="fstat-no" title="function not covered" >?: Record&lt;string, un</span>known&gt;
-): FastMCPError {<span class="cstat-no" title="statement not covered" ></span>
-  return new FastMCPError({
+  details?: Record&lt;string, unknown&gt;
+): FastMCPError <span class="fstat-no" title="function not covered" >{<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+  re<span class="cstat-no" title="statement not covered" >turn new FastMCPError({</span>
     category: ErrorCategory.VALIDATION,
-<span class="cstat-no" title="statement not covered" >    code: ErrorCode.INVALID_INPUT,</span>
+    code: ErrorCode.INVALID_INPUT,
     message,
     field,
     details,
@@ -1208,14 +1208,14 @@ export function createValidationError(
 }
 &nbsp;
 /**
- * Create not found error
- */
+ * Create not fo<span class="fstat-no" title="function not covered" >und error<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+ */<span class="cstat-no" title="statement not covered" ></span>
 export function createNotFoundError(
   resource: string,
   identifier?: string | number,
   details?: Record&lt;string, unknown&gt;
-): FastMC<span class="fstat-no" title="function not covered" >PError {<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-  co<span class="cstat-no" title="statement not covered" >nst message = identifier </span>
+): FastMCPError {
+  const message = identifier 
     ? `${resource} with identifier '${identifier}' not found`
     : `${resource} not found`;
 &nbsp;
@@ -1223,11 +1223,11 @@ export function createNotFoundError(
     category: ErrorCategory.NOT_FOUND,
     code: ErrorCode.RESOURCE_NOT_FOUND,
     message,
-    details: {
-      resource,
-      ide<span class="fstat-no" title="function not covered" >ntifier,<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >      ...details,</span>
-    },
+    details: {<span class="fstat-no" title="function not covered" ></span>
+      resource,<span class="cstat-no" title="statement not covered" ></span>
+      identifier,
+      ...details,
+<span class="cstat-no" title="statement not covered" >    },</span>
   });
 }
 &nbsp;
@@ -1240,11 +1240,11 @@ export function createAuthenticationError(
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.AUTHENTICATION,
-    code:<span class="fstat-no" title="function not covered" > ErrorCode.UNAUTHORIZ</span>ED,
-    message,<span class="cstat-no" title="statement not covered" ></span>
+    code: ErrorC<span class="fstat-no" title="function not covered" >ode.UNAUTHORIZED,<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >    message,</span>
     details,
   });
-}<span class="cstat-no" title="statement not covered" ></span>
+}
 &nbsp;
 /**
  * Create authorization error
@@ -1254,11 +1254,11 @@ export function createAuthorizationError(
   resource?: string,
   action?: string,
   details?: Record&lt;string, unknown&gt;
-): FastMCPError {
-  return new FastMCPError({
+): FastMCPError <span class="fstat-no" title="function not covered" >{</span>
+  re<span class="cstat-no" title="statement not covered" >turn new FastMCPError({</span>
     category: ErrorCategory.AUTHORIZATION,
-    code:<span class="fstat-no" title="function not covered" > ErrorCode.FORBIDDE</span>N,<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    message,</span>
+    code: ErrorCode.FORBIDDEN,
+    message,
     details: {
       resource,
       action,
@@ -1269,10 +1269,10 @@ export function createAuthorizationError(
 &nbsp;
 /**
  * Create rate limit error
- */
-export function createRateLimitError(
-  resetTi<span class="fstat-no" title="function not covered" >me?: number,</span>
-  de<span class="cstat-no" title="statement not covered" >tails?: Record&lt;string, unknown&gt;</span>
+ */<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+expo<span class="cstat-no" title="statement not covered" >rt function createRateLimitError(</span>
+  resetTime?: number,
+  details?: Record&lt;string, unknown&gt;
 ): FastMCPError {
   const message = resetTime
     ? `Rate limit exceeded. Try again after ${new Date(resetTime * 1000).toISOString()}`
@@ -1284,14 +1284,14 @@ export function createRateLimitError(
     message,
     details: {
       resetTime,
-      ...details,
+      ...details<span class="fstat-no" title="function not covered" >,</span>
     },
-  });<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+  })<span class="cstat-no" title="statement not covered" >;</span>
 }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 /**
- * Create network error
- */
+ * C<span class="cstat-no" title="statement not covered" >reate network error</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
 export function createNetworkError(
   message: string = 'Network error occurred',
   originalError?: Error,
@@ -1299,43 +1299,43 @@ export function createNetworkError(
 ): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.NETWORK,
-    code: ErrorCode.NETWORK_ERROR,
+<span class="cstat-no" title="statement not covered" >    code: ErrorCode.NETWORK_ERROR,</span>
     message,
-    detai<span class="fstat-no" title="function not covered" >ls: {</span>
-      originalError: originalError?.message,
-<span class="cstat-no" title="statement not covered" >      ...details,</span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+    deta<span class="cstat-no" title="statement not covered" >ils: {</span>
+      origin<span class="cstat-no" title="statement not covered" >alError: originalError?.message,</span>
+      ...details,
+    },
   }, originalError);
 }
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Create timeout error
- */
+&nbsp;
+/**
+ * Creat<span class="cstat-no" title="statement not covered" >e timeout error</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
 export function createTimeoutError(
   operation: string,
   timeout: number,
   details?: Record&lt;string, unknown&gt;
 ): FastMCPError {
-  re<span class="cstat-no" title="statement not covered" >turn new FastMCPError({</span>
-    category: ErrorCategory.TIMEOUT,
-    code<span class="cstat-no" title="statement not covered" >: ErrorCode.TIMEOUT,</span>
-    message:<span class="cstat-no" title="statement not covered" > `Operation '${operation}' timed out after ${timeout}ms`,</span>
+  return new FastMCPError({
+    cate<span class="cstat-no" title="statement not covered" >gory: ErrorCategory.TIMEOUT,</span>
+    code: Er<span class="cstat-no" title="statement not covered" >rorCode.TIMEOUT,</span>
+    message: `Operation '${operation}' timed out after ${timeout}ms`,
     details: {
       operation,
       timeout,
       ...details,
     },
-  });
+  });<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 /**
  * Create internal error
  */
 export function createInternalError(
   message: string = 'Internal server error',
-  originalError?: Error,
-  detail<span class="cstat-no" title="statement not covered" >s?: Record&lt;string, unknown&gt;</span>
-): FastMCPEr<span class="cstat-no" title="statement not covered" >ror {</span>
+  origin<span class="cstat-no" title="statement not covered" >alError?: Error,</span>
+  details?: <span class="cstat-no" title="statement not covered" >Record&lt;string, unknown&gt;</span>
+): FastMCPError {
   return new FastMCPError({
     category: ErrorCategory.INTERNAL,
     code: ErrorCode.INTERNAL_ERROR,
@@ -1343,7 +1343,7 @@ export function createInternalError(
     details: {
       originalError: originalError?.message,
       st<span class="cstat-no" title="statement not covered" >ack: originalError?.stack,</span>
-      ...det<span class="cstat-no" title="statement not covered" >ails,</span>
+      ...details,
     },
   }, originalError);
 }
@@ -1351,7 +1351,7 @@ export function createInternalError(
 /**
  * Handle and convert common error types to FastMCPError
  */<span class="cstat-no" title="statement not covered" ></span>
-export funct<span class="cstat-no" title="statement not covered" >ion handleError(</span>
+export function handleError(
   error: unknown,
   context?: Record&lt;string, unknown&gt;
 ): FastMCPError {
@@ -1359,106 +1359,106 @@ export funct<span class="cstat-no" title="statement not covered" >ion handleErro
   if (error instanceof FastMCPError) {
     return error;
   }
-<span class="cstat-no" title="statement not covered" ></span>
-  // Already a UserError
-  if (error instanceof UserError) {
-    return new FastMCPError({
-      category: ErrorCategory.INTERNAL,
+&nbsp;
+  // Already a UserErr<span class="fstat-no" title="function not covered" >or</span>
+  if<span class="cstat-no" title="statement not covered" > (error instanceof UserError) {</span>
+    return new FastMC<span class="cstat-no" title="statement not covered" >PError({</span>
+      ca<span class="cstat-no" title="statement not covered" >tegory: ErrorCategory.INTERNAL,</span>
       code: ErrorCode.INTERNAL_ERROR,
       message: error.message,
       context,
-<span class="cstat-no" title="statement not covered" >    }, error);</span>
+    }, error);
   }
-&nbsp;
-  // Standard Error
+<span class="cstat-no" title="statement not covered" ></span>
+  // Sta<span class="cstat-no" title="statement not covered" >ndard Error</span>
   if (error instanceof Error) {
     // Check for specific error types based on message patterns
     if (error.message.includes('timeout')) {
       return new FastMCPError({
         category: ErrorCategory.TIMEOUT,
-        code: ErrorCode.TIMEOUT,
-        message<span class="fstat-no" title="function not covered" >: error.message,</span>
+        code: ErrorCod<span class="fstat-no" title="function not covered" >e.TIMEOUT,</span>
+<span class="cstat-no" title="statement not covered" >        message: error.message,</span>
 <span class="cstat-no" title="statement not covered" >        context,</span>
-      }, error);<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
+      }, error);
+    }
+<span class="cstat-no" title="statement not covered" ></span>
     if (error.message.includes('network') || error.message.includes('fetch')) {
       return new FastMCPError({
         category: ErrorCategory.NETWORK,
         code: ErrorCode.NETWORK_ERROR,
-        message: error.messag<span class="cstat-no" title="statement not covered" >e,</span>
-<span class="cstat-no" title="statement not covered" >        context,</span>
-      }, error);
+        message: error.message,
+        context,<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+      }, error);<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span>
     }
 &nbsp;
-    if (error.message.includes('unauthorized') || error.message.includes('401')) {
+    if (error.message.includes('unauthorize<span class="cstat-no" title="statement not covered" >d') || e</span>rror.message.includes('401')) {
       return new FastMCPError({
-        categor<span class="fstat-no" title="function not covered" >y: ErrorCategor</span>y.AUTHENTICATION,
+<span class="cstat-no" title="statement not covered" >        category: Error<span class="cstat-no" title="statement not covered" >Ca</span>tegory.AUTHENTICATION,</span>
 <span class="cstat-no" title="statement not covered" >        code: ErrorCode.UNAUTHORIZED,</span>
-<span class="cstat-no" title="statement not covered" >        message: error.message,</span>
+        mess<span class="cstat-no" title="statement not covered" >age: error.message,</span>
         context,
       }, error);
     }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-    if (error.message.includes('forbidden') || error.message.includes('403')) {
-      return new FastMCPError({
-        category: ErrorCategory.AUTHORIZATION,
-        code: ErrorCode.FORBIDDEN,
-        message<span class="fstat-no" title="function not covered" >: error.message</span>,<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-        context,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span>
-      }, error);
-    }
 <span class="cstat-no" title="statement not covered" ></span>
-    if (error.message.includes('not found') || error.message.includes('404')) {
-<span class="cstat-no" title="statement not covered" >      return new FastMC<span class="cstat-no" title="statement not covered" >PE</span>rror({</span>
-<span class="cstat-no" title="statement not covered" >        category: ErrorCategory.NOT_FOUND,</span>
-        code<span class="cstat-no" title="statement not covered" >: ErrorCode.RESOURCE_NOT_F</span>OUND,
+    if (error.me<span class="cstat-no" title="statement not covered" >ssage.i</span>ncludes('forbidden') || error.message.includes('403')) {
+      return new FastMCPError({
+        category: ErrorCat<span class="cstat-no" title="statement not covered" >egory.AUTHORIZATION,</span>
+        code<span class="cstat-no" title="statement not covered" >: ErrorCode.FORBID<span class="fstat-no" title="function not covered" >DE</span>N,<span class="cstat-no" title="statement not covered" ></span></span>
         message: error.message,
         context,
-      }, err<span class="cstat-no" title="statement not covered" >or);</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      }, error);</span>
+    }
+&nbsp;
+    if (error.message.includes('not found') || error.message.includes('404')) {
+      return new FastMCPError({
+        category: ErrorCategory.NOT_FOUND,
+        code: ErrorCode.RESOURCE_NOT_FOUND,
+        message: error.message,
+        context,<span class="fstat-no" title="function not covered" ></span>
+      }, error);<span class="cstat-no" title="statement not covered" ></span>
+    }
+&nbsp;
     // Generic error
-    return new FastMCPErro<span class="cstat-no" title="statement not covered" >r({</span>
-      catego<span class="cstat-no" title="statement not covered" >ry: ErrorCategory.<span class="fstat-no" title="function not covered" >IN</span>TERNAL,<span class="cstat-no" title="statement not covered" ></span></span>
+    return new FastMCPError({
+      category: ErrorCategory.INTERNAL,
       code: ErrorCode.INTERNAL_ERROR,
       message: error.message,
-<span class="cstat-no" title="statement not covered" >      context,</span>
+      context,
     }, error);
   }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
   // Unknown error type
   return new FastMCPError({
-    category: ErrorCategory.INTERNAL,
-    code: ErrorCode.INTERNAL_ERROR,
-    messa<span class="fstat-no" title="function not covered" >ge: Strin</span>g(error) || 'Unknown error occurred',
-    context,<span class="cstat-no" title="statement not covered" ></span>
-  });
+    category<span class="cstat-no" title="statement not covered" >: ErrorCategory.INTERNAL,</span>
+    code: Er<span class="cstat-no" title="statement not covered" >rorCode</span>.INTERNAL_ERROR,
+    message: String(error) || 'Unknown error occurred',
+    context,
+  });<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+/**
+ * Execute o<span class="cstat-no" title="statement not covered" >peration with error handling</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+export async function executeWithErrorHandling&lt;T&gt;(
+  operation:<span class="cstat-no" title="statement not covered" > () =&gt; Promise&lt;T&gt;,</span>
+  context?: <span class="cstat-no" title="statement not covered" >Record&lt;</span>string, unknown&gt;
+): Promise&lt;OperationResult&lt;T&gt;&gt; {
+  try {
+    const data = await operation();
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    const handledError = handleError(error, context);
+    return handledError.toOperationResult&lt;T&gt;();
+  }
 }
 &nbsp;
 /**
- * Execute operation with error handling
- */
-export async function executeWithErrorHandling&lt;T&gt;(
-  operation: () =&gt; Promise&lt;T&gt;,
-  context?: Record&lt;string, unknown&gt;
-): Promise&lt;OperationResult&lt;T&gt;&gt; {
-  tr<span class="cstat-no" title="statement not covered" >y {</span>
-    const data = await operation();
-    return {
-      succes<span class="cstat-no" title="statement not covered" >s: true,</span>
-      data,<span class="cstat-no" title="statement not covered" ></span>
-    };
-  } catch (error) {
-    const ha<span class="cstat-no" title="statement not covered" >ndledError = handleError(error, context);</span>
-    return h<span class="cstat-no" title="statement not covered" >andledE</span>rror.toOperationResult&lt;T&gt;();
-  }
-}
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
  * Execute operation and throw FastMCPError on failure
- */<span class="cstat-no" title="statement not covered" ></span>
-export async<span class="cstat-no" title="statement not covered" > functi</span>on executeOrThrow&lt;T&gt;(
+ */
+export async function executeOrThrow&lt;T&gt;(
   operation: () =&gt; Promise&lt;T&gt;,
   context?: Record&lt;string, unknown&gt;
 ): Promise&lt;T&gt; {
@@ -1567,7 +1567,7 @@ export function logError(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
@@ -345,9 +345,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -602,6 +599,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -622,20 +622,20 @@
  * Centralized configuration and constants for the enterprise secrets module
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >/**</span>
-<span class="cstat-no" title="statement not covered" > * Supported Vault versions and compatibility</span>
- */
+/**
+ * Supported Vault versions and compatibility
+ */<span class="cstat-no" title="statement not covered" ></span>
 export const VAULT_VERSIONS = {
   MINIMUM_SUPPORTED: '1.10.0',
-<span class="cstat-no" title="statement not covered" >  RECOMMENDED: '1.15.0',</span>
+  RECOMMENDED: '1.15.0',
   TESTED_VERSIONS: ['1.15.0', '1.14.6', '1.13.10']
 } as const;
 &nbsp;
 /**
- * HSM provider configurations
+ * HSM provider configuration<span class="cstat-no" title="statement not covered" >s</span>
  */
 export const HSM_PROVIDERS = {
-<span class="cstat-no" title="statement not covered" >  AWS_CLOUDHSM: {</span>
+  AWS_CLOUDHSM: {
     name: 'aws_cloudhsm',
     displayName: 'AWS CloudHSM',
     supportedRegions: ['us-east-1', 'us-west-2', 'eu-west-1'],
@@ -655,10 +655,10 @@ export const HSM_PROVIDERS = {
   }
 } as const;
 &nbsp;
-/**
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Security policy defaults and limits
  */
-<span class="cstat-no" title="statement not covered" >export const SECURITY_POLICIES = {</span>
+export const SECURITY_POLICIES = {
   PASSWORD: {
     MIN_LENGTH: 12,
     MAX_LENGTH: 128,
@@ -682,10 +682,10 @@ export const HSM_PROVIDERS = {
     DEFAULT_VALIDITY_DAYS: 365
   }
 } as const;
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
 /**
  * Encryption standards and algorithms
-<span class="cstat-no" title="statement not covered" > */</span>
+ */
 export const ENCRYPTION_STANDARDS = {
   APPROVED_ALGORITHMS: ['AES', 'ChaCha20', 'RSA', 'ECDSA'] as const,
   AES: {
@@ -700,10 +700,10 @@ export const ENCRYPTION_STANDARDS = {
     MAX_KEY_SIZE: 8192
   },
   HASH_ALGORITHMS: ['SHA-256', 'SHA-384', 'SHA-512'] as const
-} as const;
+} as const;<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 /**
-<span class="cstat-no" title="statement not covered" > * Network security configuration</span>
+ * Network security configuration
  */
 export const NETWORK_SECURITY = {
   TLS: {
@@ -718,10 +718,10 @@ export const NETWORK_SECURITY = {
       'ECDHE-RSA-CHACHA20-POLY1305'
     ] as const,
     PROHIBITED: ['RC4', 'DES', '3DES', 'MD5'] as const
-  }
+  }<span class="cstat-no" title="statement not covered" ></span>
 } as const;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >/**</span>
+/**
  * Compliance framework requirements
  */
 export const COMPLIANCE_FRAMEWORKS = {
@@ -750,10 +750,10 @@ export const COMPLIANCE_FRAMEWORKS = {
     name: 'FIPS 140-2',
     cryptoModuleRequired: true,
     levels: ['level1', 'level2', 'level3', 'level4'] as const,
-    recommendedLevel: 'level2'
+    recommendedLevel: 'level2'<span class="cstat-no" title="statement not covered" ></span>
   }
 } as const;
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 /**
  * Default timeouts and limits
  */
@@ -771,10 +771,10 @@ export const OPERATION_LIMITS = {
   },
   RATE_LIMITS: {
     API_REQUESTS_PER_MINUTE: 1000,
-    KEY_OPERATIONS_PER_HOUR: 100,
+    KEY_OPERATIONS_PER_HOUR: 1<span class="cstat-no" title="statement not covered" >00,</span>
     AUDIT_EVENTS_PER_SECOND: 10
   }
-<span class="cstat-no" title="statement not covered" >} as const;</span>
+} as const;
 &nbsp;
 /**
  * Secret engine configurations
@@ -798,10 +798,10 @@ export const SECRET_ENGINES = {
     defaultTtl: '720h' // 30 days
   },
   AWS: {
-    name: 'aws',
+    name: 'aws',<span class="cstat-no" title="statement not covered" ></span>
     description: 'AWS dynamic credentials',
     supportedCredentialTypes: ['iam_user', 'assumed_role', 'federation_token'] as const
-<span class="cstat-no" title="statement not covered" >  }</span>
+  }
 } as const;
 &nbsp;
 /**
@@ -823,10 +823,10 @@ export const AUDIT_SEVERITY = {
     color: 'orange',
     requiresImmediateAction: true
   },
-  CRITICAL: {
+  CRITICAL: {<span class="cstat-no" title="statement not covered" ></span>
     level: 'critical',
     color: 'red',
-<span class="cstat-no" title="statement not covered" >    requiresImmediateAction: true</span>
+    requiresImmediateAction: true
   }
 } as const;
 &nbsp;
@@ -851,10 +851,10 @@ export const ERROR_CODES = {
     WEAK_ENCRYPTION: 'SEC_002',
     CERTIFICATE_INVALID: 'SEC_003',
     ACCESS_DENIED: 'SEC_004'
-  },
+  },<span class="cstat-no" title="statement not covered" ></span>
   AUDIT: {
     LOG_WRITE_FAILED: 'AUD_001',
-<span class="cstat-no" title="statement not covered" >    COMPLIANCE_CHECK_FAILED: 'AUD_002',</span>
+    COMPLIANCE_CHECK_FAILED: 'AUD_002',
     RETENTION_VIOLATION: 'AUD_003'
   }
 } as const;
@@ -875,10 +875,10 @@ export const MODULE_METADATA = {
   FEATURES: {
     VAULT_INTEGRATION: true,
     HSM_SUPPORT: true,
-    COMPLIANCE_REPORTING: true,
+    COMPLIANCE_REPORTING<span class="cstat-no" title="statement not covered" >: true,</span>
     AUDIT_LOGGING: true,
     KEY_ROTATION: true,
-<span class="cstat-no" title="statement not covered" >    RBAC: true,</span>
+    RBAC: true,
     SECRET_SCANNING: true,
     BREACH_DETECTION: true
   }
@@ -901,7 +901,7 @@ export const ENV_VARS = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

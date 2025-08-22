@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/83</span>
+                <span class='fraction'>0/68</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/80</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
@@ -429,21 +429,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -452,6 +437,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -711,6 +697,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -790,171 +790,171 @@
  * Standardized validation patterns and helpers
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { z, ZodSchema, ZodError } from 'zod';</span>
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastm</span>cp';
-<span class="cstat-no" title="statement not covered" >import { ApiError } from '../types/api-</span>client.js';
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >/**</span>
-<span class="cstat-no" title="statement not covered" > * Validation result interface</span>
-<span class="cstat-no" title="statement not covered" > */</span>
-<span class="cstat-no" title="statement not covered" >export interface ValidationResult&lt;T&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  success: boolean;</span>
-<span class="cstat-no" title="statement not covered" >  data?: T;</span>
-<span class="cstat-no" title="statement not covered" >  errors?: ValidationError[];</span>
-<span class="cstat-no" title="statement not covered" >}</span>
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Custom validati<span class="cstat-no" title="statement not covered" >on error</span>
+import { z, ZodSchema, ZodError } from 'zod';
+import { UserError } from 'fastmcp';
+import { ApiError } from '../types/api-client.js';
+&nbsp;
+/**
+ * Validation result interface
+ */
+export interface ValidationResult&lt;T&gt; {
+  success: boole<span class="fstat-no" title="function not covered" >an;<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+  da<span class="cstat-no" title="statement not covered" >ta?: T;</span>
+  errors?: ValidationError[];<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+/**
+ * Custom validation error
  */
 export interface ValidationError {
-  field: string;
-  message: string;
+  field:<span class="cstat-no" title="statement not covered" > string;</span>
+  message: string;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
   code: string;
   value?: unknown;
 }
-<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Validation options<span class="cstat-no" title="statement not covered" ></span>
- */<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+/**
+ * Validatio<span class="cstat-no" title="statement not covered" >n options</span>
+ */
 export interface ValidationOptions {
   allowUnknown?: boolean;
   stripUnknown?: boolean;
-  errorMessage?: string;
+  errorM<span class="cstat-no" title="statement not covered" >essage?: string;</span>
   context?: string;
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+}
+&nbsp;
 /**
  * Validate input data against a Zod schema
  * @param schema - Zod schema to validate against
  * @param data - Data to validate
  * @param options - Validation options
- * @returns <span class="cstat-no" title="statement not covered" >Validation result</span>
+ * @returns Validation result
  */
 export function validateInput&lt;T&gt;(
   schema: ZodSchema&lt;T&gt;,
   data: unknown,
-  option<span class="cstat-no" title="statement not covered" >s: ValidationOptions = {}</span>
+  options: ValidationOptions = {}
 ): ValidationResult&lt;T&gt; {
   try {
     const validatedData = schema.parse(data);
     return {
-      success: true,
-      data: validatedData,
-    };
-  } catch (error) {
-    if (error instanceof ZodError) {
-      const validationErrors: ValidationError[] = error.errors.map(err =&gt; ({
+      success: t<span class="fstat-no" title="function not covered" >rue,<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+      data: validat<span class="cstat-no" title="statement not covered" >edData,</span>
+<span class="cstat-no" title="statement not covered" >    };</span>
+  } catch (error) {<span class="cstat-no" title="statement not covered" ></span>
+    if (error instanceof ZodEr<span class="cstat-no" title="statement not covered" >ror) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      co<span class="cstat-no" title="statement not covered" >nst validationErrors: ValidationError[] = error.err</span>ors.map(err =&gt; ({
         field: err.path.join('.') || 'root',
-        message: err.message,
+<span class="cstat-no" title="statement not covered" >        message: err.mes</span>sage,
         code: err.code,
         value: err.path.length &gt; 0 ? getNestedValue(data, err.path) : data,
       }));
 &nbsp;
       return {
         success: false,
-        e<span class="fstat-no" title="function not covered" >rrors: validationErro</span>rs,<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-      };<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+        errors: validationErrors,
+      };<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+    }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    return {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      su<span class="cstat-no" title="statement not covered" >ccess: false,</span>
-      errors: [{
+    retu<span class="cstat-no" title="statement not covered" >rn {</span>
+      success: false,
+<span class="cstat-no" title="statement not covered" >      errors: [{</span>
 <span class="cstat-no" title="statement not covered" >        field: 'root',</span>
         message: options.errorMessage || 'Validation failed',
-        code: 'validation_error',
-        value: data,
+<span class="cstat-no" title="statement not covered" >        code: 'validation_error',</span>
+<span class="cstat-no" title="statement not covered" >        value: data,</span>
       }],
-    };
-  }
+<span class="cstat-no" title="statement not covered" >    };</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
 }
-<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * V<span class="cstat-no" title="statement not covered" >alidate input and throw UserError on validation failure</span>
- * @para<span class="cstat-no" title="statement not covered" >m schema - Zod schema to valid</span>ate against
+<span class="cstat-no" title="statement not covered" ></span>
+/**
+ * Validate input and throw UserError on validation failure
+ * @param schema - Zod schema to validate against
  * @param data - Data to validate
- * @<span class="cstat-no" title="statement not covered" >param options - Validation options</span>
- * @retu<span class="cstat-no" title="statement not covered" >rns Validated data</span>
+ * @param options - Validation options
+ * @returns Validated data
  * @throws UserError on validation failure
- */<span class="cstat-no" title="statement not covered" ></span>
-export f<span class="cstat-no" title="statement not covered" >unction validateInputOrThrow&lt;T&gt;(</span>
-  schema: ZodSchema&lt;T&gt;,
-  da<span class="cstat-no" title="statement not covered" >ta: unknown,</span>
-  option<span class="cstat-no" title="statement not covered" >s: ValidationOptions = {}</span>
+ */<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+export function valid<span class="cstat-no" title="statement not covered" >ateInputOrThrow&lt;T&gt;(</span>
+  sc<span class="cstat-no" title="statement not covered" >hema: ZodSchema&lt;T&gt;,</span>
+  data: <span class="cstat-no" title="statement not covered" >unknown,</span>
+  options: ValidationOptions = {}
 ): T {
-  co<span class="cstat-no" title="statement not covered" >nst result = valid</span>ateInput(schema, data, options);
+  const result = validateInput(schema, data, options);
   
   if (!result.success) {
     const context = options.context ? `${options.context}: ` : '';
-    const errorMessages = result.errors?.map(err =&gt; `${err.field}: ${err.message}`).join(', ') || 'Validation failed';
-    throw new UserError(`${context}${errorMessages}`);
-  }
-  
-  return <span class="fstat-no" title="function not covered" >result.data</span>!;<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-}<span class="cstat-no" title="statement not covered" ></span>
+    cons<span class="cstat-no" title="statement not covered" >t errorMessages = result.errors?.map(err =&gt; `${err.field}: ${err.message}`).join(', ') || 'Validation failed';</span>
+    throw new UserError(`${<span class="cstat-no" title="statement not covered" >context}${errorMe</span>ssages}`);
+  }<span class="cstat-no" title="statement not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  return result.data!;
+}
 <span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
+/**
  * Sanitize string input
  * @param input - Input string to sanitize
  * @param options - Sanitization options
  * @returns Sanitized string
  */
 export function sanitizeString(
-  input:<span class="cstat-no" title="statement not covered" > string,</span>
-  options: {<span class="cstat-no" title="statement not covered" ></span>
-    trim?: b<span class="cstat-no" title="statement not covered" >oolean;</span>
-    lowercase?: <span class="cstat-no" title="statement not covered" >boolean;</span>
+  input: string,<span class="fstat-no" title="function not covered" ></span>
+  op<span class="cstat-no" title="statement not covered" >tions: {</span>
+    trim?: boolean;
+    lowercase?: boolean;
     maxLength?: number;
     allowEmpty?: boolean;
-  } = {}<span class="cstat-no" title="statement not covered" ></span>
+  } = {}
 ): string {
-  let sanitized = input;
-&nbsp;
+  let sanitized <span class="fstat-no" title="function not covered" >= input;</span>
+<span class="cstat-no" title="statement not covered" ></span>
   if (options.trim !== false) {
     sanitized = sanitized.trim();
   }
 &nbsp;
-  if (opt<span class="fstat-no" title="function not covered" >ions.lowercase)</span> {
-<span class="cstat-no" title="statement not covered" >    sanitized = sanitized.toLowerCase();</span>
-  }
-&nbsp;
+  if (options.lowercase) {
+    sanitized = sanitized.toLowerCase();
+  }<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
   if (options.maxLength &amp;&amp; sanitized.length &gt; options.maxLength) {
     sanitized = sanitized.substring(0, options.maxLength);
   }
-&nbsp;
-  if (!op<span class="fstat-no" title="function not covered" >tions.allowEmpty &amp;&amp; san</span>itized.length === 0) {
-<span class="cstat-no" title="statement not covered" >    throw new UserError('String cannot be empty')</span>;
-  }
+<span class="cstat-no" title="statement not covered" ></span>
+  if (!options.allowEmpty &amp;&amp; sanitized.length === 0) {
+    throw new UserError('String cannot be empty');
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   return sanitized;
 }
 &nbsp;
 /**
- * Valida<span class="fstat-no" title="function not covered" >te and sanitize ID parame</span>ter<span class="branch-0 cbranch-no" title="branch not covered" ></span>
- * @param id - ID to validate<span class="cstat-no" title="statement not covered" ></span>
+ * Validate and sanitize ID parameter
+ * @param id - ID to validate
  * @param type - Type of ID for error messages
  * @returns Validated ID
- */
-export function val<span class="cstat-no" title="statement not covered" >idateId(id: unknown, type: string = 'ID'): number {</span>
+ */<span class="fstat-no" title="function not covered" ></span>
+export function validateId(i<span class="cstat-no" title="statement not covered" >d: unknown, type: string = 'ID'): number {</span>
   const idSchema = z.number().positive().int();
   
-  tr<span class="cstat-no" title="statement not covered" >y {</span>
+  try {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     return validateInputOrThrow(idSchema, id, {
       context: type,
-      errorMessage: `${type} must be a positive integer`,
+<span class="cstat-no" title="statement not covered" >      errorMessage: `${type} must be a positive integer`,</span>
     });
   } catch (error) {
     // Try to parse string numbers
     if (typeof id === 'string' &amp;&amp; /^\d+$/.test(id)) {
       const parsed = parseInt(id, 10);
       if (parsed &gt; 0) {
-        r<span class="fstat-no" title="function not covered" >eturn parsed;</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
-    }
-    throw new UserError(`Invalid ${type}: must be a positive integer`);
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        return parsed;
+      }
+    }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    throw new UserErro<span class="fstat-no" title="function not covered" >r(</span>`Invalid<span class="cstat-no" title="statement not covered" > ${type}: must be a positive integer`);</span></span>
+  }
 }
 &nbsp;
-/**<span class="cstat-no" title="statement not covered" ></span>
+/**
  * Validate team ID parameter
  * @param teamId - Team ID to validate
  * @returns Validated team ID
@@ -963,10 +963,10 @@ export function validateTeamId(teamId: unknown): number {
   return validateId(teamId, 'Team ID');
 }
 &nbsp;
-/**<span class="fstat-no" title="function not covered" ></span>
- * V<span class="cstat-no" title="statement not covered" >alidate organizati<span class="fstat-no" title="function not covered" >on</span> ID para<span class="cstat-no" title="statement not covered" >meter</span></span>
- * @param orgId - Organization ID to validate
- * @returns Validated organization ID
+/**
+ * Validate orga<span class="fstat-no" title="function not covered" >nization ID parameter</span>
+ * @<span class="cstat-no" title="statement not covered" >param orgId - Organization ID to validate</span>
+ * @returns V<span class="fstat-no" title="function not covered" >al</span>idated <span class="cstat-no" title="statement not covered" >organization ID</span>
  */
 export function validateOrganizationId(orgId: unknown): number {
   return validateId(orgId, 'Organization ID');
@@ -974,53 +974,53 @@ export function validateOrganizationId(orgId: unknown): number {
 &nbsp;
 /**
  * Validate pagination parameters
- * @param params - Pagination parameters
- * @returns Validated pagination parameters
- */
+ * @param params<span class="fstat-no" title="function not covered" > - Pagin</span>ation parameters
+ * @<span class="cstat-no" title="statement not covered" >returns Validated pagination parameters</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
 export function validatePaginationParams(params: {
-  limit?:<span class="fstat-no" title="function not covered" > unknown;</span>
-  of<span class="cstat-no" title="statement not covered" >fset?: unknown;</span>
-} = {}): { li<span class="fstat-no" title="function not covered" >mi</span>t: numb<span class="cstat-no" title="statement not covered" >er; offset: number } {</span>
-  const paginationSchema = z.object({
-    limit: z.number().min(1).max(1000).default(100),
+  li<span class="cstat-no" title="statement not covered" >mit?: unknown;</span>
+  offset<span class="cstat-no" title="statement not covered" >?: unknown;</span>
+} = {}): { limit: number; offset: number } {
+  co<span class="cstat-no" title="statement not covered" >nst paginationSchema = z.object({</span>
+    limi<span class="cstat-no" title="statement not covered" >t: z.number().min(1).max(10</span>00).default(100),
     offset: z.number().min(0).default(0),
+  })<span class="cstat-no" title="statement not covered" >;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+  const result = validateInputOrThrow(paginationSchema, params, {
+<span class="cstat-no" title="statement not covered" >    context: 'Pagi</span>nation parameters',
   });
 &nbsp;
-  const result = validateInputOrThrow(paginationSchema, params, {
-    context: 'Pagination parameters',
-  });<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  return<span class="cstat-no" title="statement not covered" > {</span>
+  return {
     limit: result.limit ?? 100,
-<span class="cstat-no" title="statement not covered" >    offset: result.offset ?? 0,</span>
-  };<span class="cstat-no" title="statement not covered" ></span>
+    offset: result.offset ?? 0,
+  };
 }
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Validate date range parameters
- * @<span class="cstat-no" title="statement not covered" >param params - Date range parameters</span>
- * @retu<span class="cstat-no" title="statement not covered" >rns Validated date range</span>
- */
-expo<span class="cstat-no" title="statement not covered" >rt function va</span>lidateDateRange(params: {
+<span class="fstat-no" title="function not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+ * Valid<span class="cstat-no" title="statement not covered" >ate date range parameters</span>
+ * @param pa<span class="cstat-no" title="statement not covered" >rams - Date range par</span>ameters
+ * @returns Validated date range
+ */<span class="cstat-no" title="statement not covered" ></span>
+export function validateDateRange(params: {
   from: unknown;
   to: unknown;
 }): { from: string; to: string } {
   const dateRangeSchema = z.object({
-    from: z.string().datetime(),
+    from: z.string().datetime<span class="cstat-no" title="statement not covered" >(),</span>
     to: z.string().datetime(),
   }).refine(data =&gt; new Date(data.from) &lt; new Date(data.to), {
-    messa<span class="fstat-no" title="function not covered" >ge: "From date </span>must be before to date",
-  })<span class="cstat-no" title="statement not covered" >;<span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  return val<span class="cstat-no" title="statement not covered" >idateInputOrThrow(dat</span>eRangeSchema, params, {
+    message: "From date must be before to date",
+  });
+&nbsp;
+  return validateInputOrThrow(dateRangeSchema, params, {
     context: 'Date range',
-  });<span class="cstat-no" title="statement not covered" ></span>
+  });
 }
 &nbsp;
 /**
  * Convert validation errors to API errors
  * @param errors - Validation errors
-<span class="cstat-no" title="statement not covered" > * @returns API errors</span>
+ * @returns API errors
  */
 export function validationErrorsToApiErrors(errors: ValidationError[]): ApiError[] {
   return errors.map(error =&gt; ({
@@ -1036,12 +1036,12 @@ export function validationErrorsToApiErrors(errors: ValidationError[]): ApiError
 /**
  * Format validation errors for user display
  * @param errors - Validation errors
- * @returns Formatted error message
- */
-export function formatValidationErrors(errors: ValidationError[]): string {
-  return errors
-    .map(error =&gt; `${error.field}: ${error.message}`)
-    .join(', ');
+ * @returns Formatted error m<span class="fstat-no" title="function not covered" >es</span>sage
+ */<span class="cstat-no" title="statement not covered" ></span>
+export function <span class="cstat-no" title="statement not covered" >formatValidat</span>ionErrors(errors: ValidationError[]): string {
+  return err<span class="cstat-no" title="statement not covered" >ors</span>
+    .map(error =<span class="cstat-no" title="statement not covered" >&gt; `${error.fie</span>ld}: ${error.message}`)
+    .join(',<span class="cstat-no" title="statement not covered" > ');</span>
 }
 &nbsp;
 /**
@@ -1050,14 +1050,14 @@ export function formatValidationErrors(errors: ValidationError[]): string {
  * @returns True if empty
  */
 export function isEmpty(value: unknown): boolean {
-  if (value === null || value === u<span class="fstat-no" title="function not covered" >nd</span>efined) {
-    return t<span class="cstat-no" title="statement not covered" >rue;</span>
+  if (value === null || value === undefined) {
+    return true;<span class="fstat-no" title="function not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  if (typeof val<span class="cstat-no" title="statement not covered" >ue === 'string</span>') {
-    return v<span class="cstat-no" title="statement not covered" >alue.trim().length === 0;</span>
-  }
-&nbsp;
+  if (typeof value === 'string') {
+    return value.trim().length === 0;
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   if (Array.isArray(value)) {
     return value.length === 0;
   }
@@ -1065,13 +1065,13 @@ export function isEmpty(value: unknown): boolean {
   if (typeof value === 'object') {
     return Object.keys(value).length === 0;
   }
-<span class="fstat-no" title="function not covered" ></span>
-  return<span class="cstat-no" title="statement not covered" > false;</span>
-}<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  return false;
+}
 &nbsp;
 /**
- * Get neste<span class="cstat-no" title="statement not covered" >d value from object using path array</span>
- * @param ob<span class="cstat-no" title="statement not covered" >j - Object to get valu</span>e from
+ * Get nested value from object using path array
+ * @param obj - Object to get value from
  * @param path - Path array
  * @returns Nested value
  */
@@ -1153,7 +1153,7 @@ export const CommonSchemas = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

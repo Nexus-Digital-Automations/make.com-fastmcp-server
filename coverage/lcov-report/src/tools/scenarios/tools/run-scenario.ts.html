@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/74</span>
+                <span class='fraction'>0/69</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/73</span>
+                <span class='fraction'>0/68</span>
             </div>
         
             
@@ -275,15 +275,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -442,6 +439,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -482,61 +482,61 @@
  * Execute Make.com scenarios with monitoring and timeout control
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { RunScenarioSchema } from '../schemas/scenario-</span>filters.js';
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition </span>} from '../../shared/types/tool-context.js';
-import { formatSuccessResponse<span class="cstat-no" title="statement not covered" > } from '../../../utils/response-formatter</span>.js';
-<span class="cstat-no" title="statement not covered" ></span>
-interface RunScenarioArgs {
-  scenarioId: string;
-  wait?: boolean;
-  timeout<span class="fstat-no" title="function not covered" >?: number;</span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+import { UserError } from 'fastmcp';
+import { RunScenarioSchema } from '../schemas/scenario-filters.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+&nbsp;
+interface RunSce<span class="fstat-no" title="function not covered" >narioArgs {</span>
+  scenarioId: string;<span class="cstat-no" title="statement not covered" ></span>
+  wa<span class="cstat-no" title="statement not covered" >it?: boolean;</span>
+  timeout?: number;
+}
+&nbsp;
 /**
  * Create run scenario tool configuration
  */
 export function createRunScenarioTool(context: ToolContext): ToolDefinition {
   const { apiClient, logger: _logger } = context;
-  
-  return {
-    name: 'run-scenario',
-    description: <span class="fstat-no" title="function not covered" >'E</span>xecute Make.com scenarios with monitoring, timeout control, and execution tracking',
-    parameters: RunScenari<span class="branch-0 cbranch-no" title="branch not covered" >oSchema,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
-      title:<span class="cstat-no" title="statement not covered" > 'Run Scenario',</span>
-      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false, // Executes scenarios, not read-only</span>
+  <span class="fstat-no" title="function not covered" ></span>
+  return {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+    name: 'run-scenario',<span class="cstat-no" title="statement not covered" ></span>
+    descript<span class="cstat-no" title="statement not covered" >ion: 'Execute Make.com scenarios with monitoring, timeout control, and execution tracking',</span>
+    parameters: <span class="cstat-no" title="statement not covered" >RunScenarioSchema,</span>
+    annotations: {
+      title: 'Run Scenario',
+      readOnlyHint: false, // Executes scenarios, not read-only
       openWorldHint: false,
     },
-    execute: async (args: unknown, context): Promise&lt;string&gt; =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute:<span class="cstat-no" title="statement not covered" > async (args: unknown, context): Promise&lt;string</span>&gt; =&gt; {
+      const <span class="cstat-no" title="statement not covered" >{ log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};</span>
       const typedArgs = args as RunScenarioArgs;
-      if (lo<span class="cstat-no" title="statement not covered" >g &amp;&amp; log.info) { log.info('Starting scenario ex</span>ecution', { 
-        scen<span class="cstat-no" title="statement not covered" >arioId: typedArgs.scenarioId,</span>
-        wait: typedArgs.wait,
-        timeout: typedArgs.timeout<span class="cstat-no" title="statement not covered" ></span>
+      if (log &amp;&amp; log.info) { log.info('St<span class="cstat-no" title="statement not covered" >arting scenario execution', { </span>
+        scenario<span class="cstat-no" title="statement not covered" >Id: typedArgs.scenarioId,</span>
+        wait: typedA<span class="cstat-no" title="statement not covered" >rgs.wait,</span>
+        timeout: typedArgs.timeout
       }); }<span class="cstat-no" title="statement not covered" ></span>
       <span class="cstat-no" title="statement not covered" ></span>
       reportProgress?.({ progress: 0, total: 100 });
       <span class="cstat-no" title="statement not covered" ></span>
       try {<span class="cstat-no" title="statement not covered" ></span>
         // Get scenario details first to validate existence
-        const sc<span class="cstat-no" title="statement not covered" >enarioResponse = await apiClient.get(`/scenarios/${typedArgs.scenarioId}`);</span>
-        if (!scenari<span class="cstat-no" title="statement not covered" >oResponse.success) {</span>
-          throw new UserError(`Scenario not found: ${typedArgs.scenarioId}`);
+        const scenarioResponse = await apiClient.get(`/scenarios/${typedArgs.scenarioId}`);
+        if (!sce<span class="cstat-no" title="statement not covered" >narioResponse.success) {</span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Scenario not found: ${typedArgs.scenarioId}`);</span>
         }
         <span class="cstat-no" title="statement not covered" ></span>
-        const scenar<span class="cstat-no" title="statement not covered" >io = scenarioResponse.data as { </span>
+        const scenario = scenarioResponse.data as { 
           id: string; 
-          name: string; <span class="cstat-no" title="statement not covered" ></span>
-          active: boolean; 
+          name: <span class="cstat-no" title="statement not covered" >string; </span>
+          active: bo<span class="cstat-no" title="statement not covered" >olean; </span>
           team?: { id: string; name: string }; 
         };<span class="cstat-no" title="statement not covered" ></span>
         <span class="cstat-no" title="statement not covered" ></span>
-        reportProgress?.({ progress: 20, total: 100 });
-        <span class="cstat-no" title="statement not covered" ></span>
-        // Check if scenario is active<span class="cstat-no" title="statement not covered" ></span>
-        if (!scenario.active) {<span class="cstat-no" title="statement not covered" ></span>
+        reportProgress?.({ progress:<span class="cstat-no" title="statement not covered" > 20, total: 100 });</span>
+        
+        // Check if scenario is active
+        if (!scenario.active) {
           throw new UserError(`Cannot execute inactive scenario: ${typedArgs.scenarioId}`);
         }
         
@@ -554,101 +554,101 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
         
         const executionData = executionResponse.data as {
           executionId: string;
-          status: string;
-          startedAt: string;
-          scenario: { id: string; name: string };
+          status<span class="cstat-no" title="statement not covered" >: string;</span>
+          startedAt: string;<span class="cstat-no" title="statement not covered" ></span>
+          scenario: { id: string; name: str<span class="cstat-no" title="statement not covered" >ing };</span>
         };<span class="cstat-no" title="statement not covered" ></span>
         <span class="cstat-no" title="statement not covered" ></span>
         const finalResult = {<span class="cstat-no" title="statement not covered" ></span>
-          scenario: {<span class="cstat-no" title="statement not covered" ></span>
-            id: scenario.id,<span class="cstat-no" title="statement not covered" ></span>
-            name: scenario.name,<span class="cstat-no" title="statement not covered" ></span>
-            team: sc<span class="cstat-no" title="statement not covered" >enario.team</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
+          scenario: <span class="cstat-no" title="statement not covered" >{</span>
+            id: scenario<span class="cstat-no" title="statement not covered" >.id,</span>
+            name: scenario.name,
+            team: scenario.team
+          },
           execution: {
-            id: executionData.executionId,
-            status: executionData.status,
-            startedAt: executionData.startedAt,
-            complete<span class="cstat-no" title="statement not covered" >dAt: undefined as string | undefined,</span>
-            duration: un<span class="cstat-no" title="statement not covered" >defined as number <span class="fstat-no" title="function not covered" >| </span>undefined<span class="cstat-no" title="statement not covered" >,</span></span>
-            result: unde<span class="cstat-no" title="statement not covered" >fined as unk</span>nown
+            id: exec<span class="cstat-no" title="statement not covered" >utionData.executionId,</span>
+            status: exec<span class="cstat-no" title="statement not covered" >utionData.status,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+            startedAt: e<span class="cstat-no" title="statement not covered" >xecutionData</span>.startedAt,
+            completedAt: undefined as str<span class="cstat-no" title="statement not covered" >ing | undefined,</span>
+            duration: un<span class="cstat-no" title="statement not covered" >defined as number | undefined,</span>
+            result: unde<span class="cstat-no" title="statement not covered" >fined as unknown</span>
           },<span class="cstat-no" title="statement not covered" ></span>
           metadata: {<span class="cstat-no" title="statement not covered" ></span>
-            waitForCompl<span class="cstat-no" title="statement not covered" >etion: typedArgs.wait,</span>
-            timeoutSeconds: typedArgs.timeout,<span class="cstat-no" title="statement not covered" ></span>
-            executionTimesta<span class="cstat-no" title="statement not covered" >mp: new Date().toISOString()</span>
+            waitForCompletion: typedArgs.wait,<span class="cstat-no" title="statement not covered" ></span>
+            timeoutSeconds: type<span class="cstat-no" title="statement not covered" >dArgs.timeout,</span>
+            executionTimestamp: <span class="cstat-no" title="statement not covered" >new Date().toISOString()</span>
           }<span class="cstat-no" title="statement not covered" ></span>
         };<span class="cstat-no" title="statement not covered" ></span>
         <span class="cstat-no" title="statement not covered" ></span>
-        // If waiting for comple<span class="cstat-no" title="statement not covered" >tion, poll for status</span>
-        if (typedArgs.wait) {<span class="cstat-no" title="statement not covered" ></span>
-          const startTime = Date.now<span class="cstat-no" title="statement not covered" >();</span>
-          const timeoutSeconds = typedArgs.timeout || 300; // Default 5 minutes
-          const timeoutMs = timeoutSeconds * 1000;
-          let attempts = 0;<span class="cstat-no" title="statement not covered" ></span>
-          const maxAttempts = Math.c<span class="cstat-no" title="statement not covered" >eil(timeoutSeconds / 2); // Check every 2 seconds</span>
-          <span class="cstat-no" title="statement not covered" ></span>
+        // If waiting for completion, poll for status
+        if (typedArgs.wait) {
+          const startTime = Date<span class="cstat-no" title="statement not covered" >.now();</span>
+          const timeoutSeconds = typ<span class="cstat-no" title="statement not covered" >edArgs.timeout || 300; // Default 5 minutes</span>
+          const timeoutMs = timeoutSecon<span class="cstat-no" title="statement not covered" >ds * 1000;</span>
+          let attempts = 0;
+          const maxAttempts = Math.ceil(timeoutSeconds / 2); // Check every 2 seconds
+          
           if (log &amp;&amp; log.info) { log.info('Waiting for scenario execution to complete', { 
             executionId: executionData.executionId,
-            timeoutSeconds: timeoutSeconds 
+            timeoutSeconds: timeoutS<span class="cstat-no" title="statement not covered" >econds </span>
           }); }
           
-          while (attempts &lt; maxAttem<span class="cstat-no" title="statement not covered" >pts) {</span>
-            await new Promise(resolve =&gt; setTimeout(resolve, 2000)); // Wait 2 seconds
-            attempts++;
-            
-            const progress =<span class="cstat-no" title="statement not covered" > 50 + (attempts / maxAttempts) * 45;</span>
-            reportProgress?.({ p<span class="cstat-no" title="statement not covered" >rogress: Math.min(95, progress), total: 100 });</span>
+          while (attempts &lt; maxAttempts) {
+            await new Promis<span class="cstat-no" title="statement not covered" >e(resolve =&gt; setTimeout(resolve, 2000)); // Wait 2 seconds</span>
+            attempts++;<span class="cstat-no" title="statement not covered" ></span>
             <span class="cstat-no" title="statement not covered" ></span>
+            const progress = 50 + (attempts / maxAttempts) * 45;
+            reportProgress?.({ progress: Math.min(95, progress), total: 100 });
+            
             try {
-              const statusResponse = await apiClient.get(`/scenarios/${typedArgs.scenarioId}/executions/${executionData.executionId}`);
-              
+              const statusRespon<span class="cstat-no" title="statement not covered" >se = await apiClient.get(`/scenarios/${typ</span>edArgs.scenarioId}/executions/${executionData.executionId}`);
+              <span class="cstat-no" title="statement not covered" ></span>
               if (statusResponse.success) {
-                const statusData<span class="cstat-no" title="statement not covered" > = statusResponse.data as {</span>
-                  id: string;<span class="cstat-no" title="statement not covered" ></span>
-                  status: string;
-                  startedAt: string;
+                const statusData = statusResponse.data as {
+                  id: string;
+                  status: st<span class="cstat-no" title="statement not covered" >ring;</span>
+                  startedAt: str<span class="cstat-no" title="statement not covered" >ing;</span>
                   completedAt?: string;
-                  result?: u<span class="cstat-no" title="statement not covered" >nknown;</span>
-                  error?: unknow<span class="cstat-no" title="statement not covered" >n;</span>
+                  result?: unknown;
+                  error?: unknown;
                 };
                 
                 finalResult.execution.status = statusData.status;
                 finalResult.execution.completedAt = statusData.completedAt;
-                finalResult.execution.result = statusData.result;
-                
-                if (statusData.completedAt) {
-                  fi<span class="cstat-no" title="statement not covered" >nalResult.execution.duration = Math.round(</span>
-                    (new<span class="cstat-no" title="statement not covered" > Date(statusData.completedAt).getTime() - </span>new Date(statusData.startedAt).getTime()) / 1000
-                  );<span class="cstat-no" title="statement not covered" ></span>
-                }<span class="cstat-no" title="statement not covered" ></span>
+                fina<span class="cstat-no" title="statement not covered" >lResult.execution.result = statusData.result;</span>
+                <span class="cstat-no" title="statement not covered" ></span>
+                if (stat<span class="cstat-no" title="statement not covered" >usData.completedAt) {</span>
+                  finalResul<span class="cstat-no" title="statement not covered" >t.execution.duration = Math.round(</span>
+                    (new Date(statusData.completedAt).getTime() - new Date(statusData.startedAt).getTime()) / 1000
+                  );
+                }
                 
                 // Check if execution is complete
                 if (['completed', 'error', 'stopped', 'failed'].includes(statusData.status)) {
-                  if (log &amp;&amp; log.info) { log.info('Scenario execution completed', {
-                    executionId: executionData.executionId,
-                    status: statusData.status,
-<span class="cstat-no" title="statement not covered" >                    duration: finalResult.execution.duration</span>
-<span class="cstat-no" title="statement not covered" >                  }); }</span>
-                  br<span class="cstat-no" title="statement not covered" >eak;</span>
+<span class="cstat-no" title="statement not covered" >                  if (log &amp;&amp; log.info) { log.info('Scenario execu</span>tion completed', {
+<span class="cstat-no" title="statement not covered" >                    executionId: executionData.executionId,</span>
+<span class="cstat-no" title="statement not covered" >                    status: statusData.status,</span>
+                    duration: finalResult.execution.duration
+                  }); }
+                  break;
                 }
               }
               
               // Check timeout
-              if (Date.now() - startTime &gt; timeoutMs) {
+              if<span class="cstat-no" title="statement not covered" > (Date.now() - startTime &gt; timeoutMs) {</span>
                 if (log &amp;&amp; log.warn) { log.warn('Scenario execution timeout reached', { 
                   executionId: executionData.executionId,
-<span class="cstat-no" title="statement not covered" >                  timeoutSeconds: timeoutSeconds</span>
-                }); }
-                finalResult.execution.status = 'timeout';
-                break;<span class="cstat-no" title="statement not covered" ></span>
-              }<span class="cstat-no" title="statement not covered" ></span>
-              <span class="cstat-no" title="statement not covered" ></span>
+                  timeoutSeconds: tim<span class="cstat-no" title="statement not covered" >eoutSeconds</span>
+<span class="cstat-no" title="statement not covered" >                }); }</span>
+                fina<span class="cstat-no" title="statement not covered" >lResult.execution.status = 'timeout';</span>
+                break;
+              }
+              
             } catch (statusError) {
-              if (log &amp;&amp; log.warn) { log.warn('Failed to check execution status', { 
+              if<span class="cstat-no" title="statement not covered" > (log &amp;&amp; log.warn) { log.warn('Failed to check execution status', { </span>
                 executionId: executionData.executionId,
                 error: statusError instanceof Error ? statusError.message : String(statusError)
-              })<span class="cstat-no" title="statement not covered" >; }</span>
+              }); }
               // Continue polling despite status check errors
             }
           }
@@ -691,7 +691,7 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

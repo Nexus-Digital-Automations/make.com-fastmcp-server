@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -151,11 +151,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -218,6 +215,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -234,73 +234,73 @@
  * Deletes a Make.com scenario with safety checks and force options
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { DeleteScenarioSchema } from '../schemas/blueprint-up</span>date.js';
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition </span>} from '../../shared/types/tool-context.js';
-import { formatSuccessResponse<span class="cstat-no" title="statement not covered" > } from '../../../utils/response-formatter</span>.js';
-<span class="cstat-no" title="statement not covered" ></span>
-/**
- * Create delete scenario tool configuration
- */
-export fu<span class="fstat-no" title="function not covered" >nction createDeleteScenar</span>ioTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = co<span class="cstat-no" title="statement not covered" >ntext;</span>
-  <span class="cstat-no" title="statement not covered" ></span>
+import { UserError } from 'fastmcp';
+import { DeleteScenarioSchema } from '../schemas/blueprint-update.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+&nbsp;
+/**<span class="fstat-no" title="function not covered" ></span>
+ * Create delete scenario tool con<span class="cstat-no" title="statement not covered" >figurati</span>on
+ */<span class="cstat-no" title="statement not covered" ></span>
+export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
+  const { apiClient, logger } = context;
+  
   return {
     name: 'delete-scenario',
     description: 'Delete a Make.com scenario with safety checks and force options',
     parameters: DeleteScenarioSchema,
     annotations: {
       title: 'Delete Scenario',
-      readOnlyHint: false,
-      destructiveHint: true,
-      openWorldHint: false,
-    },<span class="fstat-no" title="function not covered" ></span>
-    execute: async (args: <span class="branch-0 cbranch-no" title="branch not covered" >unknown,<span class="fstat-no" title="function not covered" > c</span>ontext): Promise<span class="fstat-no" title="function not covered" >&lt;s</span>tring&gt; =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
-      const { log = { info: ()<span class="cstat-no" title="statement not covered" > =&gt; {</span>}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
-      const <span class="cstat-no" title="statement not covered" >typedArgs = args as { scenarioId: string; force?: boolean };</span>
+      readOnlyHin<span class="fstat-no" title="function not covered" >t:</span> false,
+      destructiveHint: tru<span class="branch-0 cbranch-no" title="branch not covered" >e,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+      openWorldHint: false,<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (args: unknown, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+      const <span class="cstat-no" title="statement not covered" >typedArgs = args as { scenarioId: string; force</span>?: boolean };
       <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp; log.info) { log.info('Deleting scenario', { scenarioId: typedArgs.scenarioId, force: typedArgs.force }); }
-      report<span class="cstat-no" title="statement not covered" >Progress?.({ progress: 0, total: 100 });</span>
+      reportProg<span class="cstat-no" title="statement not covered" >ress?.({ progress: 0, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      try {
-        // Check<span class="cstat-no" title="statement not covered" > scenario status first if not forcing</span>
-        if (!typedAr<span class="cstat-no" title="statement not covered" >gs.force) {</span>
-          reportProgress?.({ progress: 10, <span class="cstat-no" title="statement not covered" >total: 100 });</span>
-          const stat<span class="cstat-no" title="statement not covered" >usResponse = await apiClient.get(`/scenarios/${typedArgs.scenarioId}`);</span>
-          <span class="cstat-no" title="statement not covered" ></span>
-          if (statusResp<span class="cstat-no" title="statement not covered" >onse.success &amp;&amp; statusResponse.data) {</span>
-            const scenario =<span class="cstat-no" title="statement not covered" > statusResponse.data as { active?: boolean };</span>
-            if (scenario.active) {
-              throw new UserError(
-                'Cannot delete active scenario. Use --force true to override, or deactivate scenario first.'
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        // Check sce<span class="cstat-no" title="statement not covered" >nario status first if not forcing</span>
+        if (!typedArgs.force) {<span class="cstat-no" title="statement not covered" ></span>
+          reportProgress<span class="cstat-no" title="statement not covered" >?.({ progress: 10, total: 100 });</span>
+          const statusRespon<span class="cstat-no" title="statement not covered" >se = await apiClient.get(`/scenarios/${typedArgs.scenarioId}`);</span>
+          
+          if (statusResponse.success &amp;&amp; statusResponse.data) {
+            const scenario = statusResponse.data as { active?: boolean };
+            if (<span class="cstat-no" title="statement not covered" >scenario.active) {</span>
+              throw new UserError<span class="cstat-no" title="statement not covered" >(</span>
+<span class="cstat-no" title="statement not covered" >                'Cannot delete active scenario. Use --force true</span> to override, or deactivate scenario first.'
               );<span class="cstat-no" title="statement not covered" ></span>
             }<span class="cstat-no" title="statement not covered" ></span>
-          }<span class="cstat-no" title="statement not covered" ></span>
+          }
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
         reportProgress?.({ progress: 50, total: 100 });
-<span class="cstat-no" title="statement not covered" ></span>
-        const response = await <span class="cstat-no" title="statement not covered" >apiClient.delete(`/scenarios/${typedArgs.scenarioId}`);</span>
+&nbsp;
+        const response = await apiClient.delete(`/scenarios/${typedArgs.scenarioId}`);
         reportProgress?.({ progress: 90, total: 100 });
 &nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to delete scenario: ${response.error?.message}`);
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to delete scenario: ${response.error?.message}`);</span>
         }
-<span class="cstat-no" title="statement not covered" ></span>
-        reportProgre<span class="cstat-no" title="statement not covered" >ss?.({ progress: 100, total: 100 });</span>
 &nbsp;
-        const result = {
+        reportProgress?.({ progress: 100, total: 100 });
+&nbsp;
+        const re<span class="cstat-no" title="statement not covered" >sult = {</span>
           scenarioId: typedArgs.scenarioId,
           message: `Scenario deleted successfully`,
-          force:<span class="cstat-no" title="statement not covered" > Boolean(typedArgs.force),</span>
-          timestamp: new Date().toISOString(),
+          force: Boolean(typedArgs.fo<span class="cstat-no" title="statement not covered" >rce),</span>
+          timest<span class="cstat-no" title="statement not covered" >amp: new Date().toISOString(),</span>
         };
-<span class="cstat-no" title="statement not covered" ></span>
-        if (log <span class="cstat-no" title="statement not covered" >&amp;&amp; log.info) { log.info('Scenario deleted successfully', { </span>
-          scenarioId: typedArgs.scenarioId,
+&nbsp;
+        if (log &amp;&amp; log.info) { log.info('Scenario deleted successfully', { 
+          scenar<span class="cstat-no" title="statement not covered" >ioId: typedArgs.scenarioId,</span>
           force: typedArgs.force 
         }); }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -319,7 +319,7 @@ export fu<span class="fstat-no" title="function not covered" >nction createDelet
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

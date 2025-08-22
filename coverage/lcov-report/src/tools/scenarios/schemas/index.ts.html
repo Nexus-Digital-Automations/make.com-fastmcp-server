@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/42</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/30</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
@@ -209,30 +209,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -288,6 +273,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -350,34 +350,34 @@
  * @description Aggregates and re-exports all Zod schemas and types used in scenarios operations
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
-<span class="cstat-no" title="statement not covered" ></span>
+import { z } from 'zod';
+&nbsp;
 // Import schemas for local use
-import {<span class="cstat-no" title="statement not covered" ></span>
-  ScenarioFiltersSchema as _S<span class="cstat-no" title="statement not covered" >cenarioFiltersSchema,</span>
-  ScenarioDetailSchema as _Sce<span class="cstat-no" title="statement not covered" >narioDetailSchema,</span>
+import {
+  ScenarioFiltersSchema as _ScenarioFiltersSchema,
+  ScenarioDetailSchema as _ScenarioDetailSchema,
   RunScenarioSchema as _RunScenarioSchema,
-} from './scenario-filters.j<span class="cstat-no" title="statement not covered" >s';</span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >import {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >  TroubleshootScenarioSchema as _TroubleshootScenarioSchema,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+} from './scenario-filters.js';
+&nbsp;
+import {
+  TroubleshootScenarioSchema as _TroubleshootScenarioSchema,
   GenerateTroubleshootingReportSchema as _GenerateTroubleshootingReportSchema,
-} from './troubleshooting.j<span class="cstat-no" title="statement not covered" >s';</span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >import {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+} from './troubleshooting.js';<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+import {
   CreateScenarioSchema as _CreateScenarioSchema,
-  UpdateScenarioSchema as _U<span class="cstat-no" title="statement not covered" >pdateScenarioSchema,</span>
-<span class="cstat-no" title="statement not covered" >  DeleteScenarioSchema as _DeleteScenarioSchema,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >  CloneScenarioSchema as _CloneScenarioSchema,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >  ValidateBlueprintSchema as _ValidateBlueprintSchema,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >  ExtractBlueprintConnectionsSchema as _ExtractBlueprintConnectionsSchema,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >  OptimizeBlueprintSchema as _OptimizeBlueprintSchema,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >} from './blueprint-update.js';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  UpdateScenarioSchema as _UpdateScenarioSchema,
+  DeleteScenarioSchema as _DeleteScenarioSchema,
+  CloneScenarioSchema as _CloneScenarioSchema,
+  ValidateBlueprintSchema as _ValidateBlueprintSchema,
+  ExtractBlueprintConnectionsSchema as _ExtractBlueprintConnectionsSchema,
+  OptimizeBlueprintSchema as _OptimizeBlueprintSchema,
+} from './blueprint-update.js';
+&nbsp;
 // Re-export schemas from scenario-filters
 export {
   ScenarioFiltersSchema,
-<span class="cstat-no" title="statement not covered" >  ScenarioDetailSchema,</span>
+  ScenarioDetailSchema,
   RunScenarioSchema,
   type ScenarioFilters,
   type ScenarioDetail,
@@ -388,33 +388,33 @@ export {
 export {
   TroubleshootScenarioSchema,
   GenerateTroubleshootingReportSchema,
-  type TroubleshootScenario,
+  type TroubleshootScenario,<span class="cstat-no" title="statement not covered" ></span>
   type GenerateTroubleshootingReport,
 } from './troubleshooting.js';
 &nbsp;
-// Re-export all schemas from blueprint-update
-export {
-  CreateScenarioSchema,
-  UpdateScenarioSchema,
+// R<span class="fstat-no" title="function not covered" >e-</span>export all schemas from blueprint-update
+export {<span class="cstat-no" title="statement not covered" ></span>
+  CreateScenarioSchema,<span class="cstat-no" title="statement not covered" ></span>
+  UpdateScen<span class="cstat-no" title="statement not covered" >arioSchema,</span>
   DeleteScenarioSchema,
   CloneScenarioSchema,
-  ValidateBlueprintSchema,
-  ExtractBlueprintConnectionsSchema,
+  ValidateBlueprintSchema,<span class="cstat-no" title="statement not covered" ></span>
+  ExtractBlu<span class="cstat-no" title="statement not covered" >eprintConnectionsSchema,</span>
   OptimizeBlueprintSchema,
   type CreateScenario,
   type UpdateScenario,
-<span class="cstat-no" title="statement not covered" >  type DeleteScenario,</span>
+  type DeleteScenario,
   type CloneScenario,
   type ValidateBlueprint,
   type ExtractBlueprintConnections,
-  ty<span class="fstat-no" title="function not covered" >pe</span> OptimizeBlueprint,
-} from '<span class="cstat-no" title="statement not covered" >./blueprint-update.js';</span>
+  type OptimizeBlueprint,
+} fr<span class="fstat-no" title="function not covered" >om</span> './blueprint-update.js';
 <span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
  * Collection of all scenario-related schemas for easy access
  */
-export const ScenariosSchemas = {<span class="cstat-no" title="statement not covered" ></span>
-  // Filter <span class="cstat-no" title="statement not covered" >and query schemas</span>
+export const<span class="cstat-no" title="statement not covered" > ScenariosSch</span>emas = {
+  // Filter and query schemas
   filters: {
     ScenarioFiltersSchema: _ScenarioFiltersSchema,
     ScenarioDetailSchema: _ScenarioDetailSchema,
@@ -423,12 +423,12 @@ export const ScenariosSchemas = {<span class="cstat-no" title="statement not cov
     GenerateTroubleshootingReportSchema: _GenerateTroubleshootingReportSchema,
   },
   
-  //<span class="fstat-no" title="function not covered" > U</span>pdate and modification schemas
-  update<span class="cstat-no" title="statement not covered" >s: {</span>
-    CreateSc<span class="cstat-no" title="statement not covered" >enarioSchema: _CreateScenari</span>oSchema,
+  // Update and modification schemas
+  updates: {
+    CreateScenarioSchema: _CreateScenarioSchema,
     UpdateScenarioSchema: _UpdateScenarioSchema,
     DeleteScenarioSchema: _DeleteScenarioSchema,
-    CloneSce<span class="cstat-no" title="statement not covered" >narioSchema: </span>_CloneScenarioSchema,
+    CloneScenarioSchema: _CloneScenarioSchema,
   },
   
   // Blueprint manipulation schemas
@@ -493,7 +493,7 @@ export const SchemaValidation = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

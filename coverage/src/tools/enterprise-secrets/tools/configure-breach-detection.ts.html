@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/71</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/70</span>
+                <span class='fraction'>0/64</span>
             </div>
         
             
@@ -339,16 +339,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -558,6 +555,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -610,42 +610,42 @@
  * Configure comprehensive breach detection and automated response systems
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { BreachDetectionConfigSchema } from '../schemas/index.js';</span>
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition,</span> ToolExecutionContext } from '../../shared/types/tool-context.js';
-import { BreachIndi<span class="cstat-no" title="statement not covered" >cator } from '../types/index.js</span>';
-import { auditLogger } fro<span class="cstat-no" title="statement not covered" >m '../../../lib/audit-logger.js';</span>
-import { formatSuccessResponse }<span class="cstat-no" title="statement not covered" > from '../../../utils/response-formatter.js';</span>
+import { UserError } from 'fastmcp';
+import { BreachDetectionConfigSchema } from '../schemas/index.js';
+import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
+import { BreachIndicator } from '../types/index.js';
+import { auditLogger } from '../../../lib/audit-logger.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
-/**
- * Breach Detection Manager class
- */
-class BreachDetectionM<span class="cstat-no" title="statement not covered" >anage</span>r {
-  private static instan<span class="cstat-no" title="statement not covered" >ce: Breach</span>DetectionManager | null = null;
-  private breachIndicat<span class="cstat-no" title="statement not covered" >ors: Map&lt;s</span>tring, BreachIndicator&gt; = new Map();
-  pr<span class="fstat-no" title="function not covered" >iv</span>ate detectionConfigs: Map&lt;string, unknown&gt; = new Map();
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Breach Detection Man<span class="cstat-no" title="statement not covered" >ager class</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+clas<span class="fstat-no" title="function not covered" >s </span>BreachDetectionManager {
+  privat<span class="cstat-no" title="statement not covered" >e static instance: BreachDetectionManager | null = null;</span>
+  private br<span class="cstat-no" title="statement not covered" >eachIndicators: Map&lt;string, BreachIndicator&gt; = new Map();</span>
+  private detectionConfigs: Map&lt;string, unknown&gt; = new Map();
 <span class="cstat-no" title="statement not covered" ></span>
-  public sta<span class="cstat-no" title="statement not covered" >tic getInstance(): BreachDetectionManager {</span>
+  public static getInstance(): BreachDetectionManager {
     if (!BreachDetectionManager.instance) {
-      Br<span class="cstat-no" title="statement not covered" >eachDetectionManager.instance = new Brea</span>chDetectionManager();
+      BreachDetectionManager.instance = new BreachDetectionManager();
     }
-    return BreachDetectionManager.instance;
-  }
+<span class="fstat-no" title="function not covered" >    re</span>turn BreachDetectionManager.instance;
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  /*<span class="fstat-no" title="function not covered" >*</span>
-   * Configure breach detection <span class="cstat-no" title="statement not covered" >and monitoring</span>
-   */
-  public<span class="cstat-no" title="statement not covered" > async configureBreachDetection(config: Parameters&lt;type</span>of BreachDetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
-    const validatedConfig = BreachDetectionConfigSchema.parse(config);
-<span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Configure breach detection and monitoring
+   */<span class="cstat-no" title="statement not covered" ></span>
+  public<span class="cstat-no" title="statement not covered" > async configureBreachDetection(config: Parameters&lt;typeof </span>BreachDetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
+    cons<span class="cstat-no" title="statement not covered" >t validatedConfig = BreachDetectionConfigSchema.parse(conf</span>ig);
+&nbsp;
     // S<span class="cstat-no" title="statement not covered" >tore configuration</span>
-    this<span class="cstat-no" title="statement not covered" >.detectionConfigs.set('default', validatedConfig);</span>
+    this.det<span class="cstat-no" title="statement not covered" >ectionConfigs.set('default', validatedCo</span>nfig);
 &nbsp;
-    // I<span class="cstat-no" title="statement not covered" >nitialize monitoring systems</span>
-    await th<span class="cstat-no" title="statement not covered" >is.initializeAnomalyDetection(validatedC</span>onfig);
+    // Initialize monitoring systems
+    awai<span class="cstat-no" title="statement not covered" >t this.initializeAnomalyDetection(validatedConfig);</span>
     await this.initializeThreatIntelligence(validatedConfig);
     await this.initializeBehavioralAnalysis(validatedConfig);
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     // Setup automated response systems
     if (validatedConfig.responseConfig.automaticContainment) {
       await this.setupAutomaticContainment();
@@ -655,37 +655,37 @@ class BreachDetectionM<span class="cstat-no" title="statement not covered" >anag
     await auditLogger.logEvent({
       level: 'info',
       category: 'security',
-      action: 'breach_detection_configured',
-      success: true,
+<span class="fstat-no" title="function not covered" ></span>      action: 'breach_detection_configured',
+      success: true,<span class="cstat-no" title="statement not covered" ></span>
       details: {
-<span class="fstat-no" title="function not covered" ></span>        detectionMethods: validatedConfig.detectionMethods,
-        monitoringTargets: valid<span class="cstat-no" title="statement not covered" >atedConfig.monitoringTargets,</span>
-        responseConfig: validatedConfig.responseConfig,
-      },
+        detectionMethods: validatedConfig.detectionMethods,
+        monitoringTargets: validatedConfig.monitoringTargets,
+<span class="fstat-no" title="function not covered" ></span>        responseConfig: validatedConfig.responseConfig,
+      },<span class="cstat-no" title="statement not covered" ></span>
       riskLevel: 'low',
-<span class="fstat-no" title="function not covered" >    })</span>;
-  }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  private async initializeAnomalyDetection(config: Parameters&lt;typeof BreachDetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
-    const validatedConfig = BreachDetectionConfigSchema.parse(config);
-<span class="fstat-no" title="function not covered" >    //</span> Initialize anomaly detection systems
-    // Debug: Initializing anoma<span class="cstat-no" title="statement not covered" >ly detection (enabled: validatedConfig.detectionMetho</span>ds.anomalyDetection)
+    });
   }
+<span class="fstat-no" title="function not covered" ></span>
+  private async initializeAnomaly<span class="cstat-no" title="statement not covered" >Detection(config: Parameters&lt;typeof Breach</span>DetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
+    const _validatedConfig = BreachDetectionConfigSchema.parse(config);
+    // Initialize anomaly detection systems
+    // Debug: Initializing anomaly detection (enabled: validatedConfig.detectionMethods.anomalyDetection)
+  }<span class="fstat-no" title="function not covered" ></span>
 &nbsp;
   private async initializeThreatIntelligence(config: Parameters&lt;typeof BreachDetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
-<span class="fstat-no" title="function not covered" >    co</span>nst validatedConfig = BreachDetectionConfigSchema.parse(config);
+    const _validatedConfig = BreachDetectionConfigSchema.parse(config);
     // Initialize threat intelligence feeds
     // Debug: Initializing threat intelligence (enabled: validatedConfig.detectionMethods.threatIntelligence)
   }
-&nbsp;
+<span class="fstat-no" title="function not covered" ></span>
   private async initializeBehavioralAnalysis(config: Parameters&lt;typeof BreachDetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
-    const validatedConfig = BreachDetectionConfigSchema.parse(config);
-<span class="fstat-no" title="function not covered" >    //</span> Initialize behavioral analysis
-    // Debug: Initializing behavioral analysis (enabled: validatedConfig.detectionMethods.behavioralAnalysis)
+    const _validatedConfig <span class="cstat-no" title="statement not covered" >= B</span>reachDetectionConfigSchema.parse(config);
+    // Initialize behavioral analysis
+    // D<span class="cstat-no" title="statement not covered" >ebug: Initializing behavioral analysis (enabled: validatedConfig.detectionMethods.behavioralAnalysis)</span>
   }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  privat<span class="cstat-no" title="statement not covered" >e async setupAutomaticContainment(): Promise&lt;void&gt; {</span>
-    // Setup automatic contain<span class="cstat-no" title="statement not covered" >ment procedures</span>
+  private async setupAutomaticContainment(): Promise&lt;void&gt; {
+    // Setup automatic containment procedures
     // Debug: Setting up automatic containment
   }
 &nbsp;
@@ -697,23 +697,23 @@ class BreachDetectionM<span class="cstat-no" title="statement not covered" >anag
     const indicators: BreachIndicator[] = [];
     
     // Generate simulated breach indicators
-    if (Math.random() &gt; 0.95) { // 5% chance of finding anomalies
-      const indicator: BreachIndicator = {
+    if (Math<span class="cstat-no" title="statement not covered" >.random() &gt; 0.95) { // 5% ch</span>ance of finding anomalies
+      const <span class="cstat-no" title="statement not covered" >indicator: BreachIndicator = {</span>
         id: `breach-${Date.now()}`,
-        type<span class="cstat-no" title="statement not covered" >: 'anomalous_access',</span>
-        seve<span class="cstat-no" title="statement not covered" >rity: 'medium',</span>
+<span class="cstat-no" title="statement not covered" >        type: 'anomalous_ac</span>cess',
+        severity: 'medium',
         confidence: 0.75,
-<span class="cstat-no" title="statement not covered" >        timestamp: new Date</span>(),
+        timestamp: new Date(),
         source: 'access_pattern_analysis',
-        details: {
+<span class="fstat-no" title="function not covered" ></span>        details: {
           anomalyType: 'unusual_access_time',
-          affectedResource: 'vault/secrets/database/*',
-<span class="fstat-no" title="function not covered" ></span>          riskScore: 65,
-        },
+          affectedResource:<span class="cstat-no" title="statement not covered" > 'v</span>ault/secrets/database/*',
+          riskScore: 65,
+<span class="cstat-no" title="statement not covered" >        },</span>
         status: 'active',<span class="cstat-no" title="statement not covered" ></span>
         responseActions: ['alert_security_team', 'log_detailed_audit'],
-      };<span class="cstat-no" title="statement not covered" ></span>
-      <span class="cstat-no" title="statement not covered" ></span>
+      };
+      
       indicators.push(indicator);
       this.breachIndicators.set(indicator.id, indicator);
     }
@@ -725,31 +725,31 @@ class BreachDetectionM<span class="cstat-no" title="statement not covered" >anag
    * Detect security anomalies
    */
   public async detectAnomalies(): Promise&lt;BreachIndicator[]&gt; {
-    // Simulate anomaly detection
-    const indicators: BreachIndicator[] = [];
+    // Simul<span class="cstat-no" title="statement not covered" >ate anomaly detection</span>
+    const in<span class="cstat-no" title="statement not covered" >dicators: BreachIndicator[] = [];</span>
     
-    // Gener<span class="cstat-no" title="statement not covered" >ate simulated anomaly indica</span>tors
-    if (Math<span class="cstat-no" title="statement not covered" >.random() &gt; 0.97) { // 3% chance of finding security</span> anomalies
+    // G<span class="cstat-no" title="statement not covered" >enerate simulated a</span>nomaly indicators
+    if (Math.random() &gt; 0.97) { // 3% chance of finding security anomalies
       const indicator: BreachIndicator = {
-<span class="cstat-no" title="statement not covered" >        id: `anomaly-${Date</span>.now()}`,
+        id: `anomaly-${Date.now()}`,
         type: 'security_anomaly',
-        severity: 'high',
-        confidence: 0.85,
+<span class="fstat-no" title="function not covered" ></span>        severity: 'high',
+<span class="cstat-no" title="statement not covered" >        confidence: 0.85,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
         timestamp: new Date(),
-<span class="fstat-no" title="function not covered" ></span>        source: 'security_anomaly_detection',
-<span class="cstat-no" title="statement not covered" >        details: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        source: 'security_anomaly_detection',
+        details: {
           anomalyType: 'privilege_escalation_attempt',
-          affectedResource: 'vault/auth/token/*',
-          riskScore: 85,
-        },
-<span class="fstat-no" title="function not covered" ></span>        status: 'active',
-        responseActions: [<span class="cstat-no" title="statement not covered" >'automatic_containment', 'immediate_ale</span>rt', 'forensic_analysis'],
+<span class="fstat-no" title="function not covered" ></span>          affectedResource: 'vault/auth/token/*',
+          riskScore: 85,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        },</span>
+        stat<span class="cstat-no" title="statement not covered" >us: 'active',</span>
+        responseActions: ['automatic_containment', 'immediate_alert', 'forensic_analysis'],
       };<span class="cstat-no" title="statement not covered" ></span>
-      <span class="cstat-no" title="statement not covered" ></span>
-      indicators.push(indicator);
-      th<span class="cstat-no" title="statement not covered" >is.breachIndicators.set(ind</span>icator.id, indicator);
+      
+      in<span class="cstat-no" title="statement not covered" >dicators.push(indicator);</span>
+      this.breachIndicators.set(indicator.id, indicator);
     }
-    <span class="cstat-no" title="statement not covered" ></span>
+    
     return indicators;
   }
 &nbsp;
@@ -762,73 +762,73 @@ class BreachDetectionM<span class="cstat-no" title="statement not covered" >anag
 &nbsp;
   /**
    * Update indicator status
-   */
-  public async updateIndicatorStatus(indicatorId: string, status: 'active' | 'resolved' | 'false_positive'): Promise&lt;void&gt; {
-    const indicator = this.breachIndicators.get(indicatorId);
-<span class="fstat-no" title="function not covered" >    if</span> (!indicator) {
-      throw new Error(`Brea<span class="cstat-no" title="statement not covered" >ch indicator not found: ${indicatorId}`);</span>
+   *<span class="fstat-no" title="function not covered" >/</span>
+  public async updateIndica<span class="cstat-no" title="statement not covered" >torStatus(indicatorId: string, status: 'act</span>ive' | 'resolved' | 'false_positive'): Promise&lt;void&gt; {
+    const indicator = this.<span class="cstat-no" title="statement not covered" >bre</span>achIndicators.get(indicatorId);
+    if (!indicator) {<span class="cstat-no" title="statement not covered" ></span>
+      th<span class="cstat-no" title="statement not covered" >row new Error(`Brea<span class="fstat-no" title="function not covered" >ch</span> indicator not found: ${indicatorId}`);</span>
     }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    indi<span class="cstat-no" title="statement not covered" >cator.status = stat<span class="fstat-no" title="function not covered" >us</span>;</span>
+    indicator.status = status;
 <span class="cstat-no" title="statement not covered" ></span>
-    // Log i<span class="cstat-no" title="statement not covered" >ndicator status update</span>
-    await auditLogger.logEvent({
-      le<span class="cstat-no" title="statement not covered" >vel: 'info',</span>
-      category: 'security',
-      action: 'breach_indicator_status<span class="fstat-no" title="function not covered" >_u</span>pda<span class="cstat-no" title="statement not covered" >ted',</span>
-      success: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      details: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    // Log indicator status update
+    await auditLogger.logEvent({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      level: 'info',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      category: 'security',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      action: 'breach_indicator_status_updated',
+      success: true,
+      details: {
         indicatorId,
         newStatus: status,
         indicatorType: indicator.type,
       },
       riskLevel: 'low',
-    });
-  }
-&nbsp;
-  /**<span class="fstat-no" title="function not covered" ></span>
-   * Get breach detecti<span class="cstat-no" title="statement not covered" >on stati</span>stics
-   *<span class="cstat-no" title="statement not covered" >/</span>
+    });<span class="fstat-no" title="function not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**
+   * Get breach detection statistics
+   */
   public getBreachStatistics(): {
     total: number;
     active: number;
     resolved: number;
     falsePositives: number;
     bySeverity: Record&lt;string, number&gt;;
-    byType: Record&lt;string, number&gt;;
-  } {
-    const indicators = Array.from(this.breachIndicators.values());
-    const bySever<span class="fstat-no" title="function not covered" >it</span>y: Record&lt;string, number&gt; = {};
-    const byType: Record&lt;string, number&gt; = {<span class="cstat-no" title="statement not covered" >};</span>
+    byType: Recor<span class="fstat-no" title="function not covered" >d&lt;</span>string, number&gt;;
+  } {<span class="cstat-no" title="statement not covered" ></span>
+    const in<span class="cstat-no" title="statement not covered" >dicators = Array.from(this.breachIndicators.values());</span>
+    const by<span class="cstat-no" title="statement not covered" >Severity: Record&lt;string, number&gt; = {};</span>
+    const by<span class="cstat-no" title="statement not covered" >Type: Record&lt;string, number&gt; = {};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-    indicato<span class="cstat-no" title="statement not covered" >rs.forEach(indicator =&gt; {</span>
-      bySeve<span class="cstat-no" title="statement not covered" >rity[indicator.severity] = (bySeverity[indicator.severity] || 0) + 1;</span>
-      byType[indicator.type] = (byType[<span class="cstat-no" title="statement not covered" >indicator.type] || 0) + 1;</span>
+    indicators.forEach(indicator =&gt; {<span class="cstat-no" title="statement not covered" ></span>
+      bySeverity<span class="cstat-no" title="statement not covered" >[indicator.severity] = (bySeverity[indicator.sev</span>erity] || 0) + 1;
+      byType[ind<span class="cstat-no" title="statement not covered" >icator.type] = (byType[indicator.type] || 0) + 1;</span>
     });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    return {<span class="cstat-no" title="statement not covered" ></span>
-      total: ind<span class="cstat-no" title="statement not covered" >icators.length,</span>
-      active: indicators.filter<span class="cstat-no" title="statement not covered" >(i =&gt; i.status === 'active').length,</span>
+    return {
+      total: indicators.length,
+      active: indicators.filter(i =&gt; i.status === 'active').length,
       resolved: indicators.filter(i =&gt; i.status === 'resolved').length,
       falsePositives: indicators.filter(i =&gt; i.status === 'false_positive').length,
       bySeverity,
       byType,
     };
   }
-}
-&nbsp;
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 /**
- * Configure bre<span class="cstat-no" title="statement not covered" >ach detection tool configuration</span>
- */<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-export function createConfigureBreachDetectionTool(context: ToolContext): ToolDefinition {
+ * Configure breach detection tool configuration
+ */<span class="cstat-no" title="statement not covered" ></span>
+export function <span class="cstat-no" title="statement not covered" >createConfigureBreachDetectionTool(context: ToolContex</span>t): ToolDefinition {
   const { logger } = context;
-  <span class="cstat-no" title="statement not covered" ></span>
+  
   return {<span class="cstat-no" title="statement not covered" ></span>
-    name: 'configure-breach-detection',
-    description: 'Configure comprehensive breach detection and automated response systems',
-    parameters: BreachDetectionConfig<span class="cstat-no" title="statement not covered" >Schema,</span>
-    annotations:<span class="cstat-no" title="statement not covered" > {</span>
-      title: 'Co<span class="cstat-no" title="statement not covered" >nfigure Breach Detection and Response Systems',</span>
+    name: 'confi<span class="cstat-no" title="statement not covered" >gure-breach-detection',</span>
+    description:<span class="cstat-no" title="statement not covered" > 'Configure comprehensive breach detection and automated response systems',</span>
+    parameters: BreachDetectionConfigSchema,
+    annotations: {
+      title: 'Configure Breach Detection and Response Systems',
       readOnlyHint: false,
       idempotentHint: true,
       openWorldHint: false,
@@ -883,7 +883,7 @@ export function createConfigureBreachDetectionTool(context: ToolContext): ToolDe
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

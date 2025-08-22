@@ -39,7 +39,7 @@ jest.mock('../../../src/lib/config.js', () => ({
   }
 }));
 
-import MonitoringMiddleware from '../../../src/middleware/monitoring.js';
+import { MonitoringMiddleware } from '../../../src/middleware/monitoring.js';
 import metrics from '../../../src/lib/metrics.js';
 import logger from '../../../src/lib/logger.js';
 
@@ -47,6 +47,13 @@ const mockMetrics = metrics as jest.Mocked<typeof metrics>;
 const mockLogger = logger as jest.Mocked<typeof logger>;
 
 describe('MonitoringMiddleware', () => {
+  it('should verify logger mock is working', () => {
+    console.log('Logger mock:', logger);
+    console.log('Logger.child:', logger.child);
+    expect(logger.child).toBeDefined();
+    expect(typeof logger.child).toBe('function');
+  });
+
   let monitoringMiddleware: MonitoringMiddleware;
   let mockServer: jest.Mocked<FastMCP>;
   let mockChildLogger: jest.Mocked<ReturnType<typeof logger.child>>;

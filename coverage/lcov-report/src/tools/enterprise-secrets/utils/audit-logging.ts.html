@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/37</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/37</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -387,9 +387,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -534,7 +531,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -582,6 +578,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -706,26 +706,26 @@
  * Centralized audit logging utilities for enterprise secrets management compliance
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { auditLogger } from '../../../lib/audit-logger.js';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
+import { auditLogger } from '../../../lib/audit-logger.js';
+&nbsp;
+/**
  * Audit event types for enterprise secrets management
- */
-export type EnterpriseSecretsAuditEvent =
-  | 'vault_cluster_configured'
-  | 'vault_cluster_sea<span class="cstat-no" title="statement not covered" >led'</span>
-  | <span class="fstat-no" title="function not covered" >'v</span>ault_cluster_unsealed' 
-  | <span class="fstat-no" title="function not covered" >'h</span>sm_configured'
+ */<span class="cstat-no" title="statement not covered" ></span>
+expo<span class="fstat-no" title="function not covered" >rt</span> type EnterpriseSecretsAuditEvent =
+  | <span class="fstat-no" title="function not covered" >'v</span>ault_cluster_configured'
+  | 'vau<span class="cstat-no" title="statement not covered" >lt_cluster_sealed'</span>
+  | 'vault_c<span class="cstat-no" title="statement not covered" >luster_unsealed' </span>
+  | 'hsm_configured'
   | 'hsm<span class="cstat-no" title="statement not covered" >_key_generated'</span>
-  | 'hsm_key<span class="cstat-no" title="statement not covered" >_rotated'</span>
+  | 'hsm_key_rotated'
   | 'secret_engine_configured'
-  | 'sec<span class="cstat-no" title="statement not covered" >ret_generated'</span>
+  | 'secret_generated'
   | 'secret_retrieved'
-  | 'secret_rotated'
-  | 'rbac_policy_created'
+  | <span class="fstat-no" title="function not covered" >'s</span>ecret_rotated'<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+  | 'rbac_policy_created'<span class="cstat-no" title="statement not covered" ></span>
   | 'rbac_policy_modified'
-  | <span class="fstat-no" title="function not covered" >'s</span>ecret_leakage_detected'<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-  | 'breach_detection_trigg<span class="cstat-no" title="statement not covered" >ered'</span>
+  | 'secret_leakage_detected'
+  | 'breach_detection_triggered'
   | 'compliance_report_generated'
   | 'audit_system_configured';
 &nbsp;
@@ -735,51 +735,51 @@ export type EnterpriseSecretsAuditEvent =
 export type AuditRiskLevel = 'low' | 'medium' | 'high' | 'critical';
 &nbsp;
 /**
- * Compliance frameworks
+ * Compl<span class="cstat-no" title="statement not covered" >iance frameworks</span>
  */
 export type ComplianceFramework = 'SOC2' | 'PCI_DSS' | 'GDPR' | 'FIPS_140_2' | 'COMMON_CRITERIA' | 'ISO_27001';
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 /**
- * Audit event details interface
- */
-export interface EnterpriseAuditEventDetails {
-  cl<span class="fstat-no" title="function not covered" >us</span>terId?: string;<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-  nodeId?: string;<span class="cstat-no" title="statement not covered" ></span>
-  provid<span class="cstat-no" title="statement not covered" >er?: string;</span>
+ * A<span class="fstat-no" title="function not covered" >ud</span>it event details interface<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+export i<span class="cstat-no" title="statement not covered" >nterface EnterpriseAuditEventDetails {</span>
+  clusterId?: string;
+  nodeId?: string;
+  provider?: string;
   secretEngine?: string;
   secretPath?: string;
   policyName?: string;
   userId?: string;
   roleId?: string;
-  ipAddress?: string;
-  userAgent?: string;
+  ip<span class="fstat-no" title="function not covered" >Ad</span>dress?: string;<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+  userAg<span class="cstat-no" title="statement not covered" >ent?: string;</span>
   complianceFramework?: ComplianceFramework[];
-  [k<span class="fstat-no" title="function not covered" >ey</span>: string]: unknown;<span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-}<span class="cstat-no" title="statement not covered" ></span>
+  [key: string]: unknown;
+}
 &nbsp;
 /**
  * Enhanced audit logging for enterprise secrets management
  */
 export class EnterpriseAuditLogger {
   private static instance: EnterpriseAuditLogger | null = null;
-&nbsp;
-  private constructor() {}
-&nbsp;
-  pu<span class="fstat-no" title="function not covered" >bl</span>ic static getInstance(): EnterpriseAuditLogger {<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-    if (!EnterpriseAudi<span class="cstat-no" title="statement not covered" >tLogger.instance) {</span>
-      EnterpriseAuditLogge<span class="cstat-no" title="statement not covered" >r.instance = new Enterprise</span>AuditLogger();
-    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+  private constructor()<span class="cstat-no" title="statement not covered" > {}</span>
+<span class="cstat-no" title="statement not covered" ></span>
+  public<span class="cstat-no" title="statement not covered" > static getInstance(): EnterpriseAuditLogger {</span>
+    if (!EnterpriseAuditLogger.instance) {
+      EnterpriseAuditLogger.instance = new EnterpriseAuditLogger();
+    }
     return EnterpriseAuditLogger.instance;
   }
 &nbsp;
   /**
    * Log enterprise secrets management audit event
    */
-  public async logEvent(
-    action: EnterpriseSecretsAuditEvent,
+  pu<span class="fstat-no" title="function not covered" >bl</span>ic async logEvent(<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+    acti<span class="cstat-no" title="statement not covered" >on: EnterpriseSecretsAuditEvent,</span>
     success: boolean,
-<span class="fstat-no" title="function not covered" >    de</span>tails: EnterpriseAuditEventDetails = {},<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-    risk<span class="cstat-no" title="statement not covered" >Level: AuditRiskLevel = 'low'</span>
+    details: EnterpriseAuditEventDetails = {},
+    riskLevel: AuditRiskLevel = 'low'
   ): Promise&lt;void&gt; {
     const auditEvent = {
       level: this.determineLogLevel(success, riskLevel),
@@ -787,23 +787,23 @@ export class EnterpriseAuditLogger {
       action,
       success,
       details: {
-        ...details,
-        timestamp: new Date().toISOString(),
+<span class="fstat-no" title="function not covered" ></span>        ...details,<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+        timestamp: new Dat<span class="cstat-no" title="statement not covered" >e().toISOString(),</span>
         source: 'enterprise-secrets-management',
-<span class="fstat-no" title="function not covered" ></span>        auditVersion: '2.0',<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-      },<span class="cstat-no" title="statement not covered" ></span>
+        auditVersion: '2.0',
+      },
       riskLevel,
     };
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
     await auditLogger.logEvent(auditEvent);
   }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   /**
    * Log compliance-specific event
-   */
+   */<span class="cstat-no" title="statement not covered" ></span>
   public async logComplianceEvent(
     action: EnterpriseSecretsAuditEvent,
-    comp<span class="cstat-no" title="statement not covered" >lianceFramework: ComplianceFramework | ComplianceFramework[],</span>
+    complianceFramework: ComplianceFramework | ComplianceFramework[],
     success: boolean,
     details: EnterpriseAuditEventDetails = {},
     riskLevel: AuditRiskLevel = 'low'
@@ -811,13 +811,13 @@ export class EnterpriseAuditLogger {
     const frameworks = Array.isArray(complianceFramework) ? complianceFramework : [complianceFramework];
     
     await this.logEvent(action, success, {
-      ...details,
+<span class="fstat-no" title="function not covered" ></span>      ...details,
       complianceFramework: frameworks,
       complianceRelevant: true,
-<span class="fstat-no" title="function not covered" >    },</span> riskLevel);
+    }, r<span class="cstat-no" title="statement not covered" >iskLevel);</span>
   }
 &nbsp;
-  /**<span class="cstat-no" title="statement not covered" ></span>
+  /**
    * Log security violation or breach
    */
   public async logSecurityViolation(
@@ -830,77 +830,77 @@ export class EnterpriseAuditLogger {
       violation,
       securityIncident: true,
       requiresImmediateAction: riskLevel === 'critical',
+<span class="fstat-no" title="function not covered" >    },</span> riskLevel);
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Log acc<span class="cstat-no" title="statement not covered" >ess attempt (su</span>ccessful or failed)
+   */<span class="cstat-no" title="statement not covered" ></span>
+  public async logAccessAttempt(
+    resourceType: string,
+    resourceId: string,
+    success: boolean,
+<span class="fstat-no" title="function not covered" >    de</span>tails: EnterpriseAuditEventDetails = {}
+  ): Promise&lt;void&gt; {<span class="cstat-no" title="statement not covered" ></span>
+    const action = success ? 'secret_retrieved' : 'secret_retrieval_failed';
+    const riskLevel: AuditRiskLevel = success ? 'low' : 'medium';
+&nbsp;
+    await this.logEvent(action as EnterpriseSecretsAuditEvent, success, {
+      ...details,
+      re<span class="cstat-no" title="statement not covered" >sourceType,</span>
+      resourceId,
+      accessAttempt: true,
     }, riskLevel);
   }
 &nbsp;
-  /*<span class="fstat-no" title="function not covered" >*</span>
-   * Log<span class="cstat-no" title="statement not covered" > access attempt (successful or failed)</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
-  public<span class="cstat-no" title="statement not covered" > async logAccessAttempt(</span>
-    resource<span class="cstat-no" title="statement not covered" >Type: string,</span>
-    reso<span class="cstat-no" title="statement not covered" >urceId: string,</span>
-    success: boolean,
-    details: EnterpriseAuditEventDetails = {}
-  ): Promise&lt;void&gt; {
-    const action = success ? 'secret_retrieved' : 'secret_retrieval_failed';
-<span class="fstat-no" title="function not covered" >    co</span>nst riskLevel: AuditRiskLevel = success ? 'low' : 'medium';
-<span class="cstat-no" title="statement not covered" ></span>
-    await this.logEvent(action as EnterpriseSecretsAuditEvent, success, {
-      ...details,
-      resourceType,
-      resourceId,
-      accessAttempt: true,
-    }, r<span class="cstat-no" title="statement not covered" >iskLevel);</span>
-  }
-&nbsp;
-<span class="cstat-no" title="statement not covered" >  /**</span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
    * Log administrative action
    */
   public async logAdminAction(
-<span class="cstat-no" title="statement not covered" >    action: EnterpriseSecretsAuditEvent,</span>
-    adminUserId: string,
+<span class="fstat-no" title="function not covered" >    ac</span>tion: EnterpriseSecretsAuditEvent,
+    admi<span class="cstat-no" title="statement not covered" >nUserId: string,</span>
     targetResource: string,
     details: EnterpriseAuditEventDetails = {}
-  ):<span class="fstat-no" title="function not covered" > P</span>romise&lt;void&gt; {
-    awai<span class="cstat-no" title="statement not covered" >t this.logEvent(action, true, {</span>
+  ): Promise&lt;void&gt; {
+    await this.logEvent(action, true, {
       ...details,
       adminUserId,
       targetResource,
       administrativeAction: true,
       requiresApproval: this.requiresApprovalWorkflow(action),
     }, 'medium');
-  }
-&nbsp;
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
    * Log key lifecycle event
-   *<span class="fstat-no" title="function not covered" >/</span>
-  public async logKeyLifec<span class="cstat-no" title="statement not covered" >ycleEvent(</span>
+   */
+  public async logKeyLifecycleEvent(
     operation: 'created' | 'rotated' | 'retired' | 'compromised',
     keyId: string,
     keyType: string,
-    details: EnterpriseAuditEventDetails = {}
+    deta<span class="cstat-no" title="statement not covered" >ils: EnterpriseAuditEventDetails = {}</span>
   ): Promise&lt;void&gt; {
     const actionMap = {
       created: 'hsm_key_generated',
-      ro<span class="cstat-no" title="statement not covered" >tated: 'hsm_key_rotated',</span>
-      retired: 'hsm_key_retired',
-      compromised: 'hsm_key_compromised'
-    } as const;
-&nbsp;
-<span class="fstat-no" title="function not covered" >    co</span>nst riskLevelMap = {
-      cr<span class="cstat-no" title="statement not covered" >eated: 'low',</span>
-      rotate<span class="cstat-no" title="statement not covered" >d: 'low', </span>
-      retired: 'medium',<span class="cstat-no" title="statement not covered" ></span>
+      rotated: 'hsm_key_rotated',
+<span class="fstat-no" title="function not covered" ></span>      retired: 'hsm_key_retired',
+      co<span class="cstat-no" title="statement not covered" >mpromised: 'hsm_key_compromised'</span>
+    } as con<span class="cstat-no" title="statement not covered" >st;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    const riskLevelMap = {
+      created: 'low',
+      rotated: 'low', 
+      re<span class="cstat-no" title="statement not covered" >tired: 'medium',</span>
       compromised: 'critical'
     } as const;
 &nbsp;
-    awai<span class="cstat-no" title="statement not covered" >t this.logEvent(</span>
+    await this.logEvent(
       actionMap[operation] as EnterpriseSecretsAuditEvent,
-      operation !== 'compromised',
+      operation !== 'compromised',<span class="cstat-no" title="statement not covered" ></span>
       {
         ...details,
         keyId,
-<span class="cstat-no" title="statement not covered" >        keyType,</span>
+        keyType,
         keyOperation: operation,
         keyLifecycleEvent: true,
       },
@@ -1027,7 +1027,7 @@ export const enterpriseAuditLogger = EnterpriseAuditLogger.getInstance();</pre><
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

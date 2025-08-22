@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/104</span>
+                <span class='fraction'>0/98</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/104</span>
+                <span class='fraction'>0/98</span>
             </div>
         
             
@@ -605,16 +605,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -989,6 +985,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1142,59 +1142,59 @@
  * Single-responsibility tool for scenario troubleshooting and diagnostics
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema </span>} from '../schemas/troubleshooting.js';
-<span class="cstat-no" title="statement not covered" >import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';</span>
-import { generateT<span class="cstat-no" title="statement not covered" >roubleshootingRepor</span>t as _generateTroubleshootingReport } from '../utils/troubleshooting.js';
-import type MakeApiClient fro<span class="cstat-no" title="statement not covered" >m '../../../lib/make-api-client.js';</span>
-import { formatSuccessResponse }<span class="cstat-no" title="statement not covered" > from '../../../utils/response-formatter.js';</span>
-&nbsp;
-/**
+import { UserError } from 'fastmcp';
+import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema } from '../schemas/troubleshooting.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { generateTroubleshootingReport as _generateTroubleshootingReport } from '../utils/troubleshooting.js';
+import type MakeApiClient from '../../../lib/make-api-client.js';
+import { formatS<span class="fstat-no" title="function not covered" >uccessResponse } from '../../..</span>/utils/response-formatter.js';
+<span class="cstat-no" title="statement not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Create troubleshoot scenario tool configuration
- */<span class="fstat-no" title="function not covered" ></span>
-export function createTroubleshoot<span class="cstat-no" title="statement not covered" >Scenario</span>Tool(context: ToolContext): ToolDefinition {
-  co<span class="cstat-no" title="statement not covered" >nst { apiClient, logger } = context;</span>
+ */
+export function createTroubleshootScenarioTool(context: ToolContext): ToolDefinition {
+  const { apiClient, logger } = context;
   
   return {
     name: 'troubleshoot-scenario',
     description: 'Perform comprehensive troubleshooting analysis on Make.com scenarios',
-    parameters: TroubleshootScenarioSchema,
-    annotations: {
-      title: 'Troubleshoot Scenario',
-      readOnlyHint: true,
-      openWorldHi<span class="fstat-no" title="function not covered" >nt</span>: false,
-    },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+    parameters: T<span class="fstat-no" title="function not covered" >ro</span>ubleshootScenarioSchema,
+    annotations: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+      title:<span class="cstat-no" title="statement not covered" > 'Troubleshoot Scenario',</span>
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: true,</span>
+      openWorldHint: false,
+    },<span class="cstat-no" title="statement not covered" ></span>
     execute:<span class="cstat-no" title="statement not covered" > async (args: unknown, context): Promise&lt;string&gt; =&gt; {</span>
-      const { lo<span class="cstat-no" title="statement not covered" >g = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {</span>} }, reportProgress = () =&gt; {} } = context || {};
-      if (log &amp;&amp; log.info) { log.info('Starting scenario troubleshooting', JSON.stringify(args)); }
-      report<span class="cstat-no" title="statement not covered" >Progress?.({ progress: 0, total: 100 });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span>
+      const { log = { info: () =&gt; {}, error: () =&gt; {},<span class="branch-0 cbranch-no" title="branch not covered" > warn: (</span>) =&gt; {}, debug: () =&gt; {} }<span class="branch-0 cbranch-no" title="branch not covered" >, rep</span>ortProgress = () =&gt; {} } = co<span class="branch-0 cbranch-no" title="branch not covered" >ntext</span> || {};<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+      if (log &amp;&amp;<span class="cstat-no" title="statement not covered" > log.info) { log.info('Starting scenario troubleshooting', JSON.stringify(args)); }</span>
+      reportProgress<span class="cstat-no" title="statement not covered" >?.({ progress: 0, total: 100 });</span>
+&nbsp;
+      try {<span class="cstat-no" title="statement not covered" ></span>
         const {<span class="cstat-no" title="statement not covered" ></span>
-          scenarioId<span class="cstat-no" title="statement not covered" >,</span>
-          diagnosticTypes = ['all'],
-          includeRecommendations = true<span class="cstat-no" title="statement not covered" >,</span>
+          scenarioId,
+          diagnosticTypes = ['all<span class="cstat-no" title="statement not covered" >'],</span>
+          includ<span class="cstat-no" title="statement not covered" >eRecommendations = true,</span>
           includ<span class="cstat-no" title="statement not covered" >ePerformanceHistory = true,</span>
-          severityFilter,
-          autoFix = false,<span class="cstat-no" title="statement not covered" ></span>
-          timeRa<span class="cstat-no" title="statement not covered" >nge</span>
-        } = args<span class="cstat-no" title="statement not covered" > as {</span>
-          scenarioId<span class="cstat-no" title="statement not covered" >?: string;</span>
+          severityFi<span class="cstat-no" title="statement not covered" >lter,</span>
+          autoFix = false,
+          timeRange
+        } = args as {
+          scenarioId?: string;
           diagnosticTypes?: string[];
-          includeRecommendations?: boolean;
-          includePerformanceHistory?: boolean;
-          severityFilter?: string;
-          autoFix?: boolean;
-          timeRange?: { hours?: number };<span class="cstat-no" title="statement not covered" ></span>
-        };<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!scenari<span class="cstat-no" title="statement not covered" >oId) {</span>
+          includeRecommendations?: boolean;<span class="cstat-no" title="statement not covered" ></span>
+          includ<span class="cstat-no" title="statement not covered" >ePerformanceHistory?: boolean;</span>
+          severi<span class="cstat-no" title="statement not covered" >tyFilter?: string;</span>
+          autoFix?: <span class="cstat-no" title="statement not covered" >boolean;</span>
+          timeRange?: { hours?: number };
+        };
+&nbsp;
+        if (!scenarioId) {
           throw new UserError('Scenario ID is required');
-        }
+        }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         const timeRangeHours = timeRange?.hours || 24;
 &nbsp;
-        reportPr<span class="cstat-no" title="statement not covered" >ogress?.({ progress: 10, total: 100 });</span>
+        reportProgress?.({ progress: 10, total: 100 });
 &nbsp;
         // Fetch scenario for analysis
         const scenario = await fetchScenarioForTroubleshooting(
@@ -1203,32 +1203,32 @@ export function createTroubleshoot<span class="cstat-no" title="statement not co
         );
 &nbsp;
         reportProgress?.({ progress: 30, total: 100 });
-&nbsp;
-        if (log &amp;&amp; log.info) { log.info('Fetched scenario for troubleshooting', { 
-          scenarioId: scenarioId,
-          timeRangeHours 
-        }); }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        // Gener<span class="cstat-no" title="statement not covered" >ate comprehensive troubleshooting report</span>
+        if (log <span class="cstat-no" title="statement not covered" >&amp;&amp; log.info) { log.info('Fetched scenario for troubleshooting', { </span>
+          scenar<span class="cstat-no" title="statement not covered" >ioId: scenarioId,</span>
+          timeRangeHours 
+        }); }
+&nbsp;
+        // Generate comprehensive troubleshooting report
         const troubleshootingReport = await generateSingleScenarioTroubleshootingReport(
           scenario,
           timeRangeHours,
-          diagnosticTypes,
-          includeRecommendations,
-          includePerformanceHistory,
-          severityFilter,
-          autoF<span class="fstat-no" title="function not covered" >ix</span>
-        );<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        reportProgress?.({ progress: 100, total: 100 });</span>
+          diagn<span class="fstat-no" title="function not covered" >osticTypes,</span>
+          includeReco<span class="cstat-no" title="statement not covered" >mmendations,</span>
+<span class="cstat-no" title="statement not covered" >          includePerformanceHistory,</span>
+<span class="cstat-no" title="statement not covered" >          severityFilter,</span>
+          autoFix
+<span class="cstat-no" title="statement not covered" >        );</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        if (log &amp;&amp; log.inf</span>o) { log.info('Scenario troubleshooting completed', {
-          scenarioId: scenarioId,
-          reportGenerated: true,
+        reportProgress?.({ progress: 100, total: 100 });
+&nbsp;
+        if (log &amp;&amp; log.info) { log.info('Scenario troubleshooting completed', {
+          scena<span class="fstat-no" title="function not covered" >rioId: scenarioId,</span>
+<span class="cstat-no" title="statement not covered" >          reportGenerated: true,</span>
           timeRangeHours
         }); }
-<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return formatSuccessResponse({</span>
+&nbsp;
+        return formatSuccessResponse({
           report: troubleshootingReport,
           summary: {
             scenarioId: scenarioId,
@@ -1256,58 +1256,58 @@ async function fetchScenarioForTroubleshooting(
   apiClient: MakeApiClient, 
   scenarioId: string
 ): Promise&lt;unknown&gt; {
-  const response = await apiClient.get(`/scenarios/${scenarioId}`);
-  if (!response.success) {
-    throw new Error(`Failed to fetch scenario ${scenarioId}`);
+  const response<span class="fstat-no" title="function not covered" > = await apiClient.get(`/scenarios/${sce</span>narioId}`);
+  if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    throw new Error(`Failed to fetch scenario ${scenarioId}`);</span>
   }
-  return <span class="fstat-no" title="function not covered" >response.data;</span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  return response.data;
+}
+&nbsp;
 /**
  * Generate troubleshooting report for a single scenario
  */
 async function generateSingleScenarioTroubleshootingReport(
-  scenario: unknown,
-  timeRangeHours: number,
-  diagnosticTypes: string[],
-  includeRecommendations: boolean,
-  includePerforma<span class="fstat-no" title="function not covered" >nc</span>eHistory: boolean,
-  severityFilter?: string,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+  scenario: unkno<span class="fstat-no" title="function not covered" >wn</span>,
+  timeRangeHours: number,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+  diagnostic<span class="cstat-no" title="statement not covered" >Types: string[],</span>
+  includeRecomme<span class="cstat-no" title="statement not covered" >ndations: boolean,</span>
+  includePerformanceHistory: boolean,
+  severityFi<span class="cstat-no" title="statement not covered" >lter?: string,</span>
   autoFix?: <span class="cstat-no" title="statement not covered" >boolean</span>
-): Promise&lt;unkno<span class="cstat-no" title="statement not covered" >wn&gt; {</span>
-  return {
-    scenario<span class="cstat-no" title="statement not covered" >Id: (scenario as { id: string }).id,</span>
-    healthSc<span class="cstat-no" title="statement not covered" >ore: 85,</span>
-    status: 'warning',<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span>
-    diagnostics: [<span class="cstat-no" title="statement not covered" ></span>
-      {<span class="cstat-no" title="statement not covered" ></span>
-        category: 'performance',
+): Promise&lt;unknown&gt; {<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span>
+  return {<span class="cstat-no" title="statement not covered" ></span>
+    scenarioId: <span class="cstat-no" title="statement not covered" >(scenario as { id: string }).id,</span>
+    healthScore: 85,
+    status: 'warning',<span class="cstat-no" title="statement not covered" ></span>
+    diagnostics:<span class="cstat-no" title="statement not covered" > [</span>
+      {
+        category: 'p<span class="cstat-no" title="statement not covered" >erformance',</span>
         severity: 'medium',<span class="cstat-no" title="statement not covered" ></span>
-        issue: '<span class="cstat-no" title="statement not covered" >Slow response time detected',</span>
-        description: 'Average execution time exceeds threshold',
-        recommendati<span class="cstat-no" title="statement not covered" >on: 'Consider optimizing data processing steps',</span>
-        fixable: true<span class="cstat-no" title="statement not covered" ></span>
-      }<span class="cstat-no" title="statement not covered" ></span>
-    ],<span class="cstat-no" title="statement not covered" ></span>
-    recommendations: [
-      'Optimize webhook response handling',
-      'Review filter conditions for efficiency',
-      'Consider caching frequently accessed data'
+        issue: 'Slow res<span class="cstat-no" title="statement not covered" >ponse time detected',</span>
+        description: 'Averag<span class="cstat-no" title="statement not covered" >e execution time exceeds thresh</span>old',
+        recommendation: 'Consider optimizing data processing steps',
+        fixable: true
+      }
     ],
-    metadata: {<span class="cstat-no" title="statement not covered" ></span>
-      timeRangeHours<span class="cstat-no" title="statement not covered" >,</span>
-      diagnosticsRun: di<span class="cstat-no" title="statement not covered" >agnosticTypes,</span>
+    recommendations: [
+      'Optimize webhook response hand<span class="cstat-no" title="statement not covered" >ling',</span>
+      'Review filter<span class="cstat-no" title="statement not covered" > conditions for efficiency',</span>
+      'Consider caching <span class="cstat-no" title="statement not covered" >frequently accessed data'</span>
+    ],
+    metadata: {
+      timeRangeH<span class="cstat-no" title="statement not covered" >ours,</span>
+      diagnosticsRun<span class="cstat-no" title="statement not covered" >: diagnosticTypes,</span>
       includeRecommendations,
       includePerformanceHistory,
-      severityFi<span class="cstat-no" title="statement not covered" >lter,</span>
-      autoFix<span class="cstat-no" title="statement not covered" ></span>
-    }
+      severityFilter,
+      autoFix
+    }<span class="cstat-no" title="statement not covered" ></span>
   };
-}
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-/**<span class="cstat-no" title="statement not covered" ></span>
+/**
  * Create generate troubleshooting report tool configuration
- */<span class="cstat-no" title="statement not covered" ></span>
+ */
 export function createGenerateTroubleshootingReportTool(context: ToolContext): ToolDefinition {
   const { apiClient, logger } = context;
   
@@ -1319,11 +1319,11 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
       title: 'Generate Troubleshooting Report',
       readOnlyHint: true,
       openWorldHint: false,
-    },
+    },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     execute: async (args: unknown, context): Promise&lt;string&gt; =&gt; {
       const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
       if (log &amp;&amp; log.info) { log.info('Generating comprehensive troubleshooting report', JSON.stringify(args)); }
-      reportProgress?.({ progress: 0, total: 100 });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      reportProgress?.({ progress: 0, total: 100 });
 &nbsp;
       try {
         const {
@@ -1340,138 +1340,138 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
             formatType?: string;
           };
           analysisFilters?: {
-            timeRangeHours?: number;
-            severityThreshold?: string;
+            time<span class="cstat-no" title="statement not covered" >RangeHours?: number;</span>
+            severity<span class="cstat-no" title="statement not covered" >Threshold?: string;</span>
             maxScenariosToAnalyze?: number;
           };
-          compar<span class="cstat-no" title="statement not covered" >isonBaseline?: {</span>
-            compareT<span class="cstat-no" title="statement not covered" >oHistorical?: boolean;</span>
+          comparisonBaseline?: {
+            compareToHistorical?: boolean;
             baselineTimeRangeHours?: number;
-            includeBenchmarks?: boolean;
+            incl<span class="cstat-no" title="statement not covered" >udeBenchmarks?: boolean;</span>
           };
         };
 &nbsp;
-        const ti<span class="cstat-no" title="statement not covered" >meRangeHours = analysisFilters.timeRangeHours || 24;</span>
+        const timeRangeHours = analysisFilters.timeRangeHours || 24;
 &nbsp;
         reportProgress?.({ progress: 10, total: 100 });
 &nbsp;
         // Fetch scenarios for analysis
         let scenarios: unknown[] = [];
-        if (scenarioIds &amp;&amp; scenarioIds.length &gt; 0) {
-          // Fetch specific scenarios
-          for (const scenarioId of scenarioIds) {
+        if (scenarioIds &amp;&amp; scenarioId<span class="cstat-no" title="statement not covered" >s.length &gt; 0) {</span>
+          // Fet<span class="cstat-no" title="statement not covered" >ch specific scenarios</span>
+          for (c<span class="cstat-no" title="statement not covered" >onst scenarioId of scenarioIds) {</span>
             const response = await apiClient.get(`/scenarios/${scenarioId}`);
-            if (response.success) {<span class="cstat-no" title="statement not covered" ></span>
-              sc<span class="cstat-no" title="statement not covered" >enarios.push(response.data);</span>
-            }<span class="cstat-no" title="statement not covered" ></span>
+            if (response.success) {
+              scenarios.push(response.data);
+            }
           }
         } else {
           // Fetch all scenarios
-          const response = await apiClient.get('/scenarios');
-          if (response.success) {
-            scenarios = response.data as unknown[];
-          }
-        }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (scenarios.length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >          return formatSuccessResponse({</span>
-            message: 'No sc<span class="cstat-no" title="statement not covered" >enarios found for analysi</span>s',
-            timestamp: new Da<span class="cstat-no" title="statement not covered" >te().toISOString()</span>
-          })<span class="cstat-no" title="statement not covered" >.content[0].text;</span>
+          const<span class="fstat-no" title="function not covered" > response = await apiClient.get('/</span>scenarios');
+          if (response<span class="cstat-no" title="statement not covered" >.su</span>ccess) {
+<span class="cstat-no" title="statement not covered" >            scenarios = response.data as unknown[];</span>
+<span class="cstat-no" title="statement not covered" >          }</span>
         }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (<span class="cstat-no" title="statement not covered" >scenarios.length === 0) {</span>
+          return<span class="cstat-no" title="statement not covered" > formatSuccessResponse({</span>
+            message: 'No scenarios found for analysis',
+            timestamp: new Date().toISOString()
+          }).content[0].text;
+        }
 &nbsp;
         reportProgress?.({ progress: 60, total: 100 });
 &nbsp;
         // Generate comprehensive report
         const report = {
-          reportId: 'report_' + Date.now(),
+<span class="cstat-no" title="statement not covered" >          reportId: 'r</span>eport_' + Date.now(),
           generatedAt: new Date().toISOString(),
           executiveSummary: {
             totalScenarios: scenarios.length,
-<span class="cstat-no" title="statement not covered" >            healthySce</span>narios: Math.floor(scenarios.length * 0.8),
-            warningScenarios: Math.floor(scenarios.length * 0.15),
-            criticalScenarios: Math.floor(scenarios.length * 0.05),
-            systemHealthScore: 85
-          },
-          findi<span class="fstat-no" title="function not covered" >ngs: {</span>
-<span class="cstat-no" title="statement not covered" >            commonIssues: [</span>
-              {<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >                pattern: 'Slow API response times',</span>
-<span class="cstat-no" title="statement not covered" >                frequency: Math.fl</span>oor(scenarios.length * 0.3),
+            healthyScenarios: Math.floor(scenarios.length * 0.8),
+            war<span class="fstat-no" title="function not covered" >ningScenarios: Math.floor(s</span>cenarios.length * 0.15),
+<span class="cstat-no" title="statement not covered" >            criticalScenarios: Math.floor(scenarios.length * 0.05),</span>
+            systemHealthS<span class="cstat-no" title="statement not covered" >core: 85</span>
+<span class="cstat-no" title="statement not covered" >          },</span>
+          fi<span class="cstat-no" title="statement not covered" >ndings: {</span>
+            commonIssues: [
+<span class="cstat-no" title="statement not covered" >              {</span>
+                pattern: 'Slow API response times',
+                frequency: Math.floor(scenarios.length * 0.3),
                 severity: 'medium',
 <span class="cstat-no" title="statement not covered" >                aff</span>ectedScenarios: scenarioIds || scenarios.slice(0, 3).map(s =&gt; (s as { id: string }).id)
               }
             ],
             recommendations: [
-<span class="cstat-no" title="statement not covered" >              'Impl</span>ement connection pooling for database operations',
+              'Implement connection pooling for database operations',
               'Add retry logic for external API calls',
-              'Optimize webhook payload processing'
-            ]
+              '<span class="fstat-no" title="function not covered" >Optimize webhook payload proce</span>ssing'
+            ]<span class="cstat-no" title="statement not covered" ></span>
           },
-          actionPlan: reportOptions.includeActionPlan ? {
-            imm<span class="fstat-no" title="function not covered" >ediate: ['Fix critical authent</span>ication errors'],
-            shortTerm: ['Op<span class="cstat-no" title="statement not covered" >timize performance</span> bottlenecks'],
+<span class="cstat-no" title="statement not covered" >          actionPlan: reportOptions.includeActionPlan ? {</span>
+<span class="cstat-no" title="statement not covered" >            immediate: ['Fix critical authentication errors'],</span>
+            shortTerm: ['Optimize performance bottlenecks'],
             longTerm: ['Implement comprehensive monitoring']
 <span class="cstat-no" title="statement not covered" >          } : undefined,</span>
-<span class="cstat-no" title="statement not covered" >          metadata: {</span>
-            timeRangeHours,
-            analysisFilters,
-<span class="cstat-no" title="statement not covered" >            comparisonBaseline,</span>
+          metadata: {
+<span class="cstat-no" title="statement not covered" >            timeRangeHours,</span>
+<span class="cstat-no" title="statement not covered" >            analysisFilters</span>,
+            comparisonBaseline,
             formatType: reportOptions.formatType || 'json'
-<span class="cstat-no" title="statement not covered" >          }</span>
-<span class="cstat-no" title="statement not covered" >        };</span>
-&nbsp;
-        if (log &amp;&amp; log.info) { log.info('Troubleshooting report generated successfully', {
-          reportId: report.reportId,
+          }
+        };
+<span class="fstat-no" title="function not covered" ></span>
+        if (log &amp;&amp; log.inf<span class="cstat-no" title="statement not covered" >o) { log.info('Tro</span>ubleshooting report generated successfully', {
+<span class="cstat-no" title="statement not covered" >          reportId: report.reportId,</span>
           scenarioCount: scenarios.length,
-          forma<span class="fstat-no" title="function not covered" >tType: reportOptions.formatTy</span>pe || 'json'
-        }); }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        return formatSuccessResponse({
-          re<span class="cstat-no" title="statement not covered" >port: report,</span>
-          su<span class="cstat-no" title="statement not covered" >mmary: </span>{
+          fo<span class="cstat-no" title="statement not covered" >rmatType: reportOptions.formatType || 'json'</span>
+        }); <span class="cstat-no" title="statement not covered" >}</span>
+&nbsp;
+        retu<span class="cstat-no" title="statement not covered" >rn formatSuccessResponse({</span>
+          re<span class="cstat-no" title="statement not covered" >port: r</span>eport,
+          summary: {
             totalScenarios: scenarios.length,
-<span class="cstat-no" title="statement not covered" >            reportGenerated: true,</span>
+            reportGenerated: true,
 <span class="cstat-no" title="statement not covered" >            timesta</span>mp: new Date().toISOString()
           }
         }).content[0].text;
-        
-      } catc<span class="cstat-no" title="statement not covered" >h (erro</span>r) {
+    <span class="cstat-no" title="statement not covered" >    </span>
+      } <span class="cstat-no" title="statement not covered" >catch (error) {</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Troubleshooting report generation failed', { error: errorMessage });
-<span class="cstat-no" title="statement not covered" >        throw new UserError(`Troubleshooting report generation failed: ${errorMessage}`);</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        logger.error?.('Trou</span>bleshooting report generation failed', { error: errorMessage });
+        throw new UserError(`Troubleshooting report generation failed: ${errorMessage}`);
+      }
     },
-  };<span class="cstat-no" title="statement not covered" ></span>
-}
-&nbsp;
+  };
+}<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 /**
  * Fetch scenarios for troubleshooting analysis
- */<span class="fstat-no" title="function not covered" ></span>
-asyn<span class="cstat-no" title="statement not covered" >c function _fetchScenariosForTroubleshooting(</span>
+ */
+async function _fetchScenariosForTroubleshoo<span class="fstat-no" title="function not covered" >ti</span>ng(<span class="cstat-no" title="statement not covered" ></span>
   apiClient: MakeApiClient,
   scenarioIds: string[],
   teamId?: string
-): Promise&lt;unknown[]&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+): Promise&lt;unknown[]&gt; {
   const scenarios: unknown[] = [];
-  
-  for (const scenarioId of scenarioIds) {
+  <span class="fstat-no" title="function not covered" ></span>
+  fo<span class="cstat-no" title="statement not covered" >r (const scenarioId of scenarioIds) {</span>
     try {
       const params = teamId ? { teamId } : {};
-      const res<span class="fstat-no" title="function not covered" >ponse = await apiClient.</span>get(`/scenarios/${scenarioId}`, { params });
-    <span class="cstat-no" title="statement not covered" >  </span>
+      const response = await apiClient.get(`/scenarios/${scenarioId}`, { params });
+      
       if (response.success &amp;&amp; response.data) {
         scenarios.push(response.data);
       } else {
         // Warning: Failed to fetch scenario (scenarioId, error: response.error)
       }
     } catch (error) {
-      // Warning: Error fetching scenario (scenarioId, error)
-    }
+      // <span class="fstat-no" title="function not covered" >Warning: Error fetching scenario</span> (scenarioId, error)
+<span class="cstat-no" title="statement not covered" >    }</span>
   }
   
-  return <span class="fstat-no" title="function not covered" >scenarios;</span>
-}<span class="cstat-no" title="statement not covered" ></span>
+  return scenarios;
+}
 &nbsp;
 /**
  * Fetch scenarios based on filters
@@ -1484,13 +1484,13 @@ async function _fetchScenariosWithFilters(
     const response = await apiClient.get('/scenarios', { params: filters });
     
     if (response.success &amp;&amp; Array.isArray(response.data)) {
-      return response.data;
-    }
-    
+      ret<span class="fstat-no" title="function not covered" >urn response.data;</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+    <span class="cstat-no" title="statement not covered" ></span>
     return [];
-  } catch<span class="fstat-no" title="function not covered" > (error) {</span>
-    // Warning: Erro<span class="cstat-no" title="statement not covered" >r fetching </span>scenarios with filters (error)
-<span class="cstat-no" title="statement not covered" >    return [];</span>
+  } catch (error) {
+    // Warning: Error fetching scenarios with filters (error)
+    return [];
   }
 }
 &nbsp;
@@ -1501,13 +1501,13 @@ async function _enhanceTroubleshootingReport(
   baseReport: unknown,
   scenarios: unknown[],
   options: {
-    includeDependencyMapping: boolean;
-    includePerformanceAnalysis: boolean;
-    apiClient: MakeApiClient;
+    inclu<span class="fstat-no" title="function not covered" >deDependencyMapping: b</span>oolean;
+    includePerforma<span class="cstat-no" title="statement not covered" >nceAnalysis</span>: boolean;
+<span class="cstat-no" title="statement not covered" >    apiClient: MakeApiClient;</span>
     logger: unknown;
-  }<span class="fstat-no" title="function not covered" ></span>
-): Promise&lt;unknown&gt;<span class="cstat-no" title="statement not covered" > {</span>
-  co<span class="cstat-no" title="statement not covered" >nst enhancedReport = { ...(baseReport as Record&lt;string, unknown&gt;) };</span>
+  }
+): Promise&lt;unknown&gt; {
+  const enhancedReport = { ...(baseReport as Record&lt;string, unknown&gt;) };
   
   // Add dependency mapping if requested
   if (options.includeDependencyMapping) {
@@ -1520,12 +1520,12 @@ async function _enhanceTroubleshootingReport(
     options.apiClient
   );
   
-  // Add troubleshooting insights
-  enhancedReport.insights = generateTroubleshootingInsights(baseReport, scenarios);
+  // Add troubl<span class="fstat-no" title="function not covered" >eshooting insights</span>
+  en<span class="cstat-no" title="statement not covered" >hancedReport.insights = generateTroubleshootingInsights(baseReport, scenarios);</span>
   
   return enhancedReport;
-}<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+}
+&nbsp;
 /**
  * Format troubleshooting report based on requested type
  */
@@ -1681,7 +1681,7 @@ async function generateSecurityAssessment(_scenarios: unknown[]): Promise&lt;unk
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/38</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/38</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -161,11 +161,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -235,6 +232,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -254,58 +254,58 @@
  * Single-responsibility tool with focused functionality for listing and searching scenarios
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { ScenarioFiltersSchema } from '../schemas/scenario-fi</span>lters.js';
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition </span>} from '../../shared/types/tool-context.js';
-import { formatSuccessResponse<span class="cstat-no" title="statement not covered" > } from '../../../utils/response-formatter</span>.js';
-<span class="cstat-no" title="statement not covered" ></span>
-/**
- * Create list scenarios tool configuration
- */
-export fu<span class="fstat-no" title="function not covered" >nction createListScenario</span>sTools(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = co<span class="cstat-no" title="statement not covered" >ntext;</span>
-  <span class="cstat-no" title="statement not covered" ></span>
+import { UserError } from 'fastmcp';
+import { ScenarioFiltersSchema } from '../schemas/scenario-filters.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+&nbsp;
+/**<span class="fstat-no" title="function not covered" ></span>
+ * Create list scenarios tool conf<span class="cstat-no" title="statement not covered" >iguratio</span>n
+ */<span class="cstat-no" title="statement not covered" ></span>
+export function createListScenariosTools(context: ToolContext): ToolDefinition {
+  const { apiClient, logger } = context;
+  
   return {
     name: 'list-scenarios',
     description: 'List and search Make.com scenarios with advanced filtering options',
     parameters: ScenarioFiltersSchema,
     annotations: {
-      title: 'List Scenarios',
-      readOnlyHint: true,
-      openWorldHint: true,
-    },<span class="fstat-no" title="function not covered" ></span>
-    execute: async (args: <span class="branch-0 cbranch-no" title="branch not covered" >unknown,<span class="fstat-no" title="function not covered" > c</span>ontext): Promise<span class="fstat-no" title="function not covered" >&lt;s</span>tring&gt; =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
-      const <span class="cstat-no" title="statement not covered" >{ log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};</span>
-      if (log &amp;&amp;<span class="cstat-no" title="statement not covered" > log.info) { log.info('Listing scenarios', JSON.strin</span>gify(args)); }
+      title: 'Lis<span class="fstat-no" title="function not covered" >t </span>Scenarios',
+      readOnlyHint: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+      openWo<span class="cstat-no" title="statement not covered" >rldHint: true,</span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (args: unknown, context): Promise&lt;string&gt; =&gt; {
+      const <span class="cstat-no" title="statement not covered" >{ log = { info: () =&gt; {}, error: () =&gt; {}, warn</span>: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+      if (lo<span class="cstat-no" title="statement not covered" >g &amp;&amp; log.info) { log.info('Listing scenarios', JSON.stringify(args)); }</span>
       reportProgress?.({ progress: 0, total: 100 });
 <span class="cstat-no" title="statement not covered" ></span>
       try {<span class="cstat-no" title="statement not covered" ></span>
         // Build query parameters
-        const argsTyped = args as <span class="cstat-no" title="statement not covered" >{</span>
-          limit?: number;<span class="cstat-no" title="statement not covered" ></span>
-          offset?: number;
-          teamId?: string;
-          folderId?: string;
-          search<span class="cstat-no" title="statement not covered" >?: string;</span>
-          active?: b<span class="cstat-no" title="statement not covered" >oolean;</span>
+        const argsTyped = args as {
+          limit?: number;
+          offset<span class="cstat-no" title="statement not covered" >?: number;</span>
+          teamId?: s<span class="cstat-no" title="statement not covered" >tring;</span>
+          folder<span class="cstat-no" title="statement not covered" >Id?: string;</span>
+          search?: s<span class="cstat-no" title="statement not covered" >tring;</span>
+          active<span class="cstat-no" title="statement not covered" >?: boolean;</span>
         };<span class="cstat-no" title="statement not covered" ></span>
         <span class="cstat-no" title="statement not covered" ></span>
-        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
-          limit: arg<span class="cstat-no" title="statement not covered" >sTyped.limit ?? 10,</span>
-          offset<span class="cstat-no" title="statement not covered" >: argsTyped.offset ?? 0,</span>
+        const params<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt; = {</span>
+          limit:<span class="cstat-no" title="statement not covered" > argsTyped.limit ?? 10,</span>
+          offset: argsTyped.offse<span class="cstat-no" title="statement not covered" >t ?? 0,</span>
         };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (argsTyped.teamId) par<span class="cstat-no" title="statement not covered" >ams.teamId = argsTyped.teamId;</span>
-        if (args<span class="cstat-no" title="statement not covered" >Typed.folderId) params.folderId = argsTyped.fold</span>erId;
-        if (args<span class="cstat-no" title="statement not covered" >Typed.search) params.q = argsTyped.search;</span>
-        if (argsType<span class="cstat-no" title="statement not covered" >d.active !== undefined) params.active = argsTyped.active;</span>
-&nbsp;
-        reportProgress?.({ progres<span class="cstat-no" title="statement not covered" >s: 25, total: </span>100 });
+        if (argsType<span class="cstat-no" title="statement not covered" >d.teamId) params.teamId = argsTyped.teamId;</span>
+        if (argsTyped.folderId) params.folderId = argsTyped.folderId;
+        if (argsTyped.search) para<span class="cstat-no" title="statement not covered" >ms.q = argsTyp</span>ed.search;
+        if (argsTyped.active !== <span class="cstat-no" title="statement not covered" >undefined) params.</span>active = argsTyped.active;
 <span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get('/scenarios', { para</span>ms });
+        reportProgress?.({ progress: 25, total: 100 });
+<span class="cstat-no" title="statement not covered" ></span>
+        const response = await <span class="cstat-no" title="statement not covered" >apiClient.get('/scenarios', { params });</span>
         reportProgress?.({ progress: 75, total: 100 });
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!response.success) <span class="cstat-no" title="statement not covered" >{</span>
+&nbsp;
+        if (!response.success) {
           throw new UserError(`Failed to list scenarios: ${response.error?.message}`);
         }
 &nbsp;
@@ -313,21 +313,21 @@ export fu<span class="fstat-no" title="function not covered" >nction createListS
         const metadata = response.metadata;
 &nbsp;
         reportProgress?.({ progress: 100, total: 100 });
-&nbsp;
-        // Type guard for scenarios array
-        const scenariosArray = Array.isArray(scenarios) ? scenarios : [];
 <span class="cstat-no" title="statement not covered" ></span>
-        const result<span class="cstat-no" title="statement not covered" > = {</span>
+        // Type guar<span class="cstat-no" title="statement not covered" >d for scenarios array</span>
+        const scenariosArray = Array.isArray(scenarios) ? scenarios : [];
+&nbsp;
+        const result = {
           scenarios: scenariosArray,
-          pagination: {
+          pagina<span class="cstat-no" title="statement not covered" >tion: {</span>
             total: metadata?.total || scenariosArray.length,
             limit: argsTyped.limit,
-            offs<span class="cstat-no" title="statement not covered" >et: argsTyped.offset,</span>
-            hasMore: (metadata?.total || 0) &gt; ((argsTyped.offset || 0) + (argsTyped.limit || 20)),
-          },
-          filters: args,<span class="cstat-no" title="statement not covered" ></span>
-          timest<span class="cstat-no" title="statement not covered" >amp: new Date().toISOString(),</span>
-        };<span class="cstat-no" title="statement not covered" ></span>
+            offset: argsTyped.offset,<span class="cstat-no" title="statement not covered" ></span>
+            hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; ((argsTyped.offset || 0) + (argsTyped.l</span>imit || 20)),
+          },<span class="cstat-no" title="statement not covered" ></span>
+          filters: args,
+          timestamp: new Date().toISOString(),
+        };
 &nbsp;
         if (log &amp;&amp; log.info) { log.info('Scenarios listed successfully', { 
           count: result.scenarios.length,
@@ -349,7 +349,7 @@ export fu<span class="fstat-no" title="function not covered" >nction createListS
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

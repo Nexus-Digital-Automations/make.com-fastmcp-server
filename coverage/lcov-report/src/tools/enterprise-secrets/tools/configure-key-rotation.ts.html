@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/59</span>
+                <span class='fraction'>0/53</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/58</span>
+                <span class='fraction'>0/52</span>
             </div>
         
             
@@ -266,12 +266,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -427,6 +424,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -464,46 +464,46 @@
  * Configure automated key rotation policies with scheduled and event-driven triggers
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { KeyRotationPolicySchema } from '../schemas/index.js';</span>
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition,</span> ToolExecutionContext } from '../../shared/types/tool-context.js';
-import { KeyRotatio<span class="cstat-no" title="statement not covered" >nStatus } from '../types/index.</span>js';
-import { auditLogger } fro<span class="cstat-no" title="statement not covered" >m '../../../lib/audit-logger.js';</span>
-import { formatSuccessResponse }<span class="cstat-no" title="statement not covered" > from '../../../utils/response-formatter.js';</span>
+import { UserError } from 'fastmcp';
+import { KeyRotationPolicySchema } from '../schemas/index.js';
+import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
+import { KeyRotationStatus } from '../types/index.js';
+import { auditLogger } from '../../../lib/audit-logger.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
-/**
- * Key Rotation Manager class
- */
-class KeyRotationManag<span class="cstat-no" title="statement not covered" >er {</span>
-  private static instan<span class="cstat-no" title="statement not covered" >ce: KeyRot</span>ationManager | null = null;
-  pr<span class="fstat-no" title="function not covered" >iv</span>ate rotationPolicies: Map&lt;string, KeyRotationStatus&gt; = new Map();
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Key Rotation Manager<span class="cstat-no" title="statement not covered" > class</span>
+ */<span class="fstat-no" title="function not covered" ></span>
+class Ke<span class="cstat-no" title="statement not covered" >yRotationManager {</span>
+  private st<span class="cstat-no" title="statement not covered" >atic instance: KeyRotationManager | null = null;</span>
+  private rotationPolicies: Map&lt;string, KeyRotationStatus&gt; = new Map();
 <span class="cstat-no" title="statement not covered" ></span>
-  public sta<span class="cstat-no" title="statement not covered" >tic getInstance(): KeyRotationManager {</span>
+  public static getInstance(): KeyRotationManager {
     if (!KeyRotationManager.instance) {
-      Ke<span class="cstat-no" title="statement not covered" >yRotationManager.instance = new KeyR</span>otationManager();
+      KeyRotationManager.instance = new KeyRotationManager();
     }
-    return KeyRotationManager.instance;
-  }
+<span class="fstat-no" title="function not covered" >    re</span>turn KeyRotationManager.instance;
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  /*<span class="fstat-no" title="function not covered" >*</span>
-   * Configure automated key rot<span class="cstat-no" title="statement not covered" >ation policy</span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Configure automated key ro<span class="cstat-no" title="statement not covered" >tation policy</span>
    */
-  public async configureKeyRo<span class="cstat-no" title="statement not covered" >tation(policy: Parameters&lt;typeof KeyRotation</span>PolicySchema.parse&gt;[0]): Promise&lt;KeyRotationStatus&gt; {
-    const validatedPolicy = Key<span class="cstat-no" title="statement not covered" >RotationPolicySchema.parse(policy);</span>
+  public async configureKeyRotation(policy: Parameters&lt;typeof KeyRotationPolicySchema.parse&gt;[0]): Promise&lt;KeyRotationStatus&gt; {
+    const validatedPolicy = KeyRotationPolicySchema.parse(policy);
 &nbsp;
     // Calculate next rotation time
     const nextRotation = this.calculateNextRotation(validatedPolicy);
 &nbsp;
     const rotationStatus: KeyRotationStatus = {
       policyName: validatedPolicy.policyName,
-      lastRotation: new Date(0), // Never rotated initially
+      la<span class="cstat-no" title="statement not covered" >stRotation: new Date(0), // Never rotated initially</span>
       nextScheduledRotation: nextRotation,
-      rotationCount: 0,
-      st<span class="cstat-no" title="statement not covered" >atus: 'active',</span>
-      affectedPaths: validatedPolicy.targetPaths,
-      ro<span class="cstat-no" title="statement not covered" >tationHistory: [],</span>
+      ro<span class="cstat-no" title="statement not covered" >tationCount: 0,</span>
+      status: 'active',
+      af<span class="cstat-no" title="statement not covered" >fectedPaths: validatedPolicy.targetPaths,</span>
+      rotationHistory: [],
     };
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     // Store rotation policy
     this.rotationPolicies.set(validatedPolicy.policyName, rotationStatus);
 &nbsp;
@@ -513,51 +513,51 @@ class KeyRotationManag<span class="cstat-no" title="statement not covered" >er {
     // Log policy configuration
     await auditLogger.logEvent({
       level: 'info',
-      category: 'security',
+      ca<span class="cstat-no" title="statement not covered" >tegory: 'security',</span>
       action: 'key_rotation_policy_configured',
-      success: true,
-      de<span class="cstat-no" title="statement not covered" >tails: {</span>
-        policyName: validatedPolicy.policyName,
-<span class="fstat-no" title="function not covered" ></span>        rotationType: validatedPolicy.rotationType,
-        targetPaths: validatedPo<span class="cstat-no" title="statement not covered" >licy.targetPaths,</span>
-        nextRotation<span class="cstat-no" title="statement not covered" >: nextRotat</span>ion.toISOString(),
-      },<span class="cstat-no" title="statement not covered" ></span>
-      riskLe<span class="cstat-no" title="statement not covered" >vel: 'low',</span>
+<span class="fstat-no" title="function not covered" ></span>      success: true,
+      details: {<span class="cstat-no" title="statement not covered" ></span>
+        policyName: <span class="cstat-no" title="statement not covered" >validatedPo</span>licy.policyName,
+<span class="cstat-no" title="statement not covered" >        rotationType: validatedPolicy.rotationType,</span>
+        targ<span class="cstat-no" title="statement not covered" >etPaths: validatedPolicy.targetPaths,</span>
+        nextRotation: nextRotation.toISOString(),
+      },
+      ri<span class="cstat-no" title="statement not covered" >skLevel: 'low',</span>
     });
-&nbsp;
-    retu<span class="cstat-no" title="statement not covered" >rn rotationStatus;</span>
-  }
 <span class="fstat-no" title="function not covered" ></span>
-  private calculateNextRotation(<span class="cstat-no" title="statement not covered" >policy: Parameters&lt;typeof KeyRotationPolicySchema</span>.parse&gt;[0]): Date {
+    return rotationStatus;<span class="cstat-no" title="statement not covered" ></span>
+  }
+&nbsp;
+  private calculateNextRotation(policy: Parameters&lt;typeof KeyRotationPolicySchema.parse&gt;[0]): Date {
     const validatedPolicy = KeyRotationPolicySchema.parse(policy);
     const now = new Date();
     
-    if (validatedPolicy.rotationType === 'scheduled' &amp;&amp; validatedPolicy.schedule.intervalHours) {
-      return new Date(now.getTime() + validatedPolicy.schedule.intervalHours * 60 * 60 * 1000);
-    }
-    <span class="fstat-no" title="function not covered" ></span>
-    // Default to 30 days for o<span class="cstat-no" title="statement not covered" >ther rotation types</span>
+<span class="fstat-no" title="function not covered" >    if</span> (validatedPolicy.rotationType === 'scheduled' &amp;&amp; validatedPolicy.schedule.intervalHours) {
+      return new Date(now.getTi<span class="cstat-no" title="statement not covered" >me() + validatedPolicy.schedule.interv</span>alHours * 60 * 60 * 1000);
+    }<span class="cstat-no" title="statement not covered" ></span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    // Default to 30 days for other rotation types
     retu<span class="cstat-no" title="statement not covered" >rn new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);</span>
+  }
+<span class="cstat-no" title="statement not covered" ></span>
+  private scheduleRotationMonitoring(policy: Parameters&lt;typeof KeyRotationPolicySchema.parse&gt;[0]): void {
+    const _v<span class="cstat-no" title="statement not covered" >alidatedPolicy = K<span class="fstat-no" title="function not covered" >ey</span>RotationP<span class="cstat-no" title="statement not covered" >olicySchema.parse(policy);</span></span>
+    // Schedule monitoring for the rotation policy
+    // Debug<span class="cstat-no" title="statement not covered" >: Scheduling rotation monitoring (policy: </span>validatedPolicy.policyName, type: validatedPolicy.rotationType)
   }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  privat<span class="cstat-no" title="statement not covered" >e scheduleRotationMonitoring(policy: Parameters&lt;typeof KeyRotationPolicySchema.parse&gt;[0]): void {</span>
-    const validatedPolicy = KeyRotationPolicySchema.parse(policy);
-    // Sched<span class="cstat-no" title="statement not covered" >ule monitoring for the rotation pol</span>icy
-    // Debug: Scheduling rotation monitoring (policy: validatedPolicy.policyName, type: validatedPolicy.rotationType)
-  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
    * Execute<span class="cstat-no" title="statement not covered" > key rotation for a specific policy</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
-  public asy<span class="cstat-no" title="statement not covered" >nc executeKeyRotation(policyName: </span>string): Promise&lt;void&gt; {
-    const ro<span class="cstat-no" title="statement not covered" >tationStatus = this.rotationPolicies.get(policyName);</span>
+   */
+  public async executeKeyRotation(policyName: string): Promise&lt;void&gt; {
+    const rotationStatus = this.rotationPolicies.get(policyName);
     if (!rotationStatus) {
       throw new Error(`Rotation policy not found: ${policyName}`);
     }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
     try {
       // Execute rotation
-      rotati<span class="cstat-no" title="statement not covered" >onStatus.status = 'pending';</span>
+      rotationStatus.status = 'pending';
       
       // Simulate rotation process
       await new Promise(resolve =&gt; setTimeout(resolve, 1000));
@@ -568,63 +568,63 @@ class KeyRotationManag<span class="cstat-no" title="statement not covered" >er {
       rotationStatus.rotationCount++;
       rotationStatus.status = 'active';
       
-      rotationStatus.rotationHistory.push({
-        timestamp: new Date(),
-        triggerType: 'scheduled',
-        success: true,<span class="cstat-no" title="statement not covered" ></span>
-        deta<span class="cstat-no" title="statement not covered" >ils: 'Automatic scheduled rotation</span> completed successfully',
-      });<span class="cstat-no" title="statement not covered" ></span>
+      rotationStatus.rotationHist<span class="cstat-no" title="statement not covered" >ory.push({</span>
+        time<span class="cstat-no" title="statement not covered" >stamp: new Date(),</span>
+        trig<span class="cstat-no" title="statement not covered" >gerType: 'scheduled',</span>
+        success: true,
+        details: 'Automatic scheduled rotation completed successfully',
+      });
 &nbsp;
       // Log rotation
-      await auditLogger.logEvent({
+      await <span class="cstat-no" title="statement not covered" >auditLogger.l</span>ogEvent({
         level: 'info',
         category: 'security',
-        acti<span class="cstat-no" title="statement not covered" >on: 'key_rota</span>tion_executed',
+        action: 'key_rotation_executed',
         success: true,
         details: {
           policyName,
-          rotationCount: rotationStatus.rotationCount,
-          triggerType: 'scheduled',
-        },
-        r<span class="fstat-no" title="function not covered" >iskLevel: 'low',</span>
-      });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    } catch (error) {</span>
+          rotati<span class="fstat-no" title="function not covered" >onCount: rotationStatus.rotatio</span>nCount,
+          triggerType: <span class="cstat-no" title="statement not covered" >'schedul</span>ed',
+<span class="cstat-no" title="statement not covered" >        },</span>
+        riskLevel: 'low',
+      });
+    } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       rotationStatus.status = 'failed';
       rotationStatus.rotationHistory.push({
         timestamp: new Date(),
         triggerType: 'scheduled',
-        success: false,
-        details: errorMessage,
-      });
-      <span class="fstat-no" title="function not covered" ></span>
-      throw error;<span class="cstat-no" title="statement not covered" ></span>
+        success: <span class="fstat-no" title="function not covered" >fa</span>lse,
+        details: errorMessage,<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+      <span class="cstat-no" title="statement not covered" ></span>
+      throw <span class="cstat-no" title="statement not covered" >error;</span>
     }<span class="cstat-no" title="statement not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Configure key<span class="cstat-no" title="statement not covered" > rotation tool configuration</span>
- */<span class="cstat-no" title="statement not covered" ></span>
-export function <span class="cstat-no" title="statement not covered" >createConfigureKeyRotationTool(context: ToolCont</span>ext): ToolDefinition {
-  const { logger } = context;<span class="cstat-no" title="statement not covered" ></span>
+ * Configure key rotation tool <span class="cstat-no" title="statement not covered" >configuration</span>
+ */
+export function createConfigureKeyRotationTool(context: ToolContext): ToolDefinition {
+  const { logger } = context;
   
-  return {
+  return {<span class="cstat-no" title="statement not covered" ></span>
     name: 'configure-key-rotation',
     description: 'Configure automated key rotation policies with scheduled and event-driven triggers',
-    parameters: <span class="cstat-no" title="statement not covered" >KeyRotationPolicySchema,</span>
+    parameters: KeyRotationPolicySchema,
     annotations: {
-      title: 'Configure Automated Key Rotation Policies',
-      readOnlyHint: false,
+      title: 'Co<span class="cstat-no" title="statement not covered" >nfigure Automated Key Rotation Policies',</span>
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false,</span>
       idempotentHint: true,
-      openWorldH<span class="cstat-no" title="statement not covered" >int: false,</span>
+      openWorldHint: false,
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (args: unknown, execContext: ToolExecutionContext): Promise&lt;string&gt; =&gt; {
-      const { log, reportProgress } = execContext;
-      <span class="cstat-no" title="statement not covered" ></span>
-      log?.info?<span class="cstat-no" title="statement not covered" >.('Configuring key rotation policy', JSON.stringify(args));</span>
-      reportProg<span class="cstat-no" title="statement not covered" >ress?.({ progress: 0, total: 100 });</span>
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (args: unknown, execContext: ToolExecutionContext): Promise&lt;string&gt; =&gt; {</span>
+      const { lo<span class="cstat-no" title="statement not covered" >g, reportProgress } = execContext;</span>
+      
+      log?.info?.('Configuring key rotation policy', JSON.stringify(args));
+      reportProgress?.({ progress: 0, total: 100 });
 &nbsp;
       try {
         const validatedInput = KeyRotationPolicySchema.parse(args);
@@ -664,7 +664,7 @@ export function <span class="cstat-no" title="statement not covered" >createConf
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

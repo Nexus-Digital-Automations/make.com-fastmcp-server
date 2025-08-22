@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/56</span>
+                <span class='fraction'>0/50</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/55</span>
+                <span class='fraction'>0/49</span>
             </div>
         
             
@@ -313,12 +313,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -492,6 +489,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -558,19 +558,19 @@
  * Stream detailed execution logs with real-time updates, advanced filtering, and multiple output formats
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { ScenarioRunLogsSchema } from '../schemas/stream-config.js';</span>
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition </span>} from '../../shared/types/tool-context.js';
-import { LogStreamingManage<span class="cstat-no" title="statement not covered" >r, LogStreamingConfig } from '../utils/</span>stream-processor.js';
-import { MakeLogEntry } from '<span class="cstat-no" title="statement not covered" >../types/streaming.js';</span>
-import { formatSuccessResponse }<span class="cstat-no" title="statement not covered" > from '../../../utils/response-formatter.js';</span>
-&nbsp;
-/**
- * Create get scenario run logs tool configuration
- */<span class="fstat-no" title="function not covered" ></span>
-export function createGetScenarioR<span class="cstat-no" title="statement not covered" >unLogsTo</span>ol(context: ToolContext): ToolDefinition {
-  const { apiClient, logger }<span class="cstat-no" title="statement not covered" > = context;</span>
-  co<span class="cstat-no" title="statement not covered" >nst streamingManager = new LogStreamingManager(apiClient);</span>
+import { UserError } from 'fastmcp';
+import { ScenarioRunLogsSchema } from '../schemas/stream-config.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { LogStreamingManager, LogStreamingConfig } from '../utils/stream-processor.js';
+import { MakeLogEntry } from '../types/streaming.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+<span class="fstat-no" title="function not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Create get scenario run lo<span class="cstat-no" title="statement not covered" >gs tool configuration</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+export function createGetScenarioRunLogsTool(context: ToolContext): ToolDefinition {
+  const { apiClient, logger } = context;
+  const streamingManager = new LogStreamingManager(apiClient);
   
   return {
     name: 'get_scenario_run_logs',
@@ -578,20 +578,20 @@ export function createGetScenarioR<span class="cstat-no" title="statement not co
     parameters: ScenarioRunLogsSchema,
     annotations: {
       title: 'Get Scenario Run Logs',
-      readOnlyHint: true,
-      destructiveHint: false,
-      idempotentHint: true,
-      openWorldHi<span class="fstat-no" title="function not covered" >nt</span>: true,
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute:<span class="cstat-no" title="statement not covered" > async (input: unknown, { log }): Promise&lt;string&gt; =&gt; {</span>
+      readOnlyHin<span class="fstat-no" title="function not covered" >t:</span> true,
+      destructiveHint: false,<span class="cstat-no" title="statement not covered" ></span>
+      idempo<span class="cstat-no" title="statement not covered" >tentHint: true,</span>
+      openWorldHint: true,
+    },
+    execute: async (input: unknown, { log }): Promise&lt;string&gt; =&gt; {
       const { scenarioId, executionId, streaming, filtering, output } = input as {
         scenarioId: number;
-        executionId?: string;
+        exec<span class="cstat-no" title="statement not covered" >utionId?: string;</span>
         streaming: {
-          enabled: boolean;
-          ba<span class="cstat-no" title="statement not covered" >tchSize: number;</span>
+          enabled: boolean;<span class="cstat-no" title="statement not covered" ></span>
+          batchSize: number;
           batchTimeoutMs: number;
-          compressionEnabled: boolean;<span class="cstat-no" title="statement not covered" ></span>
+          compressionEnabled: boolean;
         };
         filtering: {
           logLevels: string[];
@@ -615,29 +615,29 @@ export function createGetScenarioR<span class="cstat-no" title="statement not co
         filtering,
       });
 &nbsp;
-      try {
+      try {<span class="cstat-no" title="statement not covered" ></span>
         // Build streaming configuration
-        const streamingConfig: LogStreamingConfig = {
-          realTi<span class="cstat-no" title="statement not covered" >meFiltering: {</span>
-            logLevels: filtering.logLevels as ('debug' | 'info' | 'warn' | 'error' | 'critical')[],
-            components: filtering<span class="cstat-no" title="statement not covered" >.mo</span>duleTypes || [],
-            correlationIds: executio<span class="cstat-no" title="statement not covered" >nI</span>d ? [executionId] : [],
-            userSessions: [],<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        const streamingConfig: Lo<span class="cstat-no" title="statement not covered" >gSt</span>reamingConfig = {
+          realTimeFiltering: {<span class="cstat-no" title="statement not covered" ></span>
+            logLevels: filtering.logL<span class="cstat-no" title="statement not covered" >evels as ('debug' | 'info' | 'warn' | 'error' | 'critical')[],<span class="fstat-no" title="function not covered" ></span></span>
+            components: <span class="cstat-no" title="statement not covered" >filtering.moduleTypes |</span>| [],
+            correlationI<span class="cstat-no" title="statement not covered" >ds: executionId ? [executionI</span>d] : [],
+            userSessions: [],
             timeWindows:<span class="cstat-no" title="statement not covered" > {</span>
-              start: fil<span class="cstat-no" title="statement not covered" >tering.startTime ? new Date(f</span>iltering.startTime) : new Date(Date.now() - 24 * 60 * 60 * 1000),
+              start: fil<span class="cstat-no" title="statement not covered" >tering.startTime ? new Date(filtering.startTime) : new Date(Date.now() - 24 * 60 * 60 * 1000),</span>
               end: filtering.endTime ? new Date(filtering.endTime) : new Date(),
-              live: stre<span class="cstat-no" title="statement not covered" >aming.enabled,</span>
-            },<span class="cstat-no" title="statement not covered" ></span>
+              live: streaming.enabled,
+            },
           },
           aggregationStrategy: {
             batchingEnabled: streaming.enabled,
-            batchSize: streaming.batchSize,
+            batchSiz<span class="cstat-no" title="statement not covered" >e: streaming.batch<span class="fstat-no" title="function not covered" >Si</span>ze,<span class="cstat-no" title="statement not covered" ></span></span>
             batchTimeoutMs: streaming.batchTimeoutMs,
-            compressionEnabled: streaming.compressionEnabled,
-            deduplic<span class="cstat-no" title="statement not covered" >ationEnabled: true<span class="fstat-no" title="function not covered" >,<span class="cstat-no" title="statement not covered" ></span></span></span>
+            compress<span class="cstat-no" title="statement not covered" >ionEnabled: streaming.compressionEnabled,</span>
+            deduplicationEnabled: t<span class="cstat-no" title="statement not covered" >rue,</span>
           },
-          bufferingS<span class="cstat-no" title="statement not covered" >trategy: {</span>
-            enabled: streaming.enab<span class="cstat-no" title="statement not covered" >led,</span>
+          bufferingStrategy: {
+            enabled: streaming.enabled,
             maxBufferSize: 1000,
             bufferTimeoutMs: 300000, // 5 minutes
             persistToRedis: false,
@@ -648,18 +648,18 @@ export function createGetScenarioR<span class="cstat-no" title="statement not co
         if (streaming.enabled) {
           // Real-time streaming mode
           const logs: MakeLogEntry[] = [];
-          let totalLogs = 0;
+          let totalL<span class="cstat-no" title="statement not covered" >ogs = 0;</span>
 &nbsp;
           const streamId = await streamingManager.startLogStreaming(
-            scenario<span class="cstat-no" title="statement not covered" >Id,</span>
-            executionId || null,
+            scenarioId,
+            executionId || null,<span class="cstat-no" title="statement not covered" ></span>
             streamingConfig,
             (newLogs) =&gt; {
-              logs.push(...newLogs)<span class="cstat-no" title="statement not covered" >;</span>
+              logs.push(...newLogs);
               totalLogs += newLogs.length;
               
-              // Format and output new logs (used for side effects)
-              formatLogs(newLogs, output);
+              // For<span class="cstat-no" title="statement not covered" >mat and output new logs (used for side effects)</span>
+              formatLogs<span class="cstat-no" title="statement not covered" >(newLogs, output);</span>
               
               log?.i<span class="cstat-no" title="statement not covered" >nfo?.('New logs received', {</span>
                 count: n<span class="cstat-no" title="statement not covered" >ewLogs.length,</span>
@@ -670,16 +670,16 @@ export function createGetScenarioR<span class="cstat-no" title="statement not co
           );<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
           // Run for a limited time for demo purposes (in production, this would be managed differently)
-          await new <span class="cstat-no" title="statement not covered" >Promise(resolve =&gt; setTimeout(resolve, 30000)); // 30 seconds</span>
+          await new Promise(resolve =<span class="cstat-no" title="statement not covered" >&gt; setTimeout(resolve, 30000)); // 30 seconds</span>
 <span class="cstat-no" title="statement not covered" ></span>
-          // Stop streaming
-          streamingManager.stopLogStr<span class="cstat-no" title="statement not covered" >eaming(streamId);</span>
+          // Stop stream<span class="cstat-no" title="statement not covered" >ing</span>
+          streamingManager.stopLogStreaming(streamId);
 <span class="cstat-no" title="statement not covered" ></span>
-          const result =<span class="cstat-no" title="statement not covered" > {</span>
-            summary: {
-              totalLogs,<span class="cstat-no" title="statement not covered" ></span>
-              streamId,<span class="cstat-no" title="statement not covered" ></span>
-              scenarioId,<span class="cstat-no" title="statement not covered" ></span>
+          const result = {<span class="cstat-no" title="statement not covered" ></span>
+            summary: {<span class="cstat-no" title="statement not covered" ></span>
+              totalLogs,
+              streamId,
+              scenarioId,
               executionId: executionId || 'live',
               duration: '30 seconds',
               format: output.format,
@@ -691,33 +691,33 @@ export function createGetScenarioR<span class="cstat-no" title="statement not co
           };
 &nbsp;
           return formatSuccessResponse(result).content[0].text;
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         } else {
           // Static log retrieval
-          const para<span class="cstat-no" title="statement not covered" >ms: Record&lt;string, unknown&gt; = {</span>
-            limit: 100,
-            offset: 0,
-            sortBy: 'timestamp',
-            sortOrder: 'desc',<span class="cstat-no" title="statement not covered" ></span>
-          };<span class="cstat-no" title="statement not covered" ></span>
+          const params: Record&lt;string, unknown&gt; = {
+            limit: 100,<span class="cstat-no" title="statement not covered" ></span>
+            offs<span class="cstat-no" title="statement not covered" >et: 0,</span>
+            sort<span class="cstat-no" title="statement not covered" >By: 'timestamp',</span>
+            sortOrde<span class="cstat-no" title="statement not covered" >r: 'desc',</span>
+          };
 <span class="cstat-no" title="statement not covered" ></span>
-          if (execut<span class="cstat-no" title="statement not covered" >ionId) {</span>
+          if (executionId) {
             params.executionId = executionId;
-          }<span class="cstat-no" title="statement not covered" ></span>
+          }
 &nbsp;
           if (filtering.logLevels?.length &gt; 0) {
             params.level = filtering.logLevels.join(',');
           }
+<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          if (filter<span class="fstat-no" title="function not covered" >in</span>g.startTime) {</span>
+<span class="cstat-no" title="statement not covered" >            params.dateFrom = filtering.startTime;</span>
+          }
+<span class="cstat-no" title="statement not covered" ></span>
+          if (filtering.endTime) {
+            para<span class="cstat-no" title="statement not covered" >ms.dateTo = filtering.endTime;</span>
+          }
 &nbsp;
-          if (filtering.startTime) {
-            params.dateFrom = filtering.startTime;
-<span class="fstat-no" title="function not covered" >          }</span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >          if (filtering.endTime) {</span>
-            params.dateTo = filtering.endTime;
-          }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-          const <span class="cstat-no" title="statement not covered" >response = await apiClient.get(`/scenarios/${scenarioId}/logs`, { params });</span>
+          const response = await apiClient.get(`/scenarios/${scenarioId}/logs`, { params });
 &nbsp;
           if (!response.success) {
             throw new UserError(`Failed to retrieve logs: ${response.error || 'Unknown error'}`);
@@ -727,16 +727,16 @@ export function createGetScenarioR<span class="cstat-no" title="statement not co
           const formattedLogs = formatLogs(logs, output);
 &nbsp;
           const result = {
-            summary: {
-              totalLogs: logs.length,
-              scenarioId,
-              executionId: executi<span class="cstat-no" title="statement not covered" >onId || 'all',</span>
-              format: output.f<span class="cstat-no" title="statement not covered" >ormat,</span>
-              timeRange: {<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >                start: filtering.startTime,</span>
+            summary: {<span class="cstat-no" title="statement not covered" ></span>
+              totalLogs: logs.<span class="cstat-no" title="statement not covered" >length,</span>
+              scenarioId,<span class="cstat-no" title="statement not covered" ></span>
+              ex<span class="cstat-no" title="statement not covered" >ecutionId: executionId || 'all',</span>
+              format: output.format,
+              timeRange: {
+<span class="cstat-no" title="statement not covered" >                start: filte</span>ring.startTime,
                 end: filtering.endTime,
               },
-            },<span class="cstat-no" title="statement not covered" ></span>
+            },
             logs: formattedLogs,
             status: 'completed',
             message: `Retrieved ${logs.length} logs successfully`,
@@ -805,7 +805,7 @@ function formatLogs(logs: MakeLogEntry[], output: {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

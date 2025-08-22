@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/486</span>
+                <span class='fraction'>0/477</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/415</span>
+                <span class='fraction'>0/408</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/69</span>
+                <span class='fraction'>0/68</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/480</span>
+                <span class='fraction'>0/471</span>
             </div>
         
             
@@ -1755,16 +1755,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3161,7 +3155,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3442,43 +3442,43 @@
  * Comprehensive tools for managing folders, data stores, and resource organization
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError } from 'fastmcp';
+import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '..</span>/utils/response-formatter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// Extended fo<span class="cstat-no" title="statement not covered" >lder and data s</span>tore types
-export interface Mak<span class="cstat-no" title="statement not covered" >eFolder {</span>
-  id: number;<span class="cstat-no" title="statement not covered" ></span>
+import logger from '../lib/logger.js';
+import { formatSuccessRespo<span class="cstat-no" title="statement not covered" >nse } from '../utils/response-formatter.js';</span>
+&nbsp;
+// Extended folder and data store types
+export interface MakeFolder {
+  id: number;
   name: string;
-  description?: string;<span class="cstat-no" title="statement not covered" ></span>
+  description?: string;
   parentId?: number;
   path: string;
   organizationId?: number;
   teamId?: number; 
   type: 'template' | 'scenario' | 'connection' | 'mixed';
   permissions: {
-    read: string[];
+    read: string[];<span class="cstat-no" title="statement not covered" ></span>
     write: string[];
     admin: string[];
   };
   itemCount: {
     templates: number;
-    scenarios: number;<span class="cstat-no" title="statement not covered" ></span>
+    scenarios: number;
     connections: number;
     subfolders: number;
     total: number;
   };
   metadata: {
     size: number; // bytes
-    lastActivity: string;
+    lastActivity: string;<span class="cstat-no" title="statement not covered" ></span>
     mostActiveItem?: {
       type: string;
       id: number;
       name: string;
       activity: number;
-    };<span class="cstat-no" title="statement not covered" ></span>
+    };
   };
   createdAt: string;
   updatedAt: string;
@@ -3510,55 +3510,55 @@ export interface MakeDataStructure {
   strict: boolean;
   usage: {
     dataStoresCount: number;
-    totalRecords: number;
+    totalRecords: number<span class="cstat-no" title="statement not covered" >;</span>
     lastUsed?: string;
   };
   validation: {
     enabled: boolean;
     rules: string[];
-    lastValidation?: str<span class="cstat-no" title="statement not covered" >ing;</span>
+    lastValidation?: string;
     validationErrors?: number;
-  };
+  };<span class="cstat-no" title="statement not covered" ></span>
   createdAt: string;
   updatedAt: string;
   createdBy: number;
 }
 &nbsp;
-export interface MakeDataStore {<span class="cstat-no" title="statement not covered" ></span>
+export interface MakeDataStore {
   id: number;
   name: string;
   description?: string;
   type: 'data_structure' | 'key_value' | 'queue' | 'cache';
   organizationId?: number;
   teamId?: number;
-  structure: {
+  structure: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     fields?: Array&lt;{
-      name: string;
+      name: string;<span class="cstat-no" title="statement not covered" ></span>
       type: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'array';
       required: boolean;
       defaultValue?: unknown;
-      validation?: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      validation?: {
         min?: number;
-        max?: number;<span class="cstat-no" title="statement not covered" ></span>
+        max?: number;
         pattern?: string;
-        enum?: unknown[];
+        enum?: unknown[];<span class="cstat-no" title="statement not covered" ></span>
       };
     }&gt;;
     indexes?: Array&lt;{
       fields: string[];
       unique: boolean;
-      name: string;<span class="cstat-no" title="statement not covered" ></span>
+      name: string;
     }&gt;;
   };
   settings: {
     maxSize: number; // MB
-    ttl?: number; // seconds
+    ttl?: number; // seconds<span class="cstat-no" title="statement not covered" ></span>
     autoCleanup: boolean;
     encryption: boolean;
     compression: boolean;
   };
   usage: {
-    recordCount: number;<span class="cstat-no" title="statement not covered" ></span>
+    recordCount: number;
     sizeUsed: number; // bytes
     operationsToday: number;
     lastOperation: string;
@@ -3567,45 +3567,45 @@ export interface MakeDataStore {<span class="cstat-no" title="statement not cove
     read: string[];
     write: string[];
     admin: string[];
-  };
-  createdAt: string;
-  updatedAt: string;
+  };<span class="fstat-no" title="function not covered" ></span>
+  createdAt: string;<span class="cstat-no" title="statement not covered" ></span>
+  up<span class="cstat-no" title="statement not covered" >datedAt: string;</span>
   createdBy: number;
-}
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-// Input <span class="fstat-no" title="function not covered" >validation sche</span>mas
-const FolderCreateSchema = z<span class="cstat-no" title="statement not covered" >.object({</span>
-  na<span class="cstat-no" title="statement not covered" >me: z.string().min(1).max(100).describe('Folder name (1-100 characters)')</span>,
+// Input validation schemas
+const FolderCreateSchema = z.object({
+  name: z.string().min(1).max(100).describe('Folder name (1-100 characters)'),
   description: z.string().max(500).optional().describe('Folder description (max 500 characters)'),
-  pa<span class="cstat-no" title="statement not covered" >rentId: z.number().min(1).optional().describe('Parent folder ID (for nested folders)'),</span>
+  parentId: z.number().min(1).optional().describe('Parent folder ID (for nested folders)'),
   type: z.enum(['template', 'scenario', 'connection', 'mixed']).default('mixed').describe('Folder content type'),
   organizationId: z.number().min(1).optional().describe('Organization ID (for organization folders)'),
   teamId: z.number().min(1).optional().describe('Team ID (for team folders)'),
   permissions: z.object({
-    read: z.array(z.string()).default([]).describe('User/team IDs with read access'),
-    write: z.array(z.string()).default([]).describe('User/team IDs with write access'),
-    admin: z.array(z.string()).default([]).describe('User/team IDs with admin access'),
+    read: z.array<span class="fstat-no" title="function not covered" >(z</span>.string()).default([]).describe('User/team IDs with read access'),
+    write: z.array(z.string()).default([]).describe('User/team IDs with write access'),<span class="cstat-no" title="statement not covered" ></span>
+    admin: z<span class="cstat-no" title="statement not covered" >.array(z.string()).default([]).describe('User/team IDs with admin access'),</span>
   }).default({}).describe('Folder permissions'),
 }).strict();
 &nbsp;
-<span class="fstat-no" title="function not covered" ></span>
-const FolderListSchema = z.object({<span class="cstat-no" title="statement not covered" ></span>
-  parentId: <span class="cstat-no" title="statement not covered" >z.number().min(1).optional().describe('List folders under this parent (null for root)'),</span>
-  type: z.enum(['template', 'scenario', 'connection', 'mixed', 'all']).default('all').describe('Filter by folder type'),
+&nbsp;
+const FolderListSchema = z.object({
+  parentId: z.number().min(1).optional().describe('List folders under this parent (null for root)'),
+  type: z.en<span class="cstat-no" title="statement not covered" >um(['template', 'scenario', 'connection', 'mixed', 'all']).default('all').describe('Filter by folder type'),</span>
   organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
-  teamId: z.number().min(1).optional().describe('Filter by team ID'),
-  searchQuery: z.string().max(100).optional().describe('Search in folder names and descriptions'),
-  includeEmpty: z.boolean().default(true).describe('Include empty folders'),
-  includeContents: z.boolean().default(false).describe('Include folder contents summary'),
-  limit: z.n<span class="cstat-no" title="statement not covered" >umber().min(1).max(1000).default(100).describe('Maximum number of folders to return'),</span>
+  teamId: z.numb<span class="cstat-no" title="statement not covered" >er().min(1).optional().describe('Filter by team ID'),</span>
+  searchQuery: z.string().max(100).optional<span class="cstat-no" title="statement not covered" >().describe('Search in folder names and desc</span>riptions'),
+  includeEmpty: z.bo<span class="cstat-no" title="statement not covered" >olean().default(true).describe('Include empty folders'),</span>
+  includeContents: z.boo<span class="cstat-no" title="statement not covered" >lean().default(false).describe('Include folder contents summary'),</span>
+  limit: z.number().min(1).max(1000).default(100).describe('Maximum number of folders to return'),
   offset: z.number().min(0).default(0).describe('Number of folders to skip for pagination'),
-  sortBy: z.enum<span class="cstat-no" title="statement not covered" >(['name', 'createdAt', 'updatedAt', 'itemCount', 'lastActivity']).default('name').describe('Sort field'),</span>
-  sortOrder: z.enum(['asc', 'desc']).defaul<span class="cstat-no" title="statement not covered" >t('asc').describe('Sort order'),</span>
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  sortBy: z.enum(['name', 'createdA<span class="cstat-no" title="statement not covered" >t', 'updatedAt', 'itemCount', 'lastActivity']).default('name').describe('Sort field'),</span>
+  sortOrder: z.enum(['asc', 'desc']).default('asc').describe('Sort order'),
+}).strict();
+&nbsp;
 const DataStoreCreateSchema = z.object({
   name: z.string().min(1).max(100).describe('Data store name (1-100 characters)'),
-  description: z.string().max(500).<span class="cstat-no" title="statement not covered" >optional().describe('Data store description (max 500 characters)'),</span>
+  description: z.string().max(500).optional().describe('Data store description (max 500 characters)'),
   type: z.enum(['data_structure', 'key_value', 'queue', 'cache']).describe('Data store type'),
   organizationId: z.number().min(1).optional().describe('Organization ID (for organization data stores)'),
   teamId: z.number().min(1).optional().describe('Team ID (for team data stores)'),
@@ -3613,26 +3613,26 @@ const DataStoreCreateSchema = z.object({
     fields: z.array(z.object({
       name: z.string().min(1).max(50).describe('Field name'),
       type: z.enum(['string', 'number', 'boolean', 'date', 'object', 'array']).describe('Field data type'),
-      required: z.boolean().default(false).describe('Whether field is required'),
-      defaultValue: z.any().optional().describe('Default field value'),
-      validation: z.object({
+      required: z.boolean().def<span class="cstat-no" title="statement not covered" >ault(false)</span>.describe('Whether field is required'),
+      defaultVal<span class="cstat-no" title="statement not covered" >ue: z.any().optional().describe('Default field value'),</span>
+      validation: z.<span class="cstat-no" title="statement not covered" >object({</span>
         min: z.number().optional().describe('Minimum value/length'),
-        max: z.number().optional().describe('Maximum value/length'),
-        pattern: z.string().optional().describe('Regex pattern for validation'),
-        enum: z.array(z.any()).<span class="cstat-no" title="statement not covered" >optional().</span>describe('Allowed values'),
-      }).optiona<span class="cstat-no" title="statement not covered" >l().describe('Field validation rules'),</span>
-    })).optional().d<span class="cstat-no" title="statement not covered" >escribe('Data structure fields (for data_structure type</span>)'),
-    indexes: z.array(z.object({
-      fields: z.array<span class="cstat-no" title="statement not covered" >(z.string().min(1)).min(1).describe('Fields to index'),</span>
-      unique: z.bool<span class="cstat-no" title="statement not covered" >ean().default(false).describe('Whether </span>index should be unique'),
-      name: z.string().min(1).max(50).describe('Index name'),
-    })).optional().describe('Data<span class="cstat-no" title="statement not covered" >base indexes'),</span>
-  }).optional().<span class="cstat-no" title="statement not covered" >describe('Data structure definition'),</span>
-  settings: z.object<span class="cstat-no" title="statement not covered" >({</span>
+        max: z.number<span class="cstat-no" title="statement not covered" >().optional().describe('Maximum value/length'),</span>
+        pattern: z.s<span class="cstat-no" title="statement not covered" >tring().optional().describe('Regex patt</span>ern for validation'),
+        enum: z.array(z.any()).optional().describe('Allowed values'),
+      }).optional().describe('Fie<span class="cstat-no" title="statement not covered" >ld validation rules'),</span>
+    })).optional<span class="cstat-no" title="statement not covered" >().describe('Data structure fields (for data_structure type)'),</span>
+    indexes: z.array<span class="cstat-no" title="statement not covered" >(z.object({</span>
+      fields: z.array(z.string().min(1)).min(1).describe('Fields to index'),
+      unique: z.boolean().defau<span class="cstat-no" title="statement not covered" >lt(false).desc</span>ribe('Whether index should be unique'),
+      name: z.st<span class="cstat-no" title="statement not covered" >ring().min(1).max(50).describe('Index name'),</span>
+    })).optional().d<span class="cstat-no" title="statement not covered" >escribe('Database indexes'),</span>
+  }).optional().describe('Data structure definition'),
+  settings: z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
     maxSize: z.number().min(1).max(10000).default(100).describe('Maximum size in MB'),
-    ttl: z.number().min(60).opt<span class="cstat-no" title="statement not covered" >ional().descri</span>be('Time to live in seconds'),
-    autoCleanup:<span class="cstat-no" title="statement not covered" > z.boolean().default(false).describe('Enable automatic cleanup'),</span>
-    encryption: z.bo<span class="cstat-no" title="statement not covered" >olean().default(false).describe('Enable data encryption'),</span>
+    ttl: z.number().min(60).optional().describe('Time to live in seconds'),
+    autoCleanup: z.boolean().default(false).describe('Enable automatic cleanup'),
+    encryption: z.boolean().default(false).describe('Enable data encryption'),
     compression: z.boolean().default(false).describe('Enable data compression'),
   }).default({})<span class="cstat-no" title="statement not covered" >.describe('Data store settings'),</span>
   permissions: z.object({
@@ -3640,7 +3640,7 @@ const DataStoreCreateSchema = z.object({
     write: z.array(z.string()).default([]).describe('User/team IDs with write access'),
     admin: z.array(z.string()).default([]).describe('User/team IDs with admin access'),
   }).default({}).describe('Data store permissions'),
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
+}).strict();
 &nbsp;
 const MoveItemsSchema = z.object({
   items: z.array(z.object({
@@ -3648,117 +3648,117 @@ const MoveItemsSchema = z.object({
     id: z.number().min(1).describe('Item ID'),
   })).min(1).max(100).describe('Items to move (max 100)'),
   targetFolderId: z.number().min(1).optional().describe('Target folder ID (null for root)'),
-  copyInsteadOfMove: z.boolean().default(false).describe('Copy items instead of moving them'),
-}).strict();
-&nbsp;
-// Interface for recursive data structure field
-interface DataStructureField {
+  copyInsteadOfMove: z.boolean().defa<span class="cstat-no" title="statement not covered" >ult(false).describe('Copy items instead of moving them'</span>),
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+// Interface for rec<span class="cstat-no" title="statement not covered" >ursive data s</span>tructure field
+interface DataSt<span class="cstat-no" title="statement not covered" >ructureField {</span>
   name: string;
-  type: 'text' | 'number' | 'boolean'<span class="cstat-no" title="statement not covered" > | 'date' | 'array' | 'collection';</span>
-  required?: boo<span class="cstat-no" title="statement not covered" >lean;</span>
-  default?: unkn<span class="cstat-no" title="statement not covered" >own;</span>
-  constraints?: {<span class="cstat-no" title="statement not covered" ></span>
-    minLength?: <span class="cstat-no" title="statement not covered" >number;</span>
+  type: 'text' | 'number' | 'boolean' | 'date' | 'array' | 'collection';
+  required?: boolean;
+  default?: unknown;
+  co<span class="cstat-no" title="statement not covered" >nstraints?: {</span>
+    minLength?: number;
     maxLength?: number;
     minimum?: number;
     maximum?: number;
     pattern?: string;
-<span class="cstat-no" title="statement not covered" >    enum?: unknown[];</span>
+    enum?: unknown[];
   };
   spec?: DataStructureField[];
 }
 &nbsp;
-const DataStructureFieldSchema: z.ZodType&lt;DataStructureField&gt; = z.object({
-  name: z.string().min(1).max(50).describe('Field name'),
-  type: z.enum(['text', 'number', 'boolean', 'date', 'array', 'collection']).describe('Field data type'),
+const DataStructu<span class="fstat-no" title="function not covered" >re</span>FieldSchema: z.ZodType&lt;DataStructureField&gt; = z.object({
+  name: z.string().min(1).max(50).describe('Field name'),<span class="cstat-no" title="statement not covered" ></span>
+  type: z.en<span class="cstat-no" title="statement not covered" >um(['text', 'number', 'boolean', 'date', 'array', 'collection']).describe('Field data type'),</span>
   required: z.boolean().default(false).describe('Whether field is required'),
   default: z.unknown().optional().describe('Default field value'),
   constraints: z.object({
-    minLength: z.<span class="fstat-no" title="function not covered" >nu</span>mber().min(0).optional().describe('Minimum text length'),
-    maxLength: z.number().min(1).optional().describe('Maximum text length'),<span class="cstat-no" title="statement not covered" ></span>
-    minimum:<span class="cstat-no" title="statement not covered" > z.number().optional().describe('Minimum numeric value'),</span>
-    maximum: z.number().optional().describe('Maximum numeric value'),
-    pattern: z.string().optional().describe('Regex pattern for text validation'),
+    minLength: z.number().min(0).optional().describe('Minimum text length'),
+    maxLength: z.number().min(1).optional().describe('Maximum text length'),
+    minimum: z.number().optional().describe('Minimum numeric value'),
+    maximum:<span class="cstat-no" title="statement not covered" > z.number().optional().describe('Maximum numeric value'),</span>
+    pattern: z.string().optiona<span class="cstat-no" title="statement not covered" >l().describe('Regex pattern for text validation'),</span>
     enum: z.array(z.unknown()).optional().describe('Allowed values'),
   }).optional().describe('Field validation constraints'),
   spec: z.array(z.lazy(() =&gt; DataStructureFieldSchema)).optional().describe('Nested field specification for collections/arrays'),
 }).strict();
-<span class="cstat-no" title="statement not covered" ></span>
-const DataStructureCreateSchema<span class="cstat-no" title="statement not covered" > = z.object({</span>
+&nbsp;
+const DataStructureCreateSchema = z.object({
   name: z.string().min(1).max(100).describe('Data structure name (1-100 characters)'),
-  description: z.string().max(500).optional().describe('Data structure description (max 500 characters)'),
-  organizationId: z.number().min(1).optional().describe('Organization ID (for organization data structures)'),
-  teamId: z.number().min(1).optional().describe('Team ID (for team data structures)'),
-  specification: z.array(DataStructureFieldSchema).min(1).describe('Field specifications'),
-  strict: z.boolean().default(true).describe('Enable strict validation mode'),
-}).strict();
+  description: z<span class="cstat-no" title="statement not covered" >.string().max(500).optional().describe('Data structure description (max 500 characters)'),</span>
+  organizationId: z.<span class="cstat-no" title="statement not covered" >number().min(1).optional().d</span>escribe('Organization ID (for organization data structures)'),
+  teamId: z.numb<span class="cstat-no" title="statement not covered" >er().min(1).optional().describe('Team ID (for team data structures)'),</span>
+  specification: z.a<span class="cstat-no" title="statement not covered" >rray(DataStructureFi</span>eldSchema).min(1).describe('Field specifications'),
+  strict: z.bool<span class="cstat-no" title="statement not covered" >ean().default(true).describe('Enable strict validation mode'),</span>
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
 const DataStructureL<span class="cstat-no" title="statement not covered" >istSchema = z.object({</span>
   organizationId<span class="cstat-no" title="statement not covered" >: z.number().min(1).optional().describe('Filter by organization ID'),</span>
-  teamId: z.number()<span class="cstat-no" title="statement not covered" >.min(1).optional().d</span>escribe('Filter by team ID'),
-  searchQuery: z<span class="cstat-no" title="statement not covered" >.string().max(100).optional().describe('Search in structure names and descriptions'),</span>
-  includeUsage: z.bo<span class="cstat-no" title="statement not covered" >olean().default(true).describe('Include </span>usage statistics'),
-  includeValidat<span class="cstat-no" title="statement not covered" >ion: z.boolean().default(false).describe('Include validation details'),</span>
-  limit: z.number().<span class="cstat-no" title="statement not covered" >min(1).max(1000).default</span>(100).describe('Maximum number of structures to return'),
-  offset: z.numb<span class="cstat-no" title="statement not covered" >er().min(0).default(0).describe('Number of structures to skip for pagination'),</span>
-  sortBy: z.enum(['n<span class="cstat-no" title="statement not covered" >ame', 'createdAt', 'updatedAt</span>', 'usageCount', 'lastUsed']).default('name').describe('Sort field'),
-  sortOrder: z.enum(['asc', 'desc<span class="cstat-no" title="statement not covered" >']).default('asc').describe('Sort order'),</span>
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  teamId: z.number()<span class="cstat-no" title="statement not covered" >.min(1).optional().describe('</span>Filter by team ID'),
+  searchQuery: z.string().max(100<span class="cstat-no" title="statement not covered" >).optional().describe('Search in structure n</span>ames and descriptions'),
+  includeUsage: <span class="cstat-no" title="statement not covered" >z.boolean().default(true).describe('Include usage statistics'),</span>
+  includeValidation:<span class="cstat-no" title="statement not covered" > z.boolean().default(false).describe('Include validation details'),</span>
+  limit: z.number().min(1).max(1000).default(100).describe('Maximum number of structures to return'),
+  offset: z.number().min(0).defa<span class="cstat-no" title="statement not covered" >ult(0).describe('Num</span>ber of structures to skip for pagination'),
+  sortBy: z.enum(['name', 'create<span class="cstat-no" title="statement not covered" >dAt', 'updatedAt',</span> 'usageCount', 'lastUsed']).default('name').describe('Sort field'),
+  sortOrder: z.e<span class="cstat-no" title="statement not covered" >num(['asc', 'desc']).default('asc').describe('Sort order'),</span>
+}).strict();
+&nbsp;
 const DataStructureUpdateSchema = z.object({
-  id: z.number().min(1).describe<span class="cstat-no" title="statement not covered" >('Data structure ID </span>to update'),
-  name: z.string().min(1).max(100<span class="cstat-no" title="statement not covered" >).optional().descr</span>ibe('Updated structure name'),
-  description: z<span class="cstat-no" title="statement not covered" >.string().max(500).optional().describe('Updated structure description'),</span>
-  specification: z.array(DataStructureFieldSchema).optional().describe('Updated field specifications'),
+  id: z.number().min(1).describe('Data structure ID to update'),
+  name: z.string().min(1).max(100)<span class="cstat-no" title="statement not covered" >.optional().describe('Updated </span>structure name'),
+  description: z.string().max(500).optional().describe('Updated structure description'),
+  specification: z.array(DataStr<span class="cstat-no" title="statement not covered" >uctureFieldSchema).optional().describe('Updated field specifications'),</span>
   strict: z.boolean().optional().describe('Updated strict validation mode'),
   migrationOptions: z.object({
-    preserveData: z.boolean().default(true).describe('Preserve existing data during migration'),
-    backupFirst: z.boolean().defau<span class="cstat-no" title="statement not covered" >lt(true).describe('Create back</span>up before migration'),
-    validateBeforeUpdate: z.boolean().default(true).describe('Validate structure before applying'),
-  }).default({}).describe('Migra<span class="cstat-no" title="statement not covered" >tion configuration'),</span>
+    preserveData: z.boolean().default(true).descr<span class="fstat-no" title="function not covered" >ib</span>e('<span class="cstat-no" title="statement not covered" >Preserve existing data</span> during migration'),
+    backupFirst: z.boolean().default(true).descri<span class="fstat-no" title="function not covered" >be</span>('C<span class="cstat-no" title="statement not covered" >reate backup before mi</span>gration'),
+    validateBeforeUpdate: z.boolean().default(true)<span class="fstat-no" title="function not covered" >.d</span>esc<span class="cstat-no" title="statement not covered" >ribe('Validate structure</span> before applying'),
+  }).default({}).describe('Migration configura<span class="fstat-no" title="function not covered" >ti</span>on'<span class="cstat-no" title="statement not covered" >),</span>
 }).strict();
 &nbsp;
 /**<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
- * Add folder organization and data store tools t<span class="fstat-no" title="function not covered" >o </span>Fas<span class="cstat-no" title="statement not covered" >tMCP server</span>
+ * Add folder organization and data store tools to<span class="fstat-no" title="function not covered" > F</span>astMCP ser<span class="cstat-no" title="statement not covered" >ver</span>
  */<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-export function addFolderTools(server: FastMCP<span class="fstat-no" title="function not covered" >, </span>api<span class="cstat-no" title="statement not covered" >Client: MakeApiClie</span>nt): void {
-  const componentLogger = logger.child({ component: 'FolderTools' });
+export function addFolderTools(server: FastMCP, apiC<span class="fstat-no" title="function not covered" >li</span>ent: MakeA<span class="cstat-no" title="statement not covered" >piClient): void {</span>
+  const componentLogger = logger.child({ component:<span class="fstat-no" title="function not covered" > '</span>FolderTool<span class="cstat-no" title="statement not covered" >s' });</span>
   
-  componentLogger.info('Adding folder organization <span class="fstat-no" title="function not covered" >an</span>d data sto<span class="cstat-no" title="statement not covered" >re tools');</span>
+  componentLogger.info('Adding folder organizatio<span class="fstat-no" title="function not covered" >n </span>and<span class="cstat-no" title="statement not covered" > data store tools');</span>
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  // Create folder<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  // Create folder
   server.addTool({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     name: 'create-folder',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     description: 'Create a new folder for organizing templates, scenarios, and connections',
-    annotations: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      title: 'Create Folder',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
+      title: 'Create Folder',
       readOnlyHint: false,
-      destructiveHint: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      idempotentHint: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      destructiveHint: true,
+      idempotentHint: true,
       openWorldHint: true,
-    },<span class="cstat-no" title="statement not covered" ></span>
+    },
     parameters: FolderCreateSchema,
     execute: async (input, { log }) =&gt; {
       const { name, description, parentId, type, organizationId, teamId, permissions } = input;
 &nbsp;
       log.info('Creating folder', {
         name,
-        type,
-        parentId,
-        organizationId,
-        teamId,
-      });
+        type,<span class="cstat-no" title="statement not covered" ></span>
+        parentId<span class="cstat-no" title="statement not covered" >,</span>
+        organiza<span class="cstat-no" title="statement not covered" >tionId,</span>
+        teamId,<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        // Valid<span class="cstat-no" title="statement not covered" >ate parent folder exists if specified</span>
-        if (pare<span class="cstat-no" title="statement not covered" >ntId) {</span>
-          const pare<span class="cstat-no" title="statement not covered" >ntResponse = </span>await apiClient.get(`/folders/${parentId}`);
-          if (!p<span class="cstat-no" title="statement not covered" >arentResponse.success) {</span>
+      try {
+        // Validate parent folder exists if specified
+        if (parentId) {
+<span class="cstat-no" title="statement not covered" >          const parentResponse = await apiClient.get(`/folders/${parentId}`);</span>
+          if (!parentResponse.success) {
             throw new UserError(`Parent folder with ID ${parentId} not found`);
           }
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        const folderData = {</span>
+        const folderData = {
           name,
           description,
           parentId,
@@ -3769,33 +3769,33 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
             ...permissions,
             read: permissions?.read ?? [],
             write: permissions?.write ?? [],
-            admin: permissions?.admin ?? [],
-          },
-        };
-&nbsp;
-        let endpoint = '/folders';
-        if (organizationId) {
-          endpoin<span class="fstat-no" title="function not covered" >t </span>= `/organizations/${organizationId}/folders`;
-        } else if (teamId) {<span class="cstat-no" title="statement not covered" ></span>
-          en<span class="cstat-no" title="statement not covered" >dpoint = `/teams/${teamId}/folders`;</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
+            admin<span class="fstat-no" title="function not covered" >: </span>permissions?.admin ?? [],
+          },<span class="cstat-no" title="statement not covered" ></span>
+        };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const response = await apiClient.post(endpoint, folderData);
-&nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to create folder: ${response.error?.message || 'Unknown error'}`);
+        let endpoint = '/folder<span class="cstat-no" title="statement not covered" >s';</span>
+        if (organizationId) {
+          endpoint = `/organizations/${organizationId}/folders`;
+        } else if (teamId) {
+          endpoint = `/teams/${teamId}/folders`;
         }
 <span class="cstat-no" title="statement not covered" ></span>
-        const fo<span class="cstat-no" title="statement not covered" >lder = response.data as MakeFolder;</span>
-        if (!folder)<span class="cstat-no" title="statement not covered" > {</span>
-          throw new UserError('Folder creation failed - no data returned');
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.post(endpoint, folderData);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!response.success) {
+          throw new UserError(`Fa<span class="cstat-no" title="statement not covered" >iled to create</span> folder: ${response.error?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        log.info<span class="cstat-no" title="statement not covered" >('Successfully created folder', {</span>
+        const folder = response.data as MakeFolder;
+        if (!folder) {
+          throw new UserError('Folder creation failed - no data returned');
+        }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        log.info('Successfully created folder', {
           folderId: folder.id,
           name: folder.name,
           type: folder.type,
-          path: <span class="cstat-no" title="statement not covered" >folder.path,</span>
+          path: folder.path,
         });
 &nbsp;
         return formatSuccessResponse({
@@ -3810,66 +3810,66 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
             },
           },
         }, `Folder "${name}" created successfully`).content[0].text;
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating folder', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to create folder: ${errorMessage}`);
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error creating folder', { name, error: errorMessage });</span>
+        if (error in<span class="cstat-no" title="statement not covered" >stanceof User</span>Error) throw error;
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to create folder: ${errorMessage}`);</span>
       }
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // List folders<span class="cstat-no" title="statement not covered" ></span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+    },
+  });
+&nbsp;
+  //<span class="cstat-no" title="statement not covered" > List folders</span>
+  server.addTool({
     name: 'list-folders',
     description: 'List and filter folders with organizational hierarchy',
     annotations: {
       title: 'List Folders',
-<span class="cstat-no" title="statement not covered" >      readOnlyHint: true,</span>
+      readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: true,
     },
-    parameters: FolderListSchema,
-    execute: async (input, { log }) =&gt; {
-      const { parentId, type, organizationId, teamId, searchQuery, includeEmpty, includeContents, limit, offset, sortBy, sortOrder } = input;
+    parameters: F<span class="fstat-no" title="function not covered" >ol</span>derListSchema,
+    execute: async (input, { log }) =&gt; {<span class="cstat-no" title="statement not covered" ></span>
+      const <span class="cstat-no" title="statement not covered" >{ parentId, type, organizationId, teamId, searchQuery, includeEmpty, includeContents, limit, offset, sortBy, sortOrder } = input;</span>
 &nbsp;
       log.info('Listing folders', {
         parentId,
-        type,<span class="fstat-no" title="function not covered" ></span>
-        searchQuery,<span class="cstat-no" title="statement not covered" ></span>
-        limi<span class="cstat-no" title="statement not covered" >t,</span>
+        type,
+        sear<span class="cstat-no" title="statement not covered" >chQuery,</span>
+        limit,<span class="cstat-no" title="statement not covered" ></span>
         offset,
-      });
-&nbsp;
-      try {
-        cons<span class="cstat-no" title="statement not covered" >t params: Record&lt;string, unknown&gt; = {</span>
-          limit,<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const params: Re<span class="cstat-no" title="statement not covered" >cord&lt;string, unknown&gt; = {</span>
+          limit,
           offset,
           sortBy<span class="cstat-no" title="statement not covered" >,</span>
           sortOrder,<span class="cstat-no" title="statement not covered" ></span>
-          includeEmp<span class="cstat-no" title="statement not covered" >ty,</span>
-          includeContent<span class="cstat-no" title="statement not covered" >s,</span>
+          includeEmpty,
+          includeContents,
         };
 &nbsp;
-        if (pare<span class="cstat-no" title="statement not covered" >ntId) params.parentId = parentId;</span>
-        if (type !== 'all') param<span class="cstat-no" title="statement not covered" >s.type = type;</span>
-        if (organizationId) params.organizationId = organizationId;
+        if (parentId) params.pare<span class="cstat-no" title="statement not covered" >ntId = parentId;</span>
+        if (type<span class="cstat-no" title="statement not covered" > !== 'all') params.type = type;</span>
+        if (organiza<span class="cstat-no" title="statement not covered" >tionId) params.organizationId = organizationId;</span>
         if (teamId) params.teamId = teamId;
-        if (searchQuery) params.search = searchQuery;
+        if (searchQuery) params<span class="cstat-no" title="statement not covered" >.search = sear</span>chQuery;
+<span class="cstat-no" title="statement not covered" ></span>
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get('/folders', { params });</span>
 &nbsp;
-        const response = await ap<span class="cstat-no" title="statement not covered" >iClient.get('/folders', { params });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!respons<span class="cstat-no" title="statement not covered" >e.success) {</span>
+        if (!response.success) {
           throw new UserError(`Failed to list folders: ${response.error?.message || 'Unknown error'}`);
-        }<span class="cstat-no" title="statement not covered" ></span>
+        }
 <span class="cstat-no" title="statement not covered" ></span>
-        const fo<span class="cstat-no" title="statement not covered" >lders = response.data as MakeFolder[] || [];</span>
+        const folders = response.data as MakeFolder[] || [];
         const metadata = response.metadata;
 &nbsp;
         log.info('Successfully retrieved folders', {
           count: folders.length,
-          total:<span class="cstat-no" title="statement not covered" > metadata?.total,</span>
+          total: metadata?.total,
         });
 &nbsp;
         // Create folder hierarchy visualization
@@ -3877,53 +3877,53 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
 &nbsp;
         // Create summary statistics
         const summary = {
-          totalFolders: metadata?.total || folders.length,
-          typeBreakdown: {
-            template: folders.filter(f =&gt; f.type === 'template').length,
-            scenario: folders.filter(f =&gt; f.type === 'scenario').length,
-            connection: folders.filter(f =&gt; f.type === 'connection').length,
+          totalFolders: metadata?.tot<span class="cstat-no" title="statement not covered" >al || folders.length,</span>
+          typeBr<span class="cstat-no" title="statement not covered" >eakdown: {</span>
+            temp<span class="cstat-no" title="statement not covered" >late: folders.filter(f =&gt; f.type === 'template').length,</span>
+            scenario<span class="cstat-no" title="statement not covered" >: folders.fil</span>ter(f =&gt; f.type === 'scenario').length,
+            conn<span class="cstat-no" title="statement not covered" >ection: folders.filter(f =&gt; f.type === 'connection').length,</span>
             mixed: folders.filter(f =&gt; f.type === 'mixed').length,
-          },<span class="cstat-no" title="statement not covered" ></span>
-          conten<span class="cstat-no" title="statement not covered" >tSummary: {</span>
-            tota<span class="cstat-no" title="statement not covered" >lItems: folders.reduce((sum, f) =&gt; sum + f.itemCount.total, 0),</span>
-            template<span class="cstat-no" title="statement not covered" >s: folders.re</span>duce((sum, f) =&gt; sum + f.itemCount.templates, 0),
-            scen<span class="cstat-no" title="statement not covered" >arios: folders.reduce((sum, f) =&gt; sum + f.itemCount.scenarios, 0),</span>
+          },
+          contentSummary: {
+            totalItems: folders.reduce((sum, f) =&gt; sum + f.itemCount.total, 0),
+<span class="cstat-no" title="statement not covered" >            templates: folders.reduce((sum, f) =&gt; sum + f.itemCount.templates, 0),</span>
+            scenarios: folders.reduce((sum, f) =&gt; sum + f.itemCount.scenarios, 0),
             connections: folders.reduce((sum, f) =&gt; sum + f.itemCount.connections, 0),
             subfolders: folders.reduce((sum, f) =&gt; sum + f.itemCount.subfolders, 0),
           },
           emptyFolders: folders.filter(f =&gt; f.itemCount.total === 0).length,
-<span class="cstat-no" title="statement not covered" >          largestFolder: folders.reduce((max, f) =&gt; </span>
+          largestFolder: folders.reduce((max, f) =&gt; 
             f.itemCount.total &gt; (max?.itemCount.total || 0) ? f : max, folders[0]),
           mostRecentActivity: folders
             .filter(f =&gt; f.metadata.lastActivity)
             .sort((a, b) =&gt; new Date(b.metadata.lastActivity).getTime() - new Date(a.metadata.lastActivity).getTime())[0],
-        };
-&nbsp;
-        return formatSuccessResponse({
+        };<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        retu<span class="cstat-no" title="statement not covered" >rn formatSuccessResponse({</span>
           folders,
           hierarchy: includeContents ? hierarchy : undefined,
           summary,
-          paginat<span class="fstat-no" title="function not covered" >io</span>n: {
-            total: metadata?.total || folders.length,<span class="cstat-no" title="statement not covered" ></span>
+          pagination: {
+            total: metadata?.total || folders.length,
 <span class="cstat-no" title="statement not covered" >            limit,</span>
             offset,
-            hasMore: (metadata?.total || 0) &gt; (offset + folders.length),
-          },
-        }, "Folders retrieved successfully");
+            hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; (offset + folders.length),</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+        }, "Folders retr<span class="cstat-no" title="statement not covered" >ieved successfully");</span>
       } catch (error: unknown) {
-        cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('Error listing folders', { error: errorMessage });
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
-        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to list folders: ${errorMessage}`);</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error listing folder<span class="cstat-no" title="statement not covered" >s', { error: errorMes<span class="fstat-no" title="function not covered" >sa</span>ge <span class="cstat-no" title="statement not covered" >});</span></span>
+        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
+        throw new UserEr<span class="cstat-no" title="statement not covered" >ror(`Failed to list folders: ${errorMessage}`);</span>
+      }
     },
-  });
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  // Get folder cont<span class="cstat-no" title="statement not covered" >ents</span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  // Get folder contents
+  server.addTool({
     name: 'get-folder-contents',
     description: 'Get detailed contents of a specific folder',
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+    annotations: {
       title: 'Get Folder Contents',
       readOnlyHint: true,
       destructiveHint: false,
@@ -3938,33 +3938,33 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
       offset: z.number().min(0).default(0).describe('Number of items to skip for pagination'),
     }),
     execute: async (input, { log }) =&gt; {
-      const { folderId, contentType, includeMetadata, limit, offset } = input;
+      const { folderId, content<span class="cstat-no" title="statement not covered" >Type, includeMe</span>tadata, limit, offset } = input;
+<span class="cstat-no" title="statement not covered" ></span>
+      log.info('Gett<span class="cstat-no" title="statement not covered" >ing folder contents', { folderId, contentType });</span>
 &nbsp;
-      log.info('Getting folder contents', { folderId, contentType });
-&nbsp;
-      try {
-        const params: Record&lt;string, unknown&gt; = {
-          contentType,<span class="cstat-no" title="statement not covered" ></span>
-          includ<span class="cstat-no" title="statement not covered" >eMetadata,</span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const params<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt; = {</span>
+          contentType,
+          includeMetadata,<span class="cstat-no" title="statement not covered" ></span>
           limit,<span class="cstat-no" title="statement not covered" ></span>
-          offset,
-        };<span class="cstat-no" title="statement not covered" ></span>
+          offset,<span class="cstat-no" title="statement not covered" ></span>
+        };
 <span class="cstat-no" title="statement not covered" ></span>
-        const response = await apiClient.get(`/folders/${folderId}/contents`, { params });
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get(`/folders/${folderId}/contents`, { params });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to get folder contents: ${response.error?.message || 'Unknown error'}`);</span>
+        if (!response.success) {
+          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to get folder contents: ${response.error?.message || 'Unknown error'}`);</span>
         }
-<span class="cstat-no" title="statement not covered" ></span>
-        const co<span class="cstat-no" title="statement not covered" >ntents = response.data as Record&lt;string, unknown&gt;;</span>
-        const metada<span class="cstat-no" title="statement not covered" >ta = response.metadata;</span>
 &nbsp;
-        log.info<span class="cstat-no" title="statement not covered" >('Successfully retrieved folder contents', {</span>
+        const contents = response.data as Record&lt;string, unknown&gt;;
+        const metadata = response.metadata;
+<span class="cstat-no" title="statement not covered" ></span>
+        log.info('Successfully retrieved folder contents', {
           folderId,
           itemCount: (contents?.items as unknown[])?.length || 0,
         });
 &nbsp;
-        return f<span class="cstat-no" title="statement not covered" >ormatSuccessResponse({</span>
+        return formatSuccessResponse({
           folder: contents?.folder,
           contents: (contents?.items as unknown[]) || [],
           summary: {
@@ -3977,22 +3977,22 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
             },
           },
           pagination: {
-            total: metadata?.total || 0,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) &gt; (offset + ((contents?.items as unknown[])?.length || 0)),
-          },
+            total: metadata?.total ||<span class="cstat-no" title="statement not covered" > 0,</span>
+            limi<span class="cstat-no" title="statement not covered" >t,</span>
+            offs<span class="cstat-no" title="statement not covered" >et,</span>
+            hasMore:<span class="cstat-no" title="statement not covered" > (metadata?.t</span>otal || 0) &gt; (offset + ((contents?.items as unknown[])?.length || 0)),
+          },<span class="cstat-no" title="statement not covered" ></span>
         });
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.erro<span class="cstat-no" title="statement not covered" >r('Error getting folder contents', { folderId, error: errorMessage });</span>
-        if (error in<span class="cstat-no" title="statement not covered" >stanceof User</span>Error) throw error;
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to get folder contents: ${errorMessage}`);</span>
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error getting folder contents', { folderId, error: errorMessage });
+<span class="cstat-no" title="statement not covered" >        if (error instanceof UserError) throw error;</span>
+        throw new UserError(`Failed to get folder contents: ${errorMessage}`);
       }
     },
   });
 &nbsp;
-  //<span class="cstat-no" title="statement not covered" > Move items between folders</span>
+  // Move items between folders
   server.addTool({
     name: 'move-items',
     description: 'Move or copy items between folders with bulk operations',
@@ -4007,179 +4007,179 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
     execute: async (input, { log, reportProgress }) =&gt; {
       const { items, targetFolderId, copyInsteadOfMove } = input;
 &nbsp;
-      log.info('Moving/copying items', {
-        itemCount: items.length,
-        targetFolderId,
+      log.info('M<span class="fstat-no" title="function not covered" >ov</span>ing/copying items', {
+        itemCount: items.length,<span class="cstat-no" title="statement not covered" ></span>
+        targ<span class="cstat-no" title="statement not covered" >etFolderId,</span>
         operation: copyInsteadOfMove ? 'copy' : 'move',
       });
 &nbsp;
-      try {<span class="fstat-no" title="function not covered" ></span>
-        reportProgress({ progress: 0, total: 100 });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        // Validate target folder exists if specified
-        if (targetFolderId) {
+      try {
+        reportProgress({ progress: 0, total: 100 });
+&nbsp;
+        // V<span class="cstat-no" title="statement not covered" >alidate target folder exists if specified</span>
+        if (targetFolderId) {<span class="cstat-no" title="statement not covered" ></span>
           const targetResponse = await apiClient.get(`/folders/${targetFolderId}`);
           if (!targetResponse.success) {
             throw new UserError(`Target folder with ID ${targetFolderId} not found`);
           }
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+        }
+&nbsp;
         reportProgress({ progress: 25, total: 100 });
-&nbsp;
-        const moveData = {
-          items,
-          targetFolderId,
-          operation: copyInsteadOfMove ? 'copy' : 'move',
-        };
 <span class="cstat-no" title="statement not covered" ></span>
-        const respon<span class="cstat-no" title="statement not covered" >se = await apiClient</span>.post('/folders/move-items', moveData);
+        const moveDa<span class="cstat-no" title="statement not covered" >ta = {</span>
+          items,<span class="cstat-no" title="statement not covered" ></span>
+          targetFold<span class="cstat-no" title="statement not covered" >erId,</span>
+          operat<span class="cstat-no" title="statement not covered" >ion: copyInsteadOfMove ? 'copy' : 'move',</span>
+        };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (!respons<span class="cstat-no" title="statement not covered" >e.success) {</span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to ${copyInsteadOfMove ? 'copy' : 'move'} items: ${response.error?.message || 'Unknown error'}`);</span>
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.post('/folders/move-items', moveData);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!response.success) {
+          throw new UserError(`Fail<span class="cstat-no" title="statement not covered" >ed to ${copyInsteadO</span>fMove ? 'copy' : 'move'} items: ${response.error?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sult = response.data as Record&lt;string, unknown&gt;;</span>
-        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress: 100, total: 100 });</span>
+        const result = response.data as Record&lt;string, unknown&gt;;
+        reportProgress({ progress: 100, total: 100 });
 &nbsp;
-        log.info('Successfully move<span class="cstat-no" title="statement not covered" >d/copied items', {</span>
-          operation: copyInsteadO<span class="cstat-no" title="statement not covered" >fMove ? 'copy' : '</span>move',
-          succes<span class="cstat-no" title="statement not covered" >sful: Number(result?.successful || 0),</span>
+        log.info('Successfully moved/copied items', {
+          operation: copyInstead<span class="cstat-no" title="statement not covered" >OfMove ? 'copy' : 'move',</span>
+          successful: Number(result?.successful || 0),
           failed: Number(result?.failed || 0),
-        });
-&nbsp;
-        return formatSuccessResponse({
-          result,<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        return formatSuccessResponse({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          result,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           message: `Successfully ${copyInsteadOfMove ? 'copied' : 'moved'} ${result?.successful || 0} items`,
           summary: {
-            operation: copyInsteadOfMove ? 'copy' : 'move'<span class="fstat-no" title="function not covered" >,<span class="cstat-no" title="statement not covered" ></span></span>
+            operation: copyInsteadOfMove ? 'copy' : 'mov<span class="fstat-no" title="function not covered" >e'</span>,<span class="cstat-no" title="statement not covered" ></span>
             requestedItems: items.length,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-            successfulOperations: result?.success<span class="fstat-no" title="function not covered" >fu</span>l ||<span class="cstat-no" title="statement not covered" > 0,</span>
-            failedOperations: result?.failed || 0<span class="fstat-no" title="function not covered" >,<span class="cstat-no" title="statement not covered" ></span></span>
+            successfulOperations: result?.successful || 0,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+            failedOperations: result?.failed || 0,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
             targetFolder: targetFolderId ? result?.targetFolderName : 'Root',
           },
           errors: result?.errors || [],<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         }).content[0].text;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        const errorMessage = error instanceof Error ? error<span class="fstat-no" title="function not covered" >.m</span>essage : St<span class="cstat-no" title="statement not covered" >ring(error);</span>
+      } catch (error: unknown) {
+        const errorMessage = error instanceof E<span class="fstat-no" title="function not covered" >rr</span>or ? error.<span class="cstat-no" title="statement not covered" >message : String(error);</span>
         log.error('Error moving/copying items', { error: errorMessage });
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to ${copyInsteadOfMov<span class="fstat-no" title="function not covered" >e </span>? 'copy' : <span class="cstat-no" title="statement not covered" >'move'} items: ${errorMessage}`);</span>
-      }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to ${copyInsteadOfMove ? 'copy' : 'move'} items: ${errorMessage}`);</span>
+      }
     },
-  });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  });
 &nbsp;
   // Create data store
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+  server.addTool({
     name: 'create-data-store',
     description: 'Create a new data store for persistent data management',
     parameters: DataStoreCreateSchema,
     annotations: {
       title: 'Create Data Store',
-      readOnlyHint: false,
-      destructiveHint: true,
-      idempotentHint: false,
-      openWorldHint: true,
-    },
+      readOnlyHint: false,<span class="cstat-no" title="statement not covered" ></span>
+      destructiv<span class="cstat-no" title="statement not covered" >eHint: true,</span>
+      idempotent<span class="cstat-no" title="statement not covered" >Hint: false,</span>
+      openWorldHint:<span class="cstat-no" title="statement not covered" > true,</span>
+    },<span class="cstat-no" title="statement not covered" ></span>
     execute: async (input, { log }) =&gt; {
-      const { name, description, type<span class="cstat-no" title="statement not covered" >, organizationId, teamId, structure, settings, permissi</span>ons } = input;
-<span class="cstat-no" title="statement not covered" ></span>
-      log.info('<span class="cstat-no" title="statement not covered" >Creating data store', {</span>
-        name,<span class="cstat-no" title="statement not covered" ></span>
-        type,<span class="cstat-no" title="statement not covered" ></span>
+      const { name, description, type, organizationId, teamId, structure, settings, permissions } = input;
+&nbsp;
+      log.info('Creating data store', {
+<span class="cstat-no" title="statement not covered" >        name,</span>
+        type,
         organizationId,
         teamId,
       });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      try {</span>
+      try {
         // Validate structure for data_structure type
         if (type === 'data_structure') {
           if (!structure?.fields || structure.fields.length === 0) {
             throw new UserError('Data structure type requires field definitions');
-          }
-          
-          // Validate field names are unique
+          }<span class="fstat-no" title="function not covered" ></span>
+          <span class="cstat-no" title="statement not covered" ></span>
+          //<span class="cstat-no" title="statement not covered" > Validate field names are unique</span>
           const fieldNames = structure.fields.map(f =&gt; f.name);
           if (new Set(fieldNames).size !== fieldNames.length) {
             throw new UserError('Field names must be unique within the data structure');
-          }<span class="fstat-no" title="function not covered" ></span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const dataStoreData = {
-          name,
+          }
+        }
+&nbsp;
+        cons<span class="cstat-no" title="statement not covered" >t dataStoreData = {</span>
+          name,<span class="cstat-no" title="statement not covered" ></span>
           description,
           type,
           organizationId,
           teamId,
-          st<span class="cstat-no" title="statement not covered" >ructure: structure || {},</span>
-          settings: {<span class="cstat-no" title="statement not covered" ></span>
+          structure: structure || {},
+          settings: {
             ...settings,
-            maxSize: settings?.maxSize ?? 100,
-            autoCleanup: settings?.autoCleanup ?? false,
-            encryption: settings?.encryption ?? false,
-            compression: settings?.compression ?? false,
-          },
-          permissions: {
-            ...p<span class="cstat-no" title="statement not covered" >ermissions,</span>
-            read: pe<span class="cstat-no" title="statement not covered" >rmissions?.read ?? [],</span>
-            writ<span class="cstat-no" title="statement not covered" >e: permissions?.write ?? [],</span>
-            admin: p<span class="cstat-no" title="statement not covered" >ermissions?.admin ?? [],</span>
+            maxS<span class="cstat-no" title="statement not covered" >ize: settings?.maxSize ?? 100,</span>
+            autoClea<span class="cstat-no" title="statement not covered" >nup: settings?.autoCleanup ?? false,</span>
+            encr<span class="cstat-no" title="statement not covered" >yption: settings?.encryption ?? false,</span>
+            compress<span class="cstat-no" title="statement not covered" >ion: settings?.compressi</span>on ?? false,
+          },<span class="cstat-no" title="statement not covered" ></span>
+          permission<span class="cstat-no" title="statement not covered" >s: {</span>
+            ...permissions,<span class="cstat-no" title="statement not covered" ></span>
+            read<span class="cstat-no" title="statement not covered" >: permissions?.read ?? [],</span>
+            write: p<span class="cstat-no" title="statement not covered" >ermissions?.write ?? [],</span>
+            admin: permissions?.admin ?? [],
           },<span class="cstat-no" title="statement not covered" ></span>
         };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        let endp<span class="cstat-no" title="statement not covered" >oint = '/data-stores';</span>
-        if (organiza<span class="cstat-no" title="statement not covered" >tionId) {</span>
+        let endpoint = '/data-stores';
+        if (organizationId) {
           endpoint = `/organizations/${organizationId}/data-stores`;
-        } else if (teamId) {<span class="cstat-no" title="statement not covered" ></span>
-          endpoint = `/teams/${te<span class="cstat-no" title="statement not covered" >amId}/data-stores`</span>;
-        }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        const response = await apiClient.post(endpoint, dataStoreData);
-&nbsp;
-        if (!response.success) {
-          throw new UserError(`F<span class="cstat-no" title="statement not covered" >ailed to create data store: ${response.error?.message || 'Unknown error'}`);</span>
+        } else if (teamId) {
+          endpoint = `/teams/${t<span class="cstat-no" title="statement not covered" >eamId}/data-stores`;</span>
         }
 &nbsp;
-        const dataStore = response.data as MakeDataStore;
+        const response = await apiClient.post(endpoint, dataStoreData);
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          throw new UserError(`Failed to create data store: ${res<span class="fstat-no" title="function not covered" >po</span>nse.error?.<span class="cstat-no" title="statement not covered" >message || 'Unknown error'}`);</span>
+        }
+&nbsp;
+        const dataStore = response.data as MakeDataStore;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         if (!dataStore) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          throw new UserError('Data store creation failed - <span class="fstat-no" title="function not covered" >no</span> data retur<span class="cstat-no" title="statement not covered" >ned');</span>
+          throw new UserError('Data store creation failed - no data returned');
         }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
         log.info('Successfully created data store', {
-          dataStoreId: dataStore.id,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          name: dataStore.name,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          type: dataStore.type,
-        });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-&nbsp;
+          dataStoreId: dataStore.id,
+          name: <span class="cstat-no" title="statement not covered" >dataStore.name,<span class="fstat-no" title="function not covered" ></span></span>
+          type: data<span class="cstat-no" title="statement not covered" >Store.type,<span class="fstat-no" title="function not covered" ></span></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
         return formatSuccessResponse({
           dataStore,
-          messag<span class="cstat-no" title="statement not covered" >e: `Data store "${name}<span class="fstat-no" title="function not covered" >" </span>created successfully`,</span>
-          configurat<span class="cstat-no" title="statement not covered" >ion: {<span class="fstat-no" title="function not covered" ></span></span>
-            type: dataStore.type,<span class="cstat-no" title="statement not covered" ></span>
-            maxSize: `${<span class="cstat-no" title="statement not covered" >dataStore.settings.maxSize} MB`,</span>
+          messag<span class="cstat-no" title="statement not covered" >e: `Data store "${name}" created successfully`,</span>
+          configuration: {
+            type: dataStore.type,
+            maxSize: `${dataStore.settings.maxSize} MB`,
             encryption: dataStore.settings.encryption,
             compression: dataStore.settings.compression,
-            fiel<span class="cstat-no" title="statement not covered" >dCount: dataStore.structure.fields?.length || 0,</span>
+            fieldCount: dataStore.structure.fields?.length || 0,
             indexCount: dataStore.structure.indexes?.length || 0,
           },
           permissions: {
             readAccess: dataStore.permissions.read.length,
             writeAccess: dataStore.permissions.write.length,
-            adminAccess: dataStore.permissions.admin.length,
-          },
-        }).content[0].text;
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+            adminAccess: dataStore.pe<span class="cstat-no" title="statement not covered" >rmissions.admin.length,</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+        }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
+      } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
         log.error('Error creating data store', { name, error: errorMessage });
-        if (error instanceof UserErro<span class="cstat-no" title="statement not covered" >r) throw error;</span>
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to create data store: ${errorMessage}`);</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to create data store: ${errorMessage}`);
+      }
+<span class="cstat-no" title="statement not covered" >    },</span>
+  });
 &nbsp;
   // List data stores
   server.addTool({
     name: 'list-data-stores',
-<span class="cstat-no" title="statement not covered" >    description: 'List and filter data stores with usage information',</span>
+    description: 'List and filter data stores with usage information',
     parameters: z.object({
       type: z.enum(['data_structure', 'key_value', 'queue', 'cache', 'all']).default('all').describe('Filter by data store type'),
       organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
@@ -4189,229 +4189,229 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
       limit: z.number().min(1).max(1000).default(100).describe('Maximum number of data stores to return'),
       offset: z.number().min(0).default(0).describe('Number of data stores to skip for pagination'),
       sortBy: z.enum(['name', 'type', 'createdAt', 'recordCount', 'sizeUsed']).default('name').describe('Sort field'),
-      sortOrder: z.enum(['asc', 'desc']).default('asc').describe('Sort order'),
-    }),
-    annotations: {
-      title: 'List Data Stores',
-      readOnlyHint: true,
+      sortOrder: <span class="fstat-no" title="function not covered" >z.</span>enum(['asc', 'desc']).default('asc').describe('Sort order'),
+    }),<span class="cstat-no" title="statement not covered" ></span>
+    annotati<span class="cstat-no" title="statement not covered" >ons: {</span>
+      title:<span class="cstat-no" title="statement not covered" > 'List Data Stores',</span>
+      readOnlyHint: true,<span class="cstat-no" title="statement not covered" ></span>
       destructiveHint: false,
-      idempotentH<span class="fstat-no" title="function not covered" >in</span>t: true,
-      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute:<span class="cstat-no" title="statement not covered" > async (input, { log }) =&gt; {</span>
-      const { type, organizatio<span class="cstat-no" title="statement not covered" >nId, teamId, includeUsage, includeStructure, limit, offset, sortBy, sortOrder } = input;</span>
-&nbsp;
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (input, { log <span class="cstat-no" title="statement not covered" >}) =&gt; {</span>
+      const { ty<span class="cstat-no" title="statement not covered" >pe, organizationId, teamId, includeUsage, includeStructure, limit, offset, sortBy, sortOrder } = input;</span>
+<span class="cstat-no" title="statement not covered" ></span>
       log.info('Listing data stores', {
-        type,
-        organizationId,
+        type,<span class="cstat-no" title="statement not covered" ></span>
+        organiza<span class="cstat-no" title="statement not covered" >tionId,</span>
         teamId,<span class="cstat-no" title="statement not covered" ></span>
-        limit,<span class="cstat-no" title="statement not covered" ></span>
+        limit,
         offset,<span class="cstat-no" title="statement not covered" ></span>
       });
-<span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const params<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt; = {</span>
-          limit,
-          offset<span class="cstat-no" title="statement not covered" >,</span>
-          sortBy,
-          sortOrder,
-          includeUsage,
-          includeStructure,
-        };
-<span class="cstat-no" title="statement not covered" ></span>
-        if (type !== 'all') params.type = type;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        const response = await apiClient.get('/data-stores', { params }<span class="fstat-no" title="function not covered" >);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!response.succes<span class="cstat-no" title="statement not covered" >s) {</span>
-          throw new UserError(`Failed to list data stores: ${response.error?.message || 'Unknown error'}`);
-        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-&nbsp;
-        const dataStores = response.data as MakeDataStore[] || [];
-        const metadata = response.metadata;
-&nbsp;
-        log.info('Successfully retrieved data stores', {
-          count: dataStores.length,
-          total: metadata?.total,
-        });
-<span class="cstat-no" title="statement not covered" ></span>
-        // Create summary statistics
-        const summary = {
-          totalDataStores: metadata?.total || dataStores.length,
-          typeBreakdown: {<span class="cstat-no" title="statement not covered" ></span>
-            data<span class="cstat-no" title="statement not covered" >_structure: dataStores.filter(ds =&gt; ds.type === 'data_structure').length,</span>
-            key_valu<span class="cstat-no" title="statement not covered" >e: dataStores.filter(ds =&gt; ds.type === 'key_value').length,</span>
-            queue: d<span class="cstat-no" title="statement not covered" >ataStores.filter(ds =&gt; ds.type === 'queue').length,</span>
-            cache: dataStores.filter(ds =&gt; ds.type === 'cache').length,
-          },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          usageSummary: includeUsage ? {
-            totalRecords: dataStores.reduce((sum, ds) =&gt; sum + ds.usage.recordCount, 0),
-            tota<span class="cstat-no" title="statement not covered" >lSizeUsed: dataStores.reduce((sum, ds) =&gt; sum + ds.usage.sizeUsed, 0),</span>
-            totalOperationsToday: dataStores.reduce((sum, ds) =&gt; sum + ds.usage.operationsToday, 0),
-            mostActiveStore: dataStores.reduce((max, ds) =&gt; 
-              ds.usage.operationsToda<span class="cstat-no" title="statement not covered" >y &gt; (max?.usage.operationsToday || 0) ? ds : max, dataS</span>tores[0]),
-          } : un<span class="cstat-no" title="statement not covered" >defined,</span>
-          storag<span class="cstat-no" title="statement not covered" >eAnalysis: {</span>
-            totalCap<span class="cstat-no" title="statement not covered" >acity: dataSt</span>ores.reduce((sum, ds) =&gt; sum + ds.settings.maxSize * 1024 * 1024, 0), // bytes
-            tota<span class="cstat-no" title="statement not covered" >lUsed: dataStores.reduce((sum, ds) =&gt; sum + ds.usage.sizeUsed, 0),</span>
-            utilizationRate: dataStores.length &gt; 0 ? 
-              (dataStores.reduce((sum, ds) =&gt; sum + (ds.usage.sizeUsed / (ds.settings.maxSize * 1024 * 1024)), 0) / dataStores.length * 100).toFixed(2) + '%' : '0%',
-          },
-        };
-<span class="cstat-no" title="statement not covered" ></span>
-        return formatSuccessResponse({
-          dataStores,
-          summary,
-          pagination: {
-            total: metadata?.total || dataStores.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) &gt; (offset + dataStores.length),
-          },
-        });
-      } catch (er<span class="fstat-no" title="function not covered" >ro</span>r: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);<span class="cstat-no" title="statement not covered" ></span>
-        log.<span class="cstat-no" title="statement not covered" >error('Error listing data stores', { error: errorMessage });</span>
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to list data stores: ${errorMessage}`);
-      }
-    },
-  });
-&nbsp;
-  // List da<span class="cstat-no" title="statement not covered" >ta structures</span>
-  server.addTool({
-    name: 'list-data-structures',<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-    description:<span class="cstat-no" title="statement not covered" > 'List and filter data structures with usage and validation information',</span>
-    parameters: Data<span class="cstat-no" title="statement not covered" >StructureListSchema,</span>
-    annotations: {
-      title: 'List Data Structures',
-      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: true,</span>
-      destructiveHin<span class="cstat-no" title="statement not covered" >t: false,</span>
-      idempotentHint: tr<span class="cstat-no" title="statement not covered" >ue,</span>
-      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (input, { log }) =&gt; {
-      const { organizationId, teamId, searchQuery, includeUsage, includeValidation, limit, offset, sortBy, sortOrder } = input;
-<span class="cstat-no" title="statement not covered" ></span>
-      log.info('Listing data<span class="cstat-no" title="statement not covered" > structures', {</span>
-        organizationId,<span class="cstat-no" title="statement not covered" ></span>
-        teamId,
-        searchQuery,
-        limit,
-        offset,
-      });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
       try {
         const params: Record&lt;string, unknown&gt; = {
           limit,
-          offset,
+          offset,<span class="cstat-no" title="statement not covered" ></span>
           sortBy,
           sortOrder,
-          includeUsage,<span class="cstat-no" title="statement not covered" ></span>
-          includ<span class="cstat-no" title="statement not covered" >eValidation,</span>
-        };<span class="cstat-no" title="statement not covered" ></span>
+          includeUsage,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          includeStructure,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        };<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (type !== 'all') <span class="cstat-no" title="statement not covered" >params.type = </span>type;
+        if (organizationId) params.organizationId = organizationId;
+        if (teamId) params.teamId = teamId;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
-        if (organizat<span class="cstat-no" title="statement not covered" >ionId) params.organizationId = organizationId;</span>
-        if (teamId) <span class="cstat-no" title="statement not covered" >params.teamId = teamId;</span>
-        if (searchQuery) params.search = searchQuery;
-<span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get('/data-structures', { params });</span>
-<span class="cstat-no" title="statement not covered" ></span>
+        const response = await apiClient.get('/data-stores', { params });
+&nbsp;
         if (!response.success) {
-          throw new UserError(`Failed <span class="cstat-no" title="statement not covered" >to list data s</span>tructures: ${response.error?.message || 'Unknown error'}`);
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const dataStructures = response.data as MakeDataStructure[] || [];
-        const me<span class="cstat-no" title="statement not covered" >tadata = response.metadata;</span>
+          throw new UserError(`Failed to list data stores: ${response.error?.message || 'Unknown error'}`);
+        }
 &nbsp;
-        log.info('Successfully retrieved data structures', {
-          count: dataStructures.length,
-          total: metadata?.total,
+        const dataStores = response.data as MakeDataStore[] || [];
+        const metadata = respon<span class="cstat-no" title="statement not covered" >se.metadata;</span>
+&nbsp;
+        log.info('Successfully retrieved data stores', {
+          count: dataStores.length,
+          total: metadata?.total,<span class="cstat-no" title="statement not covered" ></span>
         });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        // Create summary statistics
+<span class="cstat-no" title="statement not covered" ></span>
+        // Create su<span class="cstat-no" title="statement not covered" >mmary statistics</span>
         const summary = {
-          totalStructures: metadata?.total || dataStructures.length,
-          fieldTypeBreakdown: {} as Record&lt;string, number&gt;,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          usageSummary: includeUsage ? {
-            totalDataStores: dataStructures.reduce((sum, ds) =&gt; sum + ds.u<span class="fstat-no" title="function not covered" >sa</span>ge.<span class="cstat-no" title="statement not covered" >dataStoresCount, 0),</span>
-            totalRecords: dataStructures.reduce((sum, ds) =&gt; sum + ds.usage.totalRecords, 0),
-            mostUsedStructure: dataStructures.reduce((max, ds) =&gt; 
-              ds.usage.dataStoresCount &gt; (max?.usage.dataStoresCount || 0) ? ds : max, dataStructures[0]),
+          totalDataStores: metadata?.total || dataStores.length,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          typeBreakdown: {
+            data_structure: dataStores.filter(ds =&gt; ds.type === 'data_structure').length,
+            key_<span class="cstat-no" title="statement not covered" >value: dataStores.filter(ds =&gt; ds.type === 'key_value'</span>).length,
+            queue: dataStores.filter(ds =&gt; ds.type === 'queue').length,
+            cache: dataStores.filter(ds =&gt; ds.type === 'cache').length,
+          },<span class="cstat-no" title="statement not covered" ></span>
+          usageS<span class="cstat-no" title="statement not covered" >ummary: includeUsage ? {</span>
+            tota<span class="cstat-no" title="statement not covered" >lRecords: dataStores.reduce((sum, ds) =&gt; sum + ds.usage.recordCount, 0),</span>
+            totalSiz<span class="cstat-no" title="statement not covered" >eUsed: dataSt</span>ores.reduce((sum, ds) =&gt; sum + ds.usage.sizeUsed, 0),
+            tota<span class="cstat-no" title="statement not covered" >lOperationsToday: dataStores.reduce((sum, ds) =&gt; sum + ds.usage.operat</span>ionsToday, 0),
+            mostActiveStore: dataStores.reduce((max, ds) =&gt; 
+              ds.usage.operationsToday &gt; (max?.usage.operationsToday || 0) ? ds : max, dataStores[0]),
           } : undefined,
-          validationSummary: includeValidation ? {
-            strictModeEnabled: dataSt<span class="cstat-no" title="statement not covered" >ructures.filter(ds =&gt; ds.strict).length,</span>
-            stru<span class="cstat-no" title="statement not covered" >cturesWithErrors: dataStructures.filter(ds =&gt; (ds.validation.validationErro</span>rs || 0) &gt; 0).length,
-            avgF<span class="cstat-no" title="statement not covered" >ieldsPerStructure: dataStructures.length &gt; 0 ? </span>
-              (dataS<span class="cstat-no" title="statement not covered" >tructures.red</span>uce((sum, ds) =&gt; sum + ds.specification.length, 0) / dataStructures.length).toFixed(1) : '0',
-          } : un<span class="cstat-no" title="statement not covered" >defined,</span>
+          storageAnalysis: {
+<span class="cstat-no" title="statement not covered" >            totalCapacity: dataStores.reduce((sum, ds) =&gt; sum + ds.settings.maxSize * 1024 * 1024, 0), // bytes</span>
+            totalUsed: dataStores.reduce((sum, ds) =&gt; sum + ds.usage.sizeUsed, 0),
+            utilizationRate: dataStores.length &gt; 0 ? 
+              (dataStores.reduce((sum, ds) =&gt; sum + (ds.usage.sizeUsed / (ds.settings.maxSize * 1024 * 1024)), 0) / dataStores.length * 100).toFixed(2) + '%' : '0%',
+          },
         };
 &nbsp;
-        // Count field types
-        dataStructures.forEach(structure =&gt; {
-<span class="cstat-no" title="statement not covered" >          structure.specification.forEach(field =&gt; {</span>
-            const fieldType = field.type;
-            summary.fieldTypeBreakdown[fieldType] = (summary.fieldTypeBreakdown[fieldType] || 0) + 1;
-          });
-        });
-&nbsp;
         return formatSuccessResponse({
-          dataStructures,
+          dataStores,
           summary,
           pagination: {
-            total: metadata?.total || dataStructures.length,
-            limit<span class="fstat-no" title="function not covered" >,</span>
-            offset,<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            hasMore: (metadata?.total || 0) &gt; (offset + dataStructures.length),</span>
+            total<span class="fstat-no" title="function not covered" >: </span>metadata?.total || dataStores.length,
+            limit,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            offset,</span>
+            hasMore: (metadata?.total || 0) &gt; (offset + dataStores.length),
           },
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing data structures', { error: errorMessage });
+        log.error('Error listing data stores', { error: errorMessage });
         if (<span class="cstat-no" title="statement not covered" >error instanceof UserError) throw error;</span>
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to list data structures: </span>${errorMessage}`);
-      }
+        throw new UserError(`Failed to list data stores: ${errorMessage}`);
+      }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
     },<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  // List data structures
+  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+    name: 'list-data<span class="cstat-no" title="statement not covered" >-structures',</span>
+    description: 'List a<span class="cstat-no" title="statement not covered" >nd filter data structures with usage and validation information',</span>
+    parameters: DataStructur<span class="cstat-no" title="statement not covered" >eListSchema,</span>
+    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+      title: 'List Data Structures',
+      readOnlyHint: true,
+      destructiveHint: f<span class="cstat-no" title="statement not covered" >alse,</span>
+      idempotentHint: true,<span class="cstat-no" title="statement not covered" ></span>
+      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
+    },
+    execute: async (input, { log }) =&gt; {
+      const { organizationId, teamId, searchQuery, includeUsage, includeValidation, limit, offset, sortBy, sortOrder } = input;
+&nbsp;
+      log.info('Listing data structure<span class="cstat-no" title="statement not covered" >s', {</span>
+        organizationId,
+        teamId,
+        searchQuery,
+        limit,
+        offset,
+      });
+&nbsp;
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
+          limit,<span class="cstat-no" title="statement not covered" ></span>
+          offset,
+          sortBy,<span class="cstat-no" title="statement not covered" ></span>
+          sortOrder,<span class="cstat-no" title="statement not covered" ></span>
+          includeUsage,
+          includeValidation,<span class="cstat-no" title="statement not covered" ></span>
+        };<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (organizationId) params.organizationId = organizationId;
+        if (teamId) params.teamId = te<span class="cstat-no" title="statement not covered" >amId;</span>
+        if (sear<span class="cstat-no" title="statement not covered" >chQuery) params.search = searchQuery;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const response = await apiClient.get('/data-structures', { params });
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!response.success) {
+          throw new UserError(`Failed to list data structures: ${response.error?.message || 'Unknown error'}`);
+        }
+&nbsp;
+        const da<span class="cstat-no" title="statement not covered" >taStructures = response.data as MakeDataStructure[] || [];</span>
+        const metadata = response.metadata;
+&nbsp;
+        log.info('Successfully retrieved data structures', {
+          count: dataStructures.length,
+          total: metadata?.total,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        });
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        // Create summary statistics
+        const summary = {
+          totalStructures: metadata?.total || dataStructures.length,
+          fieldTypeBreakdown: {} as Record&lt;string, number&gt;,
+          usageSummary: includeUsage ? {
+            totalDataStores: dataStru<span class="cstat-no" title="statement not covered" >ctures.reduce((sum, ds) =&gt; sum + ds.usage.dataStoresCou</span>nt, 0),
+            tota<span class="cstat-no" title="statement not covered" >lRecords: dataStructures.reduce((sum, ds) =&gt; sum + ds.usage.totalRecords, 0</span>),
+            most<span class="cstat-no" title="statement not covered" >UsedStructure: dataStructures.reduce((max, ds) =&gt; </span>
+              ds.usa<span class="cstat-no" title="statement not covered" >ge.dataStores</span>Count &gt; (max?.usage.dataStoresCount || 0) ? ds : max, dataStructures[0]),
+          } : un<span class="cstat-no" title="statement not covered" >defined,</span>
+          validationSummary: includeValidation ? {
+            strictModeEnabled: dataStructures.filter(ds =&gt; ds.strict).length,
+            structuresWithErrors: dataStructures.filter(ds =&gt; (ds.validation.validationErrors || 0) &gt; 0).length,
+            avgFieldsPerStructure: dataStructures.length &gt; 0 ? 
+<span class="cstat-no" title="statement not covered" >              (dataStructures.reduce((sum, ds) =&gt; sum + ds.specification.length, 0) / dataStructures.length).toFixed(1) : '0',</span>
+          } : undefined,
+        };
+&nbsp;
+        // Count field types
+        dataStructures.forEach(structure =&gt; {
+          structure.specification.forEach(field =&gt; {
+            const fieldType = field.type;
+            summary.fieldTypeBreakdown[fieldType] = (summary.fieldTypeBreakdown[fieldType] || 0) + 1;
+          });
+        });
+<span class="fstat-no" title="function not covered" ></span>
+        return formatSuccessResponse({<span class="cstat-no" title="statement not covered" ></span>
+          da<span class="cstat-no" title="statement not covered" >taStructures,</span>
+          summary,
+          pagination: {
+            total: metadata?.total || dataStructures.length,
+            limit,
+            offset,
+<span class="cstat-no" title="statement not covered" >            hasMore: (metadata?.total || 0) &gt; (offset + dataStructures.length),</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+        });
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.error('E<span class="cstat-no" title="statement not covered" >rror listing data structures', { error: errorMessage });</span>
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to li<span class="cstat-no" title="statement not covered" >st data structures: $</span>{errorMessage}`);
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },
   });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
   // Get data structure details
   server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'get-d<span class="cstat-no" title="statement not covered" >ata-structure',</span>
-    description: 'Get detailed information about a specific data structure',
-    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
-      id: z.number()<span class="cstat-no" title="statement not covered" >.min(1).describe('Data structure ID'),</span>
-      includeUsage: z.boolean().default(true).describe('Include usage statistics'),
-      includeValidation: z.boolean().default<span class="cstat-no" title="statement not covered" >(true).describe('Include validation details'),</span>
-      includeDataSto<span class="cstat-no" title="statement not covered" >res: z.boolean().default(false).describe('Include associated data stores'),</span>
+    name: 'get-data-<span class="cstat-no" title="statement not covered" >structure',</span>
+    description: 'Get de<span class="cstat-no" title="statement not covered" >tailed information about a specific data structure',</span>
+    parameters: z.object({
+      id: z.number().min(1).describe('Data structure ID'),
+      includeUsa<span class="cstat-no" title="statement not covered" >ge: z.boolean().default(true).describe('Includ</span>e usage statistics'),
+      includeValidation: z.boolean(<span class="cstat-no" title="statement not covered" >).d</span>efault(true).describe('Include validation details'),
+      includeDat<span class="cstat-no" title="statement not covered" >aStores: z.boolean().default(false).describe('Include associated data stores'),</span>
     }),<span class="cstat-no" title="statement not covered" ></span>
-    annotations: {
-      title: 'Get Data Structure',
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
+      title: 'Get Da<span class="cstat-no" title="statement not covered" >ta Structure',</span>
       readOnlyHi<span class="cstat-no" title="statement not covered" >nt: true,</span>
-      destructiveHint: false,<span class="cstat-no" title="statement not covered" ></span>
+      destructiveHin<span class="cstat-no" title="statement not covered" >t: false,</span>
       idempotent<span class="cstat-no" title="statement not covered" >Hint: true,</span>
       openWorldHint:<span class="cstat-no" title="statement not covered" > true,</span>
     },<span class="cstat-no" title="statement not covered" ></span>
     execute: async (<span class="cstat-no" title="statement not covered" >input, { log }) =&gt; {</span>
-      const { id<span class="cstat-no" title="statement not covered" >, includeUsage, includeValidation, includeDataStores } = input;</span>
+      const { id, includeUsage, i<span class="cstat-no" title="statement not covered" >ncludeValidation, includeDataStores } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('<span class="cstat-no" title="statement not covered" >Getting data structure', { id });</span>
-<span class="cstat-no" title="statement not covered" ></span>
+      log.info('Gett<span class="cstat-no" title="statement not covered" >ing data structure', { id });</span>
+&nbsp;
       try {<span class="cstat-no" title="statement not covered" ></span>
-        const params<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt; = {</span>
-          includeUsage,<span class="cstat-no" title="statement not covered" ></span>
-          includ<span class="cstat-no" title="statement not covered" >eValidation,</span>
-          includeDat<span class="cstat-no" title="statement not covered" >aStores,</span>
+        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
+          includ<span class="cstat-no" title="statement not covered" >eUsage,</span>
+          includeValidation,
+          includeDataStores,
         };
-<span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get(`/data-structures/</span>${id}`, { params });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get(`/data-structures/${id}`, { params });</span>
+&nbsp;
         if (!response.success) {
           throw new UserError(`Failed to get data structure: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
-        const da<span class="cstat-no" title="statement not covered" >taStructure = response.data as MakeDataStructure;</span>
+        const dataStructure = response.data as MakeDataStructure;
         if (!dataStructure) {
           throw new UserError(`Data structure with ID ${id} not found`);
         }
@@ -4421,22 +4421,22 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
           name: dataStructure.name,
           fieldCount: dataStructure.specification.length,
         });
-&nbsp;
-        // Analyze field complexity
-        const analysis = {
-          fieldAnalysis: {
-            totalFields: dataStructure.specification.length,
+<span class="cstat-no" title="statement not covered" ></span>
+        // Analy<span class="cstat-no" title="statement not covered" >ze field complexity</span>
+        const an<span class="cstat-no" title="statement not covered" >alysis = {</span>
+          fieldAnaly<span class="cstat-no" title="statement not covered" >sis: {</span>
+            tota<span class="cstat-no" title="statement not covered" >lFields: dataStructure.specification.length,</span>
             requiredFields: dataStructure.specification.filter(f =&gt; f.required).length,
-            fieldsWithConstraints: da<span class="cstat-no" title="statement not covered" >taStructure.specification.filter(f =&gt; f.constraints).le</span>ngth,
-            fiel<span class="cstat-no" title="statement not covered" >dTypes: dataStructure.specification.reduce((types, field) =&gt; {</span>
-              ty<span class="cstat-no" title="statement not covered" >pes[field.type] = (types[field.type] || 0) + 1;</span>
-              return<span class="cstat-no" title="statement not covered" > types;</span>
-            }, {<span class="cstat-no" title="statement not covered" >} as Record&lt;string, number&gt;),</span>
+            fieldsWithConstraints: dataStructure.specification.filter(f =&gt; f.constraints).length,
+            fieldTypes: dataStructure.specification.reduce((types, field) =&gt; {
+              types[field.type] = (types[field.type] || 0) + 1;
+<span class="cstat-no" title="statement not covered" >              return types;</span>
+            }, {} as Record&lt;string, number&gt;),
             complexFields: dataStructure.specification.filter(f =&gt; f.type === 'collection' || f.type === 'array').length,
           },
           validationComplexity: {
             strictMode: dataStructure.strict,
-<span class="cstat-no" title="statement not covered" >            validationRules: dataStructure.validation.rules.length,</span>
+            validationRules: dataStructure.validation.rules.length,
             hasErrors: (dataStructure.validation.validationErrors || 0) &gt; 0,
             errorCount: dataStructure.validation.validationErrors || 0,
           },
@@ -4445,86 +4445,86 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
         const result: Record&lt;string, unknown&gt; = {
           dataStructure,
           analysis,
-        };
-&nbsp;
-        const extendedResponse = response as typeof response &amp; { dataStores?: Array&lt;{ usage: { recordCount: number } }&gt; };
-        if (includeDataStores &amp;&amp; extendedResponse.dataStores) {
+        };<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        cons<span class="cstat-no" title="statement not covered" >t extendedResponse = response as typeof response &amp; { dataStores?: Arr</span>ay&lt;{ usage: { recordCount: number } }&gt; };
+        if (<span class="cstat-no" title="statement not covered" >includeDataStores &amp;&amp; extendedResponse.dataStores) {</span>
           result.associatedDataStores = extendedResponse.dataStores;
-          result.dataStoresSummary = {
-            count<span class="fstat-no" title="function not covered" >: </span>extendedResponse.dataStores.length,
-            totalRecords: extendedResponse.dataStor<span class="cstat-no" title="statement not covered" >es.red</span>uce((sum, ds) =&gt; sum + ds.usage.recordCount, 0),
+          result.dataStoresSummary = {<span class="cstat-no" title="statement not covered" ></span>
+            count: extendedResponse.dataStores.length,
+            totalRecords: extendedResponse.dataStores.reduce((sum, ds) =&gt; sum + ds.usage.recordCount, 0),
           };<span class="cstat-no" title="statement not covered" ></span>
         }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        return formatSuccessResponse(resul<span class="cstat-no" title="statement not covered" >t).content[0].text;</span>
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.erro<span class="cstat-no" title="statement not covered" >r('Error getting data structure', { id, error: errorMessage });</span>
-        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
-        throw new UserError(`Failed to get data structure: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
+        return formatSuccessResponse(r<span class="cstat-no" title="statement not covered" >esult).content[0].text;</span>
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
+        const errorMessage = error instan<span class="cstat-no" title="statement not covered" >ceof Error ? error.message : String(error);</span>
+        log.error('Error getting data structure', { id, error: errorMessage });
+        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
+        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to get data structure: ${errorMessage}`);</span>
+      }
+    },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  });
 &nbsp;
   // Create data<span class="cstat-no" title="statement not covered" > structure</span>
   server.addTool({<span class="cstat-no" title="statement not covered" ></span>
     name: 'create-data-structure',
-    description: 'Create a new data structure with field specificat<span class="fstat-no" title="function not covered" >io</span>ns <span class="cstat-no" title="statement not covered" >and val</span>idation rules',
+    description: 'Create a new data structure with field specifications and validation rules',
     parameters: DataStructureCreateSchema,
     annotations: {
-      title: 'Cr<span class="cstat-no" title="statement not covered" >eate Data Structure',</span>
-      readOnlyHint: <span class="cstat-no" title="statement not covered" >false,</span>
+      title: 'Create Data Structure',
+      readOnlyHint: false,
       destructiveHint: true,
       idempotentHint: false,
-      openWorldHint: true,
+      openWorldHint: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     },
     execute: async (input, { log }) =&gt; {
       const { name, description, organizationId, teamId, specification, strict } = input;
 &nbsp;
       log.info('Creating data structure', {
-        name,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        name,
         fieldCount: specification.length,
-        organizationId,
+        organizationId,<span class="cstat-no" title="statement not covered" ></span>
         teamId,
         strict,
-      });
-&nbsp;
+      });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
       try {
-        // Validate field specifi<span class="cstat-no" title="statement not covered" >cations</span>
+        // Valid<span class="cstat-no" title="statement not covered" >ate field specifications</span>
         const fieldNames = specification.map(f =&gt; f.name);
         if (new Set(fieldNames).size !== fieldNames.length) {
-          throw <span class="cstat-no" title="statement not covered" >new UserError('Field names must be unique within the data structure');</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        // Valid<span class="cstat-no" title="statement not covered" >ate field constraints</span>
+          throw new UserError('Field names must be unique within the data structure');
+        }
+<span class="cstat-no" title="statement not covered" ></span>
+        // Validate field constraints
         for (const field of specification) {
           if (field.constraints) {
             if (field.constraints.minLength !== undefined &amp;&amp; field.constraints.maxLength !== undefined) {
               if (field.constraints.minLength &gt; field.constraints.maxLength) {
-<span class="cstat-no" title="statement not covered" >                throw new UserError(`Field "${field.name}": minLength cannot be greater than maxLength`);</span>
+                throw new UserError(`Field "${field.name}": minLength cannot be greater than maxLength`);
               }
             }
-            if (field.constraints.minimum !== undefined &amp;&amp; field.constraints.maximum !== undefined) {
+            if (field.constraints.minimum !== undefined &amp;&amp; field.constraints<span class="fstat-no" title="function not covered" >.m</span>axi<span class="cstat-no" title="statement not covered" >mum !==</span> undefined) {
               if (field.constraints.minimum &gt; field.constraints.maximum) {
                 throw new UserError(`Field "${field.name}": minimum cannot be greater than maximum`);
               }
             }
-          }
-        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-&nbsp;
-        const structureData = {
-          name,
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const struct<span class="cstat-no" title="statement not covered" >ureData = {</span>
+          name,<span class="cstat-no" title="statement not covered" ></span>
           description,
-          organizationId,<span class="cstat-no" title="statement not covered" ></span>
-          teamId<span class="cstat-no" title="statement not covered" >,</span>
-          specif<span class="cstat-no" title="statement not covered" >ication,</span>
-          strict,<span class="cstat-no" title="statement not covered" ></span>
-        };<span class="cstat-no" title="statement not covered" ></span>
+          organizationId,
+          teamId,
+          specification,
+<span class="cstat-no" title="statement not covered" >          strict,</span>
+        };
 &nbsp;
         let endpoint = '/data-structures';
         if (organizationId) {
           endpoint = `/organizations/${organizationId}/data-structures`;
-<span class="cstat-no" title="statement not covered" >        } else if (teamId) {</span>
+        } else if (teamId) {
           endpoint = `/teams/${teamId}/data-structures`;
         }
 &nbsp;
@@ -4535,38 +4535,38 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
         }
 &nbsp;
         const dataStructure = response.data as MakeDataStructure;
-        if (!dataStructure) {
-          throw new UserError('Data structure creation failed - no data returned');
-        }
-&nbsp;
-        log.info('Successfully created data structure', {
-          id: dataStructure.id,
-          name: d<span class="fstat-no" title="function not covered" >at</span>aStructure.name,
-          fieldCount: dataStructure.specification.length,<span class="cstat-no" title="statement not covered" ></span>
-        });<span class="cstat-no" title="statement not covered" ></span>
+        if (!data<span class="fstat-no" title="function not covered" >St</span>ructure) {
+          throw new UserError('Data structure creation failed - no data returned');<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return formatSuccessRes<span class="cstat-no" title="statement not covered" >ponse({</span>
-          dataStructure,
-          message: `Data structure "${name}" created successfully`,
+        log.info('Successfully <span class="cstat-no" title="statement not covered" >created data structure', {</span>
+          id: dataStructure.id,
+          name: dataStructure.name,
+          fieldCount: dataStructure.specification.length,
+        });
+&nbsp;
+        return formatSuccessRespo<span class="cstat-no" title="statement not covered" >nse({</span>
+          dataSt<span class="cstat-no" title="statement not covered" >ructure,</span>
+          message: `<span class="cstat-no" title="statement not covered" >Data structure "${name}" created successfully`,</span>
           configuration: {
-            fieldCount: dataStructure.specification.length,
-            requiredFields: dataStructure.specification.filter(f =&gt; f.required).length,
-            strictMode: dataStruc<span class="cstat-no" title="statement not covered" >ture.strict,</span>
-            comp<span class="cstat-no" title="statement not covered" >lexFields: dataStructure.specification.filter(f =&gt; f.type === 'collection' || f.type === 'array').length,</span>
+            fieldCount: dataStruct<span class="cstat-no" title="statement not covered" >ure.specificat</span>ion.length,
+            requ<span class="cstat-no" title="statement not covered" >iredFields: dataStructure.specification.filter(f =&gt; f.required).length,</span>
+            strictMo<span class="cstat-no" title="statement not covered" >de: dataStructure.strict,</span>
+            complexFields: dataStructure.specification.filter(f =&gt; f.type === 'collection' || f.type === 'array').length,
           },<span class="cstat-no" title="statement not covered" ></span>
           validationRules: dataStructure.validation.rules,
-        });<span class="cstat-no" title="statement not covered" ></span>
-      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
-        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.message : String(error);</span>
+        });
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating data structure', { name, error: errorMessage });
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
-        throw new UserError(`Failed to create data structure: ${errorMessage}`);
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to crea<span class="cstat-no" title="statement not covered" >te data structure: ${errorMessage}`);</span>
       }
     },
   });
 &nbsp;
   // Update data structure
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+  server.addTool({
     name: 'update-data-structure',
     description: 'Update an existing data structure with migration support',
     parameters: DataStructureUpdateSchema,
@@ -4575,45 +4575,45 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
       readOnlyHint: false,
       destructiveHint: true,
       idempotentHint: true,
-      openWorldHint: true,
+      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
     },
     execute: async (input, { log, reportProgress }) =&gt; {
       const { id, name, description, specification, strict, migrationOptions } = input;
-&nbsp;
-      log.info('Updating data structure', {
+<span class="cstat-no" title="statement not covered" ></span>
+      log.info('<span class="cstat-no" title="statement not covered" >Updating data structure', {</span>
         id,<span class="cstat-no" title="statement not covered" ></span>
-        name,
+        name,<span class="cstat-no" title="statement not covered" ></span>
         hasNewSpecification: !!specification,
         migrationOptions,
-      });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress: 0, total: 100 });</span>
+      });
 &nbsp;
-        // Get current structure for validation
+      try {
+        reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 0, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        // Get curre<span class="cstat-no" title="statement not covered" >nt structure for validation</span>
         const currentResponse = await apiClient.get(`/data-structures/${id}`);
         if (!currentResponse.success) {
           throw new UserError(`Data structure with ID ${id} not found`);
-        }<span class="cstat-no" title="statement not covered" ></span>
+        }
 <span class="cstat-no" title="statement not covered" ></span>
-        const curren<span class="cstat-no" title="statement not covered" >tStructure = currentResponse.data as MakeDataStructure;</span>
+        const currentStructure = currentResponse.data as MakeDataStructure;
         reportProgress({ progress: 25, total: 100 });
-&nbsp;
-        // Validate migration if specification is changing
-        if (specification &amp;&amp; migrationOptions.validateBeforeUpdate) {
-          log.in<span class="cstat-no" title="statement not covered" >fo('Validating structure migration', { id });</span>
-          
+<span class="cstat-no" title="statement not covered" ></span>
+        // Valid<span class="cstat-no" title="statement not covered" >ate migration if specification is changing</span>
+        if (spec<span class="cstat-no" title="statement not covered" >ification &amp;&amp; migrationOptions.validateBeforeUpdate) {</span>
+          log.info('<span class="cstat-no" title="statement not covered" >Validating st</span>ructure migration', { id });
+          <span class="cstat-no" title="statement not covered" ></span>
           // Check for breaking changes
-          const breakingChanges = val<span class="cstat-no" title="statement not covered" >idateStructureChanges(currentStructure.specification, s</span>pecification);
-          if (br<span class="cstat-no" title="statement not covered" >eakingChanges.length &gt; 0 &amp;&amp; !migrationOptions.preserveData) {</span>
-            thro<span class="cstat-no" title="statement not covered" >w new UserError(`Breaking changes detected that may cause data loss: ${breakingChanges.join(', ')}`);</span>
-          }<span class="cstat-no" title="statement not covered" ></span>
-        }<span class="cstat-no" title="statement not covered" ></span>
+          const breakingChanges = validateStructureChanges(currentStructure.specification, specification);
+          if (breakingChanges.length &gt; 0 &amp;&amp; !migrationOptions.preserveData) {
+            throw new UserError(`Breaking changes detected that may cause data loss: ${breakingChanges.join(', ')}`);
+<span class="cstat-no" title="statement not covered" >          }</span>
+        }
 &nbsp;
         reportProgress({ progress: 50, total: 100 });
 &nbsp;
         const updateData: Record&lt;string, unknown&gt; = {};
-<span class="cstat-no" title="statement not covered" >        if (name) updateData.name = name;</span>
+        if (name) updateData.name = name;
         if (description !== undefined) updateData.description = description;
         if (specification) updateData.specification = specification;
         if (strict !== undefined) updateData.strict = strict;
@@ -4634,63 +4634,63 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
           fieldCount: updatedStructure.specification.length,
         });
 &nbsp;
-        return formatSuccessResponse({
-          dataStructure: updatedStructure,
-          message: `Data structure "${updatedStructure.name}" updated successfully`,
-          changes: {
+        return fo<span class="fstat-no" title="function not covered" >rm</span>atSuccessResponse({
+          dataStructure: updatedStructure,<span class="cstat-no" title="statement not covered" ></span>
+          me<span class="cstat-no" title="statement not covered" >ssage: `Data structure "${updatedStructure.name}" updated</span> successfully`,
+          ch<span class="cstat-no" title="statement not covered" >anges: {</span>
             nameChanged: currentStructure.name !== updatedStructure.name,
-            specificationChanged: JSON.stringify(currentStructure.specification) !== JSON.stringify(updatedStructure.specification),
-            stric<span class="fstat-no" title="function not covered" >tM</span>odeChanged: currentStructure.strict !== updatedStructure.strict,
-            fieldCount: {<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >              before: currentStructure.specification.length,</span>
-<span class="cstat-no" title="statement not covered" >              after: updatedStructure.specification.length,</span>
-            },
+            specificationChanged: JSON.s<span class="cstat-no" title="statement not covered" >tringify(currentStructure.specification) !</span>== JSON.stringify(updatedStructure.specification),
+            stri<span class="cstat-no" title="statement not covered" >ctModeChanged: currentStructure.strict !== updatedStructure.strict,</span>
+            fieldCou<span class="cstat-no" title="statement not covered" >nt: {</span>
+              before: currentStructure.specification.length,
+              after: updatedStructure<span class="cstat-no" title="statement not covered" >.specification.length</span>,
+            },<span class="cstat-no" title="statement not covered" ></span>
           },<span class="cstat-no" title="statement not covered" ></span>
-          migrat<span class="cstat-no" title="statement not covered" >ion: (response as typeof response &amp; { migration?: unknown }).migration || null,</span>
+          migration:<span class="cstat-no" title="statement not covered" > (response as typeof res</span>ponse &amp; { migration?: unknown }).migration || null,
         });<span class="cstat-no" title="statement not covered" ></span>
-      } catch (error: unknown) {
-        const errorMessage = error in<span class="cstat-no" title="statement not covered" >stanceof Error ? erro</span>r.message : String(error);
-        log.error('Error updating d<span class="cstat-no" title="statement not covered" >ata</span> structure', { id, error: errorMessage });
+      } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.error('E<span class="cstat-no" title="statement not covered" >rror updating data structure', { id, error: errorMessage });</span>
         if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
-        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to updat</span>e data structure: ${errorMessage}`);
+        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to update data structure: ${errorMessage}`);</span>
       }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
   });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Delete data<span class="cstat-no" title="statement not covered" > structure</span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'delete-data-structure'<span class="cstat-no" title="statement not covered" >,</span>
-    description:<span class="cstat-no" title="statement not covered" > 'Delete a data structure with dependency checking and confirmation',</span>
-    parameters: z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
+&nbsp;
+  // Delete data structure<span class="cstat-no" title="statement not covered" ></span>
+  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+    name: 'delete-data-structure',
+    description: 'Delete a data structure with dependency checking and confirmation',
+    parameters: z.object({
       id: z.number().min(1).describe('Data structure ID to delete'),
-      force: z.boolean().default(fals<span class="cstat-no" title="statement not covered" >e).describe('F</span>orce deletion even with associated data stores'),
-      confirmDel<span class="cstat-no" title="statement not covered" >etion: z.boolean().default(false).describe('Confirm deletion of the data structure'),</span>
+      force: z.b<span class="cstat-no" title="statement not covered" >oolean().default(false).describe('Force deletion even with associated data stores'),</span>
+      confirmDeletion: z.boolean().default(false).describe('Confirm deletion of the data structure'),
     }),
     annotations: {
       title: 'Delete Data Structure',
       readOnlyHint: false,
-      destructiv<span class="cstat-no" title="statement not covered" >eHint: true,</span>
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
       const { id, force, confirmDeletion } = input;
-&nbsp;
-      log.info('Deleting data structure', { id, force, confirmDeletion });
-&nbsp;
-      try {
-        // Get structure details and check dependencies
+<span class="cstat-no" title="statement not covered" ></span>
+      log.info('<span class="cstat-no" title="statement not covered" >Deleting data structure', { id, force, confirmDeletion });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        // Get s<span class="cstat-no" title="statement not covered" >tructure details and check dependencies</span>
         const structureResponse = await apiClient.get(`/data-structures/${id}`, {
-          params: { includeDataStores<span class="cstat-no" title="statement not covered" >: true }</span>
-        });<span class="cstat-no" title="statement not covered" ></span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        if (!structu<span class="cstat-no" title="statement not covered" >reResponse.su</span>ccess) {
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Data structure with ID ${id} not found`);</span>
+          params: { includeDataStores: true }
+        });
+        
+<span class="cstat-no" title="statement not covered" >        if (!structureResponse.success) {</span>
+          throw new UserError(`Data structure with ID ${id} not found`);
         }
 &nbsp;
         const dataStructure = structureResponse.data as MakeDataStructure;
         const extendedStructureResponse = structureResponse as typeof structureResponse &amp; { dataStores?: Array&lt;{ id: number; name: string }&gt; };
-<span class="cstat-no" title="statement not covered" >        const associatedStores = extendedStructureResponse.dataStores || [];</span>
+        const associatedStores = extendedStructureResponse.dataStores || [];
 &nbsp;
         // Check for dependencies
         if (associatedStores.length &gt; 0 &amp;&amp; !force) {
@@ -4700,27 +4700,27 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
             `Associated stores: ${associatedStores.map(s =&gt; s.name).join(', ')}`
           );
         }
-&nbsp;
-        // Require confirmation for deletion
-        if (!confirmDeletion) {
-          return formatSuccessResponse({
-            action: 'confirmation_required',
+<span class="fstat-no" title="function not covered" ></span>
+        // Require confirmation for deletion<span class="cstat-no" title="statement not covered" ></span>
+        if (<span class="cstat-no" title="statement not covered" >!confirmDeletion) {</span>
+          re<span class="cstat-no" title="statement not covered" >turn formatSuccessResponse({</span>
+            acti<span class="cstat-no" title="statement not covered" >on: 'confirmation_required',</span>
             dataStructure: {
-              id:<span class="fstat-no" title="function not covered" > d</span>ataStructure.id,
-              name: dataStructure.name,<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >              fieldCount: dataStructure.specification.length,</span>
-<span class="cstat-no" title="statement not covered" >            },</span>
-            depe<span class="cstat-no" title="statement not covered" >ndencies: {</span>
-              dataStoresCount: associatedStores.length,
-              dataStores: associatedSt<span class="cstat-no" title="statement not covered" >ores.map(s =&gt; ({ id: s.id, name: s.name })</span>),
+              id: dataStructure.id,<span class="cstat-no" title="statement not covered" ></span>
+              na<span class="cstat-no" title="statement not covered" >me: dataStructure.name,</span>
+              fieldC<span class="cstat-no" title="statement not covered" >ount: dataStructure.specification.length,</span>
+            },
+            dependencies: {<span class="cstat-no" title="statement not covered" ></span>
+              da<span class="cstat-no" title="statement not covered" >taStoresCount: associatedStores.length,</span>
+              dataStores: associatedStores.map(s =&gt; ({ id: s.id, name: s.name })),
             },<span class="cstat-no" title="statement not covered" ></span>
             warning:<span class="cstat-no" title="statement not covered" > associatedStores.length &gt; 0 ? </span>
               'This data structure has associated data stores that will become invalid after deletion.' : 
-              'This action cannot <span class="cstat-no" title="statement not covered" >be undone.',</span>
-            next<span class="cstat-no" title="statement not covered" >Step: 'Call this tool again with confirmDeleti</span>on=true to proceed with deletion',
+              'This action cannot be undone.',
+            nextStep: 'Call this tool again with confirmDeletion=true to proceed with deletion',
           });
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+        }
+&nbsp;
         const response = await apiClient.delete(`/data-structures/${id}`, {
           data: { force }
         });
@@ -4730,125 +4730,125 @@ export function addFolderTools(server: FastMCP<span class="fstat-no" title="func
         }
 &nbsp;
         log.info('Successfully deleted data structure', {
-          id,
-          name: dataStructure.name,
-          hadDependencies: associatedStores.length &gt; 0,
-        });
-&nbsp;
+          id,<span class="cstat-no" title="statement not covered" ></span>
+          name: <span class="cstat-no" title="statement not covered" >dataStructure.name,</span>
+          hadDepende<span class="cstat-no" title="statement not covered" >ncies: associatedStores.length &gt; 0,</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
         return formatSuccessResponse({
-          message: `Data structure <span class="cstat-no" title="statement not covered" >"${da</span>taStructure.name}" deleted successfully`,
-          delete<span class="cstat-no" title="statement not covered" >dStructure: {</span>
-            id: data<span class="cstat-no" title="statement not covered" >Structure.id,</span>
-            name: da<span class="cstat-no" title="statement not covered" >taStructure.name,</span>
-            fieldCount: dataStructure.speci<span class="cstat-no" title="statement not covered" >fication.length,</span>
+          message: `Data structure "${dataStructure.name}" deleted successfully`,
+          deletedStr<span class="cstat-no" title="statement not covered" >ucture: {</span>
+            id: dataStru<span class="cstat-no" title="statement not covered" >cture.id,</span>
+            name: dataStructure.name,
+            fieldCount: dataStructure.specification.length,
           },
           impact: {
-            affected<span class="cstat-no" title="statement not covered" >DataStores: associatedStores.length,</span>
-            dataStoresIn<span class="cstat-no" title="statement not covered" >validated: force ? associatedStores.map(s =&gt; s.name) : [],</span>
+            affectedDataStores: associatedStores.length,
+            dataStoresInvalidated: force ? associatedStores.map(s =&gt; s.name) : [],
           },
-        });
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error deleting data structure', { id, error: errorMessage });
+        });<span class="cstat-no" title="statement not covered" ></span>
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.error('E<span class="cstat-no" title="statement not covered" >rror deleting data structure', { id, error: errorMessage });</span>
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to delete data structure: ${errorMessage}`);
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to delete data structure: $</span>{errorMessage}`);
       }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+    },
+  });
+&nbsp;
   // Get data store details
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'get-d<span class="cstat-no" title="statement not covered" >ata-store',</span>
+  server.addTool({
+    name: 'get-data-store',<span class="cstat-no" title="statement not covered" ></span>
     description: 'Get detailed information about a specific data store',
     parameters: z.object({
       id: z.number().min(1).describe('Data store ID'),
       includeStructure: z.boolean().default(true).describe('Include data structure details'),
       includeUsage: z.boolean().default(true).describe('Include usage statistics'),
-      includeRecords: z.boolean<span class="cstat-no" title="statement not covered" >().default(false).describe('Include sample records'),</span>
+      includeRecords: z.boolean().default(false).describe('Include sample records'),
       recordsLimit: z.number().min(1).max(100).default(10).describe('Number of sample records to include'),
     }),
     annotations: {
-      title: 'Get Data Store',
-      readOnlyHint: true,
+      title: 'Ge<span class="cstat-no" title="statement not covered" >t Data Store',</span>
+      readOnlyHint: <span class="cstat-no" title="statement not covered" >true,</span>
       destructiveHint: false,
-      idempotentHint: true,
+      idempotent<span class="cstat-no" title="statement not covered" >Hint: true,</span>
       openWorldHint: true,
     },
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
-      const { id, in<span class="cstat-no" title="statement not covered" >cludeStructure, includeUsage, incl</span>udeRecords, recordsLimit } = input;
-&nbsp;
-      log.info('<span class="cstat-no" title="statement not covered" >Getting data store', { id });</span>
-&nbsp;
+    execute: async (input, { log }) =<span class="cstat-no" title="statement not covered" >&gt; {</span>
+      const { id<span class="cstat-no" title="statement not covered" >, includeStructure, includeUsage, includeRecords, recordsLimit } = in</span>put;
+<span class="cstat-no" title="statement not covered" ></span>
+      log.info('Gett<span class="cstat-no" title="statement not covered" >ing data stor</span>e', { id });
+<span class="cstat-no" title="statement not covered" ></span>
       try {
-        const params: Record&lt;string, <span class="cstat-no" title="statement not covered" >unknown&gt; = {</span>
-          includ<span class="cstat-no" title="statement not covered" >eStructure,</span>
-          includ<span class="cstat-no" title="statement not covered" >eUsage,</span>
-          includeRec<span class="cstat-no" title="statement not covered" >ords,</span>
-          record<span class="cstat-no" title="statement not covered" >sLimit,</span>
-        };
-&nbsp;
+        const params: Record&lt;string, unknown&gt; = {
+          includeStructure,
+<span class="cstat-no" title="statement not covered" >          includeUsage,</span>
+          includeRecords,
+          recordsLimit,
+        }<span class="fstat-no" title="function not covered" >;</span>
+<span class="cstat-no" title="statement not covered" ></span>
         const response = await apiClient.get(`/data-stores/${id}`, { params });
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!response.success) {
-          throw new UserError(`Failed to get data store: ${response.error?.message || 'Unknown error'}`);
-        }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const dataStore = response.data as MakeDataStore;
-        if (!dataStore) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-          throw new Us<span class="cstat-no" title="statement not covered" >erError(`Data store <span class="fstat-no" title="function not covered" >wi</span>th <span class="cstat-no" title="statement not covered" >ID ${id</span>} </span>not found`);
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        if (!response.<span class="cstat-no" title="statement not covered" >success) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >          throw new UserError(`Failed to get data store: ${response.error?.message || 'Unknown error'}`);</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        log.<span class="cstat-no" title="statement not covered" >info('Successfully retrieved data store', {</span>
-          id: dataStore.id,
-          name: dataStore.name,
-          type: dataStore.type,
-          recordCount: dataS<span class="cstat-no" title="statement not covered" >tore.usage.recordCount,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        const dataStore = response.data as MakeDataStore;
+        if (!dataStore) {
+          throw new UserError(`Data store with ID ${id} not found`);
+        }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        log.info('Successfully retrieved data store', {</span>
+          id: dataStore.i<span class="cstat-no" title="statement not covered" >d,</span>
+<span class="cstat-no" title="statement not covered" >          name: dataStore.name,</span>
+          ty<span class="cstat-no" title="statement not covered" >pe: dataStore.type,</span>
+          record<span class="cstat-no" title="statement not covered" >Count: dataStore.usage.recordCount,</span>
+        });
 <span class="cstat-no" title="statement not covered" ></span>
-        // Calculate util<span class="cstat-no" title="statement not covered" >ization metrics</span>
-<span class="cstat-no" title="statement not covered" >        const utilizationMetrics = {</span>
-          st<span class="cstat-no" title="statement not covered" >orageUtilization: {</span>
-            maxS<span class="cstat-no" title="statement not covered" >ize: dataStore.settings.maxSize * 1024 * 1024, // Convert MB to bytes</span>
-            currentSize: dataStore.usage.sizeUsed,
-<span class="cstat-no" title="statement not covered" >            utilizationPercentage: ((dataStore.usage.sizeUsed / (dataStore.settings.maxSize * 1024 * 1024)) * 100).toFixed(2) + '%',</span>
-            avai<span class="cstat-no" title="statement not covered" >lableSpace: (dataStore.settings.maxSize * 1024 * 1024) - dataStore.usage.sizeUse</span>d,
+        // Calcu<span class="cstat-no" title="statement not covered" >late utilization metrics</span>
+        const utilizationMetrics = {
+          storageUtilization: {
+            maxSize: dataStore.settings.maxSize * 1024 * 1024, // Convert MB to bytes
+<span class="cstat-no" title="statement not covered" >            currentSize: dat</span>aStore.usage.sizeUsed,
+            utilizationPercentage: ((dataStore.usage.sizeUsed / (dataStore.settings.maxSize * 1024 * 1024)) * 100).toFixed(2) + '%',
+            availableSpace: (dataStore.settings.maxSize * 1024 * 1024) - dataStore.usage.sizeUsed,
+<span class="fstat-no" title="function not covered" >          },</span>
+          activityMetr<span class="cstat-no" title="statement not covered" >ics: {</span>
+            recordCount:<span class="cstat-no" title="statement not covered" > da</span>taStore.usage.recordCount,
+            operationsToday: dataStore.usage.operationsToday,
+<span class="cstat-no" title="statement not covered" >            lastOper<span class="fstat-no" title="function not covered" >at</span>ion: dataStore.usage.lastOperation,</span>
+<span class="cstat-no" title="statement not covered" >            averageOperationsPerRecord: dataStore.usage.recordCount &gt; 0 ? </span>
+              (dataStore.usage.operationsToday / dataStore.usage.recordCount).toFixed(2) : '0',
           },
-          activityMetrics: {
-            recordCount: dataStore.usage.recordCount,
-<span class="cstat-no" title="statement not covered" >            operationsToday:</span> dataStore.usage.operationsToday,
-            lastOperation: dataStore.usage.lastOperation,
-            averageOperationsPerRecord: dataStore.usage.recordCount &gt; 0 ? 
-<span class="fstat-no" title="function not covered" >              (dataStore.usage</span>.operationsToday / dataStore.usage.recordCount).toFixed(2) : '0',
-          },<span class="cstat-no" title="statement not covered" ></span>
-        };<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        const result<span class="fstat-no" title="function not covered" >: </span>Record&lt;string, unknown&gt; = {</span>
-<span class="cstat-no" title="statement not covered" >          dataStore,</span>
-          metrics: utilizationMetrics,
         };
 &nbsp;
-        const extendedResponse = response as typeof response &amp; { 
-          dataStructure?: MakeDataStructure;
-<span class="cstat-no" title="statement not covered" >          sampleReco<span class="fstat-no" title="function not covered" >rd</span>s?: unknown[];</span>
+        const result: Record&lt;string, unknown&gt; = {
+<span class="cstat-no" title="statement not covered" >          dataStore,<span class="fstat-no" title="function not covered" ></span></span>
+          metrics: utilizat<span class="cstat-no" title="statement not covered" >ionMetrics,</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const extendedResponse = response as typeof response &amp; { </span>
+          dataStructure?: M<span class="cstat-no" title="statement not covered" >akeDataStructure;</span>
+          sa<span class="cstat-no" title="statement not covered" >mpleRecords?: unknown[];</span>
         };<span class="cstat-no" title="statement not covered" ></span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        if (<span class="cstat-no" title="statement not covered" >includeS</span>tructure &amp;&amp; extendedResponse.dataStructure) {
-<span class="cstat-no" title="statement not covered" >          result.dataStructure = extendedResponse.dataStructure;</span>
-          result.structureS<span class="cstat-no" title="statement not covered" >ummary = {</span>
-<span class="cstat-no" title="statement not covered" >            fieldCount: extendedResponse.dataStructure.specification.length,</span>
-            stri<span class="cstat-no" title="statement not covered" >ctMode: extendedResponse.dataStruc</span>ture.strict,
-            validationEnabled: extendedResponse.dataStructure.validation.enabled,
+        
+        if (includeStructure &amp;&amp; extendedResponse.dataStructure) {
+          result<span class="cstat-no" title="statement not covered" >.dataStructure = extendedRespo</span>nse.dataStructure;
+          result.structureSummary = {
+            fieldCount: extendedResponse.dataStructure.specification.length,
+            strictMode: extendedResponse.dataStructure.strict,
+<span class="cstat-no" title="statement not covered" >            validationEnabled: extendedRes</span>ponse.dataStructure.validation.enabled,
           };
-        }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        if (includeRecords &amp;&amp; extendedResponse.sampleRecords) {
-          result.sampleRecords = extendedResponse.sampleRecords;
-          re<span class="cstat-no" title="statement not covered" >sult.recordsSummary = {</span>
-            sampleCount: extendedResponse.sampleRecords.length,
-            totalRecords: dataStore.usage.recordCount,
-<span class="cstat-no" title="statement not covered" >          };</span>
         }
 <span class="cstat-no" title="statement not covered" ></span>
+        if (includeRecords &amp;&amp; extendedResponse.sampleRecords) {
+          result.sampleRecords = extendedResponse.sampleRecords;
+          result.recordsSummary = {
+            sampleCount: extendedResponse.sampleRecords.length,
+            totalRecords: dataStore.usage.recordCount,
+          };
+        }
+&nbsp;
         return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -5131,7 +5131,7 @@ export default addFolderTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

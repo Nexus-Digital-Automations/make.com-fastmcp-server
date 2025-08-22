@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/524</span>
+                <span class='fraction'>0/514</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/346</span>
+                <span class='fraction'>0/339</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/71</span>
+                <span class='fraction'>0/70</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/512</span>
+                <span class='fraction'>0/502</span>
             </div>
         
             
@@ -1995,17 +1995,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3610,7 +3604,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3911,55 +3911,55 @@
  * @see {@link https://docs.make.com/api/connections} Make.com Connections API Documentation
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error, type SerializableValue } fr<span class="fstat-no" title="function not covered" >om</span> 'fastmcp';</span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError, type SerializableValue } from 'fastmcp';
+import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import { safeGetRecord, safeGetArray } from '../u</span>tils/validation.js';
-import { formatSuc<span class="cstat-no" title="statement not covered" >cessResponse } from</span> '../utils/response-formatter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// Type definitions <span class="cstat-no" title="statement not covered" >for connection diagnostics</span>
-interface ConnectionData<span class="cstat-no" title="statement not covered" > {</span>
-  id: number;<span class="cstat-no" title="statement not covered" ></span>
+import logger from '../lib/logger.js';
+import { safeGetRecord, safeGetArray } from '../utils/validation.js';
+import { formatSuccessResponse }<span class="cstat-no" title="statement not covered" > from '../utils/response-formatter.js';</span>
+&nbsp;
+// Type definitions for connection diagnostics
+interface ConnectionData {
+  id: number;
   name: string;
-  service: string;<span class="cstat-no" title="statement not covered" ></span>
-  accountName: string;
+  service: string;
+  accountName: string;<span class="cstat-no" title="statement not covered" ></span>
   valid?: boolean;
   lastVerified?: string;
   createdAt?: string;
   credentials?: Record&lt;string, unknown&gt;;
 }
-<span class="cstat-no" title="statement not covered" ></span>
-interface ConnectionDiagnosticResult {
+&nbsp;
+interface ConnectionDiagnosticR<span class="cstat-no" title="statement not covered" >esult {</span>
   category: 'health' | 'connectivity' | 'authentication' | 'performance' | 'security';
   severity: 'info' | 'warning' | 'error' | 'critical';
   title: string;
   description: string;
   details: Record&lt;string, unknown&gt;;
-  recommendations: string[];<span class="cstat-no" title="statement not covered" ></span>
-  fixable: boolean;
+  recommendations: string[];
+  fixable: boolean;<span class="cstat-no" title="statement not covered" ></span>
   autoFixAction?: string;
   timestamp: string;
 }
 &nbsp;
 interface ConnectionResult {
-  connectionId: number;<span class="cstat-no" title="statement not covered" ></span>
-  name: string;
+  connectionId: number;
+  name: string;<span class="cstat-no" title="statement not covered" ></span>
   service: string;
   accountName: string;
   overallHealth: 'healthy' | 'warning' | 'critical' | 'unknown';
   healthScore: number;
   diagnostics: ConnectionDiagnosticResult[];
-  summary: {<span class="cstat-no" title="statement not covered" ></span>
+  summary: {
     totalIssues: number;
     criticalIssues: number;
-    warningIssues: number;
+    warningIssues: number;<span class="cstat-no" title="statement not covered" ></span>
     infoIssues: number;
     fixableIssues: number;
   };
   executionTime: number;
   timestamp: string;
-}<span class="cstat-no" title="statement not covered" ></span>
+}
 &nbsp;
 interface DiagnosticOptions {
   diagnosticTypes: string[];
@@ -3977,15 +3977,15 @@ interface Logger {
 }
 &nbsp;
 // Input validation schemas
-const ConnectionFiltersSchema = z.object({
-  service: z.string().optional().describe('Filter by service name (e.g., "slack", "gmail")'),
-  status: z.enum(['valid', 'invalid', 'all']).default('all').describe('Filter by connection status'),
+const Connection<span class="fstat-no" title="function not covered" >FiltersSchema = z.o</span>bject({
+  service: z.string().option<span class="cstat-no" title="statement not covered" >al().describe('Filter by service name (e.g., "s</span>lack", "gmail")'),
+  st<span class="cstat-no" title="statement not covered" >atus: z.enum(['valid', 'invalid', 'all']).default('all').des</span>cribe('Filter by connection status'),
   search: z.string().optional().describe('Search connections by name or account'),
   limit: z.number().min(1).max(100).default(20).describe('Maximum number of connections to return'),
   offset: z.number().min(0).default(0).describe('Number of connections to skip for pagination'),
-}).strict<span class="fstat-no" title="function not covered" >();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-cons<span class="cstat-no" title="statement not covered" >t CreateConnectionSchema = z.object({</span>
+}).strict();
+&nbsp;
+const CreateConnectionSchema = z.object({
   name: z.string().min(1).max(100).describe('Connection name'),
   service: z.string().min(1).describe('Service identifier (e.g., "slack", "gmail")'),
   accountName: z.string().min(1).max(100).describe('Account name or identifier'),
@@ -4019,67 +4019,67 @@ const CreateWebhookSchema = z.object({
   isActive: z.boolean().default(true).describe('Whether webhook is active'),
 }).strict();
 &nbsp;
-const UpdateWebhookSchema = z.object({
+cons<span class="cstat-no" title="statement not covered" >t UpdateWebhookSchema = z.object({</span>
   webhookId: z.number().min(1).describe('Webhook ID to update'),
   name: z.string().min(1).max(100).optional().describe('New webhook name'),
   url: z.string().url().optional().describe('New webhook URL'),
   method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional().describe('New HTTP method'),
   headers: z.record(z.string()).optional().describe('Updated headers'),
-  is<span class="cstat-no" title="statement not covered" >Active: z.boolean().optional().describe('Update webhook status'),</span>
+  isActive: z.boolean().optional().describe('Update webhook status'),
 }).strict();
 &nbsp;
-/**
- * Adds comprehensive connection and webhook management tools to the FastMCP server
- * 
+/**<span class="fstat-no" title="function not covered" ></span>
+ * Adds comprehensive connection and webhook management tools t<span class="cstat-no" title="statement not covered" >o the </span>FastMCP server
+ * <span class="cstat-no" title="statement not covered" ></span>
  * @param {FastMCP} server - The FastMCP server instance
  * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and error handling
  * @returns {void}
- * <span class="fstat-no" title="function not covered" ></span>
- * @example<span class="cstat-no" title="statement not covered" ></span>
- * ```typesc<span class="cstat-no" title="statement not covered" >ript</span>
- * import { addConnectionTools } from './tools/connections.js';
  * 
+ * @example
+ * ```typescript
+ * import { <span class="cstat-no" title="statement not covered" >addConnectionTools } from './tools/connections.js';</span>
+ * <span class="cstat-no" title="statement not covered" ></span>
  * const server = new FastMCP();
  * const apiClient = new MakeApiClient(config);
  * addConnectionTools(server, apiClient);
- * ```
+ * ```<span class="cstat-no" title="statement not covered" ></span>
  */<span class="cstat-no" title="statement not covered" ></span>
-export function addConnectionTo<span class="cstat-no" title="statement not covered" >ols(server: FastMCP, apiClient: MakeApiClient): void {</span>
-  const componentLogger = logger.child({ component: 'ConnectionTools' });
-  
-  componentLogger.info('Adding connection management tools');
+export function <span class="cstat-no" title="statement not covered" >addConnectionTools(server: FastMCP, apiClient: MakeApiClient): void {</span>
+  const componentLog<span class="cstat-no" title="statement not covered" >ger = logger.child({ com</span>ponent: 'ConnectionTools' });
+  <span class="cstat-no" title="statement not covered" ></span>
+  componentLogger.in<span class="cstat-no" title="statement not covered" >fo('Adding connection management to</span>ols');
 <span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * List and fi<span class="cstat-no" title="statement not covered" >lter app connections in Make.com with advanced search capabilities</span>
+   * List and filter<span class="cstat-no" title="statement not covered" > app connections in Make.com with advanced search capabilities</span>
+   * 
+   * Provides comprehensive connecti<span class="cstat-no" title="statement not covered" >on listing with support for </span>service filtering,
+   * status validation, text sear<span class="cstat-no" title="statement not covered" >ch, and pagination</span> for managing integrations.
    * <span class="cstat-no" title="statement not covered" ></span>
-   * Provides co<span class="cstat-no" title="statement not covered" >mprehensive connection listing with support for service filtering,</span>
-   * status validati<span class="cstat-no" title="statement not covered" >on, text search, and pagination for</span> managing integrations.
-   * <span class="cstat-no" title="statement not covered" ></span>
-   * @tool list-<span class="cstat-no" title="statement not covered" >connections</span>
-   * @category Conne<span class="cstat-no" title="statement not covered" >ction Management</span>
+   * @tool list-connections
+   * @category Connection Management
    * @permission connection:read
    * <span class="cstat-no" title="statement not covered" ></span>
-   * @param {Object} args - Conne<span class="cstat-no" title="statement not covered" >ction filtering pa</span>rameters
-   * @param {str<span class="cstat-no" title="statement not covered" >ing} [args.service] - Filter by service name (e.g., "slack", "gmail")</span>
+   * @param {Object} args - Connection filtering parameters
+   * @param {string} [args.service] - Filter by service name (e.g., "slack", "gmail")
    * @param {('valid'|'invalid'|'all')} [args.status='all'] - Filter by connection status
    * @param {string} [args.search] - Search connections by name or account
    * @param {number} [args.limit=20] - Maximum number of connections to return (1-100)
-   * @param {num<span class="cstat-no" title="statement not covered" >ber} [args.offset=0] - Number of connections to skip for pagination</span>
+   * @param {number} [args.offset=0] - Number of connections to skip for pagination
    * 
    * @returns {Promise&lt;string&gt;} JSON response containing:
    * - connections: Array of connection objects with service details
    * - pagination: Pagination metadata (total, limit, offset, hasMore)
-   * - filters: Applied filter parameters for reference
-   * - timestamp: ISO timestamp of the response
-   * 
-   * @throws {UserError} When API request fails or parameters are invalid
-   * 
-   * @example
-   * ```bash<span class="cstat-no" title="statement not covered" ></span>
-   * # List all <span class="cstat-no" title="statement not covered" >connections</span>
-   * mcp-client <span class="cstat-no" title="statement not covered" >list-connections</span>
+   * - filters: Applied filter parame<span class="cstat-no" title="statement not covered" >ters for reference</span>
+   * - timestamp<span class="cstat-no" title="statement not covered" >: ISO timestamp of the response</span>
    * <span class="cstat-no" title="statement not covered" ></span>
-   * # Filter by<span class="cstat-no" title="statement not covered" > service and status</span>
+   * @throws {UserEr<span class="cstat-no" title="statement not covered" >ror} When API</span> request fails or parameters are invalid
+   * <span class="cstat-no" title="statement not covered" ></span>
+   * @example
+   * ```bash
+   * # List all connections
+   * mcp-client list-connections
+   * 
+   * # Filter by service and status
    * mcp-client list-connections --service "slack" --status "valid"
    * 
    * # Search connections with pagination
@@ -4103,48 +4103,48 @@ export function addConnectionTo<span class="cstat-no" title="statement not cover
       log.info('Listing connections', {
         service,
         status,
-        search,
+<span class="cstat-no" title="statement not covered" >        search,</span>
         limit,
         offset,
       });
 &nbsp;
       try {
-<span class="cstat-no" title="statement not covered" >        const params: Record&lt;string, unknown&gt; = {</span>
+        const params: Record&lt;string, unknown&gt; = {
           limit,
           offset,
         };
 &nbsp;
-        if (service) params.service = service;
-        if (search) params.search = search;
-        if (status !== 'all') params.valid = status === 'valid';
-&nbsp;
-        const response = await apiClient.get('/connections', { params });
-&nbsp;
-        if (!resp<span class="fstat-no" title="function not covered" >on</span>se.success) {
-          throw new UserError(`Failed<span class="cstat-no" title="statement not covered" > to li</span>st connections: ${response.error?.message || 'Unknown error'}`);
+        if (servi<span class="fstat-no" title="function not covered" >ce</span>) params.service = service;
+        if (search) params.search = s<span class="cstat-no" title="statement not covered" >earch;</span>
+        if (<span class="cstat-no" title="statement not covered" >status !== 'all') params.valid = status === 'valid';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const response = await ap<span class="cstat-no" title="statement not covered" >iClient.get('/connections', { params });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!respons<span class="cstat-no" title="statement not covered" >e.success) {</span>
+          throw new UserError(`Failed to list connections: ${response.error?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const connections = safeG<span class="cstat-no" title="statement not covered" >etArray(response.data);</span>
-        const me<span class="cstat-no" title="statement not covered" >tadata = response.metadata;</span>
+        const connec<span class="cstat-no" title="statement not covered" >tions = safeGetArray(response.data);</span>
+        const metadata = response.metadata;
 <span class="cstat-no" title="statement not covered" ></span>
         log.info('Successfully retrieved connections', {
-          count: connections.length<span class="cstat-no" title="statement not covered" >,</span>
-          total:<span class="cstat-no" title="statement not covered" > metadata?.total,</span>
-        });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        return f<span class="cstat-no" title="statement not covered" >ormatSuccessResponse({</span>
+          count: connections.length,
+          total: metadata?.total,
+        });
+<span class="cstat-no" title="statement not covered" ></span>
+        return formatSuccessResponse({
           connections,
-          pagination: {
-            total: metadata?.total || connections.length,
-            limit,
-            offs<span class="cstat-no" title="statement not covered" >et,</span>
-            hasMore: (metadata?.total || 0) &gt; (offset + connections.length),
+          pagination: {<span class="cstat-no" title="statement not covered" ></span>
+            tota<span class="cstat-no" title="statement not covered" >l: metadata?.total || connections.length,</span>
+            limi<span class="cstat-no" title="statement not covered" >t,</span>
+            offset,<span class="cstat-no" title="statement not covered" ></span>
+            hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; (offset + connections.length),</span>
           },
-        }, "Connections retrieved suc<span class="cstat-no" title="statement not covered" >cessfully");</span>
-      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('E<span class="cstat-no" title="statement not covered" >rror listing </span>connections', { error: errorMessage });
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
+        }, "Connections retrieved successfully");
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error listing connections', { error: errorMessage });
+        if (error instanceof UserError) throw error;
         throw new UserError(`Failed to list connections: ${errorMessage}`);
       }
     },
@@ -4185,59 +4185,59 @@ export function addConnectionTo<span class="cstat-no" title="statement not cover
     annotations: {
       title: 'Get Connection Details',
       readOnlyHint: true,
-      openWorldHint: true,
+<span class="cstat-no" title="statement not covered" >      openWorldHint: true,</span>
     },
     execute: async (input, { log }) =&gt; {
       const { connectionId } = input;
 &nbsp;
       log.info('Getting connection details', { connectionId });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
       try {
         const response = await apiClient.get(`/connections/${connectionId}`);
-&nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to get connection: ${response.error?.message || 'Unknown error'}`);
+<span class="fstat-no" title="function not covered" ></span>
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
+          th<span class="cstat-no" title="statement not covered" >row new UserError(`Failed to get connection: ${response.error?.message || 'Unknown error'}`);</span>
         }
 &nbsp;
         const connection = safeGetRecord(response.data);
-        <span class="fstat-no" title="function not covered" ></span>
-        if (!connection || Object.keys(connection).length === 0) {<span class="cstat-no" title="statement not covered" ></span>
-          th<span class="cstat-no" title="statement not covered" >row new UserError(`Connection with ID ${connectionId} not found`);</span>
+        
+        if (<span class="cstat-no" title="statement not covered" >!connection || Object.keys(connection).length === 0) {</span>
+          throw new UserError(`Connecti<span class="cstat-no" title="statement not covered" >on with ID ${connectionId} not found`);</span>
         }
 &nbsp;
         log.info('Successfully retrieved connection', {
           connectionId,
-          na<span class="cstat-no" title="statement not covered" >me: connection.name as string,</span>
-          service: connection.service a<span class="cstat-no" title="statement not covered" >s string,</span>
-        });
-&nbsp;
-        return formatSuccessResponse({ connection }, "Connection details retrieved successfully").content[0].text;
+          name: connection.name as string,
+          service: connection.service as string,
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({ connection }, "Connection details retrieved successfully").content[0].text;</span>
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting connection', { connectionId, error: errorMessage });
-        if (error instanceof User<span class="cstat-no" title="statement not covered" >Error) throw error;</span>
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to get connection details: ${errorMessage}`);</span>
+        const errorMessage = error <span class="cstat-no" title="statement not covered" >instanceof Error ? error.mess</span>age : String(error);
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error getting connection', { connectionId, error: errorMessage });</span>
+        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
+        throw new UserError(`Failed to get connection details: ${errorMessage}`);
       }<span class="cstat-no" title="statement not covered" ></span>
     },
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Create a new app connection in Make.com with secure credential handling
-   * <span class="cstat-no" title="statement not covered" ></span>
+  });
+&nbsp;
+  /**
+   * Create a ne<span class="cstat-no" title="statement not covered" >w app connection in Make.com with secure credential handling</span>
+   * 
    * Creates a new connection to external services with proper credential
    * storage, validation, and security measures for integration management.
    * 
-   * @tool create-connection
+   * @tool create-connection<span class="cstat-no" title="statement not covered" ></span>
    * @category C<span class="cstat-no" title="statement not covered" >onnection Management</span>
-   * @permission connection:create
-   * 
-   * @param {Object} args - Connection creation parameters
-   * @param {string} args.name - Connection name (required, 1-100 chars)
-   * @param {string} args.service - S<span class="cstat-no" title="statement not covered" >ervice identifier (e.g., "slack", "gmail") (required)</span>
-   * @param {str<span class="cstat-no" title="statement not covered" >ing} args.accountName - Account name or identifier (required, 1-100 chars)</span>
-   * @param {Obj<span class="cstat-no" title="statement not covered" >ect} args.credentials - Service-specific credentials (required)</span>
-   * @param {Object}<span class="cstat-no" title="statement not covered" > [args.metada</span>ta] - Additional connection metadata
+   * @permission<span class="cstat-no" title="statement not covered" > connection:create</span>
    * <span class="cstat-no" title="statement not covered" ></span>
+   * @param {Obj<span class="cstat-no" title="statement not covered" >ect} args - Connection creation parameters</span>
+   * @param {string} args.name - Connection name (required, 1-100 chars)
+   * @param {string} args.service - Service identifier (e.g., "slack", "gmail") (required)
+   * @param {string} args.accountName - Account name or identifier (required, 1-100 chars)
+   * @param {Object} args.credentials - Service-specific credentials (required)
+   * @param {Object} [args.metadata] - Additional connection metadata
+   * 
    * @returns {Promise&lt;string&gt;} JSON response containing:
    * - connection: Complete created connection object
    * - message: Success confirmation message
@@ -4278,343 +4278,343 @@ export function addConnectionTo<span class="cstat-no" title="statement not cover
 &nbsp;
       log.info('Creating new connection', {
         name,
-        service,
+<span class="cstat-no" title="statement not covered" >        service,</span>
         accountName,
       });
 &nbsp;
       try {
         const connectionData = {
-<span class="cstat-no" title="statement not covered" >          name,</span>
+          name,
           service,
           accountName,
-          credentials,
-          metadata: metadata || {},
-        };
-&nbsp;
-        const response = await apiClient.post('/connections', connectionData);
-&nbsp;
-        if (!resp<span class="fstat-no" title="function not covered" >on</span>se.success) {
-          throw new UserError(`Failed to create connection: ${response.error?.m<span class="cstat-no" title="statement not covered" >essage</span> || 'Unknown error'}`);
+          credent<span class="fstat-no" title="function not covered" >ia</span>ls,
+          metadata: metadata || {},<span class="cstat-no" title="statement not covered" ></span>
+        };<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const response = await apiC<span class="cstat-no" title="statement not covered" >lie</span>nt.post('/connections', connectionData);
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!respons<span class="cstat-no" title="statement not covered" >e.success) {</span>
+          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to create connection: ${response.error?.message || 'Unknown error'}`);</span>
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const connection = safeGetR<span class="cstat-no" title="statement not covered" >eco</span>rd(response.data);
+        const connec<span class="cstat-no" title="statement not covered" >tion = safeGetRecord(response.data);</span>
         <span class="cstat-no" title="statement not covered" ></span>
-        if (!connect<span class="cstat-no" title="statement not covered" >ion || Object.keys(conne</span>ction).length === 0) {
+        if (!connect<span class="cstat-no" title="statement not covered" >ion || Object.keys(connection).l</span>ength === 0) {
           throw <span class="cstat-no" title="statement not covered" >new UserError('Connection creation failed - no data returned');</span>
         }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully created connection', {</span>
+&nbsp;
+        log.info('Successfully cr<span class="cstat-no" title="statement not covered" >eated connection', {</span>
           connec<span class="cstat-no" title="statement not covered" >tionId: connection.id as number,</span>
           name: conn<span class="cstat-no" title="statement not covered" >ection.name as string,</span>
-          servic<span class="cstat-no" title="statement not covered" >e: connection.service as string,</span>
+          service: connection.service as string,
         });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        return formatSuccessRespo<span class="cstat-no" title="statement not covered" >nse({</span>
-          connec<span class="cstat-no" title="statement not covered" >tion,</span>
-        }, `Connecti<span class="cstat-no" title="statement not covered" >on "${name}" created successfully`).content[0].text;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
+          connection,
+        }, `Conn<span class="cstat-no" title="statement not covered" >ection "${name}" created successfully`).content[0].text;</span>
       } catch (error: unknown) {
-        const errorMessage = error <span class="cstat-no" title="statement not covered" >instanceof Error ? error.message : String(error);</span>
-        log.erro<span class="cstat-no" title="statement not covered" >r('Error creating connection', { name, service, error: errorMessage });</span>
-        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
-        throw new UserError(`Failed to create connection: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error creating connection', { name, service, error: errorMessage });
+        if (error instanceof UserError) throw error;
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to create connection: ${errorMessage}`);</span>
+      }
     },
   });
 &nbsp;
-  /**
+  /**<span class="cstat-no" title="statement not covered" ></span>
    * Update an e<span class="cstat-no" title="statement not covered" >xisting app connection with secure credential management</span>
-   * 
-   * Modifies connection properties including name, account details, credentials,
-   * and metadata with validation and security measures for safe updates.
-   * 
-   * @tool update-connection<span class="cstat-no" title="statement not covered" ></span>
-   * @category C<span class="cstat-no" title="statement not covered" >onnection Management</span>
-   * @permission<span class="cstat-no" title="statement not covered" > connection:write</span>
    * <span class="cstat-no" title="statement not covered" ></span>
-   * @param {Obj<span class="cstat-no" title="statement not covered" >ect} args - Connection update parameters</span>
+   * Modifies connec<span class="cstat-no" title="statement not covered" >tion properti</span>es including name, account details, credentials,
+   * and metadat<span class="cstat-no" title="statement not covered" >a with validation and security measures for safe updates.</span>
+   * 
+   * @tool update-connection
+   * @category Connection Management
+   * @permission connection:write
+   * <span class="cstat-no" title="statement not covered" ></span>
+   * @param {Object} args - Connection update parameters
    * @param {number} args.connectionId - Connection ID to update (required)
    * @param {string} [args.name] - New connection name (1-100 chars)
    * @param {string} [args.accountName] - New account name (1-100 chars)
    * @param {Object} [args.credentials] - Updated credentials
-   *<span class="cstat-no" title="statement not covered" > @param {Object} [args.metadata] - Updated metadata</span>
+   * @param {Object} [args.metadata] - Updated metadata
    * 
    * @returns {Promise&lt;string&gt;} JSON response containing:
    * - connection: Updated connection object
    * - message: Success confirmation message
-   * - updatedFields: List of fields that were modified
-   * 
-   * @throws {UserError} When connection not found, update fails, or no data provided
-   * 
-   * @example
-   * ```bash
-   * # Update con<span class="fstat-no" title="function not covered" >ne</span>ction name
-   * mcp-client update-connection --c<span class="cstat-no" title="statement not covered" >onnect</span>ionId 12345 --name "Updated Slack Connection"
+   * - updatedFie<span class="fstat-no" title="function not covered" >ld</span>s: List of fields that were modified
    * <span class="cstat-no" title="statement not covered" ></span>
-   * # Updat<span class="cstat-no" title="statement not covered" >e credentials and metadata</span>
-   * mcp-client update-connection<span class="cstat-no" title="statement not covered" > \</span>
-   *   --connect<span class="cstat-no" title="statement not covered" >ionId 12345 \</span>
-   *   --credentials<span class="cstat-no" title="statement not covered" > '{"token": "new-token-123"}' \</span>
-   *   --metadata '{"updated": true, "version": "2.0"}'
+   * @throws<span class="cstat-no" title="statement not covered" > {UserError} When connection not found, update fail</span>s, or no data provided
    * <span class="cstat-no" title="statement not covered" ></span>
-   * # Update ac<span class="cstat-no" title="statement not covered" >count name</span>
+   * @example<span class="cstat-no" title="statement not covered" ></span>
+   * ```bash<span class="cstat-no" title="statement not covered" ></span>
+   * # Update connec<span class="cstat-no" title="statement not covered" >tion name</span>
+   * mcp-client update-connection --connectionId 12345 --name "Updated Slack Connection"
+   * <span class="cstat-no" title="statement not covered" ></span>
+   * # Update cr<span class="cstat-no" title="statement not covered" >edentials and metadata</span>
    * mcp-client update-connection \
    *   --connectionId 12345 \
-   *   --accountName "new-account@com<span class="cstat-no" title="statement not covered" >pany.com"</span>
-   * ```<span class="cstat-no" title="statement not covered" ></span>
+   *   --credentials '{"token": "new-<span class="cstat-no" title="statement not covered" >token-123"}' \</span>
+   *   --metadat<span class="cstat-no" title="statement not covered" >a '{"updated": true, "version": "2.0"}'</span>
    * <span class="cstat-no" title="statement not covered" ></span>
-   * @see {@link htt<span class="cstat-no" title="statement not covered" >ps://docs.mak</span>e.com/api/connections#update} Make.com Update Connection API
-   */<span class="cstat-no" title="statement not covered" ></span>
+   * # Update accoun<span class="cstat-no" title="statement not covered" >t name</span>
+   * mcp-client <span class="cstat-no" title="statement not covered" >update-connection \</span>
+   *   --connectionId 12345 \
+   *   --accountName "new-account@company.com"
+   * ```
+   * 
+   *<span class="cstat-no" title="statement not covered" > @see {@link https://docs.make.com/api/connections#update} Make.com Update Connection API</span>
+   */
   server.addTool({
     name: 'update-connection',
     description: 'Update an existing app connection',
     parameters: UpdateConnectionSchema,
-<span class="cstat-no" title="statement not covered" >    annotations: {</span>
+    annotations: {
       title: 'Update Connection',
       idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
-      const { connectionId, name, accountName, credentials, metadata } = input;
-&nbsp;
-      log.info('Updating connection', { connectionId });
-&nbsp;
-      try {
-        const updateData: Record&lt;string, unknown&gt; = {};
-        if (name <span class="fstat-no" title="function not covered" >!=</span>= undefined) updateData.name = name;
-        if (accountName !== undefined) updateData.a<span class="cstat-no" title="statement not covered" >ccount</span>Name = accountName;
-        if (<span class="cstat-no" title="statement not covered" >credentials !== undefined) updateData.credentials = credentials;</span>
-        if (<span class="cstat-no" title="statement not covered" >metadata !== undefined) updateData.metadata = metadata;</span>
+      const { con<span class="fstat-no" title="function not covered" >ne</span>ctionId, name, accountName, credentials, metadata } = input;
 <span class="cstat-no" title="statement not covered" ></span>
-        if (Obje<span class="cstat-no" title="statement not covered" >ct.keys(updateData).length === 0) {</span>
-          throw new <span class="cstat-no" title="statement not covered" >UserError('No update data provided</span>');
-        }<span class="cstat-no" title="statement not covered" ></span>
+      log.in<span class="cstat-no" title="statement not covered" >fo('Updating connection', { connectionId });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const respon<span class="cstat-no" title="statement not covered" >se = await apiClient.patch(`/connections/${connectionId}`, updateData);</span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const up<span class="cstat-no" title="statement not covered" >dateData: Record&lt;string, unknown&gt; = {};</span>
+        if (name !==<span class="cstat-no" title="statement not covered" > undefined) updateData.name = name</span>;
+        if (accountName !== undef<span class="cstat-no" title="statement not covered" >ined) updateData.accountName = accountName;</span>
+        if (cred<span class="cstat-no" title="statement not covered" >entials !== undefined) updateData.credentials = credentials;</span>
+        if (metadata<span class="cstat-no" title="statement not covered" > !== undefined) updateData.metadata = metadata;</span>
 &nbsp;
-        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to update connection: ${response.error?.message || 'Unknown error'}`);</span>
+        if (Object.keys(updateData)<span class="cstat-no" title="statement not covered" >.length === 0) {</span>
+          throw <span class="cstat-no" title="statement not covered" >new UserError('No update data provided');</span>
         }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        const connection = safeG<span class="cstat-no" title="statement not covered" >etRecord(response</span>.data);
-        if (!connection || Objec<span class="cstat-no" title="statement not covered" >t.keys(connection).length === 0) {</span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError('Connection update failed - no data returned');</span>
+        const response = await a<span class="cstat-no" title="statement not covered" >piClient.patch(`/</span>connections/${connectionId}`, updateData);
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new UserError(`Failed to update connection: ${response.error?.message || 'Unknown error'}`);
+        }
+&nbsp;
+        const connection = safeGetRecord(response.data);
+        if (!con<span class="cstat-no" title="statement not covered" >nection || Object.keys(connection).length === 0) {</span>
+          throw new UserError('Connection update failed - no data returned');
         }
 &nbsp;
         log.info('Successfully updated connection', {
           connectionId,
-          name: <span class="cstat-no" title="statement not covered" >connection.name as string,</span>
+          name: connection.name as string,
           updatedFields: Object.keys(updateData),
-        });
-&nbsp;
-        return formatSuccessResponse({
-          connection,
-        }, "Connection updated successfully").content[0].text;
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return f<span class="cstat-no" title="statement not covered" >ormatSuccessResponse({</span>
+          connection<span class="cstat-no" title="statement not covered" >,</span>
+        }, "Conn<span class="cstat-no" title="statement not covered" >ection updated successfully").content[0].text;</span>
       } catch (error: unknown) {
-        const errorMessage = error in<span class="cstat-no" title="statement not covered" >stanceof Error ? error.message : String(error);</span>
-        log.erro<span class="cstat-no" title="statement not covered" >r('Error updating connection', { connectionId, error: errorMessage });</span>
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
-        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Fail</span>ed to update connection: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error updating connection', { connectionId, error: errorMessage });
+        if (error instanceof UserError) throw error;
+<span class="cstat-no" title="statement not covered" >        throw new UserError(`Failed to update connection: ${errorMessage}`);</span>
+      }
     },
   });
 &nbsp;
   // Delete connection tool
-  se<span class="cstat-no" title="statement not covered" >rver.addTool({</span>
+  server.addTool({
     name: 'delete-connection',
     description: 'Delete an app connection from Make.com',
-    parameters: z.object({
-      connectionId: z.number().min(1).describe('Connection ID to delete'),
-    }),
+    parameters: z<span class="fstat-no" title="function not covered" >.o</span>bject({
+      connectionId: z.number().min(1).describe('Connection ID to delete'<span class="cstat-no" title="statement not covered" >),</span>
+    }),<span class="cstat-no" title="statement not covered" ></span>
     annotations: {
       title: 'Delete Connection',
       destructiveHint: true,
-      openWorldHi<span class="fstat-no" title="function not covered" >nt</span>: true,
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute:<span class="cstat-no" title="statement not covered" > async (input, { log }) =&gt; {</span>
-      const { connectionId } = input;
-&nbsp;
+      openWorldHint: true,
+    },
+    execute: async (input, { log }) =&gt; {
+      const <span class="cstat-no" title="statement not covered" >{ connectionId } = input;</span>
+<span class="cstat-no" title="statement not covered" ></span>
       log.info('Deleting connection', { connectionId });
 &nbsp;
       try {
-        const response = await apiClient.delete(`/connections/${connectionId}`);
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.delete(`/connections/${connectionId}`);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (!response.success) <span class="cstat-no" title="statement not covered" >{</span>
-          throw new UserError(`Failed to delete connection: ${response.error?.message || 'Unknown error'}`);
-        }
-&nbsp;
-        log.info<span class="cstat-no" title="statement not covered" >('Successfully deleted connection', { connectionId });</span>
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to delete conn</span>ection: ${response.error?.message || 'Unknown error'}`);
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return f<span class="cstat-no" title="statement not covered" >ormatSuccessResponse(</span>
-          {},<span class="cstat-no" title="statement not covered" ></span>
-          `Conne<span class="cstat-no" title="statement not covered" >ction ${connectionId} deleted successfully`</span>
-        ).content[0]<span class="cstat-no" title="statement not covered" >.text;</span>
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('E<span class="cstat-no" title="statement not covered" >rror deleting connection', { connectionId, error: errorMessage });</span>
+        log.info('Successfully de<span class="cstat-no" title="statement not covered" >leted connection', { connectionId });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse(</span>
+          {},
+          `Connection ${connectio<span class="cstat-no" title="statement not covered" >nId} deleted successfully`</span>
+        ).content[0].text;<span class="cstat-no" title="statement not covered" ></span>
+      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error deleting connection', { connectionId, error: errorMessage });
         if (error instanceof UserError) throw error;
-        throw new UserError(`Fail<span class="cstat-no" title="statement not covered" >ed to delete connection: ${errorMessage}`);</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to delete connection: ${errorMessage}`);</span>
+      }
+    },
   });
 &nbsp;
   // Test connection tool
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+  server.addTool({
     name: 'test-connection',
     description: 'Test an app connection to verify it\'s working correctly',
     parameters: z.object({
       connectionId: z.number().min(1).describe('Connection ID to test'),
-      testEndpoint: z.string().optional().describe('Specific endpoint to test (optional)'),
-    }),
-    annotations: {
-      title: 'Test Connection',
-      readOnlyHint: true,
+      testEndpoint: z.string().option<span class="cstat-no" title="statement not covered" >al().describe('Specific endpoint to test (optional)'),</span>
+    }),<span class="cstat-no" title="statement not covered" ></span>
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
+      title: 'Test C<span class="cstat-no" title="statement not covered" >onnection',</span>
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: true,</span>
       openWorldHint: true,
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
-      const { co<span class="cstat-no" title="statement not covered" >nnectionId, testEndpoint } = input;</span>
+    },
+    execute: async (input, { log }) =&gt; {
+      const { connectionId, testEndpoint } = input;
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('<span class="cstat-no" title="statement not covered" >Testing connection', { connectionId, testEndpoint });</span>
+      log.info('Testing connection', { connectionId, testEndpoint });
 &nbsp;
       try {
         const testData: Record&lt;string, unknown&gt; = {};
         if (testEndpoint) testData.endpoint = testEndpoint;
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         const response = await apiClient.post(`/connections/${connectionId}/test`, testData);
 &nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to test connection: ${response.error?.message || 'Unknown error'}`);
-        }
+        if (!resp<span class="fstat-no" title="function not covered" >on</span>se.success) {
+          throw new UserError(`Failed to test connection: ${response.error?.message || <span class="cstat-no" title="statement not covered" >'Unkno</span>wn error'}`);
+        }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         const testResult = safeGetRecord(response.data);
         if (!testResult || Object.keys(testResult).length === 0) {
-          throw n<span class="fstat-no" title="function not covered" >ew</span> UserError('Connection test failed - no result returned');
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const isValid = testResult.valid as boolean;
-        const message = (testResult.message as string) || (isValid ? 'Connection test successful' : 'Connection test failed');
+          throw new UserError('Connection test failed - no result returned');
+        }
+&nbsp;
+        cons<span class="cstat-no" title="statement not covered" >t isValid = testResult.valid as boolean;</span>
+        const message = (testResult.<span class="cstat-no" title="statement not covered" >message as string) || (isValid ? 'Connection test successful' : 'Connection test failed');</span>
 &nbsp;
         log.info('Connection test completed', {
           connectionId,
           isValid,
-          me<span class="cstat-no" title="statement not covered" >ssage,</span>
-        });<span class="cstat-no" title="statement not covered" ></span>
+          message,
+        });
 &nbsp;
         return formatSuccessResponse({
-          connectionId,
-          isValid,
-          message,
+          connectionId,<span class="cstat-no" title="statement not covered" ></span>
+          isVali<span class="cstat-no" title="statement not covered" >d,</span>
+          message,<span class="cstat-no" title="statement not covered" ></span>
           details: testResult.details,
-        }, "Connection test completed").content[0].text;
-      } catch (error: unknown) {
-        const errorMessage = erro<span class="cstat-no" title="statement not covered" >r instanceof Error ? error.message : String(err</span>or);
-        log.erro<span class="cstat-no" title="statement not covered" >r('Error testing connection', { connectionId, error: errorMessage });</span>
-        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
+        }, "Connection test comp<span class="cstat-no" title="statement not covered" >leted").content[0].text;</span>
+      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
+        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.message : String(error);</span>
+        log.error('Error testing connection', { connectionId, error: errorMessage });
+        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
         throw new UserError(`Failed to test connection: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  // List webhoo<span class="cstat-no" title="statement not covered" >ks tool</span>
+      }
+    },
+  });
+<span class="cstat-no" title="statement not covered" ></span>
+  // List webhooks tool
   server.addTool({
     name: 'list-webhooks',  
     description: 'List and filter webhooks in Make.com',
-    parameters: WebhookFiltersSchema,
+    parameters: WebhookFiltersSchema,<span class="cstat-no" title="statement not covered" ></span>
     annotations:<span class="cstat-no" title="statement not covered" > {</span>
-      title: 'List Webhooks',
-      readOnlyHint: true,
-      openWorldHint: true,
+      title: 'Li<span class="cstat-no" title="statement not covered" >st Webhooks',</span>
+      readOnlyHint: <span class="cstat-no" title="statement not covered" >true,</span>
+      openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
     },
-    execute: async (input, { log }) =<span class="cstat-no" title="statement not covered" >&gt; {</span>
-      const { co<span class="cstat-no" title="statement not covered" >nnectionId, scenarioId, status, limit, offset } = input;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-      log.info('List<span class="cstat-no" title="statement not covered" >ing webhooks'</span>, {
-        connecti<span class="cstat-no" title="statement not covered" >onId,</span>
+    execute: async (input, { log }) =&gt; {
+      const { connectionId, scenarioId, status, limit, offset } = input;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      log.info('Listing webhooks', {</span>
+        connectionId,
         scenarioId,
         status,
         limit,
         offset,
-<span class="cstat-no" title="statement not covered" >      });</span>
+      });
 &nbsp;
       try {
-        const params: Record&lt;string, unknown&gt; = {
-          limit,
-          offset,
-        };
-&nbsp;
-        if (connectionId) params.connectionId = connectionId;
-        if (scena<span class="fstat-no" title="function not covered" >ri</span>oId) params.scenarioId = scenarioId;
-        if (status !== 'all') params.active = status === 'active';<span class="cstat-no" title="statement not covered" ></span>
+        const par<span class="fstat-no" title="function not covered" >am</span>s: Record&lt;string, unknown&gt; = {
+          limit,<span class="cstat-no" title="statement not covered" ></span>
+          of<span class="cstat-no" title="statement not covered" >fset,</span>
+        };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        cons<span class="cstat-no" title="statement not covered" >t response = await apiClient.get('/webhooks', { params });</span>
+        if (conn<span class="cstat-no" title="statement not covered" >ectionId) params.connectionId = connectionId;</span>
+        if (scenario<span class="cstat-no" title="statement not covered" >Id) params.scenarioId = </span>scenarioId;
+        if (stat<span class="cstat-no" title="statement not covered" >us !== 'all') params.active = status === 'active';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get('/webhooks', { params });</span>
 <span class="cstat-no" title="statement not covered" ></span>
         if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to lis</span>t webhooks: ${response.error?.message || 'Unknown error'}`);
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to list webh</span>ooks: ${response.error?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
         const we<span class="cstat-no" title="statement not covered" >bhooks = safeGetArray(response.data);</span>
         const metada<span class="cstat-no" title="statement not covered" >ta = response.metadata;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully retrieved webhooks'</span>, {
+&nbsp;
+        log.info('Successfully re<span class="cstat-no" title="statement not covered" >trieved webhooks', {</span>
           count:<span class="cstat-no" title="statement not covered" > webhooks.length,</span>
           total: met<span class="cstat-no" title="statement not covered" >adata?.total,</span>
-        });<span class="cstat-no" title="statement not covered" ></span>
+        });
 <span class="cstat-no" title="statement not covered" ></span>
-        return formatSuccessResponse({
+        return f<span class="cstat-no" title="statement not covered" >ormatSuccessResponse({</span>
           webhooks,<span class="cstat-no" title="statement not covered" ></span>
-          pagina<span class="cstat-no" title="statement not covered" >tion: {</span>
-            total: m<span class="cstat-no" title="statement not covered" >etadata?.total || webhooks.length,</span>
+          pagination: {
+            tota<span class="cstat-no" title="statement not covered" >l: metadata?.total || webhooks.length,</span>
             limit,
-            offset,<span class="cstat-no" title="statement not covered" ></span>
-            hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; (offset + webhooks.length),</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-        }, "Webhooks retrieved successfully");
-      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
+            offset,
+            hasMore: (metadata?.total || 0) &gt; (offset + webhooks.length),
+          },
+        }, "Webh<span class="cstat-no" title="statement not covered" >ooks retrieved successfully");</span>
+      } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing webhooks', { error: errorMessage });
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to list webhooks: ${errorMessage}`);
+        throw new UserError(`Failed t<span class="cstat-no" title="statement not covered" >o list webhooks: ${errorMessage}`);</span>
       }<span class="cstat-no" title="statement not covered" ></span>
-    },
-  });
-&nbsp;
+    },<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   // Create webhook tool
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'creat<span class="cstat-no" title="statement not covered" >e-webhook',</span>
-    description:<span class="cstat-no" title="statement not covered" > 'Create a new webhook in Make.com',</span>
-    parameters: Crea<span class="cstat-no" title="statement not covered" >teWebhookSche</span>ma,
-    annotations:<span class="cstat-no" title="statement not covered" > {</span>
+  server.addTool({
+    name: 'create-webhook',
+    description: 'Create a new webhook in Make.com',
+<span class="cstat-no" title="statement not covered" >    parameters: CreateWebhookSchema,</span>
+    annotations: {
       title: 'Create Webhook',
       idempotentHint: true,
       openWorldHint: true,
     },
-<span class="cstat-no" title="statement not covered" >    execute: async (input, { log }) =&gt; {</span>
+    execute: async (input, { log }) =&gt; {
       const { name, url, method, headers, connectionId, scenarioId, isActive } = input;
 &nbsp;
       log.info('Creating new webhook', {
         name,
-        url,
-        method,
-        connectionId,
-        scenarioId,
-      });
-&nbsp;
-      try {<span class="fstat-no" title="function not covered" ></span>
-        const webhookData = {<span class="cstat-no" title="statement not covered" ></span>
-          na<span class="cstat-no" title="statement not covered" >me,</span>
-          ur<span class="cstat-no" title="statement not covered" >l,</span>
-          method,<span class="cstat-no" title="statement not covered" ></span>
-          header<span class="cstat-no" title="statement not covered" >s: headers || {},</span>
-          connection<span class="cstat-no" title="statement not covered" >Id,</span>
-          scenarioId,
+        url,<span class="fstat-no" title="function not covered" ></span>
+        method,<span class="cstat-no" title="statement not covered" ></span>
+        conn<span class="cstat-no" title="statement not covered" >ectionId,</span>
+        scen<span class="cstat-no" title="statement not covered" >arioId,</span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const webhookData = {
+          name,<span class="cstat-no" title="statement not covered" ></span>
+          url,<span class="cstat-no" title="statement not covered" ></span>
+          method,
+          headers: headers || {},
+          connectionId,<span class="cstat-no" title="statement not covered" ></span>
+          scenar<span class="cstat-no" title="statement not covered" >ioId,</span>
           isActi<span class="cstat-no" title="statement not covered" >ve,</span>
         };<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         const response = await apiClient.post('/webhooks', webhookData);
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to create webhook: ${response.error?.message || 'Unknown error'}`);</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        if (!response.success) {
+          throw new UserError(`Failed to create webhook: ${response.error?.message || 'Unknown error'}`);
+        }
+&nbsp;
         const webhook = safeGetRecord(response.data);
         if (!webhook || Object.keys(webhook).length === 0) {
           throw new UserError('Webhook creation failed - no data returned');
@@ -4666,13 +4666,13 @@ export function addConnectionTo<span class="cstat-no" title="statement not cover
         }
 &nbsp;
         const response = await apiClient.patch(`/webhooks/${webhookId}`, updateData);
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         if (!response.success) {
           throw new UserError(`Failed to update webhook: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
         const webhook = safeGetRecord(response.data);
-<span class="cstat-no" title="statement not covered" >        if (!webhook || Object.keys(webhook).length === 0) {</span>
+        if (!webhook || Object.keys(webhook).length === 0) {
           throw new UserError('Webhook update failed - no data returned');
         }
 &nbsp;
@@ -4687,69 +4687,69 @@ export function addConnectionTo<span class="cstat-no" title="statement not cover
         }, "Webhook updated successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error updating webhook', { webhookId, error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to update webhook: ${errorMessage}`);
+        log.error<span class="fstat-no" title="function not covered" >('</span>Error updating webhook', { webhookId, error: errorMessage });
+        if (error instanceof UserError) throw error;<span class="cstat-no" title="statement not covered" ></span>
+        thro<span class="cstat-no" title="statement not covered" >w new UserError(`Failed to update webhook: ${errorMessage}`);</span>
       }
     },
   });
-<span class="fstat-no" title="function not covered" ></span>
-  // Delete webhook tool<span class="cstat-no" title="statement not covered" ></span>
-  server.add<span class="cstat-no" title="statement not covered" >Tool({</span>
-    name: 'delete-webhook',
-    description: 'Delete a webhook from Make.com',
-    parameters: z.object({
+&nbsp;
+  // Delete webhook tool
+  server.addTool({
+    name: 'delete-webhook',<span class="cstat-no" title="statement not covered" ></span>
+    descript<span class="cstat-no" title="statement not covered" >ion: 'Delete a webhook from Make.com',</span>
+    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
       webhookId: z.number().min(1).describe('Webhook ID to delete'),
-    }),
-    annotations: {
-      title: 'Delete Webhook',<span class="cstat-no" title="statement not covered" ></span>
-      destru<span class="cstat-no" title="statement not covered" >ctiveHint: true,</span>
-      openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
+    }),<span class="cstat-no" title="statement not covered" ></span>
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
+      title: 'Delete<span class="cstat-no" title="statement not covered" > Webhook',</span>
+      destructiveHint: true,
+      openWorldHint: true,
     },
-    execute: async (input, { log }) =&gt; {<span class="cstat-no" title="statement not covered" ></span>
-      const { we<span class="cstat-no" title="statement not covered" >bhookId } = input;</span>
+    execute: async (input, { log }) =&gt; {
+      const { webhookId } = input;
 <span class="cstat-no" title="statement not covered" ></span>
       log.info('Deleting webhook', { webhookId });
-&nbsp;
-      try {
-        const response = await apiClient.delete(`/webhooks/${webhookId}`);
-&nbsp;
-        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw new UserError(`Failed to delete webhook: ${response.error?.message || 'Unknown error'}`);
-        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        log.info<span class="cstat-no" title="statement not covered" >('Successfull<span class="cstat-no" title="statement not covered" >y </span>deleted webhook', { webhookId });</span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const re<span class="cstat-no" title="statement not covered" >sponse = awai<span class="cstat-no" title="statement not covered" >t </span>apiClient.delete(`/webhooks/${webhookId}`);</span>
 <span class="cstat-no" title="statement not covered" ></span>
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to delete webhook: ${response.error?.message || 'Unknown error'}`);</span>
+        }
+&nbsp;
+        log.info('Successfully deleted webhook', { webhookId });
+&nbsp;
         return formatSuccessResponse(<span class="cstat-no" title="statement not covered" ></span>
-          {},<span class="cstat-no" title="statement not covered" ></span>
+          {},
           `Webhook ${webhookId} deleted successfully`
         ).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error deleting webhook', { web<span class="cstat-no" title="statement not covered" >hookId, error: errorMessage });</span>
+        log.error('Error deleting webhook', { webhookId, error: errorMessage });
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to delete webhook: ${errorMessage}`);
-      }
+        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to delete webhook: ${errorMess</span>age}`);
+      }<span class="cstat-no" title="statement not covered" ></span>
     },
-  });
+  });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  /**
-   * Comprehensive c<span class="cstat-no" title="statement not covered" >onnection diagnostics with validation, health </span>checks, and performance analysis
-   * <span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Comprehensive connection diagno<span class="cstat-no" title="statement not covered" >stics with validation, health checks, and performance analysis</span>
+   * 
    * Performs in-depth analysis of Make.com connections including connectivity tests,
-   * authenticat<span class="cstat-no" title="statement not covered" >ion verification, performance monitoring, secu</span>rity assessment,
+   * authentication verification,<span class="cstat-no" title="statement not covered" > performance monitoring, security assessment,</span>
    * and automated troubleshooting with fix recommendations.
-   * <span class="cstat-no" title="statement not covered" ></span>
-   * @tool diagnose-connection-issue<span class="cstat-no" title="statement not covered" >s</span>
-   * @category Connection Diagnostics
+   * 
+   * @tool diagnose-connection-issues<span class="cstat-no" title="statement not covered" ></span>
+   * @category C<span class="cstat-no" title="statement not covered" >onnection Diagnostics</span>
    * @permission connection:read
    * <span class="cstat-no" title="statement not covered" ></span>
    * @param {Object} args - Connection diagnostic parameters
    * @param {number} [args.connectionId] - Specific connection ID to diagnose
-   * @param {string} [args.service] - Fi<span class="cstat-no" title="statement not covered" >lter by service type (e.g., "slack", "gmail")</span>
-   * @param {str<span class="cstat-no" title="statement not covered" >ing[]} [args.diagnosticTypes=['all']] - Types </span>of diagnostics to run
+   * @param {string} [args.service] - Filter by service type (e.g., "slack", "gmail")
+   * @param {string[]} [args.diagnosticTypes=['all']] - Types of diagnostics to run
    * @param {boolean} [args.includePerformanceMetrics=true] - Include performance analysis
-   * @param {boolean} [args.inclu<span class="cstat-no" title="statement not covered" >deSecurityChecks=true] - Include security assessment</span>
+   * @param {boolean} [args.includeSecurityChecks=true] - Include security assessment
    * @param {boolean} [args.testConnectivity=true] - Test actual connectivity
    * @param {number} [args.timeRangeHours=24] - Hours of history to analyze
    * @param {string} [args.severityFilter] - Minimum severity level to report
@@ -4763,129 +4763,129 @@ export function addConnectionTo<span class="cstat-no" title="statement not cover
    * - recommendations: Actionable fix recommendations
    * - metadata: Diagnostic session metadata
    * 
-   * @throws {UserError} When diagnostic analysis fails or connections not accessible
-   * 
+   * @throws {Us<span class="cstat-no" title="statement not covered" >erError} When diagnostic analysis fails or conn</span>ections not accessible
+   * <span class="cstat-no" title="statement not covered" ></span>
    * @example
    * ```bash
    * # Diagnose specific connection
    * mcp-client diagnose-connection-issues --connectionId 12345
-   * <span class="cstat-no" title="statement not covered" ></span>
-   * # Diagnose <span class="cstat-no" title="statement not covered" >all Slack connections</span>
-   * mcp-client diagnose-connection-issues --service "slack"
+   * 
+   * # Diagnose all Slack connections
+   * mcp-client <span class="cstat-no" title="statement not covered" >diagnose-connection-issues --service "slack"</span>
    * 
    * # Security-focused analysis
-   * mcp-client diagnose-connection-issues \\
-   *   --diagnosticTypes '["security", "authentication"]' \\
-   *   --includeSecurityChecks true
+   * mcp-client diagnose-connection-i<span class="cstat-no" title="statement not covered" >ssues \\</span>
+   *   --diagnos<span class="cstat-no" title="statement not covered" >ticTypes '["security", "authentication"]' \\</span>
+   *   --include<span class="cstat-no" title="statement not covered" >SecurityChecks true</span>
    * <span class="cstat-no" title="statement not covered" ></span>
-   * # Performance analysis with extended history
+   * # Performan<span class="cstat-no" title="statement not covered" >ce analysis with extended history</span>
    * mcp-client diagnose-connection-issues \\
-   *   --diagnosticTypes '["performan<span class="cstat-no" title="statement not covered" >ce", "connectivity"]' \\</span>
-   *   --timeRan<span class="cstat-no" title="statement not covered" >geHours 72 \\</span>
-   *   --include<span class="cstat-no" title="statement not covered" >PerformanceMetrics true</span>
-   * ```<span class="cstat-no" title="statement not covered" ></span>
-   * <span class="cstat-no" title="statement not covered" ></span>
+   *   --diagnosticTypes '["performance", "connectivity"]' \\
+   *   --timeRangeHours 72 \\
+   *<span class="cstat-no" title="statement not covered" >   --includePerformanceMetrics true</span>
+   * ```
+   * 
    * @see {@link https://docs.make.com/api/connections} Make.com Connections API
    */
-  server.addTool({
+  server.addToo<span class="fstat-no" title="function not covered" >l({</span>
 <span class="cstat-no" title="statement not covered" >    name: 'diagnose-connection-issues',</span>
     description: 'Comprehensive connection diagnostics with health checks, performance analysis, security assessment, and troubleshooting recommendations',
-    parameters: z.object({
-      connectionId: z.number().min(1).optional().describe('Specific connection ID to diagnose'),
-      service: z.string().optional().describe('Filter by service type (e.g., "slack", "gmail")'),
-      diagnosti<span class="fstat-no" title="function not covered" >cTypes: z.array(z.enum([</span>
-<span class="cstat-no" title="statement not covered" >        'connectivity', 'authentication', 'performance', 'security', 'health', 'all'</span>
+    parameters: z.object(<span class="cstat-no" title="statement not covered" >{</span>
+      co<span class="cstat-no" title="statement not covered" >nnectionId: z.number().min(1).optional().describe('Specific connection ID to diagnose'),</span>
+      servic<span class="cstat-no" title="statement not covered" >e: z.string().optional().describe('Filter by service type (e.g., "slack", "gmail")'),</span>
+      diagnosticTypes: z.array(z.enum([
+<span class="cstat-no" title="statement not covered" >        'connectivity', 'authentication', 'perf</span>ormance', 'security', 'health', 'all'
       ])).default(['all']).describe('Types of diagnostics to run'),
-      includePerformanceM<span class="cstat-no" title="statement not covered" >etrics: z.boolean().default(true).describe('Include </span>performance analysis'),
-      in<span class="cstat-no" title="statement not covered" >cludeSecurityChecks: z.boolean().default(true).describe('Include security assessment'),</span>
-      testCo<span class="cstat-no" title="statement not covered" >nnectivity: z.boolean().default(true).describe('Test actual connectivity to services'),</span>
-      timeRangeHours: z.number().min(1).max(168).default(24).describe('Hours of execution history to analyze'),
-      se<span class="cstat-no" title="statement not covered" >verityFilter: z.enum(['info', 'warning', 'error', 'critical'</span>]).optional().describe('Minimum severity level to report'),
-      generateReport: z.boolean().default(true).describe('Generate detailed diagnostic report')
-    }).strict(),
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      title: 'Connection Diagnostics',</span>
-      re<span class="cstat-no" title="statement not covered" >adOnlyHint: true,</span>
-      openWorldHint: <span class="cstat-no" title="statement not covered" >true</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-    exec<span class="cstat-no" title="statement not covered" >ute: async (input, { log, reportProgress }) =&gt; {</span>
+      includePerformanceMetrics: z.boolean().default(true).describe('Include performance analysis'),
+      includeSecuri<span class="cstat-no" title="statement not covered" >tyChecks: z.boo</span>lean().default(true).describe('Include security assessment'),
+<span class="cstat-no" title="statement not covered" >      testConnectivity: z.boolean().default(true).describe('Test actual connectivity to services'),</span>
+      ti<span class="cstat-no" title="statement not covered" >meRangeHours: z.number().m</span>in(1).max(168).default(24).describe('Hours of execution history to analyze'),
+      severityFilter:<span class="cstat-no" title="statement not covered" > z.enum(['info', 'warning', 'error', 'critical']</span>).optional().describe('Minimum severity level to report'),
+<span class="cstat-no" title="statement not covered" >      generateReport: z.boolean().default(true).describe('Generate detailed diagnostic report')</span>
+    }).s<span class="cstat-no" title="statement not covered" >trict(),</span>
+    annotations: {
+      title: 'Connection<span class="cstat-no" title="statement not covered" > Diagnostics',</span>
+<span class="cstat-no" title="statement not covered" >      readOnlyHint: true,</span>
+<span class="cstat-no" title="statement not covered" >      openWorldHint: tru</span>e
+    },
+    execute: async (input, { log, reportProgress }) =&gt; {
       const {
-        connectionId,<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        service,</span>
-<span class="cstat-no" title="statement not covered" >        diagnosticTypes,</span>
-        includePerformanceMetrics,
-        includeSecurityChecks,
-        testConnectivity,
-        timeRangeHours,
-        severit<span class="fstat-no" title="function not covered" >yFilter,</span>
-        generateReport: _<span class="cstat-no" title="statement not covered" >generateReport</span>
+        connectionId,
+        service<span class="fstat-no" title="function not covered" >,</span>
+        diagnosticTypes,<span class="cstat-no" title="statement not covered" ></span>
+        includePerforman<span class="cstat-no" title="statement not covered" >ceM</span>etrics,
+        includeSecurit<span class="cstat-no" title="statement not covered" >yChecks,</span>
+        testConnectivity,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        timeRangeHours,</span>
+        severityFilter,
+<span class="cstat-no" title="statement not covered" >        generateReport: _generateReport</span>
       } = input;<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('Starting conne<span class="cstat-no" title="statement not covered" >ction diagnostics', {</span>
-<span class="cstat-no" title="statement not covered" >        connectionId,</span>
+      log.info('<span class="cstat-no" title="statement not covered" >Starting connection diagnostics'</span>, {
+        connectionId,
         service,
-<span class="cstat-no" title="statement not covered" >        diagnosticTypes,</span>
-        timeRangeHours,<span class="cstat-no" title="statement not covered" ></span>
-        test<span class="cstat-no" title="statement not covered" >Connectivity</span>
+        diagnosticTypes,
+<span class="cstat-no" title="statement not covered" >        timeRangeHours,</span>
+        testConnectivity<span class="cstat-no" title="statement not covered" ></span>
       });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
       const startTime = Date.now();
       
-      tr<span class="cstat-no" title="statement not covered" >y {</span>
-        reportProgress({ progress: 10, <span class="cstat-no" title="statement not covered" >total: 100 });</span>
+      try {
+<span class="cstat-no" title="statement not covered" >        reportProgress({ progress: 10, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        // Step <span class="cstat-no" title="statement not covered" >1: Get connections to analyze</span>
-        const connectionsToAnalyze = await getConnectionsForDiagnostics(
+        // S<span class="cstat-no" title="statement not covered" >tep 1: Get connections to analyze</span>
+        const co<span class="cstat-no" title="statement not covered" >nnectionsToAnalyze = await get</span>ConnectionsForDiagnostics(
           apiClient, connectionId, service, log
         );
-<span class="cstat-no" title="statement not covered" ></span>
-        if (connectionsToAnalyz<span class="cstat-no" title="statement not covered" >e.length === 0) {</span>
-          th<span class="cstat-no" title="statement not covered" >row new UserError(</span>
-            conn<span class="cstat-no" title="statement not covered" >ectionId </span>
-              ? `Connection with ID ${connectionId} not found`
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (connectionsToAnalyze.length === 0) {</span>
+          throw new UserError(<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            connectionId </span>
+              ? <span class="cstat-no" title="statement not covered" >`Connection with ID ${connectionId} n</span>ot found`
               : service
                 ? `No connections found for service: ${service}`
-<span class="cstat-no" title="statement not covered" >                : 'No connections found to diagnose'</span>
-          );<span class="cstat-no" title="statement not covered" ></span>
+                : 'No connections found to diagnose'
+<span class="cstat-no" title="statement not covered" >          );</span>
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        reportProgress({ progress: 20, total: 100 });
+        reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 20, total: 100 </span>});
 &nbsp;
         // Step 2: Run diagnostics for each connection
-<span class="cstat-no" title="statement not covered" >        const connectionResults = [];</span>
-        const totalConnections = co<span class="cstat-no" title="statement not covered" >nnectionsToAnalyze.length;</span>
+        const connectionResults = [];
+        const totalConnectio<span class="cstat-no" title="statement not covered" >ns = connectionsToAnalyze.length;</span>
         <span class="cstat-no" title="statement not covered" ></span>
-        for (let<span class="cstat-no" title="statement not covered" > i = 0; i &lt; connectionsToAnalyze.l</span>ength; i++) {
+<span class="cstat-no" title="statement not covered" >        for (let i = 0; i &lt; connectionsToAnalyze.length; i++) {</span>
           const connection = connectionsToAnalyze[i];
           const connectionProgress = 20 + ((i + 1) / totalConnections) * 60;
           
-          log.info('Analyzin<span class="cstat-no" title="statement not covered" >g connection', {</span>
-            connectionId: conn<span class="cstat-no" title="statement not covered" >ection.id,</span>
-<span class="cstat-no" title="statement not covered" >            service: connection.service,</span>
-            name: connection.name
+          log.info('Analyzing connection', {
+            connectionId: connection.id,
+            service: connection.service,
+            name: connection.name<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           });
 &nbsp;
-          const connectionDiagnostic = await diagnoseIndividualConnection(
-            connection,
-            apiClient,
+          const connectionDiagnostic = await diagno<span class="fstat-no" title="function not covered" >se</span>Ind<span class="cstat-no" title="statement not covered" >ividualConnection(</span>
+            connection,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+            apiClient,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
             {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
               diagnosticTypes,
               includePerformanceMetrics,
-              includeSecurityChecks,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-              testConnectivity,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-              timeRangeHours,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-              severityFilter<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-            },
+              includeSecurityChecks,
+              testConnectivity,
+              timeRangeHours,
+              severityFilter
+<span class="cstat-no" title="statement not covered" >            },</span>
             log
           );
 &nbsp;
-          connectionResults.push(connectionDiagnostic);
+<span class="cstat-no" title="statement not covered" >          connectionResults.push(connectionDiagnostic);</span>
           reportProgress({ progress: Math.floor(connectionProgress), total: 100 });
-<span class="cstat-no" title="statement not covered" >        }</span>
+        }
 &nbsp;
         reportProgress({ progress: 85, total: 100 });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        // Step 3: Generate comprehensive summary</span>
+        // Step 3: Generate comprehensive summary
         const summary = generateConnectionDiagnosticSummary(connectionResults);
         const performance = includePerformanceMetrics 
           ? generatePerformanceAnalysis(connectionResults, timeRangeHours)
@@ -4911,39 +4911,39 @@ export function addConnectionTo<span class="cstat-no" title="statement not cover
               timeRangeHours,
               testConnectivity,
               includePerformanceMetrics,
-              includeSecurityChecks,
-              severityFilter,
+              i<span class="fstat-no" title="function not covered" >ncludeSecurityChecks,</span>
+              sever<span class="cstat-no" title="statement not covered" >ity</span>Filter,
               executionTime: Date.now() - startTime
-            },
-            timestamp: new Date().toISOString()
+<span class="cstat-no" title="statement not covered" >            },</span>
+<span class="cstat-no" title="statement not covered" >            timestamp: new Date().toISOString()</span>
           }
-        };<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        };</span>
 <span class="cstat-no" title="statement not covered" ></span>
         reportProgress({ progress: 100, total: 100 });
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        log.info('Connection diagnostics complet</span>ed', {
+<span class="cstat-no" title="statement not covered" >        log.info('Connection diagnostics comp</span>leted', {
           connectionsAnalyzed: connectionResults.length,
-<span class="cstat-no" title="statement not covered" >          overallHealth: summary.overallHealth,</span>
-<span class="cstat-no" title="statement not covered" >          totalIssues: summary.totalIssues,</span>
-          criticalIssues: summary.criticalIssues,
+          overallHealth: summary.overallHealth,
+          totalIssues<span class="cstat-no" title="statement not covered" >: summary.totalIssues,</span>
+<span class="cstat-no" title="statement not covered" >          criticalIssues: summary.criticalIssues,</span>
 <span class="cstat-no" title="statement not covered" >          executionTime: Date.now() - startTime</span>
-<span class="cstat-no" title="statement not covered" >        });</span>
+        });
 &nbsp;
-        return formatSuccessResponse(response, "Connection diagnostics completed successfully").content[0].text;
+        return formatSucc<span class="cstat-no" title="statement not covered" >essResponse(response, "C</span>onnection diagnostics completed successfully").content[0].text;
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      } catch (error: unknown) {</span>
-<span class="cstat-no" title="statement not covered" >        const errorMessage = error instanceof Error ?</span> error.message : String(error);
-        log.error('Connection diagnostics failed', { error: errorMessage });
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const errorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.<span class="cstat-no" title="statement not covered" >error('Connection diagnostics failed', { error: errorMessage });</span>
         if (error instanceof UserError) throw error;
-        throw new UserErr<span class="cstat-no" title="statement not covered" >or(`Connection diagnosti</span>cs failed: ${errorMessage}`);
+        throw new UserError(`Connection diagnostics failed: ${errorMessage}`);
 <span class="cstat-no" title="statement not covered" >      }</span>
     },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  });
+&nbsp;
   componentLogger.info('Connection management tools added successfully');
 }
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+/**
  * Get connections for diagnostic analysis
  */
 async function getConnectionsForDiagnostics(
@@ -4953,15 +4953,15 @@ async function getConnectionsForDiagnostics(
   log?: Logger
 ): Promise&lt;ConnectionData[]&gt; {
   if (connectionId) {
-    // Get specific connection
+<span class="cstat-no" title="statement not covered" >    // Get specific connection</span>
     const response = await apiClient.get(`/connections/${connectionId}`);
-    if (!response.success) {
+    if (!response.success) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       throw new UserError(`Failed to get connection ${connectionId}: ${response.error?.message || 'Unknown error'}`);
     }
     return [safeGetRecord(response.data) as unknown as ConnectionData];
-  }<span class="cstat-no" title="statement not covered" ></span>
+  }
 &nbsp;
-  // Get connections with opti<span class="fstat-no" title="function not covered" >on</span>al <span class="cstat-no" title="statement not covered" >service filter</span>
+  // Get connections with optional service filter
   const params: Record&lt;string, unknown&gt; = { limit: 100 };
   if (service) params.service = service;
 &nbsp;
@@ -4976,19 +4976,19 @@ async function getConnectionsForDiagnostics(
   return connections;
 }
 &nbsp;
-/**
- * Diagnose individual connection with comprehensive checks
- */
-async function diagnoseIndividualConnection(
-  connection: ConnectionData,
-  apiClient: MakeApiClient,
-  options: Diag<span class="fstat-no" title="function not covered" >nosticOptions,</span>
-  log?: Logger<span class="cstat-no" title="statement not covered" ></span>
-): P<span class="cstat-no" title="statement not covered" >romise&lt;ConnectionResult&gt; {</span>
-  const <span class="cstat-no" title="statement not covered" >connectionId = connection.id as number;</span>
-  const diagnostics: Conn<span class="cstat-no" title="statement not covered" >ectionDiagnosticResult[] = [];</span>
-  const <span class="cstat-no" title="statement not covered" >startTime = Date.now();</span>
-<span class="cstat-no" title="statement not covered" ></span>
+/**<span class="fstat-no" title="function not covered" ></span>
+ * Diagnose individual co<span class="cstat-no" title="statement not covered" >nnection with </span>comprehensive checks
+ */<span class="cstat-no" title="statement not covered" ></span>
+async fu<span class="cstat-no" title="statement not covered" >nction diagnoseIndividualConnection(</span>
+  connection: ConnectionD<span class="cstat-no" title="statement not covered" >ata,</span>
+  apiCli<span class="cstat-no" title="statement not covered" >ent: MakeApiClient,</span>
+  options: D<span class="cstat-no" title="statement not covered" >iagnosticOptions,</span>
+  log?: Logger
+): Promise&lt;ConnectionResult&gt; {
+  const connectionId = connection.id as number;
+  const diagnostics: ConnectionDiagnosticResult[] = [];
+  const startTime = Date.now();
+&nbsp;
   const runAllDiagnostics = options.diagnosticTypes.includes('all');
 &nbsp;
   try {
@@ -5003,18 +5003,18 @@ async function diagnoseIndividualConnection(
     // 2. Connectivity Test
     if ((runAllDiagnostics || options.diagnosticTypes.includes('connectivity')) &amp;&amp; options.testConnectivity) {
       const connectivityResult = await testConnectionConnectivity(connection, apiClient, log);
-      if (shouldIncludeResult(connectivityResult, options.severityFilter)) {
-        diagnostics.push(connectivityResult);
-      }
-    }
-&nbsp;
-    // 3. Authentication Verification
-    if (runAllDiagnostics |<span class="cstat-no" title="statement not covered" >| options.diagnosticTypes.includes('authentication</span>')) {
-      const authResult =<span class="cstat-no" title="statement not covered" > await verifyConn</span>ectionAuthentication(connection, apiClient, log);
-      if (shouldIncludeR<span class="cstat-no" title="statement not covered" >esult(authResult, options.severityFilter)) {</span>
-        diagnostics.push(auth<span class="cstat-no" title="statement not covered" >Result);</span>
+      if (shouldIncludeResu<span class="cstat-no" title="statement not covered" >lt(connectivityResult, option</span>s.severityFilter)) {
+        diagnostics.push<span class="cstat-no" title="statement not covered" >(connectivityResu</span>lt);
       }<span class="cstat-no" title="statement not covered" ></span>
     }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    // 3. Au<span class="cstat-no" title="statement not covered" >thentication Verification</span>
+    if (runAllDiagnostics || options.diagnosticTypes.includes('authentication')) {
+      const authResult = await verifyConnectionAuthentication(connection, apiClient, log);
+      if (shouldIncludeResult(authResult, options.severityFilter)) {
+        diagnostics.push(authResult);
+      }
+    }
 &nbsp;
     // 4. Performance Analysis
     if ((runAllDiagnostics || options.diagnosticTypes.includes('performance')) &amp;&amp; options.includePerformanceMetrics) {
@@ -5024,13 +5024,13 @@ async function diagnoseIndividualConnection(
       }
     }
 &nbsp;
-    // 5. Security Assessment
+    // 5<span class="cstat-no" title="statement not covered" >. Security Assessment</span>
     if ((runAllDiagnostics || options.diagnosticTypes.includes('security')) &amp;&amp; options.includeSecurityChecks) {
       const securityResult = await assessConnectionSecurity(connection);
       if (shouldIncludeResult(securityResult, options.severityFilter)) {
         diagnostics.push(securityResult);
       }
-    }<span class="cstat-no" title="statement not covered" ></span>
+    }
 &nbsp;
     // Calculate connection health score
     const healthScore = calculateConnectionHealthScore(diagnostics);
@@ -5047,17 +5047,17 @@ async function diagnoseIndividualConnection(
       summary: {
         totalIssues: diagnostics.length,
         criticalIssues: diagnostics.filter(d =&gt; d.severity === 'critical').length,
-        warningIssues: diagnostics.filter(d =&gt; d.severity === 'warning').length,
+<span class="cstat-no" title="statement not covered" >        warningIssues: diagnostics.filter(d =&gt; d.severity === 'warning').length,</span>
         infoIssues: diagnostics.filter(d =&gt; d.severity === 'info').length,
         fixableIssues: diagnostics.filter(d =&gt; d.fixable).length
       },
-      executionTime: Date.now() - startTime,
+      ex<span class="cstat-no" title="statement not covered" >ecutionTime: Date.now() - startTime,</span>
       timestamp: new Date().toISOString()
-    };<span class="cstat-no" title="statement not covered" ></span>
+    };
 &nbsp;
   } catch (error) {
     log?.error('Connection diagnostic failed', {
-      co<span class="cstat-no" title="statement not covered" >nnectionId,</span>
+      connectionId,
       error: (error as Error).message
     });
 &nbsp;
@@ -5074,21 +5074,21 @@ async function diagnoseIndividualConnection(
         title: 'Diagnostic Analysis Failed',
         description: `Failed to analyze connection: ${(error as Error).message}`,
         details: { error: (error as Error).message },
-        recommendations: ['Check connection permissions', 'Verify API access'],
-        fixable: false,
-        timestamp: new Date().toISOString()
-      }],
+        recomme<span class="fstat-no" title="function not covered" >ndations: ['Check connection pe</span>rmissions', 'Verify API access'],
+        fixable: false,<span class="cstat-no" title="statement not covered" ></span>
+        timestamp: n<span class="cstat-no" title="statement not covered" >ew Date().toISOStri</span>ng()
+<span class="cstat-no" title="statement not covered" >      }],</span>
       summary: {
-        totalIssues: 1,
-        critica<span class="fstat-no" title="function not covered" >lIssues: 0,</span>
-        warningIssues: 0,<span class="cstat-no" title="statement not covered" ></span>
-        infoIssues: <span class="cstat-no" title="statement not covered" >0,</span>
-<span class="cstat-no" title="statement not covered" >        fixableIssues: 0</span>
+        totalIssues: 1,<span class="cstat-no" title="statement not covered" ></span>
+        criticalIssues: 0,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        warningIssues: 0,</span>
+        info<span class="cstat-no" title="statement not covered" >Issues: 0,</span>
+        fixableIssues: 0
       },
-      executionTime: Date.no<span class="cstat-no" title="statement not covered" >w() - startTime,</span>
-      timestamp: new Date().toI<span class="cstat-no" title="statement not covered" >SOString()</span>
-    };<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+      executionTime: Date.now() - startTime,
+      timestamp: new Date().toISOString()
+    };
+  }
 }
 &nbsp;
 /**
@@ -5103,18 +5103,18 @@ async function checkConnectionHealth(connection: ConnectionData): Promise&lt;Con
   }
   
   if (!connection.service) {
-    issues.push('Missing service identifier');
-  }
-  
-  if (!connection.accountName) {
-    issues.push('Missing account name');
-  }
-<span class="cstat-no" title="statement not covered" ></span>
-  // Check connection status<span class="cstat-no" title="statement not covered" ></span>
-  const isActive = conne<span class="cstat-no" title="statement not covered" >ction.valid</span> !== false;
-  if (!isActive) {<span class="cstat-no" title="statement not covered" ></span>
-    issues.p<span class="cstat-no" title="statement not covered" >ush('Connection marked as invalid');</span>
+    issu<span class="cstat-no" title="statement not covered" >es.push('Missing service identifier');</span>
   }<span class="cstat-no" title="statement not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  if (!connection.accountName) {<span class="cstat-no" title="statement not covered" ></span>
+    issues.p<span class="cstat-no" title="statement not covered" >ush('Missing account name');</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  // Check connection status
+  const isActive = connection.valid !== false;
+  if (!isActive) {
+    issues.push('Connection marked as invalid');
+  }
 &nbsp;
   // Check last verification
   const lastVerified = connection.lastVerified;
@@ -5129,14 +5129,14 @@ async function checkConnectionHealth(connection: ConnectionData): Promise&lt;Con
     return {
       category: 'health' as const,
       severity: 'info' as const,
-      title: 'Connection Health: Good',
-      description: 'Connection passes basic health checks',
+      title:<span class="cstat-no" title="statement not covered" > 'Connection Health: Good',</span>
+      descriptio<span class="cstat-no" title="statement not covered" >n: 'Connection passes basic health checks',</span>
       details: {
         name: connection.name,
         service: connection.service,
         isActive,
-        last<span class="cstat-no" title="statement not covered" >Verified</span>
-      },<span class="cstat-no" title="statement not covered" ></span>
+        lastVerified
+      },
       recommendations: ['Continue monitoring connection health'],
       fixable: false,
       timestamp: new Date().toISOString()
@@ -5152,13 +5152,13 @@ async function checkConnectionHealth(connection: ConnectionData): Promise&lt;Con
       issues,
       name: connection.name,
       service: connection.service
-    },
+    },<span class="cstat-no" title="statement not covered" ></span>
     recommendations: [
       'Review connection configuration',
       'Verify service credentials',
       'Test connection manually'
     ],
-    fixa<span class="cstat-no" title="statement not covered" >ble: true,</span>
+    fixable: true,
     autoFixAction: 'fix-connection-health',
     timestamp: new Date().toISOString()
   };
@@ -5169,17 +5169,17 @@ async function checkConnectionHealth(connection: ConnectionData): Promise&lt;Con
  */
 async function testConnectionConnectivity(
   connection: ConnectionData,
-  apiClient: MakeApiClient,
+  apiCli<span class="cstat-no" title="statement not covered" >ent: MakeApiClient,</span>
   log?: Logger
 ): Promise&lt;ConnectionDiagnosticResult&gt; {
   const connectionId = connection.id as number;
-  
+  <span class="cstat-no" title="statement not covered" ></span>
   try {
-    log?<span class="cstat-no" title="statement not covered" >.info('Testing connection connectivity', { connectionId });</span>
+    log?.info('Testing connection connectivity', { connectionId });
     
     const response = await apiClient.post(`/connections/${connectionId}/test`, {});
     
-    if (<span class="cstat-no" title="statement not covered" >!response.success) {</span>
+    if (!response.success) {
       return {
         category: 'connectivity' as const,
         severity: 'error' as const,
@@ -5195,26 +5195,26 @@ async function testConnectionConnectivity(
           'Verify network connectivity',
           'Review API permissions',
           'Check service status'
-        ],
-        fixable: true,
-        autoFixAction: 'reconnect-service',
+        ],<span class="fstat-no" title="function not covered" ></span>
+        fixable: true,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        autoFixAction: 'reconnect-service',</span>
         timestamp: new Date().toISOString()
       };
-    }
-<span class="fstat-no" title="function not covered" ></span>
-    const testResult = sa<span class="cstat-no" title="statement not covered" >feGetRecord(re</span>sponse.data);
-<span class="cstat-no" title="statement not covered" >    const isValid = testResult.valid as boolean;</span>
-    const message = (testResult.message as string) || 'Connection test completed';
-    const responseTime = testResult.responseTime as number;
+    }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+    const testResult = safeGetRe<span class="cstat-no" title="statement not covered" >cord(response.data);</span>
+    const isValid = testRe<span class="cstat-no" title="statement not covered" >sult.valid as boole</span>an;
+    const message = (testRe<span class="cstat-no" title="statement not covered" >sult.message as string) || 'Conne</span>ction test completed';
+    const responseTime <span class="cstat-no" title="statement not covered" >= testR</span>esult.responseTime as number;
 <span class="cstat-no" title="statement not covered" ></span>
-    if (isValid) {
+    if (isValid) {<span class="cstat-no" title="statement not covered" ></span>
       return {<span class="cstat-no" title="statement not covered" ></span>
-        category: 'connect<span class="cstat-no" title="statement not covered" >ivity' as const,</span>
-        severity: 'info' as<span class="cstat-no" title="statement not covered" > const,</span>
-        title: 'Connect<span class="cstat-no" title="statement not covered" >ion Tes</span>t: Successful',
-        description:<span class="cstat-no" title="statement not covered" > message,</span>
-        details: {<span class="cstat-no" title="statement not covered" ></span>
-          connectionId,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        category: 'connectivity' as const,</span>
+        seve<span class="cstat-no" title="statement not covered" >rity: 'info' as const,</span>
+        titl<span class="cstat-no" title="statement not covered" >e: 'Connection Test: Successful',</span>
+        desc<span class="cstat-no" title="statement not covered" >ription: message,</span>
+        deta<span class="cstat-no" title="statement not covered" >ils: {</span>
+          connectionId,
 <span class="cstat-no" title="statement not covered" >          isValid,</span>
           re<span class="cstat-no" title="statement not covered" >sponseTime,</span>
           te<span class="cstat-no" title="statement not covered" >stResult</span>
@@ -5223,14 +5223,14 @@ async function testConnectionConnectivity(
         fixable: false,
 <span class="cstat-no" title="statement not covered" >        timestamp: new Date().toISOString()</span>
       };<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+    }
 <span class="cstat-no" title="statement not covered" ></span>
-    return {<span class="cstat-no" title="statement not covered" ></span>
+    return {
       category: 'connectivity' as const,
-      se<span class="cstat-no" title="statement not covered" >verity: 'warning' as const,</span>
-      title:<span class="cstat-no" title="statement not covered" > 'Connection Test: Issues Detected',</span>
+      severity: 'warning' as const,
+      title: 'Connection Test: Issues Detected',
       description: message || 'Connection test revealed issues',
-      de<span class="cstat-no" title="statement not covered" >tails: {</span>
+      details: {
         connectionId,
         isValid,
         responseTime,
@@ -5246,70 +5246,70 @@ async function testConnectionConnectivity(
       autoFixAction: 'fix-connectivity-issues',
       timestamp: new Date().toISOString()
     };
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
   } catch (error) {
     log?.warn('Connection test error', {
       connectionId,
-      error: (error as Error).message
+      er<span class="cstat-no" title="statement not covered" >ror: (error a</span>s Error).message
     });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     return {
       category: 'connectivity' as const,
       severity: 'error' as const,
-      ti<span class="cstat-no" title="statement not covered" >tle: 'Connect</span>ion Test Error',
-      description: `Unable to test connection: ${(error as Error).message}`,
-      details: {
-        connectionId,
-        error: (error as Error).message,
+      title: 'C<span class="fstat-no" title="function not covered" >onnection Test Error',</span>
+      description: `Unabl<span class="cstat-no" title="statement not covered" >e to test conn</span>ection: ${(error as Error).message}`,
+      details: {<span class="cstat-no" title="statement not covered" ></span>
+        connectionId,<span class="cstat-no" title="statement not covered" ></span>
+        error: (error as Err<span class="cstat-no" title="statement not covered" >or)</span>.message,
         testAttempted: false
-      },<span class="fstat-no" title="function not covered" ></span>
+      },<span class="cstat-no" title="statement not covered" ></span>
       recommendations: [<span class="cstat-no" title="statement not covered" ></span>
-        'Check API c<span class="cstat-no" title="statement not covered" >onnectivity',</span>
-        'Verify connection <span class="cstat-no" title="statement not covered" >per</span>missions',
-        'Try again later'<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        'Check API connectivity',</span>
+        'Verify connec<span class="cstat-no" title="statement not covered" >tion permissions'</span>,
+<span class="cstat-no" title="statement not covered" >        'Try again later'</span>
       ],
-      fixable: false,<span class="cstat-no" title="statement not covered" ></span>
-      timestamp: new Date()<span class="cstat-no" title="statement not covered" >.toISOString()</span>
-<span class="cstat-no" title="statement not covered" >    };</span>
+      fixabl<span class="cstat-no" title="statement not covered" >e: false,</span>
+      timestamp:<span class="cstat-no" title="statement not covered" > new Date().toISOString()</span>
+    };
   }<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Verify connec<span class="cstat-no" title="statement not covered" >tion authentication</span>
+/**
+ * Verify connection authentication
  */
-async functi<span class="cstat-no" title="statement not covered" >on verifyConnectionAuthentication(</span>
-  connection: Co<span class="cstat-no" title="statement not covered" >nnectionData,</span>
-  apiClient: MakeApiClient,
-  log?: Logger
-): Promise&lt;ConnectionDiagnosticResult&gt; {
+asyn<span class="cstat-no" title="statement not covered" >c function verifyConnectionAuthentication(</span>
+  connection: Connectio<span class="cstat-no" title="statement not covered" >nData,</span>
+  apiCli<span class="cstat-no" title="statement not covered" >ent: MakeApiClient,</span>
+  log?: Logg<span class="cstat-no" title="statement not covered" >er</span>
+): Promise&lt;C<span class="cstat-no" title="statement not covered" >onnectionDiagnosticResult&gt; {</span>
   const connectionId = connection.id as number;
-  co<span class="cstat-no" title="statement not covered" >nst service = connection.service as string;</span>
-  <span class="cstat-no" title="statement not covered" ></span>
-  try {<span class="cstat-no" title="statement not covered" ></span>
-    // Check<span class="cstat-no" title="statement not covered" > for OAuth token expiration</span>
-    const cr<span class="cstat-no" title="statement not covered" >edentials = connection.credentials || {};</span>
-    const hasCredentials = Object.keys(credentials).length &gt; 0;
-    
+  const service = connection.service as string;
+  
+  tr<span class="cstat-no" title="statement not covered" >y {</span>
+    // Check for OAuth tok<span class="cstat-no" title="statement not covered" >en expiration</span>
+    cons<span class="cstat-no" title="statement not covered" >t credentials = connection.credentials || {};</span>
+    const ha<span class="cstat-no" title="statement not covered" >sCredentials = Object.keys(credentials).length &gt; 0;</span>
+    <span class="cstat-no" title="statement not covered" ></span>
     if (!hasCredentials) {
-<span class="cstat-no" title="statement not covered" >      return {</span>
+      return {
         category: 'authent<span class="cstat-no" title="statement not covered" >ication' as const,</span>
-<span class="cstat-no" title="statement not covered" >        severity: 'critical' as const,</span>
-        titl<span class="cstat-no" title="statement not covered" >e: 'No Authentication Credentials',</span>
-        desc<span class="cstat-no" title="statement not covered" >ription: 'Connection has no stored credentials',</span>
-        details: {
-          connectionId,
-          service,<span class="cstat-no" title="statement not covered" ></span>
-          hasCreden<span class="cstat-no" title="statement not covered" >tials: </span>false
+        severity: '<span class="cstat-no" title="statement not covered" >critica</span>l' as const,
+<span class="cstat-no" title="statement not covered" >        title: 'No Authentication Credentials',</span>
+<span class="cstat-no" title="statement not covered" >        description: 'Connectio</span>n has no stored credentials',
+        d<span class="cstat-no" title="statement not covered" >etails: {</span>
+<span class="cstat-no" title="statement not covered" >          connectionId,</span>
+<span class="cstat-no" title="statement not covered" >          service,</span>
+<span class="cstat-no" title="statement not covered" >          hasCredentials: fals</span>e
 <span class="cstat-no" title="statement not covered" >        },</span>
 <span class="cstat-no" title="statement not covered" >        recommendations: [</span>
-<span class="cstat-no" title="statement not covered" >          'Re-authenticate the connection',</span>
-<span class="cstat-no" title="statement not covered" >          'Verify OAuth flow</span> completion',
-<span class="cstat-no" title="statement not covered" >          'Check credential storage'</span>
-<span class="cstat-no" title="statement not covered" >        ],</span>
-<span class="cstat-no" title="statement not covered" >        fixable: true,</span>
-<span class="cstat-no" title="statement not covered" >        autoFixAction: 'reauth-connection',</span>
+          'Re-authenticate the connection',
+<span class="cstat-no" title="statement not covered" >          'Verify OAuth flow completion',</span>
+          'Check credential storage'
+        ],
+        fixable: true,
+        autoFixAction: 'reauth-connection',
         timestamp: new Date().toISOString()
-<span class="cstat-no" title="statement not covered" >      };</span>
+      };
     }
 &nbsp;
     // Check OAuth token expiration
@@ -5324,78 +5324,78 @@ async functi<span class="cstat-no" title="statement not covered" >on verifyConne
           severity: 'critical' as const,
           title: 'Authentication Token Expired',
           description: `OAuth token expired ${Math.abs(hoursUntilExpiry).toFixed(1)} hours ago`,
-          details: {
-            connectionId,
-            service,
-            expiresAt: expiresAt.toISOString(),
-            hoursOverdue: Math.abs(hoursUntilExpiry)
-          },
-<span class="fstat-no" title="function not covered" >          recommendations: [</span>
-<span class="cstat-no" title="statement not covered" >            'Refresh OAuth token',</span>
-<span class="cstat-no" title="statement not covered" >            'Re-authe</span>nticate connection',
-            'Check automati<span class="cstat-no" title="statement not covered" >c token refresh'</span>
-          ],<span class="cstat-no" title="statement not covered" ></span>
-          fixable: true,<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >          autoFixAction: 'refresh-oauth</span>-token',
-          timestamp: new Date().toISOString()
-        };
+<span class="fstat-no" title="function not covered" >          details: {</span>
+<span class="cstat-no" title="statement not covered" >            connectionId,</span>
+<span class="cstat-no" title="statement not covered" >            service,</span>
+            expiresAt: expi<span class="cstat-no" title="statement not covered" >resAt.toISOString(),</span>
+            hoursOverdue<span class="cstat-no" title="statement not covered" >: Math.abs(hoursUntilExpiry)</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          recommendations: [</span>
+            'Refresh OAuth token',
+            'Re-authenticate connection',
+            'Check automatic token refresh'
+          ],
+<span class="fstat-no" title="function not covered" >          fixable: true,</span>
+          autoFi<span class="cstat-no" title="statement not covered" >xAct</span>ion: 'refresh-oauth-token',
+<span class="cstat-no" title="statement not covered" >          timestamp: new Date().toISOString()</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
       }
-      
-      if <span class="fstat-no" title="function not covered" >(hoursUntilExpiry &lt;= 24) {</span>
-        return {<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >          category: 'authentication' as const,</span>
-<span class="cstat-no" title="statement not covered" >          severity: 'warning' as const,</span>
+      <span class="cstat-no" title="statement not covered" ></span>
+      if (hoursU<span class="cstat-no" title="statement not covered" >ntilExp</span>iry &lt;= 24) {
+        return {
+          catego<span class="cstat-no" title="statement not covered" >ry: 'authenti</span>cation' as const,
+          severi<span class="cstat-no" title="statement not covered" >ty: 'wa</span>rning' as const,
           title: 'Authentication Token Expiring Soon',
           descri<span class="cstat-no" title="statement not covered" >ption: `OAuth</span> token expires in ${hoursUntilExpiry.toFixed(1)} hours`,
           detail<span class="cstat-no" title="statement not covered" >s: {</span>
             connectionId,
             serv<span class="cstat-no" title="statement not covered" >ice,</span>
-            expi<span class="cstat-no" title="statement not covered" >resAt: </span>expiresAt.toISOString(),
+            expiresAt: expiresAt.toISOString(),
             hoursRemaining: hoursUntilExpiry
-          },<span class="cstat-no" title="statement not covered" ></span>
-          recomm<span class="cstat-no" title="statement not covered" >endatio</span>ns: [
+<span class="cstat-no" title="statement not covered" >          },</span>
+          recommendations: [
             'Refresh OAuth token proactively',
-            'Ena<span class="cstat-no" title="statement not covered" >ble aut</span>omatic token refresh',
+            'Enable automatic token refresh',
             'Schedule re-authentication'
-          ],
+<span class="fstat-no" title="function not covered" >          ],</span>
 <span class="cstat-no" title="statement not covered" >          fixable: true,</span>
-          autoFixAction: 'refresh-oauth-token',
-          timestamp: new Date().toISOString()
-        };
-      }
-    }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          autoFixAction: '</span>refresh-oauth-token',
+          timestamp: new<span class="cstat-no" title="statement not covered" > Date().toISOStri<span class="fstat-no" title="function not covered" >ng</span>()<span class="cstat-no" title="statement not covered" ></span></span>
+        };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-    retu<span class="cstat-no" title="statement not covered" >rn {</span>
-      category: 'authent<span class="cstat-no" title="statement not covered" >ication' as const<span class="fstat-no" title="function not covered" >,<span class="cstat-no" title="statement not covered" ></span></span></span>
-      severity: 'info<span class="cstat-no" title="statement not covered" >' as const,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      title: 'Authentic<span class="cstat-no" title="statement not covered" >ation: Valid',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >      description: 'Connection authentication appears valid',</span>
-      de<span class="cstat-no" title="statement not covered" >tails: {</span>
-<span class="cstat-no" title="statement not covered" >        connectionId,</span>
-<span class="cstat-no" title="statement not covered" >        service,</span>
-<span class="cstat-no" title="statement not covered" >        hasCredentials: true,</span>
-<span class="cstat-no" title="statement not covered" >        tokenStatus: crede</span>ntials.expires_at ? 'valid' : 'no_expiry'
-<span class="cstat-no" title="statement not covered" >      },</span>
-      recommendations: ['Monitor token expiration'],
-      fixable: false,
-      timestamp: new Date().toISOString()
-    };
-<span class="fstat-no" title="function not covered" ></span>
-  } catch (error) {<span class="cstat-no" title="statement not covered" ></span>
-    log?.warn('Authentication v<span class="cstat-no" title="statement not covered" >erification error', {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >    return {</span>
+      ca<span class="cstat-no" title="statement not covered" >tegory: 'authentica</span>tion' as const,
+<span class="cstat-no" title="statement not covered" >      severity: 'info' as const,</span>
+      ti<span class="cstat-no" title="statement not covered" >tle: 'Authenticati</span>on: Valid',
+<span class="cstat-no" title="statement not covered" >      description: 'Co</span>nnection authentication appears valid',
+      details: {
+        connectionId,
+        service,
+        hasCredentials: true,
+        t<span class="fstat-no" title="function not covered" >okenStatus: credentials.expires_at ?</span> 'valid' : 'no_expiry'
+      },<span class="cstat-no" title="statement not covered" ></span>
+      recommendations: ['Monito<span class="cstat-no" title="statement not covered" >r token expiration'],<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      fixable: false,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      timestamp: new Date().toIS<span class="cstat-no" title="statement not covered" >OString()<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  } catch (error) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    log?.warn('Authenticat<span class="cstat-no" title="statement not covered" >ion verification error<span class="fstat-no" title="function not covered" >',</span> {<span class="cstat-no" title="statement not covered" ></span></span>
       connectionId,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      error: (error as Error).me<span class="cstat-no" title="statement not covered" >ssage<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-    });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      error: (error as E<span class="cstat-no" title="statement not covered" >rror).mess</span>age
+<span class="cstat-no" title="statement not covered" >    });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-    return {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      category: 'authentic<span class="cstat-no" title="statement not covered" >ation' as const,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      severity: 'warning' as co<span class="cstat-no" title="statement not covered" >nst,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      title: 'Authentica<span class="cstat-no" title="statement not covered" >tion Verif</span>ication Failed',
-<span class="cstat-no" title="statement not covered" >      description: `Unable to verify authentication: ${(error as Error).message}`,</span>
-      de<span class="cstat-no" title="statement not covered" >tails: {</span>
-        c<span class="cstat-no" title="statement not covered" >onnectionId,</span>
-<span class="cstat-no" title="statement not covered" >        service,</span>
-<span class="cstat-no" title="statement not covered" >        error: (error as Error).message</span>
+    retur<span class="cstat-no" title="statement not covered" >n {</span>
+      ca<span class="cstat-no" title="statement not covered" >tegory: 'authentication' as</span> const,
+<span class="cstat-no" title="statement not covered" >      severity: 'warning' as const,</span>
+      title: 'Authentication Verification Failed',
+      description: `Unable to verify authentication: ${(error as Error).message}`,
+      details: {
+        connectionId,
+        service,
+        error: (error as Error).message
       },
       recommendations: [
         'Check connection credentials',
@@ -5406,66 +5406,66 @@ async functi<span class="cstat-no" title="statement not covered" >on verifyConne
     };
   }
 }
-&nbsp;
-/**
- * Analyze connection performance
- */
-async function analyzeConnectionPerformance(
-  connection: ConnectionData,
-  apiClie<span class="fstat-no" title="function not covered" >nt: MakeApiClient,</span>
-  timeRangeHours: number,<span class="cstat-no" title="statement not covered" ></span>
-  log?: Logger<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-): Promise&lt;Conne<span class="fstat-no" title="function not covered" >ct</span>ion<span class="cstat-no" title="statement not covered" >DiagnosticResult | null&gt; {</span>
-  co<span class="cstat-no" title="statement not covered" >nst connectionId = connection.id as number;</span>
+<span class="fstat-no" title="function not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Analyze connec<span class="fstat-no" title="function not covered" >ti</span>on <span class="cstat-no" title="statement not covered" >performance</span>
+ */<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+asyn<span class="cstat-no" title="statement not covered" >c function analyzeConnectionPerformance(</span>
+  connec<span class="cstat-no" title="statement not covered" >tion: ConnectionData,</span>
+  apiClient: MakeApiClient,
+  timeRangeHours: number,
+  log?: Logger
+): Promise&lt;ConnectionDiagnosticResult | null&gt; {
+  const connectionId = connection.id as number;
   <span class="cstat-no" title="statement not covered" ></span>
-  try {
-    // This would typically fetch execution logs and analyze performance
-    // For now, we'll simulate performance analysis
-    log?.info('Analyzing connection performance', { connectionId, timeRangeHours });
-    
-    // Simulate performance m<span class="cstat-no" title="statement not covered" >etrics</span>
-    const avg<span class="fstat-no" title="function not covered" >Re</span>spo<span class="cstat-no" title="statement not covered" >nseTime = 150 + Math.random() * 300; // </span>150-450ms
-    const errorR<span class="fstat-no" title="function not covered" >at</span>e = M<span class="cstat-no" title="statement not covered" >ath.random() * 10; // </span>0-10%
-    const usageCount = <span class="cstat-no" title="statement not covered" >Math.floor(Math.random() * 1000); // 0-1000 uses</span>
+  try {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    // This woul<span class="fstat-no" title="function not covered" >d </span>typic<span class="cstat-no" title="statement not covered" >ally fetch execution l</span>ogs and analyze performance
+    // For now, we'll s<span class="cstat-no" title="statement not covered" >imulate performance analysis</span>
+    log?.info<span class="fstat-no" title="function not covered" >('</span>Ana<span class="cstat-no" title="statement not covered" >lyzing connection performance'</span>, { connectionId, timeRangeHours });
     <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    let severity<span class="fstat-no" title="function not covered" >: </span>'info<span class="cstat-no" title="statement not covered" >' | 'warning' | 'error</span>' = 'info';
-<span class="cstat-no" title="statement not covered" >    let title = 'Performance: Good';</span>
+<span class="cstat-no" title="statement not covered" >    // Simulate performance metrics</span>
+    const avgResponseTime = 150 + Math.random() * 300; // 150-450ms
+    const errorRate = Math.random() * 10; // 0-10%
+    const usageCount = Math.floor(Math.random() * 1000); // 0-1000 uses
+    
+    let severity: 'info' | 'warning' | 'error' = 'info';
+    let title = 'Performance: Good';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     let description = 'Connection performance is within acceptable ranges';
     const recommendations = [];
-    
+    <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     if (avgResponseTime &gt; 2000) {
-      severity = 'warning';
-      title = 'Performance: Slow Response Times';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      severity = 'warning';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      title = 'Performance: Slow Response Times';
       description = `Average response time is ${avgResponseTime.toFixed(0)}ms`;
       recommendations.push('Investigate service response times', 'Consider caching strategies');
-    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    
-    if (errorRate &gt; 5) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      severity = 'error';
-      title = 'Performance: High Error Rate';
-      description = `Error rate is ${errorRate.toFixed(1)}% over the last ${timeRangeHours} hours`;
-      recommendations.push('Investigate connection errors', 'Review error logs', 'Check service status');
     }
     
-    if (r<span class="fstat-no" title="function not covered" >ecommendations.length === 0</span>) {
-      recommendations.push('Cont<span class="cstat-no" title="statement not covered" >inue monitoring performance trends');</span>
-    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >    return {</span>
-      ca<span class="cstat-no" title="statement not covered" >tegory: 'performance' as const,</span>
-      severity,
-      title,
-      description,
-      details: {
+    if (errorRate &gt; 5) {
+      sev<span class="fstat-no" title="function not covered" >erity = 'error';</span>
+      title = 'Performance: High<span class="cstat-no" title="statement not covered" > Error Rate';</span>
+      description<span class="fstat-no" title="function not covered" > =</span> `E<span class="cstat-no" title="statement not covered" >rror rate is $</span>{errorRate.toFixed(1)}% over the last ${timeRangeHours} hours`;
+      recommenda<span class="fstat-no" title="function not covered" >ti</span>ons<span class="cstat-no" title="statement not covered" >.push('Investigate connect</span>ion errors', 'Review error logs', 'Check service status');
+<span class="cstat-no" title="statement not covered" >    }</span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    if (recommendations.length === 0) {
+      recommendations.push('Continue monitoring performance trends');
+    }
+&nbsp;
+    return {
+      category: 'performanc<span class="cstat-no" title="statement not covered" >e' as const,</span>
+      severit<span class="fstat-no" title="function not covered" >y,<span class="cstat-no" title="statement not covered" ></span></span>
+      title,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      description,<span class="cstat-no" title="statement not covered" ></span>
+      details: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         connectionId,
-        timeRangeHours,<span class="cstat-no" title="statement not covered" ></span>
-        metri<span class="fstat-no" title="function not covered" >cs</span>: {<span class="cstat-no" title="statement not covered" ></span>
-          averag<span class="fstat-no" title="function not covered" >eR</span>espon<span class="cstat-no" title="statement not covered" >seTime: Math.round(avg</span>ResponseTime),
-          errorRate: parseFloat(e<span class="cstat-no" title="statement not covered" >rrorRate.toFixed(1)),</span>
-          totalUsage: usageCount,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        timeRangeHours,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        metrics: {</span>
+          averageResponseTime: Math.round(avgResponseTime),
+          errorRate: parseFloat(errorRate.toFixed(1)),
+          totalUsage: usageCount,
           trend: avgResponseTime &gt; 1000 ? 'degrading' : 'stable'
-        }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >      },</span>
+        }
+      },
       recommendations,
       fixable: severity !== 'info',
       autoFixAction: severity !== 'info' ? 'optimize-performance' : undefined,
@@ -5474,59 +5474,59 @@ async function analyzeConnectionPerformance(
 &nbsp;
   } catch (error) {
     log?.warn('Performance analysis error', {
-      connectionId,
-      error: (error as Error).message
-    });
-    return null;
+      con<span class="fstat-no" title="function not covered" >nectionId,</span>
+      error: (error as Error).m<span class="cstat-no" title="statement not covered" >essage</span>
+    });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    return null;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   }
-}
-<span class="fstat-no" title="function not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Assess connect<span class="fstat-no" title="function not covered" >io</span>n s<span class="cstat-no" title="statement not covered" >ecurity</span>
- */<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-async function assessConnectionSecurity(connection: ConnectionData): Promise&lt;ConnectionDiagnosticResult&gt; {
-  const connectionId = connection<span class="cstat-no" title="statement not covered" >.id as number;<span class="fstat-no" title="function not covered" ></span></span>
-  const <span class="cstat-no" title="statement not covered" >service = connection.service as </span>string;
-  const <span class="cstat-no" title="statement not covered" >securityIssu</span>es = [];
-  const recommendations = [];
-  
-  // Check for hardcoded creden<span class="cstat-no" title="statement not covered" >tials (basic check)</span>
-  const creden<span class="fstat-no" title="function not covered" >ti</span>als = connection<span class="cstat-no" title="statement not covered" >.crede</span>ntials || {};
-  const credentialKeys = Object.keys(credentials);
+ * Assess connection security
+ */
+async function assessConnection<span class="cstat-no" title="statement not covered" >Security(connection: ConnectionData): Promise&lt;ConnectionDiagnosticResult&gt; {</span>
+  const connec<span class="fstat-no" title="function not covered" >ti</span>onId = connectio<span class="cstat-no" title="statement not covered" >n.id a</span>s number;
+  const service = connection.service as string;
+  const secur<span class="fstat-no" title="function not covered" >it</span>yIssues = [];<span class="cstat-no" title="statement not covered" ></span>
+  const recommendations = <span class="cstat-no" title="statement not covered" >[];</span>
   <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  for (const key of creden<span class="cstat-no" title="statement not covered" >tialKeys) {</span>
-    const value =<span class="fstat-no" title="function not covered" > c</span>red<span class="cstat-no" title="statement not covered" >entials[key];</span>
-    if (typeof v<span class="fstat-no" title="function not covered" >al</span>ue <span class="cstat-no" title="statement not covered" >=== 'string' &amp;&amp; value.leng</span>th &gt; 0) {
-      // Chec<span class="fstat-no" title="function not covered" >k </span>for <span class="cstat-no" title="statement not covered" >potentially hardcoded secrets</span>
-      if (key.toLowerCase().includes('passw<span class="fstat-no" title="function not covered" >or</span>d')<span class="cstat-no" title="statement not covered" > &amp;&amp; value.length &lt; 12) {</span>
+  // Check for h<span class="fstat-no" title="function not covered" >ar</span>dco<span class="cstat-no" title="statement not covered" >ded credentials (basic che</span>ck)
+  const crede<span class="fstat-no" title="function not covered" >nt</span>ials<span class="cstat-no" title="statement not covered" > = connection.credentials || {};</span>
+  const credentialKeys = Object.keys(creden<span class="fstat-no" title="function not covered" >ti</span>als<span class="cstat-no" title="statement not covered" >);</span>
+  
+  for (const key of credentialKeys) {
+    const value = credentials[key];
+<span class="cstat-no" title="statement not covered" >    if (typeof value === 'string' &amp;&amp; value.length &gt; 0) {</span>
+      // Check for potentially hardcoded secrets
+      if (key.toLowerCase().includes('password') &amp;&amp; value.length &lt; 12) {
         securityIssues.push('Weak password detected');
       }
       if (key.toLowerCase().includes('secret') &amp;&amp; value.startsWith('test_')) {
-<span class="cstat-no" title="statement not covered" >        securityIssues.push('Test credentials in production');</span>
+        securityIssues.push('Test credentials in production');
       }
+    }
+  }<span class="fstat-no" title="function not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  // Che<span class="cstat-no" title="statement not covered" >ck OAuth scope permissions</span>
+  if (cr<span class="cstat-no" title="statement not covered" >edentials.sc</span>ope) {
+    const scopes = (credentials.scope as string).split(' ');
+    if (scopes.includes('admin') || scopes.includes('write:all')) {
+      securityIssues.push('Excessive permissions detected');
+      recommendations.push('Review and limit OAuth scopes to minimum required');
+    }
+  }<span class="fstat-no" title="function not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  // Che<span class="cstat-no" title="statement not covered" >ck connection age</span>
+  if (co<span class="cstat-no" title="statement not covered" >nnection.cre</span>atedAt) {
+    const ageInDays = (Date.now() - new Date(connection.createdAt as string).getTime()) / (1000 * 60 * 60 * 24);
+    if (ageInDays &gt; 365) {
+      securityIssues.push('Connection is over 1 year old');
+      recommendations.push('Consider rotating connection credentials annually');
     }
   }
   
-  // Check OAuth scope permissions
-  if (credentials.scope) {
-    const scopes = (credentials.scope as string).split(' ');
-    if (scopes.includes('admin') || scopes.includes('write:all')) {
-      sec<span class="fstat-no" title="function not covered" >urityIssues.push('Exce</span>ssive permissions detected');
-<span class="cstat-no" title="statement not covered" >      recommendations.push('Re<span class="fstat-no" title="function not covered" >vi</span>ew and limit OAuth scopes to minimum required');</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-  
-  // Check connection age
-  if (connection.createdAt) {
-    const ageInDays = (Date.now() - new Date(connection.createdAt as string).getTime()) / (1000 * 60 * 60 * 24);
-    if (ageInDays &gt; 365) {
-      sec<span class="fstat-no" title="function not covered" >urityIssues.push('Conn</span>ection is over 1 year old');
-<span class="cstat-no" title="statement not covered" >      recommendations.push('Co<span class="fstat-no" title="function not covered" >ns</span>ider rotating connection credentials annually');</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-  
   const securityScore = Math.max(0, 100 - (securityIssues.length * 20));
-<span class="cstat-no" title="statement not covered" >  </span>
+  
   let severity: 'info' | 'warning' | 'error' | 'critical' = 'info';
   if (securityScore &lt; 40) severity = 'critical';
   else if (securityScore &lt; 60) severity = 'error';
@@ -5818,7 +5818,7 @@ export default addConnectionTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

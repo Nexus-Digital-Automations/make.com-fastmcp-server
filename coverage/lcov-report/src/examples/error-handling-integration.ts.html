@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/109</span>
+                <span class='fraction'>0/95</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/85</span>
+                <span class='fraction'>0/78</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/100</span>
+                <span class='fraction'>0/86</span>
             </div>
         
             
@@ -524,7 +524,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -534,25 +533,16 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -676,7 +666,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -875,6 +864,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -981,124 +981,124 @@
  * Error Handling Integration Example for Make.com FastMCP Server
  * Demonstrates comprehensive error handling with correlation IDs, recovery, and analytics
  */
-&nbsp;
-import { MakeServ<span class="cstat-no" title="statement not covered" >erError, UserError, createVal<span class="fstat-no" title="function not covered" >id</span>ationError, createExternalServiceError } from '../utils/errors.js';</span>
-import { ext<span class="cstat-no" title="statement not covered" >ractCorrelationId</span>, cre<span class="cstat-no" title="statement not covered" >ateToolErrorResponse } from '../utils/error-response.js';</span>
-impo<span class="cstat-no" title="statement not covered" >rt { retryWithBackoff, CircuitBreakerFactory, BulkheadFactory } from '../ut<span class="cstat-no" title="statement not covered" >ils/error-recovery.js';</span></span>
-import { <span class="cstat-no" title="statement not covered" >errorAnalytic<span class="cstat-no" title="statement not covered" >s, monitorPerformance </span>} from '../uti<span class="cstat-no" title="statement not covered" >ls/error-analytics.js';<span class="cstat-no" title="statement not covered" ></span></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt logger from '../lib/logger.js';</span>
-&nbsp;
-/**<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
- * E<span class="cstat-no" title="statement not covered" >xample: Make.com API Client with comprehensive error handling<span class="cstat-no" title="statement not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+import { Mak<span class="cstat-no" title="statement not covered" >eServerError, Use</span>rErro<span class="cstat-no" title="statement not covered" >r, createValidationError, createExternalServiceError } from '../utils/errors.js';</span>
+impo<span class="cstat-no" title="statement not covered" >rt { extractCorrelationId, createToolErrorResponse } from '../utils/error-r<span class="cstat-no" title="statement not covered" >esponse.js';</span></span>
+import { <span class="cstat-no" title="statement not covered" >retryWithBack<span class="cstat-no" title="statement not covered" >off, CircuitBreakerFac</span>tory, Bulkhead<span class="cstat-no" title="statement not covered" >Factory } from '../util<span class="cstat-no" title="statement not covered" >s/error-recovery.js';</span></span></span>
+impo<span class="cstat-no" title="statement not covered" >rt { errorAnalytics, monitorPerformance } from '../utils/error-</span>analytics.js';
+import logger from '../lib/logger.js';
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+/**<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+ * Example: Make.com API Client with comprehensive error handling
  */
-export class EnhancedM<span class="cstat-no" title="statement not covered" >akeApiClient {<span class="fstat-no" title="function not covered" ></span></span>
-  pr<span class="cstat-no" title="statement not covered" >ivate circuitBreaker = CircuitBreakerFactory.getOrCreate('m</span>ake-api', {
+export class EnhancedMakeApiClient {
+  private circuitBreaker = CircuitBreakerFactory.getOrCreate('make-api', {
     failureThreshold: 5,
     resetTimeout: 60000,
-<span class="cstat-no" title="statement not covered" >  });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  private bulkhead = BulkheadFactory.getOrCreate(</span>'make-api-requests', 10, 50);
-<span class="cstat-no" title="statement not covered" >  private componentLogger = logger.child({ component: 'EnhancedMa</span>keApiClient' });
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  /**</span>
-   * Enhanced API re<span class="cstat-no" title="statement not covered" >quest with full error handling</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
-  @monitorPerformance<span class="cstat-no" title="statement not covered" ></span>
-  async makeRequest&lt;T&gt;(<span class="cstat-no" title="statement not covered" ></span>
-    endpoint: string<span class="cstat-no" title="statement not covered" >,</span>
+  });
+&nbsp;
+  private bulkhead = BulkheadFactory.getOrCreate('make-api-requests', 10, 50);
+  private componentLogger = logger.child({ component: 'EnhancedMakeApiClient' });
+&nbsp;
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Enhanced API request with full error handling
+   */
+  @monitorPerformance
+  async makeReq<span class="cstat-no" title="statement not covered" >uest&lt;T&gt;(</span>
+    endpoint: string,<span class="cstat-no" title="statement not covered" ></span>
     options: {
       method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
       data?: unknown;
-      timeout?: number;
-      correlationId?:<span class="cstat-no" title="statement not covered" > string;</span>
-    } = {}
+<span class="fstat-no" title="function not covered" ></span>      timeout?: number;<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+      correlationId?: string;<span class="cstat-no" title="statement not covered" ></span>
+    } = {}<span class="cstat-no" title="statement not covered" ></span>
   ): Promise&lt;T&gt; {
     const correlationId = options.correlationId || extractCorrelationId({});
-    const opera<span class="cstat-no" title="statement not covered" >tionLogger = this.componentLogger.child({</span>
-      correlationId,<span class="cstat-no" title="statement not covered" ></span>
-      operation: 'makeRequest',
-      endpoint,
-    });
-<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
-    operationLogger.info('Star<span class="cstat-no" title="statement not covered" >ting API request', {</span>
-      method: options.method || <span class="cstat-no" title="statement not covered" >'GET',</span>
+    const operationLogger = this.componentLogger.child({
+      correlationId,
+      op<span class="cstat-no" title="statement not covered" >eration: 'makeRequest',</span>
       endpoint,
     });
 &nbsp;
+    oper<span class="cstat-no" title="statement not covered" >ationLogger.info('Starting API request', {</span>
+      method: options.method || 'GET',
+      endpoint,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    });
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     try {
-      //<span class="cstat-no" title="statement not covered" > Use bulkhead for request isolation</span>
-      const result = await this.bulkhead.execute(async () =&gt; {
+      // Use bulkhea<span class="cstat-no" title="statement not covered" >d for request isolation<span class="fstat-no" title="function not covered" ></span></span>
+      const result = awa<span class="cstat-no" title="statement not covered" >it this.bulkhead.execute(async () =&gt; {</span>
         // Use circuit breaker for failure protection
         return await this.circuitBreaker.execute(async () =&gt; {
-<span class="cstat-no" title="statement not covered" >          // Use retry with backoff for resilience</span>
-          return await retryWithBackoff(
-            async () =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          // Use retry with backoff for resilience
+          return await retryWithB<span class="fstat-no" title="function not covered" >ac</span>koff(
+            async () =&gt; {<span class="cstat-no" title="statement not covered" ></span>
               return await this.performActualRequest&lt;T&gt;(endpoint, options);
-            },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+            },
             {
-              maxRet<span class="cstat-no" title="statement not covered" >ries: 3,<span class="fstat-no" title="function not covered" ></span></span>
-              baseDelay:<span class="cstat-no" title="statement not covered" > 1000,</span>
+              maxRetries: 3,
+              baseDelay: 1000,
               onRetry: (error, attempt) =&gt; {
                 operationLogger.warn('Retrying API request', {
                   attempt,
-                  error: error.me<span class="fstat-no" title="function not covered" >ss</span>age,
-                  endpoint,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                  error: error.message,</span>
+                  endpoint,
                 });
               },
-            },
+<span class="cstat-no" title="statement not covered" >            },</span>
             correlationId
           );
-        }, correlationId);
+        }, correlationId);<span class="cstat-no" title="statement not covered" ></span>
       }, correlationId);
 &nbsp;
-      operat<span class="cstat-no" title="statement not covered" >ionLogger.info('API request completed successfully', {</span>
+      operationLogger.info('API request completed successfully', {
         endpoint,
         hasData: !!result,
-      });
-<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
       return result;
     } catch (error) {
-      const enhancedError = this.e<span class="cstat-no" title="statement not covered" >nhanceError(error as Error, {</span>
-        endpoint,
+      const enhancedError = this.enhanceError(error as Error, {
+        endp<span class="cstat-no" title="statement not covered" >oint,</span>
         correlationId,
         operation: 'makeRequest',
       });
 &nbsp;
-      // Rec<span class="cstat-no" title="statement not covered" >ord error for analytics</span>
+      // Rec<span class="cstat-no" title="statement not covered" >ord error for analyti</span>cs
       errorAnalytics.recordError(enhancedError, {
         component: 'EnhancedMakeApiClient',
         operation: 'makeRequest',
         correlationId,
+      });
+<span class="fstat-no" title="function not covered" ></span>
+      operationLogger.error('API request failed', {
+<span class="cstat-no" title="statement not covered" >        endpoint,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        errorCode: enhancedError instanceof MakeServerError ? enhancedError.code : 'UNKNOWN_ERROR',
+<span class="cstat-no" title="statement not covered" >        correlationId: enhancedError instanceof MakeServerError ? enhancedError.correlationId : correlationId,</span>
       });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-      operationLogger.error('API request failed', {
-        endpoint,
-        errorCode: enhancedError instanceof MakeServerError ? enhancedError.code : 'UNKNOWN_ERROR',
-        corr<span class="cstat-no" title="statement not covered" >elationId: enhancedEr</span>ror instanceof MakeServerError ? enhancedError.correlationId : correlationId,
-      });
-&nbsp;
-      throw enhancedError;
-    }
+      th<span class="cstat-no" title="statement not covered" >row enhancedError;</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
   }
-<span class="fstat-no" title="function not covered" ></span>
-  /**
-   * Sim<span class="cstat-no" title="statement not covered" >ulated actual API <span class="fstat-no" title="function not covered" >re</span>quest (re<span class="cstat-no" title="statement not covered" >place with real implementation)</span></span>
+&nbsp;
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Simulated actual API request (replace with real implementation)
    */
-  privat<span class="cstat-no" title="statement not covered" >e async performActualRequest&lt;T&gt;(</span>
-    endpoint<span class="cstat-no" title="statement not covered" >: string</span>
-  ): Promise&lt;T&gt; {
+  private async performActualRequest&lt;T&gt;(
+    endpoint: string
+  ):<span class="fstat-no" title="function not covered" > P</span>romise&lt;T&gt; {
     // S<span class="cstat-no" title="statement not covered" >imulate network request</span>
-    await ne<span class="cstat-no" title="statement not covered" >w Promise(resolve =&gt; setTimeout(resolve,</span> Math.random() * 1000));
+    await ne<span class="cstat-no" title="statement not covered" >w Promise(reso</span>lve =&gt; setTimeout(resolve, Math.random() * 1000));
 &nbsp;
     // Simulate occasional failures for demonstration
     if (<span class="cstat-no" title="statement not covered" >Math.random() &lt; 0.1) {</span>
-      throw new Error('Network timeout');
+      throw <span class="cstat-no" title="statement not covered" >new Error('Network timeout');</span>
     }
 &nbsp;
     if (Math.random() &lt; 0.05) {
-<span class="fstat-no" title="function not covered" ></span>      throw new Error('Service unavailable');
-    }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+      throw new Error('Service unavailable');
+    }
+&nbsp;
     // Return mock successful response
     return { success: true, data: `Response from ${endpoint}` } as T;
   }<span class="cstat-no" title="statement not covered" ></span>
@@ -1111,7 +1111,7 @@ export class EnhancedM<span class="cstat-no" title="statement not covered" >akeA
     context: {
       endpoint: string;
       correlationId: string;
-      op<span class="cstat-no" title="statement not covered" >eration: string;</span>
+      operation: string;
     }<span class="cstat-no" title="statement not covered" ></span>
   ): UserError | MakeServerError {
     if (error instanceof MakeServerError || error instanceof UserError) {
@@ -1131,9 +1131,9 @@ export class EnhancedM<span class="cstat-no" title="statement not covered" >akeA
         {
           correlationId: context.correlationId,
           operation: context.operation,
-          component: 'EnhancedMakeApiClient',
+          compon<span class="fstat-no" title="function not covered" >ent: 'EnhancedMakeA</span>piClient',
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >      );</span>
+      );
     }
 &nbsp;
     if (error.message.includes('unavailable')) {
@@ -1142,65 +1142,65 @@ export class EnhancedM<span class="cstat-no" title="statement not covered" >akeA
         'Service temporarily unavailable',
         error,
         {
-<span class="fstat-no" title="function not covered" >          endpoint: context.</span>endpoint,
-<span class="cstat-no" title="statement not covered" >          originalError: error.message,</span>
-        },
-        {
-          correlationId: context.correlationId,
+          endpoint: context.endpoint,
+          originalError: error.message,
+        },<span class="fstat-no" title="function not covered" ></span>
+        {<span class="cstat-no" title="statement not covered" ></span>
+          correlationId: context.cor<span class="cstat-no" title="statement not covered" >relationId,</span>
           operation: context.operation,
           component: 'EnhancedMakeApiClient',
         }
       );
-    }
+    }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-    // Default to generic external service error
-    return createExternalServiceError(
-      'Make.com A<span class="fstat-no" title="function not covered" >PI</span>',
-      `API request failed: ${error<span class="cstat-no" title="statement not covered" >.message}`,</span>
-      error,<span class="cstat-no" title="statement not covered" ></span>
+    // Default t<span class="cstat-no" title="statement not covered" >o generic external service error</span>
+    return createExt<span class="cstat-no" title="statement not covered" >ernalServiceError(</span>
+      'Make.com API',
+      `API request failed: ${error.message}`,
+      error,
       {
         endpoint: context.endpoint,
         originalError: error.message,
       },
-      {<span class="cstat-no" title="statement not covered" ></span>
+      {
         correlationId: context.correlationId,
         operatio<span class="cstat-no" title="statement not covered" >n: context.operation,</span>
-        component: '<span class="cstat-no" title="statement not covered" >EnhancedMakeApiClient',</span>
+        component: 'EnhancedMakeApiClient',
       }
     );
-  }
+  }<span class="cstat-no" title="statement not covered" ></span>
 }
 &nbsp;
 /**
  * Example: Enhanced Tool Implementation with Error Handling
- */
+ */<span class="cstat-no" title="statement not covered" ></span>
 export function createEnhancedTool(apiClient: EnhancedMakeApiClient): {
-  name: string;<span class="cstat-no" title="statement not covered" ></span>
+  name: string;
   description: string;
   parameters: Record&lt;string, unknown&gt;;
-  execute: (args: Record&lt;string, unknown&gt;, context: Record&lt;string, unknown&gt;) =&gt; Promise&lt;string&gt;;
-} {<span class="cstat-no" title="statement not covered" ></span>
+  execute: (args<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt;, context: Record&lt;string, unknown&gt;) =&gt; Promise&lt;string&gt;;</span>
+} {
   return {
     name: 'enhanced-make-request',
-    description: 'Make API request with comprehensive error handling',
+    description:<span class="cstat-no" title="statement not covered" > 'Make API request with comprehensive error handling',</span>
     parameters: {
-      type: 'object',<span class="cstat-no" title="statement not covered" ></span>
+      type: 'object',
       properties: {
         endpoint: { type: 'string', description: 'API endpoint to call' },
-        method: { type: 'string', enum: ['GET', 'POST', 'PUT', 'DELETE'], default: 'GET' },
+        method: <span class="cstat-no" title="statement not covered" >{ type: 'string', enum: ['GET', 'POST', 'PUT', 'DELETE'], default: 'GET' },</span>
         data: { type: 'object', description: 'Request payload' },
-      },<span class="cstat-no" title="statement not covered" ></span>
+      },
       required: ['endpoint'],
     },
     execute: async (args: {
-      endpoint: <span class="cstat-no" title="statement not covered" >string;</span>
+      endpoint: string;
       method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-      data?: unknown;
+      data?: unk<span class="cstat-no" title="statement not covered" >nown;</span>
     }, context: {
       session?: Record&lt;string, unknown&gt;;
-      log: {<span class="cstat-no" title="statement not covered" ></span>
+      log: {
         info: (message: string, data?: Record&lt;string, unknown&gt;) =&gt; void;
-        error: (message: string, data?: Record&lt;string, unknown&gt;) =&gt; void;
+        error: (<span class="cstat-no" title="statement not covered" >message: string, data?: Record&lt;string, unknown&gt;) =&gt; void;</span>
       };
     }): Promise&lt;string&gt; =&gt; {
       const correlationId = extractCorrelationId({ session: context.session });
@@ -1211,13 +1211,13 @@ export function createEnhancedTool(apiClient: EnhancedMakeApiClient): {
       });
 &nbsp;
       try {
-        // Valid<span class="cstat-no" title="statement not covered" >ate input parameters</span>
+        // Validate input parameters
         if (!args.endpoint || typeof args.endpoint !== 'string') {
           throw createValidationError(
-            'Invalid endpoint parameter',
-            {
+            'Inv<span class="fstat-no" title="function not covered" >alid endpoint parameter',</span>
+<span class="cstat-no" title="statement not covered" >            {</span>
               field: 'endpoint',
-              va<span class="cstat-no" title="statement not covered" >lue: args.endpoint,</span>
+              value: args.endpoint,
               expected: 'non-empty string',
             },
             {
@@ -1225,113 +1225,113 @@ export function createEnhancedTool(apiClient: EnhancedMakeApiClient): {
               operation: 'enhanced-make-request',
               component: 'EnhancedTool',
             }
-<span class="fstat-no" title="function not covered" >          );</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-&nbsp;
-        operationLogger.info('Executing enhanced Make.com API request', {
-          endpoint: args.endpoint,
+          );
+        }
+<span class="fstat-no" title="function not covered" ></span>
+        operationLogger.in<span class="cstat-no" title="statement not covered" >fo('Executing enhanced Ma</span>ke.com API request', {
+          endpoint: args.<span class="cstat-no" title="statement not covered" >endpoint,</span>
           method: args.method || 'GET',
         });
 &nbsp;
         context.log.info('Starting API request with error handling', {
-          endpoint: args.endpoint,
-          correlationId,
+          endpoint: a<span class="cstat-no" title="statement not covered" >rgs</span>.endpoint,
+          correlationI<span class="cstat-no" title="statement not covered" >d,</span>
         });
-&nbsp;
-        // Make<span class="fstat-no" title="function not covered" > the API request with compr</span>ehensive error handling
-        const result = awa<span class="cstat-no" title="statement not covered" >it apiClient.makeRequest(args.endpoint, {</span>
-          method: args.me<span class="cstat-no" title="statement not covered" >thod,</span>
-          data: args.data,
-          correlationId,
-        });
-&nbsp;
-        operationLogg<span class="cstat-no" title="statement not covered" >er.</span>info('Tool execution completed successfully', {
-          endpoint: ar<span class="cstat-no" title="statement not covered" >gs.endpoint,</span>
-          correlationId,
-<span class="cstat-no" title="statement not covered" >        });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        context.log.info('API request completed successfully', {</span>
-          endpoint: args.endp<span class="cstat-no" title="statement not covered" >oint,</span>
+        // Make the API re<span class="cstat-no" title="statement not covered" >quest with </span>comprehensive error handling
+<span class="cstat-no" title="statement not covered" >        const result = await apiClient.makeRequest(args.endpoint, {</span>
+          method: args.method<span class="cstat-no" title="statement not covered" >,</span>
+<span class="cstat-no" title="statement not covered" >          data: args.data,</span>
+          correlationId,
+        });
+&nbsp;
+        operationLogger.info('Tool execution completed successfully', {
+          endpoint: args.endpoint,
 <span class="cstat-no" title="statement not covered" >          correlationId,</span>
         });
 &nbsp;
-        // Return success response with proper formatting
+        context.log.info('API request completed successfully', {
+          endpoint: args.endpoint,
+          correlationId,
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        // Return success response with proper formatting</span>
         return JSON.stringify({
           success: true,
-<span class="cstat-no" title="statement not covered" >          data: result,</span>
-          correlationId,
-          timestamp: new Date().toISOString(),
+          data: result,
+          correlationId,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+          timestamp: new D<span class="cstat-no" title="statement not covered" >ate().toISOString(),</span>
         }, null, 2);
 &nbsp;
       } catch (error) {
-        operationLogger.erro<span class="cstat-no" title="statement not covered" >r('Tool execution failed', {</span>
-          endpoint: args.end<span class="cstat-no" title="statement not covered" >point,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >          error: error instanceof Error ? error.message : String(error),</span>
-          correlationId,
-        });
-&nbsp;
-        context.log.error('A<span class="cstat-no" title="statement not covered" >PI request failed', {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-          endpoint: args.e<span class="cstat-no" title="statement not covered" >ndpoint,</span>
+        operationLogger.error('Tool execution failed', {
+<span class="cstat-no" title="statement not covered" >          endpoint: args.endpoint,</span>
           error: error instanceof Error ? error.message : String(error),
           correlationId,
         });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        // Return formatted error response</span>
+<span class="cstat-no" title="statement not covered" >        context.log.error('API request failed', {</span>
+          endpoint: args.endpoint,
+          error: error instanceof Error ? error.message : String(error),
+          correlationId,
+        });
+&nbsp;
+        // Return formatted error response
         return createToolErrorResponse(
           error as Error,
           'enhanced-make-request',
-          correlationId
-<span class="cstat-no" title="statement not covered" >        );</span>
-      }
+          correlationI<span class="fstat-no" title="function not covered" >d</span>
+        );<span class="cstat-no" title="statement not covered" ></span>
+      }<span class="cstat-no" title="statement not covered" ></span>
     },
+  };
+}
+<span class="cstat-no" title="statement not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Example: Error Analytic<span class="cstat-no" title="statement not covered" >s Dashboard Data</span>
+ */
+export function getError<span class="cstat-no" title="statement not covered" >AnalyticsDashboard(): {</span>
+  metrics: ReturnType&lt;typeof errorAnalytics.getErrorMetrics&gt;;
+  performance: ReturnType&lt;typeof errorAnalytics.getPerformanceMetrics&gt;;
+  trends: ReturnType&lt;typeof errorAnalytics.getErrorTrends&gt;;
+  patter<span class="cstat-no" title="statement not covered" >ns: ReturnType&lt;typeof errorAnalytics.getTopErrorPatterns&gt;;</span>
+  circuitBreakers: Record&lt;string, unknown&gt;;
+  bulkhe<span class="cstat-no" title="statement not covered" >ads: Record&lt;string, unknown&gt;;</span>
+} {<span class="cstat-no" title="statement not covered" ></span>
+  return {
+    metrics: errorAnalytics.getErrorMetrics(),
+    performance: errorAnalytics.getPerformanceMetrics(),
+    trends: errorAnalytics.getErrorTrends(24), // Last 24 hours
+    patterns: errorAnalytics.getTopErrorPatterns(10),
+    circuitBreakers: CircuitBreakerFactory.getAllStats(),
+    bulkhead<span class="cstat-no" title="statement not covered" >s: BulkheadFactory.getAllStats(),</span>
   };
 }
 &nbsp;
 /**
- * Example: Error Analytics Dashboard Data
- */
-export function getErrorAnalyticsDashboard(): {
-  metrics: Retu<span class="fstat-no" title="function not covered" >rnType&lt;typeof errorAnalyt</span>ics.getErrorMetrics&gt;;
-  performance: ReturnType&lt;<span class="cstat-no" title="statement not covered" >typeof errorAnalytics.getPerformanceMetrics&gt;;</span>
-  trends: ReturnType&lt;ty<span class="cstat-no" title="statement not covered" >peof errorAnalytics.getErrorTrends&gt;;</span>
-  patterns: ReturnType&lt;typeof errorAnalytics.getTopErrorPatterns&gt;;
-  circuitBreakers: Record&lt;string, unknown&gt;;
-  bulkheads: Record&lt;string, unknown&gt;;
-} {<span class="cstat-no" title="statement not covered" ></span>
-  re<span class="cstat-no" title="statement not covered" >turn {</span>
-    metrics: errorAnalytic<span class="cstat-no" title="statement not covered" >s.getErrorMetrics(),</span>
-    performance: errorAnalytics.getPerformanceMetrics(),
-    trends: errorAnalyti<span class="cstat-no" title="statement not covered" >cs.getErrorTrends(24), // Last 24 hours</span>
-    patterns: errorAnalytics.getTopErrorPatterns(10),
-    circuitBreakers: CircuitBreakerFactory.getAllStats(),
-    bulkheads: BulkheadFactory.getAllStats(),
-  };<span class="cstat-no" title="statement not covered" ></span>
-}
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Example: Health Check with Error Handling Integration
- */
+ * Example: Health Check w<span class="cstat-no" title="statement not covered" >ith Error Handling Integratio</span>n
+ */<span class="cstat-no" title="statement not covered" ></span>
 export async function performEnhancedHealthCheck(): Promise&lt;{
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: string;
   services: Record&lt;string, {
-    status: <span class="cstat-no" title="statement not covered" >'healthy' | 'degraded' | 'unhealthy';</span>
-    responseTime?: number;
+    status: 'healthy' | 'degraded' | 'unhealthy';
+    resp<span class="cstat-no" title="statement not covered" >onseTime?: number;</span>
     error?: string;
   }&gt;;
   analytics: ReturnType&lt;typeof getErrorAnalyticsDashboard&gt;;
 }&gt; {<span class="cstat-no" title="statement not covered" ></span>
-  const <span class="cstat-no" title="statement not covered" >correlationId = extractCorrelationId({});</span>
+  const correlationId = extractCorrelationId({});
   const healthLogger = logger.child({
     component: 'HealthCheck',
     operation: 'enhanced-health-check',
     correlationId,
   });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   const services: Record&lt;string, {
     status: 'healthy' | 'degraded' | 'unhealthy';
     responseTime?: number;
-<span class="cstat-no" title="statement not covered" >    error?: string;</span>
+    error?: string;
   }&gt; = {};
 &nbsp;
   const apiClient = new EnhancedMakeApiClient();
@@ -1441,7 +1441,7 @@ export async function demonstrateErrorHandling(): Promise&lt;void&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

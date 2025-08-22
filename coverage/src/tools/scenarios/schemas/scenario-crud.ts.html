@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
@@ -121,9 +121,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -162,6 +159,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -173,10 +173,10 @@
  * @fileoverview Schema definitions for scenario CRUD operations
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-export const C<span class="cstat-no" title="statement not covered" >reateScenarioSc</span>hema = z.object({
-<span class="cstat-no" title="statement not covered" >  name: z.string().min(1).max(100).describe('Scenario name (required)'),</span>
+import { z } from 'zod';<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+export const CreateScenarioSchema = z.object({
+  name: z.string().min(1).max(100).describe('Scenario name (required)'),
   teamId: z.string().optional().describe('Team ID to create scenario in'),
   folderId: z.string().optional().describe('Folder ID to organize scenario'),
   blueprint: z.any().optional().describe('Scenario blueprint/configuration JSON'),
@@ -184,10 +184,10 @@ export const C<span class="cstat-no" title="statement not covered" >reateScenari
     type: z.enum(['immediately', 'interval', 'cron']).default('immediately'),
     interval: z.number().positive().optional().describe('Interval in minutes for interval scheduling'),
     cron: z.string().optional().describe('Cron expression for cron scheduling'),
-  }).optional().describe('Scheduling configuration'),
+  }).optional().describe('Scheduling<span class="cstat-no" title="statement not covered" > configuration'),</span>
 }).strict();
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export const UpdateScenarioSchema = z.object({</span>
+export const UpdateScenarioSchema = z.object({
   scenarioId: z.string().min(1).describe('Scenario ID to update (required)'),
   name: z.string().min(1).max(100).optional().describe('New scenario name'),
   active: z.boolean().optional().describe('Set scenario active/inactive status'),
@@ -195,26 +195,26 @@ export const C<span class="cstat-no" title="statement not covered" >reateScenari
   scheduling: z.object({
     type: z.enum(['immediately', 'interval', 'cron']),
     interval: z.number().positive().optional(),
-    cron: z.string().optional(),
+    cron: z.string().optional(),<span class="cstat-no" title="statement not covered" ></span>
   }).optional().describe('Updated scheduling configuration'),
 }).strict();
-<span class="cstat-no" title="statement not covered" ></span>
-export const DeleteScenarioSchema = z.object({
+&nbsp;
+export const DeleteScenarioSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   scenarioId: z.string().min(1).describe('Scenario ID to delete (required)'),
   force: z.boolean().default(false).describe('Force delete even if scenario is active'),
-<span class="cstat-no" title="statement not covered" >}).strict();</span>
+}).strict();
 &nbsp;
-export const ScenarioDetailSchema = z.object({
+export const ScenarioDetailSchema =<span class="cstat-no" title="statement not covered" > z.object({</span>
   scenarioId: z.string().min(1).describe('Scenario ID to retrieve details for (required)'),
   includeBlueprint: z.boolean().default(false).describe('Include full scenario blueprint in response'),
-<span class="cstat-no" title="statement not covered" >  includeExecutions: z.boolean().default(false).describe('Include recent execution history'),</span>
+  includeExecutions: z.boolean().default(false).describe('Include recent execution history'),
 }).strict();
 &nbsp;
 export const CloneScenarioSchema = z.object({
-  scenarioId: z.string().min(1).describe('Source scenario ID to clone (required)'),
+  scenarioId: z.string().min(1).d<span class="cstat-no" title="statement not covered" >escribe('Source scenario ID to clone (required)'),</span>
   name: z.string().min(1).max(100).describe('Name for the cloned scenario (required)'),
   teamId: z.string().optional().describe('Target team ID (defaults to source scenario team)'),
-<span class="cstat-no" title="statement not covered" >  folderId: z.string().optional().describe('Target folder ID'),</span>
+  folderId: z.string().optional().describe('Target folder ID'),
   active: z.boolean().default(false).describe('Whether to activate the cloned scenario'),
 }).strict();
 &nbsp;
@@ -229,7 +229,7 @@ export const RunScenarioSchema = z.object({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

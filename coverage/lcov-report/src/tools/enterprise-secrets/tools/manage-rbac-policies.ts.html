@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/45</span>
+                <span class='fraction'>0/39</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/43</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
@@ -234,12 +234,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -368,6 +365,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -400,49 +400,49 @@
  * Create and manage fine-grained role-based access control policies for secret access
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { RBACPolicySchema } from '../schemas/index.js';</span>
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition,</span> ToolExecutionContext } from '../../shared/types/tool-context.js';
-import { auditLogge<span class="cstat-no" title="statement not covered" >r } from '../../../lib/audit-lo</span>gger.js';
-import { formatSuccessResp<span class="cstat-no" title="statement not covered" >onse } from '../../../utils/response-for</span>matter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-/**
- * RBAC Policy Manager class
- */
-class RBACPolicyManager {
-  private static insta<span class="cstat-no" title="statement not covered" >nce: </span>RBACPolicyManager | null = null;
-  private polic<span class="cstat-no" title="statement not covered" >ies: Map&lt;s</span>tring, unknown&gt; = new Map();
-<span class="fstat-no" title="function not covered" ></span>
-  public<span class="cstat-no" title="statement not covered" > static getInstance(): RBACPolicyManager {</span>
-    if (!RBA<span class="cstat-no" title="statement not covered" >CPolicyManager.instance) {</span>
-      RBACPolicyManager.instance = new RBACPolicyManager();
-    }<span class="cstat-no" title="statement not covered" ></span>
-    return RBACPolicyManager.instance;
-  }
+import { UserError } from 'fastmcp';
+import { RBACPolicySchema } from '../schemas/index.js';
+import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
+import { auditLogger } from '../../../lib/audit-logger.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
+/**
+ * RBAC Policy Manager<span class="cstat-no" title="statement not covered" > clas</span>s
+ */<span class="cstat-no" title="statement not covered" ></span>
+clas<span class="fstat-no" title="function not covered" >s </span>RBACPolicyManager {
+  privat<span class="cstat-no" title="statement not covered" >e static instance: RBACPolicyManager | null = null;</span>
+  private po<span class="cstat-no" title="statement not covered" >licies: Map&lt;string, unknown&gt; = new Map();</span>
+&nbsp;
+  public<span class="cstat-no" title="statement not covered" > static getInstance(): RBACPolicyMa</span>nager {
+    if (!RBACPolicyManager.instance) {
+      RBACPolicyManager.instance = new RBACPolicyManager();
+    }
+    return RBACPolicyManager.instance;
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
-   *<span class="fstat-no" title="function not covered" > C</span>reate and manage RBAC policy
-   */<span class="cstat-no" title="statement not covered" ></span>
-  public async manageRBACPolicy(policy: Parameters&lt;typeof RBACPolicySchema.parse&gt;[0]): Promise&lt;{
-    policyName: string;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+   * Create and manage RBAC po<span class="cstat-no" title="statement not covered" >licy<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+   */
+  public async manageRBACPolicy(policy: Pa<span class="fstat-no" title="function not covered" >ra</span>met<span class="cstat-no" title="statement not covered" >ers&lt;typeo</span>f RBACPolicySchema.parse&gt;[0]): Promise&lt;{
+    policyName: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     policyContent: string;
     success: boolean;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  }&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  }&gt; {
     const validatedInput = RBACPolicySchema.parse(policy);
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
     // Create HCL policy content
     const policyContent = validatedInput.rules.map(rule =&gt; `
-path "${rule.path}" {
+path "${<span class="cstat-no" title="statement not covered" >rule.path}" {</span>
   capabilities = [${rule.capabilities.map(c =&gt; `"${c}"`).join(', ')}]
   ${rule.requiredParameters ? `required_parameters = [${rule.requiredParameters.map(p =&gt; `"${p}"`).join(', ')}]` : ''}
-  ${rule<span class="cstat-no" title="statement not covered" >.allowedParameters ? `allowed_parameters = ${JSON.stringify(rule.allowedParameters)}` : ''}</span>
+  ${rule.allowedParameters ? `allowed_parameters = ${JSON.stringify(rule.allowedParameters)}` : ''}
   ${rule.deniedParameters ? `denied_parameters = [${rule.deniedParameters.map(p =&gt; `"${p}"`).join(', ')}]` : ''}
   ${rule.minWrappingTtl ? `min_wrapping_ttl = "${rule.minWrappingTtl}"` : ''}
   ${rule.maxWrappingTtl ? `max_wrapping_ttl = "${rule.maxWrappingTtl}"` : ''}
-}
+}<span class="cstat-no" title="statement not covered" ></span>
       `).join('\n');
 &nbsp;
-    // S<span class="cstat-no" title="statement not covered" >tore policy</span>
+    // Store policy
     this.policies.set(validatedInput.policyName, {
       name: validatedInput.policyName,
       content: policyContent,
@@ -451,40 +451,40 @@ path "${rule.path}" {
     });
 &nbsp;
     // Log policy creation
-    await auditLogger.logEvent({
+    awai<span class="cstat-no" title="statement not covered" >t auditLogger.logEvent({</span>
       level: 'info',
       category: 'security',
-      ac<span class="cstat-no" title="statement not covered" >tion: 'rbac_policy_created',</span>
+      action: 'rbac_policy_created',
       success: true,
       details: {
         policyName: validatedInput.policyName,
         ruleCount: validatedInput.rules.length,
         metadata: validatedInput.metadata,
-      },
-      riskLevel: 'low',
+<span class="fstat-no" title="function not covered" ></span>      },
+      ri<span class="cstat-no" title="statement not covered" >skLevel: 'low',</span>
     });
-<span class="fstat-no" title="function not covered" ></span>
-    retu<span class="cstat-no" title="statement not covered" >rn {</span>
+&nbsp;
+    return {
       success: true,
-      policyName: validatedInput.policyName,
-      policyContent,
+<span class="fstat-no" title="function not covered" ></span>      policyName: validatedInput.policyName,
+      po<span class="cstat-no" title="statement not covered" >licyContent,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
     };
-  }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  }
+&nbsp;
   /**
    * Get policy by name
    */
   public getPolicy(policyName: string): unknown {
-    return this.policies.get(policyName);
-  }
-&nbsp;
-  /*<span class="fstat-no" title="function not covered" >*</span>
+<span class="fstat-no" title="function not covered" >    re</span>turn this.policies.get(policyName);
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**
    * Lis<span class="cstat-no" title="statement not covered" >t all policies</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
-  public listPolicies(): Array&lt;{ name: string; metadata?: unknown }&gt; {
-    retu<span class="cstat-no" title="statement not covered" >rn Array.from(this.policies.entrie</span>s()).map(([name, policy]) =&gt; ({
+   */
+  public<span class="cstat-no" title="statement not covered" > listPolicies(): Array&lt;{ name: string; metadata?: unknown }&gt; {</span>
+    return Array.from(this.policies.entries()).map(([name, policy]) =&gt; ({
       name,
-      me<span class="cstat-no" title="statement not covered" >tadata: (policy as { metadata?: unknown }).metadata,</span>
+      metadata: (policy as { metadata?: unknown }).metadata,
     }));
   }
 &nbsp;
@@ -494,46 +494,46 @@ path "${rule.path}" {
   public async deletePolicy(policyName: string): Promise&lt;void&gt; {
     if (!this.policies.has(policyName)) {
       throw new Error(`Policy not found: ${policyName}`);
-    }
+    }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    this.policies.delete(policyName);</span>
 &nbsp;
-    this.policies.delete(policyName);
-<span class="fstat-no" title="function not covered" ></span>
-    // Log policy delet<span class="cstat-no" title="statement not covered" >ion</span>
-<span class="cstat-no" title="statement not covered" >    await auditLogger.logEvent({</span>
+    // Log policy deletion
+    await auditLogger.logEvent({
       level: 'info',
       category: 'security',
       action: 'rbac_policy_deleted',
       success: true,
       details: { policyName },
       riskLevel: 'low',
-    });
-  }
-}
-<span class="fstat-no" title="function not covered" ></span>
+    });<span class="fstat-no" title="function not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Manage RB<span class="cstat-no" title="statement not covered" >AC policies tool configuration</span>
+ * Manage RBAC policies tool configurat<span class="cstat-no" title="statement not covered" >ion</span>
  */<span class="cstat-no" title="statement not covered" ></span>
-export funct<span class="cstat-no" title="statement not covered" >ion createManageRBACPoliciesTool(context: ToolContext): ToolDefinition {</span>
+export function <span class="cstat-no" title="statement not covered" >createManageRBACPoliciesTool(context: ToolContex</span>t): ToolDefinition {
   const { logger } = context;<span class="cstat-no" title="statement not covered" ></span>
   <span class="cstat-no" title="statement not covered" ></span>
   return {<span class="cstat-no" title="statement not covered" ></span>
-    name: 'manage-rbac-policies<span class="cstat-no" title="statement not covered" >',</span>
-    description:<span class="cstat-no" title="statement not covered" > 'Create and manage fine-grained role-based acce</span>ss control policies for secret access',
-    parameters: RBACPolicySchema,<span class="cstat-no" title="statement not covered" ></span>
-    annotations: {
+    name: 'manage-rbac-policies',
+    description: 'Create and manage fine-grained role-based access control policies for secret access',
+    parameters: RBACPolicySchema,
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
       title: 'Create and Manage RBAC Access Control Policies',
       readOnlyHint: false,
-      idempotent<span class="cstat-no" title="statement not covered" >Hint: true,</span>
-      openWorldHint: false,
-    },
+      idempotentHint: true,
+      openWorldH<span class="cstat-no" title="statement not covered" >int: false,</span>
+    },<span class="cstat-no" title="statement not covered" ></span>
     execute: async (args: unknown, execContext: ToolExecutionContext): Promise&lt;string&gt; =&gt; {
-      const { lo<span class="cstat-no" title="statement not covered" >g, reportProgress } = execContext;</span>
+      const { log, reportProgress } = execContext;
       <span class="cstat-no" title="statement not covered" ></span>
-      log?.info?.('Managing RBAC policies', JSON.stringify(args));
-      reportProgress?.({ progress: 0, total: 100 });
-<span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const va<span class="cstat-no" title="statement not covered" >lidatedInput = RBACPolicySchema.parse(args);</span>
+      log?.info?<span class="cstat-no" title="statement not covered" >.('Managing RBAC policies', JSON.stringify(args));</span>
+      reportProg<span class="cstat-no" title="statement not covered" >ress?.({ progress: 0, total: 100 });</span>
+&nbsp;
+      try {
+        const validatedInput = RBACPolicySchema.parse(args);
         const policyManager = RBACPolicyManager.getInstance();
         
         reportProgress?.({ progress: 25, total: 100 });
@@ -568,7 +568,7 @@ export funct<span class="cstat-no" title="statement not covered" >ion createMana
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

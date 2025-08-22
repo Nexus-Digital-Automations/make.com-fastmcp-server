@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -311,9 +311,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -533,6 +530,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -554,12 +554,12 @@
  * Centralized constants and configuration values for scenario operations
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >/**</span>
-<span class="cstat-no" title="statement not covered" > * Scenario operation timeouts in milliseconds</span>
- */
+/**
+ * Scenario operation timeouts in milliseconds
+ */<span class="cstat-no" title="statement not covered" ></span>
 export const TIMEOUTS = {
   LIST_SCENARIOS: 30000,
-<span class="cstat-no" title="statement not covered" >  GET_SCENARIO: 15000,</span>
+  GET_SCENARIO: 15000,
   CREATE_SCENARIO: 45000,
   UPDATE_SCENARIO: 30000,
   DELETE_SCENARIO: 20000,
@@ -571,83 +571,83 @@ export const TIMEOUTS = {
 } as const;
 &nbsp;
 /**
- * Default pagination settings
+ * Default pagination sett<span class="cstat-no" title="statement not covered" >ings</span>
  */
 export const PAGINATION = {
-<span class="cstat-no" title="statement not covered" >  DEFAULT_LIMIT: 20,</span>
+  DEFAULT_LIMIT: 20,
   MAX_LIMIT: 100,
   DEFAULT_OFFSET: 0
 } as const;
 &nbsp;
-/**
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Scenario status values
  */
-<span class="cstat-no" title="statement not covered" >export const SCENARIO_STATUS = {</span>
+export const SCENARIO_STATUS = {
   ACTIVE: 'active',
   INACTIVE: 'inactive',
   DRAFT: 'draft',
   ARCHIVED: 'archived',
   ERROR: 'error'
 } as const;
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
 /**
  * Blueprint validation severity levels
-<span class="cstat-no" title="statement not covered" > */</span>
+ */
 export const VALIDATION_SEVERITY = {
   CRITICAL: 'critical',
   HIGH: 'high',
   MEDIUM: 'medium',
   LOW: 'low',
   INFO: 'info'
-} as const;
+} as const;<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 /**
-<span class="cstat-no" title="statement not covered" > * Optimization recommendation priorities</span>
+ * Optimization recommendation priorities
  */
 export const OPTIMIZATION_PRIORITY = {
   HIGH: 'high',
   MEDIUM: 'medium',
-  LOW: 'low'
+  LOW: 'low'<span class="cstat-no" title="statement not covered" ></span>
 } as const;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >/**</span>
+/**
  * Optimization categories
  */
 export const OPTIMIZATION_CATEGORIES = {
   PERFORMANCE: 'performance',
   COST: 'cost',
   RELIABILITY: 'reliability',
-  SECURITY: 'security',
+  SECURITY: 'security',<span class="cstat-no" title="statement not covered" ></span>
   MAINTAINABILITY: 'maintainability'
 } as const;
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 /**
  * Troubleshooting report formats
  */
 export const REPORT_FORMATS = {
   DETAILED: 'detailed',
-  EXECUTIVE: 'executive',
+  EXECUTIVE: 'executive',<span class="cstat-no" title="statement not covered" ></span>
   TECHNICAL: 'technical',
   SUMMARY: 'summary'
-<span class="cstat-no" title="statement not covered" >} as const;</span>
+} as const;
 &nbsp;
 /**
  * Health score thresholds
  */
-export const HEALTH_THRESHOLDS = {
+export const HEALTH_THRESHOLDS <span class="cstat-no" title="statement not covered" >= {</span>
   HEALTHY: 80,
   WARNING: 60,
-<span class="cstat-no" title="statement not covered" >  CRITICAL: 40</span>
+  CRITICAL: 40
 } as const;
 &nbsp;
 /**
  * Security assessment levels
  */
 export const SECURITY_LEVELS = {
-  SECURE: 'secure',
+  SECURE: 'secure',<span class="cstat-no" title="statement not covered" ></span>
   LOW: 'low',
   MEDIUM: 'medium',
-<span class="cstat-no" title="statement not covered" >  HIGH: 'high',</span>
+  HIGH: 'high',
   CRITICAL: 'critical'
 } as const;
 &nbsp;
@@ -658,10 +658,10 @@ export const PERFORMANCE_GRADES = {
   A_PLUS: 'A+',
   A: 'A',
   B_PLUS: 'B+',
-  B: 'B',
+  B: 'B',<span class="cstat-no" title="statement not covered" ></span>
   C_PLUS: 'C+',
   C: 'C',
-<span class="cstat-no" title="statement not covered" >  D_PLUS: 'D+',</span>
+  D_PLUS: 'D+',
   D: 'D',
   F: 'F'
 } as const;
@@ -671,10 +671,10 @@ export const PERFORMANCE_GRADES = {
  */
 export const CONNECTION_REQUIRED_MODULES = [
   'http',
-  'google-sheets',
+  'google-sheets',<span class="cstat-no" title="statement not covered" ></span>
   'slack',
   'email',
-<span class="cstat-no" title="statement not covered" >  'database',</span>
+  'database',
   'webhook',
   'api',
   'oauth'
@@ -684,10 +684,10 @@ export const CONNECTION_REQUIRED_MODULES = [
  * Built-in module types that don't require connections
  */
 export const BUILTIN_MODULES = [
-  'builtin:BasicRouter',
+  'builtin:BasicRouter',<span class="cstat-no" title="statement not covered" ></span>
   'builtin:Delay',
   'builtin:JSONTransformer',
-<span class="cstat-no" title="statement not covered" >  'builtin:Iterator',</span>
+  'builtin:Iterator',
   'builtin:Filter',
   'builtin:Aggregator',
   'builtin:DataStore',
@@ -697,10 +697,10 @@ export const BUILTIN_MODULES = [
 /**
  * Error codes for scenario operations
  */
-export const ERROR_CODES = {
+export const ERROR_CODES = {<span class="cstat-no" title="statement not covered" ></span>
   SCENARIO_NOT_FOUND: 'SCENARIO_NOT_FOUND',
   INVALID_BLUEPRINT: 'INVALID_BLUEPRINT',
-<span class="cstat-no" title="statement not covered" >  VALIDATION_FAILED: 'VALIDATION_FAILED',</span>
+  VALIDATION_FAILED: 'VALIDATION_FAILED',
   OPTIMIZATION_FAILED: 'OPTIMIZATION_FAILED',
   TROUBLESHOOTING_FAILED: 'TROUBLESHOOTING_FAILED',
   INSUFFICIENT_PERMISSIONS: 'INSUFFICIENT_PERMISSIONS',
@@ -760,10 +760,10 @@ export const TOOL_ANNOTATIONS = {
     readOnlyHint: true,
     openWorldHint: false
   },
-  TROUBLESHOOT_SCENARIO: {
+  TROUBLESHOOT_SCENARIO: {<span class="cstat-no" title="statement not covered" ></span>
     title: 'Troubleshoot Scenario',
     readOnlyHint: true,
-<span class="cstat-no" title="statement not covered" >    openWorldHint: false</span>
+    openWorldHint: false
   },
   GENERATE_TROUBLESHOOTING_REPORT: {
     title: 'Generate Troubleshooting Report',
@@ -772,10 +772,10 @@ export const TOOL_ANNOTATIONS = {
   }
 } as const;
 &nbsp;
-/**
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Default analysis options
  */
-<span class="cstat-no" title="statement not covered" >export const DEFAULT_ANALYSIS_OPTIONS = {</span>
+export const DEFAULT_ANALYSIS_OPTIONS = {
   STRICT_VALIDATION: false,
   INCLUDE_SECURITY_CHECKS: true,
   INCLUDE_PERFORMANCE_ANALYSIS: true,
@@ -799,7 +799,7 @@ export const VERSION_INFO = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

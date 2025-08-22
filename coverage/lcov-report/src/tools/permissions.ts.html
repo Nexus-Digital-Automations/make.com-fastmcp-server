@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/332</span>
+                <span class='fraction'>0/323</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/257</span>
+                <span class='fraction'>0/250</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/332</span>
+                <span class='fraction'>0/323</span>
             </div>
         
             
@@ -1041,16 +1041,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1891,7 +1885,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2002,62 +2002,62 @@
  * @see {@link https://docs.make.com/api/users} Make.com Users API Documentation
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError } from 'fastmcp';
+import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../utils/r</span>esponse-formatter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// Input valid<span class="cstat-no" title="statement not covered" >ation schemas</span>
-const UserFiltersSch<span class="cstat-no" title="statement not covered" >ema = z.object({</span>
-  teamId: z.number().min(1).opti<span class="cstat-no" title="statement not covered" >onal().describe('Filter by team ID'),</span>
+import logger from '../lib/logger.js';
+import { formatSuccessResp<span class="cstat-no" title="statement not covered" >onse } from '../utils/response-formatter.js';</span>
+&nbsp;
+// Input validation schemas
+const UserFiltersSchema = z.object({
+  teamId: z.number().min(1).optional().describe('Filter by team ID'),
   organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
-  role: z.enum(['admin', '<span class="cstat-no" title="statement not covered" >member', 'viewer']).optional().describe('Filter by user role'),</span>
+  role: z.enum(['admin', 'member', 'viewer']).optional().describe('Filter by user role'),
   isActive: z.boolean().optional().describe('Filter by active status'),
   search: z.string().optional().describe('Search users by name or email'),
-  limit: z.number().min(1).max(100).default(20).describe('Maximum number of users to return'),
+  limit: z.number().min(1).ma<span class="cstat-no" title="statement not covered" >x(100).default(20).describe('Maximum number of users to return'),</span>
   offset: z.number().min(0).default(0).describe('Number of users to skip for pagination'),
 }).strict();
 &nbsp;
 const UpdateUserRoleSchema = z.object({
   userId: z.number().min(1).describe('User ID to update'),
-  role: z.enum(['admin', 'mem<span class="cstat-no" title="statement not covered" >ber', 'viewer']).describe('New role for the user'),</span>
+  role: z.enum(['admin', '<span class="cstat-no" title="statement not covered" >member', 'viewer']).describe('New role for the user'),</span>
   teamId: z.number().min(1).optional().describe('Team ID for role assignment'),
   permissions: z.array(z.string()).optional().describe('Specific permissions to grant'),
 }).strict();
 &nbsp;
 const TeamFiltersSchema = z.object({
-  organizationId: z.number<span class="cstat-no" title="statement not covered" >().min(1).optional().describe('Filter by organization ID'),</span>
+  organizationId: z.numbe<span class="cstat-no" title="statement not covered" >r().min(1).optional().describe('Filter by organization ID'),</span>
   search: z.string().optional().describe('Search teams by name'),
   limit: z.number().min(1).max(100).default(20).describe('Maximum number of teams to return'),
   offset: z.number().min(0).default(0).describe('Number of teams to skip for pagination'),
 }).strict();
-&nbsp;
-const CreateTeamSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
+<span class="cstat-no" title="statement not covered" ></span>
+const CreateTeamSchema = z.object({
   name: z.string().min(1).max(100).describe('Team name'),
   description: z.string().max(500).optional().describe('Team description'),
   organizationId: z.number().min(1).optional().describe('Organization ID to create team in'),
-}).strict();
-<span class="cstat-no" title="statement not covered" ></span>
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 const UpdateTeamSchema = z.object({
   teamId: z.number().min(1).describe('Team ID to update'),
   name: z.string().min(1).max(100).optional().describe('New team name'),
-  description: z.string().max(500).optional().describe('New team description'),
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-const OrganizationFiltersSchema = z.object({
-  search: z.string().optional().describe('Search organizations by name'),
-  limit: z.number().min(1).max(100).default(20).describe('Maximum number of organizations to return'),
-  offset: z.number().min(0).defau<span class="cstat-no" title="statement not covered" >lt(0).describe('Number of organizations to skip for pagination'),</span>
+  description: z.string().max(500<span class="cstat-no" title="statement not covered" >).optional().describe('New team description'),</span>
 }).strict();
 &nbsp;
-const CreateOrganizationSchema = z.object({
-  name: z.string().min(1).max(100<span class="cstat-no" title="statement not covered" >).describe('Organization name'),</span>
+const OrganizationFiltersSchema = z.object({
+  search: z.string().optional().d<span class="cstat-no" title="statement not covered" >escribe('Search organizations by name'),</span>
+  limit: z.number().min(1).max(100).default(20).describe('Maximum number of organizations to return'),
+  offset: z.number().min(0).default(0).describe('Number of organizations to skip for pagination'),
+}).strict();
+&nbsp;
+const CreateOrganizationS<span class="cstat-no" title="statement not covered" >chema = z.object({</span>
+  name: z.string().min(1).max(100).describe('Organization name'),
   description: z.string().max(500).optional().describe('Organization description'),
 }).strict();
 &nbsp;
 const UpdateOrganizationSchema = z.object({
-  organizationId: z.numbe<span class="cstat-no" title="statement not covered" >r().min(1).describe('Organization ID to update'),</span>
+  organizationId: z.number().min(1).describe('Organization ID to update'),
   name: z.string().min(1).max(100).optional().describe('New organization name'),
   description: z.string().max(500).optional().describe('New organization description'),
 }).strict();
@@ -2074,15 +2074,15 @@ const InviteUserSchema = z.object({
  * Adds comprehensive user permission and role management tools to the FastMCP server
  * 
  * @param {FastMCP} server - The FastMCP server instance
- * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and authentication
- * @returns {void}
- * 
+ * @param {MakeA<span class="fstat-no" title="function not covered" >piClient} apiClient</span> - Make.com API client with rate limiting and authentication
+ * @returns {void}<span class="cstat-no" title="statement not covered" ></span>
+ * <span class="cstat-no" title="statement not covered" ></span>
  * @example
  * ```typescript
  * import { addPermissionTools } from './tools/permissions.js';
- * <span class="fstat-no" title="function not covered" ></span>
- * const server = new FastMC<span class="cstat-no" title="statement not covered" >P();</span>
- * c<span class="cstat-no" title="statement not covered" >onst apiClient = new MakeApiClient(config);</span>
+ * 
+ * const server = new FastMCP();
+ * const apiClient = new MakeApiClient(config);
  * addPermissionTools(server, apiClient);
  * ```
  */
@@ -2109,199 +2109,199 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
    * - permissions: List of granted permissions
    * - teams: Team memberships with role details
    * - organizations: Organization associations
-   * - preferences: User preferences and settings
+   *<span class="cstat-no" title="statement not covered" > - preferences: User preferences and settings</span>
    * - lastLoginAt: ISO timestamp of last login
    * - createdAt: ISO timestamp of account creation
    * 
    * @throws {UserError} When authentication fails or user not found
    * 
-   *<span class="cstat-no" title="statement not covered" > @example</span>
+   * @example
    * ```bash
    * # Get current user information
-   * mcp-client get-current-user
-   * ```
-   * 
-   * @see {@link https://docs.make.com/api/users#current} Make.com Current User API
-   */
-  server.addTool({
-    name: 'get-cu<span class="fstat-no" title="function not covered" >rr</span>ent-user',
-    descript<span class="cstat-no" title="statement not covered" >ion: 'Get current user information and permiss</span>ions',
-    paramete<span class="cstat-no" title="statement not covered" >rs: z.object({}),</span>
+   * mcp-client g<span class="fstat-no" title="function not covered" >et</span>-current-user
+   * ```<span class="cstat-no" title="statement not covered" ></span>
+   * <span class="cstat-no" title="statement not covered" ></span>
+   * @see {@link https://docs.mak<span class="cstat-no" title="statement not covered" >e.com/api/users#current} Make.com</span> Current User API
+   */<span class="cstat-no" title="statement not covered" ></span>
+  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+    name: 'get-current-user',
+    description: 'Get current<span class="cstat-no" title="statement not covered" > user informat</span>ion and permissions',
+    parameters: <span class="cstat-no" title="statement not covered" >z.object({}),</span>
     annotations: {<span class="cstat-no" title="statement not covered" ></span>
-      title: 'Ge<span class="cstat-no" title="statement not covered" >t Current User Profile',</span>
-      readOnlyHint: <span class="cstat-no" title="statement not covered" >true,</span>
-      openWorldHint: true,
+      title: 'Get Current User Profile',
+      readOnlyHint: true,
+      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
-      log.info('Gett<span class="cstat-no" title="statement not covered" >ing current user information');</span>
+    execute: async (input, { log }) =&gt; {
+      log.info('Getting current user information');
 &nbsp;
       try {
-        const response = await a<span class="cstat-no" title="statement not covered" >piCli</span>ent.get('/users/me');
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!response.success) {
-          throw new UserError(`Failed to get current user: ${response.error?.message || 'Unknown error'}`);
-        }
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get('/users/me');</span>
 &nbsp;
-        const us<span class="cstat-no" title="statement not covered" >er = response.data;</span>
-        if (!user || typeof user !== 'object') {
-          throw new UserError('Current user information not available');
+        if (!response.success) {
+          throw new UserError(`Failed<span class="cstat-no" title="statement not covered" > to get current user: ${response.error?.message || 'Unk</span>nown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        // Type <span class="cstat-no" title="statement not covered" >guard for user object</span>
-        const userOb<span class="cstat-no" title="statement not covered" >j = user as {</span> id?: unknown; email?: unknown; role?: unknown };
-<span class="cstat-no" title="statement not covered" ></span>
+        const user =<span class="cstat-no" title="statement not covered" > response.dat</span>a;
+        if (!use<span class="cstat-no" title="statement not covered" >r || typeof user !== 'object') {</span>
+          throw new UserError('Current user information not available');
+        }
+&nbsp;
+        // Type guard for user object
+<span class="cstat-no" title="statement not covered" >        const userObj = user as { id?: unknown; email?: unknown; role?: unknown };</span>
+&nbsp;
         log.info('Successfully retrieved current user', {
           userId: String(userObj.id ?? 'unknown'),
           email: String(userObj.email ?? 'unknown'),
           role: String(userObj.role ?? 'unknown'),
-<span class="cstat-no" title="statement not covered" >        });</span>
+        });
 &nbsp;
         return formatSuccessResponse({ user }).content[0].text;
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting current user', { error: errorMessage });
+      } catch (er<span class="fstat-no" title="function not covered" >ro</span>r: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);<span class="cstat-no" title="statement not covered" ></span>
+        log.<span class="cstat-no" title="statement not covered" >error('Error getting current user', { error: errorMessage });</span>
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get current user: ${errorMessage}`);
       }
-    },<span class="fstat-no" title="function not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+    },
+  });
+&nbsp;
   // List users with filtering
   server.addTool({
-    name: 'list-users',
-    description: 'List and filter users with role and permission information',
+    name: 'l<span class="cstat-no" title="statement not covered" >ist-users',</span>
+    description: 'List and filt<span class="cstat-no" title="statement not covered" >er users with role and permission information',</span>
     parameters: UserFiltersSchema,
     annotations: {
       title: 'List Users and Roles',
-      readOnlyHint: true,
-      openWo<span class="cstat-no" title="statement not covered" >rldHint: true,</span>
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: true,</span>
+      openWorldHint:<span class="cstat-no" title="statement not covered" > true,</span>
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (input, { log }) =&gt; {
-      const { teamId, organizationId, role, isActive, search, limit, offset } = input;
-&nbsp;
+    execute: async (<span class="cstat-no" title="statement not covered" >input, { log }) =&gt; {</span>
+      const { te<span class="cstat-no" title="statement not covered" >amId, organizationId, role, isActive, search, limit, offset } = input;</span>
+<span class="cstat-no" title="statement not covered" ></span>
       log.info('<span class="cstat-no" title="statement not covered" >Listing users', {</span>
         teamId,<span class="cstat-no" title="statement not covered" ></span>
         organiza<span class="cstat-no" title="statement not covered" >tionId,</span>
         role,<span class="cstat-no" title="statement not covered" ></span>
-        isActive<span class="cstat-no" title="statement not covered" >,</span>
+        isActive,
         search,<span class="cstat-no" title="statement not covered" ></span>
         limit,<span class="cstat-no" title="statement not covered" ></span>
         offset,<span class="cstat-no" title="statement not covered" ></span>
-      });<span class="cstat-no" title="statement not covered" ></span>
+      });
 <span class="cstat-no" title="statement not covered" ></span>
-      try {
-        const params: Record&lt;st<span class="cstat-no" title="statement not covered" >ring, unk</span>nown&gt; = {
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const params: Record&lt;string, unknown&gt; = {
           limit,<span class="cstat-no" title="statement not covered" ></span>
-          offset,<span class="cstat-no" title="statement not covered" ></span>
-        };
-<span class="cstat-no" title="statement not covered" ></span>
-        if (teamId) <span class="cstat-no" title="statement not covered" >params.teamId = teamId;</span>
-        if (organizationId) params.organizationId = organizationId;
-        if (role) params.role = r<span class="cstat-no" title="statement not covered" >ole;</span>
-        if (isAc<span class="cstat-no" title="statement not covered" >tive !== undefined) params.active = isActive;</span>
-        if (search) <span class="cstat-no" title="statement not covered" >params.search = search;</span>
+          offset<span class="cstat-no" title="statement not covered" >,</span>
+        };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        // Get users from team<span class="cstat-no" title="statement not covered" > or organization con</span>text
-        let endpoint = '/users';<span class="cstat-no" title="statement not covered" ></span>
-        if (teamId) {
-          endpoint = `/teams/${team<span class="cstat-no" title="statement not covered" >Id}/users`;</span>
-        } else i<span class="cstat-no" title="statement not covered" >f (organizationId) {</span>
+        if (teamId) params.tea<span class="cstat-no" title="statement not covered" >mId = teamId;</span>
+        if (organizationId) param<span class="cstat-no" title="statement not covered" >s.organizationId =</span> organizationId;
+        if (role) params.role = role;
+        if (isActive !== undefined)<span class="cstat-no" title="statement not covered" > params.active = isActive;</span>
+        if (sear<span class="cstat-no" title="statement not covered" >ch) params.search = search;</span>
+&nbsp;
+        // Get users from team or organization context
+        let endpoint = '/users';
+        if (team<span class="cstat-no" title="statement not covered" >Id) {</span>
+          endpoint = `/teams/${teamId}/users`;
+        } else if (organizationId) {
           endpoint = `/organizations/${organizationId}/users`;
         }
 &nbsp;
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get(endpoint, { params });</span>
+        const response = await apiClient.get(endpoint, { params });
 &nbsp;
         if (!response.success) {
           throw new UserError(`Failed to list users: ${response.error?.message || 'Unknown error'}`);
         }
-&nbsp;
-        const users = response.data || [];
-        const metadata = response.metadata;
-&nbsp;
-        // Type guard for users array
-        const usersArray = Array.isArray(users) ? users : [];
 <span class="cstat-no" title="statement not covered" ></span>
-        log.info<span class="cstat-no" title="statement not covered" >('Successfully retrieved users', {</span>
-          count:<span class="cstat-no" title="statement not covered" > usersArray.length,</span>
-          total: met<span class="cstat-no" title="statement not covered" >adata?.total,</span>
-        });<span class="cstat-no" title="statement not covered" ></span>
+        const us<span class="cstat-no" title="statement not covered" >ers = response.data || [];</span>
+        const me<span class="cstat-no" title="statement not covered" >tadata = response.metadata;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        // Type <span class="cstat-no" title="statement not covered" >guard for users array</span>
+        const usersArray = Array.isArray(users) ? users : [];
+&nbsp;
+        log.info('Successfully retrieved users', {
+          count: usersArray.length,
+<span class="cstat-no" title="statement not covered" >          total: metadata?.total,</span>
+        });
 &nbsp;
         return formatSuccessResponse({
           users: usersArray,
           pagination: {
-<span class="cstat-no" title="statement not covered" >            total: metadata?.total || usersArray.length,</span>
+            total: metadata?.total || usersArray.length,
             limit,
             offset,
             hasMore: (metadata?.total || 0) &gt; (offset + usersArray.length),
           },
-        });
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing users', { error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to list users: ${errorMessage}`);
-      }<span class="fstat-no" title="function not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="fstat-no" title="function not covered" ></span>
+      } catch (error: unknown) <span class="cstat-no" title="statement not covered" >{</span>
+        cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? erro</span>r.message : String(error);
+        log.<span class="cstat-no" title="statement not covered" >error('Error listing users', { error: errorMessage });</span>
+        if (error instanceof User<span class="cstat-no" title="statement not covered" >Error) throw error;</span>
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to list users: ${errorMessage}`);</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },
   });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  // Get user details<span class="cstat-no" title="statement not covered" ></span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'get-user'<span class="cstat-no" title="statement not covered" >,</span>
-    description: 'Get detailed information about a specific user',
-    parameters: z.object({<span class="cstat-no" title="statement not covered" ></span>
-      userId: z.<span class="cstat-no" title="statement not covered" >number().min(1).describe('User ID to retrieve'),</span>
-    }),<span class="cstat-no" title="statement not covered" ></span>
+  // Get user detail<span class="cstat-no" title="statement not covered" >s</span>
+  server.addTool({
+    name: 'get-user',
+    description: 'Get detailed i<span class="cstat-no" title="statement not covered" >nform</span>ation about a specific user',
+    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
+      userId: z.number().min(1).describe('User ID to retrieve'),
+    }),
     annotations: {
       title: 'Get User Details',
-      readOnlyHint: true,<span class="cstat-no" title="statement not covered" ></span>
-      openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: true,</span>
+      openWorldHint: true,
     },
-    execute: async (input, { log }) =&gt; {
-      const { userId } = input;
-&nbsp;
-      log.info('<span class="cstat-no" title="statement not covered" >Getting user details', { userId });</span>
-&nbsp;
-      try {
-        const response = await apiCli<span class="cstat-no" title="statement not covered" >ent.get(`/users/${userId}`);</span>
+    execute: async (input, { log }) =<span class="cstat-no" title="statement not covered" >&gt; {</span>
+      const { us<span class="cstat-no" title="statement not covered" >erId } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw new <span class="cstat-no" title="statement not covered" >UserError(`Fa</span>iled to get user: ${response.error?.message || 'Unknown error'}`);
-        }<span class="cstat-no" title="statement not covered" ></span>
+      log.info('Gett<span class="cstat-no" title="statement not covered" >ing user deta</span>ils', { userId });
+<span class="cstat-no" title="statement not covered" ></span>
+      try {
+        const response = await apiClient.get(`/users/${userId}`);
+&nbsp;
+        if (!response.success) {
+<span class="cstat-no" title="statement not covered" >          throw new UserError(`Failed to get user: ${response.error?.message || 'Unknown error'}`);</span>
+        }
 &nbsp;
         const user = response.data;
         if (!user || typeof user !== 'object') {
           throw new UserError(`User with ID ${userId} not found`);
-<span class="cstat-no" title="statement not covered" >        }</span>
+        }
 &nbsp;
         // Type guard for user object
         const userObj = user as { email?: unknown; role?: unknown };
 &nbsp;
-        log.info('Successfully retrieved user', {
-          userId,
-          email: String(userObj.email ?? 'unknown'),
-          role: String(userObj.role ?? 'unknown'),
-        });
-&nbsp;
-        return fo<span class="fstat-no" title="function not covered" >rm</span>atSuccessResponse({ user }).content[0].text;
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
-        cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : </span>String(error);
-        log.<span class="cstat-no" title="statement not covered" >error('Error getting user', { userId, error: errorMessage });</span>
-        if (error instanceof UserEr<span class="cstat-no" title="statement not covered" >ror) thro</span>w error;
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to get user details: ${errorMessage}`);</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
+        log.info(<span class="fstat-no" title="function not covered" >'S</span>uccessfully retrieved user', {
+          userId,<span class="cstat-no" title="statement not covered" ></span>
+          em<span class="cstat-no" title="statement not covered" >ail: String(userObj.email ?? 'unknown'),</span>
+          ro<span class="cstat-no" title="statement not covered" >le: String(userObj.role ?? 'unknown'),</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({ user }).c</span>ontent[0].text;
+      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
+        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? erro</span>r.message : String(error);
+        log.error('Error gettin<span class="cstat-no" title="statement not covered" >g user', { userId, error:</span> errorMessage });
+        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
+        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to get user details: ${errorMessage}</span>`);
+      }
     },<span class="cstat-no" title="statement not covered" ></span>
   });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  // Update user<span class="cstat-no" title="statement not covered" > role and permissions</span>
+  // Update user role and permissions
   server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'update-user-role',
-    description: 'Update user rol<span class="cstat-no" title="statement not covered" >e and permissions',</span>
-    parameters: <span class="cstat-no" title="statement not covered" >UpdateUserRoleSchema,</span>
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+    name: 'updat<span class="cstat-no" title="statement not covered" >e-user-role',</span>
+    description: 'Up<span class="cstat-no" title="statement not covered" >date user role and permissions',</span>
+    parameters: UpdateUserRoleSchema,
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
       title: 'Update User Role and Permissions',
-      readOnlyHint: false,<span class="cstat-no" title="statement not covered" ></span>
-      destructiv<span class="cstat-no" title="statement not covered" >eHint: false,</span>
-      idempotentHint<span class="cstat-no" title="statement not covered" >: true,</span>
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
     },<span class="cstat-no" title="statement not covered" ></span>
     execute: async (input, { log }) =&gt; {
@@ -2310,526 +2310,526 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       log.info('Updating user role', { userId, role, teamId });
 &nbsp;
       try {<span class="cstat-no" title="statement not covered" ></span>
-        const updateData: Record&lt;string, unknown&gt; = { role };
-        if (teamId) updateData.teamId = teamId;
-        if (permissions) updateData.permissions = permissions;
-&nbsp;
-        let endpoint = `/users/${userId}/roles`;
-        if (teamId) {<span class="cstat-no" title="statement not covered" ></span>
-          endpoi<span class="cstat-no" title="statement not covered" >nt = `/teams/${teamId}/users/${userId}/role`;</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
+        const up<span class="cstat-no" title="statement not covered" >dateData: Record&lt;string, unknown&gt; = { role };</span>
+        if (team<span class="cstat-no" title="statement not covered" >Id) updateData.teamId = teamId;</span>
+        if (permissi<span class="cstat-no" title="statement not covered" >ons) updateDa</span>ta.permissions = permissions;
 <span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.patch(endpoint, updateData);</span>
+        let endpoint = `/users/${userId}/roles`;
+        if (teamId) {
+          endpoint = `/teams/${teamId}/users/${userId}/role`;
+        }
+<span class="cstat-no" title="statement not covered" ></span>
+        const response = await apiClient.patch(endpoint, updateData);
 &nbsp;
         if (!response.success) {
           throw new UserError(`Failed to update user role: ${response.error?.message || 'Unknown error'}`);
         }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         const user = response.data;
         if (!user) {
-          throw new UserError('User role update failed - no data returned');
-        }
-&nbsp;
+          throw n<span class="fstat-no" title="function not covered" >ew</span> UserError('User role update failed - no data returned');
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
         log.info('Successfully updated user role', {
           userId,
           newRole: role,
-          teamId,<span class="fstat-no" title="function not covered" ></span>
-          permissions: permissions?.length || 0,<span class="cstat-no" title="statement not covered" ></span>
+          teamId,
+          permissions: permissions?.length || 0,
         });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         return formatSuccessResponse({
           user,
           message: 'User role updated successfully',
-        }).content[0].text;
-      } catc<span class="cstat-no" title="statement not covered" >h (error: unknown) {</span>
-        const errorMessage = er<span class="cstat-no" title="statement not covered" >ror instanceof Error ? error.message : String(error);</span>
-        log.error('Error updating user role', { userId, error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to update user role: ${errorMessage}`);
+        }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
+      } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.error('E<span class="cstat-no" title="statement not covered" >rror updating user role'</span>, { userId, error: errorMessage });
+        if (error instanceof Us<span class="cstat-no" title="statement not covered" >erError) </span>throw error;
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to update user role: ${errorMessage}`);</span>
       }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+    },
   });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
   // List teams<span class="cstat-no" title="statement not covered" ></span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'list-team<span class="cstat-no" title="statement not covered" >s',</span>
-    description: 'List and filter teams',
-    parameters: TeamFiltersSchema<span class="cstat-no" title="statement not covered" >,</span>
-    annotations:<span class="cstat-no" title="statement not covered" > {</span>
-      title: 'List T<span class="cstat-no" title="statement not covered" >eams',</span>
+  server.addTool({
+    name: 'list-teams',<span class="cstat-no" title="statement not covered" ></span>
+    description: 'List and filter<span class="cstat-no" title="statement not covered" > teams',</span>
+    parameters: TeamFiltersSchema,
+    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+      title: 'Li<span class="cstat-no" title="statement not covered" >st Teams',</span>
       readOnlyHint: true,
-      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (input, { log }) =&gt; {
-      const { organizationId, searc<span class="cstat-no" title="statement not covered" >h, limit, offset } = input;</span>
-<span class="cstat-no" title="statement not covered" ></span>
+      openWorldHint: true,
+    },
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
+      const { organizationId, search, limit, offset } = input;
+&nbsp;
       log.info('Listing teams', {
         organizationId,
         search,
-        limit,<span class="cstat-no" title="statement not covered" ></span>
+        limit,
         offset,
       });
 &nbsp;
       try {
-        const params: Record&lt;string, unknown&gt; = {
-          limit,
-          offset,
-        };
-&nbsp;
-        if (organizationId) params.organizationId = organizationId;
-        if (search) params.search = s<span class="cstat-no" title="statement not covered" >earch;</span>
+        const params: Record&lt;string, <span class="cstat-no" title="statement not covered" >unknown&gt; = {</span>
+          limit,<span class="cstat-no" title="statement not covered" ></span>
+          offset<span class="cstat-no" title="statement not covered" >,</span>
+        };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        let endp<span class="cstat-no" title="statement not covered" >oint = '/teams';</span>
-        if (organiza<span class="cstat-no" title="statement not covered" >tionId) {</span>
-          endpoi<span class="cstat-no" title="statement not covered" >nt = `/organizations/${organizationId}/teams`;</span>
+        if (organizationId) params.organizationId = organizationId;
+        if (search) params.search = search;
+&nbsp;
+        let endpoint = '/teams';
+<span class="cstat-no" title="statement not covered" >        if (organizationId) {</span>
+          endpoint = `/organizations/${organizationId}/teams`;
         }
 &nbsp;
         const response = await apiClient.get(endpoint, { params });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        if (!response.success) {</span>
+        if (!response.success) {
           throw new UserError(`Failed to list teams: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
         const teams = response.data || [];
-        const metadata = response.metadata;
-&nbsp;
-        // Type guard for teams array
-        const teamsArray = Array.isArray(teams) ? teams : [];
-&nbsp;
-        log.info('Successfully retrieved teams', {
-          count: <span class="fstat-no" title="function not covered" >te</span>amsArray.length,
-          total: metadata?.tota<span class="cstat-no" title="statement not covered" >l,</span>
+        const met<span class="fstat-no" title="function not covered" >ad</span>ata = response.metadata;
+<span class="cstat-no" title="statement not covered" ></span>
+        // T<span class="cstat-no" title="statement not covered" >ype guard for teams array</span>
+        cons<span class="cstat-no" title="statement not covered" >t teamsArray = Array.isArray(teams) ? teams : [];</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        log.info<span class="cstat-no" title="statement not covered" >('Successfully retrieved teams', {</span>
+          count: tea<span class="cstat-no" title="statement not covered" >msArray.length,</span>
+          total: metadata?.total,
         });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return formatSuccessRespo<span class="cstat-no" title="statement not covered" >nse({</span>
-          teams:<span class="cstat-no" title="statement not covered" > teamsArray,</span>
-          pagination<span class="cstat-no" title="statement not covered" >: {</span>
-            total: metadata?.total || teamsArray.length,
-            limit,<span class="cstat-no" title="statement not covered" ></span>
-            offs<span class="cstat-no" title="statement not covered" >et,</span>
-            hasMore:<span class="cstat-no" title="statement not covered" > (metadata?.total || 0) &gt; (offset + teamsArray.length),</span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
+          teams: teamsArray,
+          pagination: {
+            total: metadata?.tot<span class="cstat-no" title="statement not covered" >al ||</span> teamsArray.length,
+            limi<span class="cstat-no" title="statement not covered" >t,</span>
+            offset,
+            hasMore: (metadata?.total || 0) &gt; (offset + teamsArray.length),
           },
-        });
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('Error listing teams', { error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to list teams: ${errorMessage}`);
+        });<span class="cstat-no" title="statement not covered" ></span>
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error listing team<span class="cstat-no" title="statement not covered" >s', { error: errorMessage });</span>
+        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to list teams: ${errorMessage}`);</span>
       }<span class="cstat-no" title="statement not covered" ></span>
-    },
+    },<span class="cstat-no" title="statement not covered" ></span>
   });
-<span class="cstat-no" title="statement not covered" ></span>
-  // Get team de<span class="cstat-no" title="statement not covered" >tails</span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'get-team'<span class="cstat-no" title="statement not covered" >,</span>
-    description:<span class="cstat-no" title="statement not covered" > 'Get detailed information about a specific team',</span>
+&nbsp;
+  // Get team details
+  server.addTool({
+<span class="cstat-no" title="statement not covered" >    name: 'get-team',</span>
+    description: 'Get detailed information about a specific team',
     parameters: z.object({
       teamId: z.number().min(1).describe('Team ID to retrieve'),
     }),
     annotations: {
-<span class="cstat-no" title="statement not covered" >      title: 'Get Team Details',</span>
+      title: 'Get Team Details',
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log }) =&gt; {
-      const { teamId } = input;
-&nbsp;
-      log.info('Getting team details', { teamId });
-&nbsp;
+    execute: asyn<span class="fstat-no" title="function not covered" >c </span>(input, { log }) =&gt; {
+      const { teamId } = input;<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      log.in<span class="cstat-no" title="statement not covered" >fo('Getting team details', { teamId });</span>
+<span class="cstat-no" title="statement not covered" ></span>
       try {
-        const res<span class="fstat-no" title="function not covered" >po</span>nse = await apiClient.get(`/teams/${teamId}`);
+        const response = await apiClient.get(`/teams/${teamId}`);
+&nbsp;
+        if (!response.success) {
+          throw new UserError(`Fa<span class="cstat-no" title="statement not covered" >iled to get team: ${response.error?.messa</span>ge || 'Unknown error'}`);
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (<span class="cstat-no" title="statement not covered" >!response.success) {</span>
-          th<span class="cstat-no" title="statement not covered" >row new UserError(`Failed to get team: ${response.error?.message || 'Unknown error'}`);</span>
+        const team = response.data;
+        if (!team || typeof t<span class="cstat-no" title="statement not covered" >eam !== 'objec</span>t') {
+          throw <span class="cstat-no" title="statement not covered" >new UserError(`Team with ID ${teamId} not found`);</span>
         }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        const team = response.data;
-        if (!team || typeof team !== 'object') {
-          throw new UserError(`Team with ID ${teamId} not found`);
-        }<span class="cstat-no" title="statement not covered" ></span>
+        // Type guard for team object
+        const teamObj = team as <span class="cstat-no" title="statement not covered" >{ nam</span>e?: unknown };
 <span class="cstat-no" title="statement not covered" ></span>
-        // Type guar<span class="cstat-no" title="statement not covered" >d for team object</span>
-        const teamObj = team as { name?: unknown };
-<span class="cstat-no" title="statement not covered" ></span>
-        log.info<span class="cstat-no" title="statement not covered" >('Successfully retrieved team', {</span>
-          teamId,<span class="cstat-no" title="statement not covered" ></span>
+        log.info('Successfully retrieved team', {
+          teamId,
           name: String(teamObj.name ?? 'unknown'),
-        });
-<span class="cstat-no" title="statement not covered" ></span>
-        return f<span class="cstat-no" title="statement not covered" >ormatSuccessResponse({ team }).content[0].text;</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        return formatSuccessResponse({ team }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting team', { teamId, error: errorMessage });
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
-        throw new UserError(`Failed to get team details: ${errorMessage}`);
-      }
-    },
-  });
+        if (error instanceof UserErro<span class="cstat-no" title="statement not covered" >r) throw error;</span>
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to get team details: ${errorMessage}`);</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  // Create team<span class="cstat-no" title="statement not covered" ></span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'creat<span class="cstat-no" title="statement not covered" >e-team',</span>
-    description: 'Cr<span class="cstat-no" title="statement not covered" >eate a new te</span>am',
-    parameters: <span class="cstat-no" title="statement not covered" >CreateTeamSchema,</span>
+  // Create team
+  server.addTool({
+    name: 'create-team',
+<span class="cstat-no" title="statement not covered" >    description: 'Create a new team',</span>
+    parameters: CreateTeamSchema,
     annotations: {
       title: 'Create New Team',
       readOnlyHint: false,
       idempotentHint: false,
-<span class="cstat-no" title="statement not covered" >      openWorldHint: true,</span>
+      openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
       const { name, description, organizationId } = input;
-&nbsp;
-      log.info('Creating new team', { name, organizationId });
-&nbsp;
-      try {
-        const teamData = {
-          name,
-          descrip<span class="fstat-no" title="function not covered" >ti</span>on,
-          organizationId,<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" ></span>
+      log.info('Creating new team', { name, organi<span class="cstat-no" title="statement not covered" >zation</span>Id });
+<span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const teamData = {<span class="cstat-no" title="statement not covered" ></span>
+          name,<span class="cstat-no" title="statement not covered" ></span>
+          descriptio<span class="cstat-no" title="statement not covered" >n,</span>
+          organi<span class="cstat-no" title="statement not covered" >zationId,</span>
         };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const response = await apiC<span class="cstat-no" title="statement not covered" >lie</span>nt.post('/teams', teamData);
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!respons<span class="cstat-no" title="statement not covered" >e.success) {</span>
+        const respon<span class="cstat-no" title="statement not covered" >se = await apiClient.post('/teams', teamData);</span>
+&nbsp;
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
           throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to create team: ${response.error?.message || 'Unknown error'}`);</span>
         }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const team =<span class="cstat-no" title="statement not covered" > response.data;</span>
-        if (!team || typeof team !== 'object') {
-          throw new UserError('Te<span class="cstat-no" title="statement not covered" >am creation failed - no data returned');</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        // Type guard for team object
-        const teamObj = team <span class="cstat-no" title="statement not covered" >as { id?: unkn</span>own; name?: unknown };
-<span class="cstat-no" title="statement not covered" ></span>
-        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully created team', {</span>
+&nbsp;
+        const team = response<span class="cstat-no" title="statement not covered" >.data;</span>
+        if (!tea<span class="cstat-no" title="statement not covered" >m || typeof team !== 'object') {</span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError('Team creation failed - no data returned');</span>
+        }
+&nbsp;
+        // Type guard for team o<span class="cstat-no" title="statement not covered" >bject</span>
+        const te<span class="cstat-no" title="statement not covered" >amObj = team as { id?: unknown; name?: unknown };</span>
+&nbsp;
+        log.info('Successfully created team', {
           teamId: String(teamObj.id ?? 'unknown'),
           name: String(teamObj.name ?? 'unknown'),
         });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         return formatSuccessResponse({
           team,
           message: `Team "${name}" created successfully`,
         }).content[0].text;
-      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating team', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to create team: ${errorMessage}`);
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error)</span>;
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error creating team', { name, error: errorMessage });</span>
+        if (error in<span class="cstat-no" title="statement not covered" >stanceof User</span>Error) throw error;
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to create team: ${errorMessage}`);</span>
       }
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Update team<span class="cstat-no" title="statement not covered" ></span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+    },
+  });
+&nbsp;
+  //<span class="cstat-no" title="statement not covered" > Update team</span>
+  server.addTool({
     name: 'update-team',
     description: 'Update team information',
     parameters: UpdateTeamSchema,
     annotations: {
-<span class="cstat-no" title="statement not covered" >      title: 'Update Team Information',</span>
+      title: 'Update Team Information',
       readOnlyHint: false,
       idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
       const { teamId, name, description } = input;
-&nbsp;
-      log.info('Updating team', { teamId });
-&nbsp;
-      try {
-        const updateData: Record&lt;string, unknown&gt; = {};
-        if (name !== undefined) updateData.name = name;
-        if (descr<span class="fstat-no" title="function not covered" >ip</span>tion !== undefined) updateData.description = description;
+<span class="fstat-no" title="function not covered" ></span>
+      log.info('Updating team',<span class="cstat-no" title="statement not covered" > { tea</span>mId });
 <span class="cstat-no" title="statement not covered" ></span>
-        if (<span class="cstat-no" title="statement not covered" >Object.keys(updateData).length === 0) {</span>
-          th<span class="cstat-no" title="statement not covered" >row new UserError('No update data provided');</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const respon<span class="cstat-no" title="statement not covered" >se = await apiClient.patch(`/teams/${teamId}`, updateData);</span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const updateData: Record&lt;<span class="cstat-no" title="statement not covered" >string, unknown&gt; = {};</span>
+        if (name<span class="cstat-no" title="statement not covered" > !== undefined) updateData.name = name;</span>
+        if (descript<span class="cstat-no" title="statement not covered" >ion !== undefined) updateData.description = description;</span>
 &nbsp;
-        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to update team: ${response.error?.message || 'Unknown error'}`);</span>
+        if (Obje<span class="cstat-no" title="statement not covered" >ct.keys(updateData).length === 0) {</span>
+          throw <span class="cstat-no" title="statement not covered" >new UserError('No update data provided');</span>
         }
 &nbsp;
-        const team = response.data;
-        if (!team || typeof team !== 'object') {
-          throw new UserError('Team u<span class="cstat-no" title="statement not covered" >pdate failed - no data returned');</span>
+        const response = await apiClient.patch(`/teams/${teamId}`, updateData);
+&nbsp;
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
+          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to update team: ${response.error?.message || </span>'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        // Type guar<span class="cstat-no" title="statement not covered" >d for team ob</span>ject
-        const te<span class="cstat-no" title="statement not covered" >amObj = team as { name?: unknown };</span>
+        const te<span class="cstat-no" title="statement not covered" >am = response.data;</span>
+        if (!team || typeof team !== 'object') {
+          throw new UserError('Team update failed - no data returned');
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        // Type guard for team object</span>
+        const teamObj = team as { name?: unknown };
 &nbsp;
         log.info('Successfully updated team', {
           teamId,
           name: String(teamObj.name ?? 'unknown'),
-<span class="cstat-no" title="statement not covered" >          updatedFields: Object.keys(updateData),</span>
+          updatedFields: Object.keys(updateData),
         });
 &nbsp;
-        return formatSuccessResponse({
-          team,
-          message: 'Team updated successfully',
+        return fo<span class="fstat-no" title="function not covered" >rm</span>atSuccessResponse({
+          team,<span class="cstat-no" title="statement not covered" ></span>
+          me<span class="cstat-no" title="statement not covered" >ssage: 'Team updated successfully',</span>
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error<span class="fstat-no" title="function not covered" >('</span>Error updating team', { teamId, error: errorMessage });
-        if (error instanceof UserError) throw <span class="cstat-no" title="statement not covered" >error;</span>
-        thro<span class="cstat-no" title="statement not covered" >w new UserError(`Failed to update team: ${errorMessage}`);</span>
+        log.error('Error updating team', { teamId, error: errorMessage });
+        if (<span class="cstat-no" title="statement not covered" >error instanceof UserError) throw error;</span>
+        throw new UserError(`Fa<span class="cstat-no" title="statement not covered" >iled to update team: ${errorMessage}`);</span>
       }
     },
   });
-&nbsp;
-  // Delete <span class="cstat-no" title="statement not covered" >team</span>
+<span class="cstat-no" title="statement not covered" ></span>
+  // Delete team<span class="cstat-no" title="statement not covered" ></span>
   server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'delete-team',
-    description: 'Delete a team',
+    name: 'delet<span class="cstat-no" title="statement not covered" >e-team',</span>
+    description: 'De<span class="cstat-no" title="statement not covered" >lete a team',</span>
     parameters: z.object({
-      teamId: z.<span class="cstat-no" title="statement not covered" >number().min(1).describe('Team ID to delete'),</span>
+      teamId: z.number().min(1).descri<span class="cstat-no" title="statement not covered" >be('Team ID to delet</span>e'),
     }),<span class="cstat-no" title="statement not covered" ></span>
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
-      title: 'De<span class="cstat-no" title="statement not covered" >lete Team',</span>
-      readOnlyHint: <span class="cstat-no" title="statement not covered" >false,</span>
+    annotations: {
+      title: 'Delete Team',<span class="cstat-no" title="statement not covered" ></span>
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false,</span>
       destructiveHint: true,
-      idempotentHint: true,<span class="cstat-no" title="statement not covered" ></span>
-      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
-    },
-    execute: async (input, { log }) =&gt; {<span class="cstat-no" title="statement not covered" ></span>
-      const { te<span class="cstat-no" title="statement not covered" >amId } = input;</span>
+      idempotentHint: true,
+      openWorldHint: true,
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (input, { log }) =&gt; {
+      const { teamId } = input;
 &nbsp;
       log.info('Deleting team', { teamId });
 &nbsp;
-      try {<span class="cstat-no" title="statement not covered" ></span>
+      try {
         const response = await apiClient.delete(`/teams/${teamId}`);
 &nbsp;
         if (!response.success) {
           throw new UserError(`Failed to delete team: ${response.error?.message || 'Unknown error'}`);
-        }
-&nbsp;
-        log.info('Successfully deleted team', { teamId });
-&nbsp;
-        return formatSuccessResponse({
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        log.info<span class="cstat-no" title="statement not covered" >('Successfully deleted team', { teamId });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return f<span class="cstat-no" title="statement not covered" >ormatSuccessResponse({</span>
           message: `Team ${teamId} deleted successfully`,
-        }).content[0].text;<span class="cstat-no" title="statement not covered" ></span>
-      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('E<span class="cstat-no" title="statement not covered" >rror deleting</span> team', { teamId, error: errorMessage });
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
+        }).content[0].text;
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+<span class="cstat-no" title="statement not covered" >        log.error('Error deleting team', { teamId, error: errorMessage });</span>
+        if (error instanceof UserError) throw error;
         throw new UserError(`Failed to delete team: ${errorMessage}`);
       }
     },
   });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   // List organizations
   server.addTool({
     name: 'list-organizations',
     description: 'List user organizations',
-    parameters: OrganizationFiltersSchema,
-    annotations: {
-      title: 'List Organizations',
-      readOnlyHint: true,
-      openWorldHint: true,
-    },
-    execute: asyn<span class="fstat-no" title="function not covered" >c </span>(input, { log }) =&gt; {
-      const { search, limit, offset } =<span class="cstat-no" title="statement not covered" > input</span>;
+    parameters: O<span class="fstat-no" title="function not covered" >rg</span>anizationFiltersSchema,
+    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+      title:<span class="cstat-no" title="statement not covered" > 'List Organizations',</span>
+      readOn<span class="cstat-no" title="statement not covered" >lyHint: true,</span>
+      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (<span class="cstat-no" title="statement not covered" >input, { log }) =&gt; {</span>
+      const { search, limit, offset } = input;
 <span class="cstat-no" title="statement not covered" ></span>
-      log.in<span class="cstat-no" title="statement not covered" >fo('Listing organizations', {</span>
+      log.info('<span class="cstat-no" title="statement not covered" >Listing organizations', {</span>
         search,<span class="cstat-no" title="statement not covered" ></span>
-        limit,<span class="cstat-no" title="statement not covered" ></span>
-        offset,<span class="cstat-no" title="statement not covered" ></span>
-      });
+        limit,
+        offset,
+      });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const params<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt; = {</span>
+      try {
+        const params: Record&lt;string, unknown&gt; = {
           limit,
-          offset,
-        };<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (search) params.search = search;
+          offset<span class="cstat-no" title="statement not covered" >,</span>
+        };
 &nbsp;
-        const response = await apiClient.get('/organizations', { params });
+        if (search) params.search = s<span class="cstat-no" title="statement not covered" >earch;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (!response.success) {
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get('/organizations', { params });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
           throw new UserError(`Failed to list organizations: ${response.error?.message || 'Unknown error'}`);
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const or<span class="cstat-no" title="statement not covered" >ganizations = response.data || [];</span>
-        const metada<span class="cstat-no" title="statement not covered" >ta = response</span>.metadata;
-<span class="cstat-no" title="statement not covered" ></span>
+        }
+&nbsp;
+        const organizations = response.data || [];
+<span class="cstat-no" title="statement not covered" >        const metadata = response.metadata;</span>
+&nbsp;
         // Type guard for organizations array
         const organizationsArray = Array.isArray(organizations) ? organizations : [];
 &nbsp;
         log.info('Successfully retrieved organizations', {
-<span class="cstat-no" title="statement not covered" >          count: organizationsArray.length,</span>
+          count: organizationsArray.length,
           total: metadata?.total,
         });
 &nbsp;
-        return formatSuccessResponse({
-          organizations: organizationsArray,
-          pagination: {
-            total: metadata?.total || organizationsArray.length,
-            limit,
+        return fo<span class="fstat-no" title="function not covered" >rm</span>atSuccessResponse({
+          organizations: organizationsArra<span class="cstat-no" title="statement not covered" >y,</span>
+          pa<span class="cstat-no" title="statement not covered" >gination: {</span>
+<span class="cstat-no" title="statement not covered" >            total: metadata?.total || organizationsArray.length,</span>
+            limit,<span class="cstat-no" title="statement not covered" ></span>
             offset,
-            hasMo<span class="fstat-no" title="function not covered" >re</span>: (metadata?.total || 0) &gt; (offset + organizationsArray.length),
-          },<span class="cstat-no" title="statement not covered" ></span>
+            hasMore: (metadata?.total || 0) &gt; (offset + organizationsArray.length),
+          },
         });<span class="cstat-no" title="statement not covered" ></span>
-      } catc<span class="cstat-no" title="statement not covered" >h (error: unknown) {</span>
-        const errorMessage = error instan<span class="cstat-no" title="statement not covered" >ceof Error ? error.message : String(error);</span>
+      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
+        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.message : String(error);</span>
         log.error('Error listing organizations', { error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to list organizations: ${errorMessage}`);
+        if (error instanceof UserErro<span class="cstat-no" title="statement not covered" >r) throw error</span>;
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to list organizations: ${errorMessage}`);</span>
       }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  // Get organization details<span class="cstat-no" title="statement not covered" ></span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'get-organ<span class="cstat-no" title="statement not covered" >ization',</span>
+    },
+  });
+<span class="cstat-no" title="statement not covered" ></span>
+  // Get organiz<span class="cstat-no" title="statement not covered" >ation details</span>
+  server.addTool({
+    name: 'get-organization',
     description: 'Get detailed information about a specific organization',
-    parameters: z.object({
-      organizationId: z.number(<span class="cstat-no" title="statement not covered" >).min(1).desc</span>ribe('Organization ID to retrieve'),
-    }),<span class="cstat-no" title="statement not covered" ></span>
+    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
+      organizationId: z.number().min(1).describe('Organization ID to retrieve'),
+    }),
     annotations: {
       title: 'Get Organization Details',
       readOnlyHint: true,
-      openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
-    },
-    execute: async (input, { log }) =&gt; {
-      const { organizationId } = input;
-&nbsp;
+      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
+      const { organi<span class="cstat-no" title="statement not covered" >zationId } = </span>input;
+<span class="cstat-no" title="statement not covered" ></span>
       log.info('Getting organization details', { organizationId });
+&nbsp;
+      try {
+        const response = await apiClient.get(`/organizations/${organizationId}`);
 <span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get(`/organizations/${organizationId}`);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+        if (!response.success) {
           throw new UserError(`Failed to get organization: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
         const organization = response.data;
-<span class="cstat-no" title="statement not covered" >        if (!organization || typeof organization !== 'object') {</span>
+        if (!organization || typeof organization !== 'object') {
           throw new UserError(`Organization with ID ${organizationId} not found`);
         }
 &nbsp;
-        // Type guard for organization object
-        const orgObj = organization as { name?: unknown };
-&nbsp;
-        log.info('Successfully retrieved organization', {
-          organizationId,
-          name: String(orgObj.name ?? 'unknown'),
-        });<span class="fstat-no" title="function not covered" ></span>
+        // Type g<span class="fstat-no" title="function not covered" >ua</span>rd for organization object
+        const orgObj = organization as { name?: unknown };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        retu<span class="cstat-no" title="statement not covered" >rn formatSuccessResponse({ organization }).content[0].t</span>ext;
-      } catc<span class="cstat-no" title="statement not covered" >h (error: unknown) {</span>
-        const errorMessage = error <span class="cstat-no" title="statement not covered" >ins</span>tanceof Error ? error.message : String(error);
-        log.erro<span class="cstat-no" title="statement not covered" >r('Error getting organization', { organizationId, error: errorMessage });</span>
-        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) thro</span>w error;
+        log.<span class="cstat-no" title="statement not covered" >info('Successfully retrieved organization', {</span>
+          organizationId,<span class="cstat-no" title="statement not covered" ></span>
+          name: <span class="cstat-no" title="statement not covered" >String(orgObj.name ?? 'unknown'),</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({ organization }).con</span>tent[0].text;
+      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
+        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.message </span>: String(error);
+        log.error('Error getting organization', { organizationId, error: errorMessage });
+        if (error instanceof User<span class="cstat-no" title="statement not covered" >Error) throw error;</span>
         throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to get organization details: ${errorMessage}`);</span>
       }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+    },
   });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  // Create organization<span class="cstat-no" title="statement not covered" ></span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'create-or<span class="cstat-no" title="statement not covered" >ganization',</span>
-    description: 'Create a new organization',
-    parameters: CreateOrganizationSch<span class="cstat-no" title="statement not covered" >ema,</span>
-    annotations:<span class="cstat-no" title="statement not covered" > {</span>
-      title: 'Create<span class="cstat-no" title="statement not covered" > New Organization',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+  // Create organiza<span class="cstat-no" title="statement not covered" >tion</span>
+  server.addTool({
+    name: 'create-organization',
+    description: 'Create a new <span class="cstat-no" title="statement not covered" >organization'</span>,
+    parameters: <span class="cstat-no" title="statement not covered" >CreateOrganizationSchema,</span>
+    annotations: {
+      title: 'Create New Organization',
       readOnlyHint: false,
       idempotentHint: false,
-      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+      openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
+    },
     execute: async (input, { log }) =&gt; {
       const { name, description } = input;
 &nbsp;
       log.info('Creating new organization', { name });
 <span class="cstat-no" title="statement not covered" ></span>
-      try {
-        const organizationData = {
-          name,
-          description,
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const or<span class="cstat-no" title="statement not covered" >ganizationData = {</span>
+          name,<span class="cstat-no" title="statement not covered" ></span>
+          descri<span class="cstat-no" title="statement not covered" >ption,</span>
         };
-<span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.post('/organizations', organizationData);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!respons<span class="cstat-no" title="statement not covered" >e.success) {</span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to create organization: ${response.error?.message || 'Unkno</span>wn error'}`);
+&nbsp;
+        const response = await apiClient.post('/organizations', organizationData);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (!response.success) {</span>
+          throw new UserError(`Failed to create organization: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
         const organization = response.data;
         if (!organization || typeof organization !== 'object') {
-<span class="cstat-no" title="statement not covered" >          throw new UserError('Organization creation failed - no data returned');</span>
+          throw new UserError('Organization creation failed - no data returned');
         }
 &nbsp;
         // Type guard for organization object
         const orgObj = organization as { id?: unknown; name?: unknown };
 &nbsp;
         log.info('Successfully created organization', {
-          organizationId: String(orgObj.id ?? 'unknown'),
-          name: String(orgObj.name ?? 'unknown'),
-        });
-&nbsp;
-        return formatSuccessResponse({
-          organization,
-          message<span class="fstat-no" title="function not covered" >: </span>`Organization "${name}" created successfully`,
-        }).content[0].text;<span class="cstat-no" title="statement not covered" ></span>
-      } catc<span class="cstat-no" title="statement not covered" >h (error: unknown) {</span>
-        cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('Error creating<span class="cstat-no" title="statement not covered" > organization', { name, error: errorMessage });</span>
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
-        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to create organization: ${errorMessage}`);</span>
+          organiz<span class="fstat-no" title="function not covered" >at</span>ionId: String(orgObj.id ?? 'unknown'),
+          name: String(orgObj.name ?? '<span class="cstat-no" title="statement not covered" >unknow</span>n'),
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return formatSuccessRespo<span class="cstat-no" title="statement not covered" >nse({</span>
+          organi<span class="cstat-no" title="statement not covered" >zation,</span>
+          message: `<span class="cstat-no" title="statement not covered" >Organization "${name}" created successfully`,</span>
+        }).content[0].text;
+      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.error('Error creating organization', { name, error: errorMessage });
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to create organization: ${errorMessage}`);
       }
     },<span class="cstat-no" title="statement not covered" ></span>
   });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  // Update organization
-  server.addTool({
+<span class="cstat-no" title="statement not covered" ></span>
+  // Update organiza<span class="cstat-no" title="statement not covered" >tion</span>
+  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
     name: 'update-organization',
-    description: 'Update organization<span class="cstat-no" title="statement not covered" > information',</span>
-    parameters: <span class="cstat-no" title="statement not covered" >UpdateOrganizationSchema,</span>
-    annotations:<span class="cstat-no" title="statement not covered" > {</span>
-      title: 'Update<span class="cstat-no" title="statement not covered" > Organization</span> Information',
-      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false,</span>
+    description: 'Update organization information',
+    parameters: UpdateOrganizationSchema,
+    annotations: {
+<span class="cstat-no" title="statement not covered" >      title: 'Update Organization Information',</span>
+      readOnlyHint: false,
       idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
-<span class="cstat-no" title="statement not covered" >      const { organizationId, name, description } = input;</span>
+      const { organizationId, name, description } = input;
 &nbsp;
       log.info('Updating organization', { organizationId });
 &nbsp;
-      try {
-        const updateData: Record&lt;string, unknown&gt; = {};
-        if (name !== undefined) updateData.name = name;
+      try {<span class="fstat-no" title="function not covered" ></span>
+        const updateData: Record&lt;string, unknown&gt; = {};<span class="cstat-no" title="statement not covered" ></span>
+        if (<span class="cstat-no" title="statement not covered" >name !== undefined) updateData.name = name;</span>
         if (description !== undefined) updateData.description = description;
 &nbsp;
         if (Object.keys(updateData).length === 0) {
-          throw n<span class="fstat-no" title="function not covered" >ew</span> UserError('No update data provided');
-        }<span class="cstat-no" title="statement not covered" ></span>
+          throw new UserError('No update data provided');
+        }
 <span class="cstat-no" title="statement not covered" ></span>
-        const response = await apiClient.patch(`/organizations/${organizationId}`, updateData);
+        const response = await apiC<span class="cstat-no" title="statement not covered" >lient.patch(`/organizations/${organizationId}`, updateData);</span>
 &nbsp;
         if (!response.success) {
           throw new UserError(`Failed to update organization: ${response.error?.message || 'Unknown error'}`);
         }
 <span class="cstat-no" title="statement not covered" ></span>
-        const organization = respon<span class="cstat-no" title="statement not covered" >se.data;</span>
-        if (!organization || typeof organization !== 'object') {
+        const or<span class="cstat-no" title="statement not covered" >ganization = response.data;</span>
+        if (!organiz<span class="cstat-no" title="statement not covered" >ation || typeof organization !== 'obje</span>ct') {
           throw new UserError('Organization update failed - no data returned');
-        }
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        // Type guard for organization object
+        const orgObj = organizati<span class="cstat-no" title="statement not covered" >on as { name?: unknown };</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully updated organization', {</span>
+          organizationId,
+          name: String(orgObj.name <span class="cstat-no" title="statement not covered" >?? 'unknown'),</span>
+          update<span class="cstat-no" title="statement not covered" >dFields: Object.keys(updateData),</span>
+        });
 &nbsp;
-        // Type guard for organ<span class="cstat-no" title="statement not covered" >ization object</span>
-        const or<span class="cstat-no" title="statement not covered" >gObj = organization as { name?: unknown };</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        log.info('Successfully updated organization', {
-          organizatio<span class="cstat-no" title="statement not covered" >nId,</span>
-          name: Stri<span class="cstat-no" title="statement not covered" >ng(orgObj.name ?? 'unknown'),</span>
-          updatedFields: Object.keys(updateData),
-        });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
+        return formatSuccessResponse({
           organization,
-          message: 'Organization up<span class="cstat-no" title="statement not covered" >dated successf</span>ully',
+          message: 'Organization updated successfully',
         }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -2837,22 +2837,22 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to update organization: ${errorMessage}`);
       }<span class="cstat-no" title="statement not covered" ></span>
-    },
-  });
-&nbsp;
-  // Delete organization
+    },<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  // Delete orga<span class="cstat-no" title="statement not covered" >nization</span>
   server.addTool({
-    name: 'delete-organization',<span class="cstat-no" title="statement not covered" ></span>
-    description:<span class="cstat-no" title="statement not covered" > 'Delete an organization',</span>
-    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
-      organizationId<span class="cstat-no" title="statement not covered" >: z.number().</span>min(1).describe('Organization ID to delete'),
-    }),<span class="cstat-no" title="statement not covered" ></span>
+    name: 'delete-organization',
+    description: 'Delete an organization',
+<span class="cstat-no" title="statement not covered" >    parameters: z.object({</span>
+      organizationId: z.number().min(1).describe('Organization ID to delete'),
+    }),
     annotations: {
       title: 'Delete Organization',
       readOnlyHint: false,
-<span class="cstat-no" title="statement not covered" >      destructiveHint: true,</span>
+      destructiveHint: true,
       idempotentHint: true,
-<span class="cstat-no" title="statement not covered" >      openWorldHint: true,</span>
+      openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
       const { organizationId } = input;
@@ -2953,7 +2953,7 @@ export default addPermissionTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

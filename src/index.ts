@@ -57,8 +57,23 @@ async function main(): Promise<void> {
   }
 }
 
-// Start the server
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Start the server only when running directly (not in test environment)
+function isMainModule(): boolean {
+  // In test environment, avoid using import.meta.url
+  if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {
+    return false;
+  }
+  
+  try {
+    // Use import.meta.url for runtime detection
+    return import.meta.url === `file://${process.argv[1]}`;
+  } catch {
+    // Fallback for environments that don't support import.meta
+    return false;
+  }
+}
+
+if (isMainModule()) {
   main().catch((error) => {
     // Use stderr instead of console.error to avoid corrupting MCP stdio protocol
     process.stderr.write(`Unhandled error during server startup: ${error}\n`);

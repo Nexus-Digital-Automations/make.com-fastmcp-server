@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/61</span>
+                <span class='fraction'>0/55</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/59</span>
+                <span class='fraction'>0/53</span>
             </div>
         
             
@@ -332,12 +332,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -538,6 +535,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -596,54 +596,54 @@
  * Configure comprehensive audit system for compliance and security monitoring
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { AuditConfigSchema } from '../schemas/index.js';</span>
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition,</span> ToolExecutionContext } from '../../shared/types/tool-context.js';
-import { auditLogge<span class="cstat-no" title="statement not covered" >r } from '../../../lib/audit-lo</span>gger.js';
-import { formatSuccessResp<span class="cstat-no" title="statement not covered" >onse } from '../../../utils/response-for</span>matter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-/**
- * Audit System Manager class
- */
-class AuditSystemManager {
-  private static insta<span class="cstat-no" title="statement not covered" >nce: </span>AuditSystemManager | null = null;
-  private auditConfigurati<span class="cstat-no" title="statement not covered" >ons: Map&lt;s</span>tring, unknown&gt; = new Map();
-  private auditDevi<span class="cstat-no" title="statement not covered" >ces: Map&lt;s</span>tring, unknown&gt; = new Map();
-<span class="fstat-no" title="function not covered" ></span>
-  public<span class="cstat-no" title="statement not covered" > static getInstance(): AuditSystemManager {</span>
-    if (!Aud<span class="cstat-no" title="statement not covered" >itSystemManager.instance) {</span>
-      AuditSystemManager.instance = new AuditSystemManager();
-    }<span class="cstat-no" title="statement not covered" ></span>
-    return AuditSystemManager.instance;
-  }
+import { UserError } from 'fastmcp';
+import { AuditConfigSchema } from '../schemas/index.js';
+import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
+import { auditLogger } from '../../../lib/audit-logger.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
+/**
+ * Audit System Manage<span class="cstat-no" title="statement not covered" >r cla</span>ss
+ */<span class="cstat-no" title="statement not covered" ></span>
+class AuditSystemMa<span class="cstat-no" title="statement not covered" >nager {</span>
+  pr<span class="fstat-no" title="function not covered" >iv</span>ate static instance: AuditSystemManager | null = null;
+  privat<span class="cstat-no" title="statement not covered" >e auditConfigurations: Map&lt;string, unknown&gt; = new Map();</span>
+  private au<span class="cstat-no" title="statement not covered" >ditDevices: Map&lt;string, unknown&gt; = new Map();</span>
+&nbsp;
+  public<span class="cstat-no" title="statement not covered" > static getInstance(): AuditSystemMa</span>nager {
+    if (!AuditSystemManager.instance) {
+      AuditSystemManager.instance = new AuditSystemManager();
+    }
+    return AuditSystemManager.instance;
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
-   *<span class="fstat-no" title="function not covered" > C</span>onfigure comprehensive audit system
-   */<span class="cstat-no" title="statement not covered" ></span>
+   * Configure comprehensive audit <span class="cstat-no" title="statement not covered" >system<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+   */
   public async configureAuditSystem(config: Parameters&lt;typeof AuditConfigSchema.parse&gt;[0]): Promise&lt;{
-    devicesConfigured: number;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    devicesConfigured: number;
     retentionPeriod: number;
     complianceFrameworks: string[];
     encryptionEnabled: boolean;
-    immutableStorage: boolean;
-  }&gt; {
+    immu<span class="cstat-no" title="statement not covered" >tableStorage: boolean;<span class="fstat-no" title="function not covered" ></span></span>
+  }&gt; {<span class="cstat-no" title="statement not covered" ></span>
     const validatedInput = AuditConfigSchema.parse(config);
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    // Confi<span class="cstat-no" title="statement not covered" >gure audit devices</span>
+&nbsp;
+    // Configure audit devices
     const auditDeviceConfigs = validatedInput.auditDevices.map(device =&gt; ({
       type: device.type,
       path: device.path,
       format: device.format,
-      config: device.config,
+      co<span class="cstat-no" title="statement not covered" >nfig: device.config,</span>
     }));
 &nbsp;
-    // S<span class="cstat-no" title="statement not covered" >tore device configurations</span>
+    // Store device configurations
     auditDeviceConfigs.forEach((deviceConfig, index) =&gt; {
       this.auditDevices.set(`device-${index}`, {
-        ...deviceConfig,
+<span class="cstat-no" title="statement not covered" >        ...deviceConfig,</span>
         id: `device-${index}`,
         status: 'active',
-<span class="cstat-no" title="statement not covered" >        createdAt: new Date(),</span>
+        createdAt: new Date(),
       });
     });
 &nbsp;
@@ -652,10 +652,10 @@ class AuditSystemManager {
       ...validatedInput,
       configuredAt: new Date(),
       status: 'active',
-    });
+    });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
     // Log audit configuration
-    awai<span class="cstat-no" title="statement not covered" >t auditLogger.logEvent({</span>
+    await auditLogger.logEvent({
       level: 'info',
       category: 'security',
       action: 'audit_system_configured',
@@ -663,33 +663,33 @@ class AuditSystemManager {
       details: {
         auditDevices: validatedInput.auditDevices.length,
         retentionPeriodDays: validatedInput.retention.retentionPeriodDays,
-        complianceFrameworks: validatedInput.compliance.frameworks,
-      },
+<span class="fstat-no" title="function not covered" ></span>        complianceFrameworks: validatedInput.compliance.frameworks,
+      },<span class="cstat-no" title="statement not covered" ></span>
       riskLevel: 'low',
-<span class="fstat-no" title="function not covered" >    })</span>;
-<span class="cstat-no" title="statement not covered" ></span>
+    });
+&nbsp;
     return {
-      devicesConfigured: validatedInput.auditDevices.length,
-      retentionPeriod: validatedInput.retention.retentionPeriodDays,
+<span class="fstat-no" title="function not covered" ></span>      devicesConfigured: validatedInput.auditDevices.length,
+      re<span class="cstat-no" title="statement not covered" >tentionPeriod: validatedInput.retention.retentionPe<span class="fstat-no" title="function not covered" >ri</span>odDays,<span class="cstat-no" title="statement not covered" ></span></span>
       complianceFrameworks: validatedInput.compliance.frameworks,
-<span class="fstat-no" title="function not covered" ></span>      encryptionEnabled: validatedInput.retention.encryptionEnabled,
-      im<span class="cstat-no" title="statement not covered" >mutableStorage: validatedInput.retention.immutableS<span class="fstat-no" title="function not covered" >to</span>rage,<span class="cstat-no" title="statement not covered" ></span></span>
+      encryptionEnabled: validatedInput.retention.encryptionEnabled,
+      immutableStorage: validatedInput.retention.immutableStorage,
     };
   }
 &nbsp;
   /**
    * Get audit configuration
-   */
-  public getAuditConfiguration(): unknown {
-    return this.auditConfigurations.get('default');
-  }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+   *<span class="fstat-no" title="function not covered" >/</span>
+  public getAuditConfig<span class="cstat-no" title="statement not covered" >uration(): unknown {</span>
+    retu<span class="cstat-no" title="statement not covered" >rn this.auditConfigurations.get('default');</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * List au<span class="cstat-no" title="statement not covered" >dit devices</span>
-   */
-  public<span class="cstat-no" title="statement not covered" > listAuditDevices(): Arr</span>ay&lt;{ id: string; type: string; status: string }&gt; {
+   * List audit devices
+   */<span class="cstat-no" title="statement not covered" ></span>
+  public listAuditDevices(): Array&lt;{ id: string; type: string; status: string }&gt; {
     return Array.from(this.auditDevices.entries()).map(([id, device]) =&gt; ({
-      id<span class="cstat-no" title="statement not covered" >,</span>
+      id,
       type: (device as { type: string }).type,
       status: (device as { status: string }).status,
     }));
@@ -702,17 +702,17 @@ class AuditSystemManager {
     const device = this.auditDevices.get(deviceId);
     if (!device) {
       throw new Error(`Audit device not found: ${deviceId}`);
-    }
+<span class="fstat-no" title="function not covered" >    }</span>
 &nbsp;
-    (device as { status: string }).status = status;
-<span class="fstat-no" title="function not covered" ></span>
-    // Log device status update
-    await auditLogger.logEve<span class="cstat-no" title="statement not covered" >nt({</span>
-      level: 'info',<span class="cstat-no" title="statement not covered" ></span>
-      category: 'security',<span class="cstat-no" title="statement not covered" ></span>
-      action: 'audit_device_status<span class="cstat-no" title="statement not covered" >_updated',</span>
+    (device as { status: str<span class="cstat-no" title="statement not covered" >ing }).status = status;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    // Log device status update<span class="cstat-no" title="statement not covered" ></span>
+    await auditLogger.logEvent({<span class="cstat-no" title="statement not covered" ></span>
+      level: 'info',
+      ca<span class="cstat-no" title="statement not covered" >tegory: 'security',</span>
+      action: 'audit_device_status_updated',
       success: true,
-      de<span class="cstat-no" title="statement not covered" >tails: {</span>
+      details: {
         deviceId,
         newStatus: status,
         deviceType: (device as { type: string }).type,
@@ -722,86 +722,86 @@ class AuditSystemManager {
   }
 &nbsp;
   /**
-   * Generate audit trail summary
+   * Gen<span class="cstat-no" title="statement not covered" >erate audit trail summary</span>
    */
   public async generateAuditTrailSummary(period: { start: Date; end: Date }): Promise&lt;{
-    tota<span class="cstat-no" title="statement not covered" >lEvents: number;</span>
+    totalEvents: number;
     criticalEvents: number;
     complianceViolations: number;
     evidenceIntegrity: boolean;
   }&gt; {
     // Simulate audit trail analysis
     const totalEvents = Math.floor(Math.random() * 100000) + 50000;
-    const criticalEvents = Math.floor(Math.random() * 50) + 10;
+<span class="fstat-no" title="function not covered" >    co</span>nst criticalEvents = Math.floor(Math.random() * 50) + 10;
     const complianceViolations = Math.floor(Math.random() * 5);
-    const evidenceIntegrity = complianceViolations === 0;
-<span class="fstat-no" title="function not covered" ></span>
-    // Log audit trail summary generation
-    await auditLogger.logE<span class="cstat-no" title="statement not covered" >vent({</span>
-      level: 'info',<span class="cstat-no" title="statement not covered" ></span>
-      category: 'security',<span class="cstat-no" title="statement not covered" ></span>
-      ac<span class="cstat-no" title="statement not covered" >tion: 'audit_trail_summary_generated',</span>
+    const evidenceIntegrit<span class="cstat-no" title="statement not covered" >y = complianceViolations === 0;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    // Log audit trail summary <span class="cstat-no" title="statement not covered" >generation</span>
+    awai<span class="cstat-no" title="statement not covered" >t auditLogger.logEvent({</span>
+      level: 'info',
+      category: 'security',
+      action: 'audit_trail_summary_generated',
       success: true,
       details: {
         period,
         totalEvents,
         criticalEvents,
         complianceViolations,
-      },
-      riskLevel: complianceViolations &gt; 0 ? 'medium' : 'low',
-    });
-<span class="fstat-no" title="function not covered" ></span>
-    return {<span class="cstat-no" title="statement not covered" ></span>
-      to<span class="cstat-no" title="statement not covered" >talEvents,</span>
-      criticalEvents,
-      complianceViolations,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      evidenceIntegrity,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="fstat-no" title="function not covered" ></span>      },
+      riskLevel: complia<span class="cstat-no" title="statement not covered" >nceViolations &gt; 0 ? 'medium' : 'low',</span>
+    });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+    return {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      totalEvents,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      criticalEvents,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      complianceViolations,
+      evidenceIntegrity,
+    };
   }
 &nbsp;
   /**
    * Validate audit log integrity
-   */
-  public async validateAuditLogIntegrity(): Promise&lt;{
-    validated: boolean;
-    total<span class="fstat-no" title="function not covered" >Logs: number;</span>
-    corruptedLogs: numb<span class="cstat-no" title="statement not covered" >er;</span>
-<span class="cstat-no" title="statement not covered" >    integrityScore: number;</span>
+   */<span class="fstat-no" title="function not covered" ></span>
+  public async validate<span class="cstat-no" title="statement not covered" >AuditLog</span>Integrity(): Promise&lt;{
+<span class="cstat-no" title="statement not covered" >    validated: boolean;</span>
+    totalLogs: number;
+    corruptedLogs: number;
+    integrityScore: number;
   }&gt; {
     // Simulate integrity validation
     const totalLogs = Math.floor(Math.random() * 1000000) + 500000;
     const corruptedLogs = Math.floor(Math.random() * 10);
     const integrityScore = corruptedLogs === 0 ? 100 : Math.max(90, 100 - (corruptedLogs / totalLogs) * 100);
 &nbsp;
-    return {
-      validated: true,
-      totalLogs,
-      corruptedLo<span class="fstat-no" title="function not covered" >gs</span>,
-      integrityScore,<span class="cstat-no" title="statement not covered" ></span>
+    return {<span class="fstat-no" title="function not covered" ></span>
+      validated: true,<span class="cstat-no" title="statement not covered" ></span>
+      totalL<span class="cstat-no" title="statement not covered" >ogs,</span>
+      corrup<span class="cstat-no" title="statement not covered" >tedLogs,</span>
+      integr<span class="cstat-no" title="statement not covered" >ityScore,</span>
     };<span class="cstat-no" title="statement not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * Get audit system statistics<span class="cstat-no" title="statement not covered" ></span>
+   * Get audit s<span class="cstat-no" title="statement not covered" >ystem statistics</span>
    */<span class="cstat-no" title="statement not covered" ></span>
-  public getAuditStatistics(): {<span class="cstat-no" title="statement not covered" ></span>
-    totalDevices<span class="cstat-no" title="statement not covered" >: number;</span>
-    activeDevices: number;<span class="cstat-no" title="statement not covered" ></span>
+  public getAuditStatistics(): {
+    totalDevices: number;
+    activeDevices: number;
     disabledDevices: number;
-    errorDevices: number;
+    errorDevices<span class="cstat-no" title="statement not covered" >: number;</span>
     totalConfigurations: number;
   } {
-    const device<span class="cstat-no" title="statement not covered" >s = Array.from(this.auditDevices.values());</span>
-&nbsp;
-    return {
+    const devices = Array.from(this.auditDevices.values());
+<span class="cstat-no" title="statement not covered" ></span>
+    return {<span class="cstat-no" title="statement not covered" ></span>
       totalDevices: devices.length,
-      activeDevi<span class="cstat-no" title="statement not covered" >ces: devices.filter(d =&gt; (d as { status: string }</span>).status === 'active').length,
-      disabledDe<span class="cstat-no" title="statement not covered" >vices: devices.filter(d =&gt; (d as { status: string }).status === 'disabled').length,</span>
-      errorDevices: devices.filter(d =&gt; (d as { status: string }).status === 'error').length,
-      totalConfigurations: this.auditConfigurations.size,
-    };<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-}<span class="cstat-no" title="statement not covered" ></span>
+      activeDevices: devices.filter(d =&gt; (d as { status: string }).status === 'active').length,
+      disabledDevices: devices.filter<span class="cstat-no" title="statement not covered" >(d =&gt; (d as { status: string }).status === 'disabled').</span>length,
+      errorDevic<span class="cstat-no" title="statement not covered" >es: devices.filter(d =&gt; (d as { status: string }).status === 'error').l</span>ength,
+      totalConfi<span class="cstat-no" title="statement not covered" >gurations: this.auditConfigurations.size,</span>
+    };
+  }
+}
 &nbsp;
 /**
  * Configure audit system tool configuration
@@ -862,7 +862,7 @@ export function createConfigureAuditSystemTool(context: ToolContext): ToolDefini
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

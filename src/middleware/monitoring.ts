@@ -374,6 +374,19 @@ class MonitoringMiddleware {
   }
 }
 
+// Export class for direct instantiation
+export { MonitoringMiddleware };
+
+// Lazy singleton pattern to avoid constructor issues in tests
+let monitoringInstance: MonitoringMiddleware | null = null;
+
+export function getMonitoringInstance(): MonitoringMiddleware {
+  if (!monitoringInstance) {
+    monitoringInstance = new MonitoringMiddleware();
+  }
+  return monitoringInstance;
+}
+
 // Create and export singleton instance
-export const monitoring = new MonitoringMiddleware();
+export const monitoring = getMonitoringInstance();
 export default monitoring;

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/396</span>
+                <span class='fraction'>0/387</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/403</span>
+                <span class='fraction'>0/396</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/38</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/396</span>
+                <span class='fraction'>0/387</span>
             </div>
         
             
@@ -1266,16 +1266,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2359,7 +2353,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2464,38 +2464,38 @@
  * Comprehensive tools for managing custom variables at organization, team, and scenario levels
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError } from 'fastmcp';
+import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-<span class="cstat-no" title="statement not covered" >import { MakeVariable, MakeIncompleteExecution } from '../types</span>/index.js';
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-import { formatSuc<span class="cstat-no" title="statement not covered" >cessResponse } from</span> '../utils/response-formatter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// Extended variable<span class="cstat-no" title="statement not covered" > types for comprehensive management</span>
-export interface MakeCustomVaria<span class="cstat-no" title="statement not covered" >ble extends MakeVariable {</span>
+import { MakeVariable, MakeIncompleteExecution } from '../types/index.js';
+import logger from '../lib/lo<span class="cstat-no" title="statement not covered" >gger.js';</span>
+import { formatSuccessResponse } from '../utils/response-formatter.js';
+&nbsp;
+// Extended variable types for comprehensive management
+export interface MakeCustomVariable extends MakeVariable {
   organizationId?: number;
-  teamId?: number;<span class="cstat-no" title="statement not covered" ></span>
+  teamId?: number;
   scenarioId?: number;
   description?: string;
   tags?: string[];
   lastModified: string;
   modifiedBy: number;
-  version: number;
+  version: number;<span class="cstat-no" title="statement not covered" ></span>
 }
 &nbsp;
 // Input validation schemas
 const VariableCreateSchema = z.object({
   name: z.string().min(1).max(100).describe('Variable name (1-100 characters)'),
-  value: z.any().describe('Va<span class="cstat-no" title="statement not covered" >riable value (string, number, boolean, or JSON object)'),</span>
+  value: z.any().describe('Variable value (string, number, boolean, or JSON object)'),
   type: z.enum(['string', 'number', 'boolean', 'json']).describe('Variable data type'),
   scope: z.enum(['organization', 'team', 'scenario']).describe('Variable scope level'),
-  organizationId: z.number().min(1).optional().describe('Organization ID (required for organization scope)'),
+  organizationId: z.number(<span class="cstat-no" title="statement not covered" >).min(1).optional().describe('Organization ID (required for organization scope)'),</span>
   teamId: z.number().min(1).optional().describe('Team ID (required for team/scenario scope)'),
   scenarioId: z.number().min(1).optional().describe('Scenario ID (required for scenario scope)'),
   description: z.string().max(500).optional().describe('Variable description (max 500 characters)'),
   tags: z.array(z.string()).default([]).describe('Variable tags for organization'),
   isEncrypted: z.boolean().default(false).describe('Whether to encrypt variable value'),
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
+}).strict();
 &nbsp;
 const VariableUpdateSchema = z.object({
   variableId: z.number().min(1).describe('Variable ID to update'),
@@ -2503,194 +2503,194 @@ const VariableUpdateSchema = z.object({
   value: z.any().optional().describe('New variable value'),
   type: z.enum(['string', 'number', 'boolean', 'json']).optional().describe('New variable data type'),
   description: z.string().max(500).optional().describe('New variable description'),
-  tags: z.array(z.string()).optional().describe('New variable tags'),
+  tags: z.array(z.string()).optional<span class="cstat-no" title="statement not covered" >().describe('New variable tags'),</span>
   isEncrypted: z.boolean().optional().describe('Update encryption setting'),
 }).strict();
 &nbsp;
 const VariableListSchema = z.object({
-  scope: z.enum(['organization', 'team', 'scenario', 'all']).default('all').describe('Filter by variable scope'),
-  organizationId: z.number().min(1).<span class="cstat-no" title="statement not covered" >optional().describe('Filter by organization ID'),</span>
+  scope: z.enum(['organizatio<span class="cstat-no" title="statement not covered" >n', 'team', 'scenario', 'all']).default('all').describe('Filter by variable scope'),</span>
+  organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
   teamId: z.number().min(1).optional().describe('Filter by team ID'),
   scenarioId: z.number().min(1).optional().describe('Filter by scenario ID'),
   namePattern: z.string().optional().describe('Filter by name pattern (supports wildcards)'),
   tags: z.array(z.string()).optional().describe('Filter by tags (AND operation)'),
-  type: z.enum(['string', 'nu<span class="cstat-no" title="statement not covered" >mber', 'boolean', 'json']).optional().describe('Filter by variable type'),</span>
+  type: z.enum(['string', 'number', 'boolean', 'json']).optional().describe('Filter by variable type'),
   isEncrypted: z.boolean().optional().describe('Filter by encryption status'),
   limit: z.number().min(1).max(1000).default(100).describe('Maximum number of variables to return'),
   offset: z.number().min(0).default(0).describe('Number of variables to skip for pagination'),
   sortBy: z.enum(['name', 'createdAt', 'lastModified', 'scope']).default('name').describe('Sort field'),
   sortOrder: z.enum(['asc', 'desc']).default('asc').describe('Sort order'),
-}).strict();
-&nbsp;
-const VariableBulkOperationSchema = z.object({
-  operation: z.enum(['delete', 'update_tags', 'change_scope', 'bulk_encrypt']).describe('Bulk operation type'),
-  variableIds: z.array(z.number().min(1)).min(1).max(100).describe('Array of variable IDs (max 100)'),
-  operationData: z.record(z.any()).optional().describe('Operation-specific data'),
 }).strict<span class="fstat-no" title="function not covered" >();</span>
 <span class="cstat-no" title="statement not covered" ></span>
+cons<span class="cstat-no" title="statement not covered" >t VariableBulkOperationSchema = z.object({</span>
+  operat<span class="cstat-no" title="statement not covered" >ion: z.enum(['delete', 'update_tags', 'change_scope', 'bulk_encrypt']).describe('Bulk</span> operation type'),
+  variableIds: z.array(z.number().min(1)).min(1).max(100).describe('Array of variable IDs (max 100)'),
+  op<span class="cstat-no" title="statement not covered" >erationData: z.record(z.any()).optional().describe('Operation-specific data'),</span>
+}).stric<span class="cstat-no" title="statement not covered" >t();</span>
+&nbsp;
 cons<span class="cstat-no" title="statement not covered" >t VariableExportSchema = z.object({</span>
   scope:<span class="cstat-no" title="statement not covered" > z.enum(['organization', 'team', 'scenario', 'all']).default('all').describe('Export scope'),</span>
   organizationId: z.number().min(1).optional().describe('Organization ID for scoped export'),
-  te<span class="cstat-no" title="statement not covered" >amId: z.number().min(1).optional().describe('Team ID for scoped export'),</span>
-  scenar<span class="cstat-no" title="statement not covered" >ioId: z.number().min(1).optional().describe('Scenario ID for scoped export'),</span>
+  teamId: z.number().min(1).optional().describe('Team ID for scoped export'),
+  scenarioId: z.number().min(1).optional().describe('Scenario ID for scoped export'),
   format: z.enum(['json', 'csv', 'env']).default('json').describe('Export format'),
-  in<span class="cstat-no" title="statement not covered" >cludeEncrypted: z.boolean().default(false).describe('Include encrypted variables (values will be masked)'),</span>
-  includ<span class="cstat-no" title="statement not covered" >eMetadata: z.boolean().default(true).describe('Include metadata (tags, description, etc.)'),</span>
-}).strict();
+  includeEncrypted: z.boolean().default(false).describe('Include encrypted variables (values will be masked)'),
+  include<span class="fstat-no" title="function not covered" >Metadata: z.boolean(</span>).default(true).describe('Include metadata (tags, description, etc.)'),
+}).s<span class="cstat-no" title="statement not covered" >trict();</span>
 &nbsp;
-/**
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Validate variable scope consistency
- */
-function <span class="fstat-no" title="function not covered" >validateVariableScop</span>e(input: Record&lt;string, unknown&gt;): void {
-  co<span class="cstat-no" title="statement not covered" >nst { scope, organizationId, teamId, scenarioId } = input;</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+function val<span class="cstat-no" title="statement not covered" >idateVariableScope(input: Record&lt;string, unknown&gt;): void {</span>
+  const { scope,<span class="cstat-no" title="statement not covered" > organizationId, teamId, scenarioId } = input;</span>
   
-  if (scope <span class="cstat-no" title="statement not covered" >=== 'organization' &amp;&amp; </span>!organizationId) {
+  if (scope <span class="cstat-no" title="statement not covered" >=== 'organiz</span>ation' &amp;&amp; !organizationId) {
     throw new UserError('Organization ID is required for organization scope variables');
+  }
+  <span class="cstat-no" title="statement not covered" ></span>
+  if (scope === <span class="cstat-no" title="statement not covered" >'team' &amp;&amp; (!or</span>ganizationId || !teamId)) {
+    throw ne<span class="cstat-no" title="statement not covered" >w UserError('Organization ID and Team ID are required for team scope variables');</span>
   }<span class="cstat-no" title="statement not covered" ></span>
   <span class="cstat-no" title="statement not covered" ></span>
-  if (scope === <span class="cstat-no" title="statement not covered" >'team' &amp;&amp; (!organizationId || !teamId)) {</span>
-    throw new UserError('Organization ID and Team ID are required for team scope variables');
+  if (scope === 'sce<span class="cstat-no" title="statement not covered" >nario' &amp;&amp; (!o</span>rganizationId || !teamId || !scenarioId)) {
+    throw new Us<span class="cstat-no" title="statement not covered" >erError('Organization ID, Team ID, and Scenario ID are required for scenario scope variables');</span>
   }<span class="cstat-no" title="statement not covered" ></span>
-  
-  if (scope === 'scenario' &amp;&amp; (!organizationId || !teamId || !scenarioId)) {
-    throw ne<span class="cstat-no" title="statement not covered" >w UserError('Organization ID, Team ID, and Scenario ID are required for scenario scope variables');</span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-}<span class="cstat-no" title="statement not covered" ></span>
+}
 <span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Format variable v<span class="cstat-no" title="statement not covered" >alue based on</span> type
+/**
+ * Format va<span class="cstat-no" title="statement not covered" >riable value based on type</span>
  */<span class="cstat-no" title="statement not covered" ></span>
-function formatVaria<span class="cstat-no" title="statement not covered" >bleValue(value</span>: unknown, type: string): unknown {
-  switch (type) {
-    case 'st<span class="cstat-no" title="statement not covered" >ring':</span>
+function for<span class="cstat-no" title="statement not covered" >matVariableValue(value: unknown, type: string): unknown {</span>
+  switch (type) <span class="cstat-no" title="statement not covered" >{</span>
+    case 'string':<span class="cstat-no" title="statement not covered" ></span>
       return String(value);
-    case 'nu<span class="cstat-no" title="statement not covered" >mber': {</span>
-      const num <span class="cstat-no" title="statement not covered" >= Number(value</span>);
-      if (is<span class="cstat-no" title="statement not covered" >NaN(num)) {</span>
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Invalid number value: ${value}`);</span>
+    case 'number': {
+      const num = Nu<span class="cstat-no" title="statement not covered" >mber(value);</span>
+      if (isNaN(num)) {
+        throw new UserError(`Invalid number value: ${value}`);
       }<span class="cstat-no" title="statement not covered" ></span>
       return num;
-    }
-    case 'boolean':<span class="cstat-no" title="statement not covered" ></span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+    case 'boolean':
       if (typeof value === 'boolean') return value;
       if (typeof value === 'string') {
-        cons<span class="cstat-no" title="statement not covered" >t lower = value.toLowerCase();</span>
+        const lower = value.toLowerCase();
         if (lower === 'true' || lower === '1') return true;
-        if (<span class="cstat-no" title="statement not covered" >lower === 'fal</span>se' || lower === '0') return false;
-      }
-      throw new UserError(`Invalid boolean value: ${value}`);
+        if (lowe<span class="fstat-no" title="function not covered" >r === 'false' || </span>lower === '0') return false;
+      }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      throw new UserError(`Invalid boolean value: ${value}`);</span>
     case 'json':
-      if (typeof value === 'object') return value;
+<span class="cstat-no" title="statement not covered" >      if (typeof value === 'object') return value;</span>
       if (typeof value === 'string') {
-        t<span class="fstat-no" title="function not covered" >ry {</span>
-          return JSON.parse(<span class="cstat-no" title="statement not covered" >value);</span>
-<span class="cstat-no" title="statement not covered" >        } catch {</span>
+        try {
+          return JSON.parse(value);
+        } catch {
           throw new UserError(`Invalid JSON value: ${value}`);
-<span class="cstat-no" title="statement not covered" >        }</span>
+        }
       }
       throw new UserError(`Invalid JSON value: ${value}`);
     default:
       return value;
-  }
-}
-&nbsp;
+  }<span class="fstat-no" title="function not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 /**
  * Add custom variable management tools to FastMCP server
  */
-export function a<span class="fstat-no" title="function not covered" >dd</span>VariableTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'VariableTools' });<span class="cstat-no" title="statement not covered" ></span>
-  <span class="cstat-no" title="statement not covered" ></span>
+export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'VariableTools' });
+  
   componentLogger.info('Adding custom variable management tools');
 &nbsp;
-  // Create custom variable
+  // Create <span class="cstat-no" title="statement not covered" >custom variable</span>
   server.addTool({
-    name: 'create-custom-variable',
+    name: 'creat<span class="cstat-no" title="statement not covered" >e-custom-variable',</span>
     description: 'Create a new custom variable at organization, team, or scenario level',
-    parameters: VariableCreateSchema,
-    annotations: {
-      title:<span class="cstat-no" title="statement not covered" > 'Create Custom Variable',</span>
+    parameters: VariableCreateSchema,<span class="cstat-no" title="statement not covered" ></span>
+    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+      title: 'Create Custom Variable',
       readOnlyHint: false,
-      destructiv<span class="cstat-no" title="statement not covered" >eHint: false,</span>
+      destructiveHint: false,
       idempotentHint: false,
-      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+      openWorldHint: true,
+    },
     execute: async (input, { log }) =&gt; {
       const { name, value, type, scope, organizationId, teamId, scenarioId, description, tags, isEncrypted } = input;
 &nbsp;
       log.info('Creating custom variable', {
         name,
         type,
-        scope,
-        organizationId,
-        teamId,
+        scope,<span class="cstat-no" title="statement not covered" ></span>
+        organiza<span class="cstat-no" title="statement not covered" >tionId,</span>
+        teamId,<span class="cstat-no" title="statement not covered" ></span>
         scenarioId,
-        isEncrypted,
-      });
-<span class="cstat-no" title="statement not covered" ></span>
+        isEncrypted,<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
       try {<span class="cstat-no" title="statement not covered" ></span>
         // Validate <span class="cstat-no" title="statement not covered" >scope consistency</span>
         validateVariableScope(input);
 <span class="cstat-no" title="statement not covered" ></span>
-        // Format va<span class="cstat-no" title="statement not covered" >lue according to type</span>
-        const formattedValue = formatVariableValue(value, type);
-<span class="cstat-no" title="statement not covered" ></span>
-        const variab<span class="cstat-no" title="statement not covered" >leData = {</span>
-          name,
-          value: formattedValue,<span class="cstat-no" title="statement not covered" ></span>
-          type,<span class="cstat-no" title="statement not covered" ></span>
+        // Forma<span class="cstat-no" title="statement not covered" >t value according to type</span>
+        const format<span class="cstat-no" title="statement not covered" >tedValue = formatVariableValue(value, type);</span>
+&nbsp;
+        const variableData = {<span class="cstat-no" title="statement not covered" ></span>
+          name,<span class="cstat-no" title="statement not covered" ></span>
+          value: for<span class="cstat-no" title="statement not covered" >mattedValue,</span>
+          type,
           scope,<span class="cstat-no" title="statement not covered" ></span>
           description,
-          tags,<span class="cstat-no" title="statement not covered" ></span>
-          isEncr<span class="cstat-no" title="statement not covered" >ypted,</span>
-          ...(organi<span class="cstat-no" title="statement not covered" >zationId &amp;&amp; { organizationId }),</span>
-          ...(teamId &amp;&amp; { teamId }),
-          ...(sc<span class="cstat-no" title="statement not covered" >enarioId &amp;&amp; { scenarioId }),</span>
+          tags,
+          isEncrypted,
+          ...(organizationId &amp;&amp; { organizationId }),
+          ...(te<span class="cstat-no" title="statement not covered" >amId &amp;&amp; { teamId }),</span>
+          ...(scenarioId &amp;&amp; { scenarioId }),
         };
 &nbsp;
         // Determine API endpoint based on scope
         let endpoint = '/variables';
-        if (scop<span class="cstat-no" title="statement not covered" >e === 'organization' &amp;&amp; organizationId) {</span>
-          endpoint = `/organizations/${organizationId}/variables`;
-        } else if (scope === 'team' &amp;&amp; teamId) {
-          endpoint = `/teams/${teamId}/variables`;
-        } else if (scope === 'scenario' &amp;&amp; scenarioId) {
-          endpoint = `/scenarios/${scenarioId}/variables`;
+        if (scope === 'organization' &amp;&amp; organizationId) {
+          endpoint = `/organizations/<span class="cstat-no" title="statement not covered" >${organizationId}/variables`;</span>
+        } else i<span class="cstat-no" title="statement not covered" >f (scope === 'team' &amp;&amp; teamId) {</span>
+          endpoi<span class="cstat-no" title="statement not covered" >nt = `/teams/${teamId}/variables`;</span>
+        } else if (s<span class="cstat-no" title="statement not covered" >cope === 'sce</span>nario' &amp;&amp; scenarioId) {
+          endpoi<span class="cstat-no" title="statement not covered" >nt = `/scenarios/${scenarioId}/variables`;</span>
         }
-<span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.post(endpoint, variableData);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!respons<span class="cstat-no" title="statement not covered" >e.success) {</span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to create variable: ${response.error?.message || 'Unknown erro</span>r'}`);
+&nbsp;
+        const response = await apiClient.post(endpoint, variableData);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (!response.success) {</span>
+          throw new UserError(`Failed to create variable: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
         const variable = response.data as MakeCustomVariable;
         if (!variable) {
-<span class="cstat-no" title="statement not covered" >          throw new UserError('Variable creation failed - no data returned');</span>
+          throw new UserError('Variable creation failed - no data returned');
         }
 &nbsp;
-        log.info('Successfully created custom variable', {
-          variableId: variable.id,
-          name: variable.name,
+        log.info(<span class="fstat-no" title="function not covered" >'S</span>uccessfully created custom variable', {
+          variableId: variable.id,<span class="cstat-no" title="statement not covered" ></span>
+          na<span class="cstat-no" title="statement not covered" >me: variable.name,</span>
           scope: variable.scope,
         });
 &nbsp;
-        return fo<span class="fstat-no" title="function not covered" >rm</span>atSuccessResponse({
-          variable,<span class="cstat-no" title="statement not covered" ></span>
-          me<span class="cstat-no" title="statement not covered" >ssage: `Custom variable "${name}" created successfully`,</span>
+        return formatSuccessResponse({
+          variable,
+          message: `Custom variable "${name}" created successfully`,
           warning: isEncrypted ? 'Variable value is encrypted and cannot be retrieved in plain text' : undefined,
-        }).content[0].text;
-      } catch (error: unknown) {
+        }).c<span class="cstat-no" title="statement not covered" >ontent[0].text;</span>
+      } catch (error: unknown) <span class="cstat-no" title="statement not covered" >{</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating custom variable', { name, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create custom variable: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
+      }
     },<span class="cstat-no" title="statement not covered" ></span>
-  });
-&nbsp;
-  // List custom variables
-  server.addTool({
-    name: 'list-custom-variables',
+  });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  // List custom var<span class="cstat-no" title="statement not covered" >iables</span>
+  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+    name: 'list-cust<span class="cstat-no" title="statement not covered" >om-variables',</span>
     description:<span class="cstat-no" title="statement not covered" > 'List and filter custom variables with comprehensive search capabilities',</span>
     parameters: Vari<span class="cstat-no" title="statement not covered" >ableListSchema,</span>
     annotations:<span class="cstat-no" title="statement not covered" > {</span>
@@ -2701,51 +2701,51 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
     execute: async (<span class="cstat-no" title="statement not covered" >input, { log }) =&gt; {</span>
       const { sc<span class="cstat-no" title="statement not covered" >ope, organizationId, teamId, scenarioId, namePattern, tags, type, isEncrypted, limit, offset, sortBy, sortOrder } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('<span class="cstat-no" title="statement not covered" >Listing custom variables', {</span>
+      log.info('Listing custom <span class="cstat-no" title="statement not covered" >variables', {</span>
         scope,<span class="cstat-no" title="statement not covered" ></span>
-        organiza<span class="cstat-no" title="statement not covered" >tionId,</span>
-        teamId,<span class="cstat-no" title="statement not covered" ></span>
-        scenario<span class="cstat-no" title="statement not covered" >Id,</span>
+        organization<span class="cstat-no" title="statement not covered" >Id,</span>
+        teamId,
+        scenarioId,<span class="cstat-no" title="statement not covered" ></span>
         limit,<span class="cstat-no" title="statement not covered" ></span>
-        offset,<span class="cstat-no" title="statement not covered" ></span>
+        offset,
       });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
       try {
-        const params:<span class="cstat-no" title="statement not covered" > Record&lt;string, unknown&gt; = {</span>
+        const params: Record&lt;stri<span class="cstat-no" title="statement not covered" >ng, unknown&gt; = {</span>
           limit,<span class="cstat-no" title="statement not covered" ></span>
-          offset,
-          sortBy,<span class="cstat-no" title="statement not covered" ></span>
+          offset,<span class="cstat-no" title="statement not covered" ></span>
+          sortBy,
           sortOrder,<span class="cstat-no" title="statement not covered" ></span>
-        };
+        };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (scop<span class="cstat-no" title="statement not covered" >e !== 'all') params.scope = scope;</span>
-        if (organiza<span class="cstat-no" title="statement not covered" >tionId) params.organizationId = organizationId;</span>
+        if (scope !== 'all') params.scope = scope;
+        if (organizationId) params.organizationId = organizationId;
         if (teamId) params.teamId = teamId;
-        if (scenarioId) params.sce<span class="cstat-no" title="statement not covered" >narioId = scenarioId</span>;
-        if (namePattern) params.n<span class="cstat-no" title="statement not covered" >amePattern = nameP</span>attern;
-        if (tags<span class="cstat-no" title="statement not covered" > &amp;&amp; tags.length &gt; 0) params.tags = tags.join(',');</span>
+        if (scenarioId) params.scenarioId = scenarioId;
+        if (namePattern) params.<span class="cstat-no" title="statement not covered" >namePattern = namePattern;</span>
+        if (tags &amp;&amp; tags.length &gt; 0) params.tags = tags.join(',');
         if (type) params.type = type;
-        if (isEncrypted !== undefined) params.isEncrypted = isEncrypted;
-&nbsp;
-        let endpoint = '/variables';
-        if (scope === 'organizat<span class="cstat-no" title="statement not covered" >ion' &amp;&amp; organizationId) {</span>
+        if (isEncrypted !== undefined) params.isEncrypt<span class="fstat-no" title="function not covered" >ed</span> = <span class="cstat-no" title="statement not covered" >isEncrypted;</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        let endpoint = '/variables';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        if (scope === 'organization' &amp;&amp; organizationId) {
           endpoint = `/organizations/${organizationId}/variables`;
-        } else if (scope === 'team' &amp;&amp; teamId) {
-          endpoint = `/teams/${teamId}/variables`;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        } else if (scope === 'scenario' &amp;&amp; scen<span class="fstat-no" title="function not covered" >ar</span>ioI<span class="cstat-no" title="statement not covered" >d) {</span>
-          endpoint = `/scenarios/${scenarioId}/vari<span class="fstat-no" title="function not covered" >ab</span>les<span class="cstat-no" title="statement not covered" >`;</span>
+        } else if (scope === 'team' &amp;&amp; teamId) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          endpoint = `/teams/${teamId}/variables`<span class="fstat-no" title="function not covered" >;<span class="cstat-no" title="statement not covered" ></span></span>
+        } else if (scope === 'scenario' &amp;&amp; scenari<span class="fstat-no" title="function not covered" >oI</span>d) <span class="cstat-no" title="statement not covered" >{</span>
+          endpoint = `/scenarios/${scenarioId}/<span class="fstat-no" title="function not covered" >va</span>ria<span class="cstat-no" title="statement not covered" >bles`;</span>
+        }
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        const response = await apiClient.get(endpoint, { params });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new UserError(`Failed to list<span class="fstat-no" title="function not covered" > v</span>aria<span class="cstat-no" title="statement not covered" >bles: ${response.error?.message || 'Unknown error'}`);</span>
         }
 &nbsp;
-        const response = await apiClient.get(endp<span class="fstat-no" title="function not covered" >oi</span>nt,<span class="cstat-no" title="statement not covered" > { params });</span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        if (!response.success) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          throw new UserError(`Failed to list v<span class="fstat-no" title="function not covered" >ar</span>iab<span class="cstat-no" title="statement not covered" >les: ${response.er</span>ror?.message || 'Unknown error'}`);
-        }
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        const variables = response.data as MakeCustomVariable[] || []<span class="fstat-no" title="function not covered" >;<span class="cstat-no" title="statement not covered" ></span></span>
+        const variables = response.data as MakeCustomVariable[] || [];
         const metadata = response.metadata;
-<span class="cstat-no" title="statement not covered" ></span>
-        log.info('Successfully retrieved cust<span class="fstat-no" title="function not covered" >om</span> var<span class="cstat-no" title="statement not covered" >iables', {</span>
+&nbsp;
+        log.info('Successfully retrieved custom variables', {
           count: variables.length,
           total: metadata?.total,
         });
@@ -2753,55 +2753,55 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
         // Create summary statistics
         const summary = {
           totalVariables: metadata?.total || variables.length,
-          scopeBreakdown: {
-            organization: variables.filter(v =&gt; v.scope === 'global').length,
-            team: variables.filter(v =&gt; v.scope === 'team').length,
-            scenario: variables.filter(v =&gt; v.scope === 'scenario').length,
-          },
-          typeBreakdown: {
-            string: variables.filter(<span class="cstat-no" title="statement not covered" >v =&gt; v.type === 'string').length,</span>
-            numb<span class="cstat-no" title="statement not covered" >er: variables.filter(v =&gt; v.type === 'number').length,</span>
-            bool<span class="cstat-no" title="statement not covered" >ean: variables.filter(v =&gt; v.type === 'boolean').length,</span>
-            json: va<span class="cstat-no" title="statement not covered" >riables.filte</span>r(v =&gt; v.type === 'json').length,
+          scopeBreakdown: {<span class="cstat-no" title="statement not covered" ></span>
+            orga<span class="cstat-no" title="statement not covered" >nization: variables.filter(v =&gt; v.scope === 'global').length,</span>
+            team<span class="cstat-no" title="statement not covered" >: variables.filter(v =&gt; v.scope === 'team').length,</span>
+            scenario<span class="cstat-no" title="statement not covered" >: variables.f</span>ilter(v =&gt; v.scope === 'scenario').length,
           },<span class="cstat-no" title="statement not covered" ></span>
+          typeBreakdown: {
+            string: variables.filter(v =&gt; v.type === 'string').length,
+            number: variables.filter(v =&gt; v.type === 'number').length,
+            boolean: variables.filter(v =&gt; v.type === 'boolean').length,
+<span class="cstat-no" title="statement not covered" >            json: variables.filter(v =&gt; v.type === 'json').length,</span>
+          },
           encryptedCount: variables.filter(v =&gt; v.isEncrypted).length,
           uniqueTags: Array.from(new Set(variables.flatMap(v =&gt; (v as MakeCustomVariable).tags || []))),
         };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        return formatSuccessResponse({</span>
+        return formatSuccessResponse({
           variables: variables.map(v =&gt; ({
             ...v,
             value: v.isEncrypted ? '[ENCRYPTED]' : v.value,
           })),
           summary,
-          pagination: {
-            total: metadata?.total || variables.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) &gt; (offset + variables.length),
-          },
-        });<span class="fstat-no" title="function not covered" ></span>
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
-        cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : Str</span>ing(error);
-        log.<span class="cstat-no" title="statement not covered" >error('Error listing custom variables', { error: errorMessage });</span>
-        if (error instanceof User<span class="cstat-no" title="statement not covered" >Error) throw error;</span>
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to list custom variables: ${errorMessage}`);</span>
+          paginat<span class="fstat-no" title="function not covered" >io</span>n: {
+            total: metadata?.total || variables.l<span class="cstat-no" title="statement not covered" >ength,</span>
+<span class="cstat-no" title="statement not covered" >            limit,</span>
+<span class="cstat-no" title="statement not covered" >            offset,</span>
+            hasMore: (metadata?.t<span class="cstat-no" title="statement not covered" >otal || 0) &gt; (offset + variables.length),</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+      } catch (error: unknown) {
+        const errorMessage = erro<span class="cstat-no" title="statement not covered" >r instanceof E</span>rror ? error.message : String(error);
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error listing custom variables', { error: errorMessage });</span>
+        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
+        throw new UserError(`Failed to list custom variables: ${errorMessage}`);
       }<span class="cstat-no" title="statement not covered" ></span>
-    },
+    },<span class="cstat-no" title="statement not covered" ></span>
   });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  // Get custom vari<span class="cstat-no" title="statement not covered" >able details</span>
-  server.addTool({
-    name: 'get-custom-variab<span class="cstat-no" title="statement not covered" >le',</span>
-    description:<span class="cstat-no" title="statement not covered" > 'Get detailed information about a specific custom variable',</span>
-    parameters: z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
-      variableId: z.number().min(1).describe('<span class="cstat-no" title="statement not covered" >Variable ID to retrieve'),</span>
-      includeUsage: z.bo<span class="cstat-no" title="statement not covered" >olean().default(false).describe('Include usage statistics'),</span>
-    }),<span class="cstat-no" title="statement not covered" ></span>
-    annotations: {
+  // Get custom variable<span class="cstat-no" title="statement not covered" > details</span>
+  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+    name: 'get-custom-variable',
+    description: 'Get detailed information about a specific custom variable',
+    parameters: z.object({
+      variableId: z.numb<span class="cstat-no" title="statement not covered" >er().min(1).describe('Variable ID to retrieve'),</span>
+      includeUsage: z.boolean().default(false).describe('Include usage statistics'),
+    }),
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
       title: 'Get Custom Variable Details',
       readOnlyHint: true,
-      openWorldHint: tru<span class="cstat-no" title="statement not covered" >e,</span>
+      openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
       const { va<span class="cstat-no" title="statement not covered" >riableId, includeUsage } = input;</span>
@@ -2810,7 +2810,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
 &nbsp;
       try {
         const response = await apiClient.get(`/variables/${variableId}`);
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         if (!response.success) {
           throw new UserError(`Failed to get variable: ${response.error?.message || 'Unknown error'}`);
         }
@@ -2819,94 +2819,94 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
         if (!variable) {
           throw new UserError(`Variable with ID ${variableId} not found`);
         }
-&nbsp;
-        let usage: Record&lt;string, unknown&gt; | null = null;
-        if (includeUsage) {
-          try {
-            const usageResponse = await apiClient.get(`/variables/${variableId}/usage`);
+<span class="cstat-no" title="statement not covered" ></span>
+        let usag<span class="cstat-no" title="statement not covered" >e: Record&lt;string, unknown&gt; | null = null;</span>
+        if (incl<span class="cstat-no" title="statement not covered" >udeUsage) {</span>
+          try {<span class="cstat-no" title="statement not covered" ></span>
+            cons<span class="cstat-no" title="statement not covered" >t usageResponse = await apiClient.get(`/variables/${variableId}/usage`);</span>
             if (usageResponse.success) {
-              usage = usageResponse.d<span class="cstat-no" title="statement not covered" >ata as Record&lt;string, unknown&gt;;</span>
-            }<span class="cstat-no" title="statement not covered" ></span>
-          } catc<span class="cstat-no" title="statement not covered" >h (error) {</span>
-            log.warn<span class="cstat-no" title="statement not covered" >('Failed to r</span>etrieve variable usage statistics', { variableId });
-          }<span class="cstat-no" title="statement not covered" ></span>
+              usage = usageResponse.data as Record&lt;string, unknown&gt;;
+            }
+          } catch (error) {
+<span class="cstat-no" title="statement not covered" >            log.warn('Failed to retrieve variable usage statistics', { variableId });</span>
+          }
         }
 &nbsp;
         log.info('Successfully retrieved custom variable', {
           variableId,
-<span class="cstat-no" title="statement not covered" >          name: variable.name,</span>
+          name: variable.name,
           scope: variable.scope,
           type: variable.type,
         });
 &nbsp;
-        return formatSuccessResponse({
-          variable: {
-            ...variable,
-            value: variable.isEncrypted ? '[ENCRYPTED]' : variable.value,
-          },
-          usage,
-          metadat<span class="fstat-no" title="function not covered" >a:</span> {
-            canEdit: true, // This would be determined by user permissions<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            canDelete: variable.scope !== 'global', // Example business </span>rule - fixed comparison
-<span class="cstat-no" title="statement not covered" >            lastAccessed: usage?.lastAccessed,</span>
-            accessCount: Number(usa<span class="cstat-no" title="statement not covered" >ge?</span>.accessCount || 0),
+        return fo<span class="fstat-no" title="function not covered" >rm</span>atSuccessResponse({
+          variable: {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            ...variable,</span>
+<span class="cstat-no" title="statement not covered" >            value: variable.isEncrypted ? '[ENCRYPTED]' : variable.value,</span>
           },<span class="cstat-no" title="statement not covered" ></span>
-        });<span class="cstat-no" title="statement not covered" ></span>
-      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
-        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.message : Str</span>ing(error);
-        log.error('E<span class="cstat-no" title="statement not covered" >rror getting custom vari</span>able', { variableId, error: errorMessage });
+          usage,<span class="cstat-no" title="statement not covered" ></span>
+          metadata: <span class="cstat-no" title="statement not covered" >{</span>
+            canE<span class="cstat-no" title="statement not covered" >dit: true, // This would be determined by user permissions</span>
+            canDelet<span class="cstat-no" title="statement not covered" >e: variable.scope !== 'global', // Example business r</span>ule - fixed comparison
+            lastAcce<span class="cstat-no" title="statement not covered" >ssed: usage?.lastAccesse</span>d,
+            accessCount: Number(usage?.accessCount || 0),
+          },<span class="cstat-no" title="statement not covered" ></span>
+        });
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
+        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.message : String(error);</span>
+        log.error('Error<span class="cstat-no" title="statement not covered" > getting custom variable', { variableId, error: errorMessage });</span>
         if (error instanceof UserError) throw error;
-        throw new Use<span class="cstat-no" title="statement not covered" >rError(`Failed to get custom variable details: ${errorMessage}`);</span>
-      }
-    },<span class="cstat-no" title="statement not covered" ></span>
+        throw new UserError(`Failed to get c<span class="cstat-no" title="statement not covered" >ustom variable detail</span>s: ${errorMessage}`);
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },
   });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
   // Update custom variable
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
     name: 'update-cu<span class="cstat-no" title="statement not covered" >stom-variable',</span>
-    description: 'Update an existing custom variable',
-    parameters: Varia<span class="cstat-no" title="statement not covered" >bleUpdateSchema,</span>
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
-      title: 'Update Custom Variable',
+    description:<span class="cstat-no" title="statement not covered" > 'Update an existing custom variable',</span>
+    parameters: Vari<span class="cstat-no" title="statement not covered" >ableUpdateSchema,</span>
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
+      title: 'Update<span class="cstat-no" title="statement not covered" > Custom Variable',</span>
       readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false,</span>
       destructiveHin<span class="cstat-no" title="statement not covered" >t: false,</span>
-      idempotent<span class="cstat-no" title="statement not covered" >Hint: true,</span>
-      openWorldHint:<span class="cstat-no" title="statement not covered" > true,</span>
+      idempotentHint: true,
+      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
     execute: async (<span class="cstat-no" title="statement not covered" >input, { log }) =&gt; {</span>
-      const { va<span class="cstat-no" title="statement not covered" >riableId, name, value, type, description, tags, isEncrypted } = input;</span>
+      const { variableId, name, value, type, description, tags, isEncrypted } = input;
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('Updating custom variable', { variableId, name });
-<span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const update<span class="cstat-no" title="statement not covered" >Data: Record&lt;string, unknown&gt; = {};</span>
+      log.info('<span class="cstat-no" title="statement not covered" >Updating custom variable', { variableId, name });</span>
 &nbsp;
-        if (name !== undefined) updateDa<span class="cstat-no" title="statement not covered" >ta.name = name</span>;
-        if (valu<span class="cstat-no" title="statement not covered" >e !== undefined &amp;&amp; type !== undefined) {</span>
+      try {
+        const updateData: Record&lt;string, unknown&gt; = {};
+&nbsp;
+        if (name<span class="cstat-no" title="statement not covered" > !== undefined) updateData.name = name;</span>
+        if (value !== undefined &amp;&amp; type !== undefined) {
           updateData.value = formatVariableValue(value, type);
           updateData.type = type;
         } else if (value !== undefined) {
           // Get current variable to determine type
-          const <span class="cstat-no" title="statement not covered" >currentResponse = await apiClient.get(`/variables/${variableId}`);</span>
+          const currentResponse = await apiClient.get(`/variables/${variableId}`);
           if (!currentResponse.success) {
             throw new UserError('Failed to retrieve current variable for type validation');
           }
-          const currentVariable = currentResponse.data as MakeCustomVariable;
-          updateData.value = formatVariableValue(value, currentVariable.type);
-        } else if (type !== undefined) {
-          updateData.type = type;
-        }
+          const currentVariable = cur<span class="cstat-no" title="statement not covered" >rentResponse.data as MakeCustomVariable;</span>
+          update<span class="cstat-no" title="statement not covered" >Data.value = formatVariableValue(value, currentVariable.type);</span>
+        } else i<span class="cstat-no" title="statement not covered" >f (type !== undefined) {</span>
+          updateData<span class="cstat-no" title="statement not covered" >.type = type;</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        if (description !== undefined<span class="cstat-no" title="statement not covered" >) updateData.description = description;</span>
-        if (tags<span class="cstat-no" title="statement not covered" > !== undefined) updateData.tags = tags;</span>
-        if (isEn<span class="cstat-no" title="statement not covered" >crypted !== undefined) updateData.isEncrypted = isEncrypted;</span>
+        if (description !== undefined) updateData.description = description;
+        if (tags !== undefined) updateData.tags = tags;
+        if (isEncrypted !== undefined) updateData.isEncrypted = isEncrypted;
 <span class="cstat-no" title="statement not covered" ></span>
-        if (Obje<span class="cstat-no" title="statement not covered" >ct.keys(updateData).length === 0) {</span>
+        if (Object.keys(updateData).length === 0) {
           throw new UserError('No update data provided');
         }
 &nbsp;
         const response = await apiClient.put(`/variables/${variableId}`, updateData);
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         if (!response.success) {
           throw new UserError(`Failed to update variable: ${response.error?.message || 'Unknown error'}`);
         }
@@ -2914,149 +2914,149 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
         const updatedVariable = response.data as MakeCustomVariable;
 &nbsp;
         log.info('Successfully updated custom variable', {
-          variableId,
-          name: updatedVariable.name,
-          changes: Object.keys(updateData),
-        });
+          variabl<span class="fstat-no" title="function not covered" >eI</span>d,
+          name: updatedVariable.name,<span class="cstat-no" title="statement not covered" ></span>
+          ch<span class="cstat-no" title="statement not covered" >anges: Object.keys(updateData),</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        return formatSuccessResponse({
-          variabl<span class="fstat-no" title="function not covered" >e:</span> {
-            ...updatedVariable,<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            value: updatedVariable.isEncrypted ? '[ENCRYPTED]' : updatedV</span>ariable.value,
-          },<span class="cstat-no" title="statement not covered" ></span>
+        return f<span class="cstat-no" title="statement not covered" >ormatSuccessResponse({</span>
+          variable: {<span class="cstat-no" title="statement not covered" ></span>
+            ...updat<span class="cstat-no" title="statement not covered" >edVariable,</span>
+            value: updat<span class="cstat-no" title="statement not covered" >edVariable.isEncrypted ? '[ENCRYPTED]' : updatedVariable.value,</span>
+          },
           message: `Variable "${updatedVariable.name}" updated successfully`,
-          change<span class="cstat-no" title="statement not covered" >s: Object.keys(updateData),</span>
+          changes: Object.keys(up<span class="cstat-no" title="statement not covered" >dateData),</span>
         });<span class="cstat-no" title="statement not covered" ></span>
       } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
-        const errorMessa<span class="cstat-no" title="statement not covered" >ge = error instanceof Error ? error.message : String(error);</span>
-        log.error('Error updating custom variable', { variableId, error: errorMessage });
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Fail<span class="cstat-no" title="statement not covered" >ed to update custom variable: ${errorMessage}`);</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error updating custom variable', { variableId, error: errorMess</span>age });
+        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
+        throw new UserError(`Failed to update custom variable: ${errorMessage}`);
+      }
+    },
   });
-<span class="cstat-no" title="statement not covered" ></span>
-  // Delete cust<span class="cstat-no" title="statement not covered" >om variable</span>
-  server.addTool({
-    name: 'delete-custom-variable',
-    description: 'Delete a custom variable',
-    parameters: z.object({
-      variableId: z.number().min(1).describe('Variable ID to delete'),
+&nbsp;
+  // Delete custom variable
+  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+    name: 'delet<span class="cstat-no" title="statement not covered" >e-custom-variable',</span>
+    description:<span class="cstat-no" title="statement not covered" > 'Delete a custom variable',</span>
+    parameters: z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
+      variableId<span class="cstat-no" title="statement not covered" >: z.number().min(1).describe('Variable ID to delete'),</span>
       force: z.boolean().default(false).describe('Force delete even if variable is in use'),
-    }),<span class="cstat-no" title="statement not covered" ></span>
-    annotations:<span class="cstat-no" title="statement not covered" > {</span>
-      title: 'De<span class="cstat-no" title="statement not covered" >lete Custom Variable',</span>
-      readOnlyHint: <span class="cstat-no" title="statement not covered" >false,</span>
-      destructiv<span class="cstat-no" title="statement not covered" >eHint: true,</span>
+    }),
+    annotations: {
+      title: 'Delete Custom Variable',
+<span class="cstat-no" title="statement not covered" >      readOnlyHint: false,</span>
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
-<span class="cstat-no" title="statement not covered" >      const { variableId, force } = input;</span>
+      const { variableId, force } = input;
 &nbsp;
       log.info('Deleting custom variable', { variableId, force });
 &nbsp;
       try {
-        // Check if variable is in use (unless force delete)
-        if (!force) {
-          const usageResponse = await apiClient.get(`/variables/${variableId}/usage`);
+        // Check <span class="fstat-no" title="function not covered" >if</span> variable is in use (unless force delete)
+        if (!force) {<span class="cstat-no" title="statement not covered" ></span>
+          co<span class="cstat-no" title="statement not covered" >nst usageResponse = await apiClient.get(`/variables/${variableId}/usage`);</span>
           if (usageResponse.success &amp;&amp; Number((usageResponse.data as Record&lt;string, unknown&gt;)?.usageCount) &gt; 0) {
             throw new UserError(`Variable is currently in use (${(usageResponse.data as Record&lt;string, unknown&gt;).usageCount} references). Use force=true to delete anyway.`);
           }
-        }<span class="fstat-no" title="function not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        cons<span class="cstat-no" title="statement not covered" >t response = await apiClient.delete(`/variables/${variableId}`);</span>
+        const response = await apiClient.delete(`/variables/${variableId}`);
 &nbsp;
         if (!response.success) {
           throw new UserError(`Failed to delete variable: ${response.error?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        log.info('Successfully deleted custom variable', { variableId });
+        log.info('Su<span class="cstat-no" title="statement not covered" >ccessfully deleted custom variable', { variableId });</span>
 &nbsp;
-        return formatSuccessResponse({
+        return formatSuccessRes<span class="cstat-no" title="statement not covered" >ponse({</span>
           message: `Variable ${variableId} deleted successfully`,
           variableId,<span class="cstat-no" title="statement not covered" ></span>
-          forced<span class="cstat-no" title="statement not covered" >: force,</span>
-        }).content[0<span class="cstat-no" title="statement not covered" >].text;</span>
-      } catch (error: unknown) {
-        const errorMessage = er<span class="cstat-no" title="statement not covered" >ror instanceof</span> Error ? error.message : String(error);
+          forced: force,<span class="cstat-no" title="statement not covered" ></span>
+        }).content[0].text;<span class="cstat-no" title="statement not covered" ></span>
+      } catch (error: unknown) <span class="cstat-no" title="statement not covered" >{</span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
         log.error('Error deleting custom variable', { variableId, error: errorMessage });
-        if (error instanceof UserEr<span class="cstat-no" title="statement not covered" >ror) throw error;</span>
-        throw new UserError(`Fail<span class="cstat-no" title="statement not covered" >ed to delete custom variable: ${errorMessage}`);</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to delete custom variable: ${errorMessage}`);
+      }
     },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
+  });
 &nbsp;
   // Bulk operations on variables
   server.addTool({
     name: 'bulk-variable-operations',
-    description:<span class="cstat-no" title="statement not covered" > 'Perform bulk operations on multiple custom variables',</span>
+    description: 'Perform bulk operations on multiple custom variables',
     parameters: VariableBulkOperationSchema,
     annotations: {
       title: 'Bulk Variable Operations',
       readOnlyHint: false,
       destructiveHint: true,
-      idempotentHint: false,
-      openWorldHint: true,
-    },
-    execute: async (input, { log }) =&gt; {
-      const { operation, variableIds, operationData } = input;
+      idempotentHint: false,<span class="cstat-no" title="statement not covered" ></span>
+      openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (<span class="cstat-no" title="statement not covered" >input, { log </span>}) =&gt; {
+      const { op<span class="cstat-no" title="statement not covered" >eration, variableIds, operationData } = input;</span>
 &nbsp;
-      log.info('Performing bulk varia<span class="cstat-no" title="statement not covered" >ble operation', {</span>
-        operatio<span class="cstat-no" title="statement not covered" >n,</span>
-        variable<span class="cstat-no" title="statement not covered" >Count: variableIds.length,</span>
-      });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+      log.info('Performing bulk variable operation', {
+        operation,
+        variableCount: variableIds.length,
+<span class="cstat-no" title="statement not covered" >      });</span>
+&nbsp;
       try {
         const bulkData = {
           operation,
           variableIds,
-<span class="cstat-no" title="statement not covered" >          operationData: operationData || {},</span>
+          operationData: operationData || {},
         };
 &nbsp;
-        const response = await apiClient.post('/variables/bulk', bulkData);
-&nbsp;
-        if (!response.success) {
+        const res<span class="fstat-no" title="function not covered" >po</span>nse = await apiClient.post('/variables/bulk', bulkData);
+<span class="cstat-no" title="statement not covered" ></span>
+        if (<span class="cstat-no" title="statement not covered" >!response.success) {</span>
           throw new UserError(`Failed to perform bulk operation: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
-        const res<span class="fstat-no" title="function not covered" >ul</span>t = response.data;
-<span class="cstat-no" title="statement not covered" ></span>
+        const result = response.data;
+&nbsp;
         // T<span class="cstat-no" title="statement not covered" >ype guard for bulk operation result</span>
-        const bulkResult = result &amp;&amp; typeof result === 'object' ? result as Record&lt;string, unknown&gt; : {};
+        const bulkResult = result &amp;<span class="cstat-no" title="statement not covered" >&amp; typeof result === 'object' ? result as Record&lt;string, unknown&gt; : {};</span>
         const affected = typeof bulkResult.affected === 'number' ? bulkResult.affected : variableIds.length;
         const failed = typeof bulkResult.failed === 'number' ? bulkResult.failed : 0;
         const errors = Array.isArray(bulkResult.errors) ? bulkResult.errors : [];
 &nbsp;
-        log.<span class="cstat-no" title="statement not covered" >info('Successfully completed bulk variable operation', {</span>
-          operation,<span class="cstat-no" title="statement not covered" ></span>
+        log.info('Successfully completed bulk variable operation', {
+          operation,
           affected,
           failed,
-        });
-&nbsp;
-        return formatSuccessResponse({
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
           result,
-          message: `Bulk ${operation} completed successfully`,
+          message: `Bulk ${operation}<span class="cstat-no" title="statement not covered" > completed suc</span>cessfully`,
           summary: {
-            requested: variableId<span class="cstat-no" title="statement not covered" >s.length,</span>
-            succ<span class="cstat-no" title="statement not covered" >essful: affected,</span>
+            requested: variableIds.length,<span class="cstat-no" title="statement not covered" ></span>
+            successful: affect<span class="cstat-no" title="statement not covered" >ed,</span>
             failed,<span class="cstat-no" title="statement not covered" ></span>
-            errors,
+            errors,<span class="cstat-no" title="statement not covered" ></span>
           },<span class="cstat-no" title="statement not covered" ></span>
-        }).content[0].text;
+        }).content[0].text;<span class="cstat-no" title="statement not covered" ></span>
       } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
-        const errorMessage = e<span class="cstat-no" title="statement not covered" >rror instanceof Error ? error.message : String(error);</span>
-        log.error('Error performi<span class="cstat-no" title="statement not covered" >ng bulk variable operation', { operation, error: errorMessage });</span>
-        if (error instanceof UserErr<span class="cstat-no" title="statement not covered" >or) throw error;</span>
-        throw new UserError(`Faile<span class="cstat-no" title="statement not covered" >d to perform bulk variable operation: ${errorMessage}`);</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.error('Error performing bulk variable operation', { operation, error: errorMessage });
+        if (error instanceof UserError) throw error;
+        throw new UserError(`Failed to perform bulk variable operation: ${errorMessage}`);
+      }
     },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
+  });
 &nbsp;
   // Export variables
   server.addTool({
     name: 'export-custom-variables',
-    description:<span class="cstat-no" title="statement not covered" > 'Export custom variables in various formats for backup or migration',</span>
+    description: 'Export custom variables in various formats for backup or migration',
     parameters: VariableExportSchema,
     annotations: {
       title: 'Export Custom Variables',
@@ -3067,22 +3067,22 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
       const { scope, organizationId, teamId, scenarioId, format, includeEncrypted, includeMetadata } = input;
 &nbsp;
       log.info('Exporting custom variables', {
-        scope,
-        format,
-        includeEncrypted,
-        includeMetadata,
-      });
+        scope,<span class="cstat-no" title="statement not covered" ></span>
+        format,<span class="cstat-no" title="statement not covered" ></span>
+        includeE<span class="cstat-no" title="statement not covered" >ncrypted,</span>
+        includeMetad<span class="cstat-no" title="statement not covered" >ata,</span>
+      });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const ex<span class="cstat-no" title="statement not covered" >portData = {</span>
-          scope,<span class="cstat-no" title="statement not covered" ></span>
-          format,<span class="cstat-no" title="statement not covered" ></span>
-          includ<span class="cstat-no" title="statement not covered" >eEncrypted,</span>
+      try {
+        const exportData = {
+          scope,
+<span class="cstat-no" title="statement not covered" >          format,</span>
+          includeEncrypted,
           includeMetadata,
           ...(organizationId &amp;&amp; { organizationId }),
           ...(teamId &amp;&amp; { teamId }),
           ...(scenarioId &amp;&amp; { scenarioId }),
-<span class="cstat-no" title="statement not covered" >        };</span>
+        };
 &nbsp;
         const response = await apiClient.post('/variables/export', exportData);
 &nbsp;
@@ -3093,63 +3093,63 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
         const exportResult = response.data;
 &nbsp;
         // Type guard for export result
-        const exportResponseData = exportResult &amp;&amp; typeof exportResult === 'object' ? exportResult as Record&lt;string, unknown&gt; : {};
-        const count = typeof exportResponseData.count === 'number' ? exportResponseData.count : 0;
-        const exportId = typeof exportResponseData.exportId === 'string' ? exportResponseData.exportId : '';
+        const exp<span class="fstat-no" title="function not covered" >or</span>tResponseData = exportResult &amp;&amp; typeof exportResult === 'object' ? exportResult as Record&lt;string, unknown&gt; : {};
+        const count = typeof exportResponseData.count === 'number'<span class="cstat-no" title="statement not covered" > ? exp</span>ortResponseData.count : 0;
+        cons<span class="cstat-no" title="statement not covered" >t exportId = typeof exportResponseData.exportId === 'string' ? exportResponseData.exportId : '';</span>
         const downloadUrl = typeof exportResponseData.downloadUrl === 'string' ? exportResponseData.downloadUrl : '';
         const expiresAt = typeof exportResponseData.expiresAt === 'string' ? exportResponseData.expiresAt : '';
         const filename = typeof exportResponseData.filename === 'string' ? exportResponseData.filename : '';
-        const enc<span class="fstat-no" title="function not covered" >ry</span>ptedCount = typeof exportResponseData.encryptedCount === 'number' ? exportResponseData.encryptedCount : 0;
+        cons<span class="cstat-no" title="statement not covered" >t encryptedCount = typeof exportResponseData.encryptedCount === 'number' ? exportResponseData.encryptedCount : 0;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        log.<span class="cstat-no" title="statement not covered" >info('Successfully exported custom variables', {</span>
+        log.info('Successfully exported custom variables', {
           format,
           variableCount: count,
           exportId,
         });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return formatSuccessResponse({
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
           exportResult,
-          message: `Variables exported successfully in ${format} format`,
+          message: `Variables e<span class="cstat-no" title="statement not covered" >xported succes</span>sfully in ${format} format`,
           download: {
             url: downloadUrl,<span class="cstat-no" title="statement not covered" ></span>
-            expi<span class="cstat-no" title="statement not covered" >resAt,</span>
-            filename<span class="cstat-no" title="statement not covered" >,</span>
-          },
-          summary: {<span class="cstat-no" title="statement not covered" ></span>
+            expiresAt,<span class="cstat-no" title="statement not covered" ></span>
+            filename,
+          },<span class="cstat-no" title="statement not covered" ></span>
+          summar<span class="cstat-no" title="statement not covered" >y: {</span>
             totalVariables: count,
-            encryptedVariables: encrypt<span class="cstat-no" title="statement not covered" >edCount,</span>
-            format: format,<span class="cstat-no" title="statement not covered" ></span>
+            encryptedVariables: encryptedCount,
+            format: format,
             includeMetadata,
           },<span class="cstat-no" title="statement not covered" ></span>
-        }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error exporting custom variables', { scope, format, error: errorMessage });
         if (error instanceof UserError) throw error;
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to export custom variables: ${errorMessage}`);</span>
+        throw new UserError(`Failed to export custom variables: ${errorMessage}`);
       }
     },
   });
 &nbsp;
   // Test variable resolution
   server.addTool({
-    name: 'test-variable-resolution',
-    description: 'Test variable resolution and scope inheritance for debugging',
-    parameters: z.object({
-      variableName: z.string().min(1).describe('Variable name to test resolution for'),
-      context: z.object({
+    name: 'test-variable-resolution',<span class="cstat-no" title="statement not covered" ></span>
+    description:<span class="cstat-no" title="statement not covered" > 'Test variable resolution and scope inheritance for debugging',</span>
+    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
+      variableName: <span class="cstat-no" title="statement not covered" >z.string().mi</span>n(1).describe('Variable name to test resolution for'),
+      context: z<span class="cstat-no" title="statement not covered" >.object({</span>
         organizationId: z.number().min(1).optional(),
-        teamId: z.number().min(1).opt<span class="cstat-no" title="statement not covered" >ional(),</span>
-        scenario<span class="cstat-no" title="statement not covered" >Id: z.number().min(1).optional(),</span>
-      }).describ<span class="cstat-no" title="statement not covered" >e('Context for variable resolution'),</span>
-      includeInherit<span class="cstat-no" title="statement not covered" >ance: z.boole</span>an().default(true).describe('Show inheritance chain'),
-    }),<span class="cstat-no" title="statement not covered" ></span>
+        teamId: z.number().min(1).optional(),
+        scenarioId: z.number().min(1).optional(),
+      }).describe('Context for variable resolution'),
+      includeInheritance: z.boolean().default(true).describe('Show inheritance chain'),
+<span class="cstat-no" title="statement not covered" >    }),</span>
     annotations: {
       title: 'Test Variable Resolution',
       readOnlyHint: true,
       openWorldHint: true,
     },
-<span class="cstat-no" title="statement not covered" >    execute: async (input, { log }) =&gt; {</span>
+    execute: async (input, { log }) =&gt; {
       const { variableName, context, includeInheritance } = input;
 &nbsp;
       log.info('Testing variable resolution', {
@@ -3164,111 +3164,111 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           includeInheritance,
         };
 &nbsp;
-        const response = await apiClient.post('/variables/test-resolution', testData);
-&nbsp;
-        if (!response.success) {
+        const res<span class="fstat-no" title="function not covered" >po</span>nse = await apiClient.post('/variables/test-resolution', testData);
+<span class="cstat-no" title="statement not covered" ></span>
+        if (<span class="cstat-no" title="statement not covered" >!response.success) {</span>
           throw new UserError(`Failed to test variable resolution: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
-        const res<span class="fstat-no" title="function not covered" >ul</span>t = response.data;
-<span class="cstat-no" title="statement not covered" ></span>
-        // T<span class="cstat-no" title="statement not covered" >ype guard for resolution result</span>
-        const resolutionData = result &amp;&amp; typeof result === 'object' ? result as Record&lt;string, unknown&gt; : {};
-        const resolvedVariable = resolutionData.resolvedVariable &amp;&amp; typeof resolutionData.resolvedVariable === 'object' 
+        const result = response.data;
+&nbsp;
+        // Type guard for resolution result
+        cons<span class="cstat-no" title="statement not covered" >t resolutionData = result &amp;&amp; typeof result === 'object' ? result as Record&lt;string, unknown&gt; : {};</span>
+        const resolvedVariable <span class="cstat-no" title="statement not covered" >= resolutionData.resolvedVariable &amp;&amp; typeof resolutionData.resolvedVariable === 'object' </span>
           ? resolutionData.resolvedVariable as Record&lt;string, unknown&gt; : null;
         const inheritanceChain = Array.isArray(resolutionData.inheritanceChain) ? resolutionData.inheritanceChain : [];
 &nbsp;
         log.info('Successfully tested variable resolution', {
-          va<span class="cstat-no" title="statement not covered" >riableName,</span>
-          resolved: !!resolvedV<span class="cstat-no" title="statement not covered" >ariable,</span>
-          scope: resolvedVariable &amp;&amp; typeof resolvedVariable.scope === 'string' ? resolvedVariable.scope : undefined,
-        });
-&nbsp;
-        return formatSuccessResponse({
+          variab<span class="cstat-no" title="statement not covered" >leName,</span>
+          resolved: <span class="cstat-no" title="statement not covered" >!!resolvedVariable,</span>
+          scope:<span class="cstat-no" title="statement not covered" > resolvedVariable &amp;&amp; typeof resolvedVariable.scope === 'string' ? resolvedVariable.scope : undefined,</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
           resolu<span class="cstat-no" title="statement not covered" >tion: result,</span>
           summary: {<span class="cstat-no" title="statement not covered" ></span>
             vari<span class="cstat-no" title="statement not covered" >ableName,</span>
             context,<span class="cstat-no" title="statement not covered" ></span>
             reso<span class="cstat-no" title="statement not covered" >lved: !!resolvedVariable,</span>
-            resolved<span class="cstat-no" title="statement not covered" >Scope: resolvedVariable </span>? resolvedVariable.scope : undefined,
-            valu<span class="cstat-no" title="statement not covered" >e: resolvedVariable &amp;&amp; resolvedVariable.isEncrypted ? '[ENCRYPTED]' : (resolvedVariable ? resolvedVariable.value : undefined),</span>
-            inherita<span class="cstat-no" title="statement not covered" >nceChain,</span>
+            resolved<span class="cstat-no" title="statement not covered" >Scope: resolvedVariable ? reso</span>lvedVariable.scope : undefined,
+            value: resolvedVariab<span class="cstat-no" title="statement not covered" >le &amp;&amp; resolvedVariable.isEncrypted ? '[ENCRYPTED]' : (reso</span>lvedVariable ? resolvedVariable.value : undefined),
+            inhe<span class="cstat-no" title="statement not covered" >ritanceChain,</span>
           },<span class="cstat-no" title="statement not covered" ></span>
-        });<span class="cstat-no" title="statement not covered" ></span>
-      } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
-        const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Erro</span>r ? error.message : String(error);
-        log.error('Error testing <span class="cstat-no" title="statement not covered" >variable resolution', { variableName, error: errorMessage </span>});
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
-        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to test variable resolution: ${errorMessage}`);</span>
-      }
+        });
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
+        const errorMessage = erro<span class="cstat-no" title="statement not covered" >r instanceof Error</span> ? error.message : String(error);
+        log.error('Error testing variable resolution', { variableName, error: errorMessage });
+        if (error instanceof UserError) throw e<span class="cstat-no" title="statement not covered" >rror;<span class="fstat-no" title="function not covered" ></span></span>
+        throw new UserError(`Failed to <span class="cstat-no" title="statement not covered" >test </span>variable resolution: ${errorMessage}`);
+      }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
   });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  // Incomplete execution recovery tools<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  <span class="cstat-no" title="statement not covered" ></span>
-  // List incomplete<span class="cstat-no" title="statement not covered" > executions with recovery options</span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'list-incomplete-executions-with-recovery',<span class="cstat-no" title="statement not covered" ></span>
-    description: 'List incom<span class="cstat-no" title="statement not covered" >plete executions with detailed recovery analysis and options',</span>
-    parameters: z.object({<span class="cstat-no" title="statement not covered" ></span>
-      scenarioId: z.number().min(1).optional().describe('Filter by scenario ID'),
+<span class="cstat-no" title="statement not covered" ></span>
+  // Incomplete execution recove<span class="cstat-no" title="statement not covered" >ry tools</span>
+  
+  // List incomplete executions with recovery options
+  server.addTool({
+    name: 'list-incomplete-e<span class="cstat-no" title="statement not covered" >xecutions-with-recovery',</span>
+    description: 'List incomplete executions with detailed recovery analysis and options',
+    parameters: z.object({
+      scenarioId: z.<span class="cstat-no" title="statement not covered" >number().min(1).optional().describe('Filter by scenario ID'),</span>
       organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
       teamId: z.number().min(1).optional().describe('Filter by team ID'),
-      status: z.enum(['waiti<span class="cstat-no" title="statement not covered" >ng', 'paused', 'failed', 'all']).default('all').describe('Filter by stat</span>us'),
+      status: z.enum(['waiting', 'paused', 'failed', 'all']).default('all').describe('Filter by status'),
       ageHours: z.number().min(0).optional().describe('Filter by execution age in hours'),
       canResume: z.boolean().optional().describe('Filter by resumable status'),
-      includeRecover<span class="cstat-no" title="statement not covered" >yPlan: z.boolean().default(true).describe('Include recovery recommendations'),</span>
-      limit: z.number().min(1).max(100).default(20).describe('Maximum number of executions to return'),
+      includeRecoveryPlan: z.boolean().default(true).describe('Include recovery recommendations'),
+      limit: z.number().min(1).m<span class="cstat-no" title="statement not covered" >ax(100).default(20).describe('Maximum number of executions to return'),</span>
       offset: z.number().min(0).default(0).describe('Number of executions to skip for pagination'),
     }),
-    annotations: {
-      title: 'List Incomplete Executions with Recovery Options',
-      readOnlyHint: true,
-      destructiveHint: false,<span class="cstat-no" title="statement not covered" ></span>
+    annotations: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      title: 'List Incomplete Executions with Recovery Optio<span class="fstat-no" title="function not covered" >ns</span>',<span class="cstat-no" title="statement not covered" ></span>
+      readOnlyHint: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      destructiveHint: false,
       idempotentHint: true,
-      openWorldHint: true,
+      openWorldHint: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    execute: async (input, { log }) =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      const { scenarioId, organizationId, teamId, status, ag<span class="fstat-no" title="function not covered" >eH</span>ours, <span class="cstat-no" title="statement not covered" >canResume, includeRecover</span>yPlan, limit, offset } = input;
-&nbsp;
-      log.info('Listing incomplete executions with recovery options', {
-        scenarioId,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        organizationId,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        teamId,
-        status,
-        includeRecoveryPlan,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    execute: async (input, { log }) =&gt; {
+      const { scenarioId, organizationId, teamId, status, ageHours, canResume, includeRecoveryPlan, limit, offset } = input;
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      log.info('Listing incomplete executions with recovery options', {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        scenarioId,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        organizationId,
+        teamId,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        status,
+        includeRecoveryPlan,
+      });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
       try {
-        const params: Record&lt;string, unknown&gt; = {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          limit,
+        const params: Record&lt;string, unknown&gt; = {
+          limit,<span class="cstat-no" title="statement not covered" ></span>
           offset,
-          includ<span class="cstat-no" title="statement not covered" >eRecoveryPlan,</span>
+          includeRecoveryPlan,
         };
 &nbsp;
         if (scenarioId) params.scenarioId = scenarioId;
-        if (orga<span class="cstat-no" title="statement not covered" >nizationId) params.organizationId = organizationId;</span>
+        if (organizationId) params.organizationId = organizationId;
         if (teamId) params.teamId = teamId;
         if (status !== 'all') params.status = status;
         if (ageHours !== undefined) params.ageHours = ageHours;
         if (canResume !== undefined) params.canResume = canResume;
 &nbsp;
-        const response = await apiClient.get('/incomplete-executions', { params });
-&nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to list incomplete executions: ${response.error?.message || 'Unknown error'}`);
-        }
-&nbsp;
-        const incompleteExecutions = <span class="cstat-no" title="statement not covered" >response.data as MakeIncompleteExecution[] || [];</span>
-        const me<span class="cstat-no" title="statement not covered" >tadata = response.metadata;</span>
+        const response = await apiCli<span class="cstat-no" title="statement not covered" >ent.get('/incomplete-executions', { params });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        // Generate <span class="cstat-no" title="statement not covered" >recovery anal</span>ysis for each execution
-        const ex<span class="cstat-no" title="statement not covered" >ecutionsWithRecovery = await Promise.all(</span>
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Fa</span>iled to list incomplete executions: ${response.error?.message || 'Unknown error'}`);
+        }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        const incompleteExecutions = response.data as MakeIncompleteExecution[] || [];
+        const metadata = response.metadata;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        // Generate recovery analysis for each execution</span>
+        const executionsWithRecovery = await Promise.all(
           incompleteExecutions.map(async (execution) =&gt; {
             let recoveryPlan = null;
             
             if (includeRecoveryPlan) {
-<span class="cstat-no" title="statement not covered" >              try {</span>
+              try {
                 const recoveryResponse = await apiClient.get(`/incomplete-executions/${execution.id}/recovery-analysis`);
                 if (recoveryResponse.success) {
                   recoveryPlan = recoveryResponse.data;
@@ -3283,70 +3283,70 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
               recoveryPlan,
               age: Math.floor((Date.now() - new Date(execution.stoppedAt).getTime()) / (1000 * 60 * 60)), // hours
               priority: execution.operations &gt; 1000 ? 'high' : execution.operations &gt; 100 ? 'medium' : 'low',
-            };
-          })
-        );
+            };<span class="fstat-no" title="function not covered" ></span>
+          })<span class="cstat-no" title="statement not covered" ></span>
+        );<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         const summary = {
           totalIncomplete: metadata?.total || incompleteExecutions.length,
-          statusB<span class="fstat-no" title="function not covered" >re</span>akdown: {
-            waiting: incompleteExecutions.filter(exec =&gt; exec.<span class="cstat-no" title="statement not covered" >status</span> === 'waiting').length,
-<span class="cstat-no" title="statement not covered" >            paused: incompleteExecutions.filter(exec =&gt; exec.status === 'paused').length,</span>
-            failed: incompleteExecutions.filter(exec =&gt; exec.status === 'failed').length,
+          statusBreakdown: {
+<span class="cstat-no" title="statement not covered" >            waiting: incompleteExecutions.filter(exec =&gt; exec.status === 'waiting').length,</span>
+            paus<span class="cstat-no" title="statement not covered" >ed: incompleteExecutions.filter(exec =&gt; exec.</span>status === 'paused').length,
+            failed: incompleteExe<span class="cstat-no" title="statement not covered" >cutions.filter(exec =&gt; exec.status === 'failed').length,</span>
           },
           recoveryBreakdown: {
             canResume: incompleteExecutions.filter(exec =&gt; exec.canResume).length,
-<span class="cstat-no" title="statement not covered" >            requiresIntervention: incompleteExecutions.filter(exec =&gt; !exec.canResume).length,</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-          impactAnalysis: {<span class="cstat-no" title="statement not covered" ></span>
+            requiresIntervention: incompleteExecutions.filter(exec =&gt; !exec.canResume).length,
+          },
+          impactAnalysis: {
             totalOperationsAffected: incompleteExecutions.reduce((sum, exec) =&gt; sum + exec.operations, 0),
             totalDataTransferAffected: incompleteExecutions.reduce((sum, exec) =&gt; sum + exec.dataTransfer, 0),
             uniqueScenarios: Array.from(new Set(incompleteExecutions.map(exec =&gt; exec.scenarioId))).length,
             oldestExecution: incompleteExecutions.length &gt; 0 ? 
               Math.max(...incompleteExecutions.map(exec =&gt; 
                 Math.floor((Date.now() - new Date(exec.stoppedAt).getTime()) / (1000 * 60 * 60))
-              )) : 0,
-          },
-        };
-&nbsp;
+              ))<span class="cstat-no" title="statement not covered" > : 0,</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+        };<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
         log.info('Successfully retrieved incomplete executions with recovery plans', {
-          count: incompleteExecutions.length,
-          resuma<span class="cstat-no" title="statement not covered" >ble: summary.recoveryBreakdown.canResume,</span>
+          count: incompleteExec<span class="cstat-no" title="statement not covered" >utions.length,</span>
+          resumable: summary.recoveryBreakdown.canResume,
         });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
-          incompleteExecutions: executionsWithRecovery,
-          summary,<span class="cstat-no" title="statement not covered" ></span>
-          pagination: {
-            total: metadata?.total || <span class="cstat-no" title="statement not covered" >incompleteExecutions.length,</span>
+        return formatSuccessRes<span class="cstat-no" title="statement not covered" >ponse({</span>
+          incomp<span class="cstat-no" title="statement not covered" >leteExecutions: executionsWithRecovery,</span>
+          summary,
+          pagination: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+            total: m<span class="cstat-no" title="statement not covered" >etadata?.total || incompleteExecutions.length,</span>
             limit,<span class="cstat-no" title="statement not covered" ></span>
             offset,<span class="cstat-no" title="statement not covered" ></span>
-            hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; (offset + incomp</span>leteExecutions.length),
+            hasMore: (metadata?.total || 0) &gt; (offset + incompleteExecutions.length),
           },
-        });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
-        const errorMessage = error instanceof E<span class="cstat-no" title="statement not covered" >rror ? error.message : String(error);</span>
-        log.error('Error<span class="cstat-no" title="statement not covered" > listing incomplete executions', { error: errorMessage });</span>
-        if (error instanceof UserError) throw error;
+        });
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error listing incomplete executions', { error: errorMessage });
+        if (error instan<span class="cstat-no" title="statement not covered" >ceof UserError) throw error;</span>
         throw new UserError(`Failed to list incomplete executions with recovery: ${errorMessage}`);
       }
-    },
-  });
+    },<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  // Bulk resolve incomp<span class="cstat-no" title="statement not covered" >lete executions</span>
+  // Bulk resolve incomplete executions
   server.addTool({
     name: 'bulk-resolve-incomplete-executions',
-    description:<span class="cstat-no" title="statement not covered" > 'Resolve multiple incomplete executions with b</span>atch operations',
-    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
-      executionIds: z.array(z.number().min(1)).min(1).max(50).describe('Array of execution IDs to resolve (max 50)'),
-      action: z.enum(['retry', 'skip', 'cancel', 'auto']).describe('Action to take (auto will choose best action per execution)'),
-      options: z.object({
+    description: 'Resolve multiple incomplete executions with batch operations',
+    parameters: z.object({<span class="cstat-no" title="statement not covered" ></span>
+      executionIds: z.array(z.number().min(1)).m<span class="cstat-no" title="statement not covered" >in(1).max(50).describe('Array of execution IDs to resolve (max 50)'),</span>
+      action: z.enum(['retry', <span class="cstat-no" title="statement not covered" >'skip', 'cancel', 'auto']).describe('Action to take (auto will c</span>hoose best action per execution)'),
+      options: z<span class="cstat-no" title="statement not covered" >.object({</span>
         retryWithModifications: z.boolean().default(false).describe('Apply modifications before retry'),
         skipFailedModules: z.boolean().default(false).describe('Skip failed modules during retry'),
-        preserveState: z.boolean<span class="cstat-no" title="statement not covered" >().default(true).describe('Preserve execution state where possible'),</span>
-        notifyOnCompletion: z.boolean().default(<span class="cstat-no" title="statement not covered" >false).describe('Send notification when batch completes'),</span>
-      }).default({}).describe('<span class="cstat-no" title="statement not covered" >Bulk operation options'),</span>
-      reason: z.<span class="cstat-no" title="statement not covered" >string().max(500).optional().describe('Reason for bulk resolution'),</span>
+        preserveState: z.boolean().default(true).describe('Preserve execution state where possible'),
+        notifyOnCompletion: z.boolean().default(false).describe('Send notification when batch completes'),
+      }).default({}).describe('Bulk operation options'),
+      reason: z.string().max(500).optional().describe('Reason for bulk resolution'),
     }),
     annotations: {
       title: 'Bulk Resolve Incomplete Executions',
@@ -3356,22 +3356,22 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) =&gt; {
-      const { executionIds, action, options, reason } = input;
-&nbsp;
-      log.info('Bulk resolving incomplete executions', {
-        count: executionIds.length,
-        action,
+      const { executionIds, action, o<span class="cstat-no" title="statement not covered" >ptions, reason } = input;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+      log.info('<span class="cstat-no" title="statement not covered" >Bulk resolving incomplete executions', {</span>
+        count: execu<span class="cstat-no" title="statement not covered" >tionIds.lengt</span>h,
+        action,<span class="cstat-no" title="statement not covered" ></span>
         options,
-      });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress</span>: 0, total: 100 });
-<span class="cstat-no" title="statement not covered" ></span>
+      });
+&nbsp;
+      try {
+<span class="cstat-no" title="statement not covered" >        reportProgress({ progress: 0, total: 100 });</span>
+&nbsp;
         const bulkData = {
           executionIds,
           action,
           options: {
-<span class="cstat-no" title="statement not covered" >            ...options,</span>
+            ...options,
             retryWithModifications: options?.retryWithModifications ?? false,
             skipFailedModules: options?.skipFailedModules ?? false,
             preserveState: options?.preserveState ?? true,
@@ -3385,93 +3385,93 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
 &nbsp;
         const response = await apiClient.post('/incomplete-executions/bulk-resolve', bulkData);
 &nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to bulk resolve executions: ${response.error?.message || 'Unknown error'}`);
-        }
+        if (!resp<span class="fstat-no" title="function not covered" >on</span>se.success) {
+          throw new UserError(`Failed to bulk resolve executions: ${response.error?.message<span class="cstat-no" title="statement not covered" > || 'U</span>nknown error'}`);
+        }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         const result = response.data;
         
-        // Type g<span class="fstat-no" title="function not covered" >ua</span>rd for bulk resolve result
-        const resolveResult = result &amp;&amp; typeof result === 'object' ? result as Record&lt;strin<span class="cstat-no" title="statement not covered" >g, unk</span>nown&gt; : {};
+        // Type guard for bulk resolve result
+        const resolveResult = result &amp;&amp; typeof result === 'object' ? result as Record&lt;string, unknown&gt; : {};
         cons<span class="cstat-no" title="statement not covered" >t successful = typeof resolveResult.successful === 'number' ? resolveResult.successful : 0;</span>
-        const failed = typeof resolveResult.failed === 'number' ? resolveResult.failed : 0;
-        
+        const fa<span class="cstat-no" title="statement not covered" >iled = typeof resolveResult.failed === 'numbe</span>r' ? resolveResult.failed : 0;
+        <span class="cstat-no" title="statement not covered" ></span>
         reportProgress({ progress: 75, total: 100 });
 &nbsp;
         // Get updated status for resolved executions
-        cons<span class="cstat-no" title="statement not covered" >t statusUpdates = await Promise.all(</span>
-          execut<span class="cstat-no" title="statement not covered" >ionIds.slice(0, 10).map(async (id) =&gt; { // Li</span>mit to first 10 for performance
-            try {<span class="cstat-no" title="statement not covered" ></span>
-              const statusResponse = await apiClient.get(`/executions/${id}/status`);
-              return {
-                executionId: id,
-                newStatus: statusResponse.success &amp;&amp; statusResponse.data &amp;&amp; typeof statusResponse.data === 'object' &amp;&amp; 'status' in statusResponse.data 
+        const statusUpdates = await Promise.all(
+          executionIds.slice(0, 10).map(async (id) =&gt; { // Limit to first 10 for performance
+            try {
+              co<span class="cstat-no" title="statement not covered" >nst statusResponse = await apiClient.get(`/exe</span>cutions/${id}/status`);
+              return {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >                executionId: id,</span>
+                newS<span class="cstat-no" title="statement not covered" >tatus: statusResponse.success &amp;&amp; statusResponse.data &amp;&amp; typeof statusResponse.data === 'object' &amp;&amp; 'status</span>' in statusResponse.data 
                   ? (statusResponse.data as Record&lt;string, unknown&gt;).status : 'unknown',
-              };
+              };<span class="cstat-no" title="statement not covered" ></span>
             } ca<span class="cstat-no" title="statement not covered" >tch (error) {</span>
-              return { executionI<span class="cstat-no" title="statement not covered" >d: id, newStatus: 'error' };</span>
+              return { executionId: id, newStatus: 'error' };
             }<span class="cstat-no" title="statement not covered" ></span>
           })<span class="cstat-no" title="statement not covered" ></span>
-        );
+        );<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 100, total: 100 });</span>
-&nbsp;
-        log.info('Successfully comple<span class="cstat-no" title="statement not covered" >ted bulk resolve operation', {</span>
-          requested: executionIds.leng<span class="cstat-no" title="statement not covered" >th,</span>
+        reportProgress({ progress: 10<span class="cstat-no" title="statement not covered" >0, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        log.info('Successfully complet<span class="cstat-no" title="statement not covered" >ed bulk resolve operation', {</span>
+          requested: executionIds.lengt<span class="cstat-no" title="statement not covered" >h,</span>
           successful,<span class="cstat-no" title="statement not covered" ></span>
           failed,<span class="cstat-no" title="statement not covered" ></span>
-        });<span class="cstat-no" title="statement not covered" ></span>
+        });
 <span class="cstat-no" title="statement not covered" ></span>
-        // Additional type guards for <span class="cstat-no" title="statement not covered" >remaining properties</span>
-        const batchId = typeof resolveR<span class="cstat-no" title="statement not covered" >esult.batchId === 'string' ? resolveResult.batchId : undefined;</span>
-        const estimatedCompletionTime = t<span class="cstat-no" title="statement not covered" >ypeof resolveResult.estimatedCompletionTime === 'string' ? resolveResult.estimatedComp</span>letionTime : undefined;
-        const errors = Array.isArray(r<span class="cstat-no" title="statement not covered" >esolveResult.errors) ? resolveResult.errors : [];</span>
+        // Additional type guards for remaining properties
+        const batchId = typeof resolveResult.batchId === 'string' ? resolveResult.batchId : undefined;
+        const estimatedCompletionTime = typeof resolveResult.estimatedCompletionTime === 'string' ? resolveResult.estimatedCompletionTime : undefined;
+        const errors = Array.isArray(resolveResult.errors) ? resolveResult.errors : [];
 &nbsp;
-        return formatSuccessRespo<span class="cstat-no" title="statement not covered" >nse({</span>
+        return formatSuccessResponse({
           result,
           statusUpdates,
           summary: {
             requestedCount: executionIds.length,
             successfulResolutions: successful,
             failedResolutions: failed,
-            action: action,
-            batchId: batchId,
+            acti<span class="cstat-no" title="statement not covered" >on: action,</span>
+            batc<span class="cstat-no" title="statement not covered" >hId: batchId,</span>
             estimatedCompletionTime: estimatedCompletionTime,
           },
           message: `Bulk resolution initiated for ${executionIds.length} executions`,
           errors: errors,
-        }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
+        }).content[0].text;<span class="cstat-no" title="statement not covered" ></span>
       } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error in bulk resolve operation', { error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to bulk resolve incomplete executions: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
-    },<span class="cstat-no" title="statement not covered" ></span>
+      }
+    },
   });
 &nbsp;
   // Analyze execution failure patterns
-  server.addTool({
+  server.addTool({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     name: 'analyze-execution-failure-patterns',
     description: 'Analyze patterns in incomplete executions to identify systemic issues',
     parameters: z.object({
       organizationId: z.number().min(1).optional().describe('Analyze for specific organization'),
-      teamId: z.number().min(1).optional().describe('Analyze for specific team'),
-      timeRange: z.object({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        startDate: z.string().describe('Analysis start date (ISO format)'),
-        endDate: z.string().describe('Analysis end date (ISO format)'),
-      }).describe('Time range for analysis'),
+      teamId: z.number().min(1).optio<span class="cstat-no" title="statement not covered" >nal().describe('Analyze for specific team'),</span>
+      timeRange:<span class="cstat-no" title="statement not covered" > z.object({</span>
+        startDat<span class="cstat-no" title="statement not covered" >e: z.string().describe('Analysis start date (ISO format)'),</span>
+        endDate: z.s<span class="cstat-no" title="statement not covered" >tring().descr</span>ibe('Analysis end date (ISO format)'),
+      }).describ<span class="cstat-no" title="statement not covered" >e('Time range for analysis'),</span>
       includeRecommendations: z.boolean().default(true).describe('Include improvement recommendations'),
-      groupBy: z.enum(['scenario', 'm<span class="cstat-no" title="statement not covered" >odule', 'error_type', 'time']).default('scenario').desc</span>ribe('How to group failure analysis'),
-    }),<span class="cstat-no" title="statement not covered" ></span>
-    annotations:<span class="cstat-no" title="statement not covered" > {</span>
-      title: 'Analyz<span class="cstat-no" title="statement not covered" >e Execution F</span>ailure Patterns',
-      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: true,</span>
+      groupBy: z.enum(['scenario', 'module', 'error_type', 'time']).default('scenario').describe('How to group failure analysis'),
+    }),
+    annotations: {
+<span class="cstat-no" title="statement not covered" >      title: 'Analyze Execution Failure Patterns',</span>
+      readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: true,
     },
-<span class="cstat-no" title="statement not covered" >    execute: async (input, { log, reportProgress }) =&gt; {</span>
+    execute: async (input, { log, reportProgress }) =&gt; {
       const { organizationId, teamId, timeRange, includeRecommendations, groupBy } = input;
 &nbsp;
       log.info('Analyzing execution failure patterns', {
@@ -3501,39 +3501,39 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
         }
 &nbsp;
         const analysis = response.data;
-        reportProgress({ progress: 75, total: 100 });
-&nbsp;
-        // Type guard for analysis result
-        const analysisData = analysis &amp;&amp; typeof analysis === 'object' ? analysis as Record&lt;string, unknown&gt; : {};
-        const totalFailures = typeof analysisData.totalFailures === 'number' ? analysisData.totalFailures : 0;
+        reportPro<span class="fstat-no" title="function not covered" >gr</span>ess({ progress: 75, total: 100 });
+<span class="cstat-no" title="statement not covered" ></span>
+        // T<span class="cstat-no" title="statement not covered" >ype guard for analysis result</span>
+        cons<span class="cstat-no" title="statement not covered" >t analysisData = analysis &amp;&amp; typeof analysis === 'object' ? analysis as Record&lt;string, unknown&gt; : {};</span>
+        const totalFailures = typ<span class="cstat-no" title="statement not covered" >eof analysisData.totalFailures === 'number' ? analysisData.totalFailures : 0;</span>
         const failureRate = typeof analysisData.failureRate === 'number' ? analysisData.failureRate : 0;
-        const top<span class="fstat-no" title="function not covered" >Er</span>rors = Array.isArray(analysisData.topErrors) ? analysisData.topErrors : [];
-        const topScenarios = Array.isArray(analysisData.topScenarios) ? analysisDat<span class="cstat-no" title="statement not covered" >a.topS</span>cenarios : [];
-        cons<span class="cstat-no" title="statement not covered" >t timePatterns = analysisData.timePatterns &amp;&amp; typeof analysisData.timePattern</span>s === 'object' ? analysisData.timePatterns : {};
-        cons<span class="cstat-no" title="statement not covered" >t recoveryStats = analysisData.recoveryStats &amp;&amp; typeof analysisData.recoveryStats === 'object' ? analysisData.recoveryStats as Record&lt;string, unknown&gt; : {};</span>
-        const operationsLost = ty<span class="cstat-no" title="statement not covered" >peof analysisData.operationsLost === 'number' ? analysisData.operationsLost : 0;</span>
+        const topErrors = Array.isArray(analysisData.topErrors) ? analysisData.topErrors : [];
+        const topScenarios = Array.isArray(analysisData.topScenarios) ? analysisData.topScenarios : [];
+        const timePatterns = analysisData.timePatterns &amp;&amp; typeof analysisData.timePatterns === 'object' ? analysisData.timePatterns : {};
+        const recoveryStats = analysisData.recoveryStats &amp;&amp; typeof analysisData.recoveryStats === 'object' ? analysisData.recoveryStats as Record&lt;string, unknown&gt; : {};
+        const operationsLost = typeof analysisData.operationsLost === 'number' ? analysisData.operationsLost : 0;
         const dataTransferLost = typeof analysisData.dataTransferLost === 'number' ? analysisData.dataTransferLost : 0;
         const estimatedCost = typeof analysisData.estimatedCost === 'number' ? analysisData.estimatedCost : 0;
-&nbsp;
-        // Generate additional insights
-        const insights = {
+<span class="cstat-no" title="statement not covered" ></span>
+        // Gener<span class="cstat-no" title="statement not covered" >ate additional insights</span>
+        const insigh<span class="cstat-no" title="statement not covered" >ts = {</span>
           totalFailures: totalFailures,
-          failureRate: failureRate,
+          failureRate: failur<span class="cstat-no" title="statement not covered" >eRate,</span>
           mostCommonErrors: topErrors.slice(0, 5),
-          mostAffectedScenarios: <span class="cstat-no" title="statement not covered" >topScenarios.slice(0, 5),</span>
-          timePa<span class="cstat-no" title="statement not covered" >tterns: timePatterns,</span>
-          recoverySu<span class="cstat-no" title="statement not covered" >ccess: typeof recoveryStats.successRate === 'number' ? recoveryStats.successRate : 0,</span>
+          mostAffectedScenarios: topS<span class="cstat-no" title="statement not covered" >cenarios.slice(0, 5),</span>
+          timePatterns: timePat<span class="cstat-no" title="statement not covered" >terns,</span>
+          recove<span class="cstat-no" title="statement not covered" >rySuccess: typeof recoveryStats.successRate === 'number' ? recoveryStats.successRate : 0,</span>
           operationalImpact: {
-            operationsLost: o<span class="cstat-no" title="statement not covered" >perationsLost,</span>
+            operationsLost: operationsLost,
             dataTransferLost: dataTransferLost,
-            estimatedCost: estimatedC<span class="cstat-no" title="statement not covered" >ost,</span>
+            estimatedCost: estimatedCost,
           },<span class="cstat-no" title="statement not covered" ></span>
-        };<span class="cstat-no" title="statement not covered" ></span>
+        };
 &nbsp;
         reportProgress({ progress: 100, total: 100 });
 &nbsp;
         log.info('Successfully completed failure pattern analysis', {
-          totalF<span class="cstat-no" title="statement not covered" >ailures: insights.totalFailures,</span>
+          totalFailures: insights.totalFailures,
           failureRate: insights.failureRate,
           analysisTimeRange: timeRange,
         });
@@ -3541,23 +3541,23 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
         const recommendations = Array.isArray(analysisData.recommendations) ? analysisData.recommendations : [];
 &nbsp;
         return formatSuccessResponse({
-          analysis,
-          insights,
-          recommendations: includeRecommendations ? recommendations : undefined,
-          summary: {
-            analysisTimeRange: timeRange,
+          analysis,<span class="cstat-no" title="statement not covered" ></span>
+          insigh<span class="cstat-no" title="statement not covered" >ts,</span>
+          recomm<span class="cstat-no" title="statement not covered" >endations: includeRecommendations ? recommendations : undefined,</span>
+          summary: {<span class="cstat-no" title="statement not covered" ></span>
+            anal<span class="cstat-no" title="statement not covered" >ysisTimeRange: timeRange,</span>
             groupBy,
-            totalFailures: insights.t<span class="cstat-no" title="statement not covered" >otalFailures,</span>
-            fail<span class="cstat-no" title="statement not covered" >ureRate: `${(insights.failureRate * 100).toFixed(2)}%`,</span>
-            topI<span class="cstat-no" title="statement not covered" >ssue: insights.mostCommonErrors[0]?.error || 'No dominant error pattern',</span>
-            actionab<span class="cstat-no" title="statement not covered" >leRecommendat</span>ions: recommendations.filter((r: unknown) =&gt; typeof r === 'object' &amp;&amp; r !== null &amp;&amp; 'priority' in r &amp;&amp; (r as { priority: string }).priority === 'high').length || 0,
-          },<span class="cstat-no" title="statement not covered" ></span>
+            totalFailures: insights.totalFailures,
+            failureRate: `${(insights.failureRate * 100).toFixed(2)}%`,
+<span class="cstat-no" title="statement not covered" >            topIssue: insights.mostCommonErrors[0]?.error || 'No dominant error pattern',</span>
+            actionableRecommendations: recommendations.filter((r: unknown) =&gt; typeof r === 'object' &amp;&amp; r !== null &amp;&amp; 'priority' in r &amp;&amp; (r as { priority: string }).priority === 'high').length || 0,
+          },
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-<span class="cstat-no" title="statement not covered" >        log.error('Error analyzing failure patterns', { error: errorMessage });</span>
+        log.error('Error analyzing failure patterns', { error: errorMessage });
         if (error instanceof UserError) throw error;
-<span class="cstat-no" title="statement not covered" >        throw new UserError(`Failed </span>to analyze execution failure patterns: ${errorMessage}`);
+        throw new UserError(`Failed to analyze execution failure patterns: ${errorMessage}`);
       }
     },
   });
@@ -3664,7 +3664,7 @@ export default addVariableTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

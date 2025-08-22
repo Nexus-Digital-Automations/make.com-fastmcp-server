@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/253</span>
+                <span class='fraction'>0/244</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/193</span>
+                <span class='fraction'>0/186</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/250</span>
+                <span class='fraction'>0/241</span>
             </div>
         
             
@@ -917,16 +917,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1645,7 +1639,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1766,17 +1766,17 @@
  * Comprehensive tools for managing AI agents, LLM providers, and agent configurations
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError } from 'fastmcp';
+import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../u</span>tils/response-formatter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// AI Agent ty<span class="cstat-no" title="statement not covered" >pes for compreh</span>ensive management
-export interface Mak<span class="cstat-no" title="statement not covered" >eAIAgent {</span>
-  id: number;<span class="cstat-no" title="statement not covered" ></span>
+import logger from '../lib/logger.js';
+import { formatSuccessRespon<span class="cstat-no" title="statement not covered" >se } from '../utils/response-formatter.js';</span>
+&nbsp;
+// AI Agent types for comprehensive management
+export interface MakeAIAgent {
+  id: number;
   name: string;
-  description?: string;<span class="cstat-no" title="statement not covered" ></span>
+  description?: string;
   type: 'chat' | 'completion' | 'embedding' | 'image' | 'function_calling';
   status: 'active' | 'inactive' | 'training' | 'error';
   configuration: {
@@ -1797,13 +1797,13 @@ export interface Mak<span class="cstat-no" title="statement not covered" >eAIAge
     instructions?: string;
   };
   capabilities: string[];
-  organizationId?: number;
+  organizationId?: number;<span class="cstat-no" title="statement not covered" ></span>
   teamId?: number;
   scenarioId?: number;
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
-  lastUsed?: string;<span class="cstat-no" title="statement not covered" ></span>
+  lastUsed?: string;
   usage: {
     totalCalls: number;
     totalTokens: number;
@@ -1821,13 +1821,13 @@ export interface MakeLLMProvider {
     apiKey?: string;
     baseUrl?: string;
     apiVersion?: string;
-    organization?: string;
+    organization?: string;<span class="cstat-no" title="statement not covered" ></span>
     customHeaders?: Record&lt;string, string&gt;;
   };
   models: Array&lt;{
     id: string;
     name: string;
-    type: 'chat' | 'comple<span class="cstat-no" title="statement not covered" >tion' | 'embedding' | 'image';</span>
+    type: 'chat' | 'completion' | 'embedding' | 'image';
     maxTokens: number;
     supportsStreaming: boolean;
     costPer1kTokens: number;
@@ -1835,13 +1835,13 @@ export interface MakeLLMProvider {
   rateLimit: {
     requestsPerMinute: number;
     tokensPerMinute: number;
-  };
+  };<span class="cstat-no" title="statement not covered" ></span>
   createdAt: string;
   updatedAt: string;
 }
 &nbsp;
 // Input validation schemas
-const AIAgentCreateSchema = z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
+const AIAgentCreateSchema = z.object({
   name: z.string().min(1).max(100).describe('AI agent name (1-100 characters)'),
   description: z.string().max(500).optional().describe('Agent description (max 500 characters)'),
   type: z.enum(['chat', 'completion', 'embedding', 'image', 'function_calling']).describe('Agent type'),
@@ -1858,59 +1858,59 @@ const AIAgentCreateSchema = z.ob<span class="cstat-no" title="statement not cove
   }).describe('Agent configuration'),
   context: z.object({
     maxHistoryLength: z.number().min(0).max(1000).default(10).describe('Maximum conversation history length'),
-    memoryType: z.enum(['none', 'conversation', 'semantic', 'hybrid']).default('conversation').describe('Memory management type'),
+    memoryType: z.enum([<span class="cstat-no" title="statement not covered" >'none', 'conversation', 'semantic', 'hybrid']).default('conversation').describe('Memory management type'),</span>
     memorySize: z.number().min(0).optional().describe('Memory size limit (MB)'),
     instructions: z.string().optional().describe('Additional context instructions'),
   }).default({}).describe('Context and memory configuration'),
   capabilities: z.array(z.string()).default([]).describe('Agent capabilities (function names, tools)'),
   organizationId: z.number().min(1).optional().describe('Organization ID (for organization-scoped agents)'),
-  teamId: z.number().min<span class="cstat-no" title="statement not covered" >(1).optional().describe('Team ID (for team-scoped agents)'),</span>
+  teamId: z.number().min(1).optional().describe('Team ID (for team-scoped agents)'),
   scenarioId: z.number().min(1).optional().describe('Scenario ID (for scenario-scoped agents)'),
   isPublic: z.boolean().default(false).describe('Whether agent is publicly accessible'),
 }).strict();
 &nbsp;
 const AIAgentUpdateSchema = z.object({
   agentId: z.number().min(1).describe('AI agent ID to update'),
-  name: z.string().min(1).max(100).optional().describe('New agent name'),
-  description: z.string().max(500).optional().describe('New agent description'),
-  configuration: z.object({
+  name: z.string<span class="fstat-no" title="function not covered" >().min(1).max(10</span>0).optional().describe('New agent name'),
+  description: z.string().ma<span class="cstat-no" title="statement not covered" >x(500).optional().describe('New agent descri</span>ption'),
+  co<span class="cstat-no" title="statement not covered" >nfiguration: z.object({</span>
     model: z.string().min(1).optional(),
-    provider: z.string().min(1).optional(),
+<span class="cstat-no" title="statement not covered" >    provider: z.string().min(1).optional(),</span>
     parameters: z.record(z.any()).optional(),
-    syste<span class="fstat-no" title="function not covered" >mPrompt: z.strin</span>g().optional(),
-    temperature: z.number().<span class="cstat-no" title="statement not covered" >min(0).max(2).optional(),</span>
-<span class="cstat-no" title="statement not covered" >    maxTokens: z.number().min(1).max(200000).optional(),</span>
+    systemPrompt: z.string().optional(),
+    temperature: z.number().min(0).max(2).optional(),
+    maxTokens: z.number().min(1).max(200000).optional(),
     topP: z.number().min(0).max(1).optional(),
-<span class="cstat-no" title="statement not covered" >    frequencyPenalty: z.number().min(-2).max(2).optional(),</span>
+    frequencyPenalty: z.number().min(-2).max(2).optional(),
     presencePenalty: z.number().min(-2).max(2).optional(),
   }).optional().describe('Configuration updates'),
   context: z.object({
-    maxHistoryLength: z.number().min(0).max(1000).optional(),
-    memoryType: z.enum(['none', 'conversation', 'semantic', 'hybrid']).optional(),
-    memorySize: z.number().min(0).optional(),
+    maxHistoryLen<span class="fstat-no" title="function not covered" >gt</span>h: z.number().min(0).max(1000).optional(),
+    memoryType: z.enum(['none', 'conversation', 'semantic', 'hybrid']).optional(),<span class="cstat-no" title="statement not covered" ></span>
+    memorySi<span class="cstat-no" title="statement not covered" >ze: z.number().min(0).optional(),</span>
     instructions: z.string().optional(),
   }).optional().describe('Context updates'),
   capabilities: z.array(z.string()).optional().describe('Updated capabilities'),
-  isPublic: z.boo<span class="fstat-no" title="function not covered" >le</span>an().optional().describe('Update public accessibility'),
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
+  isPublic: z.boolean().optional().describe('Update public accessibility'),
+}).strict();
 <span class="cstat-no" title="statement not covered" ></span>
 const AIAgentListSchema = z.object({
-  type: z.enum(['chat', 'completion', 'embedding', 'image', 'function_calling', 'all']).default('all').describe('Filter by agent type'),
-  status: z.enum(['active', 'inactive', 'training', 'error', 'all']).default('all').describe('Filter by agent status'),
-  provider: z.string().optional().describe('Filter by LLM provider'),
+  type: z.enum(['chat', 'completion', 'em<span class="cstat-no" title="statement not covered" >bedding', 'image', 'function_calling', 'all']).default('all').de</span>scribe('Filter by agent type'),
+  status: z.enum<span class="cstat-no" title="statement not covered" >(['active', 'inactive', 'training', 'error', 'all']).default('all').describe('Filter by agent status'),</span>
+  provider: z.string<span class="cstat-no" title="statement not covered" >().optional().describe('Filter by LLM provider'),</span>
   organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
-  teamId: z.<span class="cstat-no" title="statement not covered" >number().min(1).optional().describe('Filter by team ID'),</span>
-  scenarioId: z.number().min(1).optional().describe('Filter by scenario ID'),
-  isPublic: z.boolean().optional().descri<span class="cstat-no" title="statement not covered" >be('Filter by public accessibility'),</span>
-  includeUsage: <span class="cstat-no" title="statement not covered" >z.boolean().default(false).describe('Include usage statistics'),</span>
-  limit: z.number().<span class="cstat-no" title="statement not covered" >min(1).max(1000).default(100).describe('Maximum number of agents to return'),</span>
-  offset: z.number().min(0).default(0).describe('Number of agents to skip for pagination'),
-  sortBy: z.enum(['name', 'create<span class="cstat-no" title="statement not covered" >dAt', 'lastUsed', 'tot</span>alCalls']).default('name').describe('Sort field'),
-  sortOrder: z.enum(['asc', 'desc']).de<span class="cstat-no" title="statement not covered" >fault('asc').describe<span class="fstat-no" title="function not covered" >('</span>Sor<span class="cstat-no" title="statement not covered" >t order'),</span></span>
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  teamId: z.number().min(1).optio<span class="cstat-no" title="statement not covered" >nal().describe('Filter</span> by team ID'),
+  scenarioId: z.number().min(1).optiona<span class="cstat-no" title="statement not covered" >l().describe('Filter <span class="fstat-no" title="function not covered" >by</span> sc<span class="cstat-no" title="statement not covered" >enario ID'),</span></span>
+  isPublic: z.bo<span class="cstat-no" title="statement not covered" >olean().optional().describe('Filter by public accessibility'),</span>
+  includeUsage: z.bo<span class="cstat-no" title="statement not covered" >olean().default(false).describe('Include usage statistics'),</span>
+  limit: z.number().min(1).max(1000).default(100).describe('Maximum number of agents to return'),
+  offset: z.number().min(0).defaul<span class="cstat-no" title="statement not covered" >t(0).describe('Number of agents to skip for pagination'),</span>
+  sortBy: z.enum(['name', 'createdAt', 'lastUsed', 'totalCalls']).default('name').describe('Sort field'),
+  sortOrder: z.enum(['asc', 'desc']).default('asc').describe('Sort order'),
+}).strict();
+&nbsp;
 const LLMProviderCreateSchema = z.object({
-  name: z.string().min(1).max(100)<span class="cstat-no" title="statement not covered" >.describe('Provider name'),</span>
+  name: z.string().min(1).max(100).describe('Provider name'),
   type: z.enum(['openai', 'anthropic', 'google', 'azure', 'custom']).describe('Provider type'),
   configuration: z.object({
     apiKey: z.string().optional().describe('API key (will be encrypted)'),
@@ -1929,29 +1929,29 @@ const LLMProviderCreateSchema = z.object({
   })).min(1).describe('Available models'),
   rateLimit: z.object({
     requestsPerMinute: z.number().min(1).default(60).describe('Requests per minute limit'),
-    tokensPerMinute: z.number().min(1).default(60000).describe('Tokens per minute limit'),
-  }).default({}).describe('Rate limiting configuration'),
-}).strict();
+    tokensPerMinute: z.number()<span class="cstat-no" title="statement not covered" >.min(1).defau</span>lt(60000).describe('Tokens per minute limit'),
+  }).default({})<span class="cstat-no" title="statement not covered" >.describe('Rate limiting configuration'),</span>
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-const AgentTestSchema = z.object({
-  agentId: z.number().min(1).describe('AI agent ID to test'),
-  testType: z.enum(['simple', '<span class="cstat-no" title="statement not covered" >conversation'</span>, 'function_calling', 'performance']).default('simple').describe('Type of test to perform'),
-  testInput: z.a<span class="cstat-no" title="statement not covered" >ny().describe('Test input (string for simple test, array for conversation)'),</span>
+const AgentTestSchema<span class="cstat-no" title="statement not covered" > = z.object({</span>
+  agentId: z.number(<span class="cstat-no" title="statement not covered" >).min(1).describe('AI agent ID to test'),</span>
+  testType: z.enum(['simple', 'conversation', 'function_calling', 'performance']).default('simple').describe('Type of test to perform'),
+  testInput: z.any().<span class="cstat-no" title="statement not covered" >describe('Test input (string for simple test, array for conversation)'),</span>
   options: z.object(<span class="cstat-no" title="statement not covered" >{</span>
     includeMetrics: z.boolean().default(true).describe('Include performance metrics'),
-    timeout: z.number<span class="cstat-no" title="statement not covered" >().min(1000).max(60000).default(30000).describe('Test timeout in milliseconds'),</span>
-    validateResponse<span class="cstat-no" title="statement not covered" >: z.boolean().default(true).describe('Val</span>idate response format'),
-  }).default({}).describe('Test options'),
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
+    timeout: z.number().min(1000)<span class="cstat-no" title="statement not covered" >.max(60000).default(30000).describe('Test </span>timeout in milliseconds'),
+    validateResp<span class="cstat-no" title="statement not covered" >onse: z.boolean().default(true).describe('Validate response format'),</span>
+  }).default({}).des<span class="cstat-no" title="statement not covered" >cribe('Test options'),</span>
+}).strict();
 <span class="cstat-no" title="statement not covered" ></span>
-/**
- * Add AI agent management tools <span class="cstat-no" title="statement not covered" >to FastMCP server</span>
- */<span class="cstat-no" title="statement not covered" ></span>
-export function addA<span class="cstat-no" title="statement not covered" >IAgentTools(server: FastMCP, apiClient: MakeApiClient): void {</span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Add AI agent mana<span class="cstat-no" title="statement not covered" >gement tools to FastMCP server</span>
+ */
+export function <span class="cstat-no" title="statement not covered" >addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void {</span>
   const componentLogger = logger.child({ component: 'AIAgentTools' });
-  <span class="cstat-no" title="statement not covered" ></span>
-  componentLogge<span class="cstat-no" title="statement not covered" >r.info('Adding AI agent management tools');</span>
-<span class="cstat-no" title="statement not covered" ></span>
+  
+  componentLogger.info('Adding AI agent management tools');
+&nbsp;
   // Create AI agent
   server.addTool<span class="cstat-no" title="statement not covered" >({</span>
     name: 'create-ai-agent',
@@ -1959,7 +1959,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
     parameters: AIAgentCreateSchema,
     annotations: {
       title: 'Create AI Agent',
-      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false,</span>
+      readOnlyHint: false,
       idempotentHint: false,
       openWorldHint: true,
     },
@@ -1967,47 +1967,47 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
       const { name, description, type, configuration, context, capabilities, organizationId, teamId, scenarioId, isPublic } = input;
 &nbsp;
       log.info('Creating AI agent', {
-        name,
-        type,
-        provider: configuration.provider,
-        model: configuration.model,
-      });
+        name,<span class="cstat-no" title="statement not covered" ></span>
+        type,<span class="cstat-no" title="statement not covered" ></span>
+        provider<span class="cstat-no" title="statement not covered" >: configuration.provider,</span>
+        model: confi<span class="cstat-no" title="statement not covered" >guration.mode</span>l,
+      });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        // Valid<span class="cstat-no" title="statement not covered" >ate provider exists</span>
-        const pr<span class="cstat-no" title="statement not covered" >oviderResponse = await apiClient.get(`/llm-providers/${configuration.provider}`);</span>
-        if (!provide<span class="cstat-no" title="statement not covered" >rResponse.suc</span>cess) {
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`LLM provider "${configuration.provider}" not found or not acce</span>ssible`);
+      try {
+        // Validate provider exists
+        const providerResponse = await apiClient.get(`/llm-providers/${configuration.provider}`);
+<span class="cstat-no" title="statement not covered" >        if (!providerResponse.success) {</span>
+          throw new UserError(`LLM provider "${configuration.provider}" not found or not accessible`);
         }
 &nbsp;
         const provider = providerResponse.data as MakeLLMProvider;
         const supportedModel = provider.models.find(m =&gt; m.id === configuration.model);
-<span class="cstat-no" title="statement not covered" >        if (!supportedModel) {</span>
+        if (!supportedModel) {
           throw new UserError(`Model "${configuration.model}" not supported by provider "${configuration.provider}"`);
         }
-&nbsp;
-        const agentData = {
-          name,
+<span class="fstat-no" title="function not covered" ></span>
+        const agentData = {<span class="cstat-no" title="statement not covered" ></span>
+          na<span class="cstat-no" title="statement not covered" >me,</span>
           description,
           type,
           configuration: {
-            ...co<span class="fstat-no" title="function not covered" >nf</span>iguration,
-            parameters: {<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >              ...configuration.parameters,</span>
-              // Set defaults based on model capabilities
-              maxTokens: configuration.maxTokens || Math.min(supportedModel.maxTokens, 4000),
+            ...configuration,
+            parameters: {
+              ...configuration.parameters,
+<span class="cstat-no" title="statement not covered" >              // Set defaults based on model capabilities</span>
+              maxTokens: config<span class="cstat-no" title="statement not covered" >uration.maxTokens || Math.min(supportedModel.maxTokens, 4000),</span>
               temperature: configuration.temperature ?? 0.7,
             },
           },
           context: {
-<span class="cstat-no" title="statement not covered" >            ...context,</span>
-            maxHistoryLength: c<span class="cstat-no" title="statement not covered" >ontext?.maxHistoryLength ?? 10,</span>
-            memoryType: context?.memoryType ?? 'conversation',
-          },
-          capabilities,
-          organizationId,
-          teamId,
-          scenarioId,
+            ...context,
+            maxHistoryLength: context?.maxHistoryLength ?? 10,
+            memo<span class="cstat-no" title="statement not covered" >ryType: context?.memoryType ?? 'conversation',</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+          capabi<span class="cstat-no" title="statement not covered" >lities,</span>
+          organizati<span class="cstat-no" title="statement not covered" >onId,</span>
+          teamId<span class="cstat-no" title="statement not covered" >,</span>
+          scenarioId<span class="cstat-no" title="statement not covered" >,</span>
           isPubl<span class="cstat-no" title="statement not covered" >ic,</span>
           status: 'a<span class="cstat-no" title="statement not covered" >ctive',</span>
         };<span class="cstat-no" title="statement not covered" ></span>
@@ -2016,53 +2016,53 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
         if (organiza<span class="cstat-no" title="statement not covered" >tionId) {</span>
           endpoi<span class="cstat-no" title="statement not covered" >nt = `/organizations/${organizationId}/ai-agents`;</span>
         } else if (t<span class="cstat-no" title="statement not covered" >eamId) {</span>
-          endpoi<span class="cstat-no" title="statement not covered" >nt = `/teams/${teamId}/ai-agents`;</span>
-        } else if (s<span class="cstat-no" title="statement not covered" >cenarioId) {</span>
-          endpoi<span class="cstat-no" title="statement not covered" >nt = `/scenarios/${scenarioId}/ai-agents`;</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        const respon<span class="cstat-no" title="statement not covered" >se = await apiClient.post(en</span>dpoint, agentData);
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
-          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to create AI agent: ${response.error?.message || 'Unknown error'}`);</span>
+          endpoint = `/teams/${te<span class="cstat-no" title="statement not covered" >amId}/ai-agents`;</span>
+        } else i<span class="cstat-no" title="statement not covered" >f (scenarioId) {</span>
+          endpoint =<span class="cstat-no" title="statement not covered" > `/scenarios/${scenarioId}/ai-agents`;</span>
         }
 <span class="cstat-no" title="statement not covered" ></span>
-        const agent = response.da<span class="cstat-no" title="statement not covered" >ta as MakeAIAgent;</span>
-        if (!age<span class="cstat-no" title="statement not covered" >nt) {</span>
-          throw new UserError('AI agent creation failed - no data returned');
+        const response = await ap<span class="cstat-no" title="statement not covered" >iClient.post(endpo</span>int, agentData);
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!response.success) {
+          throw new UserError(`Failed to create AI agent: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
-        log.info('Successfully created AI agent', {
-          agentId: agent.id,<span class="cstat-no" title="statement not covered" ></span>
-          name: agent.name,
+        const agent = response.d<span class="cstat-no" title="statement not covered" >ata as MakeAIAgent;</span>
+        if (!agent) {
+          throw new UserError('AI agent creation failed - no data returned');
+        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        log.info('Successfully created AI agent',<span class="fstat-no" title="function not covered" > {<span class="cstat-no" title="statement not covered" ></span></span>
+          agentId: agent.id,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          name: agent.name,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           type: agent.type,
-          model: agent.configuration.model,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          model: agent.configuration.model,
         });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         return formatSuccessResponse({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           agent: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
             ...agent,
-            configuration: {
-              ...agent.configuration,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-              // Mask sensitive information<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-              apiKey: agent.configuration.parame<span class="fstat-no" title="function not covered" >te</span>rs?<span class="cstat-no" title="statement not covered" >.apiKey ? '[MASKED]' : u</span>ndefined,
-            },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          },
-          message: `AI agent "${name}" created succes<span class="fstat-no" title="function not covered" >sf</span>ully`,
-          testUrl: `/ai-agents/${agent.id<span class="cstat-no" title="statement not covered" >}/test`,</span>
-        }).content[0].te<span class="cstat-no" title="statement not covered" >xt;</span>
-      } catch (error: un<span class="cstat-no" title="statement not covered" >known) {</span>
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating AI agent', { n<span class="fstat-no" title="function not covered" >am</span>e, <span class="cstat-no" title="statement not covered" >error: erro</span>rMessage });
+            configuration: {<span class="fstat-no" title="function not covered" ></span>
+              ...agent.configuration,<span class="cstat-no" title="statement not covered" ></span>
+              // Mask se<span class="cstat-no" title="statement not covered" >nsitive information</span>
+              apiKey: ag<span class="cstat-no" title="statement not covered" >ent.configur</span>ation.parameters?.apiKey ? '[MASKED]' : undefined,
+            },
+          },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          message: `AI agent "${name}" created successfully`,
+          testUrl: `/ai-agents/${agent.id}/test`,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        }).content[0].text;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      } catch (error: unknown) {
+        const errorMessage = error instanc<span class="fstat-no" title="function not covered" >eo</span>f Error ? <span class="cstat-no" title="statement not covered" >error.message : String(error);</span>
+        log.error('Error creating AI agent', { name, error: errorMessage });
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to create AI a<span class="fstat-no" title="function not covered" >ge</span>nt: ${erro<span class="cstat-no" title="statement not covered" >rMessage}`);</span>
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to create AI agent: ${errorMessage}`);</span>
       }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     },
-  });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  });
 &nbsp;
   // List AI agents
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'list-ai-agents',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  server.addTool({
+    name: 'list-ai-agents',
     description: 'List and filter AI agents with comprehensive search capabilities',
     parameters: AIAgentListSchema,
     annotations: {
@@ -2077,70 +2077,70 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
         type,
         status,
         provider,
-        limit,
-        offset,
-      });
-&nbsp;
-      try {
+        limit,<span class="cstat-no" title="statement not covered" ></span>
+        offset,<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
         const params: Record&lt;string, unknown&gt; = {
-          limit,<span class="cstat-no" title="statement not covered" ></span>
-          offset<span class="cstat-no" title="statement not covered" >,</span>
-          sortBy<span class="cstat-no" title="statement not covered" >,</span>
-          sortOrder,<span class="cstat-no" title="statement not covered" ></span>
-          includ<span class="cstat-no" title="statement not covered" >eUsage,</span>
+          limit,
+          offset,
+          sortBy,
+<span class="cstat-no" title="statement not covered" >          sortOrder,</span>
+          includeUsage,
         };
 &nbsp;
         if (type !== 'all') params.type = type;
         if (status !== 'all') params.status = status;
-<span class="cstat-no" title="statement not covered" >        if (provider) params.provider = provider;</span>
+        if (provider) params.provider = provider;
         if (organizationId) params.organizationId = organizationId;
         if (teamId) params.teamId = teamId;
         if (scenarioId) params.scenarioId = scenarioId;
         if (isPublic !== undefined) params.isPublic = isPublic;
 &nbsp;
         const response = await apiClient.get('/ai-agents', { params });
-&nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to list AI agents: ${response.error?.message || 'Unknown error'}`);
-        }
-&nbsp;
-        const agents = response.data as MakeAIAgent[] || [];
-        const met<span class="fstat-no" title="function not covered" >ad</span>ata = response.metadata;
+<span class="fstat-no" title="function not covered" ></span>
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
+          th<span class="cstat-no" title="statement not covered" >row new UserError(`Failed to list AI agents: ${resp</span>onse.error?.message || 'Unknown error'}`);
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        log.<span class="cstat-no" title="statement not covered" >info('Successfully retrieved AI agents', {</span>
-          co<span class="cstat-no" title="statement not covered" >unt: agents.length,</span>
-          total: metadata?.total,<span class="cstat-no" title="statement not covered" ></span>
-        });<span class="cstat-no" title="statement not covered" ></span>
+        const ag<span class="cstat-no" title="statement not covered" >ents = response.data as MakeAIAgent[] || [];</span>
+        const metada<span class="cstat-no" title="statement not covered" >ta = response.metadata;</span>
+&nbsp;
+        log.info('Successfully<span class="cstat-no" title="statement not covered" > retrieved AI </span>agents', {
+          count:<span class="cstat-no" title="statement not covered" > agents.length,</span>
+          total: met<span class="cstat-no" title="statement not covered" >adata?.total,</span>
+        });
 <span class="cstat-no" title="statement not covered" ></span>
-        // Create summary statistics
-        const summary = {<span class="cstat-no" title="statement not covered" ></span>
-          totalA<span class="cstat-no" title="statement not covered" >gents: metadata?.total || agents.length,</span>
-          typeBreakd<span class="cstat-no" title="statement not covered" >own: {</span>
-            chat: agents.filter(a =&gt; a.type === 'chat').length,
-            completion: agen<span class="cstat-no" title="statement not covered" >ts.fi</span>lter(a =&gt; a.type === 'completion').length,
-            embedding: agents.<span class="cstat-no" title="statement not covered" >filte</span>r(a =&gt; a.type === 'embedding').length,
-            imag<span class="cstat-no" title="statement not covered" >e: agents.filter(a =&gt; a.type === 'image').length,</span>
-            function<span class="cstat-no" title="statement not covered" >_calling: agents.filter(a =&gt; a.type === 'function_calling').length,</span>
+        // Create summary stat<span class="cstat-no" title="statement not covered" >istic</span>s
+        const su<span class="cstat-no" title="statement not covered" >mmary = {</span>
+          totalAgent<span class="cstat-no" title="statement not covered" >s: metadata?.total || agents.length,</span>
+          typeBreakdown: {<span class="cstat-no" title="statement not covered" ></span>
+            chat: agents<span class="cstat-no" title="statement not covered" >.filter(a =&gt; a.type === 'chat').length,</span>
+            completion: agen<span class="cstat-no" title="statement not covered" >ts.filter(a =&gt; a.type === 'c</span>ompletion').length,
+            embedding: agents.filter(a =&gt; a.type === 'embedding').length,
+            image: agents.filter(a =&gt; a.type === 'image').length,
+            function_calling: agents.filter(a =&gt; a.type === 'function_calling').length,
           },<span class="cstat-no" title="statement not covered" ></span>
-          statusBreakdow<span class="cstat-no" title="statement not covered" >n: {</span>
-            active: agents.f<span class="cstat-no" title="statement not covered" >ilter(a =&gt; a.status === 'act</span>ive').length,
-            inactive: agents.filter(a =&gt; a.status === 'inactive').length,
-            training: agents.filter(a =&gt; a.status === 'training').length,
-            error: agents.filter(a =&gt; a.status === 'error').length,
-          },<span class="cstat-no" title="statement not covered" ></span>
+          statusBreakdown: {
+            active: agents.filter(a =&gt; a.status === 'active').length,
+            inac<span class="cstat-no" title="statement not covered" >tive: agents.filter(a =&gt; a.status === 'inactive').length,</span>
+            training<span class="cstat-no" title="statement not covered" >: agents.filter(a =&gt; a.status === 'training').length,</span>
+            error: agents.filter(a =&gt; a.status =<span class="cstat-no" title="statement not covered" >== 'error').length,</span>
+          },
           providerBreakdown: agents.reduce((acc: Record&lt;string, number&gt;, agent) =&gt; {
-            const provider = agent.configuration.provider;
-            acc[<span class="cstat-no" title="statement not covered" >provider] = (acc[provider] || 0) + 1;</span>
-            return a<span class="cstat-no" title="statement not covered" >cc;</span>
-          }, {}),<span class="cstat-no" title="statement not covered" ></span>
+            const provid<span class="cstat-no" title="statement not covered" >er = agent.configuration.provider;</span>
+            acc[provider] = <span class="cstat-no" title="statement not covered" >(acc[provider] || 0) + 1;</span>
+            return acc;
+          }, {}),
           publicAgents: agents.filter(a =&gt; a.isPublic).length,
-          totalUsage: includeUsage ? {
-            totalCalls: <span class="cstat-no" title="statement not covered" >agents.reduce((sum, a) =&gt; sum + a.usage.totalCalls, 0),</span>
-            totalTokens: age<span class="cstat-no" title="statement not covered" >nts.reduce((sum, a) =&gt; sum + a.u</span>sage.totalTokens, 0),
-            avgResponseTime: agents.length &gt; 0 ? 
+          totalUsage: in<span class="cstat-no" title="statement not covered" >cludeUsage ? {</span>
+            totalCalls: agents.reduce((sum, a) =&gt; sum + a.usage.totalCalls, 0),
+            totalTokens: agents.reduce((sum, a) =&gt; sum + a.usage.totalTokens, 0),
+            avgR<span class="cstat-no" title="statement not covered" >esponseTime: agents.length &gt; 0 ? </span>
               agents.reduce((sum, a) =&gt; sum + a.usage.avgResponseTime, 0) / agents.length : 0,
           } : undefined,
-        };<span class="cstat-no" title="statement not covered" ></span>
+        };
 &nbsp;
         return formatSuccessResponse({
           agents<span class="cstat-no" title="statement not covered" >: agents.map(agent =&gt; ({</span>
@@ -2149,7 +2149,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
               ...agent.configuration,
               // Mask sensitive data
               parameters: {
-<span class="cstat-no" title="statement not covered" >                ...agent.configuration.parameters,</span>
+                ...agent.configuration.parameters,
                 apiKey: agent.configuration.parameters?.apiKey ? '[MASKED]' : undefined,
               },
             },
@@ -2166,35 +2166,35 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing AI agents', { error: errorMessage });
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to list AI agents: ${errorMessage}`);
-      }
-    },
-  });
-&nbsp;
+        throw new UserError(`Failed t<span class="cstat-no" title="statement not covered" >o list AI agents: ${errorMessage}`);</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   // Get AI agent details
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'get-a<span class="cstat-no" title="statement not covered" >i-agent',</span>
-    description:<span class="cstat-no" title="statement not covered" > 'Get detailed information about a specific AI agent',</span>
-    parameters: z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
-      agentId: z<span class="cstat-no" title="statement not covered" >.number().min(1).describe('AI agent ID to retrieve'),</span>
+  server.addTool({
+    name: 'get-ai-agent',
+    description: 'Get detailed information about a specific AI agent',
+<span class="cstat-no" title="statement not covered" >    parameters: z.object({</span>
+      agentId: z.number().min(1).describe('AI agent ID to retrieve'),
       includeUsage: z.boolean().default(true).describe('Include detailed usage statistics'),
       includeHistory: z.boolean().default(false).describe('Include recent conversation history'),
     }),
     annotations: {
-<span class="cstat-no" title="statement not covered" >      title: 'Get AI Agent Details',</span>
+      title: 'Get AI Agent Details',
       readOnlyHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
-      const { agentId, includeUsage, includeHistory } = input;
-&nbsp;
-      log.info('Getting AI agent details', { agentId });
-&nbsp;
-      try {
-        const response = await apiClient.get(`/ai-agents/${agentId}`);
-<span class="fstat-no" title="function not covered" ></span>
-        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
-          th<span class="cstat-no" title="statement not covered" >row new UserError(`Failed to get AI agent: ${respo</span>nse.error?.message || 'Unknown error'}`);
+      const { age<span class="fstat-no" title="function not covered" >nt</span>Id, includeUsage, includeHistory } = input;
+<span class="cstat-no" title="statement not covered" ></span>
+      log.in<span class="cstat-no" title="statement not covered" >fo('Getting AI agent details', { agentId });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const re<span class="cstat-no" title="statement not covered" >sponse = await apiClient.get(`/ai-agents/${agentId}`);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to get AI agent: ${r</span>esponse.error?.message || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
         const ag<span class="cstat-no" title="statement not covered" >ent = response.data as MakeAIAgent;</span>
@@ -2205,36 +2205,36 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
         let usage: u<span class="cstat-no" title="statement not covered" >nknown = null;</span>
         let hist<span class="cstat-no" title="statement not covered" >ory: unknown = null;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (incl<span class="cstat-no" title="statement not covered" >udeUsage) {</span>
-          try {<span class="cstat-no" title="statement not covered" ></span>
+        if (includeUsage) {
+          try {
             cons<span class="cstat-no" title="statement not covered" >t usageResponse = await apiClient.get(`/ai-agents/${agentId}/usage`);</span>
-            if (usag<span class="cstat-no" title="statement not covered" >eResponse.success) {</span>
-              us<span class="cstat-no" title="statement not covered" >age = usageResponse.data;</span>
+            if (usageResponse.success) {<span class="cstat-no" title="statement not covered" ></span>
+              usage <span class="cstat-no" title="statement not covered" >= usageResponse.data;</span>
             }<span class="cstat-no" title="statement not covered" ></span>
           } catch (error) {
-            log.warn('Failed to retrieve agent usage statistics', { agentId });
-          }<span class="cstat-no" title="statement not covered" ></span>
+            log.warn('Failed to retri<span class="cstat-no" title="statement not covered" >eve agent usage statis</span>tics', { agentId });
+          }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (includeHisto<span class="cstat-no" title="statement not covered" >ry) {</span>
+        if (includeHistory) {
           try {
-            const historyResponse = a<span class="cstat-no" title="statement not covered" >wait apiClient.get(`/a</span>i-agents/${agentId}/history`, {
-              params: { limit: 10 }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+            const historyResponse<span class="cstat-no" title="statement not covered" > = await apiClient.get(`/ai-agents/${agentId}/history`, {</span>
+              pa<span class="cstat-no" title="statement not covered" >rams: { limit: 10 }</span>
             });<span class="cstat-no" title="statement not covered" ></span>
-            if (historyR<span class="cstat-no" title="statement not covered" >esponse.success) {</span>
-              history = historyResponse.data;
-            }
-          } catch (error) {<span class="cstat-no" title="statement not covered" ></span>
-            log.<span class="cstat-no" title="statement not covered" >warn('Failed to retrieve agent conversation history', { agentId });</span>
-          }<span class="cstat-no" title="statement not covered" ></span>
+            if (historyResponse.success) {
+              history = historyRespon<span class="cstat-no" title="statement not covered" >se.data;</span>
+            }<span class="cstat-no" title="statement not covered" ></span>
+          } catch (error) {
+            log.warn('Failed to retrieve agent conversation history', { agentId });
+          }
         }
 <span class="cstat-no" title="statement not covered" ></span>
-        log.info<span class="cstat-no" title="statement not covered" >('Successfully retrieved AI agent', {</span>
+        log.info('Successfully retrieved AI agent', {
           agentId,
           name: agent.name,
           type: agent.type,
           status: agent.status,
-        });<span class="cstat-no" title="statement not covered" ></span>
+        });
 &nbsp;
         return formatSuccessResponse({
           agent: {
@@ -2244,22 +2244,22 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
               parameters: {
                 ...agent.configuration.parameters,
                 apiKey: agent.configuration.parameters?.apiKey ? '[MASKED]' : undefined,
-              },
-            },
-          },
-          usage,
-          history,
+              },<span class="cstat-no" title="statement not covered" ></span>
+            },<span class="cstat-no" title="statement not covered" ></span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+          usage,<span class="cstat-no" title="statement not covered" ></span>
+          histor<span class="cstat-no" title="statement not covered" >y,</span>
           metadata: {
-            canEdit: true, // This wo<span class="cstat-no" title="statement not covered" >uld be determined by user permissions</span>
-            canD<span class="cstat-no" title="statement not covered" >elete: agent.status !== 'training',</span>
-            canT<span class="cstat-no" title="statement not covered" >est: agent.status === 'active',</span>
-            lastHeal<span class="cstat-no" title="statement not covered" >thCheck: (usa</span>ge as Record&lt;string, unknown&gt;)?.lastHealthCheck,
-            cost<span class="cstat-no" title="statement not covered" >Estimate: (usage as Record&lt;string, unknown&gt;)?.estimatedCost,</span>
+            canEdit: true, // This would be determined by user permissions
+            canDelete: agent.status !== 'training',
+            canTest: agent.status === 'active',
+<span class="cstat-no" title="statement not covered" >            lastHealthCheck: (usage as Record&lt;string, unknown&gt;)?.lastHealthCheck,</span>
+            costEstimate: (usage as Record&lt;string, unknown&gt;)?.estimatedCost,
           },
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-<span class="cstat-no" title="statement not covered" >        log.error('Error getting AI agent', { agentId, error: errorMessage });</span>
+        log.error('Error getting AI agent', { agentId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get AI agent details: ${errorMessage}`);
       }
@@ -2267,80 +2267,80 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
   });
 &nbsp;
   // Update AI agent
-  server.addTool({
-    name: 'update-ai-agent',
-    description: 'Update an existing AI agent configuration',
-    parameters: AIAgentUpdateSchema,
+  server.addTool(<span class="fstat-no" title="function not covered" >{</span>
+    name: 'update-ai-agent',<span class="cstat-no" title="statement not covered" ></span>
+    descript<span class="cstat-no" title="statement not covered" >ion: 'Update an existing AI agent configuration',</span>
+    paramete<span class="cstat-no" title="statement not covered" >rs: AIAgentUpdateSchema,</span>
     annotations: {
-      title: 'Update AI Agent',
-      readOnlyHin<span class="fstat-no" title="function not covered" >t:</span> false,
-      destructiveHint: true,<span class="cstat-no" title="statement not covered" ></span>
-      idempo<span class="cstat-no" title="statement not covered" >tentHint: true,</span>
-      openWo<span class="cstat-no" title="statement not covered" >rldHint: true,</span>
+      title: 'Up<span class="cstat-no" title="statement not covered" >date AI Agent',</span>
+      readOnlyHint: false,<span class="cstat-no" title="statement not covered" ></span>
+      destructiveHin<span class="cstat-no" title="statement not covered" >t: true,</span>
+      idempotentHint: tr<span class="cstat-no" title="statement not covered" >ue,</span>
+      openWorldHint: true,
     },
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
-      const { agentId, name, description, <span class="cstat-no" title="statement not covered" >configuration, context, capabilities, isPublic } = </span>input;
+    execute: async (input, { log <span class="cstat-no" title="statement not covered" >}) =&gt; {</span>
+      const { ag<span class="cstat-no" title="statement not covered" >entId, name, description, configuration, context, capabilities, isPublic } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('Updating<span class="cstat-no" title="statement not covered" > AI agent', { agentId, name });</span>
+      log.info('Updating AI agent', { agentId, name });
+<span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const updateData: Record&lt;string, unknown&gt; = {};
 &nbsp;
-      try {
-        const updateData: Record&lt;<span class="cstat-no" title="statement not covered" >string, unknown&gt; = {};</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (name !==<span class="cstat-no" title="statement not covered" > undefined) updateData.name = name;</span>
+        if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
-        if (conf<span class="cstat-no" title="statement not covered" >iguration !== undefined) updateData.configuration = conf</span>iguration;
-        if (cont<span class="cstat-no" title="statement not covered" >ext !== undefined) updateData.context = context;</span>
-        if (capabilities !== undefined) updateData.capabilities = capabilities;
-        if (isPublic !== undefined) updateData.isPublic = isPublic;
-&nbsp;
-        if (Object.keys(updateData).length === 0) {
-          throw new UserError('No update data provided');
-        }
+        if (configuration !== undefined) updateData.configuration = configuration;
+        if (context !== undefined) updateData.context = context;
+        if (capabilities !== undefine<span class="cstat-no" title="statement not covered" >d) updateData.capabilities = capabilities;</span>
+        if (isPu<span class="cstat-no" title="statement not covered" >blic !== undefined) updateData.isPublic = isPublic;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        // If up<span class="cstat-no" title="statement not covered" >dating configuration, validate model compatibility</span>
-        if (conf<span class="cstat-no" title="statement not covered" >iguration?.model &amp;&amp; configuration?.provider) {</span>
-          const prov<span class="cstat-no" title="statement not covered" >iderResponse </span>= await apiClient.get(`/llm-providers/${configuration.provider}`);
-          if (!p<span class="cstat-no" title="statement not covered" >roviderResponse.success) {</span>
+        if (Object.k<span class="cstat-no" title="statement not covered" >eys(updateDat</span>a).length === 0) {
+          throw <span class="cstat-no" title="statement not covered" >new UserError('No update data provided');</span>
+        }
+&nbsp;
+        // If updating configuration, validate model compatibility
+        if (configuration?.model &amp;&amp; configuration?.provider) {
+<span class="cstat-no" title="statement not covered" >          const providerResponse = await apiClient.get(`/llm-providers/${configuration.provider}`);</span>
+          if (!providerResponse.success) {
             throw new UserError(`LLM provider "${configuration.provider}" not found`);
           }
           
           const provider = providerResponse.data as MakeLLMProvider;
-<span class="cstat-no" title="statement not covered" >          const supportedModel = provider.models.find(m =&gt; m.id === configuration.model);</span>
+          const supportedModel = provider.models.find(m =&gt; m.id === configuration.model);
           if (!supportedModel) {
             throw new UserError(`Model "${configuration.model}" not supported by provider "${configuration.provider}"`);
           }
-        }
-&nbsp;
-        const response = await apiClient.put(`/ai-agents/${agentId}`, updateData);
-&nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to update AI agent: ${response.error?.message || 'Unknown error'}`);
         }<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        cons<span class="cstat-no" title="statement not covered" >t updatedAgent = response.data as MakeAIAgent;</span>
+        cons<span class="cstat-no" title="statement not covered" >t response = await apiClient.put(`/ai-agents/${agentI</span>d}`, updateData);
 <span class="cstat-no" title="statement not covered" ></span>
-        log.info<span class="cstat-no" title="statement not covered" >('Successfully updated AI agent', {</span>
-          agentId,<span class="cstat-no" title="statement not covered" ></span>
-          name: updatedAgent.name,
-          changes: Object.keys(updateData),
-        });
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new UserError(`Fa<span class="cstat-no" title="statement not covered" >iled to update AI agent: ${response.error?.message || 'Unknown error'}`);</span>
+        }
 &nbsp;
-        return formatSuccessRespon<span class="cstat-no" title="statement not covered" >se({</span>
+        const updatedAgent = response.data as MakeAIAgent;
+&nbsp;
+        log.info('Successfully upd<span class="cstat-no" title="statement not covered" >ated AI age</span>nt', {
+          agentId,<span class="cstat-no" title="statement not covered" ></span>
+          name: <span class="cstat-no" title="statement not covered" >updatedAgent.name,</span>
+          changes: O<span class="cstat-no" title="statement not covered" >bject.keys(updateData),</span>
+        });
+<span class="cstat-no" title="statement not covered" ></span>
+        return formatSuccessResp<span class="cstat-no" title="statement not covered" >onse({</span>
           agent: {<span class="cstat-no" title="statement not covered" ></span>
             ...u<span class="cstat-no" title="statement not covered" >pdatedAgent,</span>
-            configur<span class="cstat-no" title="statement not covered" >ation: {</span>
+            conf<span class="cstat-no" title="statement not covered" >iguration: {</span>
               ...updatedAgent.configuration,
-              parameters: {<span class="cstat-no" title="statement not covered" ></span>
-                ...updatedAgent.<span class="cstat-no" title="statement not covered" >configurati</span>on.parameters,
-                apiKey: updatedAge<span class="cstat-no" title="statement not covered" >nt.configuration.par</span>ameters?.apiKey ? '[MASKED]' : undefined,
-              },<span class="cstat-no" title="statement not covered" ></span>
+              parameters: {
+                ...updatedAgent.configuration.parameters,
+                apiKey: updatedAgent.configuration.parameters?.apiKey ? '[MASKED]' : undefined,
+              },
             },<span class="cstat-no" title="statement not covered" ></span>
           },
           message: `AI agent "${updatedAgent.name}" updated successfully`,
           changes: Object.keys(updateData),
         });
       } catch (error: unknown) {
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating AI agent', { agentId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to update AI agent: ${errorMessage}`);
@@ -2356,145 +2356,145 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
       agentId: z.number().min(1).describe('AI agent ID to delete'),
       force: z.boolean().default(false).describe('Force delete even if agent is in use'),
     }),
-    annotations: {
-      title: 'Delete AI Agent',
-      readOnlyHint: false,
-      destructiveHint: true,
-      idempotentHint: true,
+    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+      title: 'De<span class="cstat-no" title="statement not covered" >lete AI Agent',</span>
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false,</span>
+      destructiveHin<span class="cstat-no" title="statement not covered" >t: true,</span>
+      idempotent<span class="cstat-no" title="statement not covered" >Hint: true,</span>
       openWorldHint: true,
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
-      const { ag<span class="cstat-no" title="statement not covered" >entId, force } = input;</span>
+    },
+    execute: async (input, { log }) =&gt; {
+      const { agentId, force } = input;
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('<span class="cstat-no" title="statement not covered" >Deleting AI agent', { agentId, force });</span>
+      log.info('Deleting AI agent', { agentId, force });
 &nbsp;
       try {
         // Check if agent is in use (unless force delete)
         if (!force) {
-<span class="cstat-no" title="statement not covered" >          const usageResponse = await apiClient.get(`/ai-agents/${agentId}/usage`);</span>
+          const usageResponse = await apiClient.get(`/ai-agents/${agentId}/usage`);
           if (usageResponse.success &amp;&amp; (usageResponse.data as Record&lt;string, unknown&gt;)?.activeConnections as number &gt; 0) {
             throw new UserError(`AI agent is currently in use (${(usageResponse.data as Record&lt;string, unknown&gt;).activeConnections as number} active connections). Use force=true to delete anyway.`);
           }
-        }
-&nbsp;
-        const response = await apiClient.delete(`/ai-agents/${agentId}`);
-&nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to delete AI agent: ${response.error?.message || 'Unknown error'}`);
         }<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        log.<span class="cstat-no" title="statement not covered" >info('Successfully deleted AI agent', { agentId });</span>
+        cons<span class="cstat-no" title="statement not covered" >t response = await apiClient.delete(`/ai-agents/${agentId}`);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return formatSuccessResponse(<span class="cstat-no" title="statement not covered" >{</span>
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
+          throw new UserError(`Failed to delete AI agent: ${response.error?.message || 'Unknown error'}`);
+        }
+&nbsp;
+        log.info('Successfully deleted AI agent', { agentId });
+&nbsp;
+        return formatSuccessResponse({
           message: `AI agent ${agentId} deleted successfully`,
           agentId,
           forced: force,
         }).content[0].text;
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error deleting AI agent', { agentId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        const errorMessage = erro<span class="cstat-no" title="statement not covered" >r instanceof Error ? error.message : String(error);</span>
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error deleting AI agent', { agentId, error: errorMessage });</span>
+        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
         throw new UserError(`Failed to delete AI agent: ${errorMessage}`);
-      }
-    },
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Test AI agent<span class="cstat-no" title="statement not covered" ></span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+  });
+&nbsp;
+  // Test AI agent
   server.addTool({
-    name: 'test-ai-agent',<span class="cstat-no" title="statement not covered" ></span>
-    description:<span class="cstat-no" title="statement not covered" > 'Test an AI agent with various test scenarios and performance metrics',</span>
+    name: 'test-<span class="cstat-no" title="statement not covered" >ai-agent',</span>
+    description: 'Test an AI agent with various test scenarios and performance metrics',
     parameters: AgentTestSchema,
     annotations: {
       title: 'Test AI Agent',
       readOnlyHint: false,
-      idempotent<span class="cstat-no" title="statement not covered" >Hint: true,</span>
+      idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) =&gt; {
       const { agentId, testType, testInput, options } = input;
 &nbsp;
       log.info('Testing AI agent', { agentId, testType });
-&nbsp;
-      try {
-        reportProgress({ progress: 0, total: 100 });
-&nbsp;
-        const testData = {
-          testType,
-          testInput,<span class="cstat-no" title="statement not covered" ></span>
-          option<span class="cstat-no" title="statement not covered" >s,</span>
-        };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const st<span class="cstat-no" title="statement not covered" >artTime = Date.now();</span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        reportPr<span class="cstat-no" title="statement not covered" >ogress({ progress: 0, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const te<span class="cstat-no" title="statement not covered" >stData = {</span>
+          testType,
+          testInput,
+          options,
+        };
+<span class="cstat-no" title="statement not covered" ></span>
+        const startTime = Date.now();
         const response = await apiClient.post(`/ai-agents/${agentId}/test`, testData);
 &nbsp;
         if (!response.success) {
           throw new UserError(`Failed to test AI agent: ${response.error?.message || 'Unknown error'}`);
-<span class="cstat-no" title="statement not covered" >        }</span>
+        }
 &nbsp;
         const testResult = response.data as Record&lt;string, unknown&gt;;
         const endTime = Date.now();
         const totalTime = endTime - startTime;
 &nbsp;
         reportProgress({ progress: 100, total: 100 });
-&nbsp;
-        log.info('Successfully tested AI agent', {
-          agentId,
-          testType,
-          success: (testResult as Record&lt;string, unknown&gt;)?.success as boolean,
+<span class="fstat-no" title="function not covered" ></span>
+        log.info('Successfully tested AI agent', {<span class="cstat-no" title="statement not covered" ></span>
+          ag<span class="cstat-no" title="statement not covered" >entId,</span>
+          te<span class="cstat-no" title="statement not covered" >stType,</span>
+          success: (testResult <span class="cstat-no" title="statement not covered" >as Record&lt;string, unknown&gt;)?.success as boolean,</span>
           responseTime: totalTime,
-        });<span class="fstat-no" title="function not covered" ></span>
+        });
 <span class="cstat-no" title="statement not covered" ></span>
-        retu<span class="cstat-no" title="statement not covered" >rn formatSuccessResponse({</span>
-          te<span class="cstat-no" title="statement not covered" >stResult,</span>
-          performance: {<span class="cstat-no" title="statement not covered" ></span>
-            totalTime: `${totalTime}ms`,
-            agentResponseTime: ((testResult as Record&lt;string, unknown&gt;)?.metrics as Record&lt;string, unknown&gt;)?.responseTime,
-            toke<span class="cstat-no" title="statement not covered" >nUsage: ((testResult as Record&lt;string, unknown&gt;)?.metrics as Record&lt;string, unknown&gt;)?.tokens,</span>
-            cost: ((<span class="cstat-no" title="statement not covered" >testResult as Record</span>&lt;string, unknown&gt;)?.metrics as Record&lt;string, unknown&gt;)?.cost,
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
+          testRe<span class="cstat-no" title="statement not covered" >sult,</span>
+          performanc<span class="cstat-no" title="statement not covered" >e: {</span>
+            totalTime: `${totalTi<span class="cstat-no" title="statement not covered" >me}ms`,</span>
+            agen<span class="cstat-no" title="statement not covered" >tResponseTime: ((testResult as Record&lt;string, unknown&gt;)?.metrics as Record&lt;string, unknown&gt;)?.responseTime,</span>
+            tokenUsa<span class="cstat-no" title="statement not covered" >ge: ((testResult as Record&lt;string, unknown&gt;)?.metrics as Record&lt;string, unknown&gt;)?.tokens,</span>
+            cost: ((testResult as Record&lt;string, unknown&gt;)?.metrics as Record&lt;string, unknown&gt;)?.cost,
           },<span class="cstat-no" title="statement not covered" ></span>
-          validation<span class="cstat-no" title="statement not covered" >: {</span>
-            responseFormat: ((tes<span class="cstat-no" title="statement not covered" >tResult as Record&lt;string, unknown&gt;)?.validation as</span> Record&lt;string, unknown&gt;)?.format || 'valid',
-            cont<span class="cstat-no" title="statement not covered" >entQuality: ((testResult as Record&lt;string, unknown&gt;)?.validation as Record&lt;string, unknown&gt;)?.quality || 'good',</span>
-            errorCou<span class="cstat-no" title="statement not covered" >nt: (((testResult as Record&lt;string, unknown&gt;)?.validation as Record&lt;string, unknown&gt;)?.errors as unknown[])?.l</span>ength || 0,
-          },
+          valida<span class="cstat-no" title="statement not covered" >tion: {</span>
+            responseFormat: ((te<span class="cstat-no" title="statement not covered" >stResult as Record&lt;string, unknown&gt;)?.validation as Record&lt;string, unknown&gt;)?.format || 'valid',</span>
+            contentQuality: ((testResult as Record&lt;string, unknown&gt;)?.validation as Record&lt;string, unknown&gt;)?.quality || 'good',
+            errorCount: (((testResult as Record&lt;stri<span class="fstat-no" title="function not covered" >ng</span>, unknown&gt;)?.validation as Record&lt;string, unknown&gt;)?.errors as unknown[])?.length || 0,
+          },<span class="cstat-no" title="statement not covered" ></span>
           summary: {<span class="cstat-no" title="statement not covered" ></span>
-            test<span class="cstat-no" title="statement not covered" >Type,</span>
-            success: testResult?<span class="cstat-no" title="statement not covered" >.success || false,</span>
-            message: testResult?.message || 'Test completed',
-            timestamp: new Date().toISOString(),<span class="fstat-no" title="function not covered" ></span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-        });<span class="cstat-no" title="statement not covered" ></span>
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? <span class="fstat-no" title="function not covered" >er</span>ror.message : String(error);
-        log.error('Error<span class="cstat-no" title="statement not covered" > testing AI agent', { agentId, testType, error: errorMes</span>sage });
-        if (error instan<span class="cstat-no" title="statement not covered" >ceof UserErr</span>or) throw error;
+            testType,
+            success: testResult?.success || false,<span class="fstat-no" title="function not covered" ></span>
+            message: tes<span class="cstat-no" title="statement not covered" >tResult?.message || 'Test completed',</span>
+            timestamp: n<span class="cstat-no" title="statement not covered" >ew Date().to</span>ISOString(),
+          },
+        });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error testing AI agent', { agentId, testType, error: errorMessage });</span>
+        if (error instanceof UserError) throw<span class="fstat-no" title="function not covered" > e</span>rror;<span class="cstat-no" title="statement not covered" ></span>
         throw new UserError(`Failed to test AI agent: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    },<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+      }
+    },
   });
-<span class="cstat-no" title="statement not covered" ></span>
-  // Create LLM provider<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
+  // Create LLM provider
   server.addTool({
     name: 'create-llm-provider',
     description: 'Create a new LLM provider configuration',
     parameters: LLMProviderCreateSchema,
-    annotations: {
-      title: 'Create LLM Provider',
-      readOnlyHint: false,
-      idempotentHint: false,
-      openWorldHint: true,
+    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+      title: 'Cr<span class="cstat-no" title="statement not covered" >eate LLM Provider',</span>
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false,</span>
+      idempotentHint<span class="cstat-no" title="statement not covered" >: false,</span>
+      openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
     },
-    execute: async (input, { log }) =<span class="cstat-no" title="statement not covered" >&gt; {</span>
-      const { na<span class="cstat-no" title="statement not covered" >me, type, configuration, models, rateLimit } = input;</span>
+    execute: async (input, { log }) =&gt; {
+      const { name, type, configuration, models, rateLimit } = input;
 <span class="cstat-no" title="statement not covered" ></span>
-      log.info('Crea<span class="cstat-no" title="statement not covered" >ting LLM prov</span>ider', { name, type, modelCount: models.length });
-<span class="cstat-no" title="statement not covered" ></span>
+      log.info('Creating LLM provider', { name, type, modelCount: models.length });
+&nbsp;
       try {
         const providerData = {
           name,
-<span class="cstat-no" title="statement not covered" >          type,</span>
+          type,
           configuration,
-<span class="cstat-no" title="statement not covered" >          models,</span>
+          models,
           rateLimit: {
             ...rateLimit,
             requestsPerMinute: rateLimit?.requestsPerMinute ?? 60,
@@ -2617,7 +2617,7 @@ export default addAIAgentTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

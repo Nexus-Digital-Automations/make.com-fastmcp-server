@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/172</span>
+                <span class='fraction'>0/167</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/168</span>
+                <span class='fraction'>0/163</span>
             </div>
         
             
@@ -617,15 +617,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1032,6 +1029,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1166,17 +1166,17 @@
  * Advanced historical log search and analysis with comprehensive filtering, aggregation, trend analysis
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { QueryLogsByTimeRangeSchema } from '../schemas/stream-config.js';</span>
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition </span>} from '../../shared/types/tool-context.js';
-import { MakeLogEntry } fro<span class="cstat-no" title="statement not covered" >m '../types/streaming.js';</span>
-import { formatSuccessResponse }<span class="cstat-no" title="statement not covered" > from '../../../utils/response-formatter.js';</span>
-&nbsp;
-/**
- * Create query logs by time range tool configuration
- */<span class="fstat-no" title="function not covered" ></span>
-export function createQueryLogsByT<span class="cstat-no" title="statement not covered" >imeRange</span>Tool(context: ToolContext): ToolDefinition {
-  co<span class="cstat-no" title="statement not covered" >nst { apiClient, logger } = context;</span>
+import { UserError } from 'fastmcp';
+import { QueryLogsByTimeRangeSchema } from '../schemas/stream-config.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { MakeLogEntry } from '../types/streaming.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+<span class="fstat-no" title="function not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * C<span class="cstat-no" title="statement not covered" >reate query logs by time range tool configuration</span>
+ */
+export function createQueryLogsByTimeRangeTool(context: ToolContext): ToolDefinition {
+  const { apiClient, logger } = context;
   
   return {
     name: 'query_logs_by_timerange',
@@ -1184,12 +1184,12 @@ export function createQueryLogsByT<span class="cstat-no" title="statement not co
     parameters: QueryLogsByTimeRangeSchema,
     annotations: {
       title: 'Query Logs by Time Range',
-      readOnlyHint: true,
-      destructiveHint: false,
-      idempotentHint: true,
-      openWorldHi<span class="fstat-no" title="function not covered" >nt</span>: true,
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute:<span class="cstat-no" title="statement not covered" > async (input: unknown, { log }): Promise&lt;string&gt; =&gt; {</span>
+      readOnlyHin<span class="fstat-no" title="function not covered" >t:</span> true,
+      destructiveHint: false,<span class="cstat-no" title="statement not covered" ></span>
+      idempo<span class="cstat-no" title="statement not covered" >tentHint: true,</span>
+      openWorldHint: true,
+    },
+    execute: async (input: unknown, { log }): Promise&lt;string&gt; =&gt; {
       const { 
         scenarioId, organizationId, teamId, executionId, timeRange, 
         filtering, pagination, aggregation, analysis, export: exportConfig
@@ -1197,63 +1197,63 @@ export function createQueryLogsByT<span class="cstat-no" title="statement not co
         scenarioId?: number;
         organizationId?: number;
         teamId?: number;
-        executionId?: string;
-        timeRange: {
+        exec<span class="cstat-no" title="statement not covered" >utionId?: string;</span>
+        timeRange: {<span class="cstat-no" title="statement not covered" ></span>
           startTime: string;
-          en<span class="cstat-no" title="statement not covered" >dTime: string;</span>
-          timezone: string;<span class="cstat-no" title="statement not covered" ></span>
+          endTime: string;<span class="cstat-no" title="statement not covered" ></span>
+          timezone: string;
         };
-        filtering: {<span class="cstat-no" title="statement not covered" ></span>
+        filtering: {
           logLevels: string[];
           executionStatus?: string;
           moduleTypes?: string[];
           moduleNames?: string[];
           searchText?: string;
           errorCodesOnly: boolean;
-          performanceThreshold?: number;
-          dataSizeThreshold?: number;
+          perfor<span class="cstat-no" title="statement not covered" >manceThreshold?: number;</span>
+          dataSizeTh<span class="cstat-no" title="statement not covered" >reshold?: number;</span>
           operationsThreshold?: number;
-          exclud<span class="cstat-no" title="statement not covered" >eSuccess: boolean;</span>
-          includeMet<span class="cstat-no" title="statement not covered" >rics: boolean;</span>
-          correlationIds?: string[];
-        };
-        paginati<span class="cstat-no" title="statement not covered" >on: {</span>
-          limit: num<span class="cstat-no" title="statement not covered" >ber;</span>
-          offset<span class="cstat-no" title="statement not covered" >: number;</span>
-          sortBy: st<span class="cstat-no" title="statement not covered" >ring;</span>
-          sortOr<span class="cstat-no" title="statement not covered" >der: string;</span>
-          cursor?: s<span class="cstat-no" title="statement not covered" >tring;</span>
+          excludeSuccess: boolean;
+          includ<span class="cstat-no" title="statement not covered" >eMetrics: boolean;</span>
+          correlatio<span class="cstat-no" title="statement not covered" >nIds?: string[];</span>
         };<span class="cstat-no" title="statement not covered" ></span>
-        aggregation:<span class="cstat-no" title="statement not covered" > {</span>
-          enable<span class="cstat-no" title="statement not covered" >d: boolean;</span>
-          groupBy?: <span class="cstat-no" title="statement not covered" >string;</span>
-          includ<span class="cstat-no" title="statement not covered" >eStats: boolean;</span>
-          includeTim<span class="cstat-no" title="statement not covered" >eDistribution: boolean;</span>
-          includ<span class="cstat-no" title="statement not covered" >ePerformanceAnalysis: boolean;</span>
-          includeErr<span class="cstat-no" title="statement not covered" >orAnalysis: boolean;</span>
+        pagination: <span class="cstat-no" title="statement not covered" >{</span>
+          limit:<span class="cstat-no" title="statement not covered" > number;</span>
+          offset: nu<span class="cstat-no" title="statement not covered" >mber;</span>
+          sortBy<span class="cstat-no" title="statement not covered" >: string;</span>
+          sortOrder:<span class="cstat-no" title="statement not covered" > string;</span>
+          cursor<span class="cstat-no" title="statement not covered" >?: string;</span>
+        };<span class="cstat-no" title="statement not covered" ></span>
+        aggregat<span class="cstat-no" title="statement not covered" >ion: {</span>
+          enabled: b<span class="cstat-no" title="statement not covered" >oolean;</span>
+          groupB<span class="cstat-no" title="statement not covered" >y?: string;</span>
+          includeSta<span class="cstat-no" title="statement not covered" >ts: boolean;</span>
+          includ<span class="cstat-no" title="statement not covered" >eTimeDistribution: boolean;</span>
+          includePer<span class="cstat-no" title="statement not covered" >formanceAnalysis: boolean;</span>
+          includ<span class="cstat-no" title="statement not covered" >eErrorAnalysis: boolean;</span>
         };<span class="cstat-no" title="statement not covered" ></span>
         analysis: {<span class="cstat-no" title="statement not covered" ></span>
-          perfor<span class="cstat-no" title="statement not covered" >manceTrends: boolean;</span>
-          errorPatte<span class="cstat-no" title="statement not covered" >rns: boolean;</span>
+          performanceTrends: boolean;
+          errorP<span class="cstat-no" title="statement not covered" >atterns: boolean;</span>
           usageMetri<span class="cstat-no" title="statement not covered" >cs: boolean;</span>
-          executionFlow: boolean;
-          anomal<span class="cstat-no" title="statement not covered" >yDetection: boolean;</span>
+          execut<span class="cstat-no" title="statement not covered" >ionFlow: boolean;</span>
+          anomalyDet<span class="cstat-no" title="statement not covered" >ection: boolean;</span>
         };<span class="cstat-no" title="statement not covered" ></span>
-        export?:<span class="cstat-no" title="statement not covered" > {</span>
-          format: st<span class="cstat-no" title="statement not covered" >ring;</span>
-          includ<span class="cstat-no" title="statement not covered" >eCharts: boolean;</span>
-          compressio<span class="cstat-no" title="statement not covered" >n: boolean;</span>
+        export?: {<span class="cstat-no" title="statement not covered" ></span>
+          format<span class="cstat-no" title="statement not covered" >: string;</span>
+          includeCha<span class="cstat-no" title="statement not covered" >rts: boolean;</span>
+          compre<span class="cstat-no" title="statement not covered" >ssion: boolean;</span>
         };<span class="cstat-no" title="statement not covered" ></span>
       };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-      log?.info?.('S<span class="cstat-no" title="statement not covered" >tarting advanced historical lo</span>g query', {
-        scenario<span class="cstat-no" title="statement not covered" >Id,</span>
-        organization<span class="cstat-no" title="statement not covered" >Id,</span>
+      log?.info?<span class="cstat-no" title="statement not covered" >.('Starting advanced historical log query', {</span>
+        scenarioId,<span class="cstat-no" title="statement not covered" ></span>
+        organizationId,
         teamId,<span class="cstat-no" title="statement not covered" ></span>
-        executionId,<span class="cstat-no" title="statement not covered" ></span>
-        timeRange,
-        filtering,<span class="cstat-no" title="statement not covered" ></span>
-        paginati<span class="cstat-no" title="statement not covered" >on,</span>
+        executio<span class="cstat-no" title="statement not covered" >nId,</span>
+        timeRange,<span class="cstat-no" title="statement not covered" ></span>
+        filtering,
+        pagination,<span class="cstat-no" title="statement not covered" ></span>
         aggregation,<span class="cstat-no" title="statement not covered" ></span>
         analysis,
       });<span class="cstat-no" title="statement not covered" ></span>
@@ -1262,24 +1262,24 @@ export function createQueryLogsByT<span class="cstat-no" title="statement not co
         const querySt<span class="cstat-no" title="statement not covered" >artTime = Date.now();</span>
         <span class="cstat-no" title="statement not covered" ></span>
         // Build comprehensive query parameters
-        const params:<span class="cstat-no" title="statement not covered" > Record&lt;string, unknown&gt; = {</span>
-          startDate:<span class="cstat-no" title="statement not covered" > timeRange.startTime,</span>
+        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
+          startDate: timeRange.startTime,
           endDate: timeRange.endTime,
-          timezo<span class="cstat-no" title="statement not covered" >ne: timeRange.timezone,</span>
+          timezone: timeRange.timezone,
           limit: pagination.limit,
           offset: pagination.offset,
-          sortBy: pagination.sortBy,
-          sortOrder: pagination.sortOrder,
-        };
+          sortBy: pagination.sort<span class="cstat-no" title="statement not covered" >By,</span>
+          sortOr<span class="cstat-no" title="statement not covered" >der: pagination.sortOrder,</span>
+        };<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        // Add cursor-based p<span class="cstat-no" title="statement not covered" >agination if provide</span>d
+        if (pagination.cursor) {<span class="cstat-no" title="statement not covered" ></span>
+          params.cursor = pagination.c<span class="cstat-no" title="statement not covered" >ursor;</span>
+        }
 <span class="cstat-no" title="statement not covered" ></span>
-        // Add c<span class="cstat-no" title="statement not covered" >ursor-based pagination if provided</span>
-        if (paginati<span class="cstat-no" title="statement not covered" >on.cursor) {</span>
-          params.cursor = pagination.cursor;
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        // Apply filtering parameters<span class="cstat-no" title="statement not covered" ></span>
+        // Apply filtering parameters
         if (scenarioId) params.scenarioId = scenarioId;
-        if (organizationId) par<span class="cstat-no" title="statement not covered" >ams.organizationId = organizationId;</span>
+        if (organizationId) params.organizationId = organizationId;
         if (teamId) params.teamId = teamId;
         if (executionId) params.executionId = executionId;
         if (filtering.logLevels.length &gt; 0) params.level = filtering.logLevels.join(',');
@@ -1303,69 +1303,69 @@ export function createQueryLogsByT<span class="cstat-no" title="statement not co
         if (executionId) {
           endpoint = `/executions/${executionId}/logs`;
         } else if (scenarioId) {
-          endpoint = `/scenarios/${scenarioId}/logs`;
-        } else if (organizationId) {
-          endpoint = `/organizations/${organizationId}/logs`;
-        } else i<span class="cstat-no" title="statement not covered" >f (teamId) {</span>
-          endpoint =<span class="cstat-no" title="statement not covered" > `/teams/${teamId}/logs`;</span>
+          endpoi<span class="cstat-no" title="statement not covered" >nt = `/scenarios/${scenarioId}/logs`;</span>
+        } else if (o<span class="cstat-no" title="statement not covered" >rganizationId) {</span>
+          endpoint =<span class="cstat-no" title="statement not covered" > `/organizations/${organizationId}/logs`;</span>
+        } else if (teamId) {
+          endpoint = `/teams/${teamId}/logs`;
         }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        log?.info?.('Executing historical log query', {
-          endpoi<span class="cstat-no" title="statement not covered" >nt,</span>
+        log?.info?.(<span class="cstat-no" title="statement not covered" >'Executing historical log query', {</span>
+          endpoint,
           paramsCount: Object.keys(params).length,
-          queryStrat<span class="cstat-no" title="statement not covered" >egy: 'time-range-optimized',</span>
+          queryStrategy: 'time-range-optimized',
         });
 &nbsp;
         // Execute the primary log query
-        const response = await apiClient.get(endpoint, { params });
+        const respon<span class="cstat-no" title="statement not covered" >se = await apiClient.get(endpoint, { params });</span>
 &nbsp;
         if (!response.success) {
-          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to query historical logs: ${response.error?.message || 'Unknown error'}`);</span>
+          throw new UserError(`Failed to query historical logs: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
-        const logs = (response.data as MakeLogEntry[]) || [];
-        const metadata = response.metadata;
-        const queryDuration = Date.now() - queryStartTime;
-<span class="cstat-no" title="statement not covered" ></span>
-        // Build com<span class="cstat-no" title="statement not covered" >prehensive result object</span>
-        const result<span class="cstat-no" title="statement not covered" >: Record&lt;string, unknown&gt; = {</span>
+        const lo<span class="cstat-no" title="statement not covered" >gs = (response.data as MakeLogEntry[]) || [];</span>
+        const metada<span class="cstat-no" title="statement not covered" >ta = response.metadata;</span>
+        const queryD<span class="cstat-no" title="statement not covered" >uration = Date.now() - queryStartTime;</span>
+&nbsp;
+        // Build comprehensive result object
+        const result: Record&lt;string, unknown&gt; = {
           queryInfo: {
             executedAt: new Date().toISOString(),
-            duration: `${queryDuration}ms`,
+            dura<span class="cstat-no" title="statement not covered" >tion: `${queryDuration}ms`,</span>
             timeRange: {
               ...timeRange,
-              ac<span class="cstat-no" title="statement not covered" >tualDuration: new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime(),</span>
+              actualDuration: new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime(),
               humanReadable: `${Math.ceil((new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime()) / (1000 * 60 * 60))} hours`,
             },
             filtering,
-            pagination: {
+            pagi<span class="cstat-no" title="statement not covered" >nation: {</span>
               ...pagination,
               total: metadata?.total || logs.length,
-              ha<span class="cstat-no" title="statement not covered" >sMore: (metadata?.total || 0) &gt; (pagination.offset + logs.length),</span>
-              nextCursor: (metadata as Record&lt;string, unknown&gt;)?.nextCursor as string,
+              hasMore: (metadata?.tot<span class="cstat-no" title="statement not covered" >al || 0) &gt; (pagination.offset + logs.length),</span>
+              ne<span class="cstat-no" title="statement not covered" >xtCursor: (metadata as Record&lt;string, unknown&gt;)?.nextCursor as string,</span>
             },
-            endpoint,<span class="cstat-no" title="statement not covered" ></span>
-            perf<span class="cstat-no" title="statement not covered" >ormance: {</span>
+            endpoint,
+            performance: {
               queryTime: queryDuration,
               averageProcessingTime: queryDuration / Math.max(logs.length, 1),
               dataRetrievalRate: `${logs.length}/${queryDuration}ms`,
             },
-          },
-          logs: logs,
+          },<span class="cstat-no" title="statement not covered" ></span>
+          logs: logs<span class="cstat-no" title="statement not covered" >,</span>
           summary: generateLogSummary(logs),
         };<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         // Add comprehensive aggregation analysis
-        if (aggr<span class="cstat-no" title="statement not covered" >egation.enabled &amp;&amp; aggregation.groupBy) {</span>
+        if (aggregation.enabled &amp;&amp; aggregation.groupBy) {
           log?.info?.('Generating advanced aggregation analysis');
           result.aggregation = generateLogAggregation(
             logs,
             aggregation.groupBy as 'level' | 'module' | 'hour',
-            aggregation.includeStats
-          );
+<span class="fstat-no" title="function not covered" >            aggregation.incl</span>udeStats
+          );<span class="cstat-no" title="statement not covered" ></span>
         }
-<span class="fstat-no" title="function not covered" ></span>
-        // Add advan<span class="cstat-no" title="statement not covered" >ced analysis features</span>
+&nbsp;
+        // Add advanced analysis features
         if (analysis.performanceTrends || analysis.errorPatterns || 
             analysis.usageMetrics || analysis.executionFlow || analysis.anomalyDetection) {
           
@@ -1378,87 +1378,87 @@ export function createQueryLogsByT<span class="cstat-no" title="statement not co
           });
           
           result.analysis = await performAdvancedLogAnalysis(logs, analysis, {
-            startTime: timeRange.startTime,
-            endTime: timeRange.endTime,
-          });
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Add ex<span class="fstat-no" title="function not covered" >po</span>rt capabilities if requested</span>
-        if (exportConfig?.format) {
-<span class="cstat-no" title="statement not covered" >          log?.info?.('Preparing export data', { format: exportConfig.format });</span>
-          result.export = await prepareLogExport(logs, {
-<span class="cstat-no" title="statement not covered" >            format: exportConfig.format,</span>
-            includeCharts: exportConfig.includeCharts,
-            compressio<span class="cstat-no" title="statement not covered" >n: exportConfig.compression,</span>
-<span class="cstat-no" title="statement not covered" >          });</span>
+            startTime: timeRan<span class="cstat-no" title="statement not covered" >ge</span>.startTime,
+            endTime: tim<span class="cstat-no" title="statement not covered" >eR</span>ange.endTime,
+<span class="cstat-no" title="statement not covered" >          });<span class="fstat-no" title="function not covered" ></span></span>
         }
 <span class="cstat-no" title="statement not covered" ></span>
-        log?.info?.('Historical log<span class="cstat-no" title="statement not covered" > query completed successfully',</span> {
-          lo<span class="cstat-no" title="statement not covered" >gsReturned: logs.length,</span>
-          qu<span class="cstat-no" title="statement not covered" >eryDuration: `${q</span>ueryDuration}ms`,
-          ag<span class="cstat-no" title="statement not covered" >gregationEnabled: aggregation.enabled,</span>
-          an<span class="cstat-no" title="statement not covered" >alysisEnabled: Object.values(analysis).some(Boolean),</span>
-          exportEnabled: !!exportConfig?.format,
-        });
+        // Add export capabilities if requested
+<span class="cstat-no" title="statement not covered" >        if (exportConfig?.format) {</span>
+          log?.info?.('Preparing export data', { format: exportConfig.format });
+          result.expor<span class="cstat-no" title="statement not covered" >t = await prepareLogExport(logs, {</span>
+<span class="cstat-no" title="statement not covered" >            format: exportConfig.format,</span>
+            includeCharts: exportConfig.includeCharts,
+<span class="cstat-no" title="statement not covered" >            compression: exportConfig.compression,</span>
+          });<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
+        log?<span class="cstat-no" title="statement not covered" >.info?.('Historical log query completed successfully', {</span>
+          lo<span class="cstat-no" title="statement not covered" >gsReturned: logs.length,</span>
+          queryDuration: `${queryDuration}ms`,
+          aggregationEnabled: aggregation.enabled,
+<span class="cstat-no" title="statement not covered" >          analysisEnabled: Object.values(analysis).some(Boolean),</span>
+<span class="cstat-no" title="statement not covered" >          exportEnabled: !!exportConfig?.format,</span>
+<span class="cstat-no" title="statement not covered" >        });</span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >        return formatSuccessResponse(result).content[0].text;</span>
 <span class="cstat-no" title="statement not covered" ></span>
       } catch (error) {
-<span class="cstat-no" title="statement not covered" >        const errorMessage = error instanceof Error ? error.message : String(error);</span>
-<span class="cstat-no" title="statement not covered" >        logger.error?.('Error querying historical l</span>ogs', {
+<span class="cstat-no" title="statement not covered" >        const errorM</span>essage = error instanceof Error ? error.message : String(error);
+        logger.error?.('Error querying historical logs', {
           error: errorMessage,
-<span class="cstat-no" title="statement not covered" >          scenarioId</span>,
+          scenarioId,
           organizationId,
-          teamId,
-          executionId,
-          timeRange,
-        }<span class="fstat-no" title="function not covered" >);</span>
+<span class="fstat-no" title="function not covered" >          teamId,</span>
+          execution<span class="cstat-no" title="statement not covered" >Id,</span>
+<span class="cstat-no" title="statement not covered" >          timeRan<span class="fstat-no" title="function not covered" >ge</span>,</span>
+        });
         <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (error<span class="fstat-no" title="function not covered" > i</span>nstanceof UserError) {</span>
-          throw error;
-<span class="cstat-no" title="statement not covered" >        }</span>
+        if (error instanceof UserError) {
+          throw <span class="cstat-no" title="statement not covered" >error;</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
         
-        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Fail</span>ed to query historical logs: ${errorMessage}`);
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to </span>query historical logs: ${errorMessage}`);
       }<span class="cstat-no" title="statement not covered" ></span>
     },
   };<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Generate log <span class="cstat-no" title="statement not covered" >summary</span> statistics
- */
-function generat<span class="cstat-no" title="statement not covered" >eLogSummary(logs:</span> MakeLogEntry[]): Record&lt;string, unknown&gt; {
+ * Generate log summary statistics
+ */<span class="cstat-no" title="statement not covered" ></span>
+function gen<span class="cstat-no" title="statement not covered" >erateLogSummary(lo</span>gs: MakeLogEntry[]): Record&lt;string, unknown&gt; {
   const summary = {
     tota<span class="cstat-no" title="statement not covered" >lLogs: logs.length,</span>
-    logLevel<span class="cstat-no" title="statement not covered" >s: {} as Record&lt;st</span>ring, number&gt;,
-    modules: {} as Record&lt;string, number&gt;,
-    exec<span class="cstat-no" title="statement not covered" >utionStates: {} as Reco</span>rd&lt;string, number&gt;,
+    logLevels: {} as Record&lt;string, number&gt;,
+    modules: {} as Recor<span class="cstat-no" title="statement not covered" >d&lt;string, number&gt;,</span>
+    executionStates: {} as Record&lt;string, number&gt;,
     timeRange: {
-      earliest: logs[0]?<span class="cstat-no" title="statement not covered" >.timestamp,</span>
+      earliest: logs[0]?.timestamp,
       latest: logs[logs.length - 1]?.timestamp,
     },
     performance: {
       averageProcessingTime: 0,
-      totalProcessingTime: 0,
-      minProcessingTime: Number.MAX_VALUE,
+<span class="cstat-no" title="statement not covered" >      totalProcessingTime: 0,<span class="fstat-no" title="function not covered" ></span></span>
+      minProcessingTime: N<span class="cstat-no" title="statement not covered" >umber.MAX_VALUE,</span>
       maxProcessingTime: 0,
-<span class="cstat-no" title="statement not covered" >    },<span class="fstat-no" title="function not covered" ></span></span>
-  };<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  let totalProcessingTime = 0;
+    },
+  };
+<span class="cstat-no" title="statement not covered" ></span>
+  let totalP<span class="cstat-no" title="statement not covered" >rocessingTime = 0;</span>
   let processedLogs = 0;
 <span class="cstat-no" title="statement not covered" ></span>
-  logs.forEa<span class="cstat-no" title="statement not covered" >ch(log =&gt; {</span>
-    // Count log levels
-    summ<span class="cstat-no" title="statement not covered" >ary.logLevels[log.level] = (summary.l</span>ogLevels[log.level] || 0) + 1;
+  logs.forEach(log =&gt; {
+<span class="cstat-no" title="statement not covered" >    // Count log levels</span>
+    summary.logLevels[log.level] = (summary.logLevels[log.level] || 0) + 1;
     
-<span class="cstat-no" title="statement not covered" >    // Count modules</span>
+    // Count modules
     summary.modules[log.module.name] = (summary.modules[log.module.name] || 0) + 1;
+    <span class="fstat-no" title="function not covered" ></span>
+    // Count execut<span class="cstat-no" title="statement not covered" >ion</span> states
+<span class="cstat-no" title="statement not covered" >    const state = log.execution?.scenarioName || 'unknown';</span>
+    summ<span class="cstat-no" title="statement not covered" >ary.executionStates[state] = (summary.executionStates[state</span>] || 0) + 1;
     
-    // Count execution states
-    const state = log.execution?.scenarioName || 'unknown';
-    summary.exe<span class="fstat-no" title="function not covered" >cutionStates[state] = (summ</span>ary.executionStates[state] || 0) + 1;
-    <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    // Performance metrics</span>
     if (<span class="cstat-no" title="statement not covered" >log.performance?.processingTime) {</span>
       const processingTime = log.performance.processingTime;
@@ -1471,54 +1471,54 @@ function generat<span class="cstat-no" title="statement not covered" >eLogSummar
 <span class="cstat-no" title="statement not covered" ></span>
   if (pr<span class="cstat-no" title="statement not covered" >ocessedLogs &gt; 0) {</span>
     summary.performance.averageProcessingTime = totalProcessingTime / processedLogs;
-<span class="cstat-no" title="statement not covered" >    summary.performance.totalProcessingTime = totalProcessingTime;</span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  if<span class="cstat-no" title="statement not covered" > (summary.perfo</span>rmance.minProcessingTime === Number.MAX_VALUE) {
-    summary.performance.minProcessingTime = 0;
+<span class="cstat-no" title="statement not covered" >    summary.perform</span>ance.totalProcessingTime = totalProcessingTime;
   }
 &nbsp;
-  return summary;
-}<span class="fstat-no" title="function not covered" ></span>
+  if (summary.performance.minProcessingTime === Number.MAX_VALUE) {
+    summary.performance.minProcessingTime = 0;
+  }<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
- * Generate l<span class="fstat-no" title="function not covered" >og</span> aggre<span class="cstat-no" title="statement not covered" >gation based on grouping criteria</span>
+  return summary<span class="fstat-no" title="function not covered" >;<span class="cstat-no" title="statement not covered" ></span></span>
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
+/**
+ * Generate log aggregation based on grouping criteria
  */
-function generateLogAggregation(
+func<span class="cstat-no" title="statement not covered" >tion generateLogAggregation(</span>
   logs: MakeLogEntry[], 
-  groupBy: 'level' | 'module' | 'hour', 
-  in<span class="cstat-no" title="statement not covered" >cludeStats: boolean</span>
+  groupBy: 'level' | 'module' | 'hour', <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  includeStats: boolean
 ): Record&lt;string, unknown&gt; {
-  const groups: Record&lt;string, MakeLogEntry[]<span class="fstat-no" title="function not covered" >&gt; </span>= {};<span class="cstat-no" title="statement not covered" ></span>
+  const groups: Record&lt;string, MakeLogEntry[]&gt; = {};
 &nbsp;
   logs.forEach(log =&gt; {
     let key: string;
-    switch (groupBy) {
-      case 'level':
-        key = log.level;
-        b<span class="fstat-no" title="function not covered" >reak;</span>
-      case 'module':<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        key = log.mod<span class="cstat-no" title="statement not covered" >ule</span>.name;
+    switc<span class="fstat-no" title="function not covered" >h (groupBy) {</span>
+      case 'level':<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        key = log.lev<span class="cstat-no" title="statement not covered" >el;</span>
 <span class="cstat-no" title="statement not covered" >        break;<span class="fstat-no" title="function not covered" ></span></span>
-      ca<span class="cstat-no" title="statement not covered" >se 'hour':</span>
-        key <span class="cstat-no" title="statement not covered" >= new Date(log.timestamp).toISOString().substring(0, 13); // YYY</span>Y-MM-DDTHH
+      ca<span class="cstat-no" title="statement not covered" >se 'module':</span>
+        key <span class="cstat-no" title="statement not covered" >= log.module.name;</span>
+        break;
+      case 'hour':
+<span class="cstat-no" title="statement not covered" >        key = new Date(log.timestamp).toISOString().substring(0, 13); // YYYY-MM-DDTHH</span>
         break;
       default:
-<span class="cstat-no" title="statement not covered" >        key = 'unknown';</span>
-    }
+        key = 'unknown';
+    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
     if (!groups[key]) {
-      groups[key] <span class="fstat-no" title="function not covered" >= </span>[];<span class="cstat-no" title="statement not covered" ></span>
+      groups[key] = [];
     }
     groups[key].push(log);
   });
-&nbsp;
-  const aggregation: Record&lt;string, unknown&gt; = {
-    groupBy,
-    group<span class="fstat-no" title="function not covered" >s: {},</span>
-    summary: {<span class="cstat-no" title="statement not covered" ></span>
-      totalGroups:<span class="cstat-no" title="statement not covered" > Object.keys(groups).length,</span>
-<span class="cstat-no" title="statement not covered" >      totalLogs: logs.length,</span>
+<span class="fstat-no" title="function not covered" ></span>
+  const aggregation: <span class="cstat-no" title="statement not covered" >Record&lt;string, unknown&gt; = {</span>
+    groupBy,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    groups: {},</span>
+    summary: {
+      totalGroups: Object.keys(groups).length,
+      totalLogs: logs.length,
     },
   };
 &nbsp;
@@ -1528,46 +1528,46 @@ function generateLogAggregation(
       percentage: (groupLogs.length / logs.length) * 100,
     };
 &nbsp;
-    if (includeStats) {
-      groupData.stats = generateLogSummary(groupLogs);
-    }
-<span class="fstat-no" title="function not covered" ></span>
-    (aggregation.groups<span class="cstat-no" title="statement not covered" > as</span> Record&lt;string, unknown&gt;)[key] = groupData;
-  })<span class="cstat-no" title="statement not covered" >;<span class="fstat-no" title="function not covered" ></span></span>
+    if (i<span class="fstat-no" title="function not covered" >ncludeStats) {</span>
+      groupData.stats =<span class="cstat-no" title="statement not covered" > ge</span>nerateLogSummary(groupLogs);
+<span class="cstat-no" title="statement not covered" >    }<span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  return agg<span class="cstat-no" title="statement not covered" >regation;</span>
-}
+    (aggrega<span class="cstat-no" title="statement not covered" >tion.groups as Record&lt;string, unkn</span>own&gt;)[key] = groupData;
+  });
 <span class="cstat-no" title="statement not covered" ></span>
+  return aggregation;
+}<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 /**
- * P<span class="cstat-no" title="statement not covered" >erform advanced log analysis</span>
+ * Perform advanced log analysis<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
  */
 async function performAdvancedLogAnalysis(
   logs: MakeLogEntry[], <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   analysis: {
     performanceTrends: boolean;
-    errorPatterns: boolean;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    errorPatterns: boolean;
     usageMetrics: boolean;
     executionFlow: boolean;
     anomalyDetection: boolean;
-  },
-  timeRange: { startTime: string; endTime: string }
-): Promise&lt;Record&lt;string, unknown&gt;&gt; {
-  const r<span class="fstat-no" title="function not covered" >esult: Record&lt;st</span>ring, unknown&gt; = {};
+  },<span class="fstat-no" title="function not covered" ></span>
+  timeRange: { startTime: st<span class="cstat-no" title="statement not covered" >ring; endTime: string }</span>
+): Promise&lt;Recor<span class="fstat-no" title="function not covered" >d&lt;</span>strin<span class="cstat-no" title="statement not covered" >g, unknown&gt;&gt; {</span>
+  const resul<span class="fstat-no" title="function not covered" >t:</span> Reco<span class="cstat-no" title="statement not covered" >rd&lt;string, unknown&gt; = {};</span>
 <span class="cstat-no" title="statement not covered" ></span>
-  if (analysis.p<span class="fstat-no" title="function not covered" >er</span>forma<span class="cstat-no" title="statement not covered" >nceTrends) {</span>
-    result.pe<span class="fstat-no" title="function not covered" >rf</span>orman<span class="cstat-no" title="statement not covered" >ceTrends = analyzePerformanceTr</span>ends(logs);
-  }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  if (analysis.errorPatterns) {
-    result.errorP<span class="cstat-no" title="statement not covered" >atterns = analyzeErrorP<span class="fstat-no" title="function not covered" >at</span>terns(logs);<span class="cstat-no" title="statement not covered" ></span></span>
+  if (an<span class="cstat-no" title="statement not covered" >alysis.performanceTrends) {</span>
+    result.performanceTrends = analyzePerformanceTrends(logs);
+  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  if (analysis.erro<span class="cstat-no" title="statement not covered" >rPatterns) {</span>
+    result.errorPatter<span class="cstat-no" title="statement not covered" >ns = analyzeErrorPat</span>terns(logs);
   }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  if (analysis.usageMe<span class="cstat-no" title="statement not covered" >trics) {</span>
-    result.usageMetric<span class="cstat-no" title="statement not covered" >s = analyzeU<span class="fstat-no" title="function not covered" >sa</span>geMet<span class="cstat-no" title="statement not covered" >rics(logs, timeRange);</span></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+  if (analysis.usageMetrics) {
+    result.usageMetrics = analyzeUsageMetrics(logs, timeRange);
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
   if (analysis.executionFlow) {
-    result.executionFlow = analyzeExecution<span class="fstat-no" title="function not covered" >Fl</span>ow(log<span class="cstat-no" title="statement not covered" >s);</span>
+    result.executionFlow = analyzeExecutionFlow(logs);
   }
 &nbsp;
   if (analysis.anomalyDetection) {
@@ -1576,11 +1576,11 @@ async function performAdvancedLogAnalysis(
 &nbsp;
   return result;
 }
-&nbsp;
-/**
+<span class="fstat-no" title="function not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Analyze performance trends in logs
- */<span class="fstat-no" title="function not covered" ></span>
-func<span class="cstat-no" title="statement not covered" >tion analyzePerformanceTrends(logs: MakeLogEntry[]): Record&lt;string, unknown&gt; {</span>
+ */
+function analyzePerformanceTrends(logs: MakeLogEntry[]): Record&lt;string, unknown&gt; {
   const trends = logs
     .filter(log =&gt; log.performance?.processingTime)
     .map(log =&gt; ({
@@ -1717,7 +1717,7 @@ async function prepareLogExport(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.248Z
+                at 2025-08-22T04:33:58.145Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

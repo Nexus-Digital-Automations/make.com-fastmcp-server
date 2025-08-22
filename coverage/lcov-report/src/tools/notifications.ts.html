@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/435</span>
+                <span class='fraction'>0/426</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/500</span>
+                <span class='fraction'>0/493</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/79</span>
+                <span class='fraction'>0/78</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/432</span>
+                <span class='fraction'>0/423</span>
             </div>
         
             
@@ -1917,16 +1917,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3323,7 +3317,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3766,17 +3766,17 @@
  * Comprehensive tools for managing notifications, email preferences, and custom data structures
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError } from 'fastmcp';
+import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../utils/respo</span>nse-formatter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// Notificatio<span class="cstat-no" title="statement not covered" >n management ty</span>pes
-export interface Mak<span class="cstat-no" title="statement not covered" >eNotification {</span>
-  id: number;<span class="cstat-no" title="statement not covered" ></span>
+import logger from '../lib/logger.js';
+import { formatSuccessResponse } <span class="cstat-no" title="statement not covered" >from '../utils/response-formatter.js';</span>
+&nbsp;
+// Notification management types
+export interface MakeNotification {
+  id: number;
   type: 'system' | 'billing' | 'security' | 'scenario' | 'team' | 'marketing' | 'custom';
-  category: 'info' | 'warning' | <span class="cstat-no" title="statement not covered" >'error' | 'success' | 'reminder' | 'alert';</span>
+  category: 'info' | 'warning' | 'error' | 'success' | 'reminder' | 'alert';
   priority: 'low' | 'medium' | 'high' | 'critical';
   title: string;
   message: string;
@@ -3805,13 +3805,13 @@ export interface Mak<span class="cstat-no" title="statement not covered" >eNotif
     failedDeliveries: number;
     errors: Array&lt;{
       recipient: string;
-      channel: string;
+      channel: string;<span class="cstat-no" title="statement not covered" ></span>
       error: string;
       timestamp: string;
     }&gt;;
   };
   schedule: {
-    sendAt?: string;<span class="cstat-no" title="statement not covered" ></span>
+    sendAt?: string;
     timezone?: string;
     recurring?: {
       enabled: boolean;
@@ -3865,19 +3865,19 @@ export interface MakeEmailPreferences {
     scenarios: {
       enabled: boolean;
       frequency: 'immediate' | 'hourly' | 'daily' | 'never';
-      categories: {
+      categories: {<span class="fstat-no" title="function not covered" ></span>
         failures: boolean;
-        completions: boolean;
+<span class="cstat-no" title="statement not covered" >        completions: boolean;</span>
         warnings: boolean;
         scheduleChanges: boolean;
       };
-      filters: {<span class="fstat-no" title="function not covered" ></span>
+      filters: {<span class="cstat-no" title="statement not covered" ></span>
         onlyMyScenarios: boolean;
-<span class="cstat-no" title="statement not covered" >        onlyImportantScenarios: boolean;</span>
+        onlyImportantScenarios: boolean;
         scenarioIds: number[];
         teamIds: number[];
       };
-    };<span class="cstat-no" title="statement not covered" ></span>
+    };
     team: {
       enabled: boolean;
       categories: {
@@ -3897,13 +3897,13 @@ export interface MakeEmailPreferences {
       };
     };
     customChannels: Array&lt;{
-      name: string;
+      name: string;<span class="cstat-no" title="statement not covered" ></span>
       type: 'webhook' | 'slack' | 'teams' | 'discord';
       enabled: boolean;
       configuration: Record&lt;string, unknown&gt;;
       filters: Record&lt;string, unknown&gt;;
     }&gt;;
-  };<span class="cstat-no" title="statement not covered" ></span>
+  };
   timezone: string;
   language: string;
   unsubscribeAll: boolean;
@@ -3937,54 +3937,54 @@ export interface MakeNotificationTemplate {
     layout?: string;
     customCss?: string;
   };
-  testing: {
-    lastTested?: string;
-    testResults?: {
+  testing: {<span class="fstat-no" title="function not covered" ></span>
+    lastTested?: string;<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    testResults?: {</span>
       renderingTime: number;
-      size: number;
+<span class="cstat-no" title="statement not covered" >      size: number;</span>
       errors: string[];
-      war<span class="fstat-no" title="function not covered" >nings: string[];</span>
-    };<span class="cstat-no" title="statement not covered" ></span>
-  };<span class="cstat-no" title="statement not covered" ></span>
+      warnings: string[];
+    };
+  };
   usage: {
-<span class="cstat-no" title="statement not covered" >    totalSent: number;</span>
+    totalSent: number;
     lastUsed?: string;
     averageDeliveryTime: number;
     deliveryRate: number;
   };
-  createdAt: string;
-  updatedAt: string;
-  createdBy: number;
-}
-&nbsp;
+  createdAt: stri<span class="fstat-no" title="function not covered" >ng</span>;
+  updatedAt: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+  createdBy: number;<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 export interface MakeCustomDataStructure {
-  id: number;<span class="fstat-no" title="function not covered" ></span>
-  name: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
-  description?: string;<span class="cstat-no" title="statement not covered" ></span>
-  type: 'sch<span class="cstat-no" title="statement not covered" >ema' | 'template' | 'validation' | 'transformation';</span>
-  organizationId<span class="cstat-no" title="statement not covered" >?: number;</span>
+  id: number;
+  name: string;
+  description?: string;
+  type: 'schema' | 'template' | 'validation' | 'transformation';
+  organizationId?: number;
   teamId?: number;
-  scope: 'global' | 'organization' | 'team' | 'personal';
-  structure: {
-    schema: Record&lt;string, unknown&gt;; // JSON Schema
+  scope: 'gl<span class="cstat-no" title="statement not covered" >obal' | 'organization' | 'team' | 'personal';</span>
+  structure: {<span class="cstat-no" title="statement not covered" ></span>
+    schema: Record&lt;s<span class="cstat-no" title="statement not covered" >tring, unknown&gt;; // JSON Schema</span>
     version: string;
     format: 'json' | 'xml' | 'yaml' | 'csv' | 'custom';
-  };
-  validation<span class="cstat-no" title="statement not covered" >: {</span>
-    enabled: boo<span class="cstat-no" title="statement not covered" >lean;</span>
-    strict: boolean;<span class="cstat-no" title="statement not covered" ></span>
+  };<span class="cstat-no" title="statement not covered" ></span>
+  validation: {<span class="cstat-no" title="statement not covered" ></span>
+    enabled: boolean<span class="cstat-no" title="statement not covered" >;</span>
+    strict: boolean;
     rules: Array&lt;{
-      field: string;
-      type: 'required' | 'format' | 'ran<span class="cstat-no" title="statement not covered" >ge' | 'custom';</span>
-      parameters<span class="cstat-no" title="statement not covered" >: unknown;</span>
-      message: strin<span class="cstat-no" title="statement not covered" >g;</span>
-    }&gt;;
+      field: string;<span class="cstat-no" title="statement not covered" ></span>
+      type: 'req<span class="cstat-no" title="statement not covered" >uired' | 'format' | 'range' | 'custom';</span>
+      parameters: un<span class="cstat-no" title="statement not covered" >known;</span>
+      message: string;
+    }&gt;;<span class="cstat-no" title="statement not covered" ></span>
   };
-  transformation: {<span class="cstat-no" title="statement not covered" ></span>
-    enabled: boo<span class="cstat-no" title="statement not covered" >lean;</span>
-    mappings: Array&lt;<span class="cstat-no" title="statement not covered" >{</span>
+  transformation: {
+    enabled: boolean;
+    mappings: Array&lt;{
       source: string;
-      target: string;<span class="cstat-no" title="statement not covered" ></span>
+      target: string;
       function?: string;
       parameters?: unknown;
     }&gt;;
@@ -3994,35 +3994,35 @@ export interface MakeCustomDataStructure {
       value: unknown;
     }&gt;;
   };
-  usage: {
-    scenariosUsing: number;
+  usage: {<span class="cstat-no" title="statement not covered" ></span>
+    scenariosUsing: <span class="cstat-no" title="statement not covered" >number;</span>
     lastUsed?: string;
-    validationCount: number;
-    errorRate: number;
-  };
-  versions: Arra<span class="cstat-no" title="statement not covered" >y&lt;{</span>
+    validationCount: number;<span class="cstat-no" title="statement not covered" ></span>
+    errorRate: n<span class="cstat-no" title="statement not covered" >umber;</span>
+  };<span class="cstat-no" title="statement not covered" ></span>
+  versions: Array&lt;{
     version: string;<span class="cstat-no" title="statement not covered" ></span>
-    changes: string;
-    createdAt: string;<span class="cstat-no" title="statement not covered" ></span>
-    createdBy: n<span class="cstat-no" title="statement not covered" >umber;</span>
+    changes: str<span class="cstat-no" title="statement not covered" >ing;</span>
+    createdAt: strin<span class="cstat-no" title="statement not covered" >g;</span>
+    createdBy: number;
   }&gt;;<span class="cstat-no" title="statement not covered" ></span>
-  createdAt: string;
-  updatedAt: string;<span class="cstat-no" title="statement not covered" ></span>
+  createdAt: string;<span class="cstat-no" title="statement not covered" ></span>
+  updatedAt: string;
   createdBy: num<span class="cstat-no" title="statement not covered" >ber;</span>
 }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-// Data structur<span class="cstat-no" title="statement not covered" >e management interfaces for type safety</span>
-export interface Dat<span class="cstat-no" title="statement not covered" >aStructureUpdateData {</span>
+// Data structure management interfaces for type safety
+export interface DataStructureUpdateData {
   name?: string;
-  description?: <span class="cstat-no" title="statement not covered" >string | null;</span>
-  structure?: {<span class="cstat-no" title="statement not covered" ></span>
-    schema?: Record&lt;string, unknown&gt;;
+  description?: string | null;
+  structure?: {
+    schema?: Rec<span class="cstat-no" title="statement not covered" >ord&lt;string, unknown&gt;;</span>
     version?: string;
     format?: 'json' | 'xml' | 'yaml' | 'csv' | 'custom';
   };
   validation?: {
     enabled?: boolean;
-    strict?: boo<span class="cstat-no" title="statement not covered" >lean;</span>
+    strict?: boolean;
     rules?: Array&lt;{
       field: string;
       type: 'required' | 'format' | 'range' | 'custom';
@@ -4035,14 +4035,14 @@ export interface Dat<span class="cstat-no" title="statement not covered" >aStruc
     mappings?: Array&lt;{
       source: string;
       target: string;
-      type: 'direct' | 'computed' | 'lookup' | 'constant';
-      parameters?: unknown;
+      type: 'direct' | 'computed' | <span class="fstat-no" title="function not covered" >'l</span>ookup' | 'const<span class="cstat-no" title="statement not covered" >ant';</span>
+      parameters?: unknown;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     }&gt;;
     filters?: Array&lt;{
       field: string;
       operator: 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'notIn';
-      value: unknown;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      caseSensitive?: boolean;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      value: unknown;
+      caseSensitive?: boolean;
     }&gt;;
   };
 }
@@ -4050,65 +4050,65 @@ export interface Dat<span class="cstat-no" title="statement not covered" >aStruc
 export interface DataStructureListResponse {
   dataStructures: MakeCustomDataStructure[];
   pagination: {
-    total: number;
-    offset: number;
-    limit: number;
+    total: number;<span class="cstat-no" title="statement not covered" ></span>
+    offset: numb<span class="cstat-no" title="statement not covered" >er;</span>
+    limit: number;<span class="cstat-no" title="statement not covered" ></span>
     hasMore: boolean;
-  };
-  filters: {
-    type: string;<span class="cstat-no" title="statement not covered" ></span>
-    scope: strin<span class="cstat-no" title="statement not covered" >g;</span>
-    format: string;<span class="cstat-no" title="statement not covered" ></span>
-    search?: string;
   };<span class="cstat-no" title="statement not covered" ></span>
+  filters: {<span class="cstat-no" title="statement not covered" ></span>
+    type: string<span class="cstat-no" title="statement not covered" >;</span>
+    scope: string;
+    format: string;
+    search?: string;
+  };
 }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 export interface DataStructureDependency {
   type: string;
   id: string;
   name: string;
-  us<span class="cstat-no" title="statement not covered" >age: string;</span>
+  usage: string;
 }
 &nbsp;
 export interface DataStructureDependencyResponse {
   dependencies: DataStructureDependency[];
 }
-&nbsp;
-export interface DataStructureArchiveInfo {
-  archiveId: string;
-  archiveUrl: string;
-}
-&nbsp;
-export interface <span class="fstat-no" title="function not covered" >Da</span>taStructureArchiveResponse {
-  archiveId: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
-  downloadUrl: string;<span class="cstat-no" title="statement not covered" ></span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-export interface DataStructureUsageStats {
-  scenariosU<span class="cstat-no" title="statement not covered" >sing: number;</span>
-  lastUsed?: string;<span class="cstat-no" title="statement not covered" ></span>
-  validationCount: number;
-  errorRate: number;
-  transformationCount: number;<span class="cstat-no" title="statement not covered" ></span>
-  averageValidat<span class="cstat-no" title="statement not covered" >ionTime: number;</span>
-  successRate: numbe<span class="cstat-no" title="statement not covered" >r;</span>
-}
-<span class="cstat-no" title="statement not covered" ></span>
-export interface<span class="cstat-no" title="statement not covered" > DataStructureValidationHistoryItem {</span>
-  timestamp: string;<span class="cstat-no" title="statement not covered" ></span>
-  result: 'success' | 'failure';
-  errors: string[];<span class="cstat-no" title="statement not covered" ></span>
-  processingTime<span class="cstat-no" title="statement not covered" >: number;</span>
+<span class="fstat-no" title="function not covered" ></span>
+export interface DataStruc<span class="branch-0 cbranch-no" title="branch not covered" >tureArch<span class="fstat-no" title="function not covered" >iv</span>eInfo {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
+  archiveId: string;<span class="cstat-no" title="statement not covered" ></span>
+  archiveUrl<span class="cstat-no" title="statement not covered" >: string;</span>
 }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-export interface<span class="cstat-no" title="statement not covered" > DataStructureTransformationHistoryItem {</span>
-  timestamp: string;<span class="cstat-no" title="statement not covered" ></span>
+export inter<span class="cstat-no" title="statement not covered" >face DataStructureArchiveResponse {</span>
+  archiveId: string;<span class="cstat-no" title="statement not covered" ></span>
+  downloadUrl: string;
+}
+<span class="cstat-no" title="statement not covered" ></span>
+export interface<span class="cstat-no" title="statement not covered" > DataStructureUsageStats {</span>
+  scenariosUsing: nu<span class="cstat-no" title="statement not covered" >mber;</span>
+  lastUsed?: string;
+  validationCount: number;<span class="cstat-no" title="statement not covered" ></span>
+  errorRate: num<span class="cstat-no" title="statement not covered" >ber;</span>
+  transformationCoun<span class="cstat-no" title="statement not covered" >t: number;</span>
+  averageValidationTime: number;
+  successRate: number;<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+export interface DataStructureValidationHistoryItem {
+  timestamp: str<span class="cstat-no" title="statement not covered" >ing;</span>
+  result: 'success' <span class="cstat-no" title="statement not covered" >| 'failure';</span>
+  errors: string[];
+  processingTime: number;
+}
+&nbsp;
+export interface DataStructureTransformationHistoryItem {
+  timestamp: str<span class="cstat-no" title="statement not covered" >ing;</span>
   result: 'success' | 'failure';
   inputRecords: number;
   outputRecords: number;
   processingTime: number;
 }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 export interface DataStructureWithStats extends MakeCustomDataStructure {
   usage: DataStructureUsageStats;
   validationHistory?: DataStructureValidationHistoryItem[];
@@ -4128,51 +4128,51 @@ const NotificationCreateSchema = z.object({
     teams: z.array(z.number()).default([]).describe('Team IDs to notify'),
     organizations: z.array(z.number()).default([]).describe('Organization IDs to notify'),
     emails: z.array(z.string().email()).default([]).describe('Direct email addresses'),
-  }).describe('Notification recipients'),
-  channels: z.object({
-    email: z.boolean().default(true).describe('Send via email'),
+  }).describe('Notification recipient<span class="cstat-no" title="statement not covered" >s'),</span>
+  channels: z.ob<span class="cstat-no" title="statement not covered" >ject({</span>
+    email: z.boolean<span class="cstat-no" title="statement not covered" >().default(true).describe('Send via email'),</span>
     inApp: z.boolean().default(true).describe('Show in-app notification'),
-    sms: z.boolean().default(false).describe('Send via SMS'),
-    webhook: z.boolean().default(false).describe('Send to webhook'),
-    slack: z.boolean().default(false)<span class="cstat-no" title="statement not covered" >.describe('Send to Slack'),</span>
-    teams: z.boo<span class="cstat-no" title="statement not covered" >lean().default(false).describe('Send to Microsoft Teams'),</span>
-  }).describe('Deliv<span class="cstat-no" title="statement not covered" >ery channels'),</span>
+    sms: z.boole<span class="cstat-no" title="statement not covered" >an().default(false).describe('Send via SMS'),</span>
+    webhook: z.boole<span class="cstat-no" title="statement not covered" >an().default(</span>false).describe('Send to webhook'),
+    slack: z.boo<span class="cstat-no" title="statement not covered" >lean().default(false).describe('Send to Slack'),</span>
+    teams: z.boolean().default(false).describe('Send to Microsoft Teams'),
+  }).describe('Delivery channels'),
   schedule: z.object({
-    sendAt: z.st<span class="cstat-no" title="statement not covered" >ring().optional().describe('Schedule send time (ISO 8601)'),</span>
-    timezone: z.stri<span class="cstat-no" title="statement not covered" >ng().default(</span>'UTC').describe('Timezone for scheduling'),
-    recurring: z<span class="cstat-no" title="statement not covered" >.object({</span>
+    sendAt: z.string().optional().describe('Schedule send time (ISO 8601)'),
+<span class="cstat-no" title="statement not covered" >    timezone: z.string().default('UTC').describe('Timezone for scheduling'),</span>
+    recurring: z.object({
       frequency: z.enum(['daily', 'weekly', 'monthly', 'quarterly', 'yearly']).describe('Recurrence frequency'),
       interval: z.number().min(1).default(1).describe('Interval between recurrences'),
       daysOfWeek: z.array(z.number().min(0).max(6)).optional().describe('Days of week (0=Sunday)'),
       dayOfMonth: z.number().min(1).max(31).optional().describe('Day of month'),
-<span class="cstat-no" title="statement not covered" >      endDate: z.string().optional().describe('End date for recurrence'),</span>
+      endDate: z.string().optional().describe('End date for recurrence'),
     }).optional().describe('Recurring schedule configuration'),
   }).optional().describe('Scheduling options'),
   templateId: z.number().optional().describe('Template ID to use'),
   templateVariables: z.record(z.any()).default({}).describe('Template variable values'),
-}).strict();
-&nbsp;
-const EmailPreferencesSchema = z.object({
-  userId: z.number().min(1).optional().describe('User ID (defaults to current user)'),
-  preferences: z.object({
+}).strict();<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+const EmailPreferencesSchema = z.object({<span class="cstat-no" title="statement not covered" ></span>
+  userId: z.<span class="cstat-no" title="statement not covered" >number().min(1).optional().describe('User ID (defaults to current user)'),</span>
+  preferences: z<span class="cstat-no" title="statement not covered" >.object({</span>
     system: z.object({
-      enabled: z.<span class="fstat-no" title="function not covered" >bo</span>olean().describe('Enable system notifications'),
-      frequency: z.enum(['<span class="branch-0 cbranch-no" title="branch not covered" >immediat<span class="fstat-no" title="function not covered" >e'</span>, 'hourly', 'dai<span class="fstat-no" title="function not covered" >ly</span>', 'weekly', 'n<span class="fstat-no" title="function not covered" >ev</span>er']).describe('<span class="fstat-no" title="function not covered" >Sy</span>stem notif</span>ication frequency'<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >),<span class="cstat-no" title="statement not covered" ></span></span></span>
-      categories: z.object({<span class="cstat-no" title="statement not covered" ></span>
-        upda<span class="cstat-no" title="statement not covered" >tes: z.boolean().describe('Product updates'),</span>
-        maintena<span class="cstat-no" title="statement not covered" >nce: z.boolean().describe('Maintenance notifications'),</span>
-        security: z.boolean().describe('Security alerts'),
-        announcements: z.boolean().describe('Company announcements'),
-      }).partial(),
-    }).partial().optional(),
-    billing: z.object({
-      enabled: z.boolean().describe('Enable billing notifications'),
+      enabled: z.boolean().describe('Enable system notifications'),
+      frequency: z.enum(['immediate', 'hourly', 'daily', 'weekly', 'never']).describe('System notification frequency'),
       categories: z.object({
-        invo<span class="cstat-no" title="statement not covered" >ices: z.boolean().describe('Invoice notifications'),</span>
-        paymentR<span class="cstat-no" title="statement not covered" >eminders: z.boolean().describe('Payment reminders'),</span>
-        usageAlerts:<span class="cstat-no" title="statement not covered" > z.boolean().describe('Usage limit alerts'),</span>
-        planChanges: z.boolean().describe('Plan change notifications'),
-      }).partial(),<span class="cstat-no" title="statement not covered" ></span>
+        updates: z.boolean().describe('Product updates'),
+        maintenance: z.boolean().describe('Maintenance notifications'),
+        security: z.boolean().describe('Security alerts'),
+        anno<span class="cstat-no" title="statement not covered" >uncements: z.boolean().describe('Company announcements'),</span>
+      }).partial<span class="cstat-no" title="statement not covered" >(),</span>
+    }).partial().opt<span class="cstat-no" title="statement not covered" >ional(),</span>
+    billing: z.object({
+      enabled: z.boolean().describe<span class="cstat-no" title="statement not covered" >('E</span>nable billing notifications'),
+      categories<span class="cstat-no" title="statement not covered" >: z.object({</span>
+        invoices: z.<span class="cstat-no" title="statement not covered" >boolean().describe('Invoice notificati</span>ons'),
+        paymentReminders: z.boolean().describe('Payment reminders'),
+        usageAle<span class="cstat-no" title="statement not covered" >rts: z.boolean().describe('Usage limit alerts'),</span>
+        planChanges:<span class="cstat-no" title="statement not covered" > z.boolean().describe('Plan chan</span>ge notifications'),
+      }).partial(),
     }).partial()<span class="cstat-no" title="statement not covered" >.optional(),</span>
     scenarios: z.obj<span class="cstat-no" title="statement not covered" >ect({</span>
       enabled: z.boolean().describe('Enable scenario notifications'),
@@ -4180,37 +4180,37 @@ const EmailPreferencesSchema = z.object({
       categories: z.<span class="cstat-no" title="statement not covered" >object({</span>
         failures: z.boolean().describe('Scenario failure notifications'),
         completi<span class="cstat-no" title="statement not covered" >ons: z.boolean().describe('Scenario completion notifications'),</span>
-        warnings: z.<span class="cstat-no" title="statement not covered" >boolean().describe('Scenario war</span>ning notifications'),
+        warnings: z.<span class="cstat-no" title="statement not covered" >boolean().describe('Scenario warning notifications'),</span>
         scheduleChanges: z.boolean().describe('Schedule change notifications'),
       }).partial<span class="cstat-no" title="statement not covered" >(),</span>
       filters: z.obj<span class="cstat-no" title="statement not covered" >ect({</span>
         onlyMyScenarios: z.boolean().describe('Only notify for my scenarios'),
-        onlyImpo<span class="cstat-no" title="statement not covered" >rtantScenarios: z.boolean().describe('Only notify for important scenarios'),</span>
-        scenarioIds:<span class="cstat-no" title="statement not covered" > z.array(z.number()).describe('Specific scenario IDs to monitor')</span>,
-        teamIds: z.array(z.number()).describe('Team IDs to monitor'),
+        onlyImportantScenarios:<span class="cstat-no" title="statement not covered" > z.boolean().describe('Only notify </span>for important scenarios'),
+        scenario<span class="cstat-no" title="statement not covered" >Ids: z.array(z.number()).describe('Specific scenario IDs to monitor'),</span>
+        teamIds: z.a<span class="cstat-no" title="statement not covered" >rray(z.number()).describe('Team IDs to monitor'),</span>
+      }).partial(),
+    }).partial().optional(),<span class="cstat-no" title="statement not covered" ></span>
+    team: z.obje<span class="cstat-no" title="statement not covered" >ct({</span>
+      enabled: z.boo<span class="cstat-no" title="statement not covered" >lean().describe('Enable team notifications'),</span>
+      categories: z.object({
+        invitations: z.boolean().describe('<span class="cstat-no" title="statement not covered" >Team invitatio</span>n notifications'),
+        roleChan<span class="cstat-no" title="statement not covered" >ges: z.boolean().describe('Role change notifications'),</span>
+        memberChange<span class="cstat-no" title="statement not covered" >s: z.boolean().describe('Member change notifica</span>tions'),
+        teamUpdates: z.boolean().describe('Team update notifications'),
       }).partial<span class="cstat-no" title="statement not covered" >(),</span>
     }).partial().opt<span class="cstat-no" title="statement not covered" >ional(),</span>
-    team: z.object({
-      enabled: z.boolean().desc<span class="cstat-no" title="statement not covered" >ribe('Enable team notifications'),</span>
-      categories<span class="cstat-no" title="statement not covered" >: z.object({</span>
-        invitations:<span class="cstat-no" title="statement not covered" > z.boolean().describe('Team invitation notificati</span>ons'),
-        roleChanges: z.boolean().describe('Role change notifications'),
-        memberChanges: z.boolean(<span class="cstat-no" title="statement not covered" >).describe('Member change notifications'),</span>
-        teamUpda<span class="cstat-no" title="statement not covered" >tes: z.boolean().describe('Team update notifications'),</span>
-      }).partial(),<span class="cstat-no" title="statement not covered" ></span>
-    }).partial().optional(),
-    marketing: z.object({<span class="cstat-no" title="statement not covered" ></span>
-      enabled: z<span class="cstat-no" title="statement not covered" >.boolean().describe('Enable marketing notifications'),</span>
-      categories: z.<span class="cstat-no" title="statement not covered" >object({</span>
+    marketing: z.object({
+      enabled: z.boolean().describe('Enable marketing notifications'),
+      categories: z.object({
         productUpdates: z.boolean().describe('Product update emails'),
-        newslett<span class="cstat-no" title="statement not covered" >ers: z.boolean().describe('Newsletter subscriptions'),</span>
-        webinars: z.<span class="cstat-no" title="statement not covered" >boolean().describe('Webinar invitations'),</span>
+        newsletters: z.boolean().describe('Newsletter subscriptions'),
+        webinars<span class="cstat-no" title="statement not covered" >: z.boolean().describe('Webinar invitations'),</span>
         surveys: z.boolean().describe('Survey invitations'),
       }).partial(),
     }).partial().optional(),
   }).optional().describe('Email preference settings'),
   timezone: z.string().optional().describe('User timezone'),
-  language: z.st<span class="cstat-no" title="statement not covered" >ring().optional().describe('Preferred language'),</span>
+  language: z.string().optional().describe('Preferred language'),
   unsubscribeAll: z.boolean().optional().describe('Unsubscribe from all emails'),
 }).strict().refine(
   (data) =&gt; {
@@ -4222,57 +4222,57 @@ const EmailPreferencesSchema = z.object({
   }
 );
 &nbsp;
-const NotificationTemplateSchema = z.object({
+const NotificationTemplateSchema =<span class="fstat-no" title="function not covered" > z</span>.object({<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
   name: z.string().min(1).max(100).describe('Template name'),
   description: z.string().max(500).optional().describe('Template description'),
   type: z.enum(['email', 'sms', 'push', 'webhook', 'slack', 'teams']).describe('Template type'),
   category: z.enum(['system', 'billing', 'scenario', 'team', 'marketing', 'custom']).describe('Template category'),
   organizationId: z.number().min(1).optional().describe('Organization ID (for org templates)'),
-  template: z.object({<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
-    subject: z.string().max(200).optional().describe('Email subject template'),
-    body: z.string().min(1).describe('Template body content'),
+  template: z.object({<span class="cstat-no" title="statement not covered" ></span>
+    subject: z.s<span class="cstat-no" title="statement not covered" >tring().max(200).optional().describe('Email subject template'),</span>
+    body: z.string()<span class="cstat-no" title="statement not covered" >.min(1).describe('Template body content'),</span>
     format: z.enum(['text', 'html', 'markdown', 'json']).default('html').describe('Template format'),
-    variables: z.array(z.object({
-      name: z.string().min(1).describe('Variable name'),
-      type: z.enum(['string', 'number<span class="cstat-no" title="statement not covered" >', 'boolean', 'date', 'object']).describe('Variable typ</span>e'),
-      required: <span class="cstat-no" title="statement not covered" >z.boolean().default(false).describe('Is variable required'),</span>
-      defaultValue: <span class="cstat-no" title="statement not covered" >z.any().optional().describe('Default value'),</span>
+    variables: z<span class="cstat-no" title="statement not covered" >.array(z.object({</span>
+      name: z.string<span class="cstat-no" title="statement not covered" >().min(1).des</span>cribe('Variable name'),
+      type: z.en<span class="cstat-no" title="statement not covered" >um(['string', 'number', 'boolean', 'date', 'object']).describe('Variable typ</span>e'),
+      required: z.boolean().default(false).describe('Is variable required'),
+      defaultValue: z.any().optional().describe('Default value'),
       description: z.string().optional().describe('Variable description'),
-    })).default(<span class="cstat-no" title="statement not covered" >[]).describe('Template variables'),</span>
-  }).describe('Templ<span class="cstat-no" title="statement not covered" >ate configura</span>tion'),
-  design: z.obje<span class="cstat-no" title="statement not covered" >ct({</span>
+    })).default([]).describe('Template variables'),
+  })<span class="cstat-no" title="statement not covered" >.describe('Template configuration'),</span>
+  design: z.object({
     theme: z.string().optional().describe('Design theme'),
     colors: z.record(z.string()).optional().describe('Color scheme'),
     fonts: z.record(z.string()).optional().describe('Font configuration'),
     layout: z.string().optional().describe('Layout template'),
-<span class="cstat-no" title="statement not covered" >    customCss: z.string().optional().describe('Custom CSS'),</span>
+    customCss: z.string().optional().describe('Custom CSS'),
   }).optional().describe('Design configuration'),
 }).strict();
 &nbsp;
 const DataStructureSchema = z.object({
-  name: z.string().min(1).max(100).describe('Data structure name'),
-  description: z.string().max(500).optional().describe('Data structure description'),
-  type: z.enum(['schema', 'template', 'validation', 'transformation']).describe('Structure type'),
-  organizationId: z.number().min(1).optional().describe('Organization ID'),
-  teamId: z.number().min(1).optional().describe('Team ID'),
+  name: z.string(<span class="fstat-no" title="function not covered" >).</span>min(1).max(100).describe('Data structure name'),
+  description: z.string().<span class="branch-0 cbranch-no" title="branch not covered" >max(500)<span class="fstat-no" title="function not covered" >.o</span>ptional().descri<span class="fstat-no" title="function not covered" >be</span>('Data structur<span class="fstat-no" title="function not covered" >e </span>description'),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span>
+  type: z.enum(['schema', 'template', 'validation', 'transformation']).describe('Structure t<span class="cstat-no" title="statement not covered" >ype'),</span>
+  organizati<span class="cstat-no" title="statement not covered" >onId: z.number().min(1).optional().describe('Organization ID'),</span>
+  teamId: z.numb<span class="cstat-no" title="statement not covered" >er().min(1).optional().describe('Team ID'),</span>
   scope: z.enum(['global', 'organization', 'team', 'personal']).default('personal').describe('Access scope'),
-  structure: z.ob<span class="fstat-no" title="function not covered" >je</span>ct({
-    schema: z.any().descri<span class="branch-0 cbranch-no" title="branch not covered" >be('JSON<span class="fstat-no" title="function not covered" > S</span>chema definition<span class="fstat-no" title="function not covered" >')</span>,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
-    version: z.string().default('1.0.0').describe('Schema version'),<span class="cstat-no" title="statement not covered" ></span>
-    format: <span class="cstat-no" title="statement not covered" >z.enum(['json', 'xml', 'yaml', 'csv', 'custom']).default('json').describe('Data format'),</span>
-  }).describe('S<span class="cstat-no" title="statement not covered" >tructure definition'),</span>
+  structure: z.object({
+    schema: z.any().describe('JSON Schema definition'),
+    version: z.string().default('1.0.0').describe('Schema version'),
+    format: z.enum(['json', 'xml', 'yaml', 'csv', 'custom']).default('json').describe('Data format'),
+  }).describe('Structure definition'),
   validation: z.object({
-    enabled: z.boolean().default(true).describe('Enable validation'),
-    strict: z.boolean().default(false).describe('Strict validation mode'),
-    rules: z.array(z.object({
+    enabled:<span class="cstat-no" title="statement not covered" > z.boolean().default(true).describe('Enable validation'),</span>
+    strict: z.bo<span class="cstat-no" title="statement not covered" >olean().default(false).describe('Strict validation mode'),</span>
+    rules: z.array(z<span class="cstat-no" title="statement not covered" >.object({</span>
       field: z.string().min(1).describe('Field path'),
-      type: z.enum(['required', 'format', 'range', 'custom']).describe('Rule type'),
+      type: z.enum(['required', 'form<span class="cstat-no" title="statement not covered" >at', 'range', 'custom']).describe('Rule type'),</span>
       parameters: z.any().optional().describe('Rule parameters'),
-      messag<span class="cstat-no" title="statement not covered" >e: z.string().describe('Error message'),</span>
-    })).default(<span class="cstat-no" title="statement not covered" >[]).describe('Validation rules'),</span>
-  }).optional().desc<span class="cstat-no" title="statement not covered" >ribe('Validation configuration'),</span>
+      message: z.string().describe('Error message'),
+    })).default([]).describe('Validation rules'),
+  }).optional().describe('Validation configuration'),
   transformation: z.object({
-    enabled: z.boolean().default(fals<span class="cstat-no" title="statement not covered" >e).describe('Enable transformation'),</span>
+    enabled: z.boolean().default(false).describe('Enable transformation'),
     mappings: z.array(z.object({
       source: z.string().min(1).describe('Source field path'),
       target: z.string().min(1).describe('Target field path'),
@@ -4281,39 +4281,39 @@ const DataStructureSchema = z.object({
     })).default([]).describe('Field mappings'),
     filters: z.array(z.object({
       field: z.string().min(1).describe('Field to filter'),
-      operator: z.string().min(1).describe('Filter operator'),
-      value: z.any().describe('Filter value'),
+      operator: <span class="cstat-no" title="statement not covered" >z.string().min(1).describe('Filter operator'),</span>
+      value: z.any()<span class="cstat-no" title="statement not covered" >.describe('Filter value'),</span>
     })).default([]).describe('Data filters'),
-  }).optional().describe('Transformation configuration'),
-}).strict();
-&nbsp;
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Add notification <span class="cstat-no" title="statement not covered" >and email management tools to FastMCP server</span>
- */
-export function addNotification<span class="cstat-no" title="statement not covered" >Tools(server: FastMCP, apiC</span>lient: MakeApiClient): void {
-  const componen<span class="cstat-no" title="statement not covered" >tLogger = logger.child({ component: 'NotificationTools' });</span>
-  <span class="cstat-no" title="statement not covered" ></span>
-  componentLogger.info('Adding notification and email management tools');
+  }).optional().describe('Trans<span class="cstat-no" title="statement not covered" >formation configuration'),</span>
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  // Create noti<span class="cstat-no" title="statement not covered" >fication</span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'create-notification',
-    description: 'Create and send a notificat<span class="cstat-no" title="statement not covered" >ion through mu</span>ltiple channels with scheduling support',
+/**
+ * Add notification and email man<span class="cstat-no" title="statement not covered" >agement tools to FastMCP server</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+export function addN<span class="cstat-no" title="statement not covered" >otificationTools(server: FastMCP, apiClient: MakeApiClient): void {</span>
+  const componentLogger = logger.child({ component: 'NotificationTools' });
+  <span class="cstat-no" title="statement not covered" ></span>
+  componentLogge<span class="cstat-no" title="statement not covered" >r.info('Adding notification and email management tools');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+  // Create notification
+  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+    name: 'create-no<span class="cstat-no" title="statement not covered" >tification',</span>
+    description: 'Create and send a notification through multiple channels with scheduling support',
     parameters: <span class="cstat-no" title="statement not covered" >NotificationCreateSchema,</span>
     annotations: {<span class="cstat-no" title="statement not covered" ></span>
       title: 'Create Multi-Channel Notification',
-      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false,</span>
-      destructiveHin<span class="cstat-no" title="statement not covered" >t: false,</span>
+      readOnlyHint: false,
+      destructiveHint: false,
       idempotentHint: false, // Each notification is unique with timestamp
-      openWorldH<span class="cstat-no" title="statement not covered" >int: true, // External messaging services (email, SMS, Slack, etc.)</span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (input, context) =&gt; {
+      openWorldHint: true, // External messaging services (email, SMS, Slack, etc.)
+    },
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context) =&gt; {</span>
       const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
       const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
         log.info('Creating notification', {
-          type,<span class="cstat-no" title="statement not covered" ></span>
+          type,
           category,
           priority,
           title: title.substring(0, 50),
@@ -4332,61 +4332,61 @@ export function addNotification<span class="cstat-no" title="statement not cover
           throw new UserError('At least one recipient must be specified');
         }
 &nbsp;
-        // Validate channels
-        const enabledChannels = Object.values(channels).filter(Boolean);
-        if (enabledChannels.length === 0) {
+        // Validate channels<span class="cstat-no" title="statement not covered" ></span>
+        const en<span class="cstat-no" title="statement not covered" >abledChannels = Object.values(channels).filter(Boolean);</span>
+        if (enabledC<span class="cstat-no" title="statement not covered" >hannels.length === 0) {</span>
           throw new UserError('At least one delivery channel must be enabled');
-        }
-&nbsp;
-        const notificationData = {<span class="cstat-no" title="statement not covered" ></span>
-          type,<span class="cstat-no" title="statement not covered" ></span>
-          category,<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const no<span class="cstat-no" title="statement not covered" >tificationData = {</span>
+          type,
+          category,
           priority,
-          title,<span class="cstat-no" title="statement not covered" ></span>
-          message,<span class="cstat-no" title="statement not covered" ></span>
-          data,<span class="cstat-no" title="statement not covered" ></span>
+          title,
+<span class="cstat-no" title="statement not covered" >          message,</span>
+          data,
           recipients,
           channels,
           schedule: schedule || {},
           template: templateId ? {
-<span class="cstat-no" title="statement not covered" >            id: templateId,</span>
+            id: templateId,
             variables: templateVariables,
           } : undefined,
           status: schedule?.sendAt ? 'scheduled' : 'draft',
         };
-&nbsp;
-        if (reportProgress) {
-          reportProgress({ progress: 50, total: 100 });
-        }
-&nbsp;
-        const response = await apiClient.post('/notifications', notificationData);
 <span class="fstat-no" title="function not covered" ></span>
-        if (!response.succ<span class="branch-0 cbranch-no" title="branch not covered" >ess) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
-          throw new UserError(`Failed to create notification: ${response.error?.message || 'Unknown error'}`);<span class="cstat-no" title="statement not covered" ></span>
+        if (reportProgress<span class="branch-0 cbranch-no" title="branch not covered" >) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+          reportProgress({ progress: 50, total: 100 });<span class="cstat-no" title="statement not covered" ></span>
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const notification = response.data as MakeNotification;
-        if (!notification) {
-          throw new UserError('Notification creation failed - no data returned');
+        const response = await apiClient.post('/notifications', notificationData);
+&nbsp;
+        if (!response.success) {
+          throw new UserError(`Failed to create notification: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
+        const notification = response.data as MakeNotification;
+        if (!notification) {
+          th<span class="cstat-no" title="statement not covered" >row new UserError('Notification creation failed - no data returned');</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
         if (reportProgress) {
           reportProgress({ progress: 100, total: 100 });
-        }
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (log <span class="cstat-no" title="statement not covered" >&amp;&amp; log.info) {</span>
-          log.info('<span class="cstat-no" title="statement not covered" >Successfully created notification', {</span>
+        if (log &amp;&amp; log.i<span class="cstat-no" title="statement not covered" >nfo) {</span>
+          log.info('Successfully created notification', {
             notificationId: notification.id,
-            type: notification.type,
-            stat<span class="cstat-no" title="statement not covered" >us: notification.status,</span>
-            recipien<span class="cstat-no" title="statement not covered" >tCount: notification.delivery.totalRecipients,</span>
+            type: notifi<span class="cstat-no" title="statement not covered" >cation.type,</span>
+            status: notification.status,
+            recipientCount: notification.delivery.totalRecipients,
           });<span class="cstat-no" title="statement not covered" ></span>
         }
 &nbsp;
-        return formatSuc<span class="cstat-no" title="statement not covered" >cessResponse({</span>
+        return formatSuccessResponse({
           notification: {
             ...notification,
-            // Mask sensitive recipient da<span class="cstat-no" title="statement not covered" >ta</span>
+            // Mask sensitive recipient data
             recipients: {
               userCount: notification.recipients.users.length,
               teamCount: notification.recipients.teams.length,
@@ -4403,42 +4403,42 @@ export function addNotification<span class="cstat-no" title="statement not cover
             status: notification.status,
             channels: Object.entries(notification.channels)
               .filter(([, enabled]) =&gt; enabled)
-              .map(([channel]) =&gt; channel),
-            totalRecipients: notification.delivery.totalRecipients,
+              .m<span class="cstat-no" title="statement not covered" >ap(([channel]) =&gt; channel),</span>
+            totalRec<span class="cstat-no" title="statement not covered" >ipients: notification.delivery.totalRecipients</span>,
             scheduled: !!schedule?.sendAt,
-            scheduledFor: schedule?.sendAt,
-          },
-          delivery: {
-            stat<span class="cstat-no" title="statement not covered" >us: notification.status,</span>
-            sentAt: <span class="cstat-no" title="statement not covered" >notification.delivery.sentAt,</span>
-            successfulDeliveries: notification.delivery.successfulDeliveries,
-            failedDeliveries: n<span class="cstat-no" title="statement not covered" >otification.deliver</span>y.failedDeliveries,
+            scheduledFor: sched<span class="cstat-no" title="statement not covered" >ule?.sendAt,</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+          delivery: <span class="cstat-no" title="statement not covered" >{</span>
+            status: notification.status,
+            sentAt: n<span class="cstat-no" title="statement not covered" >otification.delivery.sentAt,</span>
+            successf<span class="cstat-no" title="statement not covered" >ulDeliveries: notification.delivery.successfulD</span>eliveries,
+            failedDeliveries: notification.delivery.failedDeliveries,
           },<span class="cstat-no" title="statement not covered" ></span>
         });<span class="cstat-no" title="statement not covered" ></span>
-      } catch (error: unknown) {
-        const errorMe<span class="cstat-no" title="statement not covered" >ssage = error instanceof Error ? error.message : String(error);</span>
-        if (log &amp;&amp; l<span class="cstat-no" title="statement not covered" >og.error) {</span>
-          log.error('Error creating notification', { title, error: errorMessage });
+      } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (log &amp;&amp; log.error) {<span class="cstat-no" title="statement not covered" ></span>
+          log.er<span class="cstat-no" title="statement not covered" >ror('Error creating notification', { title, error: errorMessage });</span>
         }<span class="cstat-no" title="statement not covered" ></span>
-        if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
-        throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to create notification: ${errorMessage}`);</span>
-      }
-    },<span class="cstat-no" title="statement not covered" ></span>
+        if (error instanceof UserError) throw error;
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to create notification: ${errorMessage}`);</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },
   });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
   // Get email preferences
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'get-email<span class="cstat-no" title="statement not covered" >-preferences',</span>
+  server.addTool({
+    name: 'get-email-preferences',
     description: 'Get user email notification preferences and subscription settings',
-    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
-      userId: z.numb<span class="cstat-no" title="statement not covered" >er().min(1).optional().describe('User ID (defaults to current user)'),</span>
-      includeStats: z.boolean().default(false).describe('Include email statistics'),
+    parameters: z.object({
+      userId: z.number().min(1).optional().describe('User ID (defaults to current user)'),
+      includeSta<span class="cstat-no" title="statement not covered" >ts: z.boolean().default(false).describe('Include email statistics'),</span>
     }),
     annotations: {
       title: 'Get Email Notification Preferences',
       readOnlyHint: true,
       openWorldHint: true, // May access external preference systems
-    },<span class="cstat-no" title="statement not covered" ></span>
+    },
     execute: async (input, context) =&gt; {
       const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} } } = context || {};
       const { userId, includeStats } = input;
@@ -4458,24 +4458,24 @@ export function addNotification<span class="cstat-no" title="statement not cover
         }
 &nbsp;
         const response = await apiClient.get(endpoint, { params });
-&nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to get email preferences: ${response.error?.message || 'Unknown error'}`);
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to get email preferences: ${response.error?.message || 'U</span>nknown error'}`);
+        }
+<span class="cstat-no" title="statement not covered" ></span>
+        const prefer<span class="cstat-no" title="statement not covered" >ences = respo</span>nse.data as MakeEmailPreferences;
+        if (!pre<span class="cstat-no" title="statement not covered" >ferences) {</span>
+          throw new UserError('Email preferences not found');
         }
 &nbsp;
-        const preferences = response.data as MakeEmailPreferences;
-        if (!preferences) {<span class="cstat-no" title="statement not covered" ></span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError('Email preferences not found');</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        if (log <span class="cstat-no" title="statement not covered" >&amp;&amp; log.info) {</span>
-          log.info('<span class="cstat-no" title="statement not covered" >Successfully </span>retrieved email preferences', {
-            user<span class="cstat-no" title="statement not covered" >Id: preferences.userId,</span>
+        if (log &amp;&amp; log.info) {
+<span class="cstat-no" title="statement not covered" >          log.info('Successfully retrieved email preferences', {</span>
+            userId: preferences.userId,
             systemEnabled: preferences.preferences.system.enabled,
             unsubscribeAll: preferences.unsubscribeAll,
           });
         }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         return formatSuccessResponse({
           preferences,
           summary: {
@@ -4491,109 +4491,109 @@ export function addNotification<span class="cstat-no" title="statement not cover
               team: preferences.preferences.team.enabled,
               marketing: preferences.preferences.marketing.enabled,
             },
-            customChannels: preferences.preferences.customChannels.length,
-          },
-          settings: {
-            systemFrequency: preferences.preferences.system.frequency,
-            scenarioFrequency: preferences.preferences.scenarios.frequency,
-            scenarioFilters: preferences.preferences.scenarios.filters,
-            lastU<span class="fstat-no" title="function not covered" >pd</span>ated: preferences.lastUpdated,
+            custo<span class="fstat-no" title="function not covered" >mC</span>hannels: preferences.preferences.customChannels.length,
           },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
-        }).content[0].text;<span class="cstat-no" title="statement not covered" ></span>
-      } catc<span class="cstat-no" title="statement not covered" >h (error: unknown) {</span>
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+          settings: {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >            systemFrequency: preferences.preferences.system.frequency,</span>
+            scen<span class="cstat-no" title="statement not covered" >arioFrequency: preferences.preferences.scenarios.frequency,</span>
+            scenarioFilters: preferences.preferences.scenarios.filters,
+            lastUpdated: preferences.lastUpdated,
+          },
+        }).content[0].text;
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         if (log &amp;&amp; log.error) {
           log.error('Error getting email preferences', { userId, error: errorMessage });
         }
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to get email preferences: ${errorMessage}`);
-      }
+        thro<span class="cstat-no" title="statement not covered" >w new UserError(`Failed to get email preferences: ${errorMessage}`);</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
     },
   });
 &nbsp;
   // Update email preferences
-  server.add<span class="cstat-no" title="statement not covered" >Tool({</span>
-    name: 'update-email-prefere<span class="cstat-no" title="statement not covered" >nces',</span>
+  server.addTool({
+    name: 'update-email-preferences',
     description: 'Update user email notification preferences and subscription settings',
-    parameters: EmailPreferencesSchema,
-    annotations: {
-      title: 'Update Email Notification Preferences',
-      readOnlyHint: false,
-      destructiveHint: false,
-      idempotentHint: true, // Same preferences produce same result
+    parameters: <span class="cstat-no" title="statement not covered" >EmailPreferencesSchema,</span>
+    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+      title: 'Up<span class="cstat-no" title="statement not covered" >date Email Notification Preferences',</span>
+      readOnlyHint: <span class="cstat-no" title="statement not covered" >false,</span>
+      destructiv<span class="cstat-no" title="statement not covered" >eHint: false,</span>
+      idempotentHint<span class="cstat-no" title="statement not covered" >: true, // Same preferen</span>ces produce same result
       openWorldH<span class="cstat-no" title="statement not covered" >int: true, // May update external preference systems</span>
     },<span class="cstat-no" title="statement not covered" ></span>
     execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context) =&gt; {</span>
-      const { log = <span class="cstat-no" title="statement not covered" >{ info: () =&gt; {}, erro</span>r: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+      const { log = <span class="cstat-no" title="statement not covered" >{ info: () =&gt; {}, error: () =&gt; {}, warn:</span> () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
       const { us<span class="cstat-no" title="statement not covered" >erId, preferences, timezone, language, unsubscribeAll } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      if (log &amp;&amp;<span class="cstat-no" title="statement not covered" > log.info) {</span>
-        log.info('Up<span class="cstat-no" title="statement not covered" >dating email preferences</span>', {
-          userId<span class="cstat-no" title="statement not covered" >,</span>
-          hasPrefere<span class="cstat-no" title="statement not covered" >nces: !!preferences,</span>
-          timezo<span class="cstat-no" title="statement not covered" >ne,</span>
+      if (log &amp;&amp; log.info) {<span class="cstat-no" title="statement not covered" ></span>
+        log.info<span class="cstat-no" title="statement not covered" >('Updating email preferences', {</span>
+          userId,<span class="cstat-no" title="statement not covered" ></span>
+          hasPreferences: !!preferences,
+          timezone,<span class="cstat-no" title="statement not covered" ></span>
           language,<span class="cstat-no" title="statement not covered" ></span>
-          unsubscribeAll,<span class="cstat-no" title="statement not covered" ></span>
+          unsubscribeAll,
         });<span class="cstat-no" title="statement not covered" ></span>
       }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        if (reportPr<span class="cstat-no" title="statement not covered" >ogress) {</span>
-          reportProgress({ progress: 0, total: 100 });
-        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const update<span class="cstat-no" title="statement not covered" >Data: Record&lt;string, unknown&gt; = {};</span>
-&nbsp;
-        if (preferences) {<span class="cstat-no" title="statement not covered" ></span>
-          update<span class="cstat-no" title="statement not covered" >Data.preferences = preferences;</span>
+      try {
+        if (reportProgress) {<span class="cstat-no" title="statement not covered" ></span>
+          report<span class="cstat-no" title="statement not covered" >Progress({ progress: 0, total: 100 });</span>
         }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        if (time<span class="cstat-no" title="statement not covered" >zone) {</span>
-          updateData<span class="cstat-no" title="statement not covered" >.timezone = timezone;</span>
+        const up<span class="cstat-no" title="statement not covered" >dateData: Record&lt;string, unknown&gt; = {};</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (preferences) {
+          updateData.preferences = preferences;
+        }
+&nbsp;
+        if (timezone) {
+          update<span class="cstat-no" title="statement not covered" >Data.timezone = timezone;</span>
         }
 &nbsp;
         if (language) {
           updateData.language = language;
         }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         if (unsubscribeAll !== undefined) {
           updateData.unsubscribeAll = unsubscribeAll;
         }
 &nbsp;
-        if (Object.keys(updateData).length === 0) {
-          throw new UserError('No preference updates provided');
+        if (Object.keys(updateData).length === 0) {<span class="fstat-no" title="function not covered" ></span>
+          throw new UserErro<span class="cstat-no" title="statement not covered" >r('No preference updates provided');</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        if (reportProgress) {<span class="fstat-no" title="function not covered" ></span>
+          reportProgress({ p<span class="cstat-no" title="statement not covered" >rogress: 50, total: 100 });</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        let endpoint = '/notifications/email-preferences';<span class="fstat-no" title="function not covered" ></span>
+        if (userId) {<span class="cstat-no" title="statement not covered" ></span>
+          endpoint = `/users<span class="cstat-no" title="statement not covered" >/${userId}/e</span>mail-preferences`;
         }
 &nbsp;
-        if (reportProgress) {
-          reportProgress({ progress: 50, total: 100 });
-        }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        let endpoint = '/not<span class="cstat-no" title="statement not covered" >ifications/e</span>mail-preferences';
-        if (userId) {
-          endpoint = `/users/${userId}/email-preferences`;<span class="fstat-no" title="function not covered" ></span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
         const response = await apiClient.put(endpoint, updateData);
-<span class="fstat-no" title="function not covered" ></span>
-        if (!response.succes<span class="cstat-no" title="statement not covered" >s) {</span>
-          throw new UserErro<span class="cstat-no" title="statement not covered" >r(`Failed to</span> update email preferences: ${response.error?.message || 'Unknown error'}`);
-        }
 &nbsp;
-        const updatedPreferences = response.data as MakeEmailPreferences;
-        if (reportProgress) {
-          reportProgress({ progress: 100, total: 100 });
+        if (!response.success) {
+          throw new UserError(`Failed<span class="cstat-no" title="statement not covered" > to update email preferences: ${response.error?.message</span> || 'Unknown error'}`);
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (log &amp;&amp; l<span class="cstat-no" title="statement not covered" >og.info) {</span>
+        const updatedPreferences = response.data as MakeEmailPreferences;
+        if (repo<span class="cstat-no" title="statement not covered" >rtProgress) {</span>
+          reportProg<span class="cstat-no" title="statement not covered" >ress({ progre</span>ss: 100, total: 100 });
+        }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        if (log &amp;&amp; log.info) {
           log.info('Successfully updated email preferences', {
-            user<span class="cstat-no" title="statement not covered" >Id: updatedPreferences.userId,</span>
-            unsubscr<span class="cstat-no" title="statement not covered" >ibeAll: updat</span>edPreferences.unsubscribeAll,
-            cate<span class="cstat-no" title="statement not covered" >goriesUpdated: !!preferences,</span>
+            userId: updatedPreferences.userId,
+<span class="cstat-no" title="statement not covered" >            unsubscribeAll: updatedPreferences.unsubscribeAll,</span>
+            categoriesUpdated: !!preferences,
           });
         }
 &nbsp;
         return formatSuccessResponse({
-<span class="cstat-no" title="statement not covered" >          preferences: updatedPreferences,</span>
+          preferences: updatedPreferences,
           message: 'Email preferences updated successfully',
           changes: {
             preferences: !!preferences,
@@ -4603,64 +4603,64 @@ export function addNotification<span class="cstat-no" title="statement not cover
           },
           summary: {
             userId: updatedPreferences.userId,
-            unsubscribeAll: updatedPreferences.unsubscribeAll,
-            enabledCategories: Object.entries({
-              system: updatedPreferences.preferences.system.enabled,
-              billing: updatedPreferences.preferences.billing.enabled,
-              scenarios: updatedPreferences.preferences.scenarios.enabled,
+            unsub<span class="fstat-no" title="function not covered" >sc</span>ribeAll: updatedPreferences.unsubscribeAll,
+            enabledCategor<span class="branch-0 cbranch-no" title="branch not covered" >ies: Obj<span class="fstat-no" title="function not covered" >ec</span>t.entries({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span>
+              system: updatedPreferences.preferences.system.enabled,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >              billing: updatedPreferences.preferences.billing.enabled,</span>
+              sc<span class="cstat-no" title="statement not covered" >enarios: updatedPreferences.preferences.scenarios.enabled,</span>
               team: updatedPreferences.preferences.team.enabled,
-              mar<span class="fstat-no" title="function not covered" >ke</span>ting: updatedPreferences.preferences.marketing.enabled,
-            }).filter(([, <span class="branch-0 cbranch-no" title="branch not covered" >enabled]<span class="fstat-no" title="function not covered" >) </span>=&gt; enabled).map(<span class="fstat-no" title="function not covered" >([</span>category]) =&gt; c<span class="fstat-no" title="function not covered" >at</span>egory),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span>
-            lastUpdated: updatedPreferences.lastUpdated,<span class="cstat-no" title="statement not covered" ></span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-        });<span class="cstat-no" title="statement not covered" ></span>
+              marketing: updatedPreferences.preferences.marketing.enabled,
+            }).filter(([, enabled]) =&gt; enabled).map(([category]) =&gt; category),
+            lastUpdated: updatedPreferences.lastUpdated,
+          },
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log &amp;&amp; log.error) {
-          log.error('Error updating email preferences', { userId, error: errorMessage });
-        }
+        if (<span class="cstat-no" title="statement not covered" >log &amp;&amp; log.error) {</span>
+          log.er<span class="cstat-no" title="statement not covered" >ror('Error updating email preferences', { userId, error: errorMessage });</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to update email preferences: ${errorMessage}`);
-      }
+        throw new UserError(`Fa<span class="cstat-no" title="statement not covered" >iled to update email preferences: ${er</span>rorMessage}`);
+      }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
+  });
 <span class="cstat-no" title="statement not covered" ></span>
-  // Create notification template
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'creat<span class="cstat-no" title="statement not covered" >e-notification-template',</span>
-    description: 'Cr<span class="cstat-no" title="statement not covered" >eate a reusable notification template with variables and design',</span>
+  // Create notifica<span class="cstat-no" title="statement not covered" >tion template</span>
+  server.addTool({
+    name: 'create-notification-<span class="cstat-no" title="statement not covered" >template',</span>
+    description: 'Create a reusable notification template with variables and design',
     parameters: NotificationTemplateSchema,
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
-      title: 'Create<span class="cstat-no" title="statement not covered" > Notification Template',</span>
-      readOnlyHint: false,
-      destructiveHint: false,<span class="cstat-no" title="statement not covered" ></span>
-      idempotentHint: false, // Each template creation is unique
+    annotations: {
+      title: 'Create Notification Template',
+      readOnlyHint: false,<span class="cstat-no" title="statement not covered" ></span>
+      destructiv<span class="cstat-no" title="statement not covered" >eHint: false,</span>
+      idempotentHint<span class="cstat-no" title="statement not covered" >: false, // Each template creation is unique</span>
       openWorldHint: false, // Internal template management
-    },
-    execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt;<span class="cstat-no" title="statement not covered" > {}, error: () =&gt; {}, warn: () =&gt; {}, debu</span>g: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
-      const { na<span class="cstat-no" title="statement not covered" >me, description, type, category, organizationId, template, design } = input;</span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (<span class="cstat-no" title="statement not covered" >input, context) =&gt; {</span>
+      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+      const { name, description, type,<span class="cstat-no" title="statement not covered" > category, org</span>anizationId, template, design } = input;
 <span class="cstat-no" title="statement not covered" ></span>
-      if (log &amp;&amp; log.info) {
-        log.info<span class="cstat-no" title="statement not covered" >('Creating notification template', {</span>
+      if (log &amp;&amp; log<span class="cstat-no" title="statement not covered" >.info) {</span>
+        log.info('Creating notification template', {
           name,<span class="cstat-no" title="statement not covered" ></span>
-          type,
-          category,<span class="cstat-no" title="statement not covered" ></span>
+          type,<span class="cstat-no" title="statement not covered" ></span>
+          category,
           organi<span class="cstat-no" title="statement not covered" >zationId,</span>
           variableCo<span class="cstat-no" title="statement not covered" >unt: template.variables.length,</span>
         });
-      }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+      }
+&nbsp;
       try {
-        if (repo<span class="cstat-no" title="statement not covered" >rtProgress) {</span>
-          reportProg<span class="cstat-no" title="statement not covered" >ress({ progress: 0, total: 100 });</span>
-        }
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         const templateData = {
           name,
           description,
           type,
-          catego<span class="cstat-no" title="statement not covered" >ry,</span>
+          category,
           organizationId,
           isGlobal: !organizationId,
           template: {
@@ -4689,24 +4689,24 @@ export function addNotification<span class="cstat-no" title="statement not cover
 &nbsp;
         const notificationTemplate = response.data as MakeNotificationTemplate;
         if (!notificationTemplate) {
-          throw new UserError('Notification template creation failed - no data returned');
-        }
-&nbsp;
-        if (reportProgress) {
-          reportProgress({ progress: 100, total: 100 });
-        }
+          throw new UserError('Notifi<span class="cstat-no" title="statement not covered" >cation template creation failed - no data returned');</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (log <span class="cstat-no" title="statement not covered" >&amp;&amp; log.info) {</span>
-          log.info('<span class="cstat-no" title="statement not covered" >Successfully created notification template', {</span>
+        if (reportProgress) {
+          report<span class="cstat-no" title="statement not covered" >Progress({ progress: 100, total: 100 });</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (log &amp;&amp; log.info) {
+          log.info('Successfully created notification template', {
             templateId: notificationTemplate.id,
-            name<span class="cstat-no" title="statement not covered" >: notificationTemplate.name,</span>
-            type: no<span class="cstat-no" title="statement not covered" >tificationTem</span>plate.type,
-            cate<span class="cstat-no" title="statement not covered" >gory: notificationTemplate.category,</span>
+            name: notificationTemplate.name,
+<span class="cstat-no" title="statement not covered" >            type: notificationTemplate.type,</span>
+            category: notificationTemplate.category,
           });
         }
 &nbsp;
         return formatSuccessResponse({
-<span class="cstat-no" title="statement not covered" >          template: notificationTemplate,</span>
+          template: notificationTemplate,
           message: `Notification template "${name}" created successfully`,
           summary: {
             id: notificationTemplate.id,
@@ -4747,112 +4747,112 @@ export function addNotification<span class="cstat-no" title="statement not cover
     annotations: {
       title: 'Create Custom Data Structure',
       readOnlyHint: false,
-      destructiveHint: false,
-      idempotentHint: false, // Each structure creation is unique
-      openWorldHint: false, // Internal data structure management
-    },
-    execute: async (input, context) =&gt; {
+      destructive<span class="fstat-no" title="function not covered" >Hi</span>nt: false,
+      idempotentHint: fals<span class="branch-0 cbranch-no" title="branch not covered" >e, // Ea<span class="fstat-no" title="function not covered" >ch</span> structure creat<span class="fstat-no" title="function not covered" >io</span>n is unique<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
+      openWorldHint: false, // Internal data structure management<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context) =&gt; {</span>
       const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
-      const { nam<span class="fstat-no" title="function not covered" >e,</span> description, type, organizationId, teamId, scope, structure, validation, transformation } = input;
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
-      if (log &amp;&amp; log.info) {<span class="cstat-no" title="statement not covered" ></span>
-        log.<span class="cstat-no" title="statement not covered" >info('Creating custom data structure', {</span>
-          name,<span class="cstat-no" title="statement not covered" ></span>
+      const { name, description, type, organizationId, teamId, scope, structure, validation, transformation } = input;
+&nbsp;
+      if (log &amp;&amp; log.info) {
+        log.info('Creating custom data structure', {
+          name,
           type,
           scope,
           organizationId,
           teamId,
           format: structure.format,
         });
-      }
-&nbsp;
-      try {
+      }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
         if (reportProgress) {
           reportProgress({ progress: 0, total: 100 });
-        }
+        }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        // Valid<span class="cstat-no" title="statement not covered" >ate JSON Schema if provided</span>
-        if (structur<span class="cstat-no" title="statement not covered" >e.schema &amp;&amp; typeof structure.schema === 'obje</span>ct') {
+        // Validate JSON<span class="cstat-no" title="statement not covered" > Schema if provided</span>
+        if (structure.schema &amp;&amp; typeof structure.schema === 'object') {
           try {
-            JSON.stringify(structure.schema);
-          } catc<span class="cstat-no" title="statement not covered" >h (error) {</span>
-            throw ne<span class="cstat-no" title="statement not covered" >w UserError('Invalid JSON Schema provided');</span>
+            JSON.stringi<span class="cstat-no" title="statement not covered" >fy(structure.schema);</span>
+          } catch (error) {
+            throw new UserError('Invalid JSON Schema provided');
           }<span class="cstat-no" title="statement not covered" ></span>
-        }
-&nbsp;
-        const dataStruct<span class="cstat-no" title="statement not covered" >ureData = {</span>
-          name,
-          description,
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        const da<span class="cstat-no" title="statement not covered" >taStructureData = {</span>
+          name,<span class="cstat-no" title="statement not covered" ></span>
+          descri<span class="cstat-no" title="statement not covered" >ption,</span>
           type,<span class="cstat-no" title="statement not covered" ></span>
-          organi<span class="cstat-no" title="statement not covered" >zationId,</span>
+          organizati<span class="cstat-no" title="statement not covered" >onId,</span>
           teamId,<span class="cstat-no" title="statement not covered" ></span>
           scope,<span class="cstat-no" title="statement not covered" ></span>
-          structure:<span class="cstat-no" title="statement not covered" > {</span>
-            sche<span class="cstat-no" title="statement not covered" >ma: structure.schema,</span>
-            version:<span class="cstat-no" title="statement not covered" > structure.version || '1.0.</span>0',
-            format: <span class="cstat-no" title="statement not covered" >structure.format || 'json',</span>
+          structure: {<span class="cstat-no" title="statement not covered" ></span>
+            schema: <span class="cstat-no" title="statement not covered" >structure.schema,</span>
+            version: str<span class="cstat-no" title="statement not covered" >ucture.version || '1.0.0',</span>
+            format: structure.format || 'json',
           },<span class="cstat-no" title="statement not covered" ></span>
           validation<span class="cstat-no" title="statement not covered" >: validation ? {</span>
-            enabled: val<span class="cstat-no" title="statement not covered" >idation.enabled !== false,</span>
-            strict: <span class="cstat-no" title="statement not covered" >validation.strict || false,</span>
-            rules: valid<span class="cstat-no" title="statement not covered" >ation.rules || [],</span>
-          } : { enabled: true, strict: false, rules: [] },
-          transf<span class="cstat-no" title="statement not covered" >ormation: transformation ? {</span>
-            enabled:<span class="cstat-no" title="statement not covered" > transformation.enabled || f</span>alse,
-            mappings<span class="cstat-no" title="statement not covered" >: transformation.mappings || [],</span>
-            filters: tra<span class="cstat-no" title="statement not covered" >nsformation.filters || [],</span>
-          } : { enab<span class="cstat-no" title="statement not covered" >led: false, mappings: [], filters: [] },</span>
+            enabled:<span class="cstat-no" title="statement not covered" > validation.enabled !== false,</span>
+            strict: vali<span class="cstat-no" title="statement not covered" >dation.strict || false,</span>
+            rules: v<span class="cstat-no" title="statement not covered" >alidation.rules || [],</span>
+          } : { enabled:<span class="cstat-no" title="statement not covered" > true, strict: false, rules: [] },</span>
+          transforma<span class="cstat-no" title="statement not covered" >tion: transformation ? {</span>
+            enabled: tra<span class="cstat-no" title="statement not covered" >nsformation.enabled || false,</span>
+            mappings: transformation.mappings || [],
+            filt<span class="cstat-no" title="statement not covered" >ers: transformation.filters || [],</span>
+          } : { enab<span class="cstat-no" title="statement not covered" >led: false, mappings: [], filter</span>s: [] },
         };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (reportProgre<span class="cstat-no" title="statement not covered" >ss) {</span>
-          reportProgress({ progress: 50, total: 100 });
+        if (reportPr<span class="cstat-no" title="statement not covered" >ogress) {</span>
+          reportProgress<span class="cstat-no" title="statement not covered" >({ progress: 50, total: 100 });</span>
         }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        let endpoint<span class="cstat-no" title="statement not covered" > = '/data-structures';</span>
-        if (organization<span class="cstat-no" title="statement not covered" >Id) {</span>
-          endpoint =<span class="cstat-no" title="statement not covered" > `/organizations/${organizationId}/data-structures`;</span>
-        } else if (teamI<span class="cstat-no" title="statement not covered" >d) {</span>
-          endpoint =<span class="cstat-no" title="statement not covered" > `/teams/${teamId}/data-structures`;</span>
-        }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-&nbsp;
-        const response = await apiClient.post(endpoint, dataStructureData);
-&nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to create data structure: ${response.error?.message || 'Unknown error'}`);
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        let endpoint = '/data-structures';
+        if (organizationId) {
+          endpoint = `/organizations/${organizationId}/data-structures`;
+        } else if (teamId) {
+          endpoint = `/teams/${teamId}/data-structures`;
         }
 <span class="cstat-no" title="statement not covered" ></span>
-        const dataSt<span class="cstat-no" title="statement not covered" >ructure = response.data as MakeCustomDataStruc</span>ture;
-        if (!dataStructure) {
-          throw new UserError('<span class="cstat-no" title="statement not covered" >Data structure creation failed - no da</span>ta returned');
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (reportProgress) {
-          reportProgr<span class="cstat-no" title="statement not covered" >ess({ progress: 100, total: 100 });</span>
+        const respon<span class="cstat-no" title="statement not covered" >se = await apiClient.post(endpoint, dataStruct</span>ureData);
+&nbsp;
+        if (!response.success) <span class="cstat-no" title="statement not covered" >{</span>
+          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to create data structure: ${response.error?.message || 'Unknown error'}`);</span>
         }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        if (log &amp;&amp; log.info) {<span class="cstat-no" title="statement not covered" ></span>
-          log.in<span class="cstat-no" title="statement not covered" >fo('Successfully created custom data structure', {</span>
-            dataStru<span class="cstat-no" title="statement not covered" >ctureId: dataStructure.id,</span>
-            name: dataStructure.name,
-            type<span class="cstat-no" title="statement not covered" >: dataStructure.type,</span>
-            scope: d<span class="cstat-no" title="statement not covered" >ataStructure.scope,</span>
-          });
+        const dataStr<span class="cstat-no" title="statement not covered" >ucture = response.data as MakeCustomDataStructure;</span>
+        if (!dataStr<span class="cstat-no" title="statement not covered" >ucture) {</span>
+          throw new UserError('Data structure creation failed - no data returned');
         }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (reportPr<span class="cstat-no" title="statement not covered" >ogress) {</span>
+          reportProgress({ progress: 100, total: 100 });
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (log &amp;&amp; log.info) {
+          log.info('Successfully created cust<span class="cstat-no" title="statement not covered" >om data struct</span>ure', {
+            data<span class="cstat-no" title="statement not covered" >StructureId: dataStructure.id,</span>
+            name: da<span class="cstat-no" title="statement not covered" >taStructure.name,</span>
+            type: dataStructure.type,
+            scop<span class="cstat-no" title="statement not covered" >e: dataStructure.scope,</span>
+          });<span class="cstat-no" title="statement not covered" ></span>
+        }
 <span class="cstat-no" title="statement not covered" ></span>
         return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
           dataStructure,
-          messag<span class="cstat-no" title="statement not covered" >e: `Data structure "${name}" created successfully`,</span>
-          summary: {<span class="cstat-no" title="statement not covered" ></span>
+          message: `Data structure "${name}" created successfully`,
+          summary: {
             id: dataStructure.id,
-            name<span class="cstat-no" title="statement not covered" >: dataStructure.name,</span>
-            type: da<span class="cstat-no" title="statement not covered" >taStructure.type,</span>
-            scope: dataStructure.scope,
+            name: dataStructure.name,
+            type: dataStructure.type,
+            scop<span class="cstat-no" title="statement not covered" >e: dataStructure.scope,</span>
             format: dataStructure.structure.format,
             version: dataStructure.structure.version,
             validationEnabled: dataStructure.validation.enabled,
             transformationEnabled: dataStructure.transformation.enabled,
           },
-          config<span class="cstat-no" title="statement not covered" >uration: {</span>
+          configuration: {
             validationRules: dataStructure.validation.rules.length,
             transformationMappings: dataStructure.transformation.mappings.length,
             transformationFilters: dataStructure.transformation.filters.length,
@@ -4875,24 +4875,24 @@ export function addNotification<span class="cstat-no" title="statement not cover
   });
 &nbsp;
   // List custom data structures
-  server.addTool({
-    name: 'list-data-structures',
-    description: 'List and filter custom data structures with comprehensive filtering and search',
+  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+    name: 'list-<span class="cstat-no" title="statement not covered" >data-structures',</span>
+    description: 'Li<span class="cstat-no" title="statement not covered" >st and filter custom data structures with comprehensive filtering and search',</span>
     parameters: z.object({
-      type: z.enum(['schema', 'template', 'validation', 'transformation', 'all']).default('all').describe('Filter by structure type'),
-      scope: z.enum(['global', 'organization', 'team', 'personal', 'all']).default('all').describe('Filter by access scope'),
-      organizationId: z.number().min(<span class="cstat-no" title="statement not covered" >1).optional().describe('Filter by organization ID'),</span>
-      teamId: z.<span class="cstat-no" title="statement not covered" >number().min(1).optional().describe('Filter by team ID'),</span>
-      format: z.enum<span class="cstat-no" title="statement not covered" >(['json', 'xml', 'yaml', 'csv', 'custom', 'all']).default('all').describe('Filter by d</span>ata format'),
+      type: z.en<span class="cstat-no" title="statement not covered" >um(['schema', 'template', 'validation', 'transformation', 'all']).default('all').describe('Filter by structure type'),</span>
+      scope: z.enum(<span class="cstat-no" title="statement not covered" >['global', 'o</span>rganization', 'team', 'personal', 'all']).default('all').describe('Filter by access scope'),
+      organizati<span class="cstat-no" title="statement not covered" >onId: z.number().min(1).optional().describe('Filter by organization ID'),</span>
+      teamId: z.number().min(1).optional().describe('Filter by team ID'),
+      format: z.enum(['json', 'xml', 'yaml', 'csv', 'custom', 'all']).default('all').describe('Filter by data format'),
       search: z.string().max(200).optional().describe('Search in name and description'),
-      includeVal<span class="cstat-no" title="statement not covered" >idation: z.boolean().default(true).describe('Include validation configuration'),</span>
-      includeTransfo<span class="cstat-no" title="statement not covered" >rmation: z.bo</span>olean().default(true).describe('Include transformation details'),
-      limit: z.n<span class="cstat-no" title="statement not covered" >umber().min(1).max(100).default(20).describe('Maximum structures to return'),</span>
+      includeValidation: z.boolean().default(true).describe('Include validation configuration'),
+<span class="cstat-no" title="statement not covered" >      includeTransformation: z.boolean().default(true).describe('Include transformation details'),</span>
+      limit: z.number().min(1).max(100).default(20).describe('Maximum structures to return'),
       offset: z.number().min(0).default(0).describe('Structures to skip for pagination'),
       sortBy: z.enum(['createdAt', 'updatedAt', 'name', 'type']).default('createdAt').describe('Sort field'),
       sortOrder: z.enum(['asc', 'desc']).default('desc').describe('Sort order'),
     }),
-<span class="cstat-no" title="statement not covered" >    annotations: {</span>
+    annotations: {
       title: 'List Custom Data Structures',
       readOnlyHint: true,
       openWorldHint: false, // Internal data structure listing
@@ -4905,105 +4905,105 @@ export function addNotification<span class="cstat-no" title="statement not cover
         log.info('Listing custom data structures', {
           type,
           scope,
-          organizationId,
-          teamId,
-          format,
-          search,
+          organiz<span class="fstat-no" title="function not covered" >at</span>ionId,
+          teamId,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+          format,<span class="cstat-no" title="statement not covered" ></span>
+          se<span class="cstat-no" title="statement not covered" >arch,</span>
+          limit,<span class="cstat-no" title="statement not covered" ></span>
+          offset,
+        });
+      }
+&nbsp;
+      try {
+        const params: Record&lt;string, unknown&gt; = {
           limit,
           offset,
-        });<span class="fstat-no" title="function not covered" ></span>
-      }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const pa<span class="cstat-no" title="statement not covered" >rams: Record&lt;string, unknown&gt; = {</span>
-          limit,
-          offset,
-          sortBy,
-          sortOrder,
-          includeValidation,
+          so<span class="cstat-no" title="statement not covered" >rtBy,</span>
+          sortOr<span class="cstat-no" title="statement not covered" >der,</span>
+          includeVal<span class="cstat-no" title="statement not covered" >idation,</span>
           includeTransformation,
-        };
-&nbsp;
-        if (<span class="cstat-no" title="statement not covered" >type !== 'all') params.type = type;</span>
-        if (scop<span class="cstat-no" title="statement not covered" >e !== 'all') params.scope = scope;</span>
-        if (format !<span class="cstat-no" title="statement not covered" >== 'all') params.format = format;</span>
-        if (search) params.search = search;
-        if (organizationId) par<span class="cstat-no" title="statement not covered" >ams.organizationId = organizationId;</span>
-        if (team<span class="cstat-no" title="statement not covered" >Id) params.teamId = teamId;</span>
+        };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        let endpoint = '/data-structures';
-        if (organizat<span class="cstat-no" title="statement not covered" >ionId) {</span>
-          endpoint =<span class="cstat-no" title="statement not covered" > `/organizations/${organizationId}/data-structures`;</span>
-        } else if (teamId) {
-          endpoint = `/teams/${teamId}/data-structures`;
-        }<span class="cstat-no" title="statement not covered" ></span>
+        if (type !==<span class="cstat-no" title="statement not covered" > 'all') params.type = type;</span>
+        if (scope !== 'all') params.scope = scope;
+        if (format !=<span class="cstat-no" title="statement not covered" >= 'all') params.format = format;</span>
+        if (search) <span class="cstat-no" title="statement not covered" >params.search = search;</span>
+        if (organizationId) params.organizationId = organizationId;
+        if (teamId) params.teamId = teamId;
 <span class="cstat-no" title="statement not covered" ></span>
-        const respon<span class="cstat-no" title="statement not covered" >se = await apiClient.get(endpoint, { params });</span>
-&nbsp;
-        if (!response.success) {<span class="cstat-no" title="statement not covered" ></span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Failed to list data structures: ${response.error?.message || 'Unknown error'}`);</span>
+        let endp<span class="cstat-no" title="statement not covered" >oint = '/data-structures';</span>
+        if (organiza<span class="cstat-no" title="statement not covered" >tionId) {</span>
+          endpoint = `/organizations/${organizationId}/data-structures`;
+        } else if (teamId) {<span class="cstat-no" title="statement not covered" ></span>
+          endpoi<span class="cstat-no" title="statement not covered" >nt = `/teams/${teamId}/data-structures`;</span>
         }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
+        const response = await apiClient.get(endpoint, { params });
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new UserError(`Failed to<span class="cstat-no" title="statement not covered" > list data structures: ${response.error?.message</span> || 'Unknown error'}`);
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
         const data = response.data as DataStructureListResponse;
 <span class="cstat-no" title="statement not covered" ></span>
-        if (!dat<span class="cstat-no" title="statement not covered" >a || !data.dataStructures) {</span>
-          throw new UserError('Invalid r<span class="cstat-no" title="statement not covered" >esponse format from data structures API');</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (log &amp;&amp; log.info) {
+        if (!data || !data.dataStructures) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+          throw new User<span class="cstat-no" title="statement not covered" >Error('Invalid response format from data structures API');</span>
+        }
+&nbsp;
+        if (log <span class="cstat-no" title="statement not covered" >&amp;&amp; log.info) {</span>
           log.info('<span class="cstat-no" title="statement not covered" >Successfully listed data structures', {</span>
-            count: data.dataStructures.length,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-            total: data.<span class="cstat-no" title="statement not covered" >pagination.total,</span>
-            filters: data.filters,
-          });
+            count: data.dataStructures.length,
+            total: data.pagination.total,
+            filters: data.filters,<span class="cstat-no" title="statement not covered" ></span>
+          });<span class="cstat-no" title="statement not covered" ></span>
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
         return formatSuccessResponse({
           dataStructures: data.dataStructures,
-          pagination: data.paginat<span class="cstat-no" title="statement not covered" >ion,</span>
-          filter<span class="cstat-no" title="statement not covered" >s: data.filters,</span>
+          pagination: data.pagination,
+          filters: data.<span class="cstat-no" title="statement not covered" >filters,</span>
           summary: {<span class="cstat-no" title="statement not covered" ></span>
-            totalFound: data.pagination.total,<span class="cstat-no" title="statement not covered" ></span>
+            totalFound: data<span class="cstat-no" title="statement not covered" >.pagination.total,</span>
             currentPage: Math.floor(offset / limit) + 1,
             totalPages: Math.ceil(data.pagination.total / limit),
             hasMore: data.pagination.hasMore,
-          },<span class="cstat-no" title="statement not covered" ></span>
-          statistics: {<span class="cstat-no" title="statement not covered" ></span>
-            byType: data.dat<span class="cstat-no" title="statement not covered" >aStructures.reduce((acc, ds) =&gt; {</span>
-              acc[ds.type] = (acc[ds.type] || 0) + 1;
+          },
+          statistics: {
+            byType: data.dataStructures.reduce((acc, ds) =&gt; {
+              acc[ds.typ<span class="cstat-no" title="statement not covered" >e] = (acc[ds.type] || 0) + 1;</span>
               return acc;
             }, {} as Record&lt;string, number&gt;),
-            byScope: data.dataStructures.reduce((acc, ds) =&gt; {
-              acc[ds.scope] = (acc[ds.scope] || 0) + 1;
+            bySc<span class="cstat-no" title="statement not covered" >ope: data.dataStructures.reduce((acc, ds) =&gt; {</span>
+              acc[ds<span class="cstat-no" title="statement not covered" >.scope] = (acc[ds.scope] || 0) + 1;</span>
               return acc;
-            }, {} as Rec<span class="cstat-no" title="statement not covered" >ord&lt;string, number&gt;),</span>
-            byFormat: data.dataStructures.reduce((acc, ds) =&gt; {
+            }, {} as Record&lt;string, number&gt;),
+            byFormat: data.dataStruct<span class="cstat-no" title="statement not covered" >ures.reduce((acc, ds) =&gt; {</span>
               acc[ds.structure.format] = (acc[ds.structure.format] || 0) + 1;
-              re<span class="cstat-no" title="statement not covered" >turn acc;</span>
-            }, {} as<span class="cstat-no" title="statement not covered" > Record&lt;string, number&gt;),</span>
-          },
-        });
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
+              return acc;
+            }, {} as Record&lt;string, number&gt;),
+          },<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+      } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log &amp;&amp; log.error) {
-          log.error('Error listing data structures', { error: errorMessage });
-        }<span class="cstat-no" title="statement not covered" ></span>
+        if (log <span class="cstat-no" title="statement not covered" >&amp;&amp; log.error) {</span>
+          log.error(<span class="cstat-no" title="statement not covered" >'Error listing data structures', { error: error</span>Message });
+        }
         if (erro<span class="cstat-no" title="statement not covered" >r instanceof UserError) throw error;</span>
         throw new Us<span class="cstat-no" title="statement not covered" >erError(`Failed to list data structures: ${errorMessage}`);</span>
       }
-    },<span class="cstat-no" title="statement not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
+    },
+  });
 &nbsp;
-  // Get custom <span class="cstat-no" title="statement not covered" >data structure by ID</span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+  // Get custom data structure by ID
+  server.addTool({
     name: 'get-data-structure',
-    description: 'Retrieve detailed information about a specific custom data structure',
+    description:<span class="cstat-no" title="statement not covered" > 'Retrieve detailed information about a specific custom data structure',</span>
     parameters: z.object({
       dataStructureId: z.number().min(1).describe('Data structure ID'),
       organizationId: z.number().min(1).optional().describe('Organization ID (for scoped access)'),
       teamId: z.number().min(1).optional().describe('Team ID (for scoped access)'),
       includeUsageStats: z.boolean().default(true).describe('Include usage statistics'),
-      includeVal<span class="cstat-no" title="statement not covered" >idationHistory: z.boolean().default(false).describe('Include validation history'),</span>
+      includeValidationHistory: z.boolean().default(false).describe('Include validation history'),
       includeTransformationHistory: z.boolean().default(false).describe('Include transformation history'),
     }),
     annotations: {
@@ -5027,24 +5027,24 @@ export function addNotification<span class="cstat-no" title="statement not cover
       }
 &nbsp;
       try {
-        if (reportProgress) {
-          reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {<span class="cstat-no" title="statement not covered" ></span>
+          report<span class="cstat-no" title="statement not covered" >Progress({ progress: 0, total: 100 });</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        let endp<span class="cstat-no" title="statement not covered" >oint = `/data-structures/${dataStructureId}`;</span>
+        if (organiza<span class="cstat-no" title="statement not covered" >tionId) {</span>
+          endpoi<span class="cstat-no" title="statement not covered" >nt = `/organizations/${organizationId}/data-structures/${dataStructureId}</span>`;
+        } else if (teamId) {
+          endpoint = `/teams/${teamId}/data-structures/${dataStructureId}`;
         }
 &nbsp;
-        let endpoint = `/data-structures/${dataStructureId}`;
-        if (organizationId) {
-          endpoint = `/organizations/<span class="cstat-no" title="statement not covered" >${organizationId}/data-structures/${dataStructureId}`;</span>
-        } else i<span class="cstat-no" title="statement not covered" >f (teamId) {</span>
-          endpoint =<span class="cstat-no" title="statement not covered" > `/teams/${teamId}/data-structures/${dataStructureId}`;</span>
-        }
-<span class="cstat-no" title="statement not covered" ></span>
-        const params<span class="cstat-no" title="statement not covered" >: Record&lt;stri</span>ng, unknown&gt; = {
-          includ<span class="cstat-no" title="statement not covered" >eUsageStats,</span>
+<span class="cstat-no" title="statement not covered" >        const params: Record&lt;string, unknown&gt; = {</span>
+          includeUsageStats,
           includeValidationHistory,
           includeTransformationHistory,
         };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        const response = await apiClient.get(endpoint, { params });</span>
+        const response = await apiClient.get(endpoint, { params });
 &nbsp;
         if (!response.success) {
           throw new UserError(`Failed to get data structure: ${response.error?.message || 'Unknown error'}`);
@@ -5061,89 +5061,89 @@ export function addNotification<span class="cstat-no" title="statement not cover
         }
 &nbsp;
         if (reportProgress) {
-          reportProgress({ progress: 100, total: 100 });
+          reportP<span class="fstat-no" title="function not covered" >ro</span>gress({ progress: 100, total: 100 });
+        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (<span class="cstat-no" title="statement not covered" >log &amp;&amp; log.info) {</span>
+          log.in<span class="cstat-no" title="statement not covered" >fo('Successfully retrieved data structure', {</span>
+            dataStructureId: dataStructure.id,
+            name: dataStructure.name,
+            type: dataStructure.type,
+            scope: dataStructure.scope,
+          });
         }
 &nbsp;
-        if (log &amp;&amp; log.info) {
-          log.info('Successfully retrieved data structure', {
-            dataStructureId: dataStructure.id,
-            name:<span class="fstat-no" title="function not covered" > d</span>ataStructure.name,
-            type: dataStru<span class="branch-0 cbranch-no" title="branch not covered" >cture.ty<span class="fstat-no" title="function not covered" >pe</span>,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
-            scope: dataStructure.scope,<span class="cstat-no" title="statement not covered" ></span>
-          })<span class="cstat-no" title="statement not covered" >;</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
         return formatSuccessResponse({
-          dataStructure,
-          metadata: {
+          da<span class="cstat-no" title="statement not covered" >taStructure,</span>
+          metadata: {<span class="cstat-no" title="statement not covered" ></span>
             id: dataStructure.id,
             name: dataStructure.name,
             type: dataStructure.type,
             scope: dataStructure.scope,
-<span class="cstat-no" title="statement not covered" >            format: dataStructure.structure.format,</span>
-            version: dataStruct<span class="cstat-no" title="statement not covered" >ure.structure.version,</span>
+            format: dataStructure.structure.format,
+            version: dataStructure.structure.version,
             createdAt: dataStructure.createdAt,
-            updatedAt: dataStructure.updatedAt,
-          },
-          configuration: {
-            validation: {
-              enabled: dataStructure.validation.enabled,
-              strict: dataStructure.validation.strict,
+            upda<span class="cstat-no" title="statement not covered" >tedAt: dataStructure.updatedAt,</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+          config<span class="cstat-no" title="statement not covered" >uration: {</span>
+            validati<span class="cstat-no" title="statement not covered" >on: {</span>
+              en<span class="cstat-no" title="statement not covered" >abled: dataStructure.validation.enabled,</span>
+              strict<span class="cstat-no" title="statement not covered" >: dataStructure.validation.s</span>trict,
               ru<span class="cstat-no" title="statement not covered" >lesCount: dataStructure.validation.rules.length,</span>
             },<span class="cstat-no" title="statement not covered" ></span>
             tran<span class="cstat-no" title="statement not covered" >sformation: {</span>
-              enable<span class="cstat-no" title="statement not covered" >d: dataStructure.transfo</span>rmation.enabled,
-              ma<span class="cstat-no" title="statement not covered" >ppingsCount: dataStructure.transformation.mappings.length,</span>
-              filter<span class="cstat-no" title="statement not covered" >sCount: dataStructure.transf</span>ormation.filters.length,
+              enable<span class="cstat-no" title="statement not covered" >d: dataStructure.transformation.enab</span>led,
+              mappingsCount: data<span class="cstat-no" title="statement not covered" >Structure.transformation.mappings.length,</span>
+              fi<span class="cstat-no" title="statement not covered" >ltersCount: dataStructure.transformation.filters.length,</span>
             },<span class="cstat-no" title="statement not covered" ></span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-          usage:<span class="cstat-no" title="statement not covered" > dataStructure.usage || null,</span>
-          operations<span class="cstat-no" title="statement not covered" >: {</span>
-            validateUrl: `/data-s<span class="cstat-no" title="statement not covered" >tructures/${dataStructure.id}/validate`,</span>
-            tran<span class="cstat-no" title="statement not covered" >sformUrl: `/data-structures/${dataStructure.id}/transform`,</span>
-            testUrl:<span class="cstat-no" title="statement not covered" > `/data-structures/${dataStructure.id}/test`,</span>
+          },
+          usage: dataStructure.usage |<span class="cstat-no" title="statement not covered" >| null,</span>
+          operations: {<span class="cstat-no" title="statement not covered" ></span>
+            vali<span class="cstat-no" title="statement not covered" >dateUrl: `/data-structures/${dataStructure.id}/validate`,</span>
+            transfor<span class="cstat-no" title="statement not covered" >mUrl: `/data-structures/${dataStructure.id}/transform`,</span>
+            testUrl: `/data-structures/${dataStructure.id}/test`,
             updateUrl: `/data-structures/${dataStructure.id}`,
-            deleteUrl: `/data-structur<span class="cstat-no" title="statement not covered" >es/${dataStructure.i</span>d}`,
-          },<span class="cstat-no" title="statement not covered" ></span>
-        }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
-      } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
+            deleteUrl: `/data-structures/${dataStructure.id}`,
+          },
+        }).content[0].text;
+      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log &amp;&amp; log.error) {
-          log.error('Error getting data structure', { dataStructureId, error: errorMessage });
-        }
+        if (log &amp;&amp; log.error) {<span class="fstat-no" title="function not covered" ></span>
+          log.error('Err<span class="cstat-no" title="statement not covered" >or getting data structure', { dataStructureId,</span> error: errorMessage });
+        }<span class="cstat-no" title="statement not covered" ></span>
         if (error instanceof UserError) throw error;
-        throw new UserError(`Faile<span class="cstat-no" title="statement not covered" >d to get data structure: ${errorMessage}`);</span>
-      }
-    },<span class="fstat-no" title="function not covered" ></span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  // Update custom data structure
-  server.addTool({<span class="fstat-no" title="function not covered" ></span>
-    name: 'update-data-s<span class="cstat-no" title="statement not covered" >tructure',</span>
-    description: 'Update<span class="cstat-no" title="statement not covered" > an existing</span> custom data structure configuration',
-    parameters: z.object({
-      dataStructureId: z.number().min(1).describe('Data stru<span class="fstat-no" title="function not covered" >ct</span>ure ID to update'),
-      organizationId: z.<span class="cstat-no" title="statement not covered" >number().min(1).optional().describe('Organization ID (</span>for scoped access)'),
-      teamId: z.number()<span class="cstat-no" title="statement not covered" >.min(1).opti</span>onal().describe('Team ID (for scoped access)'),
-      name: z.string().min(1).max(100).optional().describe('Updated structure name'),
+        throw new UserError(`Failed to get data structure:<span class="fstat-no" title="function not covered" > $</span>{errorMessage}`);
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+  });
+<span class="fstat-no" title="function not covered" ></span>
+  // Update custom data <span class="cstat-no" title="statement not covered" >structure</span>
+  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+    name: 'update-data-structure',
+    description: 'Update an existing custom data structure configuration',
+    parameters: z.object({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      dataStructureId: z.number().min(1).describe('Data structure I<span class="fstat-no" title="function not covered" >D </span>to update'<span class="cstat-no" title="statement not covered" >),</span>
+      organizationId: z.number().min(1).optional().describe('Or<span class="fstat-no" title="function not covered" >ga</span>nization I<span class="cstat-no" title="statement not covered" >D (for scoped access)'),</span>
+      teamId: z.number().min(1).optional().describe('Team ID (for scoped access)'),
+      name: z.string().min(1).max(100).optional()<span class="fstat-no" title="function not covered" >.d</span>escribe('U<span class="cstat-no" title="statement not covered" >pdated structure name'),</span>
       description: z.string().max(500).optional().describe('Updated description'),
-      structure: z.object({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        schema: z.any().optional().describe('Updated JSON Schema de<span class="fstat-no" title="function not covered" >fi</span>nition'),<span class="cstat-no" title="statement not covered" ></span>
-        version: z.string().optional().describe('Updated schema<span class="fstat-no" title="function not covered" > v</span>ersion'),<span class="cstat-no" title="statement not covered" ></span>
-        format: z.enum(['json', 'xml', 'yaml', 'csv', 'custom']).optional().describe('Updated data format'),
-      }).optional().describe('Updated structure d<span class="fstat-no" title="function not covered" >ef</span>inition'),<span class="cstat-no" title="statement not covered" ></span>
+      structure: z.object({<span class="fstat-no" title="function not covered" ></span>
+        schema: z.any().<span class="cstat-no" title="statement not covered" >optional().describe('Updated JSON Schem<span class="fstat-no" title="function not covered" >a </span>definition'),</span>
+        version: z.string().<span class="cstat-no" title="statement not covered" >optional().describe('Updated schema version'),</span>
+        format: z.enum(['json', <span class="cstat-no" title="statement not covered" >'xml', 'yaml', 'csv', 'custom']).optiona</span>l().describe('Updated data format'),
+      }).optional().describe('Updated structure definition'),
       validation: z.object({
-        enabled: z.boolean().optional().describe('Enabl<span class="fstat-no" title="function not covered" >e/</span>disable validation'),
-        strict: z.boolea<span class="cstat-no" title="statement not covered" >n().optional().describe('Strict validat<span class="fstat-no" title="function not covered" >io</span>n mode'),</span>
-        rules: z.array(z.obj<span class="cstat-no" title="statement not covered" >ect({</span>
-          field: z.string().min(<span class="cstat-no" title="statement not covered" >1).describe('Field path'),</span>
-          type: z.enum(['required', 'format', 'range', 'custom']).describe('Rule type'),
+        enabled: z.boole<span class="cstat-no" title="statement not covered" >an().optiona</span>l().describe('Enable/disable validation'),
+        strict: z.boolean().optional().describe('Strict validation mode'),
+        rules: z.array(z.object({
+          field:<span class="cstat-no" title="statement not covered" > z.string().min(1).describe('Field path'),</span>
+          type: z.enum(['required', 'format', 'range'<span class="fstat-no" title="function not covered" >, </span>'custom'<span class="cstat-no" title="statement not covered" >]).describe('Rule type'),</span>
           parameters: z.any().optional().describe('Rule parameters'),
-          message: z.str<span class="cstat-no" title="statement not covered" >ing().descri</span>be('Error message'),
+          message: z.string().describe('Error message'),
         })).optional().describe('Updated validation rules'),
       }).optional().describe('Updated validation configuration'),
-      transforma<span class="cstat-no" title="statement not covered" >tion: z.object({</span>
-        enabled: z.boolean().optional().describe('Ena<span class="fstat-no" title="function not covered" >bl</span>e/disabl<span class="cstat-no" title="statement not covered" >e transformation'),</span>
+      transformation: z.object({
+        enabled: z.boolean().optional().describe('Enable/disable transformation'),
         mappings: z.array(z.object({
           source: z.string().describe('Source field path'),
           target: z.string().describe('Target field path'),
@@ -5154,25 +5154,25 @@ export function addNotification<span class="cstat-no" title="statement not cover
           field: z.string().describe('Field to filter'),
           operator: z.enum(['equals', 'contains', 'startsWith', 'endsWith', 'gt', 'lt', 'gte', 'lte', 'in', 'notIn']).describe('Filter operator'),
           value: z.unknown().describe('Filter value'),
-          caseSensitive: z.boolean().optional().describe('Case sensitive comparison'),
-        })).optional().describe('Updated filters'),
-      }).optional().describe('Updated transformation configuration'),
+          caseSensitive: z.boolean().<span class="cstat-no" title="statement not covered" >optional().describe('Case sensitive comparison'),</span>
+        })).opti<span class="cstat-no" title="statement not covered" >onal().describe('Updated filters'),</span>
+      }).optional().<span class="cstat-no" title="statement not covered" >describe('Updated transformation configuration'),</span>
     }),
-    annotations: {
-      title: 'Update Data Structure Configuration',
-      readOnlyHint: false,<span class="cstat-no" title="statement not covered" ></span>
-      destructiv<span class="cstat-no" title="statement not covered" >eHint: false,</span>
-      idempotentHint<span class="cstat-no" title="statement not covered" >: true, // Same updates produce same result</span>
+    annotations:<span class="cstat-no" title="statement not covered" > {</span>
+      title: 'Update<span class="cstat-no" title="statement not covered" > Data Structu</span>re Configuration',
+      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: false,</span>
+      destructiveHint: false,
+      idempotentHint: true, // Same updates produce same result
       openWorldHint: false, // Internal data structure management
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (<span class="cstat-no" title="statement not covered" >input, contex</span>t) =&gt; {
-      const { lo<span class="cstat-no" title="statement not covered" >g = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, report</span>Progress = () =&gt; {} } = context || {};
+<span class="cstat-no" title="statement not covered" >    },</span>
+    execute: async (input, context) =&gt; {
+      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
       const { dataStructureId, organizationId, teamId, name, description, structure, validation, transformation } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
-<span class="cstat-no" title="statement not covered" >        log.info('Updating data structure', {</span>
+        log.info('Updating data structure', {
           dataStructureId,
-<span class="cstat-no" title="statement not covered" >          organizationId,</span>
+          organizationId,
           teamId,
           updates: {
             name: !!name,
@@ -5617,7 +5617,7 @@ export default addNotificationTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

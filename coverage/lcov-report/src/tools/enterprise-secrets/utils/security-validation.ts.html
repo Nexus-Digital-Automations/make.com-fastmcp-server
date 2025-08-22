@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/137</span>
+                <span class='fraction'>0/133</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/135</span>
+                <span class='fraction'>0/131</span>
             </div>
         
             
@@ -389,9 +389,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -646,7 +643,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -710,264 +710,264 @@
  * Centralized security validation utilities for enterprise secrets management
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { SecurityPolicySchema } from '../schemas/index.js';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
+import { SecurityPolicySchema } from '../schemas/index.js';
+&nbsp;
+/**
  * Security validation results interface
  */
 export interface SecurityValidationResult {
   isValid: boolean;
-  violations: string[];
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
-  recommendations: string[];
-}<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Password policy validation re<span class="cstat-no" title="statement not covered" >sul</span>t
- */<span class="cstat-no" title="statement not covered" ></span>
-export inter<span class="cstat-no" title="statement not covered" >face PasswordPolicyResult {</span>
-  isValid: boolean;
-  violations: string[];
-  strength: <span class="cstat-no" title="statement not covered" >'weak' | 'fair' | 'good' | 'strong' | 'very-strong';</span>
+  vi<span class="fstat-no" title="function not covered" >ol</span>ations: string[];
+  riskLevel: 'low' | 'mediu<span class="cstat-no" title="statement not covered" >m' </span>| 'high' | 'critical';
+  recommendations: strin<span class="cstat-no" title="statement not covered" >g[];</span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Password policy validation result
+ */
+export inter<span class="cstat-no" title="statement not covered" >face PasswordPolicyResult {</span>
+  isValid: b<span class="cstat-no" title="statement not covered" >oolean;</span>
+  violations<span class="cstat-no" title="statement not covered" >: string[];</span>
+  strength: 'weak' | 'fair' | 'good' | 'strong' | 'very-strong';
+}<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 /**
- * Secur<span class="cstat-no" title="statement not covered" >ity validation utilities</span>
+ * Security validation utilities
  */
 export class SecurityValidator {
   /**
    * Validate security policy configuration
    */
   public static validateSecurityPolicy(config: unknown): SecurityValidationResult {
-    const violations: string[] = [];
-    let riskLevel: SecurityValidationResult['riskLevel'] = 'low';
-    const recommendations: string[] = [];
-<span class="fstat-no" title="function not covered" ></span>
-    try {<span class="cstat-no" title="statement not covered" ></span>
-      SecurityPolicySchema.par<span class="cstat-no" title="statement not covered" >se(config);</span>
+<span class="fstat-no" title="function not covered" >    co</span>nst violations: string[] = [];
+    let riskLevel: Security<span class="cstat-no" title="statement not covered" >Val</span>idationResult['riskLevel'] = 'low';
+    const recommendations: str<span class="cstat-no" title="statement not covered" >ing[] = [];</span>
+&nbsp;
+    try {
+      SecurityPolicySchema.parse(config);
     } catch (error) {
       violations.push('Invalid security policy configuration');
       riskLevel = 'high';
       recommendations.push('Review and correct security policy configuration');
     }
-&nbsp;
-    return {
-      isValid: violations.length === 0,
-      vi<span class="cstat-no" title="statement not covered" >olations,</span>
-      riskLe<span class="cstat-no" title="statement not covered" >vel,</span>
-      recommendations
-    };
-  }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  /**
+    return {<span class="cstat-no" title="statement not covered" ></span>
+      isValid: violations.length === 0,
+      violations,
+      ri<span class="cstat-no" title="statement not covered" >skLevel,</span>
+      recomm<span class="cstat-no" title="statement not covered" >endations</span>
+    };
+  }
+<span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
    * Validate password strength and policies
-   */<span class="cstat-no" title="statement not covered" ></span>
-  public sta<span class="cstat-no" title="statement not covered" >tic validatePassword(password: string, policy?: {</span>
-    minLength?: number;
+   */
+  public<span class="cstat-no" title="statement not covered" > static validatePassword(password: string, policy?: {</span>
+    minLengt<span class="cstat-no" title="statement not covered" >h?: number;</span>
     requireUppercase?: boolean;
-    requ<span class="cstat-no" title="statement not covered" >ireLowercase?: boolean;</span>
-    requireN<span class="cstat-no" title="statement not covered" >umbers?: boolean;</span>
-    requireSpecialChars?: boolean;
+    requireLowercase?: boolean;
+    requ<span class="cstat-no" title="statement not covered" >ireNumbers?: boolean;</span>
+    requireS<span class="cstat-no" title="statement not covered" >pecialChars?: boolean;</span>
     maxAge?: number;
-  }): Pa<span class="cstat-no" title="statement not covered" >sswordPolicyResult {</span>
-    const vi<span class="cstat-no" title="statement not covered" >olations: string[] = [];</span>
-    const defaultPolicy = {
+  }): PasswordPolicyResult {
+    const violations: str<span class="cstat-no" title="statement not covered" >ing[] = [];</span>
+    cons<span class="cstat-no" title="statement not covered" >t defaultPolicy = {</span>
       minLength: 12,
-      requireUppercase: t<span class="cstat-no" title="statement not covered" >rue,</span>
-      re<span class="cstat-no" title="statement not covered" >quireLowercase: true,</span>
+      requireUppercase: true,
+      requireLowercase: true,
       requireNumbers: true,
       requireSpecialChars: true,
       ...policy
     };
 &nbsp;
-    // Check minimum length
-    if (password.length &lt; defaultPolicy.minLength) {
+<span class="fstat-no" title="function not covered" >    //</span> Check minimum length
+    if (password.len<span class="cstat-no" title="statement not covered" >gt</span>h &lt; defaultPolicy.minLength) {
       violations.push(`Password must be at least ${defaultPolicy.minLength} characters long`);
-<span class="fstat-no" title="function not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // Check uppercase requirement
-    if (<span class="cstat-no" title="statement not covered" >defaultPolicy.requireUppercase &amp;&amp; !/[A-Z]/.test(password)) {</span>
-      violat<span class="cstat-no" title="statement not covered" >ions.push('P</span>assword must contain at least one uppercase letter');
     }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
+    // C<span class="cstat-no" title="statement not covered" >heck uppercase requirement</span>
+    if (defa<span class="cstat-no" title="statement not covered" >ultPolicy.re</span>quireUppercase &amp;&amp; !/[A-Z]/.test(password)) {
+      vi<span class="cstat-no" title="statement not covered" >olations.push('Password must contain at least one uppercase letter');</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     // C<span class="cstat-no" title="statement not covered" >heck lowercase requirement</span>
     if (defa<span class="cstat-no" title="statement not covered" >ultPolicy.re</span>quireLowercase &amp;&amp; !/[a-z]/.test(password)) {
-      violations.push('Password must contain at least one lowercase letter');
+      vi<span class="cstat-no" title="statement not covered" >olations.push('Password must contain at least one lowercase letter');</span>
     }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    // C<span class="cstat-no" title="statement not covered" >heck numbers requirement</span>
-    if (defa<span class="cstat-no" title="statement not covered" >ultPolicy.re</span>quireNumbers &amp;&amp; !/\d/.test(password)) {
-      vi<span class="cstat-no" title="statement not covered" >olations.push('Password must contain at least one number');</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+    // Check<span class="cstat-no" title="statement not covered" > numbers req</span>uirement
+    if (<span class="cstat-no" title="statement not covered" >defaultPolicy.requireNumbers &amp;&amp; !/\d/.test(password)) {</span>
+      violat<span class="cstat-no" title="statement not covered" >ions.push('P</span>assword must contain at least one number');
+    }
 <span class="cstat-no" title="statement not covered" ></span>
     // Check<span class="cstat-no" title="statement not covered" > special cha</span>racters requirement
     if (defaultPolicy.requireSpecialChars &amp;&amp; !/[!@#$%^&amp;*(),.?":{}|&lt;&gt;]/.test(password)) {
       vi<span class="cstat-no" title="statement not covered" >olations.push('Password must contain at least one special character');</span>
     }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    // Deter<span class="cstat-no" title="statement not covered" >mine strength</span>
+    cons<span class="cstat-no" title="statement not covered" >t strength = this.calculatePasswordStrength(password);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    retu<span class="cstat-no" title="statement not covered" >rn {</span>
+      isVali<span class="cstat-no" title="statement not covered" >d: violations.len</span>gth === 0,
+      vi<span class="cstat-no" title="statement not covered" >olations,</span>
+      strength
+    };
+  }
 &nbsp;
-    // D<span class="cstat-no" title="statement not covered" >etermine strength</span>
-    const st<span class="cstat-no" title="statement not covered" >rength = this.c</span>alculatePasswordStrength(password);
+  /*<span class="fstat-no" title="function not covered" >*</span>
+   * Calculate password str<span class="cstat-no" title="statement not covered" >eng</span>th score
+   */<span class="cstat-no" title="statement not covered" ></span>
+  private static calculatePasswo<span class="cstat-no" title="statement not covered" >rdS</span>trength(password: string): PasswordPolicyResult['strength'] {
+    let score = 0;
 <span class="cstat-no" title="statement not covered" ></span>
-    return {<span class="cstat-no" title="statement not covered" ></span>
-      is<span class="cstat-no" title="statement not covered" >Valid: violations.length === 0,</span>
-      violat<span class="cstat-no" title="statement not covered" >ions,</span>
-      st<span class="cstat-no" title="statement not covered" >rength</span>
-    };<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+    // Lengt<span class="cstat-no" title="statement not covered" >h scoring</span>
+    if (pass<span class="cstat-no" title="statement not covered" >word.length &gt;= 8) sc</span>ore += 1;
+    if (pass<span class="cstat-no" title="statement not covered" >word.length &gt;= 12) score += 1;</span>
+    if (password.length &gt;= 16) score += 1;
 &nbsp;
-  /**
-   * Calculate password strength score
-   */
-  pr<span class="fstat-no" title="function not covered" >iv</span>ate static calculatePasswordStrength(password: string): PasswordPolicyResult['strength'] {
-    let score = 0;<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // Length scoring<span class="cstat-no" title="statement not covered" ></span>
-    if (password.length &gt;= 8) score += 1;
-    if (<span class="cstat-no" title="statement not covered" >password.length &gt;= 12) score += 1;</span>
-    if (pass<span class="cstat-no" title="statement not covered" >word.length &gt;= 16) score += 1;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // Chara<span class="cstat-no" title="statement not covered" >cter variety scoring</span>
-    if (/[a-z]/.test(password)) score += 1;
-    if (/[A-Z]/.test(password)) score += 1;
-    if (<span class="cstat-no" title="statement not covered" >/\d/.test(password)) score += 1;</span>
-    if (/[!@<span class="cstat-no" title="statement not covered" >#$%^&amp;*(),.?":{}|&lt;&gt;]/.test(password)) score += 1;</span>
+    // C<span class="cstat-no" title="statement not covered" >haracter variety scoring</span>
+    if (/[a-<span class="cstat-no" title="statement not covered" >z]/.test(password)) score += 1;</span>
+    if (/[A-<span class="cstat-no" title="statement not covered" >Z]/.test(password)) </span>score += 1;
+    if (/\d/<span class="cstat-no" title="statement not covered" >.test(password)) score += 1;</span>
+    if (/[!@#$%^&amp;*(),.?":{}|&lt;&gt;]/.test(password)) score += 1;
 <span class="cstat-no" title="statement not covered" ></span>
     // Compl<span class="cstat-no" title="statement not covered" >exity scoring</span>
-    if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&amp;*])/.test(password)) score += 1;
+    if (/^(?<span class="cstat-no" title="statement not covered" >=.*[a-z])(?=.*[A-Z])(?</span>=.*\d)(?=.*[!@#$%^&amp;*])/.test(password)) score += 1;
 <span class="cstat-no" title="statement not covered" ></span>
-    // Retur<span class="cstat-no" title="statement not covered" >n strength based on score</span>
-    if (scor<span class="cstat-no" title="statement not covered" >e &lt;= 2) return 'weak';</span>
-    if (scor<span class="cstat-no" title="statement not covered" >e &lt;= 4) return 'fair';</span>
-    if (score &lt;= 6) return 'good';
-    if (score &lt;= 7) return 'strong';
-    retu<span class="cstat-no" title="statement not covered" >rn 'very-strong';</span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+    // Return strength based on score
+    if (score &lt;= 2) return 'weak';
+    if (<span class="cstat-no" title="statement not covered" >score &lt;= 4) return 'fair';</span>
+    if (scor<span class="cstat-no" title="statement not covered" >e &lt;= 6) return 'good';</span>
+    if (scor<span class="cstat-no" title="statement not covered" >e &lt;= 7) return 'strong</span>';
+    return '<span class="cstat-no" title="statement not covered" >very-strong';</span>
+  }
 <span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
+  /**
    * Validate API key format and strength
-   */<span class="cstat-no" title="statement not covered" ></span>
+   */
   public static validateApiKey(apiKey: string): SecurityValidationResult {
     const violations: string[] = [];
     let riskLevel: SecurityValidationResult['riskLevel'] = 'low';
     const recommendations: string[] = [];
 &nbsp;
     // Check minimum length (API keys should be at least 32 characters)
-    if (apiKey.length &lt; 32) {
-      violations.push('API key should be at least 32 characters long');
-      riskLevel = 'high';
-<span class="fstat-no" title="function not covered" ></span>      recommendations.push('Generate a longer API key for better security');
-    }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // Check for weak patterns<span class="cstat-no" title="statement not covered" ></span>
-    if (/^[0-9]+$/.test(apiKey)) {
-      violations.push('API key shou<span class="cstat-no" title="statement not covered" >ld not contain only numbers</span>');
-      ri<span class="cstat-no" title="statement not covered" >skLevel = 'high';</span>
-      recomm<span class="cstat-no" title="statement not covered" >endations.push('Use alphanumeric characters in API keys');</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    if (/^[a-zA-Z]+$/.test(apiKey)) {
-      violations.push('API key should not contain only letters');
-      ri<span class="cstat-no" title="statement not covered" >skLevel = 'medium';</span>
-      recommendations.push('Incl<span class="cstat-no" title="statement not covered" >ude numbers in API keys for better entropy');</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // Check for<span class="cstat-no" title="statement not covered" > common weak patterns</span>
-    if (/(.)\1{3<span class="cstat-no" title="statement not covered" >,}/.test(apiKey)) {</span>
-      violations<span class="cstat-no" title="statement not covered" >.push('API key contains repeated character patterns');</span>
-      riskLevel = 'medium';
-      recommendations.push('Avoid repeating character patterns in API keys');
+<span class="fstat-no" title="function not covered" >    if</span> (apiKey.length &lt; 32) {
+      violations.push('API <span class="cstat-no" title="statement not covered" >key</span> should be at least 32 characters long');
+      riskLevel = 'high'<span class="cstat-no" title="statement not covered" >;</span>
+      recommendations.push('Gene<span class="cstat-no" title="statement not covered" >rat</span>e a longer API key for better security');
     }
 <span class="cstat-no" title="statement not covered" ></span>
+    // C<span class="cstat-no" title="statement not covered" >heck for weak patterns</span>
+    if (/^[0<span class="cstat-no" title="statement not covered" >-9]+$/.test(apiKey)) {</span>
+      violat<span class="cstat-no" title="statement not covered" >ions.push('API key s</span>hould not contain only numbers');
+      riskLe<span class="cstat-no" title="statement not covered" >vel = 'high';</span>
+      recommendations.push('Use alphanumeric characters in API keys');
+    }
+<span class="cstat-no" title="statement not covered" ></span>
+    if (/^[a-zA-Z]+$/.test(apiKe<span class="cstat-no" title="statement not covered" >y)) {</span>
+      violations.push('API k<span class="cstat-no" title="statement not covered" >ey should not contain only let</span>ters');
+      riskLe<span class="cstat-no" title="statement not covered" >vel = 'medium';</span>
+      recommenda<span class="cstat-no" title="statement not covered" >tions.push('Include numbers in API keys for better entropy');</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    // Check for common weak patterns
+    if (/(.)\1{3,}/.test(apiKey)) {
+      violations.push('API key contains repeated character patterns');
+      ri<span class="cstat-no" title="statement not covered" >skLevel = 'medium';</span>
+      recommendations.push('Avoid <span class="cstat-no" title="statement not covered" >repeating character pa</span>tterns in API keys');
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
     return {<span class="cstat-no" title="statement not covered" ></span>
-      isVali<span class="cstat-no" title="statement not covered" >d: violations.length === 0,</span>
-      violations<span class="cstat-no" title="statement not covered" >,</span>
-      riskLevel,<span class="cstat-no" title="statement not covered" ></span>
-      recommenda<span class="cstat-no" title="statement not covered" >tions</span>
+      isValid: v<span class="cstat-no" title="statement not covered" >iolations.length === 0,</span>
+      violations,
+      riskLevel,
+      re<span class="cstat-no" title="statement not covered" >commendations</span>
     };
   }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   /**
    * Validate encryption configuration
    */
   public static validateEncryptionConfig(config: {
     algorithm?: string;
     keySize?: number;
-    mode?: string;
-  }): SecurityValidationResult {
-    const violations: string[] = [];
-<span class="fstat-no" title="function not covered" >    le</span>t riskLevel: SecurityValidationResult['riskLevel'] = 'low';
-    const recommendations: <span class="cstat-no" title="statement not covered" >str</span>ing[] = [];
+<span class="fstat-no" title="function not covered" >    mo</span>de?: string;
+  }): SecurityValidationRes<span class="cstat-no" title="statement not covered" >ult</span> {
+    const violations: st<span class="cstat-no" title="statement not covered" >ring[]</span> = [];
+    let riskLevel: SecurityValid<span class="cstat-no" title="statement not covered" >ati</span>onResult['riskLevel'] = 'low';
+    const recommendations: string[] = [];
 <span class="cstat-no" title="statement not covered" ></span>
     // Validate algorithm<span class="cstat-no" title="statement not covered" ></span>
-    const approvedAlgorithms = ['AES', 'ChaCha20', 'RSA'];
-    if (<span class="cstat-no" title="statement not covered" >config.algorithm &amp;&amp; !approvedAlgorithms.includes(config.algorithm)) {</span>
-      violations.push(`Encryption alg<span class="cstat-no" title="statement not covered" >orithm '${confi</span>g.algorithm}' is not approved`);
-      riskLe<span class="cstat-no" title="statement not covered" >vel = 'high';</span>
-      recommenda<span class="cstat-no" title="statement not covered" >tions.push(`Use approved algorithms: ${approvedAlgorithms.join(', '</span>)}`);
-    }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // Validate key size
-    if (config.keySize) {
-      const minKeySizes = { 'AES': 256, 'RSA': 2048, 'ChaCha20': 256 };
-      co<span class="cstat-no" title="statement not covered" >nst minSize = minKeySizes[config.algorithm as keyof typeof minKeySizes];</span>
-      <span class="cstat-no" title="statement not covered" ></span>
-      if (minSize &amp;&amp; config.keySize &lt;<span class="cstat-no" title="statement not covered" > minSize) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
-        viol<span class="cstat-no" title="statement not covered" >ations.push(`Key size ${config.keySize} is below minimum ${minSize} for ${config.algorithm}`);</span>
-        riskLeve<span class="cstat-no" title="statement not covered" >l = 'high';</span>
-        recommen<span class="cstat-no" title="statement not covered" >dations.push(`Use mi</span>nimum key size of ${minSize} bits for ${config.algorithm}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
+    const ap<span class="cstat-no" title="statement not covered" >provedAlgorithms = ['AES', 'ChaCha20', 'RSA'];</span>
+    if (config.a<span class="cstat-no" title="statement not covered" >lgorithm &amp;&amp; !approvedAlgorithms.includes(config.algorithm)) {</span>
+      violations<span class="cstat-no" title="statement not covered" >.push(`Encryption al</span>gorithm '${config.algorithm}' is not approved`);
+      riskLevel <span class="cstat-no" title="statement not covered" >= 'high';</span>
+      recommendations.push(`Use approved algorithms: ${approvedAlgorithms.join(', ')}`);
     }
 &nbsp;
-    // Validate mode for AES
-    if (<span class="cstat-no" title="statement not covered" >config.algorithm === 'AES' &amp;&amp; config.mode) {</span>
-      const <span class="cstat-no" title="statement not covered" >approvedModes = ['GCM', 'CBC', 'CTR'];</span>
-      if (!a<span class="cstat-no" title="statement not covered" >pprovedModes.includes(co</span>nfig.mode)) {
-        viol<span class="cstat-no" title="statement not covered" >ations.push(`AES mode '${config.mode}' is not recommended`);</span>
+    // V<span class="cstat-no" title="statement not covered" >alidate key size</span>
+    if (config.keySize) {<span class="cstat-no" title="statement not covered" ></span>
+      const minKeySizes = { 'AES': 25<span class="cstat-no" title="statement not covered" >6, 'RSA': 2048, 'ChaCha20':<span class="fstat-no" title="function not covered" > 2</span>56 };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+      const <span class="cstat-no" title="statement not covered" >minSize = minKeySizes[config.algorithm as keyof typeof minKeySizes];</span>
+      <span class="cstat-no" title="statement not covered" ></span>
+      if (minSiz<span class="cstat-no" title="statement not covered" >e &amp;&amp; config.keySize </span>&lt; minSize) {
+        violatio<span class="cstat-no" title="statement not covered" >ns.push(`Key size ${config.keySize} is below minimum ${minSize} for ${</span>config.algorithm}`);
+        riskLevel = 'high';
+        recommendations.push(`Use minimum key size of ${minSize} bits for ${config.algorithm}`);
+      }
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    // Valid<span class="cstat-no" title="statement not covered" >ate mode for AES</span>
+    if (conf<span class="cstat-no" title="statement not covered" >ig.algorithm === 'AES' &amp;&amp; config.mode) {</span>
+      const approvedModes = ['GCM', 'CBC', 'CTR'];
+      if<span class="cstat-no" title="statement not covered" > (!approvedModes.includes(config.mode)) {</span>
+        violations.push(`AES mode '${config.mode}' is not recommended`);
         riskLevel = 'medium';
-<span class="cstat-no" title="statement not covered" >        recommendations.push(`Use approved AES modes: ${approvedModes.join(', ')}`);</span>
+        recommendations.push(`Use approved AES modes: ${approvedModes.join(', ')}`);
       }
     }
 &nbsp;
     return {
       isValid: violations.length === 0,
       violations,
-      riskLevel,
-      recommendations
-    };
-  }<span class="fstat-no" title="function not covered" ></span>
+<span class="fstat-no" title="function not covered" ></span>      riskLevel,
+      recommendations<span class="cstat-no" title="statement not covered" ></span>
+    };<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Val<span class="cstat-no" title="statement not covered" >idate network security configuration</span>
+  /**
+   * Validate network security <span class="cstat-no" title="statement not covered" >configuration</span>
    */<span class="cstat-no" title="statement not covered" ></span>
-  public static validateNetworkConfig(config: {
-    tlsVersion?: string;<span class="cstat-no" title="statement not covered" ></span>
-    cipherSu<span class="cstat-no" title="statement not covered" >ites?: string[];</span>
-    certificateV<span class="cstat-no" title="statement not covered" >alidation?: boolean;</span>
-  }): SecurityValidationResult {
-    const violations: string[] = [];
+  public static <span class="cstat-no" title="statement not covered" >validateNetworkConfig(config: {</span>
+    tlsVersion?: string;
+    cipherSuites?: string[];
+    certificateValidation?: boolean;
+  }): SecurityValidationResult {<span class="cstat-no" title="statement not covered" ></span>
+    const violations: <span class="cstat-no" title="statement not covered" >string[] = [];</span>
     let riskLevel: SecurityValidationResult['riskLevel'] = 'low';
-    const recommendations: string<span class="cstat-no" title="statement not covered" >[] = [];</span>
+    const recommendations: string[] = [];
 <span class="cstat-no" title="statement not covered" ></span>
-    // Validate TLS version
-    if (config.tlsVersion) {
-      co<span class="cstat-no" title="statement not covered" >nst approvedVersions = ['1.2', '1.3'];</span>
-      if (!a<span class="cstat-no" title="statement not covered" >pprovedVersio</span>ns.includes(config.tlsVersion)) {
-        viola<span class="cstat-no" title="statement not covered" >tions.push(`TLS version ${config.tlsVersion} is not secure`);</span>
-        risk<span class="cstat-no" title="statement not covered" >Level = 'high</span>';
-        recom<span class="cstat-no" title="statement not covered" >mendations.push('Use TLS 1.2 or 1.3');</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
+    // Valid<span class="cstat-no" title="statement not covered" >ate TLS versi</span>on
+    if (confi<span class="cstat-no" title="statement not covered" >g.tlsVersion) {</span>
+      const <span class="cstat-no" title="statement not covered" >approvedVersi</span>ons = ['1.2', '1.3'];
+      if (!ap<span class="cstat-no" title="statement not covered" >provedVersions.includes(config.tlsVersion)) {</span>
+        viol<span class="cstat-no" title="statement not covered" >ations.push(`</span>TLS version ${config.tlsVersion} is not secure`);
+        riskL<span class="cstat-no" title="statement not covered" >evel = 'high';</span>
+        reco<span class="cstat-no" title="statement not covered" >mmendations.p</span>ush('Use TLS 1.2 or 1.3');
+      }
     }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
     // Validate cipher suites
-    if (conf<span class="cstat-no" title="statement not covered" >ig.cipherSuit</span>es) {
-      co<span class="cstat-no" title="statement not covered" >nst weakCiphers = ['RC4', 'DES', '3DES', 'MD5'];</span>
+    if (config.cipherSuites) {
+      const weakCiphers = ['RC4', 'DES', '3DES', 'MD5'];
       const foundWeakCiphers = config.cipherSuites.filter(cipher =&gt; 
         weakCiphers.some(weak =&gt; cipher.includes(weak))
       );
       
       if (foundWeakCiphers.length &gt; 0) {
         violations.push(`Weak cipher suites detected: ${foundWeakCiphers.join(', ')}`);
-<span class="cstat-no" title="statement not covered" >        riskLevel = 'high';</span>
+        riskLevel = 'high';
         recommendations.push('Remove weak cipher suites from configuration');
       }
     }
@@ -1033,7 +1033,7 @@ export class SecurityValidator {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

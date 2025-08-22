@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
@@ -309,20 +309,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -488,6 +476,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -550,69 +550,69 @@
  * Provides consistent error response structure with correlation tracking
  */
 &nbsp;
-import { randomUUID } <span class="cstat-no" title="statement not covered" >from 'crypto';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { MakeServerError, ErrorContext, UserError, EnhancedUser</span>Error, getErrorCode, getErrorStatusCode, getErrorCorrelationId } from './errors.js';
+import { randomUUID } from 'crypto';
+import { MakeServerError, ErrorContext, UserError, EnhancedUserError, getErrorCode, getErrorStatusCode, getErrorCorrelationId } from './errors.js';
 import logger from '../lib/logger.js';
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >export interface ErrorResponse {</span>
-<span class="cstat-no" title="statement not covered" >  error: {</span>
-<span class="cstat-no" title="statement not covered" >    message: string;</span>
-<span class="cstat-no" title="statement not covered" >    code: string;</span>
-<span class="cstat-no" title="statement not covered" >    statusCode: number;</span>
-<span class="cstat-no" title="statement not covered" >    correlationId: string;</span>
-<span class="cstat-no" title="statement not covered" >    timestamp: string;</span>
-    context?: Err<span class="cstat-no" title="statement not covered" >orContext;</span>
-    details?: Record<span class="cstat-no" title="statement not covered" >&lt;string, unknown&gt;;</span>
-    stack?: string;<span class="cstat-no" title="statement not covered" ></span>
-  };
-  success: false;
-}
 &nbsp;
-export in<span class="fstat-no" title="function not covered" >terface SuccessRespo</span>nse&lt;T = unknown&gt; {
-  data: T;<span class="cstat-no" title="statement not covered" ></span>
-  success: true;<span class="cstat-no" title="statement not covered" ></span>
+export interface ErrorResponse {
+  error: {
+    message: str<span class="fstat-no" title="function not covered" >ing;</span>
+    code: string;<span class="cstat-no" title="statement not covered" ></span>
+    statusCode: number;<span class="cstat-no" title="statement not covered" ></span>
+    correlationId: string;
+    timestamp: string;
+    context?: ErrorContext;
+    details?: Record&lt;string, unknown&gt;;
+<span class="cstat-no" title="statement not covered" >    stack?: string;</span>
+  };
+  success: false;<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+export interface SuccessResponse&lt;T = unknown&gt; {
+  data: T;
+  success: true;
   correlationId?: string;
   timestamp: string;
 }
 &nbsp;
-expo<span class="cstat-no" title="statement not covered" >rt type ApiResponse&lt;T = unknown&gt; = SuccessResponse&lt;T&gt; | ErrorResponse;</span>
-&nbsp;
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Forma<span class="cstat-no" title="statement not covered" >t error into standardized response structure</span>
+export type ApiResponse&lt;T = unknown&gt; = SuccessResponse&lt;T&gt; | ErrorResponse;
+<span class="cstat-no" title="statement not covered" ></span>
+/**
+ * Format error into standardized response structure
  * Now supports FastMCP UserError and maintains backward compatibility
  */
 export function formatErrorResponse(
-  error: Error | MakeServerError | UserError,
+  error: <span class="cstat-no" title="statement not covered" >Error | MakeServerError | UserError,</span>
   correlationId?: string
-): ErrorResponse {
-  const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
-  const componentLogger = logger.child({ 
-    component: 'ErrorResponseFormatter',
-    corr<span class="cstat-no" title="statement not covered" >elationId: errorCorrelationId</span>
-  });
-&nbsp;
+): ErrorResponse {<span class="cstat-no" title="statement not covered" ></span>
+  const errorCorrelationId <span class="cstat-no" title="statement not covered" >= correlationId || getErro</span>rCorrelationId(error) || randomUUID();
+  const componentLogger = logg<span class="cstat-no" title="statement not covered" >er.chi</span>ld({ 
+    component: 'ErrorRespo<span class="cstat-no" title="statement not covered" >nseFormatter',</span>
+    correlationId: error<span class="cstat-no" title="statement not covered" >CorrelationId</span>
+  });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   let formattedError: ErrorResponse['error'];
 &nbsp;
   if (error instanceof MakeServerError) {
-    // Us<span class="cstat-no" title="statement not covered" >e structured error information from MakeServerError</span>
+    // Use structured error information from MakeServerError
     const structured = error.toStructuredError();
-    formattedError = <span class="cstat-no" title="statement not covered" >{</span>
-      message: structured.m<span class="cstat-no" title="statement not covered" >essage,</span>
-      code: structured.code,<span class="cstat-no" title="statement not covered" ></span>
-      statusCode: structur<span class="cstat-no" title="statement not covered" >ed.statusCode,</span>
-      correlationId: str<span class="cstat-no" title="statement not covered" >uctured.correlationId,</span>
-      timestamp: structu<span class="cstat-no" title="statement not covered" >red.timestamp,</span>
-      co<span class="cstat-no" title="statement not covered" >ntext: structured.context,</span>
+    formattedError = {
+      message: structured.message,
+      code: structured.code,
+      statusCode: structured.statusCode,
+      co<span class="cstat-no" title="statement not covered" >rrelationId: structured.correlationId,</span>
+      timestamp: structured.timestamp,
+      context: structured.context,
       details: structured.details,
       stack: structured.stack,
     };
 &nbsp;
     componentLogger.error('Formatted MakeServerError', {
       code: structured.code,
-      statusCode: structured.statusCode,
+      st<span class="cstat-no" title="statement not covered" >atusCode: structured.statusCode,</span>
       correlationId: structured.correlationId,
     });
-  } else<span class="cstat-no" title="statement not covered" > if (error instanceof UserError) {</span>
+  } else if (error instanceof UserError) {
     // Handle FastMCP UserError
     const code = getErrorCode(error);
     const statusCode = getErrorStatusCode(error);
@@ -627,108 +627,108 @@ export function formatErrorResponse(
       statusCode,
       correlationId: errorCorrelationId,
       timestamp,
-      context,
+<span class="cstat-no" title="statement not covered" >      context,</span>
       details,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     };
 &nbsp;
     componentLogger.error('Formatted UserError', {
-      co<span class="cstat-no" title="statement not covered" >de,</span>
+      code,
       statusCode,
-      correlationId: errorCorrelationId,
-      userErrorMessage: error.message,
+      correlatio<span class="fstat-no" title="function not covered" >nId: errorCorrelationI</span>d,
+<span class="cstat-no" title="statement not covered" >      userErrorMessage: error.message,</span>
     });
   } else {
-<span class="cstat-no" title="statement not covered" >    // Handle generic Error objects</span>
+    // Handle generic Error objects
     formattedError = {
       message: error.message || 'Internal server error',
       code: 'UNKNOWN_ERROR',
       statusCode: 500,
       correlationId: errorCorrelationId,
       timestamp: new Date().toISOString(),
-      details: {
-        n<span class="fstat-no" title="function not covered" >ame: error.name,</span>
-<span class="cstat-no" title="statement not covered" >        originalMessage: error.message,</span>
-      },
+      details: {<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        nam<span class="fstat-no" title="function not covered" >e:</span> error.name,</span>
+        originalMessage: error<span class="cstat-no" title="statement not covered" >.message,</span>
+      },<span class="cstat-no" title="statement not covered" ></span>
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     };
 &nbsp;
     componentLogger.error('Formatted generic Error', {
-      code: 'UNKNOWN_ERROR',
-      correlationId: errorCorrelationId,
+      code: 'UNKNOWN_ERROR',<span class="cstat-no" title="statement not covered" ></span>
+      co<span class="cstat-no" title="statement not covered" >rrelationId: errorCorrelationId,</span>
       originalError: error.name,
     });
-  }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  return {<span class="cstat-no" title="statement not covered" ></span>
-    error: formattedError,<span class="cstat-no" title="statement not covered" ></span>
+  }
+&nbsp;
+  return {
+    erro<span class="cstat-no" title="statement not covered" >r: formattedError,</span>
     success: false,
   };
 }
 &nbsp;
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Forma<span class="cstat-no" title="statement not covered" >t successful response with correlation tracking</span>
- */
-export function formatSuccessResponse&lt;T&gt;(
-  data: T,
-  correlationId?: string
-): SuccessResponse&lt;T&gt; {
-  return<span class="cstat-no" title="statement not covered" > {</span>
+/**
+ * Format succes<span class="fstat-no" title="function not covered" >sful response with cor</span>relation tracking
+ */<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+export function formatSuccessR<span class="cstat-no" title="statement not covered" >esponse&lt;T&gt;(</span>
+  data: <span class="cstat-no" title="statement not covered" >T,</span>
+  correl<span class="cstat-no" title="statement not covered" >ationId?: string</span>
+): Succe<span class="cstat-no" title="statement not covered" >ssRespon</span>se&lt;T&gt; {
+  return {
     data,
     success: true,
     correlationId,
     timestamp: new Date().toISOString(),
   };
 }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Expre<span class="cstat-no" title="statement not covered" >ss middleware for handling errors w</span>ith correlation tracking
- */<span class="cstat-no" title="statement not covered" ></span>
-export f<span class="cstat-no" title="statement not covered" >unction </span>errorHandlerMiddleware() {
+ * Express middleware for handling errors with correlation tracking
+ */
+export function errorHandlerMiddleware() {
   return (error: Error, req: Record&lt;string, unknown&gt;, res: Record&lt;string, unknown&gt;): void =&gt; {
-    const correlationId = (req.correlationId as string) || (req.headers as Record&lt;string, string&gt;)?.['x-correlation-id'] || randomUUID();
-    
+    const correlationId = <span class="cstat-no" title="statement not covered" >(req.correlationId as string) || (req.headers a</span>s Record&lt;string, string&gt;)?.['x-correlation-id'] || randomUUID();
+    <span class="cstat-no" title="statement not covered" ></span>
     const componentLogger = logger.child({ 
       component: 'ErrorMiddleware',
       correlationId,
-      ope<span class="fstat-no" title="function not covered" >ration: `${req.method as</span> string} ${req.path as string}`,
-    });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    const errorResponse = formatErrorResponse(error, correlationId);
+      operation: `${req.method as string} ${req.path as string}`,
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    const errorResponse = formatErrorResponse(error</span>, correlationId);
 &nbsp;
     componentLogger.error('Request error handled', {
       method: req.method as string,
-      path: req.path as st<span class="cstat-no" title="statement not covered" >ring,</span>
-<span class="cstat-no" title="statement not covered" >      statusCode: errorResponse.error.statusCode,</span>
-      errorCode: errorResponse.error.code,
+      path: req.path as string,
+      statusCode<span class="fstat-no" title="function not covered" >: errorResponse.error.stat</span>usCode,
+      errorCode: errorRespon<span class="cstat-no" title="statement not covered" >se.error.code,</span>
     });
 &nbsp;
     (res as Record&lt;string, unknown&gt; &amp; { status: (code: number) =&gt; { json: (data: unknown) =&gt; void } }).status(errorResponse.error.statusCode).json(errorResponse);
   };
-}
+}<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
 /**
  * Correlation ID middleware for request tracking
  */
-export function correlationMiddleware() {
-  return <span class="fstat-no" title="function not covered" >(req: Record&lt;string, unkno</span>wn&gt;, res: Record&lt;string, unknown&gt;, next: () =&gt; void): void =&gt; {
-    const correlationId = (r<span class="cstat-no" title="statement not covered" >eq.headers as Record&lt;string, string&gt;)?.['x-correlation-id'] || randomUUID();</span>
+expo<span class="cstat-no" title="statement not covered" >rt function correlationMiddleware() {</span>
+  return (req: Record&lt;string, unknown&gt;, res: Record&lt;string, unknown&gt;, next: () =&gt; void): void =&gt; {
+    const correlationId = (req.headers as Record&lt;string, string&gt;)?.['x-correlation-id'] || randomUUID();
     req.correlationId = correlationId;
     (res as Record&lt;string, unknown&gt; &amp; { set: (key: string, value: string) =&gt; void }).set('X-Correlation-ID', correlationId);
-    next();
-  };
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+    next();<span class="fstat-no" title="function not covered" ></span>
+  };<span class="cstat-no" title="statement not covered" ></span>
+}
+&nbsp;
 /**
  * Helper function to create error responses for tools
  * Now supports FastMCP UserError and maintains backward compatibility
- */<span class="cstat-no" title="statement not covered" ></span>
+ */
 export function createToolErrorResponse(
   error: Error | MakeServerError | UserError,
   operation: string,
   correlationId?: string
-): string<span class="fstat-no" title="function not covered" > {</span>
-  co<span class="cstat-no" title="statement not covered" >nst errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();</span>
+): string {
+  const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
   const componentLogger = logger.child({ 
     component: 'ToolErrorHandler',
     operation,
@@ -793,7 +793,7 @@ export function extractCorrelationId(context: {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

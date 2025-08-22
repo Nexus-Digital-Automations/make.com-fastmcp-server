@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/9</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Functions</span>
                 <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/1</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
@@ -166,15 +166,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -223,7 +217,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -251,42 +251,42 @@
  * @version 1.0.0 (Extracted from scenarios.ts)
  */
 &nbsp;
-import { FastMCP } fro<span class="cstat-no" title="statement not covered" >m 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt MakeApiClient from '../../lib/make-api-client.js';</span>
+import { FastMCP } from 'fastmcp';
+import MakeApiClient from '../../lib/make-api-client.js';
 import logger from '../../lib/logger.js';
-<span class="cstat-no" title="statement not covered" >import { ToolContext, createToolContextLogger } from '../shared</span>/types/tool-context.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// Import individual<span class="cstat-no" title="statement not covered" > extracted tools</span>
-import {<span class="cstat-no" title="statement not covered" ></span>
+import { ToolContext, createToolContextLogger } from '../shared/types/tool-context.js';
+&nbsp;
+// Import individual extracted tools
+import {
   createListScenariosTools,
-  createGetScenario<span class="cstat-no" title="statement not covered" >Tool,</span>
+  createGetScenarioTool,
   createScenarioTool,
   createUpdateScenarioTool,
   createDeleteScenarioTool,
-  createCloneScenarioTool,
-} from './tools/index.js';
-&nbsp;
+  createCloneSce<span class="fstat-no" title="function not covered" >narioTool,</span>
+} from './tools/index.js';<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 /**
- * Add extracted scenario management tools to FastMCP server
+ * Add extracted scenari<span class="cstat-no" title="statement not covered" >o management tools to FastMCP server</span>
  * 
- * This f<span class="fstat-no" title="function not covered" >unction registers only the</span> first 7 tools extracted from the scenarios.ts
- * monolith, implementing th<span class="cstat-no" title="statement not covered" >e modular architecture pattern with dependency injection.</span>
- * <span class="cstat-no" title="statement not covered" ></span>
+ * This function registers only the first 7 tools extracted from the scenarios.ts
+ * monolith, implementing the modular architecture pattern with dependency injection.
+ * 
  * @param server - FastMCP server instance
- * @param apiClient - Ma<span class="cstat-no" title="statement not covered" >ke.com API client instance</span>
- */
-export function addExtractedScenarioTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ExtractedScenarioTools' });
-  
-  componentLogger.info('Adding extracted scenario management tools (modular architecture)');
+ * @<span class="cstat-no" title="statement not covered" >param apiClient - Make.com API client instance</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+export f<span class="cstat-no" title="statement not covered" >unction addExtractedScenarioTools(server: FastMCP, a</span>piClient: MakeApiClient): void {
+  const <span class="cstat-no" title="statement not covered" >componentLogger = logger.child({ component: 'Extr</span>actedScenarioTools' });
+  <span class="cstat-no" title="statement not covered" ></span>
+  compon<span class="cstat-no" title="statement not covered" >entLogger.info('Adding extracted scenario management to</span>ols (modular architecture)');
 <span class="cstat-no" title="statement not covered" ></span>
   // Cre<span class="cstat-no" title="statement not covered" >ate tool context with dependency injection</span>
-  const <span class="cstat-no" title="statement not covered" >toolContext: ToolContext = { </span>
-    serv<span class="cstat-no" title="statement not covered" >er, </span>
-    apiC<span class="cstat-no" title="statement not covered" >lient, </span>
-    logg<span class="cstat-no" title="statement not covered" >er: createToolContextLogger(componentLogger)</span>
-  };<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  const toolContext: ToolContext = { 
+    server, 
+    apiClient, 
+    logger: createToolContextLogger(componentLogger)
+  };
+&nbsp;
   // Register extracted tools
   try {
     server.addTool(createListScenariosTools(toolContext));
@@ -296,19 +296,19 @@ export function addExtractedScenarioTools(server: FastMCP, apiClient: MakeApiCli
     server.addTool(createDeleteScenarioTool(toolContext));
     server.addTool(createCloneScenarioTool(toolContext));
 &nbsp;
-    componentLogger.info('Extracted scenario tools added successfully', {
+    comp<span class="cstat-no" title="statement not covered" >onentLogger.info('Extracted scenario tools added successfully', {</span>
       toolCount: 6,
       tools: [
-        'list-scenarios',
+<span class="cstat-no" title="statement not covered" >        'list-scenari</span>os',
         'get-scenario', 
         'create-scenario',
-<span class="cstat-no" title="statement not covered" >        'update-scenario',</span>
+        'update-scenario',
         'delete-scenario',
         'clone-scenario'
-      ],<span class="cstat-no" title="statement not covered" ></span>
+      ],
       categories: ['CRUD', 'execution'],
       architecture: 'modular',
-<span class="cstat-no" title="statement not covered" >      extractionSource: 'scenarios.ts monolit</span>h'
+      extractionSource: 'scenarios.ts monolith'
     });
   } catch (error) {
     componentLogger.error('Failed to add extracted scenario tools', { 
@@ -325,7 +325,7 @@ export default addExtractedScenarioTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:41:57.059Z
+                at 2025-08-22T04:33:57.942Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
