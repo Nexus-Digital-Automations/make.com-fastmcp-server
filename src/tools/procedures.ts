@@ -239,7 +239,10 @@ const RemoteProcedureCreateSchema = z.object({
       interval: z.number().min(60).max(3600).default(300).describe('Health check interval in seconds'),
       endpoint: z.string().url().optional().describe('Health check endpoint'),
       expectedResponse: z.any().optional().describe('Expected health check response'),
-    }).default(() => ({})).describe('Health check configuration'),
+    }).default(() => ({
+      enabled: false,
+      interval: 300,
+    })).describe('Health check configuration'),
     alerts: z.array(z.object({
       type: z.enum(['failure_rate', 'response_time', 'availability', 'error_pattern']).describe('Alert type'),
       threshold: z.number().min(0).describe('Alert threshold'),
@@ -250,18 +253,34 @@ const RemoteProcedureCreateSchema = z.object({
       level: z.enum(['none', 'basic', 'detailed', 'verbose']).default('basic').describe('Logging level'),
       retentionDays: z.number().min(1).max(365).default(30).describe('Log retention in days'),
       includePayload: z.boolean().default(false).describe('Include request/response payload in logs'),
-    }).default(() => ({})).describe('Logging configuration'),
-  }).default(() => ({})).describe('Monitoring configuration'),
+    }).default(() => ({
+      level: 'basic' as const,
+      retentionDays: 30,
+      includePayload: false,
+    })).describe('Logging configuration'),
+  }).default(() => ({
+    healthCheck: { enabled: false, interval: 300 },
+    alerts: [],
+    logging: { level: 'basic' as const, retentionDays: 30, includePayload: false },
+  })).describe('Monitoring configuration'),
   security: z.object({
     rateLimiting: z.object({
       enabled: z.boolean().default(false).describe('Enable rate limiting'),
       maxRequests: z.number().min(1).default(100).describe('Maximum requests per window'),
       windowMs: z.number().min(1000).default(60000).describe('Rate limit window in milliseconds'),
-    }).default(() => ({})).describe('Rate limiting configuration'),
+    }).default(() => ({
+      enabled: false,
+      maxRequests: 100,
+      windowMs: 60000,
+    })).describe('Rate limiting configuration'),
     ipWhitelist: z.array(z.string()).optional().describe('IP whitelist for procedure access'),
     requiresApproval: z.boolean().default(false).describe('Require approval before execution'),
     encryptPayload: z.boolean().default(false).describe('Encrypt procedure payload'),
-  }).default(() => ({})).describe('Security configuration'),
+  }).default(() => ({
+    rateLimiting: { enabled: false, maxRequests: 100, windowMs: 60000 },
+    requiresApproval: false,
+    encryptPayload: false,
+  })).describe('Security configuration'),
 }).strict();
 
 const DeviceCreateSchema = z.object({
@@ -288,14 +307,22 @@ const DeviceCreateSchema = z.object({
       canExecute: z.boolean().default(false).describe('Can execute procedures'),
       supportedFormats: z.array(z.string()).default(['json']).describe('Supported data formats'),
       maxPayloadSize: z.number().min(1024).default(1048576).describe('Maximum payload size in bytes'),
-    }).default(() => ({})).describe('Device capabilities'),
+    }).default(() => ({
+      canReceive: true,
+      canSend: true,
+      canExecute: false,
+      supportedFormats: ['json'],
+      maxPayloadSize: 1048576,
+    })).describe('Device capabilities'),
     environment: z.object({
       os: z.string().optional().describe('Operating system'),
       version: z.string().optional().describe('OS/software version'),
       architecture: z.string().optional().describe('System architecture'),
       runtime: z.string().optional().describe('Runtime environment'),
       customProperties: z.record(z.string(), z.any()).default(() => ({})).describe('Custom device properties'),
-    }).default(() => ({})).describe('Device environment'),
+    }).default(() => ({
+      customProperties: {},
+    })).describe('Device environment'),
   }).describe('Device configuration'),
 }).strict();
 
@@ -307,12 +334,17 @@ const ProcedureExecuteSchema = z.object({
     timeout: z.number().min(1000).max(600000).optional().describe('Execution timeout in milliseconds'),
     retries: z.number().min(0).max(5).optional().describe('Number of retries on failure'),
     priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal').describe('Execution priority'),
-  }).default(() => ({})).describe('Execution options'),
+  }).default(() => ({
+    async: false,
+    priority: 'normal' as const,
+  })).describe('Execution options'),
   metadata: z.object({
     correlationId: z.string().optional().describe('Correlation ID for tracking'),
     source: z.string().optional().describe('Source of the execution request'),
     tags: z.record(z.string(), z.string()).default(() => ({})).describe('Execution tags for categorization'),
-  }).default(() => ({})).describe('Execution metadata'),
+  }).default(() => ({
+    tags: {},
+  })).describe('Execution metadata'),
 }).strict();
 
 /**

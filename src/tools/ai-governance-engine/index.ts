@@ -60,7 +60,16 @@ export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiCl
         throw new Error(result.error);
       }
       
-      return result.content || result.message || 'Compliance monitoring completed successfully';
+      // Handle content array properly for FastMCP compatibility
+      if (result.content && Array.isArray(result.content)) {
+        const textContent = result.content
+          .filter(item => item.type === 'text' && item.text)
+          .map(item => item.text)
+          .join('\n\n');
+        return textContent || result.message || 'Compliance monitoring completed successfully';
+      }
+      
+      return result.message || 'Compliance monitoring completed successfully';
     }
   });
 
@@ -91,7 +100,16 @@ export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiCl
         throw new Error(result.error);
       }
       
-      return result.content || result.message || 'Policy conflict analysis completed successfully';
+      // Handle content array properly for FastMCP compatibility
+      if (result.content && Array.isArray(result.content)) {
+        const textContent = result.content
+          .filter(item => item.type === 'text' && item.text)
+          .map(item => item.text)
+          .join('\n\n');
+        return textContent || result.message || 'Policy conflict analysis completed successfully';
+      }
+      
+      return result.message || 'Policy conflict analysis completed successfully';
     }
   });
 
@@ -122,7 +140,16 @@ export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiCl
         throw new Error(result.error);
       }
       
-      return result.content || result.message || 'Risk assessment completed successfully';
+      // Handle content array properly for FastMCP compatibility
+      if (result.content && Array.isArray(result.content)) {
+        const textContent = result.content
+          .filter(item => item.type === 'text' && item.text)
+          .map(item => item.text)
+          .join('\n\n');
+        return textContent || result.message || 'Risk assessment completed successfully';
+      }
+      
+      return result.message || 'Risk assessment completed successfully';
     }
   });
 
@@ -153,7 +180,16 @@ export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiCl
         throw new Error(result.error);
       }
       
-      return result.content || result.message || 'Automated remediation configured successfully';
+      // Handle content array properly for FastMCP compatibility
+      if (result.content && Array.isArray(result.content)) {
+        const textContent = result.content
+          .filter(item => item.type === 'text' && item.text)
+          .map(item => item.text)
+          .join('\n\n');
+        return textContent || result.message || 'Automated remediation configured successfully';
+      }
+      
+      return result.message || 'Automated remediation configured successfully';
     }
   });
 
@@ -184,7 +220,16 @@ export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiCl
         throw new Error(result.error);
       }
       
-      return result.content || result.message || 'Governance insights generated successfully';
+      // Handle content array properly for FastMCP compatibility
+      if (result.content && Array.isArray(result.content)) {
+        const textContent = result.content
+          .filter(item => item.type === 'text' && item.text)
+          .map(item => item.text)
+          .join('\n\n');
+        return textContent || result.message || 'Governance insights generated successfully';
+      }
+      
+      return result.message || 'Governance insights generated successfully';
     }
   });
 
@@ -215,7 +260,16 @@ export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiCl
         throw new Error(result.error);
       }
       
-      return result.content || result.message || 'Governance dashboard generated successfully';
+      // Handle content array properly for FastMCP compatibility
+      if (result.content && Array.isArray(result.content)) {
+        const textContent = result.content
+          .filter(item => item.type === 'text' && item.text)
+          .map(item => item.text)
+          .join('\n\n');
+        return textContent || result.message || 'Governance dashboard generated successfully';
+      }
+      
+      return result.message || 'Governance dashboard generated successfully';
     }
   });
 
@@ -246,7 +300,16 @@ export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiCl
         throw new Error(result.error);
       }
       
-      return result.content || result.message || 'Policy optimization completed successfully';
+      // Handle content array properly for FastMCP compatibility
+      if (result.content && Array.isArray(result.content)) {
+        const textContent = result.content
+          .filter(item => item.type === 'text' && item.text)
+          .map(item => item.text)
+          .join('\n\n');
+        return textContent || result.message || 'Policy optimization completed successfully';
+      }
+      
+      return result.message || 'Policy optimization completed successfully';
     }
   });
 

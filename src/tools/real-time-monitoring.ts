@@ -176,25 +176,63 @@ const RealTimeMonitoringSchema = z.object({
     enableDataFlowTracking: z.boolean().default(true).describe('Track data flow between modules'),
     enablePredictiveAnalysis: z.boolean().default(false).describe('Enable predictive performance analysis'),
     enableSSEStreaming: z.boolean().default(true).describe('Enable Server-Sent Events streaming'),
-  }).default({}),
+  }).default(() => ({
+    updateInterval: 1000,
+    monitorDuration: 60000,
+    enableProgressVisualization: true,
+    enablePerformanceAlerts: true,
+    enableDataFlowTracking: true,
+    enablePredictiveAnalysis: false,
+    enableSSEStreaming: true,
+  })),
   alertThresholds: z.object({
     performance: z.object({
       maxModuleDuration: z.number().min(1000).default(60000).describe('Maximum acceptable module duration (ms)'),
       maxTotalDuration: z.number().min(5000).default(300000).describe('Maximum acceptable total duration (ms)'),
       minThroughput: z.number().min(0.1).default(1.0).describe('Minimum acceptable throughput (ops/sec)'),
       maxErrorRate: z.number().min(0).max(1).default(0.1).describe('Maximum acceptable error rate (0-1)'),
-    }).default({}),
+    }).default(() => ({
+      maxModuleDuration: 10000,
+      maxTotalDuration: 60000,
+      minThroughput: 10,
+      maxErrorRate: 0.1,
+    })),
     resource: z.object({
       maxMemoryUsage: z.number().min(0).max(1).default(0.8).describe('Maximum memory usage threshold (0-1)'),
       maxCpuUsage: z.number().min(0).max(1).default(0.8).describe('Maximum CPU usage threshold (0-1)'),
       maxNetworkLatency: z.number().min(100).default(2000).describe('Maximum network latency threshold (ms)'),
-    }).default({}),
+    }).default(() => ({
+      maxMemoryUsage: 0.8,
+      maxCpuUsage: 0.8,
+      maxNetworkLatency: 2000,
+    })),
     execution: z.object({
       maxStuckTime: z.number().min(5000).default(30000).describe('Maximum time module can be stuck (ms)'),
       maxRetries: z.number().min(1).default(3).describe('Maximum retry attempts before alert'),
       minSuccessRate: z.number().min(0).max(1).default(0.95).describe('Minimum success rate threshold (0-1)'),
-    }).default({}),
-  }).default({}),
+    }).default(() => ({
+      maxStuckTime: 30000,
+      maxRetries: 3,
+      minSuccessRate: 0.95,
+    })),
+  }).default(() => ({
+    performance: {
+      maxModuleDuration: 60000,
+      maxTotalDuration: 300000,
+      minThroughput: 1.0,
+      maxErrorRate: 0.1,
+    },
+    resource: {
+      maxMemoryUsage: 0.8,
+      maxCpuUsage: 0.8,
+      maxNetworkLatency: 2000,
+    },
+    execution: {
+      maxStuckTime: 30000,
+      maxRetries: 3,
+      minSuccessRate: 0.95,
+    },
+  })),
   visualization: z.object({
     format: z.enum(['ascii', 'structured', 'compact']).default('structured').describe('Visualization format'),
     colorEnabled: z.boolean().default(true).describe('Enable color coding in visualization'),
@@ -202,7 +240,14 @@ const RealTimeMonitoringSchema = z.object({
     includeDataFlow: z.boolean().default(true).describe('Include data flow visualization'),
     includeTimeline: z.boolean().default(true).describe('Include execution timeline'),
     includePredictions: z.boolean().default(false).describe('Include predictive analysis'),
-  }).default({}),
+  }).default(() => ({
+    format: 'structured' as const,
+    colorEnabled: true,
+    includeMetrics: true,
+    includeDataFlow: true,
+    includeTimeline: true,
+    includePredictions: false,
+  })),
 }).strict();
 
 const StopMonitoringSchema = z.object({

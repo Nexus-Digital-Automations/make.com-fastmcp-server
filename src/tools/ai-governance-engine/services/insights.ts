@@ -389,7 +389,7 @@ export class InsightsService {
     const insights: GovernanceInsight[] = [];
 
     for (const type of types) {
-      const typeInsights = await this.generateInsightsForType(type, _data, context);
+      const typeInsights = await this.generateInsightsForType(type, data, context);
       insights.push(...typeInsights);
     }
 

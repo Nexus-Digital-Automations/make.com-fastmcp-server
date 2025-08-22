@@ -56,7 +56,7 @@ export function validateInput<T>(
     };
   } catch (error) {
     if (error instanceof ZodError) {
-      const validationErrors: ValidationError[] = error.errors.map(err => ({
+      const validationErrors: ValidationError[] = error.issues.map((err: any) => ({
         field: err.path.join('.') || 'root',
         message: err.message,
         code: err.code,

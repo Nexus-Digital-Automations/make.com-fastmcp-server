@@ -38,7 +38,13 @@ export const StreamLiveExecutionSchema = z.object({
     includePerformanceMetrics: z.boolean().default(true).describe('Include real-time performance metrics'),
     includeModuleDetails: z.boolean().default(true).describe('Include detailed module information'),
     trackProgress: z.boolean().default(true).describe('Track execution progress'),
-  }).default({}),
+  }).default(() => ({
+    updateIntervalMs: 1000,
+    maxDuration: 300000,
+    includePerformanceMetrics: true,
+    includeModuleDetails: true,
+    trackProgress: true,
+  })),
   alerts: z.object({
     enabled: z.boolean().default(true).describe('Enable alerts'),
     errorThreshold: z.number().min(1).max(10).default(3).describe('Number of errors before alert'),
@@ -46,12 +52,22 @@ export const StreamLiveExecutionSchema = z.object({
     moduleFailureAlert: z.boolean().default(true).describe('Alert on module failures'),
     executionTimeAlert: z.boolean().default(true).describe('Alert on execution time issues'),
     customThresholds: z.record(z.string(), z.number()).optional().describe('Custom alert thresholds'),
-  }).default({}),
+  }).default(() => ({
+    enabled: false,
+    errorThreshold: 0.1,
+    performanceThreshold: 0.8,
+    moduleFailureAlert: true,
+    executionTimeAlert: true,
+  })),
   output: z.object({
     format: z.enum(['json', 'structured', 'streaming']).default('structured').describe('Output format'),
     includeVisualization: z.boolean().default(true).describe('Include ASCII visualization of execution flow'),
     realTimeUpdate: z.boolean().default(true).describe('Enable real-time updates'),
-  }).default({}),
+  }).default(() => ({
+    format: 'structured' as const,
+    includeVisualization: true,
+    realTimeUpdate: true,
+  })),
 }).strict();
 
 export const QueryLogsByTimeRangeSchema = z.object({
@@ -77,14 +93,24 @@ export const QueryLogsByTimeRangeSchema = z.object({
     excludeSuccess: z.boolean().default(false).describe('Exclude successful operations from results'),
     includeMetrics: z.boolean().default(true).describe('Include performance metrics in results'),
     correlationIds: z.array(z.string()).optional().describe('Filter by correlation IDs'),
-  }).default({}),
+  }).default(() => ({
+    logLevels: ['info', 'warn', 'error'] as const,
+    errorCodesOnly: false,
+    excludeSuccess: false,
+    includeMetrics: true,
+  })),
   pagination: z.object({
     limit: z.number().min(1).max(5000).default(100).describe('Maximum number of logs to return'),
     offset: z.number().min(0).default(0).describe('Number of logs to skip'),
     sortBy: z.enum(['timestamp', 'level', 'module', 'duration', 'operations', 'dataSize']).default('timestamp').describe('Sort field'),
     sortOrder: z.enum(['asc', 'desc']).default('desc').describe('Sort order'),
     cursor: z.string().optional().describe('Cursor for pagination continuation'),
-  }).default({}),
+  }).default(() => ({
+    limit: 100,
+    offset: 0,
+    sortBy: 'timestamp' as const,
+    sortOrder: 'desc' as const,
+  })),
   aggregation: z.object({
     enabled: z.boolean().default(false).describe('Enable log aggregation and analytics'),
     groupBy: z.enum(['level', 'module', 'hour', 'day', 'execution', 'scenario', 'errorCode']).optional().describe('Group logs by field'),
@@ -92,14 +118,26 @@ export const QueryLogsByTimeRangeSchema = z.object({
     includeTimeDistribution: z.boolean().default(true).describe('Include time-based distribution analysis'),
     includePerformanceAnalysis: z.boolean().default(true).describe('Include performance trend analysis'),
     includeErrorAnalysis: z.boolean().default(true).describe('Include error pattern analysis'),
-  }).default({}),
+  }).default(() => ({
+    enabled: false,
+    includeStats: true,
+    includeTimeDistribution: true,
+    includePerformanceAnalysis: true,
+    includeErrorAnalysis: true,
+  })),
   analysis: z.object({
     performanceTrends: z.boolean().default(false).describe('Analyze performance trends over time'),
     errorPatterns: z.boolean().default(false).describe('Detect error patterns and root causes'),
     usageMetrics: z.boolean().default(false).describe('Calculate resource usage metrics'),
     executionFlow: z.boolean().default(false).describe('Analyze execution flow patterns'),
     anomalyDetection: z.boolean().default(false).describe('Detect anomalous execution patterns'),
-  }).default({}),
+  }).default(() => ({
+    performanceTrends: false,
+    errorPatterns: false,
+    usageMetrics: false,
+    executionFlow: false,
+    anomalyDetection: false,
+  })),
   export: z.object({
     format: z.enum(['json', 'csv', 'excel', 'pdf']).optional().describe('Export format for results'),
     includeCharts: z.boolean().default(false).describe('Include data visualization charts'),

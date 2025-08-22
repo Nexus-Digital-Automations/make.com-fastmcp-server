@@ -159,7 +159,10 @@ const SDKAppInstallSchema = z.object({
   permissions: z.object({
     autoGrant: z.boolean().default(false).describe('Automatically grant requested permissions'),
     restrictions: z.record(z.string(), z.any()).default({}).describe('Permission restrictions'),
-  }).default({}).describe('Permission settings'),
+  }).default(() => ({
+    autoGrant: false,
+    restrictions: {},
+  })).describe('Permission settings'),
   autoUpdate: z.boolean().default(true).describe('Enable automatic updates'),
   skipValidation: z.boolean().default(false).describe('Skip compatibility validation'),
 }).strict();

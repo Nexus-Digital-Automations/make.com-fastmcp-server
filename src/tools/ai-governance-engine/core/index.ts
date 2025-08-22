@@ -590,7 +590,7 @@ export class AIGovernanceManager {
         success: true,
         message: result.message,
         data: {
-          optimizedPolicies: result.data.optimizedPolicies.map(opt => opt.optimizedPolicy || opt.title || 'Unknown Policy'),
+          optimizedPolicies: result.data.optimizedPolicies.map(opt => opt.policyId || 'Unknown Policy'),
           impactAnalysis: typeof result.data.impactAnalysis === 'string' ? result.data.impactAnalysis : result.data.impactAnalysis?.businessImpact || 'Impact analysis completed',
           recommendations: result.data.recommendations,
           estimatedImprovement: result.data.confidenceScore || 75,
@@ -599,7 +599,11 @@ export class AIGovernanceManager {
       };
     }
     
-    return result;
+    return {
+      success: false,
+      message: result.message || 'Policy optimization failed',
+      errors: result.errors || ['Unknown error occurred'],
+    };
   }
 
   async shutdown(): Promise<void> {

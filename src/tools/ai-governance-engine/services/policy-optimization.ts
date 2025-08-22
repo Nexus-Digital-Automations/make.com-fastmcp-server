@@ -562,7 +562,11 @@ export class PolicyOptimizationService {
 
     if (bestSimulation) {
       recommendations.add(`Recommended approach: ${bestSimulation.scenario}`);
-      recommendations.add(...bestSimulation.recommendations);
+      if (Array.isArray(bestSimulation.recommendations)) {
+        bestSimulation.recommendations.forEach((rec: string) => recommendations.add(rec));
+      } else if (bestSimulation.recommendations) {
+        recommendations.add(String(bestSimulation.recommendations));
+      }
     }
 
     // General recommendations
