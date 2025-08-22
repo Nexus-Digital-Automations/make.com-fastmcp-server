@@ -202,7 +202,16 @@ class BlueprintCollaborationEngine {
     reviewRequirements: string[];
     migrationGuide?: string;
   }> {
-    return this.versionManager.createVersion(blueprintId, options);
+    const versionOptions = options as {
+      branchName: string;
+      versionType: string;
+      changeDescription: string;
+      tags: string[];
+      basedOnVersion?: string;
+      includeOptimizations: boolean;
+      performanceAnalysis: boolean;
+    };
+    return this.versionManager.createVersion(blueprintId, versionOptions);
   }
 
   async createCollaborationSession(blueprintId: string, _options: unknown): Promise<CollaborationSession> {
@@ -213,7 +222,13 @@ class BlueprintCollaborationEngine {
       versionId: 'latest',
       activeUsers: [],
       lockStatus: { isLocked: false, lockType: 'read' },
-      conflictResolution: { enabled: true, strategy: 'automatic' },
+      conflictResolution: {
+        hasConflicts: false,
+        conflicts: [],
+        resolutionStrategy: 'auto',
+        resolutionStatus: 'resolved',
+        aiSuggestions: []
+      },
       lastActivity: new Date().toISOString(),
       sessionType: 'editing',
       permissions: { canEdit: true, canReview: true, canMerge: false, canResolveConflicts: false, canManageUsers: false }
@@ -224,7 +239,27 @@ class BlueprintCollaborationEngine {
     resolutionResults: ResolutionResult[];
     resolvedBlueprint: ResolvedBlueprint;
   }> {
-    return this.conflictResolver.resolveConflicts(blueprintId, options);
+    const sessionId = `session_${Date.now()}_${blueprintId}`;
+    const conflictResolution: ConflictResolution = {
+      hasConflicts: true,
+      conflicts: [],
+      resolutionStrategy: 'auto',
+      resolutionStatus: 'pending',
+      aiSuggestions: []
+    };
+    const resolveOptions = options as {
+      resolutionStrategy: string;
+      conflictResolutions: Array<{
+        conflictId: string;
+        resolution: string;
+        customResolution?: unknown;
+        reasoning?: string;
+      }>;
+      preserveUserIntent: boolean;
+      validateResult: boolean;
+      createBackup: boolean;
+    };
+    return this.conflictResolver.resolveConflicts(sessionId, conflictResolution, resolveOptions);
   }
 
   async analyzeDependencies(blueprintId: string, options: unknown): Promise<DependencyAnalysisResult & {
