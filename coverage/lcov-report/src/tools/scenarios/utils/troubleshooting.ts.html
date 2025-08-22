@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">7.69% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/108</span>
+                <span class='fraction'>9/117</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">7.75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/107</span>
+                <span class='fraction'>9/116</span>
             </div>
         
             
@@ -565,9 +565,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -887,16 +897,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1060,61 +1060,61 @@
 &nbsp;
 import { TroubleshootingReportData, PerformanceAnalysisResult } from '../types/report.js';
 &nbsp;
-// Type definiti<span class="fstat-no" title="function not covered" >ons for troublesho</span>oting utilities
-export interface ScenarioAna<span class="cstat-no" title="statement not covered" >lysis {</span>
-  scenarioId: string;<span class="cstat-no" title="statement not covered" ></span>
-  scenarioName: string;<span class="cstat-no" title="statement not covered" ></span>
-  diagnosticReport: Troubles<span class="cstat-no" title="statement not covered" >ho</span>otingReportData;
-  performanceAnalysis?<span class="cstat-no" title="statement not covered" >: </span>PerformanceAnalysisResult;
-  errors: string[];<span class="cstat-no" title="statement not covered" ></span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-export interface Consolidat<span class="cstat-no" title="statement not covered" >edFindings</span> {
-  to<span class="cstat-no" title="statement not covered" >talScenarios: num<span class="fstat-no" title="function not covered" >be</span>r;</span>
-  health<span class="cstat-no" title="statement not covered" >yScenarios: number;</span>
-  warningSce<span class="cstat-no" title="statement not covered" >narios: </span>number;
-  criticalScenarios: nu<span class="cstat-no" title="statement not covered" >mber;</span>
-  totalI<span class="cstat-no" title="statement not covered" >ssues: number;</span>
-  criticalIs<span class="cstat-no" title="statement not covered" >sues: number;</span>
-  securityRis<span class="cstat-no" title="statement not covered" >kLevel: string;</span>
-  commonIssu<span class="cstat-no" title="statement not covered" >es: Array&lt;{</span>
-    category:<span class="cstat-no" title="statement not covered" > string;</span>
-    title: s<span class="cstat-no" title="statement not covered" >tring;</span>
-    count: number;<span class="cstat-no" title="statement not covered" ></span>
-    seve<span class="cstat-no" title="statement not covered" >rity: string;<span class="fstat-no" title="function not covered" ></span></span>
-    affected<span class="cstat-no" title="statement not covered" >Scenarios: stri</span>ng[];
+// Type definitions for troubleshooting utilities
+export interface ScenarioAnalysis {
+  scenarioId: string;
+  scenarioName: string;
+  diagnosticReport: TroubleshootingReportData;
+  performanceAnalysis?: PerformanceAnalysisResult;
+  errors: string[];
+}
+&nbsp;
+export interface ConsolidatedFindings {
+  totalSc<span class="fstat-no" title="function not covered" >enarios: number;</span>
+  healthyScenarios: number;<span class="cstat-no" title="statement not covered" ></span>
+  warningScenarios: number;<span class="cstat-no" title="statement not covered" ></span>
+  criticalScenarios: number<span class="cstat-no" title="statement not covered" >;</span>
+  totalIssues: number;<span class="cstat-no" title="statement not covered" ></span>
+  criticalIssues: numb<span class="cstat-no" title="statement not covered" >er</span>;
+  securityRiskLevel: stri<span class="cstat-no" title="statement not covered" >ng</span>;
+  commonIssues: Array&lt;{<span class="cstat-no" title="statement not covered" ></span>
+    category: string;<span class="cstat-no" title="statement not covered" ></span>
+    title: string;<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    count: number;<span class="fstat-no" title="function not covered" ></span></span>
+    seve<span class="cstat-no" title="statement not covered" >rity: string;</span>
+    affected<span class="cstat-no" title="statement not covered" >Scenario</span>s: string[];
   }&gt;;<span class="cstat-no" title="statement not covered" ></span>
-  securitySummar<span class="cstat-no" title="statement not covered" >y: {</span>
-    totalSecurityIssues: number;
-    criticalSecurityIssues: number;
-    commonSe<span class="cstat-no" title="statement not covered" >curityIssues: string[];</span>
+  securi<span class="cstat-no" title="statement not covered" >tySummary: {</span>
+    totalSec<span class="cstat-no" title="statement not covered" >urityIssues: number;</span>
+    criticalS<span class="cstat-no" title="statement not covered" >ecurityIssues: number;</span>
+    commonSe<span class="cstat-no" title="statement not covered" >curityIssues: string</span>[];
   };<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-export interface<span class="cstat-no" title="statement not covered" > SystemOverview {</span>
-  systemHealthScore:<span class="cstat-no" title="statement not covered" > number;</span>
-  performanceStatus: {
-    overall: string;
-    trends: string[];<span class="cstat-no" title="statement not covered" ></span>
-    bottlene<span class="cstat-no" title="statement not covered" >cks: string[];</span>
+export i<span class="cstat-no" title="statement not covered" >nterface SystemOvervi<span class="fstat-no" title="function not covered" >ew</span> {</span>
+  systemHeal<span class="cstat-no" title="statement not covered" >thScore: number</span>;
+  performanc<span class="cstat-no" title="statement not covered" >eStatus: {</span>
+    overall: str<span class="cstat-no" title="statement not covered" >ing;</span>
+    trends: string[];
+    bottlenecks: string[];
   };<span class="cstat-no" title="statement not covered" ></span>
   riskAssessment<span class="cstat-no" title="statement not covered" >: {</span>
     level: strin<span class="cstat-no" title="statement not covered" >g;</span>
-    factors: string[];
-    mitigations: string[];
+    factors: string[<span class="cstat-no" title="statement not covered" >];</span>
+    mitigations:<span class="cstat-no" title="statement not covered" > string[];</span>
   };<span class="cstat-no" title="statement not covered" ></span>
   resourceUtilization: {
     cpu: number;
-    memory: number;
-    network: number;
-  };
-}
-&nbsp;
+    memory: number;<span class="cstat-no" title="statement not covered" ></span>
+    network:<span class="cstat-no" title="statement not covered" > number;</span>
+  };<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 export interface ActionPlan {
   immediate: Array&lt;{
-    priority: string;<span class="cstat-no" title="statement not covered" ></span>
+    priority: st<span class="cstat-no" title="statement not covered" >ring;</span>
     action: string;
-<span class="cstat-no" title="statement not covered" >    description: string;</span>
+    description: string;
     estimatedTime: string;
     estimatedImpact: string;
   }&gt;;
@@ -1122,9 +1122,9 @@ export interface ActionPlan {
     priority: string;
     action: string;
     description: string;
-    estimatedTime: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    estimatedTime: string;<span class="cstat-no" title="statement not covered" ></span>
     estimatedImpact: string;
-  }&gt;;
+  }&gt;<span class="cstat-no" title="statement not covered" >;</span>
   longTerm: Array&lt;{
     priority: string;
     action: string;
@@ -1132,37 +1132,37 @@ export interface ActionPlan {
     estimatedTime: string;
     estimatedImpact: string;
   }&gt;;
-}
-<span class="fstat-no" title="function not covered" ></span>
-export interface CostAnal<span class="cstat-no" title="statement not covered" >ysisReport {</span>
-  currentMont<span class="fstat-no" title="function not covered" >hl</span>yEs<span class="cstat-no" title="statement not covered" >timate: number;</span>
-  optimizationPo<span class="fstat-no" title="function not covered" >te</span>ntial: <span class="cstat-no" title="statement not covered" >number;</span>
-  breakdownByCategory: Record&lt;<span class="cstat-no" title="statement not covered" >string, number&gt;;</span>
-  recommendations: Array&lt;{<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
+export interface CostAnalysisReport {
+  currentMonthlyEstimate: number;
+  optimizationPotential: number;
+  breakdownByCategory: Record&lt;string, number&gt;;
+  recommendations: Array&lt;{
     action: string;
-    estimatedSavings: number;<span class="cstat-no" title="statement not covered" ></span>
+    estimatedSavings: number;
     complexity: string;
   }&gt;;
-}
-&nbsp;
-/**
- * Aggregate finding<span class="fstat-no" title="function not covered" >s </span>fro<span class="cstat-no" title="statement not covered" >m multiple scenario analyses</span>
- */<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFindings {
+}<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+ * Aggregate fin<span class="fstat-no" title="function not covered" >di</span>ngs fro<span class="cstat-no" title="statement not covered" >m multiple</span> scenario analyses
+ */<span class="cstat-no" title="statement not covered" ></span>
+export function aggregateFindings(analyse<span class="fstat-no" title="function not covered" >s:</span> ScenarioAnaly<span class="cstat-no" title="statement not covered" >sis[]): Cons</span>olidatedFindings {
   const commonIssuesMap = new Map&lt;string, {
-    category: string;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-    title: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >    count: number;</span>
+    category: string;<span class="cstat-no" title="statement not covered" ></span>
+    title: string;
+    count: number;
     severity: string;
     affectedScenarios: string[];
   }&gt;();
-&nbsp;
-  let healthyScenarios = 0;
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  let healthyScen<span class="fstat-no" title="function not covered" >ar</span>ios<span class="cstat-no" title="statement not covered" > = 0;</span>
   let warningScenarios = 0;
   let criticalScenarios = 0;
-  let totalIssues = 0;
-  let criticalIssues = 0;
-  let totalSecurityIssues = 0;
+  let totalIssues = 0;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  let criticalIssues = 0<span class="fstat-no" title="function not covered" >;<span class="cstat-no" title="statement not covered" ></span></span>
+  le<span class="cstat-no" title="statement not covered" >t totalSecurityIssues = 0;</span>
   let criticalSecurityIssues = 0;
   const securityIssues = new Set&lt;string&gt;();
 &nbsp;
@@ -1170,20 +1170,20 @@ export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFin
     if (!analysis.diagnosticReport) return;
 &nbsp;
     const health = analysis.diagnosticReport.overallHealth;
-    if (health =<span class="fstat-no" title="function not covered" >== 'healthy') healt</span>hyScenarios++;
-    else if (health ==<span class="cstat-no" title="statement not covered" >= '</span>warning') warningScenarios++;
-    else if (health ==<span class="cstat-no" title="statement not covered" >= '</span>critical') criticalScenarios++;
-<span class="cstat-no" title="statement not covered" ></span>
+    if (health === 'healthy') healthyScenarios++;
+    else if (health === 'warning') warningScenarios++;
+    else if (health === 'critical') criticalScenarios++;
+&nbsp;
     const diagnostics = (analysis.diagnosticReport as { diagnostics?: Array&lt;{ 
-<span class="cstat-no" title="statement not covered" >      severity?: string; </span>
-      ca<span class="cstat-no" title="statement not covered" >tegory?: string; </span>
+      severity?: string; 
+      category?: string; 
       title?: string; 
     }&gt; }).diagnostics;
     diagnostics?.forEach((diagnostic) =&gt; {
-      totalIssues++;
-      if (diagnostic.severity === 'critical' || diagnostic.severity === 'error') {
-        criticalIssues++;
-      }
+      tot<span class="fstat-no" title="function not covered" >alIssues++;</span>
+      if (diagnostic.s<span class="cstat-no" title="statement not covered" >eve</span>rity === 'critical' || diagnostic.severity === 'error') {
+        criticalIssues<span class="cstat-no" title="statement not covered" >++;</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      // Track security issues</span>
       if<span class="cstat-no" title="statement not covered" > (diagnostic.category === 'security') {</span>
@@ -1206,34 +1206,34 @@ export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFin
           severity: diagnostic.severity || 'unknown',
           affectedScenarios: [analysis.scenarioId]
 <span class="cstat-no" title="statement not covered" >        });</span>
-      }
+      }<span class="cstat-no" title="statement not covered" ></span>
     });
   });
 &nbsp;
   const securityRiskLevel = criticalSecurityIssues &gt; 0 ? 'high' : 
                            totalSecurityIssues &gt; 0 ? 'medium' : 'low';
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   return {
     totalScenarios: analyses.length,
-    healthyScenarios,
+<span class="cstat-no" title="statement not covered" >    healthyScenarios,</span>
     warningScenarios,
-    criticalScen<span class="fstat-no" title="function not covered" >arios,</span>
-    totalIssues,<span class="cstat-no" title="statement not covered" ></span>
-    criticalIssues,<span class="cstat-no" title="statement not covered" ></span>
+    criticalScenarios,
+    totalIssues,
+    criticalIssues,
     securityRiskLevel,
-    commonIssues: Array.from(co<span class="cstat-no" title="statement not covered" >mmonIssuesMap.values()).sort((a, b) =&gt; b.count - a.count),</span>
-    securitySummary: {<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      totalSecurityIssues,</span>
+    commonIssues: Array.from(commonIssuesMap.values()).sort((a, b) =&gt; b.count - a.count),
+<span class="cstat-no" title="statement not covered" >    securitySummary: {</span>
+      totalSecurityIssues,
       criticalSecurityIssues,
       commonSecurityIssues: Array.from(securityIssues)
     }
-  };
-}
-&nbsp;
+  };<span class="fstat-no" title="function not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 /**
- * Generate system overview from analysis results
- */
-export function generateSystemOverview(
+ * Generate system overview fro<span class="cstat-no" title="statement not covered" >m analysis results</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+expo<span class="cstat-no" title="statement not covered" >rt function generateSystemOverview(</span>
   analyses: ScenarioAnalysis[], 
   _comparisonBaseline?: { compareToHistorical?: boolean; includeBenchmarks?: boolean }
 ): SystemOverview {
@@ -1253,8 +1253,8 @@ export function generateSystemOverview(
     bottlenecks: analyses
       .filter(a =&gt; a.diagnosticReport?.overallHealth === 'critical')
       .map(a =&gt; `Scenario ${a.scenarioName}`)
-      .slice(0, <span class="fstat-no" title="function not covered" >5)</span>
-  };<span class="cstat-no" title="statement not covered" ></span>
+      .slice(0, 5)
+  };
 &nbsp;
   const riskLevel = analyses.filter(a =&gt; a.diagnosticReport?.overallHealth === 'critical').length &gt; 0 ? 'high' :
                    analyses.filter(a =&gt; a.diagnosticReport?.overallHealth === 'warning').length &gt; 0 ? 'medium' : 'low';
@@ -1262,9 +1262,9 @@ export function generateSystemOverview(
   return {
     systemHealthScore,
     performanceStatus,
-    riskAssessment: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      level: riskLevel,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      factors: performanceStatus.bottlenecks.length &gt; 0 ? ['Critical scenarios detected'] : ['No critical issues'],
+    riskAssessment: {
+      lev<span class="fstat-no" title="function not covered" >el: riskLevel,</span>
+<span class="cstat-no" title="statement not covered" >      factors: performanceStatus.bottlenecks.length &gt; 0 ? ['Critical scenarios detected'] : ['No critical issues'],</span>
       mitigations: ['Regular monitoring', 'Proactive maintenance', 'Performance optimization']
     },
     resourceUtilization: {
@@ -1272,47 +1272,47 @@ export function generateSystemOverview(
       memory: Math.min(100, systemHealthScore + Math.random() * 15),
       network: Math.min(100, systemHealthScore + Math.random() * 25)
     }
-  };
-}
+  };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
-/**<span class="fstat-no" title="function not covered" ></span>
- * Generate action <span class="cstat-no" title="statement not covered" >plan from consolidated findings</span>
- */<span class="cstat-no" title="statement not covered" ></span>
-export f<span class="cstat-no" title="statement not covered" >unction generateActionPlan(findings: Con</span>solidatedFindings, includeTimeline: boolean): ActionPlan {
-  const immediate = [];<span class="cstat-no" title="statement not covered" ></span>
-  const <span class="cstat-no" title="statement not covered" >shortTerm = [];</span>
-  const long<span class="cstat-no" title="statement not covered" >Term = [];</span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  // Critical is<span class="cstat-no" title="statement not covered" >sues need immediate attention</span>
+/**
+ * Generate action plan from consolidated findings
+ */
+export function generateActionPlan(findings: ConsolidatedFindings, includeTimeline: boolean): ActionPlan {
+  const immediate = [];
+  const shortTerm = [];
+  const longTerm = [];
+&nbsp;
+  // Critical issues need immediate attention
   if (findings.criticalScenarios &gt; 0) {
-    immediat<span class="cstat-no" title="statement not covered" >e.push({</span>
-      priority: 'critical',
-      action: 'Address Critical Scenarios',
-<span class="cstat-no" title="statement not covered" >      description: `${findings.criticalScenarios} scenarios require immediate attention`,</span>
-      es<span class="cstat-no" title="statement not covered" >timatedTime: includeTimeline ? '1-2 ho</span>urs' : 'Immediate',
-      estimatedImpact: 'H<span class="cstat-no" title="statement not covered" >igh - Prevents system </span>failures'
+    immed<span class="fstat-no" title="function not covered" >iate.push({</span>
+      priority: 'cr<span class="cstat-no" title="statement not covered" >itical',</span>
+<span class="cstat-no" title="statement not covered" >      action: 'Address Critical Scenarios',</span>
+      de<span class="cstat-no" title="statement not covered" >scription: `${findings.criticalScenarios</span>} scenarios require immediate attention`,
+      estimatedTime: inc<span class="cstat-no" title="statement not covered" >ludeTimeline ? '1-2 hour</span>s' : 'Immediate',
+      es<span class="cstat-no" title="statement not covered" >timatedImpact: 'High - Prevents system failures'</span>
     });<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
   // Security issues
-  if<span class="cstat-no" title="statement not covered" > (findings.securi</span>tySummary.criticalSecurityIssues &gt; 0) {
+  if (findin<span class="cstat-no" title="statement not covered" >gs.securitySummary</span>.criticalSecurityIssues &gt; 0) {
     immediate.push({
       priority: 'high',
-      action: 'Fix Security Vulnerabilities',
-      description: `${findings.securitySummary.criticalSecurityIssues} critical security issues found`,
-      estimatedT<span class="fstat-no" title="function not covered" >ime: includeTimel</span>ine ? '2-4 hours' : 'Urgent',
-      estimatedImpact: 'Critical - Prevents security breaches'
+<span class="cstat-no" title="statement not covered" >      action: 'Fix Security Vulnerabilities',</span>
+      de<span class="cstat-no" title="statement not covered" >scription: `${findings.securitySummary</span>.criticalSecurityIssues} critical security issues found`,
+      estimatedTime: incl<span class="cstat-no" title="statement not covered" >udeTimeline ? '2-4 hou</span>rs' : 'Urgent',
+      es<span class="cstat-no" title="statement not covered" >timatedImpact: 'Critical - Prevents security breaches'</span>
     });<span class="cstat-no" title="statement not covered" ></span>
-  }
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  // Performance optimization
+  //<span class="cstat-no" title="statement not covered" > Performance opti</span>mization
   if (findings.warningScenarios &gt; 0) {
     shortTerm.push({
       priority: 'medium',
       action: 'Optimize Performance',
-      description: `${findings.warningScenarios} scenarios showing performance warnings`,
+      des<span class="fstat-no" title="function not covered" >cription: `${find</span>ings.warningScenarios} scenarios showing performance warnings`,
       estimatedTime: includeTimeline ? '1-2 days' : 'Short term',
-      estimatedImpact: 'Medium - Improves system performance'
+      estimated<span class="cstat-no" title="statement not covered" >Impact: 'Medium - Improves system performance'</span>
     });
   }
 &nbsp;
@@ -1322,39 +1322,39 @@ export f<span class="cstat-no" title="statement not covered" >unction generateAc
     action: 'Implement Monitoring',
     description: 'Set up comprehensive monitoring and alerting',
     estimatedTime: includeTimeline ? '1-2 weeks' : 'Long term',
-<span class="cstat-no" title="statement not covered" >    estimatedImpact: 'High - Prevents future issues'</span>
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  return<span class="cstat-no" title="statement not covered" > { immediate, shortTerm, longTerm };</span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Generate cost analysis report
- */<span class="cstat-no" title="statement not covered" ></span>
-export function generateCostAnalysis(findings: ConsolidatedFindings, scenarioCount: number): CostAnalysisReport {
-  const <span class="cstat-no" title="statement not covered" >baseScenarioCost =</span> 50; // Estimated monthly cost per scenario
-  const currentMonthlyEstimate = scenarioCount * baseScenarioCost;
-<span class="cstat-no" title="statement not covered" ></span>
-  //<span class="cstat-no" title="statement not covered" > Calculate op</span>timization potential based on issues
-  const optimizationFactor = Math.min(0.4, findings.totalIssues / (scenarioCount * 10));
-  const optimizationPotential = Math.round(currentMonthlyEstimate * optimizationFactor);
+    estimatedImpact: 'High - Prevents future issues'
+  });
 &nbsp;
+  return { immediate, shortTerm, longTerm };
+}
+&nbsp;
+/**
+ * Generate cost analysis report
+ */
+export function generateCostAnalysis(findings: ConsolidatedFindings, scenarioCount: number): CostAnalysisReport {
+  co<span class="cstat-no" title="statement not covered" >nst baseScenarioCost = 50; // Estimated monthly cost per scenario</span>
+  const <span class="cstat-no" title="statement not covered" >currentMonthlyEstimate = scenarioCount * baseScenarioCost;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+  // Cal<span class="cstat-no" title="statement not covered" >culate optimization potential based on issues</span>
+  const opti<span class="cstat-no" title="statement not covered" >mizationFactor =</span> Math.min(0.4, findings.totalIssues / (scenarioCount * 10));
+  const opti<span class="cstat-no" title="statement not covered" >mizationPotential = Math.rou<span class="fstat-no" title="function not covered" >nd</span>(currentMonthlyEstimate * optimizationFactor);</span>
+<span class="cstat-no" title="statement not covered" ></span>
   return {
-    currentMonthlyEsti<span class="fstat-no" title="function not covered" >mate,</span>
+    currentM<span class="cstat-no" title="statement not covered" >onthlyEstimate,</span>
     optimizationPotential,
-    breakdownByCategory: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      'Execution costs': Math.<span class="cstat-no" title="statement not covered" >round(cur</span>rentMonthlyEstimate * 0.6),
-      'D<span class="cstat-no" title="statement not covered" >ata transfer': Math.round(currentMonthlyEstimate * 0.25),</span>
-      'Storage': Math.round(currentMonthlyEstimate * 0.15)
+    brea<span class="cstat-no" title="statement not covered" >kdownByCategory: {</span>
+      'Execution costs': Math.round(currentMonthlyEstimate * 0.6),
+<span class="cstat-no" title="statement not covered" >      'Data transfer': Math.ro</span>und(currentMonthlyEstimate * 0.25),
+<span class="cstat-no" title="statement not covered" >      'Storage': </span>Math.round(currentMonthlyEstimate * 0.15)
     },
     recommendations: [
       {
         action: 'Optimize high-usage scenarios',
-        estimatedSavings: Math.round(optimizationPotential * 0.4),
+        estimat<span class="fstat-no" title="function not covered" >edSavings: Math.round(optimiza</span>tionPotential * 0.4),
         complexity: 'Medium'
-      },
-      {
-        action: 'Implement caching strategies',
+      },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        action: 'Implement caching strategies',</span>
         estimatedSavings: Math.round(optimizationPotential * 0.3),
         complexity: 'Low'
       },
@@ -1373,23 +1373,23 @@ export function generateCostAnalysis(findings: ConsolidatedFindings, scenarioCou
 export function generateExecutiveSummary(
   systemOverview: SystemOverview,
   findings: ConsolidatedFindings,
-  actionPlan: ActionPlan,<span class="cstat-no" title="statement not covered" ></span>
-  scenarioCount: number<span class="cstat-no" title="statement not covered" ></span>
-): Record&lt;string, unkno<span class="cstat-no" title="statement not covered" >wn&gt; {</span>
-  return {<span class="cstat-no" title="statement not covered" ></span>
-    keyFindings: [<span class="cstat-no" title="statement not covered" ></span>
-      `System health score: $<span class="cstat-no" title="statement not covered" >{systemOverview.systemHealthScore}/10</span>0`,
-<span class="cstat-no" title="statement not covered" >      `${findings.criticalScenarios} critical scenarios requiring immediate attention`,</span>
+  actionPlan: ActionPlan,
+  scenarioCount: number
+): Record&lt;string, unknown&gt; {
+  return {
+    keyFindings: [
+      `System health score: ${systemOverview.systemHealthScore}/100`,
+      `${findings.criticalScenarios} critical scenarios requiring immediate attention`,
       `${findings.totalIssues} total issues identified across ${scenarioCount} scenarios`,
       `Security risk level: ${findings.securityRiskLevel}`
     ],
-    recommendations: [
-      ...actionPlan.immediate.slice(0, 3).map(item =&gt; item.action),
-      ...actionPlan.shortTerm.slice(0, 2).map(item =&gt; item.action)
-    ],
-    impact: {
-      riskLevel: systemOverview.riskAssessment.level,
-      performanceImpact: systemOverview.performanceStatus.overall,
+    recommendations: [<span class="cstat-no" title="statement not covered" ></span>
+      ...actionPlan.immedia<span class="cstat-no" title="statement not covered" >te.slice(0, 3).map(item =&gt; item.action),</span>
+      ...actionPlan.sho<span class="cstat-no" title="statement not covered" >rtTerm.slice(0, 2).map(item =&gt; item.action)</span>
+    ],<span class="cstat-no" title="statement not covered" ></span>
+    impact: {<span class="cstat-no" title="statement not covered" ></span>
+      riskLevel: systemOvervi<span class="cstat-no" title="statement not covered" >ew.riskAssessment.level,</span>
+<span class="cstat-no" title="statement not covered" >      performanceImpact: systemOverview.performanceStatus.overall,</span>
       securityConcerns: findings.securitySummary.criticalSecurityIssues &gt; 0 ? 'High' : 'Low'
     }
   };
@@ -1549,7 +1549,7 @@ export async function generateTroubleshootingReport(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T04:33:57.942Z
+                at 2025-08-22T05:01:57.534Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

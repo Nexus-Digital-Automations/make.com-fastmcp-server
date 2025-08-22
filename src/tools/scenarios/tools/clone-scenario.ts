@@ -12,7 +12,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  * Create clone scenario tool configuration
  */
 export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient } = context;
   
   return {
     name: 'clone-scenario',
@@ -89,10 +89,10 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Failed to clone scenario', { 
+        if (log && log.error) { log.error('Failed to clone scenario', { 
           scenarioId: typedArgs.scenarioId, 
           error: errorMessage 
-        });
+        }); }
         throw new UserError(`Failed to clone scenario: ${errorMessage}`);
       }
     },

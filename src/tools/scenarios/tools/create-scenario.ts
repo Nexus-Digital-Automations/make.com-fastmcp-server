@@ -12,7 +12,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  * Create scenario tool configuration
  */
 export function createScenarioTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient } = context;
   
   return {
     name: 'create-scenario',
@@ -75,7 +75,7 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Failed to create scenario', { name: typedArgs.name, error: errorMessage });
+        if (log && log.error) { log.error('Failed to create scenario', { name: typedArgs.name, error: errorMessage }); }
         throw new UserError(`Failed to create scenario: ${errorMessage}`);
       }
     },

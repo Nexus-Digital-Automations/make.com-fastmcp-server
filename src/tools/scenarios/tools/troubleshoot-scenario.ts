@@ -14,7 +14,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  * Create troubleshoot scenario tool configuration
  */
 export function createTroubleshootScenarioTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient } = context;
   
   return {
     name: 'troubleshoot-scenario',
@@ -103,7 +103,7 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Scenario troubleshooting failed', { error: errorMessage });
+        if (log && log.error) { log.error('Scenario troubleshooting failed', { error: errorMessage }); }
         throw new UserError(`Scenario troubleshooting failed: ${errorMessage}`);
       }
     },
@@ -170,7 +170,7 @@ async function generateSingleScenarioTroubleshootingReport(
  * Create generate troubleshooting report tool configuration
  */
 export function createGenerateTroubleshootingReportTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient } = context;
   
   return {
     name: 'generate-troubleshooting-report',
@@ -299,7 +299,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Troubleshooting report generation failed', { error: errorMessage });
+        if (log && log.error) { log.error('Troubleshooting report generation failed', { error: errorMessage }); }
         throw new UserError(`Troubleshooting report generation failed: ${errorMessage}`);
       }
     },

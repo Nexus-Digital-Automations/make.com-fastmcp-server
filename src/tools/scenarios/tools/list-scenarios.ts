@@ -12,7 +12,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  * Create list scenarios tool configuration
  */
 export function createListScenariosTools(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient } = context;
   
   return {
     name: 'list-scenarios',
@@ -86,7 +86,7 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Failed to list scenarios', { error: errorMessage });
+        if (log && log.error) { log.error('Failed to list scenarios', { error: errorMessage }); }
         throw new UserError(`Failed to list scenarios: ${errorMessage}`);
       }
     },

@@ -2584,8 +2584,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint<span class="cstat-no" title="statement not covered" >: false,</span>
       openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context) =&gt; {</span>
-      const { log = <span class="cstat-no" title="statement not covered" >{ info: () =&gt; {}, error:</span> () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = <span class="cstat-no" title="statement not covered" >{ info: (): void =&gt; {}, </span>error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { na<span class="cstat-no" title="statement not covered" >me, description, type, category, organizationId, teamId, configuration, input: inputSpec, output: outputSpec, monitoring, security } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp;<span class="cstat-no" title="statement not covered" > log.info) {</span>
@@ -2740,7 +2740,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
     },
     execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { type, category, status, organizationId, teamId, includeStats, includeMonitoring, limit, offset, sortBy, sortOrder } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -2876,8 +2876,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: false,
       openWorldHint: true,
     },
-    execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: async (input, context): Promise&lt;string&gt; =&gt; {
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { procedureId, input: inputData, options, metadata } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -2946,7 +2946,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
             metrics:<span class="cstat-no" title="statement not covered" > executionResult?.metrics || {},</span>
             erro<span class="cstat-no" title="statement not covered" >rs: executionResult?.errors || [],</span>
           },<span class="cstat-no" title="statement not covered" ></span>
-        });<span class="cstat-no" title="statement not covered" ></span>
+        }).content[0].text;<span class="cstat-no" title="statement not covered" ></span>
       } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
         const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.message : String(error);</span>
         if (log &amp;&amp; log.error) {
@@ -2970,8 +2970,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: tr<span class="cstat-no" title="statement not covered" >ue,</span>
       openWorldHint: true,
     },<span class="fstat-no" title="function not covered" ></span>
-    execute: async (inpu<span class="cstat-no" title="statement not covered" >t, context) =&gt; {</span>
-      const { log = { in<span class="cstat-no" title="statement not covered" >fo: () =&gt; {}</span>, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: async (inpu<span class="cstat-no" title="statement not covered" >t, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = { in<span class="cstat-no" title="statement not covered" >fo: (): void</span> =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { name, type, category, organizationId, teamId, configuration } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
@@ -3116,7 +3116,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWorldHint:<span class="cstat-no" title="statement not covered" > true,</span>
     },<span class="cstat-no" title="statement not covered" ></span>
     execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { type, category, status, organizationId, teamId, includeHealth, includeAlerts, limit, offset, sortBy, sortOrder } = input;
 <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp; log.info) {
@@ -3250,8 +3250,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: async (input, context): Promise&lt;string&gt; =&gt; {
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { deviceId, testType, timeout, includePerformance } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -3346,7 +3346,7 @@ export default addProcedureTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T04:33:58.145Z
+                at 2025-08-22T05:01:57.968Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

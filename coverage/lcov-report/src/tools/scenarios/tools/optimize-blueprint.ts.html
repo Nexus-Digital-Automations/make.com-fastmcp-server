@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">8.51% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/88</span>
+                <span class='fraction'>8/94</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">3.22% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/31</span>
+                <span class='fraction'>1/31</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">8.88% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/84</span>
+                <span class='fraction'>8/90</span>
             </div>
         
             
@@ -364,24 +364,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -604,9 +607,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -666,9 +666,9 @@ import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js'
 import { optimizeBlueprint } from '../utils/optimization.js';
 import { Blueprint } from '../types/blueprint.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
-<span class="fstat-no" title="function not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * C<span class="cstat-no" title="statement not covered" >reate optimize blueprint tool configuration</span>
+&nbsp;
+/**
+ * Create optimize blueprint tool configuration
  */
 export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinition {
   const { logger: _logger } = context;
@@ -677,56 +677,56 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
     name: 'optimize-blueprint',
     description: 'Analyze and optimize Make.com blueprints for performance, cost, and security improvements',
     parameters: OptimizeBlueprintSchema,
-    annotations: <span class="fstat-no" title="function not covered" >{</span>
-      title: 'Optimize Blu<span class="branch-0 cbranch-no" title="branch not covered" >eprint',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
-      readOnlyHint: true,<span class="cstat-no" title="statement not covered" ></span>
-      openWo<span class="cstat-no" title="statement not covered" >rldHint: false,</span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (args: unknown, context): Promise&lt;string&gt; =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};
-      const typedArgs = args as {
+    annotations: {
+      title: 'Optimize Blueprint',
+      readOnlyHint: true,
+      openWorldHi<span class="fstat-no" title="function not covered" >nt</span>: false,
+    },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+    execute: async (args: unkn<span class="cstat-no" title="statement not covered" >own, </span>context): Promise&lt;string&gt; =&gt; {
+      const <span class="cstat-no" title="statement not covered" >{ log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};</span>
+      const type<span class="cstat-no" title="statement not covered" >dArgs = args as {</span>
         blueprint?: Blueprint;
         optimizationType?: string;
-        incl<span class="cstat-no" title="statement not covered" >udeImplementationSteps?: boolean;</span>
+        includeImplementationSteps?: boolean;
       };
-      <span class="cstat-no" title="statement not covered" ></span>
-      if (log &amp;&amp; log<span class="cstat-no" title="statement not covered" >.info) { log.info('Starting blueprint optimization analysis', { </span>
+      
+      if (lo<span class="cstat-no" title="statement not covered" >g &amp;&amp; log.info) { log.info('Starting blueprint optimization analysis', { </span>
         hasBlueprint: !!typedArgs.blueprint,
-        optimizationType: typedArg<span class="cstat-no" title="statement not covered" >s.optimizationType,</span>
-        includeImplementationSteps: typedArgs.includeImplementationSteps
-      }); }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        // Valid<span class="cstat-no" title="statement not covered" >ate blueprint structure first</span>
-        if (!typedAr<span class="cstat-no" title="statement not covered" >gs.blueprint || typeof typedArgs.blueprint !== 'object') {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-          throw new UserError('Invalid blueprint provided - must be a valid JSON object');
-        }
-&nbsp;
-        const bl<span class="cstat-no" title="statement not covered" >ueprint = typedArgs.blueprint;</span>
-        <span class="cstat-no" title="statement not covered" ></span>
+        optimiza<span class="cstat-no" title="statement not covered" >tionType: typedArgs.optimizationType,</span>
+        includeImple<span class="cstat-no" title="statement not covered" >mentationSteps: typedArgs.includeImplementationSteps</span>
+      }); }
+<span class="cstat-no" title="statement not covered" ></span>
+      try {
+        // Validate blueprint structure fir<span class="cstat-no" title="statement not covered" >st</span>
+        if (!typedArgs.blueprint || typeof typedArgs.blueprint !== 'object') {
+          throw new UserError('Invalid bluepri<span class="cstat-no" title="statement not covered" >nt provided - must be a valid JSON </span>object');
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        const blueprint = typedArgs.blueprint;
+        
         // Run optimization analysis
-        const optimizationResult = optimizeBlueprint(blueprint);
+        const op<span class="cstat-no" title="statement not covered" >timizationResult = optimizeBlueprint(blueprint);</span>
 <span class="cstat-no" title="statement not covered" ></span>
         // Filter recommendations by optimization type
         let filteredRecommendations = optimizationResult.recommendations;
-        if (typedArgs.optimizationType !== 'all') {
+        if (typedArgs.optimizationType !== '<span class="cstat-no" title="statement not covered" >all') {</span>
           filteredRecommendations = optimizationResult.recommendations.filter(
             rec =&gt; rec.category === typedArgs.optimizationType
           );
         }
 &nbsp;
-        // Generate detailed impl<span class="cstat-no" title="statement not covered" >ementation guidance if requested</span>
+        // Generate detailed implementation guidance if requested
         let implementationGuidance: Record&lt;string, unknown&gt; | undefined;
         if (typedArgs.includeImplementationSteps &amp;&amp; filteredRecommendations.length &gt; 0) {
-          implementationGuidance = generateImplementationGuidance(
+          implementationGuidance <span class="cstat-no" title="statement not covered" >= generateImplementationGuidance(</span>
             filteredRecommendations,
             typedArgs.optimizationType ?? 'all'
           );
         }
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
         // Generate optimization summary
         const optimizationSummary = {
-          currentScore: optimizationResult.optimizationScore,
+          currentScore: optimizationResult.optimizationScore,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           potentialImprovement: Math.max(0, 100 - optimizationResult.optimizationScore),
           priorityLevel: optimizationResult.optimizationScore &lt; 70 ? 'high' : 
                        optimizationResult.optimizationScore &lt; 85 ? 'medium' : 'low',
@@ -735,44 +735,44 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
         };
 &nbsp;
         // Build comprehensive response
-        const re<span class="cstat-no" title="statement not covered" >sponse = {</span>
-          optimizati<span class="cstat-no" title="statement not covered" >onSummary,</span>
+        const response = {
+          optimizationSummary,
           analysis: {
-            blueprintMetrics: optimizationResult.metrics,
-            optimizationScore: optimizationResult.optimizationScore,
+            blue<span class="cstat-no" title="statement not covered" >printMetrics: optimizationResult.metrics,</span>
+            optimiza<span class="cstat-no" title="statement not covered" >tionScore: optimizationResult.optimizationScore,</span>
             recommendationCount: filteredRecommendations.length,
             categories: getCategoryBreakdown(filteredRecommendations)
           },
-          recomm<span class="cstat-no" title="statement not covered" >endations: filteredRecommendations.map(rec =&gt; ({</span>
+          recommendations: filteredRecommendations.map(rec =&gt; ({
             ...rec,
             implementationSteps: typedArgs.includeImplementationSteps ? rec.implementationSteps : undefined
           })),<span class="cstat-no" title="statement not covered" ></span>
-          ...(im<span class="cstat-no" title="statement not covered" >plementationGuidance &amp;&amp; { implementationGuidance }),</span>
-          metadata: <span class="cstat-no" title="statement not covered" >{</span>
-            analysisType: typedArgs.optimizationType,
+          ...(implementationGuidance &amp;&amp; { implementationGuidance }),
+          metadata: {
+            analysisType: typedArgs.o<span class="cstat-no" title="statement not covered" >ptimizationType,</span>
             blue<span class="cstat-no" title="statement not covered" >printName: blueprint.name || 'Unnamed Blueprint',</span>
-            moduleCount: blueprint.flow?.length || 0,
+            moduleCo<span class="cstat-no" title="statement not covered" >unt: blueprint.flow?.length || 0,</span>
             analysisTimestamp: new Date().toISOString()
-          }
+          }<span class="cstat-no" title="statement not covered" ></span>
         };
 &nbsp;
         if (log &amp;&amp; log.info) { log.info('Blueprint optimization analysis completed', {
           optimizationScore: optimizationResult.optimizationScore,
-<span class="fstat-no" title="function not covered" >          recommendationCount: filteredR</span>ecommendations.length,
-          priorityLevel: opti<span class="cstat-no" title="statement not covered" >mizationSummary.priorit<span class="fstat-no" title="function not covered" >yL</span>evel,<span class="cstat-no" title="statement not covered" ></span></span>
-          moduleCount: optimiza<span class="cstat-no" title="statement not covered" >tionResult.metrics.modu<span class="fstat-no" title="function not covered" >le</span>Count<span class="cstat-no" title="statement not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >        }); }</span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        return formatSuccessResponse(response).content[0].text;
-&nbsp;
-      } catch (error) {
+          recommendationCount: filteredRecommendations.length,
+          priorityLevel: optimizationSummary.priorityLevel,
+          moduleCount: optimizationResult.metrics.moduleCount
+        }<span class="fstat-no" title="function not covered" >); }</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        return formatSuccessRes<span class="cstat-no" title="statement not covered" >ponse(response).content<span class="fstat-no" title="function not covered" >[0</span>].tex<span class="cstat-no" title="statement not covered" >t;</span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      } catch (error) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log &amp;&amp; log.error) { log.error('Blueprint optimization failed', { error: errorMessage }); }
         throw new UserError(`Blueprint optimization failed: ${errorMessage}`);
-      }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      }
     }
   };
-}
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
 /**
  * Generate detailed implementation guidance
@@ -787,122 +787,122 @@ function generateImplementationGuidance(
   return {
     quickWins: highPriorityRecs.slice(0, 3).map(rec =&gt; ({
       title: rec.title,
-      cat<span class="fstat-no" title="function not covered" >egory: rec.cat</span>egory,
-      timeEstimate: getTim<span class="cstat-no" title="statement not covered" >eEs</span>timate(rec.category),
-<span class="cstat-no" title="statement not covered" >      difficulty: getDifficu<span class="fstat-no" title="function not covered" >lt</span>y(rec.category),</span>
-      st<span class="cstat-no" title="statement not covered" >eps: rec.implementationSteps?.slice(0, 3) || []</span>
-    })),
-<span class="cstat-no" title="statement not covered" >    mediumTermActions: mediumPriorityRecs.slice(0, 3).map(rec =&gt; ({</span>
-      title: r<span class="fstat-no" title="function not covered" >ec</span>.title,<span class="cstat-no" title="statement not covered" ></span>
       category: rec.category,
-      timeEst<span class="fstat-no" title="function not covered" >im</span>ate: getTimeEs<span class="cstat-no" title="statement not covered" >timate(re</span>c.category, 'medium'),
-      difficulty: getDifficulty(rec.category, 'medium'),
+      timeEstimate: getTimeEstimate(rec.category),
+      difficulty: getDifficulty(rec.category),
+      ste<span class="fstat-no" title="function not covered" >ps: rec.implem</span>entationSteps?.slice(0, 3) || []
+    })),<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    mediumTermActions: mediu<span class="fstat-no" title="function not covered" >mP</span>riorityRecs.slice(0, 3).map(rec =&gt; ({</span>
+      ti<span class="cstat-no" title="statement not covered" >tle: rec.title,</span>
+      category: rec.category,
+<span class="cstat-no" title="statement not covered" >      timeEstimate: getTimeEstimate(rec.category, 'medium'),</span>
+      difficul<span class="fstat-no" title="function not covered" >ty</span>: getDifficulty(<span class="cstat-no" title="statement not covered" >rec.ca</span>tegory, 'medium'),
       steps: rec.implementationSteps || []
-    })),
+    })),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     implementationOrder: generateImplementationOrder(recommendations),
-    resou<span class="fstat-no" title="function not covered" >rceRequirements: {</span>
-      technicalSkil<span class="cstat-no" title="statement not covered" >ls: getTechnicalSkills(optimizationType),</span>
-<span class="cstat-no" title="statement not covered" >      estimatedTime: calcula<span class="fstat-no" title="function not covered" >te</span>TotalTime(recommendations),</span>
-      tools: getRequire<span class="cstat-no" title="statement not covered" >dTools(optimizationType)</span>
-    }
-  };<span class="cstat-no" title="statement not covered" ></span>
+    resourceRequirements: {
+      technicalSkills: getTechnicalSkills(optimizationType),
+      estimatedTime: calculateTotalTime(recommendations),
+      too<span class="fstat-no" title="function not covered" >ls: getRequiredTools(opti</span>mizationType)
+    }<span class="cstat-no" title="statement not covered" ></span>
+  };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Get focus<span class="cstat-no" title="statement not covered" > areas from recommendations</span>
- */
-function getFocusAreas(recommendations: Array&lt;{ category: string; priority: string }&gt;): string[] {
-  const categoryCount: Record&lt;string, number&gt; = {};
+ * Get focus areas from recomme<span class="cstat-no" title="statement not covered" >ndations</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+function get<span class="cstat-no" title="statement not covered" >FocusAreas(recommendations: Array&lt;{ </span>category: string; priority: string }&gt;): string[] {
+  const cate<span class="cstat-no" title="statement not covered" >goryCount: Record&lt;string, number&gt; = {};</span>
+  
+  recommendations.forEach(rec =&gt; {
+    categoryCount[rec.category] = (categoryCount[rec.category] || 0) + 1;
+  });<span class="cstat-no" title="statement not covered" ></span>
   <span class="cstat-no" title="statement not covered" ></span>
-  recommenda<span class="cstat-no" title="statement not covered" >tions.forEach(rec =&gt; {</span>
-    category<span class="cstat-no" title="statement not covered" >Count[rec.category] = (category</span>Count[rec.category] || 0) + 1;
-  });
-  
-  return Object.entries(categoryCount)
-    .sort(([, a], [, b<span class="cstat-no" title="statement not covered" >]) =&gt; b - a)</span>
-<span class="cstat-no" title="statement not covered" >    .slice(0, 3)</span>
-<span class="cstat-no" title="statement not covered" >    .map(([category]) =&gt; category);</span>
+  return Obj<span class="cstat-no" title="statement not covered" >ect.entries(categoryCount)</span>
+    .sort(([, a], [, b]) =&gt; b - a)
+    .slice(0, 3)
+    .map(([category]) =&gt; category);
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Calculate estimated impact from recommendations
- */
-function calculateEstimatedImpact(recommendations: Array&lt;{ priority: string; estimatedImpact?: string }&gt;): {
+ * C<span class="cstat-no" title="statement not covered" >alculate estimated impact from recommendations</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+func<span class="cstat-no" title="statement not covered" >tion calculateE</span>stimatedImpact(recommendations: Array&lt;{ priority: string; estimatedImpact?: string }&gt;): {
   performance: number;
-  cost: n<span class="fstat-no" title="function not covered" >umber;</span>
-  security: number;<span class="cstat-no" title="statement not covered" ></span>
-  ov<span class="cstat-no" title="statement not covered" >erall: number;<span class="fstat-no" title="function not covered" ></span></span>
-} {<span class="cstat-no" title="statement not covered" ></span>
-  const impa<span class="cstat-no" title="statement not covered" >ct = { performance: 0, cost: 0, security: 0, overall: 0 };</span>
-  
+  cost: number;
+  security: number;
+  overall: number;
+} {<span class="fstat-no" title="function not covered" ></span>
+  const impact = { per<span class="cstat-no" title="statement not covered" >for</span>mance: 0, cost: 0, security: 0, overall: 0 };
+  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   recomm<span class="cstat-no" title="statement not covered" >endations.forEach(rec =&gt; {</span>
-    cons<span class="cstat-no" title="statement not covered" >t weight = rec.priority === 'high' ? 3 : </span>rec.priority === 'medium' ? 2 : 1;
+    const we<span class="cstat-no" title="statement not covered" >ight = rec.priority === 'high' ? 3 : rec.priority === 'medium' ? 2 :</span> 1;
     
-<span class="cstat-no" title="statement not covered" >    // Parse estimated</span> impact if available
-    if (rec.estimatedImpact?.includes('%')) {
+    // P<span class="cstat-no" title="statement not covered" >arse estimated impact if availabl</span>e
+    if (<span class="cstat-no" title="statement not covered" >rec.estimatedImpact?.includes('%')) {</span>
       const percentage = parseInt(rec.estimatedImpact.match(/(\d+)%/)?.[1] || '0');
-      impact.performance += percentage * weight;
+<span class="cstat-no" title="statement not covered" >      impact.performan</span>ce += percentage * weight;
       impact.cost += percentage * weight;
-      imp<span class="fstat-no" title="function not covered" >act.security += </span>percentage * weig<span class="branch-0 cbranch-no" title="branch not covered" >ht;</span>
-    } else {<span class="cstat-no" title="statement not covered" ></span>
+      impact.security += percentage * weight;
+    } else {
       // Default impact values based on priority
-      impact.performance += weight * 5;
-      impact.cost += weight * 3;
+      imp<span class="fstat-no" title="function not covered" >act.performance </span>+= weight * 5;<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+      impact.cost <span class="cstat-no" title="statement not covered" >+= weight * 3;</span>
       impact.security += weight * 4;
     }
-  })<span class="cstat-no" title="statement not covered" >;</span>
+  });
   
-  // Norm<span class="fstat-no" title="function not covered" >alize and calc</span>ulate overall<span class="branch-0 cbranch-no" title="branch not covered" ></span>
-  const maxImpact = recom<span class="cstat-no" title="statement not covered" >mendations.length * 3 * 15; // max possible impact</span>
+  // Normalize and calculate overall
+  co<span class="cstat-no" title="statement not covered" >nst maxImpact = recommendations.length * 3 * 15</span>; // max possible impact
   impact.performance = Math.min(100, Math.round((impact.performance / maxImpact) * 100));
-  impact.cost = Math.min(100, Math.round((impact.cost / maxImpact) * 100));
-  impact.security = Math.min(100, Math.round((impact.security / maxImpact) * 100));
+  impact.<span class="fstat-no" title="function not covered" >cost = Math.mi</span>n(100, Math.round<span class="branch-0 cbranch-no" title="branch not covered" >((impact</span>.cost / maxImpact) * 100));
+  impact.security = Math.<span class="cstat-no" title="statement not covered" >min(100, Math.round((impact.security / maxImpact) * 100));</span>
   impact.overall = Math.round((impact.performance + impact.cost + impact.security) / 3);
   
-  re<span class="cstat-no" title="statement not covered" >turn impact;</span>
-}
-<span class="fstat-no" title="function not covered" ></span>
-/**
- * Get category breakdown <span class="cstat-no" title="statement not covered" >of recommendations</span>
- */<span class="cstat-no" title="statement not covered" ></span>
-func<span class="cstat-no" title="statement not covered" >tion getCategoryBreakdown(recommendations: Array&lt;{ category: string; priority: string }&gt;): Record&lt;string, { total: number; high: number; medium: number; low: number }&gt; {</span>
-  const breakd<span class="fstat-no" title="function not covered" >ow</span>n: Record&lt;string, { total: number; high: number; medium: number; low: number }&gt; = {};
-  <span class="cstat-no" title="statement not covered" ></span>
-  recomm<span class="cstat-no" title="statement not covered" >endations.forEach(rec =&gt; {</span>
-    if (!bre<span class="cstat-no" title="statement not covered" >akdown[rec.category])</span> {
-      br<span class="cstat-no" title="statement not covered" >eakdown[rec.category] = { total: 0, high: 0, medium: 0, low: 0 };</span>
-    }
-    <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    breakdown[rec.category].total++;
-    break<span class="fstat-no" title="function not covered" >down[rec.category][</span>rec.priority as 'high' | 'medium' | 'low']++;
-  });<span class="cstat-no" title="statement not covered" ></span>
-  
-  return breakdown;
+  return impact;
 }
 &nbsp;
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Get category breakdown of recommendations
+ */<span class="fstat-no" title="function not covered" ></span>
+function getCategoryBreakdown(recommendations: Array&lt;{ category: string; priority: string }&gt;): Record&lt;string, { total: number; high: number; medium: number; low: number }&gt; {
+  const breakdown: Record&lt;<span class="cstat-no" title="statement not covered" >string, { total: number; h</span>igh: number; medium: number; low: number }&gt; = {};
+  <span class="cstat-no" title="statement not covered" ></span>
+  re<span class="cstat-no" title="statement not covered" >commendations.forEach(rec =&gt; {</span>
+    if (!break<span class="fstat-no" title="function not covered" >do</span>wn[rec.category]) {
+      breakdown[rec.category]<span class="cstat-no" title="statement not covered" > = { total: 0, high: 0, medium: 0, low: 0 };</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    brea<span class="cstat-no" title="statement not covered" >kdown[rec.category].total++;</span>
+    breakdown[rec.category][rec.priority as 'high' | 'medium' | 'low']++;
+  });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  
+  return <span class="fstat-no" title="function not covered" >breakdown;</span>
+}<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 /**
- * H<span class="cstat-no" title="statement not covered" >elper functions for implementation guidance</span>
+ * Helper functions for implementation guidance
  */
-function <span class="fstat-no" title="function not covered" >getTimeEstimate(cat</span>egory: string, term: 'quick' | 'medium' = 'quick'): string {
-  const times: Record&lt;st<span class="cstat-no" title="statement not covered" >ring, Record&lt;string, string&gt;&gt; =</span> {
-    performance: { quick<span class="cstat-no" title="statement not covered" >: '1-2 hours', medium: <span class="fstat-no" title="function not covered" >'1</span>-2 days' },<span class="cstat-no" title="statement not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >    cost: { quick: '30 minutes', medium: '4-8 hours' },</span>
-    secu<span class="cstat-no" title="statement not covered" >rity: { quick: '1-3</span> hours', medium: '1-3 days' },
-<span class="cstat-no" title="statement not covered" >    reliability: { quick: '2-4 hours', medium: '2-5 days' }</span>
+function getTimeEstimate(category: string, term: 'quick' | 'medium' = 'quick'): string {
+  co<span class="cstat-no" title="statement not covered" >nst times: Record&lt;string, Record&lt;string, string&gt;&gt; =</span> {
+    performance: { quick: '1-2 hours', medium: '1-2 days' },
+    cost:<span class="fstat-no" title="function not covered" > { quick: '30 minut</span>es', medium: '4-8 hours' },
+    security: { quick: '<span class="cstat-no" title="statement not covered" >1-3 hours', medium: '1-3 days' </span>},
+    reliability: { quick<span class="cstat-no" title="statement not covered" >: '2-4 hours', medium: <span class="fstat-no" title="function not covered" >'2</span>-5 days' }<span class="cstat-no" title="statement not covered" ></span></span>
   };<span class="cstat-no" title="statement not covered" ></span>
   <span class="cstat-no" title="statement not covered" ></span>
-  return times[category]?.[term] || '1-4 hours';
-}<span class="fstat-no" title="function not covered" ></span>
+  re<span class="cstat-no" title="statement not covered" >turn times[category]?.[term] || '1-4 hours';</span>
+}<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
 function getDifficulty(category: string, term: 'quick' | 'medium' = 'quick'): string {
-  const difficulties: Record&lt;string, Record&lt;string, string&gt;&gt; = {
-    performance: { quick: 'easy', medium: 'moderate' },
+  const d<span class="fstat-no" title="function not covered" >ifficulties: Reco</span>rd&lt;string, Record&lt;string, string&gt;&gt; = {
+    performance: { q<span class="cstat-no" title="statement not covered" >uick: 'easy', medium: 'moderate' },</span>
     cost: { quick: 'easy', medium: 'easy' },
     security: { quick: 'moderate', medium: 'moderate' },
-<span class="cstat-no" title="statement not covered" >    reliability: { quick: 'moderate', medium: 'challe</span>nging' }
+    reliability: { quick: 'moderate', medium: 'challenging' }
   };
   
-  return difficulties[category]?.[term] || 'moderate';
+  re<span class="cstat-no" title="statement not covered" >turn difficulties[category]?.[term] || 'moderate'</span>;
 }
 &nbsp;
 function generateImplementationOrder(recommendations: Array&lt;{ category: string; priority: string; title: string }&gt;): string[] {
@@ -958,7 +958,7 @@ function getRequiredTools(optimizationType: string): string[] {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T04:33:57.942Z
+                at 2025-08-22T05:01:57.534Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

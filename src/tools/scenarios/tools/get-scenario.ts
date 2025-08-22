@@ -12,7 +12,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  * Create get scenario tool configuration
  */
 export function createGetScenarioTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient } = context;
   
   return {
     name: 'get-scenario',
@@ -72,10 +72,10 @@ export function createGetScenarioTool(context: ToolContext): ToolDefinition {
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Failed to get scenario details', { 
+        if (log && log.error) { log.error('Failed to get scenario details', { 
           scenarioId: typedArgs.scenarioId, 
           error: errorMessage 
-        });
+        }); }
         throw new UserError(`Failed to get scenario: ${errorMessage}`);
       }
     },

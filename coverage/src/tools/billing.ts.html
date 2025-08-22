@@ -4328,8 +4328,8 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: <span class="cstat-no" title="statement not covered" >true,</span>
       openWorldHint: true,
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (<span class="cstat-no" title="statement not covered" >input, context) =&gt; {</span>
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: async (<span class="cstat-no" title="statement not covered" >input, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { or<span class="cstat-no" title="statement not covered" >ganizationId, includeUsage, includeHistory, includePaymentMethods } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp; log.info) {
@@ -4431,7 +4431,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             account.billing?.paymentStatus === 'overdue' ? 'Payment overdue' : null,
             account.billing?.paymentStatus === 'failed' ? 'Payment failed' : null,
           ].filter(Boolean),
-        }, "Billing account information retrieved successfully");
+        }, "Billing account information retrieved successfully").content[0].text;
       } catch (error: unknown) <span class="cstat-no" title="statement not covered" >{</span>
         const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
         if (log &amp;&amp; l<span class="cstat-no" title="statement not covered" >og.error) {</span>
@@ -4453,7 +4453,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }): Promise&lt;string&gt; =&gt; {</span>
       const { organizationId, status, dateRange, includeLineItems, includePayments, limit, offset, sortBy, sortOrder } = input;
 &nbsp;
       log.info('Listing invoices', {
@@ -4538,7 +4538,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             offset,
             hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; (offset + invoic</span>es.length),
           },<span class="cstat-no" title="statement not covered" ></span>
-        }, "Invo<span class="cstat-no" title="statement not covered" >ices retrieved successfully");</span>
+        }, "Invo<span class="cstat-no" title="statement not covered" >ices retrieved successfully").content[0].text;</span>
       } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing invo<span class="cstat-no" title="statement not covered" >ices', { error</span>: errorMessage });
@@ -4558,7 +4558,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) =&gt; {
+    execute: async (input, { log, reportProgress }): Promise&lt;string&gt; =&gt; {
       const { organizationId, period, customPeriod, breakdown, includeProjections, includeRecommendations } = input;
 &nbsp;
       log.info('Getting usage metrics', {
@@ -4642,7 +4642,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             potentialSavings: metrics.recommendations.reduce((sum, rec) =&gt; sum + (rec.savings || 0), 0),
             highImpactRecommend<span class="cstat-no" title="statement not covered" >ations: metrics.recommendations.filter(rec =&gt; rec.impact === 'high'),</span>
           } : undefined,
-        }, "Usage metrics retrieved successfully");
+        }, "Usage metrics retrieved successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting usage metrics', { organizationId, error: errorMessage });
@@ -4663,7 +4663,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,<span class="cstat-no" title="statement not covered" ></span>
       openWorldH<span class="cstat-no" title="statement not covered" >int: true,</span>
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (input, { log, reportProgress }) =&gt; {
+    execute: async (input, { log, reportProgress }): Promise&lt;string&gt; =&gt; {
       const { organizationId, type,<span class="cstat-no" title="statement not covered" > details, bill</span>ingAddress, setAsDefault } = input;
 <span class="cstat-no" title="statement not covered" ></span>
       log.info('Addi<span class="cstat-no" title="statement not covered" >ng payment method', {</span>
@@ -4754,7 +4754,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
 <span class="cstat-no" title="statement not covered" >            setAsDefault ? 'Payment method set as default' : 'Set as default if needed',</span>
             'Update billing preferences if necessary',
           ],
-        }, "Payment method added successfully");
+        }, "Payment method added successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error adding payment method', { type, error: errorMessage });
@@ -4774,7 +4774,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,
       openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
     },
-    execute: async (input, { log, reportProgress }) =&gt; {
+    execute: async (input, { log, reportProgress }): Promise&lt;string&gt; =&gt; {
       const { organizationId, contacts, taxInfo, autoRenewal } = input;
 <span class="cstat-no" title="statement not covered" ></span>
       log.info('Upda<span class="cstat-no" title="statement not covered" >ting billing information', {</span>
@@ -4870,7 +4870,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) =&gt; {
+    execute: async (input, { log, reportProgress }): Promise&lt;string&gt; =&gt; {
       const { organizationId, name, description, type, scope, budget, categories, thresholds } = input;
 &nbsp;
       log.info('Setting budget', {
@@ -4970,7 +4970,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             budget.endDate ? null : 'No end date set - budget will continue indefinitely',
             thresholds.some(t =&gt; t.percentage &gt;= 100) ? 'Budget includes 100% threshold - may cause service interruption' : null,
           ].filter(Boolean),
-        }, `Budget "${name}" created successfully`);
+        }, `Budget "${name}" created successfully`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error setting budget', { name, type, error: errorMessage });
@@ -4990,7 +4990,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) =&gt; {
+    execute: async (input, { log, reportProgress }): Promise&lt;string&gt; =&gt; {
       const { organizationId, name, description, conditions, notifications, actions } = input;
 &nbsp;
       log.info('Creating cost alert', {
@@ -5119,7 +5119,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) =&gt; {
+    execute: async (input, { log, reportProgress }): Promise&lt;string&gt; =&gt; {
       const { 
         organizationId, 
         period, 
@@ -5271,7 +5271,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             'Monitor actual vs projected costs',
             includeSeasonality ? 'Plan for seasonal cost variations' : null,
           ].filter(Boolean),
-        }, "Cost projection generated successfully");
+        }, "Cost projection generated successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error generating cost projection', { period, algorithm, error: errorMessage });
@@ -5292,7 +5292,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) =&gt; {
+    execute: async (input, { log, reportProgress }): Promise&lt;string&gt; =&gt; {
       const { organizationId, criteria, action, notification, dryRun } = input;
 &nbsp;
       log.info('Evaluating high cost scenarios for pausing', {
@@ -5458,7 +5458,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             'Investigate root causes of high costs',
             'Update budgets and thresholds as needed',
           ],
-        }, `High cost scenarios evaluation completed - ${dryRun ? 'simulation mode' : 'actions executed'}`);
+        }, `High cost scenarios evaluation completed - ${dryRun ? 'simulation mode' : 'actions executed'}`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error evaluating high cost scenarios', { action, dryRun, error: errorMessage });
@@ -5479,7 +5479,7 @@ export default addBillingTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T04:33:58.145Z
+                at 2025-08-22T05:01:57.968Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

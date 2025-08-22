@@ -13,8 +13,8 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 /**
  * Create analyze blueprint tool configuration
  */
-export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition {
-  const { logger } = context;
+export function createAnalyzeBlueprintTool(_context: ToolContext): ToolDefinition {
+  // No context properties needed for this tool
   
   return {
     name: 'analyze-blueprint',
@@ -86,7 +86,7 @@ export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Blueprint analysis failed', { error: errorMessage });
+        if (log && log.error) { log.error('Blueprint analysis failed', { error: errorMessage }); }
         throw new UserError(`Blueprint analysis failed: ${errorMessage}`);
       }
     },

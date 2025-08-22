@@ -1940,7 +1940,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWo<span class="cstat-no" title="statement not covered" >rldHint: true,</span>
     },<span class="cstat-no" title="statement not covered" ></span>
     execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { organizationId, startDate, endDate, period, includeUsage, includePerformance, includeBilling } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -2017,7 +2017,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWorldHint: true,
     },
     execute: async (input, context) =&gt; {
-      const { lo<span class="cstat-no" title="statement not covered" >g = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};</span>
+      const { lo<span class="cstat-no" title="statement not covered" >g = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};</span>
       const { organi<span class="cstat-no" title="statement not covered" >zationId, teamId, userId, action, resour</span>ce, startDate, endDate, limit, offset } = input;
 <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp; log<span class="cstat-no" title="statement not covered" >.info) {</span>
@@ -2110,7 +2110,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       logId: z.number().min(1).describe('Audit log ID to retrieve'),
     }),
     execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { logId } = input;
 &nbsp;
       if (log &amp;&amp;<span class="cstat-no" title="statement not covered" > log.info) {</span>
@@ -2163,7 +2163,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },<span class="cstat-no" title="statement not covered" ></span>
     parameters: <span class="cstat-no" title="statement not covered" >ScenarioLogFiltersSchema,</span>
     execute: async (<span class="cstat-no" title="statement not covered" >input, context) =&gt; {</span>
-      const { log = { info: () =&gt;<span class="cstat-no" title="statement not covered" > {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportPr</span>ogress: _reportProgress = () =&gt; {} } = context || {};
+      const { log = { info: (): v<span class="cstat-no" title="statement not covered" >oid =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: ()</span>: void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { sc<span class="cstat-no" title="statement not covered" >enarioId, executionId, level, startDate, endDate, limit, offset } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp; log.info) {
@@ -2251,7 +2251,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },<span class="cstat-no" title="statement not covered" ></span>
     parameters: Exec<span class="cstat-no" title="statement not covered" >utionHistoryFiltersSchema,</span>
     execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context) =&gt; {</span>
-      const { log = <span class="cstat-no" title="statement not covered" >{ info: () =&gt; {}, error: (</span>) =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};
+      const { log = <span class="cstat-no" title="statement not covered" >{ info: (): void =&gt; {}, er</span>ror: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { scenarioId, organ<span class="cstat-no" title="statement not covered" >izationId, tea</span>mId, status, startDate, endDate, limit, offset } = input;
 <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp; log<span class="cstat-no" title="statement not covered" >.info) {</span>
@@ -2353,7 +2353,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },
     parameters: IncompleteExecutionFiltersSch<span class="cstat-no" title="statement not covered" >ema,</span>
     execute: async (input, contex<span class="cstat-no" title="statement not covered" >t) =&gt; {</span>
-      const { lo<span class="cstat-no" title="statement not covered" >g = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};</span>
+      const { lo<span class="cstat-no" title="statement not covered" >g = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};</span>
       const { scenar<span class="cstat-no" title="statement not covered" >ioId, organizationId, status, canResume, limit, offset } = input;</span>
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -2444,7 +2444,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       reason: z.stri<span class="cstat-no" title="statement not covered" >ng().optional</span>().describe('Reason for the resolution action'),
     }),<span class="cstat-no" title="statement not covered" ></span>
     execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { executionId, action, reason } = input;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (log &amp;&amp; log.info) {</span>
@@ -2500,7 +2500,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },
     parameters: HookLogFiltersSchema,
     execute: async (input, context) =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      const { log = { info: () =&gt; {}, error: () =&gt; {}<span class="fstat-no" title="function not covered" >, </span>warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};
+      const { log = { info: (): void =&gt; {}, error: ()<span class="fstat-no" title="function not covered" >: </span>void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { hookId, su<span class="cstat-no" title="statement not covered" >ccess, method, startDate, endDate, limit, offs</span>et } = input;
 <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp; log.info) {
@@ -2588,7 +2588,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
     },
     parameters: <span class="cstat-no" title="statement not covered" >ExportDataSchema,</span>
     execute: async (<span class="cstat-no" title="statement not covered" >input, contex</span>t) =&gt; {
-      const { lo<span class="cstat-no" title="statement not covered" >g = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} },</span> reportProgress: _reportProgress = () =&gt; {} } = context || {};
+      const { lo<span class="cstat-no" title="statement not covered" >g = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, </span>debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { organizationId, dataType, format, startDate, endDate, includeDetails } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -2662,7 +2662,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       endDate: z.string().optional().describe('End date for metrics (ISO format)'),
     }),
     execute: async (input, context) =&gt; {
-<span class="cstat-no" title="statement not covered" >      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: </span>() =&gt; {} }, reportProgress: _reportProgress = () =&gt; {} } = context || {};
+<span class="cstat-no" title="statement not covered" >      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): v</span>oid =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
       const { organizationId, metric, period, startDate, endDate } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -2728,7 +2728,7 @@ export default addAnalyticsTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T04:33:57.942Z
+                at 2025-08-22T05:01:57.534Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

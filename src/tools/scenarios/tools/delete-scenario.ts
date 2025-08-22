@@ -12,7 +12,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  * Create delete scenario tool configuration
  */
 export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient } = context;
   
   return {
     name: 'delete-scenario',
@@ -73,10 +73,10 @@ export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Failed to delete scenario', { 
+        if (log && log.error) { log.error('Failed to delete scenario', { 
           scenarioId: typedArgs.scenarioId, 
           error: errorMessage 
-        });
+        }); }
         throw new UserError(`Failed to delete scenario: ${errorMessage}`);
       }
     },

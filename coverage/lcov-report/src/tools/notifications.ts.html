@@ -4307,8 +4307,8 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       idempotentHint: false, // Each notification is unique with timestamp
       openWorldHint: true, // External messaging services (email, SMS, Slack, etc.)
     },
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context) =&gt; {</span>
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -4414,7 +4414,7 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
             successf<span class="cstat-no" title="statement not covered" >ulDeliveries: notification.delivery.successfulD</span>eliveries,
             failedDeliveries: notification.delivery.failedDeliveries,
           },<span class="cstat-no" title="statement not covered" ></span>
-        });<span class="cstat-no" title="statement not covered" ></span>
+        }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
       } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log &amp;&amp; log.error) {<span class="cstat-no" title="statement not covered" ></span>
@@ -4440,7 +4440,7 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       openWorldHint: true, // May access external preference systems
     },
     execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} } } = context || {};
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} } } = context || {};
       const { userId, includeStats } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -4523,8 +4523,8 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       idempotentHint<span class="cstat-no" title="statement not covered" >: true, // Same preferen</span>ces produce same result
       openWorldH<span class="cstat-no" title="statement not covered" >int: true, // May update external preference systems</span>
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context) =&gt; {</span>
-      const { log = <span class="cstat-no" title="statement not covered" >{ info: () =&gt; {}, error: () =&gt; {}, warn:</span> () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = <span class="cstat-no" title="statement not covered" >{ info: (): void =&gt; {}, error: (): void </span>=&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { us<span class="cstat-no" title="statement not covered" >erId, preferences, timezone, language, unsubscribeAll } = input;</span>
 <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp; log.info) {<span class="cstat-no" title="statement not covered" ></span>
@@ -4613,7 +4613,7 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
             }).filter(([, enabled]) =&gt; enabled).map(([category]) =&gt; category),
             lastUpdated: updatedPreferences.lastUpdated,
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (<span class="cstat-no" title="statement not covered" >log &amp;&amp; log.error) {</span>
@@ -4637,8 +4637,8 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       idempotentHint<span class="cstat-no" title="statement not covered" >: false, // Each template creation is unique</span>
       openWorldHint: false, // Internal template management
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (<span class="cstat-no" title="statement not covered" >input, context) =&gt; {</span>
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: async (<span class="cstat-no" title="statement not covered" >input, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { name, description, type,<span class="cstat-no" title="statement not covered" > category, org</span>anizationId, template, design } = input;
 <span class="cstat-no" title="statement not covered" ></span>
       if (log &amp;&amp; log<span class="cstat-no" title="statement not covered" >.info) {</span>
@@ -4751,8 +4751,8 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       idempotentHint: fals<span class="branch-0 cbranch-no" title="branch not covered" >e, // Ea<span class="fstat-no" title="function not covered" >ch</span> structure creat<span class="fstat-no" title="function not covered" >io</span>n is unique<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
       openWorldHint: false, // Internal data structure management<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
-    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context) =&gt; {</span>
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { name, description, type, organizationId, teamId, scope, structure, validation, transformation } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -4898,7 +4898,7 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       openWorldHint: false, // Internal data structure listing
     },
     execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} } } = context || {};
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} } } = context || {};
       const { type, scope, organizationId, teamId, format, search, includeValidation, includeTransformation, limit, offset, sortBy, sortOrder } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -5011,8 +5011,8 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       readOnlyHint: true,
       openWorldHint: false, // Internal data structure retrieval
     },
-    execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: async (input, context): Promise&lt;string&gt; =&gt; {
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { dataStructureId, organizationId, teamId, includeUsageStats, includeValidationHistory, includeTransformationHistory } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -5165,8 +5165,8 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       idempotentHint: true, // Same updates produce same result
       openWorldHint: false, // Internal data structure management
 <span class="cstat-no" title="statement not covered" >    },</span>
-    execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: async (input, context): Promise&lt;string&gt; =&gt; {
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { dataStructureId, organizationId, teamId, name, description, structure, validation, transformation } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -5294,7 +5294,7 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
             transformUrl: `/data-structures/${updatedDataStructure.id}/transform`,
             testUrl: `/data-structures/${updatedDataStructure.id}/test`,
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log &amp;&amp; log.error) {
@@ -5326,8 +5326,8 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       idempotentHint: true, // Multiple deletes of same structure have same effect
       openWorldHint: false, // Internal data structure management
     },
-    execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} }, reportProgress = () =&gt; {} } = context || {};
+    execute: async (input, context): Promise&lt;string&gt; =&gt; {
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const { dataStructureId, organizationId, teamId, force, checkDependencies, confirmationCode, archiveBeforeDelete } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -5465,7 +5465,7 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
               'Use the archive download URL to restore this data structure if needed within 30 days.' :
               'No archive was created. This deletion cannot be undone.',
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log &amp;&amp; log.error) {
@@ -5502,7 +5502,7 @@ export function addN<span class="cstat-no" title="statement not covered" >otific
       openWorldHint: true, // May query delivery status from external systems
     },
     execute: async (input, context) =&gt; {
-      const { log = { info: () =&gt; {}, error: () =&gt; {}, warn: () =&gt; {}, debug: () =&gt; {} } } = context || {};
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} } } = context || {};
       const { type, status, priority, dateRange, includeDelivery, includeTracking, limit, offset, sortBy, sortOrder } = input;
 &nbsp;
       if (log &amp;&amp; log.info) {
@@ -5617,7 +5617,7 @@ export default addNotificationTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T04:33:57.942Z
+                at 2025-08-22T05:01:57.534Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
