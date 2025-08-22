@@ -162,7 +162,7 @@ export const RBACPolicySchema = z.object({
     path: z.string().min(1, 'Path is required'),
     capabilities: z.array(z.enum(['create', 'read', 'update', 'delete', 'list', 'sudo', 'deny'])),
     requiredParameters: z.array(z.string()).optional(),
-    allowedParameters: z.record(z.array(z.string())).optional(),
+    allowedParameters: z.record(z.string(), z.array(z.string())).optional(),
     deniedParameters: z.array(z.string()).optional(),
     minWrappingTtl: z.string().optional(),
     maxWrappingTtl: z.string().optional(),

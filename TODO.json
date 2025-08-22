@@ -37,9 +37,9 @@
       ]
     },
     {
-      "id": "task_1755864560130_pqb4lfyil",
-      "title": "Fix TypeScript compilation errors in custom-apps.ts lines 264 and 295",
-      "description": "Resolve Zod default value type mismatches where functions returning values dont match expected union types",
+      "id": "task_1755864674170_364uapkek",
+      "title": "Fix TypeScript compilation error in vault-config.ts line 165",
+      "description": "Fix Zod record schema function call that expects 2-3 arguments but got 1",
       "mode": "DEVELOPMENT",
       "category": "error",
       "priority": "critical",
@@ -50,7 +50,7 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-22T12:09:20.130Z",
+      "created_at": "2025-08-22T12:11:14.171Z",
       "auto_research_created": false
     }
   ],
