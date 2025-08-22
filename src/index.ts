@@ -60,7 +60,8 @@ async function main(): Promise<void> {
 // Start the server
 if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch((error) => {
-    console.error('Unhandled error during server startup:', error);
+    // Use stderr instead of console.error to avoid corrupting MCP stdio protocol
+    process.stderr.write(`Unhandled error during server startup: ${error}\n`);
     process.exit(1);
   });
 }

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40.9% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/22</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.51% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>5/27</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/6</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40.9% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/22</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
@@ -162,36 +162,36 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">64x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">64x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">64x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -256,22 +256,22 @@
  * Ensures consistent response formats and prevents JSON parsing errors
  */
 &nbsp;
-export interface ToolResponse {
-  content: Array&lt;{
-    type: 'text';
-    text: string;
-  }&gt;;
-}
+<span class="cstat-no" title="statement not covered" >export interface ToolResponse {</span>
+<span class="cstat-no" title="statement not covered" >  content: Array&lt;{</span>
+<span class="cstat-no" title="statement not covered" >    type: 'text';</span>
+<span class="cstat-no" title="statement not covered" >    text: string;</span>
+<span class="cstat-no" title="statement not covered" >  }&gt;;</span>
+<span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
 /**
  * Format a data object as a proper FastMCP tool response
  * This prevents JSON parsing errors caused by returning JSON.stringify() directly
- */
-export function formatToolResponse(data: unknown): ToolResponse {
+ */<span class="fstat-no" title="function not covered" ></span>
+expo<span class="cstat-no" title="statement not covered" >rt function formatToolResponse(data: unknown): ToolResponse {</span>
   return {
     content: [
       {
-        type: 'text',<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+        type: 'text',
         text: typeof data === 'string' ? data : JSON.stringify(data, null, 2),
       },
     ],
@@ -279,13 +279,13 @@ export function formatToolResponse(data: unknown): ToolResponse {
 }
 &nbsp;
 /**
- * Format a success response with structured data
- */
+ * Format<span class="fstat-no" title="function not covered" > a success response wi</span>th structured data
+ */<span class="cstat-no" title="statement not covered" ></span>
 export function formatSuccessResponse(data: unknown, message?: string): ToolResponse {
-  const response = {<span class="branch-1 cbranch-no" title="branch not covered" ></span>
-    success: true,<span class="branch-1 cbranch-no" title="branch not covered" ></span>
+  const response = {
+    success: true,
     ...(message &amp;&amp; { message }),
-    ...(typeof data === 'object' &amp;&amp; data !== null ? data : { data }),
+<span class="cstat-no" title="statement not covered" >    ...(typeof data === 'object' &amp;&amp; data </span>!== null ? data : { data }),
   };
 &nbsp;
   return formatToolResponse(response);
@@ -352,7 +352,7 @@ export f<span class="cstat-no" title="statement not covered" >unction validateTo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:12:16.801Z
+                at 2025-08-22T03:41:57.059Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

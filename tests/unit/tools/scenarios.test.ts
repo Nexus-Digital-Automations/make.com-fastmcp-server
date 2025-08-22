@@ -49,6 +49,12 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
   let mockLog: any;
   let mockReportProgress: jest.MockedFunction<any>;
 
+  // Helper to parse response format consistently
+  const parseToolResult = (result: any) => {
+    const resultText = result.content?.[0]?.text || result;
+    return typeof resultText === 'string' ? JSON.parse(resultText) : resultText;
+  };
+
   beforeEach(async () => {
     const serverSetup = createMockServer();
     mockServer = serverSetup.server;
@@ -159,7 +165,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       const result = await tool.execute({}, mockContext);
       
       // Verify response structure
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('scenarios');
       expect(parsedResult).toHaveProperty('pagination');
       expect(parsedResult).toHaveProperty('filters');
@@ -291,7 +297,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       const tool = findTool(mockTool, 'list-scenarios');
       const result = await executeTool(tool, {}, { log: mockLog, reportProgress: mockReportProgress });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.scenarios).toEqual([]);
       expect(parsedResult.pagination.total).toBe(0);
       expect(parsedResult.pagination.hasMore).toBe(false);
@@ -329,7 +335,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         scenarioId: scenario.id.toString() 
       }, { log: mockLog, reportProgress: mockReportProgress });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('scenario');
       expect(parsedResult).toHaveProperty('timestamp');
       expect(parsedResult.scenario.id).toBe(scenario.id);
@@ -361,7 +367,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         includeBlueprint: true
       }, { log: mockLog, reportProgress: mockReportProgress });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('blueprint');
       expect(parsedResult.blueprint.flow).toHaveLength(2);
       expect(parsedResult.blueprint.settings.timeout).toBe(30000);
@@ -387,7 +393,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         includeExecutions: true
       }, { log: mockLog, reportProgress: mockReportProgress });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('recentExecutions');
       expect(parsedResult.recentExecutions).toHaveLength(2);
       
@@ -422,7 +428,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         includeExecutions: true
       }, mockContext);
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('blueprint');
       expect(parsedResult).toHaveProperty('recentExecutions');
       
@@ -506,7 +512,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         includeExecutions: true
       }, { log: mockLog, reportProgress: mockReportProgress });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('scenario');
       expect(parsedResult).not.toHaveProperty('blueprint'); // Failed to load
       expect(parsedResult).toHaveProperty('recentExecutions'); // Succeeded
@@ -541,7 +547,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         name: 'Minimal Test Scenario'
       }, mockContext);
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('scenario');
       expect(parsedResult).toHaveProperty('message');
       expect(parsedResult).toHaveProperty('timestamp');
@@ -795,7 +801,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         name: updatedName
       }, { log: mockLog, reportProgress: mockReportProgress });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('scenario');
       expect(parsedResult).toHaveProperty('updates');
       expect(parsedResult).toHaveProperty('message');
@@ -1015,7 +1021,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         force: false
       }, mockContext);
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('scenarioId');
       expect(parsedResult).toHaveProperty('message');
       expect(parsedResult).toHaveProperty('force');
@@ -1067,7 +1073,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         force: true
       }, { log: mockLog, reportProgress: mockReportProgress });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.force).toBe(true);
       
       // Should skip scenario check and go directly to DELETE
@@ -1174,7 +1180,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         name: cloneName
       }, mockContext);
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult).toHaveProperty('originalScenarioId');
       expect(parsedResult).toHaveProperty('clonedScenario');
       expect(parsedResult).toHaveProperty('message');
@@ -1421,7 +1427,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       
       expect(results).toHaveLength(10);
       results.forEach((result, index) => {
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.scenarios).toHaveLength(10);
         expect(parsed.pagination.offset).toBe(index * 10);
       });
@@ -1516,7 +1522,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         includeBlueprint: true
       }, { log: mockLog });
       
-      const parsed = JSON.parse(result);
+      const parsed = parseToolResult(result);
       expect(parsed.blueprint.flow).toHaveLength(100);
       expect(Object.keys(parsed.blueprint.settings.variables)).toHaveLength(200);
     });

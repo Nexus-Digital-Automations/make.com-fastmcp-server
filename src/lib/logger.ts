@@ -3,7 +3,10 @@
  * Provides consistent logging across the application with correlation ID tracking
  */
 
+import fs from 'fs';
+import path from 'path';
 import configManager from './config.js';
+import { getLogsDirectory } from '../utils/path-resolver.js';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -114,17 +117,29 @@ export class Logger {
 
     const formattedLog = this.formatLogEntry(entry);
 
-    switch (level) {
-      case 'debug':
-      case 'info':
-        console.log(formattedLog);
-        break;
-      case 'warn':
-        console.warn(formattedLog);
-        break;
-      case 'error':
-        console.error(formattedLog);
-        break;
+    // For MCP servers, we must avoid writing to stdout as it corrupts the JSON-RPC protocol
+    // All output should go to stderr or a log file
+    
+    try {
+      // Write to log file instead of console
+      // Use test-friendly path resolver
+      const logDir = getLogsDirectory();
+      
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+      
+      const logFile = path.join(logDir, 'server.log');
+      fs.appendFileSync(logFile, formattedLog + '\n');
+      
+      // Only write critical errors to stderr (not all errors) to minimize stdio pollution
+      if (level === 'error') {
+        process.stderr.write(formattedLog + '\n');
+      }
+    } catch (writeError) {
+      // Fallback: only write to stderr if file writing fails
+      // Suppress logger errors to avoid infinite loops and stdio pollution
+      process.stderr.write(`[${new Date().toISOString()}] LOGGER_ERROR: ${writeError}\n`);
     }
   }
 

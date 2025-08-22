@@ -22,6 +22,12 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
   let mockApiClient: MockMakeApiClient;
   let mockTool: jest.MockedFunction<any>;
 
+  // Helper to parse response format consistently
+  const parseToolResult = (result: any) => {
+    const resultText = result.content?.[0]?.text || result;
+    return typeof resultText === 'string' ? JSON.parse(resultText) : resultText;
+  };
+
   // Use the test connection from fixtures
   const testConnection = testConnections.gmail;
 
@@ -97,9 +103,12 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
         const tool = findTool(mockTool, 'list-connections');
         const result = await executeTool(tool, {});
         
-        expect(result).toContain(testConnection.name);
-        expect(result).toContain(testConnection.service);
-        expect(result).toContain('pagination');
+        const parsedResult = parseToolResult(result);
+        expect(parsedResult.success).toBe(true);
+        const resultStr = JSON.stringify(parsedResult);
+        expect(resultStr).toContain(testConnection.name);
+        expect(resultStr).toContain(testConnection.service);
+        expect(resultStr).toContain('pagination');
         
         const calls = mockApiClient.getCallLog();
         expect(calls[0].data.limit).toBe(20);
@@ -150,7 +159,7 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
           offset: 10
         });
 
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.pagination.total).toBe(100);
         expect(parsed.pagination.limit).toBe(20);
         expect(parsed.pagination.offset).toBe(10);
@@ -496,7 +505,7 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
         const tool = findTool(mockTool, 'test-connection');
         const result = await executeTool(tool, { connectionId: 12345 });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.connectionId).toBe(12345);
         expect(parsed.isValid).toBe(true);
         expect(parsed.message).toBe('Connection test successful');
@@ -542,7 +551,7 @@ describe('Connection and Webhook Management Tools - Comprehensive Test Suite', (
         const tool = findTool(mockTool, 'test-connection');
         const result = await executeTool(tool, { connectionId: 12345 });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.isValid).toBe(false);
         expect(parsed.message).toBe('Authentication failed - invalid token');
       });
