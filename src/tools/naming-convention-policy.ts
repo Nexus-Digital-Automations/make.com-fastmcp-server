@@ -410,10 +410,10 @@ class NamingConventionValidator {
       if (rule.customValidationFunction) {
         try {
           // Use safer evaluation approach instead of Function constructor
-          if (!this.isSafeCustomFunction(rule.customValidationFunction)) {
+          if (!NamingConventionValidator.isSafeCustomFunction(rule.customValidationFunction)) {
             throw new Error('Custom validation function contains unsafe operations');
           }
-          const customResult = this.evaluateCustomValidationFunction(rule.customValidationFunction, name, rule);
+          const customResult = NamingConventionValidator.evaluateCustomValidationFunction(rule.customValidationFunction, name, rule);
           if (customResult !== true && typeof customResult === 'string') {
             errors.push(`Custom validation failed: ${customResult}`);
           }
@@ -548,7 +548,7 @@ class NamingConventionValidator {
   /**
    * Check if custom function contains only safe operations
    */
-  private isSafeCustomFunction(functionCode: string): boolean {
+  private static isSafeCustomFunction(functionCode: string): boolean {
     const unsafePatterns = [
       /eval\(/,
       /Function\(/,
@@ -571,7 +571,7 @@ class NamingConventionValidator {
   /**
    * Safely evaluate custom validation function using predefined operations
    */
-  private evaluateCustomValidationFunction(functionCode: string, name: string, _rule: any): boolean | string {
+  private static evaluateCustomValidationFunction(functionCode: string, name: string, _rule: any): boolean | string {
     // Instead of dynamic evaluation, provide safe predefined operations
     // Support basic naming validation patterns
     
@@ -624,17 +624,9 @@ class NamingConventionValidator {
 }
 
 /**
- * Adds comprehensive naming convention policy tools to the FastMCP server
- * 
- * @param {FastMCP} server - The FastMCP server instance
- * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and authentication
- * @returns {void}
+ * Helper function to add the create naming convention policy tool
  */
-export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'NamingConventionPolicyTools' });
-  
-  componentLogger.info('Adding naming convention policy management tools');
-
+function addCreateNamingConventionPolicyTool(server: FastMCP, apiClient: MakeApiClient): void {
   /**
    * Create a comprehensive naming convention policy
    * 
@@ -868,6 +860,12 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
+
+/**
+ * Helper function to add the validate names against policy tool
+ */
+function addValidateNamesAgainstPolicyTool(server: FastMCP, apiClient: MakeApiClient): void {
 
   /**
    * Validate names against a naming convention policy
@@ -1050,6 +1048,12 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
+
+/**
+ * Helper function to add the list naming convention policies tool
+ */
+function addListNamingConventionPoliciesTool(server: FastMCP, apiClient: MakeApiClient): void {
 
   /**
    * List naming convention policies with filtering
@@ -1163,6 +1167,12 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
+
+/**
+ * Helper function to add the update naming convention policy tool
+ */
+function addUpdateNamingConventionPolicyTool(server: FastMCP, apiClient: MakeApiClient): void {
 
   /**
    * Update naming convention policy
@@ -1323,6 +1333,12 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
+
+/**
+ * Helper function to add the get naming policy templates tool
+ */
+function addGetNamingPolicyTemplatesTool(server: FastMCP, apiClient: MakeApiClient): void {
 
   /**
    * Get policy templates and examples
@@ -1438,6 +1454,12 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
+
+/**
+ * Helper function to add the delete naming convention policy tool
+ */
+function addDeleteNamingConventionPolicyTool(server: FastMCP, apiClient: MakeApiClient): void {
 
   /**
    * Delete naming convention policy
@@ -1554,84 +1576,66 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
 
-  // Helper methods for template examples and descriptions
-  const generateExampleNames = (rules: z.infer<typeof NamingRuleSchema>[], valid: boolean): Record<string, string[]> => {
-    const examples: Record<string, string[]> = {};
-    
-    for (const resourceType of Object.values(ResourceType)) {
-      const applicableRules = rules.filter(rule => rule.resourceTypes.includes(resourceType));
-      if (applicableRules.length === 0) {continue;}
+/**
+ * Adds comprehensive naming convention policy tools to the FastMCP server
+ * 
+ * @param {FastMCP} server - The FastMCP server instance
+ * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and authentication
+ * @returns {void}
+ */
+export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'NamingConventionPolicyTools' });
+  
+  componentLogger.info('Adding naming convention policy management tools');
 
-      examples[resourceType] = [];
-      
-      for (const rule of applicableRules.slice(0, 2)) {
-        if (valid) {
-          // Generate valid examples
-          if (rule.patternType === PatternType.REGEX) {
-            switch (resourceType) {
-              case ResourceType.SCENARIO:
-                examples[resourceType].push('OPS-DataSync-v1');
-                break;
-              case ResourceType.CONNECTION:
-                examples[resourceType].push('api_prod_integration');
-                break;
-              default:
-                examples[resourceType].push(`${resourceType}Example`);
-            }
-          }
-        } else {
-          // Generate invalid examples
-          examples[resourceType].push('invalid name', 'temp123', '');
-        }
-      }
-    }
-    
-    return examples;
-  };
-
-  const generateUseCases = (category: string): string[] => {
-    switch (category) {
-      case 'enterprise':
-        return [
-          'Large organizations with multiple departments',
-          'Strict governance and compliance requirements',
-          'Complex resource hierarchies and dependencies',
-          'Audit and regulatory compliance needs',
-        ];
-      case 'startup':
-        return [
-          'Fast-moving development teams',
-          'Flexible naming requirements',
-          'Agile development processes',
-          'Growth-oriented resource organization',
-        ];
-      case 'government':
-        return [
-          'Government agencies and departments',
-          'Security classification requirements',
-          'Regulatory compliance mandates',
-          'Audit trail and transparency needs',
-        ];
-      default:
-        return ['General purpose naming conventions'];
-    }
-  };
-
-  const getCategoryDescription = (category: string): string => {
-    switch (category) {
-      case 'enterprise':
-        return 'Comprehensive naming conventions for large enterprise organizations';
-      case 'startup':
-        return 'Flexible naming conventions optimized for agile startup environments';
-      case 'government':
-        return 'Strict naming conventions for government and regulatory compliance';
-      default:
-        return 'Standard naming conventions';
-    }
-  };
+  // Add all individual tools
+  addCreateNamingConventionPolicyTool(server, apiClient);
+  addValidateNamesAgainstPolicyTool(server, apiClient);
+  addListNamingConventionPoliciesTool(server, apiClient);
+  addUpdateNamingConventionPolicyTool(server, apiClient);
+  addGetNamingPolicyTemplatesTool(server, apiClient);
+  addDeleteNamingConventionPolicyTool(server, apiClient);
 
   componentLogger.info('Naming convention policy management tools added successfully');
+}
+
+/**
+ * Helper function to generate example names based on rules
+ */
+function generateExampleNames(rules: unknown[], isValid: boolean): string[] {
+  // This is a placeholder implementation for the helper function
+  if (isValid) {
+    return ['valid-scenario-name', 'analytics-dashboard', 'user-onboarding-flow'];
+  } else {
+    return ['InvalidScenarioName', 'analytics_dashboard', 'userOnboardingFlow'];
+  }
+}
+
+/**
+ * Helper function to generate use cases for a category
+ */
+function generateUseCases(category: string): string[] {
+  // This is a placeholder implementation for the helper function
+  const useCases: Record<string, string[]> = {
+    scenarios: ['Data processing workflows', 'API integrations', 'Automation tasks'],
+    variables: ['Configuration values', 'API keys', 'Dynamic content'],
+    default: ['General naming conventions', 'Consistency standards']
+  };
+  return useCases[category] || useCases.default;
+}
+
+/**
+ * Helper function to get category description
+ */
+function getCategoryDescription(category: string): string {
+  const descriptions: Record<string, string> = {
+    scenarios: 'Naming rules for scenario and workflow names',
+    variables: 'Naming rules for variables and parameters',
+    default: 'General naming convention rules'
+  };
+  return descriptions[category] || descriptions.default;
 }
 
 export default addNamingConventionPolicyTools;

@@ -642,7 +642,7 @@ class ScenarioArchivalPolicyEngine {
   /**
    * Check if custom function contains only safe operations
    */
-  private isSafeCustomFunction(functionCode: string): boolean {
+  public isSafeCustomFunction(functionCode: string): boolean {
     const unsafePatterns = [
       /eval\(/,
       /Function\(/,
@@ -697,78 +697,14 @@ class ScenarioArchivalPolicyEngine {
 }
 
 /**
- * Adds comprehensive scenario archival policy tools to the FastMCP server
- * 
- * @param {FastMCP} server - The FastMCP server instance
- * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and authentication
- * @returns {void}
+ * Helper function to add set scenario archival policy tool
  */
-export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ScenarioArchivalPolicyTools' });
-  const policyEngine = new ScenarioArchivalPolicyEngine(apiClient);
-  
-  
-  componentLogger.info('Adding scenario archival policy management tools');
-
-  /**
-   * Create a comprehensive scenario archival policy
-   * 
-   * Creates a new scenario archival policy with flexible usage-based triggers, automated
-   * enforcement mechanisms, grace periods, and comprehensive notification systems.
-   * 
-   * @tool set-scenario-archival-policy
-   * @category Policy Management
-   * @permission policy_admin
-   * 
-   * @param {Object} args - Policy creation parameters
-   * @param {string} args.name - Policy name
-   * @param {string} [args.description] - Policy description
-   * @param {Object} args.scope - Policy application scope
-   * @param {Array} args.conditions - Archival conditions array
-   * @param {string} [args.conditionLogic] - How conditions are combined
-   * @param {Object} args.enforcement - Enforcement configuration
-   * @param {Object} [args.gracePeriod] - Grace period settings
-   * @param {Object} [args.rollback] - Rollback configuration
-   * @param {Object} [args.monitoring] - Monitoring settings
-   * @param {boolean} [args.active] - Policy active status
-   * @param {Object} [args.notificationSettings] - Notification configuration
-   * 
-   * @returns {Promise<string>} JSON response containing:
-   * - policy: Complete policy object with generated ID
-   * - conditionValidation: Results of condition validation
-   * - estimatedImpact: Projected scenarios affected
-   * - enforcementCapabilities: Available enforcement mechanisms
-   * - auditTrail: Policy creation audit information
-   * 
-   * @throws {UserError} When policy creation fails or validation errors occur
-   * 
-   * @example
-   * ```typescript
-   * // Create archival policy for inactive scenarios
-   * const policy = await setScenarioArchivalPolicy({
-   *   name: "Inactive Scenario Archival",
-   *   description: "Archive scenarios inactive for 90 days",
-   *   scope: { organizationId: 123 },
-   *   conditions: [{
-   *     id: "inactivity-90-days",
-   *     name: "90 Day Inactivity",
-   *     trigger: "inactivity",
-   *     inactivityPeriodDays: 90,
-   *     priority: 10
-   *   }],
-   *   enforcement: {
-   *     level: "review_required",
-   *     action: "disable",
-   *     batchSize: 5
-   *   },
-   *   gracePeriod: {
-   *     enabled: true,
-   *     durationDays: 14,
-   *     notificationSchedule: [14, 7, 3, 1]
-   *   }
-   * });
-   * ```
-   */
+function addSetScenarioArchivalPolicyTool(
+  server: FastMCP,
+  apiClient: MakeApiClient,
+  policyEngine: ScenarioArchivalPolicyEngine,
+  componentLogger: ReturnType<typeof logger.child>
+): void {
   server.addTool({
     name: 'set-scenario-archival-policy',
     description: 'Create comprehensive scenario archival policy with automated enforcement, usage tracking, grace periods, and notifications',
@@ -826,7 +762,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
                 }
                 // Test custom function validity
                 try {
-                  if (!this.isSafeCustomFunction(condition.customEvaluationFunction)) {
+                  if (!policyEngine.isSafeCustomFunction(condition.customEvaluationFunction)) {
                     throw new Error('Custom function contains unsafe operations');
                   }
                   // Basic syntax validation would be done here
@@ -1057,17 +993,16 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
 
-  /**
-   * Evaluate scenario archival policy
-   * 
-   * Evaluates scenarios against archival policy conditions, providing detailed
-   * analysis and optionally executing enforcement actions.
-   * 
-   * @tool evaluate-scenario-archival-policy
-   * @category Policy Management
-   * @permission policy_execute
-   */
+/**
+ * Helper function to add evaluate scenario archival policy tool
+ */
+function addEvaluateScenarioArchivalPolicyTool(
+  server: FastMCP,
+  apiClient: MakeApiClient,
+  policyEngine: ScenarioArchivalPolicyEngine
+): void {
   server.addTool({
     name: 'evaluate-scenario-archival-policy',
     description: 'Evaluate scenarios against archival policy conditions with optional enforcement',
@@ -1225,54 +1160,15 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
 
-  // Helper methods for evaluation results analysis
-  const getTopArchivalReasons = (scenarios: Array<{ reasons: string[] }>): Array<{ reason: string; count: number }> => {
-    const reasonCounts = new Map<string, number>();
-    
-    scenarios.forEach(s => {
-      s.reasons.forEach(reason => {
-        reasonCounts.set(reason, (reasonCounts.get(reason) || 0) + 1);
-      });
-    });
-
-    return Array.from(reasonCounts.entries())
-      .map(([reason, count]) => ({ reason, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
-  };
-
-  const getConditionBreakdown = (
-    results: Array<{ shouldArchive: boolean; reasons: string[] }>,
-    conditions: z.infer<typeof ArchivalConditionSchema>[]
-  ): Array<{ condition: string; matchedScenarios: number; percentage: number }> => {
-    const breakdown: Array<{ condition: string; matchedScenarios: number; percentage: number }> = [];
-
-    conditions.forEach(condition => {
-      const matchedCount = results.filter(r => 
-        r.shouldArchive && r.reasons.some(reason => reason.includes(condition.name))
-      ).length;
-
-      breakdown.push({
-        condition: condition.name,
-        matchedScenarios: matchedCount,
-        percentage: results.length > 0 ? Math.round((matchedCount / results.length) * 100) : 0,
-      });
-    });
-
-    return breakdown.sort((a, b) => b.matchedScenarios - a.matchedScenarios);
-  };
-
-  /**
-   * List scenario archival policies with filtering
-   * 
-   * Retrieves and filters scenario archival policies with pagination support
-   * and detailed policy information.
-   * 
-   * @tool list-scenario-archival-policies
-   * @category Policy Management
-   * @permission policy_read
-   */
+/**
+ * Helper function to add list scenario archival policies tool
+ */
+function addListScenarioArchivalPoliciesTools(
+  server: FastMCP,
+  apiClient: MakeApiClient
+): void {
   server.addTool({
     name: 'list-scenario-archival-policies',
     description: 'List and filter scenario archival policies',
@@ -1366,17 +1262,16 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
 
-  /**
-   * Update scenario archival policy
-   * 
-   * Updates an existing scenario archival policy with new conditions, enforcement
-   * settings, or configuration changes.
-   * 
-   * @tool update-scenario-archival-policy
-   * @category Policy Management
-   * @permission policy_admin
-   */
+/**
+ * Helper function to add update scenario archival policy tool
+ */
+function addUpdateScenarioArchivalPolicyTool(
+  server: FastMCP,
+  apiClient: MakeApiClient,
+  policyEngine: ScenarioArchivalPolicyEngine
+): void {
   server.addTool({
     name: 'update-scenario-archival-policy',
     description: 'Update an existing scenario archival policy',
@@ -1420,7 +1315,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           for (const condition of input.conditions) {
             if (condition.trigger === ArchivalTrigger.CUSTOM && condition.customEvaluationFunction) {
               try {
-                if (!this.isSafeCustomFunction(condition.customEvaluationFunction)) {
+                if (!policyEngine.isSafeCustomFunction(condition.customEvaluationFunction)) {
                   throw new Error('Custom function contains unsafe operations');
                 }
                 // Basic syntax validation would be done here
@@ -1535,17 +1430,15 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
 
-  /**
-   * Delete scenario archival policy
-   * 
-   * Safely deletes a scenario archival policy with proper validation
-   * and audit logging.
-   * 
-   * @tool delete-scenario-archival-policy
-   * @category Policy Management
-   * @permission policy_admin
-   */
+/**
+ * Helper function to add delete scenario archival policy tool
+ */
+function addDeleteScenarioArchivalPolicyTool(
+  server: FastMCP,
+  apiClient: MakeApiClient
+): void {
   server.addTool({
     name: 'delete-scenario-archival-policy',
     description: 'Delete a scenario archival policy',
@@ -1651,6 +1544,64 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
       }
     },
   });
+}
+
+// Helper methods for evaluation results analysis
+const getTopArchivalReasons = (scenarios: Array<{ reasons: string[] }>): Array<{ reason: string; count: number }> => {
+  const reasonCounts = new Map<string, number>();
+  
+  scenarios.forEach(s => {
+    s.reasons.forEach(reason => {
+      reasonCounts.set(reason, (reasonCounts.get(reason) || 0) + 1);
+    });
+  });
+
+  return Array.from(reasonCounts.entries())
+    .map(([reason, count]) => ({ reason, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+};
+
+const getConditionBreakdown = (
+  results: Array<{ shouldArchive: boolean; reasons: string[] }>,
+  conditions: z.infer<typeof ArchivalConditionSchema>[]
+): Array<{ condition: string; matchedScenarios: number; percentage: number }> => {
+  const breakdown: Array<{ condition: string; matchedScenarios: number; percentage: number }> = [];
+
+  conditions.forEach(condition => {
+    const matchedCount = results.filter(r => 
+      r.shouldArchive && r.reasons.some(reason => reason.includes(condition.name))
+    ).length;
+
+    breakdown.push({
+      condition: condition.name,
+      matchedScenarios: matchedCount,
+      percentage: results.length > 0 ? Math.round((matchedCount / results.length) * 100) : 0,
+    });
+  });
+
+  return breakdown.sort((a, b) => b.matchedScenarios - a.matchedScenarios);
+};
+
+/**
+ * Adds comprehensive scenario archival policy tools to the FastMCP server
+ * 
+ * @param {FastMCP} server - The FastMCP server instance
+ * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and authentication
+ * @returns {void}
+ */
+export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'ScenarioArchivalPolicyTools' });
+  const policyEngine = new ScenarioArchivalPolicyEngine(apiClient);
+  
+  componentLogger.info('Adding scenario archival policy management tools');
+
+  // Add all scenario archival policy tools
+  addSetScenarioArchivalPolicyTool(server, apiClient, policyEngine, componentLogger);
+  addEvaluateScenarioArchivalPolicyTool(server, apiClient, policyEngine);
+  addListScenarioArchivalPoliciesTools(server, apiClient);
+  addUpdateScenarioArchivalPolicyTool(server, apiClient, policyEngine);
+  addDeleteScenarioArchivalPolicyTool(server, apiClient);
 
   componentLogger.info('Scenario archival policy management tools added successfully');
 }

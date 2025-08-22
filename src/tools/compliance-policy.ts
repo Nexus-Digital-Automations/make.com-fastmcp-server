@@ -367,26 +367,10 @@ class CompliancePolicyStore {
 }
 
 /**
- * Adds comprehensive compliance policy management tools to the FastMCP server
- * 
- * @param {FastMCP} server - The FastMCP server instance
- * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and authentication
- * @returns {void}
- * 
- * @example
- * ```typescript
- * import { addCompliancePolicyTools } from './tools/compliance-policy.js';
- * 
- * const server = new FastMCP();
- * const apiClient = new MakeApiClient(config);
- * addCompliancePolicyTools(server, apiClient);
- * ```
+ * Create a comprehensive compliance policy for regulatory requirements
  */
-export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'CompliancePolicyTools' });
-  const policyStore = new CompliancePolicyStore();
-
-  componentLogger.info('Adding comprehensive compliance policy management tools');
+function addCreateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
+  const componentLogger = logger.child({ component: 'CreateCompliancePolicyTool' });
 
   /**
    * Create a comprehensive compliance policy for regulatory requirements
@@ -579,6 +563,13 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
       }
     },
   });
+}
+
+/**
+ * Validate compliance for Make.com scenarios, connections, or data flows
+ */
+function addValidateComplianceTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
+  const componentLogger = logger.child({ component: 'ValidateComplianceTool' });
 
   /**
    * Validate compliance for Make.com scenarios, connections, or data flows
@@ -674,6 +665,13 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
       }
     },
   });
+}
+
+/**
+ * Generate comprehensive compliance report
+ */
+function addGenerateComplianceReportTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
+  const componentLogger = logger.child({ component: 'GenerateComplianceReportTool' });
 
   /**
    * Generate comprehensive compliance report
@@ -807,6 +805,13 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
       }
     },
   });
+}
+
+/**
+ * List all compliance policies with filtering
+ */
+function addListCompliancePoliciesTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
+  const componentLogger = logger.child({ component: 'ListCompliancePoliciesTool' });
 
   /**
    * List all compliance policies with filtering
@@ -885,6 +890,13 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
       }
     },
   });
+}
+
+/**
+ * Update existing compliance policy
+ */
+function addUpdateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
+  const componentLogger = logger.child({ component: 'UpdateCompliancePolicyTool' });
 
   /**
    * Update existing compliance policy
@@ -970,6 +982,13 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
       }
     },
   });
+}
+
+/**
+ * Get compliance policy templates for regulatory frameworks
+ */
+function addGetComplianceTemplatesTool(server: FastMCP, _apiClient: MakeApiClient, _policyStore: CompliancePolicyStore): void {
+  const componentLogger = logger.child({ component: 'GetComplianceTemplatesTool' });
 
   /**
    * Get compliance policy templates for regulatory frameworks
@@ -1055,6 +1074,13 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
       }
     },
   });
+}
+
+/**
+ * Create compliance policy from template
+ */
+function addCreatePolicyFromTemplateTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
+  const componentLogger = logger.child({ component: 'CreatePolicyFromTemplateTool' });
 
   /**
    * Create compliance policy from template
@@ -1246,6 +1272,38 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
       }
     },
   });
+}
+
+/**
+ * Adds comprehensive compliance policy management tools to the FastMCP server
+ * 
+ * @param {FastMCP} server - The FastMCP server instance
+ * @param {MakeApiClient} apiClient - Make.com API client with rate limiting and authentication
+ * @returns {void}
+ * 
+ * @example
+ * ```typescript
+ * import { addCompliancePolicyTools } from './tools/compliance-policy.js';
+ * 
+ * const server = new FastMCP();
+ * const apiClient = new MakeApiClient(config);
+ * addCompliancePolicyTools(server, apiClient);
+ * ```
+ */
+export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'CompliancePolicyTools' });
+  const policyStore = new CompliancePolicyStore();
+
+  componentLogger.info('Adding comprehensive compliance policy management tools');
+
+  // Add all compliance policy tools
+  addCreateCompliancePolicyTool(server, apiClient, policyStore);
+  addValidateComplianceTool(server, apiClient, policyStore);
+  addGenerateComplianceReportTool(server, apiClient, policyStore);
+  addListCompliancePoliciesTool(server, apiClient, policyStore);
+  addUpdateCompliancePolicyTool(server, apiClient, policyStore);
+  addGetComplianceTemplatesTool(server, apiClient, policyStore);
+  addCreatePolicyFromTemplateTool(server, apiClient, policyStore);
 
   componentLogger.info('Compliance policy management tools added successfully');
 }

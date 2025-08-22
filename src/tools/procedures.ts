@@ -348,14 +348,9 @@ const ProcedureExecuteSchema = z.object({
 }).strict();
 
 /**
- * Add remote procedure and device management tools to FastMCP server
+ * Add Create Remote Procedure tool
  */
-export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ProcedureTools' });
-  
-  componentLogger.info('Adding remote procedure and device management tools');
-
-  // Create remote procedure
+function addCreateRemoteProcedureTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-remote-procedure',
     description: 'Create a new remote procedure for webhook, API call, script execution, or other operations',
@@ -497,8 +492,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // List remote procedures
+/**
+ * Add List Remote Procedures tool
+ */
+function addListRemoteProceduresTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-remote-procedures',
     description: 'List and filter remote procedures with execution statistics and monitoring status',
@@ -644,8 +643,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Execute remote procedure
+/**
+ * Add Execute Remote Procedure tool
+ */
+function addExecuteRemoteProcedureTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'execute-remote-procedure',
     description: 'Execute a remote procedure with input data and monitoring',
@@ -738,8 +741,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Create device
+/**
+ * Add Create Device tool
+ */
+function addCreateDeviceTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-device',
     description: 'Register a new device for incoming/outgoing connections and procedure execution',
@@ -871,8 +878,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // List devices
+/**
+ * Add List Devices tool
+ */
+function addListDevicesTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-devices',
     description: 'List and filter registered devices with status and monitoring information',
@@ -1013,8 +1024,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Test device connectivity
+/**
+ * Add Test Device Connectivity tool
+ */
+function addTestDeviceConnectivityTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'test-device-connectivity',
     description: 'Test connectivity and health of a registered device',
@@ -1116,6 +1131,23 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
+
+/**
+ * Add remote procedure and device management tools to FastMCP server
+ */
+export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'ProcedureTools' });
+  
+  componentLogger.info('Adding remote procedure and device management tools');
+
+  // Add all remote procedure and device management tools
+  addCreateRemoteProcedureTool(server, apiClient);
+  addListRemoteProceduresTool(server, apiClient);
+  addExecuteRemoteProcedureTool(server, apiClient);
+  addCreateDeviceTool(server, apiClient);
+  addListDevicesTool(server, apiClient);
+  addTestDeviceConnectivityTool(server, apiClient);
 
   componentLogger.info('Remote procedure and device management tools added successfully');
 }

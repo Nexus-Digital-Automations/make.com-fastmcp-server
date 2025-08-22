@@ -83,14 +83,9 @@ const ExportDataSchema = z.object({
 }).strict();
 
 /**
- * Add analytics and audit log tools to FastMCP server
+ * Add get organization analytics tool
  */
-export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'AnalyticsTools' });
-  
-  componentLogger.info('Adding analytics and audit log tools');
-
-  // Get organization analytics
+function addGetOrganizationAnalyticsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-organization-analytics',
     description: 'Get comprehensive analytics data for an organization',
@@ -166,8 +161,13 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // List audit logs
+/**
+ * Add list audit logs tool
+ */
+function addListAuditLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
+
   server.addTool({
     name: 'list-audit-logs',
     description: 'List and filter audit logs for security and compliance monitoring',
@@ -257,8 +257,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Get audit log details
+/**
+ * Add get audit log tool
+ */
+function addGetAuditLogTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-audit-log',
     description: 'Get detailed information about a specific audit log entry',
@@ -312,8 +316,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Get scenario logs
+/**
+ * Add get scenario logs tool
+ */
+function addGetScenarioLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-scenario-logs',
     description: 'Get execution logs for a specific scenario',
@@ -400,8 +408,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Get execution history
+/**
+ * Add get execution history tool
+ */
+function addGetExecutionHistoryTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-execution-history',
     description: 'Get comprehensive execution history with filtering and analytics',
@@ -502,8 +514,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // List incomplete executions
+/**
+ * Add list incomplete executions tool
+ */
+function addListIncompleteExecutionsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-incomplete-executions',
     description: 'List and manage incomplete executions that require attention',
@@ -589,8 +605,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Resolve incomplete execution
+/**
+ * Add resolve incomplete execution tool
+ */
+function addResolveIncompleteExecutionTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'resolve-incomplete-execution',
     description: 'Resolve or retry an incomplete execution',
@@ -649,8 +669,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Get hook logs
+/**
+ * Add get hook logs tool
+ */
+function addGetHookLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-hook-logs',
     description: 'Get webhook execution logs for debugging and monitoring',
@@ -737,8 +761,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Export analytics data
+/**
+ * Add export analytics data tool
+ */
+function addExportAnalyticsDataTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'export-analytics-data',
     description: 'Export analytics, audit logs, or execution data for external analysis',
@@ -805,8 +833,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
 
-  // Get performance metrics
+/**
+ * Add get performance metrics tool
+ */
+function addGetPerformanceMetricsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-performance-metrics',
     description: 'Get detailed performance metrics and trends',
@@ -880,6 +912,27 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       }
     },
   });
+}
+
+/**
+ * Add analytics and audit log tools to FastMCP server
+ */
+export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'AnalyticsTools' });
+  
+  componentLogger.info('Adding analytics and audit log tools');
+
+  // Add all analytics tools
+  addGetOrganizationAnalyticsTool(server, apiClient);
+  addListAuditLogsTool(server, apiClient);
+  addGetAuditLogTool(server, apiClient);
+  addGetScenarioLogsTool(server, apiClient);
+  addGetExecutionHistoryTool(server, apiClient);
+  addListIncompleteExecutionsTool(server, apiClient);
+  addResolveIncompleteExecutionTool(server, apiClient);
+  addGetHookLogsTool(server, apiClient);
+  addExportAnalyticsDataTool(server, apiClient);
+  addGetPerformanceMetricsTool(server, apiClient);
 
   componentLogger.info('Analytics and audit log tools added successfully');
 }
