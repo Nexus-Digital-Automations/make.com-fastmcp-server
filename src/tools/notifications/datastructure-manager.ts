@@ -59,14 +59,9 @@ const DataStructureSchema = z.object({
 }).strict();
 
 /**
- * Add data structure management tools to FastMCP server
+ * Add create data structure tool
  */
-export function addDataStructureTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'DataStructureTools' });
-  
-  componentLogger.info('Adding data structure management tools');
-
-  // Create custom data structure
+function addCreateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-data-structure',
     description: 'Create a custom data structure for validation and transformation',
@@ -200,8 +195,13 @@ export function addDataStructureTools(server: FastMCP, apiClient: MakeApiClient)
       }
     },
   });
+}
 
-  // List custom data structures
+/**
+ * Add list data structures tool
+ */
+function addListDataStructuresTool(server: FastMCP, apiClient: MakeApiClient): void {
+
   server.addTool({
     name: 'list-data-structures',
     description: 'List and filter custom data structures with comprehensive filtering and search',
@@ -320,8 +320,12 @@ export function addDataStructureTools(server: FastMCP, apiClient: MakeApiClient)
       }
     },
   });
+}
 
-  // Get custom data structure by ID
+/**
+ * Add get data structure tool
+ */
+function addGetDataStructureTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-data-structure',
     description: 'Retrieve detailed information about a specific custom data structure',
@@ -443,8 +447,12 @@ export function addDataStructureTools(server: FastMCP, apiClient: MakeApiClient)
       }
     },
   });
+}
 
-  // Update custom data structure
+/**
+ * Add update data structure tool
+ */
+function addUpdateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'update-data-structure',
     description: 'Update an existing custom data structure configuration',
@@ -632,8 +640,12 @@ export function addDataStructureTools(server: FastMCP, apiClient: MakeApiClient)
       }
     },
   });
+}
 
-  // Delete custom data structure
+/**
+ * Add delete data structure tool
+ */
+function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'delete-data-structure',
     description: 'Delete a custom data structure with optional dependency checking and confirmation',
@@ -803,6 +815,22 @@ export function addDataStructureTools(server: FastMCP, apiClient: MakeApiClient)
       }
     },
   });
+}
+
+/**
+ * Add data structure management tools to FastMCP server
+ */
+export function addDataStructureTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'DataStructureTools' });
+  
+  componentLogger.info('Adding data structure management tools');
+
+  // Add all data structure tools
+  addCreateDataStructureTool(server, apiClient);
+  addListDataStructuresTool(server, apiClient);
+  addGetDataStructureTool(server, apiClient);
+  addUpdateDataStructureTool(server, apiClient);
+  addDeleteDataStructureTool(server, apiClient);
 
   componentLogger.info('Data structure management tools added successfully');
 }

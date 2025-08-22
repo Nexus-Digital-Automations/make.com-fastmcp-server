@@ -200,14 +200,9 @@ const WorkflowInstallSchema = z.object({
 }).strict();
 
 /**
- * Add SDK app management tools to FastMCP server
+ * Helper function to add search SDK apps tool
  */
-export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'SDKTools' });
-  
-  componentLogger.info('Adding SDK app management tools');
-
-  // Search SDK apps
+function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'search-sdk-apps',
     description: 'Search and browse available SDK apps in the Make.com marketplace',
@@ -352,8 +347,12 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       }
     },
   });
+}
 
-  // Install SDK app
+/**
+ * Helper function to add install SDK app tool
+ */
+function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'install-sdk-app',
     description: 'Install an SDK app with configuration and permission management',
@@ -482,8 +481,12 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       }
     },
   });
+}
 
-  // List installed apps
+/**
+ * Helper function to add list installed apps tool
+ */
+function addListInstalledAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-installed-apps',
     description: 'List installed SDK apps with status, usage, and configuration details',
@@ -601,8 +604,12 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       }
     },
   });
+}
 
-  // Update SDK app
+/**
+ * Helper function to add update SDK app tool
+ */
+function addUpdateSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'update-sdk-app',
     description: 'Update an installed SDK app to a newer version with rollback support',
@@ -720,8 +727,12 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       }
     },
   });
+}
 
-  // Configure SDK app
+/**
+ * Helper function to add configure SDK app tool
+ */
+function addConfigureSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'configure-sdk-app',
     description: 'Configure an installed SDK app settings, permissions, and integrations',
@@ -818,8 +829,12 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       }
     },
   });
+}
 
-  // Install workflow template
+/**
+ * Helper function to add install workflow tool
+ */
+function addInstallWorkflowTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'install-workflow',
     description: 'Install a pre-built workflow template from an SDK app',
@@ -954,6 +969,23 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       }
     },
   });
+}
+
+/**
+ * Add SDK app management tools to FastMCP server
+ */
+export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'SDKTools' });
+  
+  componentLogger.info('Adding SDK app management tools');
+
+  // Add all SDK tool functions
+  addSearchSdkAppsTool(server, apiClient);
+  addInstallSdkAppTool(server, apiClient);
+  addListInstalledAppsTool(server, apiClient);
+  addUpdateSdkAppTool(server, apiClient);
+  addConfigureSdkAppTool(server, apiClient);
+  addInstallWorkflowTool(server, apiClient);
 
   componentLogger.info('SDK app management tools added successfully');
 }
