@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/8</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/8</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -243,13 +243,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -287,7 +284,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -323,7 +320,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -351,7 +348,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -385,7 +382,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -421,7 +421,7 @@
 import { z } from 'zod';
 &nbsp;
 /**
- * Vault Server Configuration Schema
+ * Vault Server Configuration Schema<span class="cstat-no" title="statement not covered" ></span>
  */
 export const VaultServerConfigSchema = z.object({
   clusterId: z.string().min(1, 'Cluster ID is required'),
@@ -459,7 +459,7 @@ export const VaultServerConfigSchema = z.object({
   }),
 });
 &nbsp;
-/**
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Secret Engine Configuration Schema
  */
 export const SecretEngineConfigSchema = z.object({
@@ -495,7 +495,7 @@ export const SecretEngineConfigSchema = z.object({
     
     // Cloud Provider Configuration
     credentialsFile: z.string().optional(),
-    project: z.string().optional(),
+    project: z.string().optional(),<span class="cstat-no" title="statement not covered" ></span>
     region: z.string().optional(),
   }),
 });
@@ -523,7 +523,7 @@ export const KeyRotationPolicySchema = z.object({
   }),
   rotationStrategy: z.object({
     strategy: z.enum(['graceful', 'immediate', 'versioned', 'blue_green']),
-    gracePeriodHours: z.number().optional(),
+    gracePeriodHours: z.number().optional<span class="cstat-no" title="statement not covered" >(),</span>
     rollbackEnabled: z.boolean().optional().default(true),
     notificationEnabled: z.boolean().optional().default(true),
   }),
@@ -557,7 +557,7 @@ export const DynamicSecretConfigSchema = z.object({
     
     // SSH Dynamic Secrets
     keyType: z.enum(['otp', 'ca']).optional(),
-    defaultUser: z.string().optional(),
+    defaultUser: z.string().opti<span class="cstat-no" title="statement not covered" >onal(),</span>
     cidrList: z.array(z.string()).optional(),
   }),
   leaseConfig: z.object({
@@ -595,7 +595,7 @@ export const RBACPolicySchema = z.object({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T05:06:50.846Z
+                at 2025-08-22T05:22:35.726Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

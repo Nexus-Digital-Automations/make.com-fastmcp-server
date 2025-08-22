@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/24</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/24</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -132,18 +132,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -180,6 +177,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -202,9 +202,9 @@ import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/
 import { VaultServerManager } from '../utils/index.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
-/**
- * Configure Vault server tool configuration
- */
+/**<span class="fstat-no" title="function not covered" ></span>
+ * Configure Vault serv<span class="cstat-no" title="statement not covered" >er tool </span>configuration
+ */<span class="cstat-no" title="statement not covered" ></span>
 export function createConfigureVaultServerTool(context: ToolContext): ToolDefinition {
   const { logger } = context;
   
@@ -214,36 +214,36 @@ export function createConfigureVaultServerTool(context: ToolContext): ToolDefini
     parameters: VaultServerConfigSchema,
     annotations: {
       title: 'Configure Vault Server Cluster with Enterprise Features',
-      readOnlyHint: false,
-      idempotentHint: true,
-      openWorldHint: true,
-    },<span class="fstat-no" title="function not covered" ></span>
-    execute: async (args: unknown, execConte<span class="cstat-no" title="statement not covered" >xt: ToolExec</span>utionContext): Promise&lt;string&gt; =&gt; {
-      const <span class="cstat-no" title="statement not covered" >{ log, reportProgress } = execContext;</span>
+      readOnlyHin<span class="fstat-no" title="function not covered" >t:</span> false,
+      idempotentHint: true,<span class="cstat-no" title="statement not covered" ></span>
+      openWo<span class="cstat-no" title="statement not covered" >rldHint: true,</span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute:<span class="cstat-no" title="statement not covered" > async (args: unknown, execContext: ToolExecutionContext): Promise&lt;string&gt; =&gt; {</span>
+      const { log, reportProgress } = e<span class="cstat-no" title="statement not covered" >xecContext;</span>
       <span class="cstat-no" title="statement not covered" ></span>
-      log?.i<span class="cstat-no" title="statement not covered" >nfo?.('Configuring Vault server cluster', JSON.stringify(args));</span>
-      reportProgress?.({ progress: 0, t<span class="cstat-no" title="statement not covered" >otal: 100 });</span>
+      log?.info?<span class="cstat-no" title="statement not covered" >.('Configuring Vault server cluster', JSON.strin</span>gify(args));
+      reportProgress?.({ progress: 0<span class="cstat-no" title="statement not covered" >, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
       try {<span class="cstat-no" title="statement not covered" ></span>
-        const validatedInput = Vault<span class="cstat-no" title="statement not covered" >ServerConfigSchema.parse(args);</span>
-        const va<span class="cstat-no" title="statement not covered" >ultManager = VaultServerManager.getInstance();</span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        reportProgress?.({ progress: 25, total: 100 });
+        const validatedInput = VaultServerConfigSchema.parse(args);
+        const vaultManager = VaultServerManager.getInstance();
         
+        reportProgress?.({ progress: 25, total: 100 });
+        <span class="cstat-no" title="statement not covered" ></span>
         const clusterInfo = await vaultManager.configureVaultCluster(validatedInput);
         
-        reportPr<span class="cstat-no" title="statement not covered" >ogress?.({ progress: 75, total: 100 });</span>
+        reportProgress?.({ progress: 75, total: 100 });
 &nbsp;
-        const result = {
-          success: true,
+        const re<span class="cstat-no" title="statement not covered" >sult = {</span>
+          succes<span class="cstat-no" title="statement not covered" >s: true,</span>
           clusterInfo,
-          messag<span class="cstat-no" title="statement not covered" >e: `Vault cluster ${validatedInput.clusterId} con</span>figured successfully`,
+          message: `Vault cluster ${validatedInput.clusterId} configured successfully`,
         };<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        logger.info?.('Vault cluster configured successfully', {
-          clusterId: validatedInput.c<span class="cstat-no" title="statement not covered" >lusterId,</span>
-          nodeId<span class="cstat-no" title="statement not covered" >: validatedInput.nodeId,</span>
-          storag<span class="cstat-no" title="statement not covered" >eType: validatedInput.config.storage.type,</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        logger.i<span class="cstat-no" title="statement not covered" >nfo?.('Vault cluster configured successfully', {</span>
+          clusterId: validatedInput.clusterId,
+          nodeId: validatedInput.nodeId,
+          storageType: validatedInput.config.storage.type,
         });
 &nbsp;
         reportProgress?.({ progress: 100, total: 100 });
@@ -262,7 +262,7 @@ export function createConfigureVaultServerTool(context: ToolContext): ToolDefini
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T05:06:51.011Z
+                at 2025-08-22T05:22:35.886Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

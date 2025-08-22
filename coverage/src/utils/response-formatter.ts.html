@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">27.27% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>6/22</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">27.27% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/22</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -162,13 +162,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -238,6 +231,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -259,79 +259,79 @@
 export interface ToolResponse {
   content: Array&lt;{
     type: 'text';
-    text: string;
-  }&gt;;
+    text: string<span class="fstat-no" title="function not covered" >;</span>
+  }&gt;<span class="cstat-no" title="statement not covered" >;</span>
 }
 &nbsp;
 /**
  * Format a data object as a proper FastMCP tool response
  * This prevents JSON parsing errors caused by returning JSON.stringify() directly
- */<span class="fstat-no" title="function not covered" ></span>
-expo<span class="cstat-no" title="statement not covered" >rt function formatToolResponse(data: unknown): ToolResponse {</span>
+ */
+export function formatToolResponse(data: unknown): ToolResponse {
   return {
     content: [
       {
         type: 'text',
-        text: typeof data === 'string' ? data : JSON.stringify(data, null, 2),
-      },
+        text: ty<span class="fstat-no" title="function not covered" >peof data === 'string'</span> ? data : JSON.stringify(data, null, 2),
+      },<span class="cstat-no" title="statement not covered" ></span>
     ],
   };
 }
 &nbsp;
-/**
- * Format<span class="fstat-no" title="function not covered" > a success response wi</span>th structured data
- */<span class="cstat-no" title="statement not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Format a success response with structured data
+ */
 export function formatSuccessResponse(data: unknown, message?: string): ToolResponse {
   const response = {
-    success: true,
-    ...(message &amp;&amp; { message }),
-<span class="cstat-no" title="statement not covered" >    ...(typeof data === 'object' &amp;&amp; data </span>!== null ? data : { data }),
+    success: tru<span class="fstat-no" title="function not covered" >e,</span>
+    ...(message &amp;&amp; { <span class="cstat-no" title="statement not covered" >message }),</span>
+    ...(typeof data === 'object' &amp;&amp; data !== null ? data : { data }),
   };
 &nbsp;
   return formatToolResponse(response);
-}
-<span class="fstat-no" title="function not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+/**
  * Format an error response
  */
 export function formatErrorResponse(error: string | Error, code?: string): ToolResponse {
-  const response = {
+  const response<span class="fstat-no" title="function not covered" > = {</span>
 <span class="cstat-no" title="statement not covered" >    success: false,</span>
     error: error instanceof Error ? error.message : error,
-    ...(code &amp;&amp; { code }),
-  };
+    ...(code &amp;&amp; { code <span class="cstat-no" title="statement not covered" >}),</span>
+  };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   return formatToolResponse(response);
-}<span class="fstat-no" title="function not covered" ></span>
+}
 <span class="cstat-no" title="statement not covered" ></span>
 /**
- * Legacy JSON string r<span class="cstat-no" title="statement not covered" >esponse formatter - con</span>verts JSON.stringify returns to proper format
- * Use t<span class="cstat-no" title="statement not covered" >his to migrate existing tools that </span>return JSON.stringify() directly
+ * Legacy JSON string response formatter - converts JSON.stringify returns to proper format
+ * Use this to migrate existing tools that return JSON.stringify() directly
  */
 export function convertLegacyJsonResponse(jsonString: string): ToolResponse {
-  try {
-    // I<span class="cstat-no" title="statement not covered" >f it's already a valid JSON string, par</span>se and reformat
-    const parsed = JSON.parse(jsonString);
+  try {<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // If it's already a valid JSON string, parse and reformat</span>
+    cons<span class="cstat-no" title="statement not covered" >t parsed = JS</span>ON.parse(jsonString);
     return formatToolResponse(parsed);
-  } catch {
-    // If it's not valid JSON, treat as plain text
-    return formatToolResponse(jsonString);
-  }<span class="fstat-no" title="function not covered" ></span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  } <span class="cstat-no" title="statement not covered" >catch {</span>
+    // If it's not v<span class="cstat-no" title="statement not covered" >alid JSON</span>, treat as plain text
+    retu<span class="cstat-no" title="statement not covered" >rn formatToolResponse(jsonString);</span>
+  }
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
 /**
- * V<span class="cstat-no" title="statement not covered" >alidate that a response is in the correct FastMCP format</span>
- */<span class="cstat-no" title="statement not covered" ></span>
-export f<span class="cstat-no" title="statement not covered" >unction validateToolResponse(response: unknown): boolean {</span>
+ * Validate that a response is in the correct FastMCP format
+ */
+export function validateToolResponse(response: unknown): boolean {
   if (typeof response === 'string') {
-    return true; // Plain stri<span class="fstat-no" title="function not covered" >ng</span>s are va<span class="cstat-no" title="statement not covered" >lid</span>
+<span class="cstat-no" title="statement not covered" >    return true; /</span>/ Plain strings are valid
   }
 &nbsp;
   if (typeof response === 'object' &amp;&amp; response !== null) {
     const obj = response as Record&lt;string, unknown&gt;;
     return (
       'content' in obj &amp;&amp;
-<span class="cstat-no" title="statement not covered" >      Array.isArra</span>y(obj.content) &amp;&amp;
+      Array.isArray(obj.content) &amp;&amp;
       obj.content.every(
         (item) =&gt;
           typeof item === 'object' &amp;&amp;
@@ -352,7 +352,7 @@ export f<span class="cstat-no" title="statement not covered" >unction validateTo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T05:06:51.011Z
+                at 2025-08-22T05:22:35.886Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
