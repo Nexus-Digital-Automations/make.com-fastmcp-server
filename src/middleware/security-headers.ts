@@ -87,7 +87,7 @@ export class SecurityHeadersManager {
           frameAncestors: ["'none'"],
           formAction: ["'self'"],
           baseUri: ["'self'"],
-          upgradeInsecureRequests: this.config.environment === 'production' ? [] : undefined
+          ...(this.config.environment === 'production' && { upgradeInsecureRequests: [] })
         },
         reportOnly: this.config.environment === 'development',
         ...(this.config.cspReportUri && {
@@ -143,21 +143,7 @@ export class SecurityHeadersManager {
       ieNoOpen: true,
       
       // Origin Agent Cluster
-      originAgentCluster: true,
-      
-      // Permissions Policy (formerly Feature Policy)
-      permissionsPolicy: {
-        camera: [],
-        microphone: [],
-        geolocation: [],
-        payment: [],
-        usb: [],
-        bluetooth: [],
-        magnetometer: [],
-        accelerometer: [],
-        gyroscope: [],
-        ambient_light_sensor: []
-      }
+      originAgentCluster: true
     });
   }
   
@@ -180,13 +166,7 @@ export class SecurityHeadersManager {
                  req.headers['x-csrf-token'] ||
                  req.headers['x-xsrf-token'];
         },
-        ignoreMethods: ['GET', 'HEAD', 'OPTIONS'],
-        skip: (req: any) => {
-          // Skip CSRF for API endpoints that use other authentication
-          const isApiEndpoint = req.path.startsWith('/api/');
-          const hasApiAuth = req.headers['x-api-key'] || req.headers['authorization'];
-          return isApiEndpoint && hasApiAuth;
-        }
+        ignoreMethods: ['GET', 'HEAD', 'OPTIONS']
       });
     }
   }

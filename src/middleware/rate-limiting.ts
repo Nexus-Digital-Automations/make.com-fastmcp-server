@@ -94,7 +94,7 @@ export class EnterpriseRateLimitManager {
   private redisClient: Redis | null = null;
   private rateLimiters: Record<string, RateLimiterRedis | RateLimiterMemory> = {};
   private adaptiveLimiter: AdaptiveRateLimiter;
-  private ddosProtection: RateLimiterRedis | RateLimiterMemory;
+  private ddosProtection!: RateLimiterRedis | RateLimiterMemory;
   
   constructor() {
     this.adaptiveLimiter = new AdaptiveRateLimiter();
@@ -107,7 +107,6 @@ export class EnterpriseRateLimitManager {
     try {
       if (process.env.REDIS_URL) {
         this.redisClient = new Redis(process.env.REDIS_URL, {
-          retryDelayOnFailover: 100,
           maxRetriesPerRequest: 3,
           enableReadyCheck: true,
           lazyConnect: true
@@ -204,8 +203,7 @@ export class EnterpriseRateLimitManager {
           points: 1000, // 1000 requests
           duration: 60, // Per minute
           blockDuration: 3600, // Block for 1 hour
-          execEvenly: true,
-          skipFailedRequests: true
+          execEvenly: true
         })
       : new RateLimiterMemory({
           points: 1000,

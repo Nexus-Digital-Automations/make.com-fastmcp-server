@@ -19,6 +19,23 @@ interface CircuitBreakerConfig {
   volumeThreshold: number;
 }
 
+// Request interface
+interface HttpRequest {
+  ip?: string;
+  method?: string;
+  url?: string;
+  path?: string;
+  headers: Record<string, string | string[] | undefined>;
+  connection?: {
+    remoteAddress?: string;
+  };
+  socket?: {
+    remoteAddress?: string;
+  };
+  body?: unknown;
+  riskScore?: number;
+}
+
 // Request pattern interface
 interface RequestPattern {
   timestamp: number;
@@ -27,6 +44,22 @@ interface RequestPattern {
   userAgent: string;
   contentLength: number;
   successful?: boolean;
+}
+
+// Behavior analysis interface
+interface BehaviorAnalysis {
+  isBlocked?: boolean;
+  riskScore?: number;
+  anomalies?: string[];
+  patterns?: string[]; // Pattern descriptions, not RequestPattern objects
+}
+
+// Rate limiter error interface
+interface RateLimiterError {
+  remainingPoints?: number;
+  totalHits?: number;
+  points?: number;
+  msBeforeNext?: number;
 }
 
 // IP reputation data interface
@@ -56,7 +89,6 @@ export class AdvancedDDoSProtection {
     try {
       if (process.env.REDIS_URL) {
         this.redisClient = new Redis(process.env.REDIS_URL, {
-          retryDelayOnFailover: 100,
           maxRetriesPerRequest: 3,
           enableReadyCheck: true,
           lazyConnect: true
@@ -132,14 +164,15 @@ export class AdvancedDDoSProtection {
     this.rateLimiters.set('suspicious', suspiciousLimiter);
   }
   
-  public async checkDDoSProtection(req: any): Promise<{
+  public async checkDDoSProtection(req: HttpRequest): Promise<{
     allowed: boolean;
     reason?: string;
     blockDuration?: number;
     riskScore?: number;
   }> {
     const clientIP = this.getClientIP(req);
-    const userAgent = req.headers['user-agent'] || '';
+    const userAgentHeader = req.headers['user-agent'];
+    const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] || '' : userAgentHeader || '';
     
     try {
       // Analyze behavior patterns
@@ -169,17 +202,21 @@ export class AdvancedDDoSProtection {
         riskScore: ipReputation?.riskScore || 0
       };
       
-    } catch (error: any) {
-      if (error.remainingPoints !== undefined) {
+    } catch (error: unknown) {
+      const isRateLimiterError = (err: unknown): err is RateLimiterError => {
+        return typeof err === 'object' && err !== null && 'remainingPoints' in err;
+      };
+
+      if (isRateLimiterError(error)) {
         // Rate limit exceeded
-        const reason = error.totalHits > (error.points * 2) ? 'aggressive_ddos' : 'rate_limit_exceeded';
+        const reason = (error.totalHits || 0) > ((error.points || 1) * 2) ? 'aggressive_ddos' : 'rate_limit_exceeded';
         
         logger.warn('DDoS protection triggered', {
           clientIP: this.hashIP(clientIP),
           userAgent: userAgent.substring(0, 100),
           reason,
           remainingPoints: error.remainingPoints,
-          resetTime: new Date(Date.now() + error.msBeforeNext),
+          resetTime: new Date(Date.now() + (error.msBeforeNext ?? 0)),
           endpoint: req.path,
           method: req.method
         });
@@ -190,13 +227,13 @@ export class AdvancedDDoSProtection {
         return {
           allowed: false,
           reason,
-          blockDuration: Math.ceil(error.msBeforeNext / 1000),
+          blockDuration: Math.ceil((error.msBeforeNext ?? 1000) / 1000),
           riskScore: this.ipReputation.get(clientIP)?.riskScore || 0
         };
       }
       
       logger.error('DDoS protection error', {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         clientIP: this.hashIP(clientIP)
       });
       
@@ -205,16 +242,24 @@ export class AdvancedDDoSProtection {
     }
   }
   
-  private getClientIP(req: any): string {
+  private getClientIP(req: HttpRequest): string {
+    const xForwardedFor = req.headers['x-forwarded-for'];
+    const forwardedIP = Array.isArray(xForwardedFor) 
+      ? xForwardedFor[0]?.split(',')[0]?.trim()
+      : xForwardedFor?.split(',')[0]?.trim();
+    
+    const xRealIP = req.headers['x-real-ip'];
+    const realIP = Array.isArray(xRealIP) ? xRealIP[0] : xRealIP;
+    
     return req.ip ||
            req.connection?.remoteAddress ||
            req.socket?.remoteAddress ||
-           req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-           req.headers['x-real-ip'] ||
+           forwardedIP ||
+           realIP ||
            'unknown';
   }
   
-  private updateIPReputation(ip: string, analysis: any): void {
+  private updateIPReputation(ip: string, analysis: BehaviorAnalysis): void {
     const existing = this.ipReputation.get(ip) || {
       riskScore: 0,
       requestCount: 0,
@@ -276,7 +321,7 @@ export class AdvancedDDoSProtection {
 class BehaviorAnalyzer {
   private requestPatterns: Map<string, RequestPattern[]> = new Map();
   
-  async analyzeRequest(req: any, clientIP: string): Promise<{
+  async analyzeRequest(req: HttpRequest, clientIP: string): Promise<{
     riskScore: number;
     patterns: string[];
     isBot?: boolean;
@@ -285,12 +330,19 @@ class BehaviorAnalyzer {
     const now = Date.now();
     
     // Add current request to pattern
+    const userAgentHeader = req.headers['user-agent'];
+    const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] || '' : userAgentHeader || '';
+    const contentLengthHeader = req.headers['content-length'];
+    const contentLength = Array.isArray(contentLengthHeader) 
+      ? parseInt(contentLengthHeader[0] || '0', 10)
+      : parseInt(contentLengthHeader || '0', 10);
+    
     patterns.push({
       timestamp: now,
-      endpoint: req.path,
-      method: req.method,
-      userAgent: req.headers['user-agent'] || '',
-      contentLength: parseInt(req.headers['content-length'] || '0', 10)
+      endpoint: req.path || '/',
+      method: req.method || 'GET',
+      userAgent,
+      contentLength
     });
     
     // Keep only recent patterns (last 5 minutes)
@@ -300,7 +352,7 @@ class BehaviorAnalyzer {
     return this.calculateRiskScore(recentPatterns);
   }
   
-  recordSuccessfulRequest(clientIP: string, _req: any): void {
+  recordSuccessfulRequest(clientIP: string, _req: HttpRequest): void {
     // Update patterns for successful requests
     const patterns = this.requestPatterns.get(clientIP) || [];
     const lastPattern = patterns[patterns.length - 1];
@@ -394,7 +446,7 @@ export class EnterpriseCircuitBreakerManager {
     };
   }
   
-  public createCircuitBreaker(name: string, operation: Function, config?: Partial<CircuitBreakerConfig>): CircuitBreaker {
+  public createCircuitBreaker(name: string, operation: (...args: unknown[]) => Promise<unknown>, config?: Partial<CircuitBreakerConfig>): CircuitBreaker {
     const finalConfig = { ...this.defaultConfig, ...config };
     
     const breaker = new CircuitBreaker(operation, {
@@ -443,13 +495,18 @@ export class EnterpriseCircuitBreakerManager {
     return this.circuitBreakers.get(name);
   }
   
-  public getAllStats(): Record<string, any> {
-    const stats: Record<string, any> = {};
+  public getAllStats(): Record<string, unknown> {
+    const stats: Record<string, unknown> = {};
     
     for (const [name, breaker] of this.circuitBreakers.entries()) {
       stats[name] = {
-        state: breaker.state,
-        stats: breaker.stats.toJSON()
+        state: breaker.opened ? 'open' : breaker.halfOpen ? 'half-open' : 'closed',
+        stats: {
+          fires: breaker.stats.fires || 0,
+          failures: breaker.stats.failures || 0,
+          timeouts: breaker.stats.timeouts || 0,
+          fallbacks: breaker.stats.fallbacks || 0
+        }
       };
     }
     
@@ -469,9 +526,17 @@ export class EnterpriseCircuitBreakerManager {
 export const ddosProtection = new AdvancedDDoSProtection();
 export const circuitBreakerManager = new EnterpriseCircuitBreakerManager();
 
+// Express-like response interface
+interface HttpResponse {
+  status: (code: number) => HttpResponse;
+  json: (body: unknown) => void;
+  send: (body: unknown) => void;
+  setHeader: (name: string, value: string | number) => void;
+}
+
 // Middleware factory for DDoS protection
 export function createDDoSProtectionMiddleware() {
-  return async (req: any, res: any, next: any): Promise<void> => {
+  return async (req: HttpRequest, res: HttpResponse, next: () => void): Promise<void> => {
     try {
       const result = await ddosProtection.checkDDoSProtection(req);
       

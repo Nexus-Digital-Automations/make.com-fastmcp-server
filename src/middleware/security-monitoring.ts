@@ -87,7 +87,7 @@ export class SecurityMonitoringSystem extends EventEmitter {
   private eventCounts: Map<string, number> = new Map();
   private maxEventHistory = 10000;
   private maxMetricsHistory = 1440; // 24 hours at 1-minute intervals
-  private metricsInterval: NodeJS.Timeout;
+  private metricsInterval!: NodeJS.Timeout;
   private currentMetrics: Partial<SecurityMetrics> = {};
   
   constructor() {
@@ -401,7 +401,7 @@ export class SecurityMonitoringSystem extends EventEmitter {
       .substring(0, 16);
   }
   
-  public updateMetric(key: keyof SecurityMetrics, value: number): void {
+  public updateMetric(key: Exclude<keyof SecurityMetrics, 'timestamp'>, value: number): void {
     this.currentMetrics[key] = value;
   }
   

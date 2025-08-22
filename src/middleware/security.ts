@@ -212,8 +212,12 @@ export class IntegratedSecurityManager {
       // Create circuit breaker for Make.com API calls
       const makeApiBreaker = circuitBreakerManager.createCircuitBreaker(
         'make-api',
-        async (operation: string, ...args: any[]) => {
-          return await apiClient[operation](...args);
+        async (...args: unknown[]) => {
+          const [operation, ...restArgs] = args;
+          if (typeof operation !== 'string') {
+            throw new Error('First argument must be a string operation name');
+          }
+          return await (apiClient as any)[operation](...restArgs);
         },
         {
           timeout: 10000, // 10 second timeout for API calls
@@ -245,11 +249,11 @@ export class IntegratedSecurityManager {
     // Determine overall health
     let issues = 0;
     
-    if (this.config.rateLimiting.enabled && !status.rateLimiting.redisConnected && this.config.rateLimiting.redis.enabled) {
+    if (this.config.rateLimiting.enabled && 'redisConnected' in status.rateLimiting && !status.rateLimiting.redisConnected && this.config.rateLimiting.redis.enabled) {
       issues++;
     }
     
-    if (this.config.monitoring.enabled && status.monitoring.currentRiskScore > 70) {
+    if (this.config.monitoring.enabled && 'currentRiskScore' in status.monitoring && status.monitoring.currentRiskScore > 70) {
       issues++;
     }
     

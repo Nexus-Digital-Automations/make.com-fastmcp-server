@@ -8,6 +8,64 @@ import { z } from 'zod';
 import DOMPurify from 'isomorphic-dompurify';
 import validator from 'validator';
 
+// Enhanced security-focused string sanitization
+export function sanitizeString(str: string): string {
+  // Remove dangerous patterns first
+  let sanitized = str.trim();
+  
+  // Remove script tags, javascript protocols, and data URIs
+  sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
+  sanitized = sanitized.replace(/javascript:/gi, '');
+  sanitized = sanitized.replace(/data:.*base64/gi, '');
+  sanitized = sanitized.replace(/vbscript:/gi, '');
+  
+  // Use DOMPurify for comprehensive XSS prevention
+  sanitized = DOMPurify.sanitize(sanitized, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+    RETURN_DOM: false,
+    RETURN_DOM_FRAGMENT: false
+  });
+  
+  // Additional character filtering
+  sanitized = sanitized.replace(/[<>"'&\u0000-\u001f\u007f]/g, '');
+  
+  return sanitized;
+}
+
+// Enhanced security string schema with XSS prevention and default max length
+export const secureStringSchema = z.string()
+  .min(1, 'Field cannot be empty')
+  .max(1000, 'Field exceeds maximum length')
+  .refine((val) => !/<script|javascript:|data:|vbscript:/i.test(val), {
+    message: 'Potentially malicious content detected'
+  })
+  .refine((val) => !validator.contains(val, '\u0000'), {
+    message: 'Null bytes not allowed'
+  })
+  .transform((val) => sanitizeString(val));
+
+// Factory function for secure string schema with custom max length
+export const createSecureStringSchema = (maxLength: number = 1000) => 
+  z.string()
+    .min(1, 'Field cannot be empty')
+    .max(maxLength, `Field exceeds maximum length of ${maxLength}`)
+    .refine((val) => !/<script|javascript:|data:|vbscript:/i.test(val), {
+      message: 'Potentially malicious content detected'
+    })
+    .refine((val) => !validator.contains(val, '\u0000'), {
+      message: 'Null bytes not allowed'
+    })
+    .transform((val) => sanitizeString(val));
+
+// Secure ID schema with enhanced validation
+export const secureIdSchema = z.union([
+  z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
+  z.string().regex(/^\d+$/).transform((val) => parseInt(val, 10))
+]).refine((val) => val > 0 && val <= Number.MAX_SAFE_INTEGER, {
+  message: 'Invalid ID format'
+});
+
 // Common validation schemas
 export const idSchema = z.number().int().positive();
 export const nameSchema = z.string().min(1).max(255);
@@ -90,8 +148,8 @@ export const scenarioUpdateSchema = secureScenarioUpdateSchema;
 // Enhanced secure connection schemas
 export const secureConnectionCreateSchema = z.object({
   name: secureStringSchema,
-  accountName: secureStringSchema.max(255),
-  service: secureStringSchema.max(100)
+  accountName: createSecureStringSchema(255),
+  service: createSecureStringSchema(100)
     .refine((val) => /^[a-zA-Z0-9_-]+$/.test(val), {
       message: 'Service name can only contain alphanumeric characters, underscores, and hyphens'
     }),
@@ -109,7 +167,7 @@ export const connectionCreateSchema = secureConnectionCreateSchema;
 
 export const secureConnectionUpdateSchema = z.object({
   name: secureStringSchema.optional(),
-  accountName: secureStringSchema.max(255).optional(),
+  accountName: createSecureStringSchema(255).optional(),
   credentials: z.record(z.unknown())
     .refine((val) => Object.keys(val).length <= 20)
     .optional(),
@@ -224,50 +282,6 @@ export function validateDateRange(params: unknown): z.infer<typeof dateRangeSche
   return result.data;
 }
 
-// Enhanced security-focused string sanitization
-export function sanitizeString(str: string): string {
-  // Remove dangerous patterns first
-  let sanitized = str.trim();
-  
-  // Remove script tags, javascript protocols, and data URIs
-  sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
-  sanitized = sanitized.replace(/javascript:/gi, '');
-  sanitized = sanitized.replace(/data:.*base64/gi, '');
-  sanitized = sanitized.replace(/vbscript:/gi, '');
-  
-  // Use DOMPurify for comprehensive XSS prevention
-  sanitized = DOMPurify.sanitize(sanitized, {
-    ALLOWED_TAGS: [],
-    ALLOWED_ATTR: [],
-    RETURN_DOM: false,
-    RETURN_DOM_FRAGMENT: false
-  });
-  
-  // Additional character filtering
-  sanitized = sanitized.replace(/[<>"'&\u0000-\u001f\u007f]/g, '');
-  
-  return sanitized;
-}
-
-// Enhanced security string schema with XSS prevention
-export const secureStringSchema = z.string()
-  .min(1, 'Field cannot be empty')
-  .max(1000, 'Field exceeds maximum length')
-  .refine((val) => !/<script|javascript:|data:|vbscript:/i.test(val), {
-    message: 'Potentially malicious content detected'
-  })
-  .refine((val) => !validator.contains(val, '\u0000'), {
-    message: 'Null bytes not allowed'
-  })
-  .transform((val) => sanitizeString(val));
-
-// Secure ID schema with enhanced validation
-export const secureIdSchema = z.union([
-  z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
-  z.string().regex(/^\d+$/).transform((val) => parseInt(val, 10))
-]).refine((val) => val > 0 && val <= Number.MAX_SAFE_INTEGER, {
-  message: 'Invalid ID format'
-});
 
 // SQL injection prevention for search terms
 export const secureSearchSchema = z.string()

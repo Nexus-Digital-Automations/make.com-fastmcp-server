@@ -14233,9 +14233,177 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755843778543_1aycmjuq1",
+      "title": "CRITICAL: Fix Helmet.js CSP configuration error",
+      "description": "Server failing to start with: Content-Security-Policy received an invalid directive value for upgrade-insecure-requests. Need to fix security-headers.ts Helmet configuration.",
+      "mode": "DEVELOPMENT",
+      "category": "start-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T06:22:58.543Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T06:25:52.117Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T06:33:07.038Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T06:33:07.039Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755844457077_r1i7uxb7v",
+      "title": "Fix remaining ESLint errors and warnings in security middleware",
+      "description": "Address 1 ESLint error (unused import MakeServerError) and 20+ TypeScript warnings in security middleware files. Focus on circuit-breaker.ts and error-sanitization.ts.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T06:34:17.077Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755843720810_1_general_6fa0f16a",
+      "started_at": "2025-08-22T06:34:26.572Z",
+      "claimed_by": "development_session_1755843720810_1_general_6fa0f16a",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755843720810_1_general_6fa0f16a",
+          "role": "primary",
+          "assignedAt": "2025-08-22T06:34:26.572Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T06:40:53.322Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T06:40:53.323Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755844799581_hydg7sl0c",
+      "title": "Fix MCP server timeout during initialization",
+      "description": "Server times out after 60 seconds during initialize method call, need to investigate and resolve connection issues",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T06:39:59.581Z",
+      "auto_research_created": false,
+      "started_at": "2025-08-22T06:41:04.426Z",
+      "claimed_by": "agent_1755844864426",
+      "assigned_agent": "agent_1755844864426",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755844864426",
+          "action": "claimed",
+          "timestamp": "2025-08-22T06:41:04.426Z"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T06:53:21.369Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T06:53:21.369Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755845610623_2at5bd4cq",
+      "title": "Fix remaining TypeScript compilation errors in security middleware",
+      "description": "Continue fixing TypeScript errors in rate-limiting.ts, security-headers.ts, security-monitoring.ts, and security.ts files. Already fixed circuit-breaker.ts errors.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T06:53:30.623Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T06:53:49.281Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T06:57:56.184Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T06:57:56.190Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 319,
-  "last_completion": "2025-08-22T06:20:58.264Z",
+  "total_completed": 323,
+  "last_completion": "2025-08-22T06:57:56.190Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

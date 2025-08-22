@@ -6,7 +6,6 @@
 
 import crypto from 'crypto';
 import logger from '../lib/logger.js';
-import { MakeServerError } from '../utils/errors.js';
 
 // Secure error response interface
 interface SecureErrorResponse {
