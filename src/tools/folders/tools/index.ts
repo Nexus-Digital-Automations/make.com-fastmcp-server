@@ -6,6 +6,7 @@
 import type { FastMCPToolContext } from '../../../types/index.js';
 import type { FoldersContext } from '../types/index.js';
 import { FoldersManager } from '../core/index.js';
+import { MakeApiClient } from '../../../lib/make-api-client.js';
 import logger from '../../../lib/logger.js';
 
 type ToolResult = Promise<{ 
@@ -20,7 +21,7 @@ type ToolResult = Promise<{
 /**
  * Initialize folders module manager
  */
-function createFoldersManager(context: FastMCPToolContext): FoldersManager {
+async function createFoldersManager(context: FastMCPToolContext): Promise<FoldersManager> {
   const foldersContext: FoldersContext = {
     ...context,
     config: {
@@ -35,7 +36,10 @@ function createFoldersManager(context: FastMCPToolContext): FoldersManager {
     }
   };
 
-  return new FoldersManager(foldersContext);
+  // Create a secure MakeApiClient instance
+  const apiClient = await MakeApiClient.createSecure();
+  
+  return new FoldersManager(foldersContext, apiClient);
 }
 
 
@@ -43,7 +47,7 @@ function createFoldersManager(context: FastMCPToolContext): FoldersManager {
  * createFolder FastMCP tool
  */
 export async function createfolder(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -114,7 +118,7 @@ createfolder.metadata = {
  * listFolders FastMCP tool
  */
 export async function listfolders(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -185,7 +189,7 @@ listfolders.metadata = {
  * getFolderContents FastMCP tool
  */
 export async function getfoldercontents(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -256,7 +260,7 @@ getfoldercontents.metadata = {
  * moveItems FastMCP tool
  */
 export async function moveitems(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -327,7 +331,7 @@ moveitems.metadata = {
  * createDataStore FastMCP tool
  */
 export async function createdatastore(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -398,7 +402,7 @@ createdatastore.metadata = {
  * listDataStores FastMCP tool
  */
 export async function listdatastores(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -469,7 +473,7 @@ listdatastores.metadata = {
  * listDataStructures FastMCP tool
  */
 export async function listdatastructures(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -540,7 +544,7 @@ listdatastructures.metadata = {
  * getDataStructure FastMCP tool
  */
 export async function getdatastructure(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -611,7 +615,7 @@ getdatastructure.metadata = {
  * createDataStructure FastMCP tool
  */
 export async function createdatastructure(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -682,7 +686,7 @@ createdatastructure.metadata = {
  * updateDataStructure FastMCP tool
  */
 export async function updatedatastructure(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -753,7 +757,7 @@ updatedatastructure.metadata = {
  * deleteDataStructure FastMCP tool
  */
 export async function deletedatastructure(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -824,7 +828,7 @@ deletedatastructure.metadata = {
  * getDataStore FastMCP tool
  */
 export async function getdatastore(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -895,7 +899,7 @@ getdatastore.metadata = {
  * updateDataStore FastMCP tool
  */
 export async function updatedatastore(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done
@@ -966,7 +970,7 @@ updatedatastore.metadata = {
  * deleteDataStore FastMCP tool
  */
 export async function deletedatastore(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = createFoldersManager(context);
+  const manager = await createFoldersManager(context);
   
   try {
     // Initialize manager if not already done

@@ -17,14 +17,27 @@
       "subtasks": [],
       "created_at": "2025-08-22T08:37:24.255Z",
       "auto_research_created": true,
-      "assigned_agent": "development_session_1755850308607_1_general_57167653",
-      "started_at": "2025-08-22T09:15:26.989Z",
-      "claimed_by": "development_session_1755850308607_1_general_57167653",
+      "assigned_agent": "development_session_1755855339609_1_general_1ab7ba87",
+      "started_at": "2025-08-22T09:36:10.875Z",
+      "claimed_by": "development_session_1755855339609_1_general_1ab7ba87",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755850308607_1_general_57167653",
           "role": "primary",
           "assignedAt": "2025-08-22T09:15:26.989Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T09:35:35.037Z",
+          "reason": "Task stale for 20 minutes"
+        },
+        {
+          "agentId": "development_session_1755855339609_1_general_1ab7ba87",
+          "role": "primary",
+          "assignedAt": "2025-08-22T09:36:10.875Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
@@ -54,7 +67,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -63,14 +76,20 @@
       "subtasks": [],
       "created_at": "2025-08-22T08:18:02.800Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T08:18:31.894Z",
-      "claimed_by": "agent_1755850711894",
-      "assigned_agent": "agent_1755850711894",
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
       "agent_assignment_history": [
         {
           "agent": "agent_1755850711894",
           "action": "claimed",
           "timestamp": "2025-08-22T08:18:31.894Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T09:35:35.037Z",
+          "reason": "Task stale for 77 minutes"
         }
       ]
     }
@@ -82,13 +101,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755850308607_1_general_57167653": {
+    "development_session_1755855339609_1_general_1ab7ba87": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T08:11:48.608Z",
+      "lastHeartbeat": "2025-08-22T09:35:39.610Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -99,8 +118,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T08:11:48.608Z",
-      "sessionId": "session_1755850308607",
+      "createdAt": "2025-08-22T09:35:39.610Z",
+      "sessionId": "session_1755855339609",
       "metadata": {}
     }
   },

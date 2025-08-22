@@ -8,7 +8,10 @@ import type {
   FoldersContext,
   FoldersResult,
   FoldersState,
-  FoldersEvent
+  FoldersEvent,
+  CreateFolderRequest,
+  ListFoldersRequest,
+  MakeFolder
 } from '../types/index.js';
 
 import { 
@@ -16,6 +19,7 @@ import {
 } from '../schemas/index.js';
 
 import logger from '../../../lib/logger.js';
+import { MakeApiClient } from '../../../lib/make-api-client.js';
 
 /**
  * Core folders module class
@@ -24,9 +28,11 @@ import logger from '../../../lib/logger.js';
 export class FoldersManager {
   private state: FoldersState;
   private context: FoldersContext;
+  private apiClient: MakeApiClient;
 
-  constructor(context: FoldersContext) {
+  constructor(context: FoldersContext, apiClient: MakeApiClient) {
     this.context = context;
+    this.apiClient = apiClient;
     this.state = {
       initialized: false,
       config: context.config,
@@ -163,11 +169,82 @@ export class FoldersManager {
   /**
    * Execute createFolder business logic
    */
-  private async executeCreatefolder(_request: unknown): Promise<unknown> {
-    // TODO: Implement createFolder business logic
-    // This is where the core functionality for createFolder would be implemented
-    
-    throw new Error('createFolder implementation not yet completed');
+  private async executeCreatefolder(request: unknown): Promise<MakeFolder> {
+    // Validate request as CreateFolderRequest
+    const folderRequest = request as CreateFolderRequest;
+    const { 
+      name, 
+      description, 
+      parentId, 
+      type, 
+      organizationId, 
+      teamId, 
+      permissions 
+    } = folderRequest;
+
+    if (!name || !type) {
+      throw new Error('Name and type are required for folder creation');
+    }
+
+    try {
+      // Validate parent folder exists if specified
+      if (parentId) {
+        const parentResponse = await this.apiClient.get(`/folders/${parentId}`);
+        if (!parentResponse.success) {
+          throw new Error(`Parent folder with ID ${parentId} not found`);
+        }
+      }
+
+      const folderData = {
+        name,
+        description,
+        parentId,
+        type,
+        organizationId,
+        teamId,
+        permissions: {
+          read: permissions?.read ?? [],
+          write: permissions?.write ?? [],
+          admin: permissions?.admin ?? [],
+        },
+      };
+
+      // Determine appropriate endpoint based on context
+      let endpoint = '/folders';
+      if (organizationId) {
+        endpoint = `/organizations/${organizationId}/folders`;
+      } else if (teamId) {
+        endpoint = `/teams/${teamId}/folders`;
+      }
+
+      const response = await this.apiClient.post(endpoint, folderData);
+
+      if (!response.success) {
+        throw new Error(`Failed to create folder: ${response.error?.message || 'Unknown error'}`);
+      }
+
+      const folder = response.data as MakeFolder;
+      if (!folder) {
+        throw new Error('Folder creation failed - no data returned');
+      }
+
+      logger.info('Successfully created folder', {
+        folderId: folder.id,
+        name: folder.name,
+        type: folder.type,
+        path: folder.path,
+        module: 'folders'
+      });
+
+      return folder;
+    } catch (error) {
+      logger.error('Failed to create folder', {
+        error: error instanceof Error ? error.message : String(error),
+        request: folderRequest,
+        module: 'folders'
+      });
+      throw error;
+    }
   }
 
   /**
@@ -238,11 +315,72 @@ export class FoldersManager {
   /**
    * Execute listFolders business logic
    */
-  private async executeListfolders(_request: unknown): Promise<unknown> {
-    // TODO: Implement listFolders business logic
-    // This is where the core functionality for listFolders would be implemented
-    
-    throw new Error('listFolders implementation not yet completed');
+  private async executeListfolders(request: unknown): Promise<{ folders: MakeFolder[]; pagination: { total: number; limit: number; offset: number; hasMore: boolean } }> {
+    // Validate request as ListFoldersRequest
+    const listRequest = request as ListFoldersRequest;
+    const {
+      parentId,
+      type = 'all',
+      organizationId,
+      teamId,
+      searchQuery,
+      includeEmpty = false,
+      includeContents = false,
+      limit = 50,
+      offset = 0,
+      sortBy = 'name',
+      sortOrder = 'asc'
+    } = listRequest;
+
+    try {
+      // Build query parameters
+      const params: Record<string, unknown> = {
+        limit,
+        offset,
+        sortBy,
+        sortOrder,
+        includeEmpty,
+        includeContents,
+      };
+
+      if (parentId) params.parentId = parentId;
+      if (type !== 'all') params.type = type;
+      if (organizationId) params.organizationId = organizationId;
+      if (teamId) params.teamId = teamId;
+      if (searchQuery) params.search = searchQuery;
+
+      const response = await this.apiClient.get('/folders', { params });
+
+      if (!response.success) {
+        throw new Error(`Failed to list folders: ${response.error?.message || 'Unknown error'}`);
+      }
+
+      const folders = response.data as MakeFolder[] || [];
+      const metadata = response.metadata;
+
+      logger.info('Successfully retrieved folders', {
+        count: folders.length,
+        total: metadata?.total,
+        module: 'folders'
+      });
+
+      return {
+        folders,
+        pagination: {
+          total: metadata?.total || folders.length,
+          limit,
+          offset,
+          hasMore: (offset + folders.length) < (metadata?.total || folders.length)
+        }
+      };
+    } catch (error) {
+      logger.error('Failed to list folders', {
+        error: error instanceof Error ? error.message : String(error),
+        request: listRequest,
+        module: 'folders'
+      });
+      throw error;
+    }
   }
 
   /**
