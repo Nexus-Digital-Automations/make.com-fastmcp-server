@@ -651,10 +651,9 @@ function addTeamManagementTools(server: FastMCP, apiClient: MakeApiClient, _comp
 }
 
 /**
- * Add organization management tools
+ * Add list organizations tool
  */
-function addOrganizationManagementTools(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // List organizations
+function addListOrganizationsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-organizations',
     description: 'List user organizations',
@@ -715,8 +714,12 @@ function addOrganizationManagementTools(server: FastMCP, apiClient: MakeApiClien
       }
     },
   });
+}
 
-  // Get organization details
+/**
+ * Add get organization tool
+ */
+function addGetOrganizationTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-organization',
     description: 'Get detailed information about a specific organization',
@@ -762,8 +765,12 @@ function addOrganizationManagementTools(server: FastMCP, apiClient: MakeApiClien
       }
     },
   });
+}
 
-  // Create organization
+/**
+ * Add create organization tool
+ */
+function addCreateOrganizationTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-organization',
     description: 'Create a new organization',
@@ -816,8 +823,12 @@ function addOrganizationManagementTools(server: FastMCP, apiClient: MakeApiClien
       }
     },
   });
+}
 
-  // Update organization
+/**
+ * Add update organization tool
+ */
+function addUpdateOrganizationTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'update-organization',
     description: 'Update organization information',
@@ -874,8 +885,12 @@ function addOrganizationManagementTools(server: FastMCP, apiClient: MakeApiClien
       }
     },
   });
+}
 
-  // Delete organization
+/**
+ * Add delete organization tool
+ */
+function addDeleteOrganizationTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'delete-organization',
     description: 'Delete an organization',
@@ -914,6 +929,18 @@ function addOrganizationManagementTools(server: FastMCP, apiClient: MakeApiClien
       }
     },
   });
+}
+
+/**
+ * Add organization management tools
+ */
+function addOrganizationManagementTools(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
+  // Add all organization management tools
+  addListOrganizationsTool(server, apiClient);
+  addGetOrganizationTool(server, apiClient);
+  addCreateOrganizationTool(server, apiClient);
+  addUpdateOrganizationTool(server, apiClient);
+  addDeleteOrganizationTool(server, apiClient);
 }
 
 /**
