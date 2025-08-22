@@ -5,7 +5,7 @@
  */
 
 import helmet from 'helmet';
-import csrf from 'csurf';
+import { doubleCsrf } from 'csrf-csrf';
 import logger from '../lib/logger.js';
 
 // Compatible request/response types for middleware - using any for Express compatibility
@@ -26,7 +26,7 @@ interface SecurityConfig {
 export class SecurityHeadersManager {
   private config: SecurityConfig;
   private helmetInstance: (req: HttpRequest, res: HttpResponse, next: NextFunction) => void = () => {};
-  private csrfProtection: (req: HttpRequest, res: HttpResponse, next: NextFunction) => void = () => {};
+  private csrfUtilities: { generateCsrfToken: (req: HttpRequest, res: HttpResponse) => string; doubleCsrfProtection: (req: HttpRequest, res: HttpResponse, next: NextFunction) => void } | null = null;
   
   constructor(config?: Partial<SecurityConfig>) {
     this.config = {
@@ -154,16 +154,20 @@ export class SecurityHeadersManager {
   
   private setupCSRF(): void {
     if (this.config.enableCSRF) {
-      this.csrfProtection = csrf({
-        cookie: {
-          httpOnly: true,
+      // Configure Double CSRF protection
+      this.csrfUtilities = doubleCsrf({
+        getSecret: () => process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production',
+        getSessionIdentifier: (req: HttpRequest) => req.sessionID || req.ip || 'anonymous',
+        cookieName: '_csrf',
+        cookieOptions: {
+          httpOnly: false, // Client needs to read this for token access
           secure: this.config.environment === 'production',
           sameSite: 'strict',
-          maxAge: 3600000, // 1 hour
-          signed: true
+          path: '/',
+          maxAge: 3600000 // 1 hour
         },
-        sessionKey: 'session',
-        value: (req: any): string => {
+        ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+        getCsrfTokenFromRequest: (req: HttpRequest) => {
           // Extract CSRF token from multiple possible locations
           return req.body?._csrf ||
                  req.query?._csrf ||
@@ -172,7 +176,11 @@ export class SecurityHeadersManager {
                  req.headers?.['x-xsrf-token'] ||
                  '';
         },
-        ignoreMethods: ['GET', 'HEAD', 'OPTIONS']
+        errorConfig: {
+          statusCode: 403,
+          message: 'Invalid CSRF token. Please refresh the page and try again.',
+          code: 'CSRF_TOKEN_INVALID'
+        }
       });
     }
   }
@@ -197,34 +205,43 @@ export class SecurityHeadersManager {
   
   // CSRF protection middleware
   public getCSRFMiddleware(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
-    if (!this.config.enableCSRF) {
+    if (!this.config.enableCSRF || !this.csrfUtilities) {
       return (req: HttpRequest, res: HttpResponse, next: NextFunction) => next();
     }
     
     return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
-      this.csrfProtection(req, res, (err: unknown) => {
+      if (!this.csrfUtilities) {
+        return next();
+      }
+      
+      // For safe methods (GET, HEAD), generate and set CSRF token
+      if (req.method === 'GET' || req.method === 'HEAD') {
+        const csrfToken = this.csrfUtilities.generateCsrfToken(req, res);
+        
+        // Add token to request for access
+        (req as any).csrfToken = (): string => csrfToken;
+        
+        // Add token to response locals for templates
+        if (res.locals) {
+          res.locals.csrfToken = csrfToken;
+        }
+        
+        return next();
+      }
+      
+      // For unsafe methods, use the built-in protection middleware
+      this.csrfUtilities.doubleCsrfProtection(req, res, (err: unknown) => {
         if (err) {
           logger.warn('CSRF protection triggered', {
             ip: req.ip,
             userAgent: req.headers['user-agent']?.substring(0, 100),
             endpoint: req.path,
-            method: req.method
+            method: req.method,
+            error: err instanceof Error ? err.message : String(err)
           });
           
-          return res.status(403).json({
-            error: {
-              code: 'CSRF_TOKEN_INVALID',
-              message: 'Invalid CSRF token. Please refresh the page and try again.'
-            }
-          });
-        }
-        
-        // Add CSRF token to response for client use
-        const reqWithCsrf = req as unknown as { csrfToken?: () => string };
-        if (reqWithCsrf.csrfToken) {
-          if (res.locals) {
-            res.locals.csrfToken = reqWithCsrf.csrfToken();
-          }
+          // Error already handled by doubleCsrfProtection
+          return;
         }
         
         next();
