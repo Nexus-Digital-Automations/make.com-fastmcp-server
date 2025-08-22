@@ -13,20 +13,32 @@ export const ScenarioRunLogsSchema = z.object({
     batchSize: z.number().min(1).max(100).default(10).describe('Number of logs per batch'),
     batchTimeoutMs: z.number().min(100).max(60000).default(1000).describe('Batch timeout in milliseconds'),
     compressionEnabled: z.boolean().default(true).describe('Enable log compression'),
-  }).default({}),
+  }).default(() => ({
+    enabled: true,
+    batchSize: 10,
+    batchTimeoutMs: 1000,
+    compressionEnabled: true,
+  })),
   filtering: z.object({
     logLevels: z.array(z.enum(['debug', 'info', 'warn', 'error', 'critical'])).default(['info', 'warn', 'error']).describe('Log levels to include'),
     moduleTypes: z.array(z.string()).optional().describe('Module types to filter by'),
     moduleIds: z.array(z.string()).optional().describe('Specific module IDs to include'),
     startTime: z.string().optional().describe('Start time for log filtering (ISO format)'),
     endTime: z.string().optional().describe('End time for log filtering (ISO format)'),
-  }).default({}),
+  }).default(() => ({
+    logLevels: ['info', 'warn', 'error'] as ('debug' | 'info' | 'warn' | 'error' | 'critical')[],
+  })),
   output: z.object({
     format: z.enum(['json', 'structured', 'plain']).default('structured').describe('Output format'),
     includeMetrics: z.boolean().default(true).describe('Include execution metrics'),
     includeStackTrace: z.boolean().default(true).describe('Include stack traces for errors'),
     colorCoding: z.boolean().default(true).describe('Enable color coding for different log levels'),
-  }).default({}),
+  }).default(() => ({
+    format: 'structured' as const,
+    includeMetrics: true,
+    includeStackTrace: true,
+    colorCoding: true,
+  })),
 }).strict();
 
 export const StreamLiveExecutionSchema = z.object({
@@ -53,9 +65,9 @@ export const StreamLiveExecutionSchema = z.object({
     executionTimeAlert: z.boolean().default(true).describe('Alert on execution time issues'),
     customThresholds: z.record(z.string(), z.number()).optional().describe('Custom alert thresholds'),
   }).default(() => ({
-    enabled: false,
-    errorThreshold: 0.1,
-    performanceThreshold: 0.8,
+    enabled: true,
+    errorThreshold: 3,
+    performanceThreshold: 30000,
     moduleFailureAlert: true,
     executionTimeAlert: true,
   })),
@@ -94,7 +106,7 @@ export const QueryLogsByTimeRangeSchema = z.object({
     includeMetrics: z.boolean().default(true).describe('Include performance metrics in results'),
     correlationIds: z.array(z.string()).optional().describe('Filter by correlation IDs'),
   }).default(() => ({
-    logLevels: ['info', 'warn', 'error'] as const,
+    logLevels: ['info', 'warn', 'error'] as ('debug' | 'info' | 'warn' | 'error' | 'critical')[],
     errorCodesOnly: false,
     excludeSuccess: false,
     includeMetrics: true,

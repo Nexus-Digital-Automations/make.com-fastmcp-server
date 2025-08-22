@@ -499,7 +499,7 @@ export class FoldersManager {
         throw new Error(`Failed to get folder contents: ${response.error?.message || 'Unknown error'}`);
       }
 
-      const data = response.data as { folder: MakeFolder; contents: unknown } || {};
+      const data = (response.data as { folder: MakeFolder; contents: unknown }) || { folder: {} as MakeFolder, contents: {} };
       const metadata = response.metadata;
 
       logger.info('Successfully retrieved folder contents', {

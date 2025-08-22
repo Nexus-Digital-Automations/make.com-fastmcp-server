@@ -3,8 +3,8 @@
  * Provides consistent logging across the application with correlation ID tracking
  */
 
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import configManager from './config.js';
 import { getLogsDirectory } from '../utils/path-resolver.js';
 

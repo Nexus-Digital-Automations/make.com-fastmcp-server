@@ -1,8 +1,8 @@
 /**
  * Path resolution utility that works in both runtime and test environments
  */
-import path from 'path';
-import fs from 'fs';
+import * as path from 'path';
+import * as fs from 'fs';
 
 /**
  * Get the project root directory - works for both runtime and testing

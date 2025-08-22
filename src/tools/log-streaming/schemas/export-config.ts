@@ -21,13 +21,23 @@ export const ExportLogsForAnalysisSchema = z.object({
       correlationIds: z.array(z.string()).optional().describe('Filter by correlation IDs'),
       errorCodesOnly: z.boolean().default(false).describe('Only export logs with error codes'),
       performanceThreshold: z.number().optional().describe('Min processing time threshold (ms)'),
-    }).default({}),
+    }).default({
+      logLevels: ['info', 'warn', 'error'],
+      includeSuccessfulExecutions: true,
+      includeFailedExecutions: true,
+      errorCodesOnly: false
+    }),
     streaming: z.object({
       enabled: z.boolean().default(false).describe('Enable real-time streaming export'),
       batchSize: z.number().min(1).max(1000).default(50).describe('Streaming batch size'),
       intervalMs: z.number().min(1000).max(60000).default(5000).describe('Streaming interval in milliseconds'),
       maxDuration: z.number().min(60).max(86400).default(3600).describe('Max streaming duration in seconds'),
-    }).default({}),
+    }).default({
+      enabled: false,
+      batchSize: 50,
+      intervalMs: 5000,
+      maxDuration: 3600
+    }),
   }).describe('Export configuration'),
   outputConfig: z.object({
     format: z.enum(['json', 'csv', 'parquet', 'elasticsearch', 'splunk', 'datadog', 'newrelic', 'prometheus', 'aws-cloudwatch', 'azure-monitor', 'gcp-logging']).default('json').describe('Export format'),
@@ -40,7 +50,12 @@ export const ExportLogsForAnalysisSchema = z.object({
       operation: z.enum(['rename', 'format_date', 'parse_json', 'extract_regex']),
       parameters: z.record(z.string(), z.unknown()).optional(),
     })).optional().describe('Data transformation rules'),
-  }).default({}),
+  }).default({
+    format: 'json',
+    compression: 'gzip',
+    chunkSize: 1000,
+    includeMetadata: true
+  }),
   destination: z.object({
     type: z.enum(['download', 'webhook', 'external-system', 'stream']).default('download').describe('Export destination'),
     webhookUrl: z.string().optional().describe('Webhook URL for external delivery'),
@@ -64,15 +79,30 @@ export const ExportLogsForAnalysisSchema = z.object({
         maxRetries: z.number().min(0).max(10).default(3),
         retryDelayMs: z.number().min(100).max(30000).default(1000),
         backoffMultiplier: z.number().min(1).max(10).default(2),
-      }).default({}),
+      }).default({
+        maxRetries: 3,
+        retryDelayMs: 1000,
+        backoffMultiplier: 2
+      }),
     }).optional().describe('External system configuration'),
     delivery: z.object({
       immediate: z.boolean().default(true).describe('Immediate delivery'),
       scheduled: z.boolean().default(false).describe('Scheduled delivery'),
       cronExpression: z.string().optional().describe('Cron expression for scheduled delivery'),
       bufferSize: z.number().min(1).max(10000).default(100).describe('Buffer size for batched delivery'),
-    }).default({}),
-  }).default({}),
+    }).default({
+      immediate: true,
+      scheduled: false,
+      bufferSize: 100
+    }),
+  }).default({
+    type: 'download',
+    delivery: {
+      immediate: true,
+      scheduled: false,
+      bufferSize: 100
+    }
+  }),
   analytics: z.object({
     enabled: z.boolean().default(false).describe('Enable advanced analytics'),
     features: z.object({
@@ -80,12 +110,25 @@ export const ExportLogsForAnalysisSchema = z.object({
       performanceAnalysis: z.boolean().default(false).describe('Analyze performance trends'),
       errorCorrelation: z.boolean().default(false).describe('Correlate error patterns'),
       predictiveInsights: z.boolean().default(false).describe('Generate predictive insights'),
-    }).default({}),
+    }).default({
+      anomalyDetection: false,
+      performanceAnalysis: false,
+      errorCorrelation: false,
+      predictiveInsights: false
+    }),
     customMetrics: z.array(z.object({
       name: z.string(),
       aggregation: z.enum(['count', 'sum', 'avg', 'min', 'max']),
       field: z.string(),
       filters: z.record(z.string(), z.unknown()).optional(),
     })).optional().describe('Custom metrics to calculate'),
-  }).default({}),
+  }).default({
+    enabled: false,
+    features: {
+      anomalyDetection: false,
+      performanceAnalysis: false,
+      errorCorrelation: false,
+      predictiveInsights: false
+    }
+  }),
 }).strict();
