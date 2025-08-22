@@ -169,6 +169,16 @@ export interface ToolExecutionContext {
   session?: FastMCPSessionAuth;
 }
 
+export interface ToolContext extends ToolExecutionContext {
+  // Additional context properties for tools
+  config?: UnknownRecord;
+}
+
+export interface FastMCPToolContext extends ToolContext {
+  // FastMCP specific context
+  server?: FastMCPServer;
+}
+
 export interface MakeApiError extends Error {
   code?: string;
   status?: number;

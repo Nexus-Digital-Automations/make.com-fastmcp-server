@@ -144,124 +144,124 @@ export const deletedatastoreResponseSchema = foldersResultSchema.extend({
 
 
 // Validation helper functions
-export const validateFoldersConfig = (data: unknown) => {
+export const validateFoldersConfig = (data: unknown): z.infer<typeof foldersConfigSchema> => {
   return foldersConfigSchema.parse(data);
 };
 
-export const validateFoldersResult = (data: unknown) => {
+export const validateFoldersResult = (data: unknown): z.infer<typeof foldersResultSchema> => {
   return foldersResultSchema.parse(data);
 };
 
 
-export const validateCreatefolderRequest = (data: unknown) => {
+export const validateCreatefolderRequest = (data: unknown): z.infer<typeof createfolderRequestSchema> => {
   return createfolderRequestSchema.parse(data);
 };
 
-export const validateCreatefolderResponse = (data: unknown) => {
+export const validateCreatefolderResponse = (data: unknown): z.infer<typeof createfolderResponseSchema> => {
   return createfolderResponseSchema.parse(data);
 };
 
-export const validateListfoldersRequest = (data: unknown) => {
+export const validateListfoldersRequest = (data: unknown): z.infer<typeof listfoldersRequestSchema> => {
   return listfoldersRequestSchema.parse(data);
 };
 
-export const validateListfoldersResponse = (data: unknown) => {
+export const validateListfoldersResponse = (data: unknown): z.infer<typeof listfoldersResponseSchema> => {
   return listfoldersResponseSchema.parse(data);
 };
 
-export const validateGetfoldercontentsRequest = (data: unknown) => {
+export const validateGetfoldercontentsRequest = (data: unknown): z.infer<typeof getfoldercontentsRequestSchema> => {
   return getfoldercontentsRequestSchema.parse(data);
 };
 
-export const validateGetfoldercontentsResponse = (data: unknown) => {
+export const validateGetfoldercontentsResponse = (data: unknown): z.infer<typeof getfoldercontentsResponseSchema> => {
   return getfoldercontentsResponseSchema.parse(data);
 };
 
-export const validateMoveitemsRequest = (data: unknown) => {
+export const validateMoveitemsRequest = (data: unknown): z.infer<typeof moveitemsRequestSchema> => {
   return moveitemsRequestSchema.parse(data);
 };
 
-export const validateMoveitemsResponse = (data: unknown) => {
+export const validateMoveitemsResponse = (data: unknown): z.infer<typeof moveitemsResponseSchema> => {
   return moveitemsResponseSchema.parse(data);
 };
 
-export const validateCreatedatastoreRequest = (data: unknown) => {
+export const validateCreatedatastoreRequest = (data: unknown): z.infer<typeof createdatastoreRequestSchema> => {
   return createdatastoreRequestSchema.parse(data);
 };
 
-export const validateCreatedatastoreResponse = (data: unknown) => {
+export const validateCreatedatastoreResponse = (data: unknown): z.infer<typeof createdatastoreResponseSchema> => {
   return createdatastoreResponseSchema.parse(data);
 };
 
-export const validateListdatastoresRequest = (data: unknown) => {
+export const validateListdatastoresRequest = (data: unknown): z.infer<typeof listdatastoresRequestSchema> => {
   return listdatastoresRequestSchema.parse(data);
 };
 
-export const validateListdatastoresResponse = (data: unknown) => {
+export const validateListdatastoresResponse = (data: unknown): z.infer<typeof listdatastoresResponseSchema> => {
   return listdatastoresResponseSchema.parse(data);
 };
 
-export const validateListdatastructuresRequest = (data: unknown) => {
+export const validateListdatastructuresRequest = (data: unknown): z.infer<typeof listdatastructuresRequestSchema> => {
   return listdatastructuresRequestSchema.parse(data);
 };
 
-export const validateListdatastructuresResponse = (data: unknown) => {
+export const validateListdatastructuresResponse = (data: unknown): z.infer<typeof listdatastructuresResponseSchema> => {
   return listdatastructuresResponseSchema.parse(data);
 };
 
-export const validateGetdatastructureRequest = (data: unknown) => {
+export const validateGetdatastructureRequest = (data: unknown): z.infer<typeof getdatastructureRequestSchema> => {
   return getdatastructureRequestSchema.parse(data);
 };
 
-export const validateGetdatastructureResponse = (data: unknown) => {
+export const validateGetdatastructureResponse = (data: unknown): z.infer<typeof getdatastructureResponseSchema> => {
   return getdatastructureResponseSchema.parse(data);
 };
 
-export const validateCreatedatastructureRequest = (data: unknown) => {
+export const validateCreatedatastructureRequest = (data: unknown): z.infer<typeof createdatastructureRequestSchema> => {
   return createdatastructureRequestSchema.parse(data);
 };
 
-export const validateCreatedatastructureResponse = (data: unknown) => {
+export const validateCreatedatastructureResponse = (data: unknown): z.infer<typeof createdatastructureResponseSchema> => {
   return createdatastructureResponseSchema.parse(data);
 };
 
-export const validateUpdatedatastructureRequest = (data: unknown) => {
+export const validateUpdatedatastructureRequest = (data: unknown): z.infer<typeof updatedatastructureRequestSchema> => {
   return updatedatastructureRequestSchema.parse(data);
 };
 
-export const validateUpdatedatastructureResponse = (data: unknown) => {
+export const validateUpdatedatastructureResponse = (data: unknown): z.infer<typeof updatedatastructureResponseSchema> => {
   return updatedatastructureResponseSchema.parse(data);
 };
 
-export const validateDeletedatastructureRequest = (data: unknown) => {
+export const validateDeletedatastructureRequest = (data: unknown): z.infer<typeof deletedatastructureRequestSchema> => {
   return deletedatastructureRequestSchema.parse(data);
 };
 
-export const validateDeletedatastructureResponse = (data: unknown) => {
+export const validateDeletedatastructureResponse = (data: unknown): z.infer<typeof deletedatastructureResponseSchema> => {
   return deletedatastructureResponseSchema.parse(data);
 };
 
-export const validateGetdatastoreRequest = (data: unknown) => {
+export const validateGetdatastoreRequest = (data: unknown): z.infer<typeof getdatastoreRequestSchema> => {
   return getdatastoreRequestSchema.parse(data);
 };
 
-export const validateGetdatastoreResponse = (data: unknown) => {
+export const validateGetdatastoreResponse = (data: unknown): z.infer<typeof getdatastoreResponseSchema> => {
   return getdatastoreResponseSchema.parse(data);
 };
 
-export const validateUpdatedatastoreRequest = (data: unknown) => {
+export const validateUpdatedatastoreRequest = (data: unknown): z.infer<typeof updatedatastoreRequestSchema> => {
   return updatedatastoreRequestSchema.parse(data);
 };
 
-export const validateUpdatedatastoreResponse = (data: unknown) => {
+export const validateUpdatedatastoreResponse = (data: unknown): z.infer<typeof updatedatastoreResponseSchema> => {
   return updatedatastoreResponseSchema.parse(data);
 };
 
-export const validateDeletedatastoreRequest = (data: unknown) => {
+export const validateDeletedatastoreRequest = (data: unknown): z.infer<typeof deletedatastoreRequestSchema> => {
   return deletedatastoreRequestSchema.parse(data);
 };
 
-export const validateDeletedatastoreResponse = (data: unknown) => {
+export const validateDeletedatastoreResponse = (data: unknown): z.infer<typeof deletedatastoreResponseSchema> => {
   return deletedatastoreResponseSchema.parse(data);
 };
 

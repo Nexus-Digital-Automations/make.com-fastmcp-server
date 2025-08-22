@@ -75,7 +75,7 @@ export function deepClone<T>(obj: T): T {
   if (typeof obj === 'object') {
     const cloned = {} as T;
     Object.keys(obj).forEach(key => {
-      (cloned as any)[key] = deepClone((obj as any)[key]);
+      (cloned as Record<string, unknown>)[key] = deepClone((obj as Record<string, unknown>)[key]);
     });
     return cloned;
   }
@@ -144,7 +144,7 @@ export function sanitizeForLogging(data: unknown): unknown {
   const sensitiveKeys = ['password', 'token', 'key', 'secret', 'auth', 'credential'];
   const sanitized = deepClone(data);
 
-  function sanitizeObject(obj: any): void {
+  function sanitizeObject(obj: Record<string, unknown> | null): void {
     if (typeof obj !== 'object' || obj === null) return;
 
     Object.keys(obj).forEach(key => {
@@ -153,11 +153,11 @@ export function sanitizeForLogging(data: unknown): unknown {
       if (sensitiveKeys.some(sensitive => lowerKey.includes(sensitive))) {
         obj[key] = '[REDACTED]';
       } else if (typeof obj[key] === 'object') {
-        sanitizeObject(obj[key]);
+        sanitizeObject(obj[key] as Record<string, unknown> | null);
       }
     });
   }
 
-  sanitizeObject(sanitized);
+  sanitizeObject(sanitized as Record<string, unknown> | null);
   return sanitized;
 }

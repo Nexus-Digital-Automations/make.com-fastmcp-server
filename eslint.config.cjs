@@ -13,7 +13,10 @@ module.exports = [
       'src/examples/**/*',
       'temp-build/**/*',
       'temp-dist/**/*',
-      '*.json'
+      '*.json',
+      '**/__tests__/**/*',
+      '**/*.test.ts',
+      '**/*.spec.ts'
     ]
   },
   // Configuration for JavaScript files that use ES modules  
@@ -115,6 +118,7 @@ module.exports = [
         clearInterval: 'readonly',
         clearImmediate: 'readonly',
         URL: 'readonly',
+        fetch: 'readonly',
         // Node.js types
         NodeJS: 'readonly',
         crypto: 'readonly'

@@ -5,7 +5,6 @@
  */
 
 import type { 
-  FoldersConfig,
   FoldersContext,
   FoldersResult,
   FoldersState,
@@ -13,8 +12,7 @@ import type {
 } from '../types/index.js';
 
 import { 
-  validateFoldersConfig,
-  validateFoldersResult
+  validateFoldersConfig
 } from '../schemas/index.js';
 
 import logger from '../../../lib/logger.js';
@@ -165,7 +163,7 @@ export class FoldersManager {
   /**
    * Execute createFolder business logic
    */
-  private async executeCreatefolder(request: unknown): Promise<unknown> {
+  private async executeCreatefolder(_request: unknown): Promise<unknown> {
     // TODO: Implement createFolder business logic
     // This is where the core functionality for createFolder would be implemented
     
@@ -240,7 +238,7 @@ export class FoldersManager {
   /**
    * Execute listFolders business logic
    */
-  private async executeListfolders(request: unknown): Promise<unknown> {
+  private async executeListfolders(_request: unknown): Promise<unknown> {
     // TODO: Implement listFolders business logic
     // This is where the core functionality for listFolders would be implemented
     
@@ -315,7 +313,7 @@ export class FoldersManager {
   /**
    * Execute getFolderContents business logic
    */
-  private async executeGetfoldercontents(request: unknown): Promise<unknown> {
+  private async executeGetfoldercontents(_request: unknown): Promise<unknown> {
     // TODO: Implement getFolderContents business logic
     // This is where the core functionality for getFolderContents would be implemented
     
@@ -390,7 +388,7 @@ export class FoldersManager {
   /**
    * Execute moveItems business logic
    */
-  private async executeMoveitems(request: unknown): Promise<unknown> {
+  private async executeMoveitems(_request: unknown): Promise<unknown> {
     // TODO: Implement moveItems business logic
     // This is where the core functionality for moveItems would be implemented
     
@@ -465,7 +463,7 @@ export class FoldersManager {
   /**
    * Execute createDataStore business logic
    */
-  private async executeCreatedatastore(request: unknown): Promise<unknown> {
+  private async executeCreatedatastore(_request: unknown): Promise<unknown> {
     // TODO: Implement createDataStore business logic
     // This is where the core functionality for createDataStore would be implemented
     
@@ -540,7 +538,7 @@ export class FoldersManager {
   /**
    * Execute listDataStores business logic
    */
-  private async executeListdatastores(request: unknown): Promise<unknown> {
+  private async executeListdatastores(_request: unknown): Promise<unknown> {
     // TODO: Implement listDataStores business logic
     // This is where the core functionality for listDataStores would be implemented
     
@@ -615,7 +613,7 @@ export class FoldersManager {
   /**
    * Execute listDataStructures business logic
    */
-  private async executeListdatastructures(request: unknown): Promise<unknown> {
+  private async executeListdatastructures(_request: unknown): Promise<unknown> {
     // TODO: Implement listDataStructures business logic
     // This is where the core functionality for listDataStructures would be implemented
     
@@ -690,7 +688,7 @@ export class FoldersManager {
   /**
    * Execute getDataStructure business logic
    */
-  private async executeGetdatastructure(request: unknown): Promise<unknown> {
+  private async executeGetdatastructure(_request: unknown): Promise<unknown> {
     // TODO: Implement getDataStructure business logic
     // This is where the core functionality for getDataStructure would be implemented
     
@@ -765,7 +763,7 @@ export class FoldersManager {
   /**
    * Execute createDataStructure business logic
    */
-  private async executeCreatedatastructure(request: unknown): Promise<unknown> {
+  private async executeCreatedatastructure(_request: unknown): Promise<unknown> {
     // TODO: Implement createDataStructure business logic
     // This is where the core functionality for createDataStructure would be implemented
     
@@ -840,7 +838,7 @@ export class FoldersManager {
   /**
    * Execute updateDataStructure business logic
    */
-  private async executeUpdatedatastructure(request: unknown): Promise<unknown> {
+  private async executeUpdatedatastructure(_request: unknown): Promise<unknown> {
     // TODO: Implement updateDataStructure business logic
     // This is where the core functionality for updateDataStructure would be implemented
     
@@ -915,7 +913,7 @@ export class FoldersManager {
   /**
    * Execute deleteDataStructure business logic
    */
-  private async executeDeletedatastructure(request: unknown): Promise<unknown> {
+  private async executeDeletedatastructure(_request: unknown): Promise<unknown> {
     // TODO: Implement deleteDataStructure business logic
     // This is where the core functionality for deleteDataStructure would be implemented
     
@@ -990,7 +988,7 @@ export class FoldersManager {
   /**
    * Execute getDataStore business logic
    */
-  private async executeGetdatastore(request: unknown): Promise<unknown> {
+  private async executeGetdatastore(_request: unknown): Promise<unknown> {
     // TODO: Implement getDataStore business logic
     // This is where the core functionality for getDataStore would be implemented
     
@@ -1065,7 +1063,7 @@ export class FoldersManager {
   /**
    * Execute updateDataStore business logic
    */
-  private async executeUpdatedatastore(request: unknown): Promise<unknown> {
+  private async executeUpdatedatastore(_request: unknown): Promise<unknown> {
     // TODO: Implement updateDataStore business logic
     // This is where the core functionality for updateDataStore would be implemented
     
@@ -1140,7 +1138,7 @@ export class FoldersManager {
   /**
    * Execute deleteDataStore business logic
    */
-  private async executeDeletedatastore(request: unknown): Promise<unknown> {
+  private async executeDeletedatastore(_request: unknown): Promise<unknown> {
     // TODO: Implement deleteDataStore business logic
     // This is where the core functionality for deleteDataStore would be implemented
     
@@ -1158,7 +1156,7 @@ export class FoldersManager {
   /**
    * Get module statistics
    */
-  getStatistics() {
+  getStatistics(): typeof this.state.statistics {
     return { ...this.state.statistics };
   }
 
@@ -1214,7 +1212,7 @@ export class FoldersManager {
           };
 
         default:
-          throw new Error(`Unknown event type: ${(event as any).type}`);
+          throw new Error(`Unknown event type: ${(event as { type: unknown }).type}`);
       }
     } catch (error) {
       logger.error('Failed to handle event', {

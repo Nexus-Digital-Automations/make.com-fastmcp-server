@@ -8,6 +8,15 @@ import type { FoldersContext } from '../types/index.js';
 import { FoldersManager } from '../core/index.js';
 import logger from '../../../lib/logger.js';
 
+type ToolResult = Promise<{ 
+  success?: boolean; 
+  error?: string; 
+  message?: string; 
+  data?: unknown; 
+  details?: unknown; 
+  metadata?: unknown; 
+}>;
+
 /**
  * Initialize folders module manager
  */
@@ -33,7 +42,7 @@ function createFoldersManager(context: FastMCPToolContext): FoldersManager {
 /**
  * createFolder FastMCP tool
  */
-export async function createfolder(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function createfolder(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -104,7 +113,7 @@ createfolder.metadata = {
 /**
  * listFolders FastMCP tool
  */
-export async function listfolders(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function listfolders(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -175,7 +184,7 @@ listfolders.metadata = {
 /**
  * getFolderContents FastMCP tool
  */
-export async function getfoldercontents(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function getfoldercontents(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -246,7 +255,7 @@ getfoldercontents.metadata = {
 /**
  * moveItems FastMCP tool
  */
-export async function moveitems(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function moveitems(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -317,7 +326,7 @@ moveitems.metadata = {
 /**
  * createDataStore FastMCP tool
  */
-export async function createdatastore(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function createdatastore(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -388,7 +397,7 @@ createdatastore.metadata = {
 /**
  * listDataStores FastMCP tool
  */
-export async function listdatastores(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function listdatastores(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -459,7 +468,7 @@ listdatastores.metadata = {
 /**
  * listDataStructures FastMCP tool
  */
-export async function listdatastructures(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function listdatastructures(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -530,7 +539,7 @@ listdatastructures.metadata = {
 /**
  * getDataStructure FastMCP tool
  */
-export async function getdatastructure(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function getdatastructure(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -601,7 +610,7 @@ getdatastructure.metadata = {
 /**
  * createDataStructure FastMCP tool
  */
-export async function createdatastructure(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function createdatastructure(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -672,7 +681,7 @@ createdatastructure.metadata = {
 /**
  * updateDataStructure FastMCP tool
  */
-export async function updatedatastructure(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function updatedatastructure(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -743,7 +752,7 @@ updatedatastructure.metadata = {
 /**
  * deleteDataStructure FastMCP tool
  */
-export async function deletedatastructure(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function deletedatastructure(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -814,7 +823,7 @@ deletedatastructure.metadata = {
 /**
  * getDataStore FastMCP tool
  */
-export async function getdatastore(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function getdatastore(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -885,7 +894,7 @@ getdatastore.metadata = {
 /**
  * updateDataStore FastMCP tool
  */
-export async function updatedatastore(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function updatedatastore(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {
@@ -956,7 +965,7 @@ updatedatastore.metadata = {
 /**
  * deleteDataStore FastMCP tool
  */
-export async function deletedatastore(context: FastMCPToolContext, args: Record<string, unknown>) {
+export async function deletedatastore(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   const manager = createFoldersManager(context);
   
   try {

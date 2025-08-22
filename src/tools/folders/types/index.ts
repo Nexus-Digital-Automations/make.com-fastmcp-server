@@ -16,7 +16,7 @@ export interface FoldersConfig {
   };
 }
 
-export interface FoldersContext extends ToolContext {
+export interface FoldersContext extends Omit<ToolContext, 'config'> {
   config: FoldersConfig;
   // Add module-specific context properties
 }
