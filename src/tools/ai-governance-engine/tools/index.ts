@@ -393,11 +393,11 @@ export async function configureAutomatedRemediation(context: FastMCPToolContext,
 ${data.dryRunResults ? `**Dry Run Status**: Available (${data.dryRunResults.length} results)` : ''}
 
 ## 🔧 Configured Workflows
-${data.workflows.map((workflow, index) => `${index + 1}. **${workflow.name}** (${workflow.id})
-   - Type: ${workflow.type}
-   - Status: ${workflow.status}
+${data.workflows.map((workflow, index) => `${index + 1}. **Workflow** (${workflow.workflowId})
+   - Triggered By: ${workflow.triggeredBy}
+   - Severity: ${workflow.severity}
    - Steps: ${workflow.steps.length}
-   - Priority: ${workflow.priority}
+   - Duration: ${workflow.estimatedDuration}min
 `).join('\n')}
 
 ## 📋 Execution Summary
@@ -573,22 +573,22 @@ export async function generateGovernanceDashboard(context: FastMCPToolContext, a
           text: `# 📊 AI Governance Intelligence Dashboard
 
 ## 🔄 Real-Time Status
-**Last Updated**: ${dashboard.timestamp}
+**Last Updated**: ${new Date().toISOString()}
 
 ### 📈 Key Metrics
-- **Compliance Score**: ${dashboard.metrics.complianceScore}%
-- **Risk Score**: ${dashboard.metrics.riskScore}/100
-- **Policy Violations**: ${dashboard.metrics.policyViolations}
-- **Automated Remediations**: ${dashboard.metrics.automatedRemediations}
-- **Average Response Time**: ${dashboard.metrics.avgResponseTime}ms
-- **Prediction Accuracy**: ${Math.round(dashboard.metrics.predictionAccuracy * 100)}%
+- **System Status**: ${dashboard.systemStatus.status}
+- **Widget Count**: ${dashboard.widgetData.length}
+- **Alert Configurations**: ${dashboard.alertConfig.length}
+- **Dashboard Layout**: ${dashboard.dashboardConfig.layout}
+- **Real-time Data Available**: ${dashboard.realTimeMetrics ? 'Yes' : 'No'}
 
 ### 🚨 Active Alerts
-${dashboard.alerts.length > 0 ? dashboard.alerts.map(alert => `- ${alert}`).join('\n') : 'No active alerts'}
+${dashboard.alertConfig.length > 0 ? dashboard.alertConfig.map(alert => `- ${alert.metric}: ${alert.enabled ? 'Enabled' : 'Disabled'} (Warning: ${alert.thresholds.warning}, Critical: ${alert.thresholds.critical})`).join('\n') : 'No active alerts'}
 
-### 🔮 Forecasts
-${dashboard.forecasts.map(forecast => `#### ${forecast.metric} (${Math.round(forecast.confidence * 100)}% confidence)
-${forecast.predictions.slice(0, 3).map(pred => `- ${pred.timestamp}: ${pred.value} (${pred.lowerBound}-${pred.upperBound})`).join('\n')}`).join('\n\n')}
+### 📊 Dashboard Components
+${dashboard.widgetData.map((widget, index) => `#### Widget ${index + 1}
+- **Type**: ${widget.type || 'Unknown'}
+- **Data Points**: ${Array.isArray(widget.data) ? widget.data.length : 'N/A'}`).join('\n\n')}
 
 ## 🎯 Dashboard Configuration
 - **Type**: ${request.dashboardType}

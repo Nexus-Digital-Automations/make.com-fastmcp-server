@@ -820,7 +820,7 @@ export class DashboardService {
       }
     };
 
-    return (settings[dashboardType] as Record<string, unknown>) || settings.comprehensive;
+    return (settings[dashboardType] as Record<string, unknown>) || (settings.comprehensive as Record<string, unknown>);
   }
 
   private getGranularWidgets(): DashboardWidget[] {
