@@ -452,7 +452,7 @@ function addGetDataStructureTool(server: FastMCP, apiClient: MakeApiClient): voi
 /**
  * Validate JSON Schema in structure updates
  */
-function validateStructureSchema(structure: any): void {
+function validateStructureSchema(structure: { schema?: unknown }): void {
   if (structure?.schema && typeof structure.schema === 'object') {
     try {
       JSON.stringify(structure.schema);
@@ -465,7 +465,13 @@ function validateStructureSchema(structure: any): void {
 /**
  * Build update data from input parameters
  */
-function buildUpdateData(name: any, description: any, structure: any, validation: any, transformation: any): DataStructureUpdateData {
+function buildUpdateData(
+  name: string | undefined,
+  description: string | undefined,
+  structure: { schema?: unknown; version?: string; format?: string } | undefined,
+  validation: { enabled?: boolean; strict?: boolean; rules?: Array<Record<string, unknown>> } | undefined,
+  transformation: { enabled?: boolean; mappings?: Array<Record<string, unknown>>; filters?: Array<Record<string, unknown>> } | undefined
+): DataStructureUpdateData {
   const updateData: DataStructureUpdateData = {};
   
   if (name) {updateData.name = name;}
@@ -489,7 +495,7 @@ function buildUpdateData(name: any, description: any, structure: any, validation
     updateData.transformation = {};
     if (transformation.enabled !== undefined) {updateData.transformation.enabled = transformation.enabled;}
     if (transformation.mappings) {updateData.transformation.mappings = transformation.mappings;}
-    if (transformation.filters) {updateData.transformation.filters = transformation.filters.map((filter: any) => ({
+    if (transformation.filters) {updateData.transformation.filters = transformation.filters.map((filter: Record<string, unknown>) => ({
       field: filter.field,
       operator: filter.operator,
       value: filter.value,
@@ -516,7 +522,7 @@ function determineUpdateEndpoint(dataStructureId: number, organizationId?: numbe
 /**
  * Format update response with metadata and configuration details
  */
-function formatUpdateResponse(updatedDataStructure: MakeCustomDataStructure, updateData: DataStructureUpdateData, structure: any): any {
+function formatUpdateResponse(updatedDataStructure: MakeCustomDataStructure, updateData: DataStructureUpdateData, structure: { schema?: unknown; version?: string; format?: string } | undefined): import('../../utils/response-formatter.js').ToolResponse {
   return formatSuccessResponse({
     dataStructure: updatedDataStructure,
     message: `Data structure "${updatedDataStructure.name}" updated successfully`,

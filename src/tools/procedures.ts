@@ -677,8 +677,8 @@ function addListRemoteProceduresTool(server: FastMCP, apiClient: MakeApiClient):
  */
 function prepareExecutionData(
   inputData: unknown,
-  options: any,
-  metadata: any
+  options: { async?: boolean; timeout?: number; retries?: number; priority?: string },
+  metadata: Record<string, unknown>
 ): Record<string, unknown> {
   return {
     input: inputData,
@@ -702,7 +702,7 @@ function prepareExecutionData(
  * Execute remote procedure API call
  */
 async function executeRemoteProcedureCall(
-  apiClient: any,
+  apiClient: MakeApiClient,
   procedureId: string,
   executionData: Record<string, unknown>
 ): Promise<Record<string, unknown>> {
@@ -721,7 +721,7 @@ async function executeRemoteProcedureCall(
 function processExecutionResult(
   executionResult: Record<string, unknown>,
   procedureId: string,
-  log?: any
+  log?: { info: (message: string, meta?: unknown) => void }
 ): {
   result: Record<string, unknown>;
   monitoring: Record<string, unknown>;
@@ -752,7 +752,7 @@ function formatExecutionResponse(
   executionResult: Record<string, unknown>,
   procedureId: string,
   executionData: Record<string, unknown>,
-  options: any,
+  options: { async?: boolean; timeout?: number; retries?: number; priority?: string },
   monitoring: Record<string, unknown>
 ): string {
   return formatSuccessResponse({
@@ -763,7 +763,7 @@ function formatExecutionResponse(
       executionId: executionResult?.executionId,
       status: executionResult?.status,
       executionTime: executionResult?.executionTime,
-      correlationId: (executionData.metadata as any)?.correlationId,
+      correlationId: (executionData.metadata as Record<string, unknown>)?.correlationId,
       async: options.async,
       outputSize: executionResult?.output ? JSON.stringify(executionResult.output).length : 0,
     },
