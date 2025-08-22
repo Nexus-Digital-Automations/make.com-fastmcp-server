@@ -1471,7 +1471,7 @@ async function validateControl(
   };
 
   const violationCheck = frameworkRules[framework];
-  if (violationCheck && violationCheck(control, targetData, targetType)) {
+  if (violationCheck?.(control, targetData, targetType)) {
     return {
       controlId: control.controlId,
       severity: control.category === 'preventive' ? 'high' : 'medium',
