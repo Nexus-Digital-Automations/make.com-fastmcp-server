@@ -834,7 +834,7 @@ export const secureStringSchema = z.string()
   .transform((val) =&gt; sanitizeString(val));
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 // Factory function for secure string schema with custom max length
-export const createSecureStringSchema = (maxLength: number = 1000) =&gt; 
+export const createSecureStringSchema = (maxLength: number = 1000): z.ZodSchema&lt;string&gt; =&gt; 
   z.string()<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     .min(1, 'Field cannot be empty')
     .max(maxLength, `Field exc<span class="cstat-no" title="statement not covered" >eeds maximum length of ${maxLength}`)</span>
@@ -898,7 +898,7 @@ export const secureScenarioCreateSchema = z.object({
     inte<span class="cstat-no" title="statement not covered" >rval: z.number().int().positive().</span>max(86400).optional(), // Max 24 hours
   }),
   isActive: z.bo<span class="fstat-no" title="function not covered" >ol</span>ean().default(true),
-  metadata: z.record<span class="cstat-no" title="statement not covered" >(z.unknown())</span>
+  metadata: z.record<span class="cstat-no" title="statement not covered" >(z.string(), z.unkno</span>wn())
     .ref<span class="cstat-no" title="statement not covered" >ine((val) =&gt; Object.keys(val).length &lt;= 50, {</span>
       message: 'Too many metadata fields'
     })
@@ -926,7 +926,7 @@ export const sec<span class="fstat-no" title="function not covered" >ur</span>eS
     interval: z.number().int().positive().max(86400).optional(),
   }).optional(),
   isActive: z.boolean().optional(),
-  metadata: z.re<span class="fstat-no" title="function not covered" >co</span>rd(z.un<span class="cstat-no" title="statement not covered" >known())</span>
+  metadata: z.re<span class="fstat-no" title="function not covered" >co</span>rd(z.st<span class="cstat-no" title="statement not covered" >ring(), z.unknown())</span>
     .refine((val) =&gt; Object.keys(val).length &lt;= 50)
     .optional()
 }).strict();<span class="cstat-no" title="statement not covered" ></span>
@@ -941,12 +941,12 @@ export const sec<span class="fstat-no" title="function not covered" >ur</span>eC
     .refine((val) =&gt; /^[a-zA-Z0-9_-]+$/.test(val), {
       message: 'Service name can only contain alphanumeric characters, underscores, and hyphens'
     }),<span class="cstat-no" title="statement not covered" ></span>
-  credentials: z.record(z.unknown())
+  credentials: z.record(z.string(), z.unknown())
     .refine((val) =&gt; Object.keys(val<span class="cstat-no" title="statement not covered" >).length &lt;= 20, {</span>
       message: 'Too many credential fields'
     })
     .optional(),
-  metadata: z.record(z.unknown())
+  metadata: z.record(z.string(), z.unknown())
     .refine((val) =&gt; Object.keys(val).length &lt;= 30)
     .optional()
 }).strict();
@@ -956,10 +956,10 @@ export const connectionCreateSchema = secureConnectionCreateSchema;
 export const secureConnectionUpdateSchema = z.object({
   name: secureStringSchema.optional(),
   accountName: createSecureStringSchema(255).optional(),
-  credentials: z.record(z.unknown())
+  credentials: z.record(z.string(), z.unknown())
     .refine((val) =&gt; Object.keys(val).length &lt;= 20)
     .optional(),
-  metadata: z.record(z.unknown()<span class="cstat-no" title="statement not covered" >)</span>
+  metadata: z.record(z.string(),<span class="cstat-no" title="statement not covered" > z.unknown())</span>
     .refine((val) =&gt; Object.keys(val).length &lt;= 30)
     .optional()
 }).strict();
@@ -1008,7 +1008,7 @@ export const webhookCreateSchema = z.object({
   name: nameSche<span class="fstat-no" title="function not covered" >ma,</span>
   url: urlSchema,<span class="cstat-no" title="statement not covered" ></span>
   me<span class="cstat-no" title="statement not covered" >thod: z.enum(['GET', 'POST', 'PUT', 'DELETE']).default('POST'),</span>
-  header<span class="cstat-no" title="statement not covered" >s: z.record(z.string()).optional(),</span>
+  header<span class="cstat-no" title="statement not covered" >s: z.record(z.string(), z.string()).optional(),</span>
   scenarioId: z.number().int().positive().optional(),
   is<span class="cstat-no" title="statement not covered" >Active: z.boolean().</span>default(true),
 });
@@ -1017,7 +1017,7 @@ export const webhoo<span class="cstat-no" title="statement not covered" >kUpdate
   na<span class="cstat-no" title="statement not covered" >me: nameSchema.optional(),</span>
   url: u<span class="cstat-no" title="statement not covered" >rlSchema.optional(),</span>
   method: z.enum(['GET', 'POST', 'PUT', 'DELETE']).optional(),
-  he<span class="cstat-no" title="statement not covered" >aders: z.record(z.st</span>ring()).optional(),
+  he<span class="cstat-no" title="statement not covered" >aders: z.record(z.st</span>ring(), z.string()).optional(),
   isActive: z.boolean().optional(),
 });<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -1153,7 +1153,7 @@ export function safeLogObject(obj: Record&lt;string, unknown&gt;): Record&lt;str
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:52:47.089Z
+                at 2025-08-22T11:07:22.948Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

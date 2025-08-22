@@ -443,7 +443,7 @@ export class InsightsService {
     return insights;
   }
 
-  private async generateAnomalyInsights(data: AnalyticsData, context: InsightContext): Promise<GovernanceInsight[]> {
+  private async generateAnomalyInsights(data: AnalyticsData, _context: InsightContext): Promise<GovernanceInsight[]> {
     const insights: GovernanceInsight[] = [];
 
     // Detect anomalies in current metrics
@@ -722,7 +722,7 @@ export class InsightsService {
     return anomalies;
   }
 
-  private async generateMLPredictions(data: AnalyticsData, context: InsightContext): Promise<any[]> {
+  private async generateMLPredictions(_data: AnalyticsData, _context: InsightContext): Promise<any[]> {
     // Simulate ML predictions
     return [
       {
@@ -737,7 +737,7 @@ export class InsightsService {
     ];
   }
 
-  private async generateSmartRecommendations(data: AnalyticsData, context: InsightContext): Promise<any[]> {
+  private async generateSmartRecommendations(_data: AnalyticsData, _context: InsightContext): Promise<any[]> {
     return [
       {
         title: 'Optimize Automated Remediation',

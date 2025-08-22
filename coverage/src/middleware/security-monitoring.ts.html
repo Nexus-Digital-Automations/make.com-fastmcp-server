@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/161</span>
+                <span class='fraction'>0/163</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/69</span>
+                <span class='fraction'>0/73</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/155</span>
+                <span class='fraction'>0/157</span>
             </div>
         
             
@@ -651,7 +651,25 @@
 <a name='L586'></a><a href='#L586'>586</a>
 <a name='L587'></a><a href='#L587'>587</a>
 <a name='L588'></a><a href='#L588'>588</a>
-<a name='L589'></a><a href='#L589'>589</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L589'></a><a href='#L589'>589</a>
+<a name='L590'></a><a href='#L590'>590</a>
+<a name='L591'></a><a href='#L591'>591</a>
+<a name='L592'></a><a href='#L592'>592</a>
+<a name='L593'></a><a href='#L593'>593</a>
+<a name='L594'></a><a href='#L594'>594</a>
+<a name='L595'></a><a href='#L595'>595</a>
+<a name='L596'></a><a href='#L596'>596</a>
+<a name='L597'></a><a href='#L597'>597</a>
+<a name='L598'></a><a href='#L598'>598</a>
+<a name='L599'></a><a href='#L599'>599</a>
+<a name='L600'></a><a href='#L600'>600</a>
+<a name='L601'></a><a href='#L601'>601</a>
+<a name='L602'></a><a href='#L602'>602</a>
+<a name='L603'></a><a href='#L603'>603</a>
+<a name='L604'></a><a href='#L604'>604</a>
+<a name='L605'></a><a href='#L605'>605</a>
+<a name='L606'></a><a href='#L606'>606</a>
+<a name='L607'></a><a href='#L607'>607</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1017,6 +1035,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1065,6 +1085,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1246,50 +1282,65 @@
  */
 &nbsp;
 import { EventEmitter } from 'events';
+import type { Request, Response, NextFunction as ExpressNextFunction } from 'express';
 import logger from '../lib/logger.js';
-&nbsp;
-<span class="cstat-no" title="statement not covered" >/<span class="fstat-no" title="function not covered" >/ </span>For Node.js fetch (18.0+ built-in, earlier versions need node-fetch)</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+// F<span class="cstat-no" title="statement not covered" >or Node.js fetch (18.0+ built-in, earlier versions need node-fetch)</span>
 decl<span class="cstat-no" title="statement not covered" >are const fetch: typeof global.fetch;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-// S<span class="cstat-no" title="statement not covered" >ecurity event types</span>
+// E<span class="cstat-no" title="statement not covered" >xpress-compatible types for middleware</span>
+inte<span class="cstat-no" title="statement not covered" >rface ExtendedRequest extends Request {</span>
+  se<span class="cstat-no" title="statement not covered" >curityContext?: {</span>
+<span class="cstat-no" title="statement not covered" >    correlationId: string;</span>
+<span class="cstat-no" title="statement not covered" >    startTime: number;</span>
+<span class="cstat-no" title="statement not covered" >    ipAddress?: string;</span>
+<span class="cstat-no" title="statement not covered" >    userAgent?: string;</span>
+  };<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+type<span class="cstat-no" title="statement not covered" > HttpRequest = ExtendedRequest;</span>
+type HttpResponse = Response;
+type NextFunction = ExpressNextFunction;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >/<span class="fstat-no" title="function not covered" >/ </span>Security event types</span>
 expo<span class="cstat-no" title="statement not covered" >rt enum SecurityEventType {</span>
-  AU<span class="cstat-no" title="statement not covered" >THENTICATION_FAILURE = 'authentication_failure',</span>
-  AU<span class="cstat-no" title="statement not covered" >THORIZATION_FAILURE = 'authorization_failure',</span>
+  AU<span class="cstat-no" title="statement not covered" >THENTICATION_FAILURE = 'authentication_</span>failure',
+  AU<span class="cstat-no" title="statement not covered" >THORIZATION_FAILURE = 'authorizatio</span>n_failure',
   RA<span class="cstat-no" title="statement not covered" >TE_LIMIT_EXCEEDED = 'rate_limit_exceeded',</span>
-  DD<span class="cstat-no" title="statement not covered" >OS_PROTECTION_TRIGGERED = 'ddos_protection_triggered',</span>
-  MA<span class="cstat-no" title="statement not covered" >LICIOUS_INPUT_DETECTED = 'malicious_input_detected',</span>
-  CI<span class="cstat-no" title="statement not covered" >RCUIT_BREAKER_OPENED = 'circuit_breaker_opened',</span>
-  SU<span class="cstat-no" title="statement not covered" >SPICIOUS_BEHAVIOR = 'suspicious_behavior',</span>
-  SE<span class="cstat-no" title="statement not covered" >CURITY_SCAN_COMPLETED = 'security_scan_completed',</span>
-  VU<span class="cstat-no" title="statement not covered" >LNERABILITY_DETECTED = 'vulnerability_detected',</span>
-  CS<span class="cstat-no" title="statement not covered" >RF_TOKEN_INVALID = 'csrf_token_invalid',</span>
-  SQL_INJECTION_ATTEMPT = 'sql_injection_attempt',
-  XSS_ATTEMPT = 'xss_attempt',
+  DDOS_PROTECTION_TRIGGERED = 'ddos_protection_triggered',
+  MALICIOUS_INPUT_DETECTED = 'malicious_input_detected',
+  CIRCUIT_BREAKER_OPENED = 'circuit_breaker_opened',
+  SUSPICIOUS_<span class="cstat-no" title="statement not covered" >BEH</span>AVIOR = 'suspicious_behavior',
+  SECURITY_SCA<span class="cstat-no" title="statement not covered" >N_C</span>OMPLETED = 'security_scan_completed',
+  VULNERABILI<span class="cstat-no" title="statement not covered" >TY_</span>DETECTED = 'vulnerability_detected',
+  CSRF_TOKEN_INVAL<span class="cstat-no" title="statement not covered" >ID = 'csrf</span>_token_invalid',
+  SQL_INJECTION_ATTEMP<span class="cstat-no" title="statement not covered" >T = 's</span>ql_injection_attempt',
+  XSS_ATTEMPT = 'xss_att<span class="cstat-no" title="statement not covered" >empt'</span>,
   FILE_UPLOAD_VIOLATION = 'file_upload_violation',
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  I</span>P_REPUTATION_CHANGE = 'ip_reputation_change'</span>
-}<span class="cstat-no" title="statement not covered" ></span>
+  IP_REPUTATION_CHANG<span class="cstat-no" title="statement not covered" >E =</span> 'ip_reputation_change'
+}<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-// S<span class="cstat-no" title="statement not covered" >ecurity severity levels</span>
-expo<span class="cstat-no" title="statement not covered" >rt enum SecuritySeverity {</span>
-  LOW = 'low',
+// Secur<span class="cstat-no" title="statement not covered" >ity severity levels</span>
+export e<span class="cstat-no" title="statement not covered" >num SecuritySeverity {</span>
+  LOW = <span class="cstat-no" title="statement not covered" >'low',</span>
   MEDIUM = 'medium',
-  HIGH = 'high',
-  CRITICAL = <span class="cstat-no" title="statement not covered" >'cr</span>itical'
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-// Security event <span class="cstat-no" title="statement not covered" >interface</span>
-interface SecurityEven<span class="cstat-no" title="statement not covered" >t {</span>
-  id: string;<span class="cstat-no" title="statement not covered" ></span>
+  HI<span class="fstat-no" title="function not covered" >GH</span> = 'high',
+  CRITICAL = 'critical'<span class="cstat-no" title="statement not covered" ></span>
+}
+&nbsp;
+// Security event interface
+interface SecurityEvent {
+  id: string;
   type: SecurityEventType;
-  severity: SecurityS<span class="cstat-no" title="statement not covered" >eve</span>rity;
-  ti<span class="fstat-no" title="function not covered" >me</span>stamp: Date;
-  source<span class="cstat-no" title="statement not covered" >: string;</span>
-  detail<span class="cstat-no" title="statement not covered" >s: Record&lt;string, any&gt;;</span>
-  correl<span class="cstat-no" title="statement not covered" >ationId?: string;</span>
-  userId<span class="cstat-no" title="statement not covered" >?: string;</span>
+  severity: SecuritySeverity;
+  timestamp: Date;
+  source: string;
+  details: Record&lt;string, unknown&gt;;
+  correlationId?: string;
+  userId?: string;
   sessionId?: string;
-  ip<span class="fstat-no" title="function not covered" >Ad</span>dress?: string;
-  userAgent?: string;<span class="cstat-no" title="statement not covered" ></span>
+  ipAddress?: string;
+  userAgent?: string;
   resolved?: boolean;
   resolutionTime?: Date;
 }
@@ -1316,343 +1367,343 @@ interface SecurityMetrics {
 // Alert configuration interface
 interface AlertConfig {
   type: SecurityEventType;
-  severity: SecuritySeverity;
+  severi<span class="cstat-no" title="statement not covered" >ty: SecuritySeverity;</span>
   threshold: number;
-  timeWindow: number; // in milliseconds
+  ti<span class="fstat-no" title="function not covered" >me</span>Window: number; // in milliseconds
   enabled: boolean;
-  channels: string[]; // webhook URLs, email addresses, etc.
-}
+  channe<span class="cstat-no" title="statement not covered" >ls: string[]; // webhook URLs, emai<span class="fstat-no" title="function not covered" >l </span>addresses, etc.</span>
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 // Advanced security monitoring system
-export class SecurityMonitoringSystem extends EventEmitter {
+export c<span class="cstat-no" title="statement not covered" >lass SecurityMonitoring</span>System extends EventEmitter {
   private events: SecurityEvent[] = [];
-  private metrics: SecurityMetrics[] = [];
-  private alerts: AlertConfig[] = [];
-  private eventCounts: Map&lt;string, number&gt; = new Map();
+  pr<span class="fstat-no" title="function not covered" >iv</span>ate metrics: SecurityMetrics[] = [];
+  private alerts: Al<span class="cstat-no" title="statement not covered" >ertConfig[]</span> = [];
+  private eventCounts: Map&lt;st<span class="cstat-no" title="statement not covered" >ring, number&gt; = new Map();</span>
   private maxEventHistory = 10000;
-  private maxMetricsHistory = 1440; // 24 hours at 1-minute intervals
-  privat<span class="cstat-no" title="statement not covered" >e metricsInterval!: NodeJS.Ti</span>meout;
+  private maxMetricsHistory =<span class="cstat-no" title="statement not covered" > 1440; // 24 hours <span class="fstat-no" title="function not covered" >at</span> 1-minu<span class="cstat-no" title="statement not covered" >te intervals</span></span>
+  private metricsInterva<span class="cstat-no" title="statement not covered" >l!: NodeJS.Timeout;</span>
   private currentMetrics: Partial&lt;SecurityMetrics&gt; = {};
-  <span class="fstat-no" title="function not covered" ></span>
-  constructor() {
-    supe<span class="cstat-no" title="statement not covered" >r();<span class="fstat-no" title="function not covered" ></span></span>
-    this.set<span class="cstat-no" title="statement not covered" >upDefaultAlerts();</span>
-    this.startMetricsCollection();
-    this.setupEventCleanup();
-  }<span class="cstat-no" title="statement not covered" ></span>
-  
-  pr<span class="fstat-no" title="function not covered" >iv</span>ate setupDefaultAlerts(): void {
-    const defaultAle<span class="cstat-no" title="statement not covered" >rts: AlertC</span>onfig[] = [
-      {<span class="cstat-no" title="statement not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  constructor() {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    super();<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    this.setupDefaultAlerts();<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    this.startMetricsCollection();<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    this.setupEventCleanup();<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  private setupDefaultAlerts(): void {
+    const defaultAlerts: AlertConfig[] = [
+      {
         type: SecurityEventType.AUTHENTICATION_FAILURE,
-        severity: SecuritySev<span class="cstat-no" title="statement not covered" >erity.HIGH,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        threshold: 10,<span class="cstat-no" title="statement not covered" ></span>
+        severity: SecuritySeverity.HIGH,
+        threshold: 10,
         timeWindow: 5 * 60 * 1000, // 5 minutes
-        enabled: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        channels: []<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        type: SecurityEventType.DDOS_PROTECTION_T<span class="fstat-no" title="function not covered" >RI</span>GGE<span class="cstat-no" title="statement not covered" >RED,</span>
-        severity: SecuritySeverity.CRITICAL,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        threshold: 1,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        timeWindow: 60 * 1000, // 1 minute<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        enabled: true,
+<span class="cstat-no" title="statement not covered" >        enabled: true,</span>
+        channels: []
+      },<span class="cstat-no" title="statement not covered" ></span>
+      {<span class="cstat-no" title="statement not covered" ></span>
+        type: SecurityEventType.DDOS_PROTECTION_TRIGGERED,
+        severity: SecuritySeverity.CRITICAL,
+<span class="cstat-no" title="statement not covered" >        threshold: 1,</span>
+        timeWindow: 60 * 1000, // 1 minute
+<span class="cstat-no" title="statement not covered" >        enabled: true,</span>
         channels: []
       },
       {
         type: SecurityEventType.MALICIOUS_INPUT_DETECTED,
         severity: SecuritySeverity.HIGH,
         threshold: 5,
-<span class="cstat-no" title="statement not covered" >        timeWindow: 10 * 60 * 1000, </span>// 10 minutes
-        enabled: true,
-<span class="cstat-no" title="statement not covered" >        channels: []</span>
-      },<span class="cstat-no" title="statement not covered" ></span>
-      {
-        type: SecurityEventType.CIRCUIT_BREAKER_OPENED,
-<span class="cstat-no" title="statement not covered" >        severity: SecuritySeverity.MEDI</span>UM,
-        threshold: 1,
-<span class="cstat-no" title="statement not covered" >        timeWindow: 5 * 60 * 1000, // 5 minutes</span>
+        timeWindow: 10 * 60 * 1000, // 10 minutes
         enabled: true,
         channels: []
-      },
-      {
-        type: SecurityEventType.VULNERABILITY_DETECTED,
-        severity: SecuritySeverity.CRITICAL,
-        threshold: 1,
+<span class="fstat-no" title="function not covered" ></span>      },
+      {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        type: SecurityEventType.CIRCUIT_BREAKER_OPENED,</span>
+        severity: SecuritySeverity.MEDIUM,
+<span class="fstat-no" title="function not covered" ></span>        threshold: 1,
+        timeWindow: 5 * 6<span class="cstat-no" title="statement not covered" >0 * 1000, // 5 minutes</span>
+<span class="cstat-no" title="statement not covered" >        enabled: true,</span>
+        channels: []
+<span class="fstat-no" title="function not covered" ></span>      },
+      {<span class="cstat-no" title="statement not covered" ></span>
+        type<span class="cstat-no" title="statement not covered" >: Security</span>EventType.VULNERABILITY_DETECTED,
+        severity: Securi<span class="cstat-no" title="statement not covered" >ty</span>Severity.CRITICAL,
+        threshold: 1,<span class="cstat-no" title="statement not covered" ></span>
         timeWindow: 1000, // Immediate
         enabled: true,
-<span class="fstat-no" title="function not covered" ></span>        channels: []
-      }<span class="cstat-no" title="statement not covered" ></span>
-    ];<span class="cstat-no" title="statement not covered" ></span>
-    
-<span class="fstat-no" title="function not covered" >    th</span>is.alerts = defaultAlerts;
-  }<span class="cstat-no" title="statement not covered" ></span>
-  <span class="cstat-no" title="statement not covered" ></span>
-  private startMetricsCollection(): void {
-<span class="fstat-no" title="function not covered" >    //</span> Collect metrics every minute
-    this<span class="cstat-no" title="statement not covered" >.metricsInterval = setInterval(() =&gt; {</span>
-      this.c<span class="cstat-no" title="statement not covered" >ollectMetr</span>ics();
-    }, 60 * 1000);<span class="cstat-no" title="statement not covered" ></span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    // Initial collection
-    this.collectMetrics();
+        channels: []
+      }
+    ];
+    <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    this.ale<span class="cstat-no" title="statement not covered" >rts = defaultAlerts;</span>
   }
   
+  privat<span class="cstat-no" title="statement not covered" >e startMetricsCollection(): void {</span>
+    // Collect metrics every minute
+<span class="fstat-no" title="function not covered" >    th</span>is.metricsInterval = setInterval(() =&gt; {
+      this.collectMetrics();
+    }, 6<span class="cstat-no" title="statement not covered" >0 * 1000);<span class="fstat-no" title="function not covered" ></span></span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    // Initi<span class="cstat-no" title="statement not covered" >al collection<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    this.collectMetrics();
+  }<span class="cstat-no" title="statement not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ></span>
   private collectMetrics(): void {
-    cons<span class="cstat-no" title="statement not covered" >t now = new Dat<span class="fstat-no" title="function not covered" >e(</span>);</span>
-    const on<span class="cstat-no" title="statement not covered" >eMinuteAgo = new Date(now.getTime() - </span>60 * 1000);
+    const now = new Date();
+    const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
+    <span class="fstat-no" title="function not covered" ></span>
+    // Count events in t<span class="cstat-no" title="statement not covered" >he last minute</span>
+    const recentEvents<span class="cstat-no" title="statement not covered" > = this.events.filter(event =&gt; event.timestamp &gt;= oneMinuteAgo);</span>
     
-    // Count events in the last minute
-    cons<span class="cstat-no" title="statement not covered" >t recentEvents = this.events.filter(ev</span>ent =&gt; event.timestamp &gt;= oneMinuteAgo);
-    
-<span class="fstat-no" title="function not covered" >    co</span>nst metrics: SecurityMetrics = {
+    const metrics: SecurityMetrics = {
       timestamp: now,
-      au<span class="cstat-no" title="statement not covered" >thentication<span class="fstat-no" title="function not covered" >Fa</span>ilures: recentEvents.filter(e =&gt; e.type === SecurityEventType.AUTHENTICATION_FAILURE).length,</span>
-      authorizationFailures<span class="cstat-no" title="statement not covered" >: recentEvents.filter(e =&gt; e.type === Secur</span>ityEventType.AUTHORIZATION_FAILURE).length,
-      rateLi<span class="cstat-no" title="statement not covered" >mitViolations: recentEvents.filte<span class="fstat-no" title="function not covered" >r(</span>e =&gt; e.<span class="cstat-no" title="statement not covered" >type === SecurityEventType</span>.R</span>ATE_LIMIT_EXCEEDED).length,
+      authenticationFailures: recentEvents.filter(e =&gt; e.type === SecurityEventType.AUTHENTICATION_FAILURE).length,
+      authorizationFailures: recentEvents.filter(e =&gt; e.type === SecurityEventType.AUTHORIZATION_FAILURE).length,
+      rateLimitViolations: recentEvents.filter(e =&gt; e.type === SecurityEventType.RATE_LIMIT_EXCEEDED).length,
       ddosAttacks: recentEvents.filter(e =&gt; e.type === SecurityEventType.DDOS_PROTECTION_TRIGGERED).length,
-      malici<span class="cstat-no" title="statement not covered" >ousInputs: recentEvents.filter(e =&gt; e.type === SecurityEventType.MALICIOUS_INPUT_DETECTED).length,</span>
-      circuitBre<span class="cstat-no" title="statement not covered" >akerTrips: recentEvents.filter(e =&gt; e.type === SecurityE</span>ventType.CIRCUIT_BREAKER_OPENED).length,
+      maliciousInputs: recentEvents.filter(e =&gt; e.type === SecurityEventType.MALICIOUS_INPUT_DETECTED).length,
+      ci<span class="cstat-no" title="statement not covered" >rcuitBreakerTrips: recent</span>Events.filter(e =&gt; e.type === SecurityEventType.CIRCUIT_BREAKER_OPENED).length,
       suspiciousBehavior: recentEvents.filter(e =&gt; e.type === SecurityEventType.SUSPICIOUS_BEHAVIOR).length,
-      vulnerabilities: recentEvents.filter(e =&gt; e.type === SecurityEventType.VULNERABILITY_DETECTED).length,
-      averageResponseTime: this.currentMetrics.averageResponseTime || 0,
-<span class="fstat-no" title="function not covered" ></span>      systemLoad: this.getSystemLoad(),
-      memoryUsage: this.<span class="cstat-no" title="statement not covered" >getMemoryUsage(),</span>
-      activeConnection<span class="cstat-no" title="statement not covered" >s: this.currentMetrics.activeConnections || 0,</span>
-      blockedIPs: this.currentMetrics.blockedIPs || 0,
+      vulnerabilities: re<span class="cstat-no" title="statement not covered" >centEvents.filter(e =&gt; e.type === SecurityEv</span>entType.VULNERABILITY_DETECTED).length,
+      av<span class="cstat-no" title="statement not covered" >erageResponseTime: this.currentMetrics.averageResponseTime || 0,</span>
+      systemLoad: this.getSystemLoad(),
+      me<span class="cstat-no" title="statement not covered" >moryUsage: this.getMemor</span>yUsage(),
+      activeConnections: this.currentMetrics.activeConnections || 0,
+      bl<span class="cstat-no" title="statement not covered" >ockedIPs: this.currentMetrics.block</span>edIPs || 0,
       riskScore: this.calculateRiskScore(recentEvents)
-    };
+    };<span class="cstat-no" title="statement not covered" ></span>
     
     this.metrics.push(metrics);
     
     // Keep only recent metrics
     if (this.metrics.length &gt; this.maxMetricsHistory) {
-      th<span class="cstat-no" title="statement not covered" >is.metrics = this.metrics</span>.slice(-this.maxMetricsHistory);
+      this.metrics = this.metrics.slice(-this.maxMetricsHistory);
     }
     <span class="cstat-no" title="statement not covered" ></span>
-    // E<span class="cstat-no" title="statement not covered" >mit metrics event</span>
-    this.emit('metrics', metrics);
+    // Emit metrics event
+<span class="fstat-no" title="function not covered" >    th</span>is.emit('metrics', metrics);
     <span class="cstat-no" title="statement not covered" ></span>
     // Log metrics for external monitoring systems
-    logg<span class="cstat-no" title="statement not covered" >er.info('Security metrics collected</span>', {
-      timestamp: metrics.timestamp,
+<span class="fstat-no" title="function not covered" >    lo</span>gger.info('Security metrics collected', {
+      timestamp: metrics.t<span class="cstat-no" title="statement not covered" >ime</span>stamp,
       au<span class="cstat-no" title="statement not covered" >thFailures: metrics.authenticationFailures,</span>
-      rateLimitViolations: metrics.rateLimitViolations,
+      rateLi<span class="cstat-no" title="statement not covered" >mitViolations: metrics.rateLimitViolations,</span>
       ddosAttacks: metrics.ddosAttacks,
-      riskScore: metrics.riskScore,
-      systemLoad: metrics.systemLoad,
+      riskScore:<span class="cstat-no" title="statement not covered" > metrics.riskScore,</span>
+      systemLoad: me<span class="cstat-no" title="statement not covered" >trics.systemLoad,</span>
       memoryUsage: metrics.memoryUsage
     });
-  }
-  <span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+  
   private getSystemLoad(): number {
-<span class="fstat-no" title="function not covered" >    co</span>nst cpuUsage = process.cpuUsage();
-    retu<span class="cstat-no" title="statement not covered" >rn (cpuUsage.user + cpuUsage.system) / 1000000; // Convert to seconds</span>
+    const cpuUsag<span class="cstat-no" title="statement not covered" >e = process.cpuUsage();</span>
+    return (cpuU<span class="cstat-no" title="statement not covered" >sage.user + cpuUsage.system) </span>/ 1000000; // Convert to seconds
   }
-  <span class="fstat-no" title="function not covered" ></span>
-  private getMemoryUsage()<span class="cstat-no" title="statement not covered" >: n</span>umber {
-    cons<span class="cstat-no" title="statement not covered" >t memUsage = process.memoryUsage();</span>
-    return (<span class="cstat-no" title="statement not covered" >memUsage.heapUsed / memUsage.heapTotal) * 100; // Percentage</span>
-  }
-  <span class="cstat-no" title="statement not covered" ></span>
-  private calculateR<span class="cstat-no" title="statement not covered" >iskScore(events: SecurityEvent[</span>]): number {
-    if (events.length === 0) return 0;
-    
-    let riskScore = <span class="cstat-no" title="statement not covered" >0;</span>
-    const weights = {
-      [SecuritySeverity.LOW]: 0.1,
-      [SecuritySe<span class="cstat-no" title="statement not covered" >verity.MEDIUM]: 0.3,</span>
-      [SecurityS<span class="cstat-no" title="statement not covered" >everity.HIGH]: 0.6,</span>
-      [SecuritySeverity.CRITICAL]: 1.0
+  
+  private getMem<span class="cstat-no" title="statement not covered" >oryUsage(): number {</span>
+    const memUsage = process.memoryUsage();
+    return (memUsage.heapUsed / memUsage.heapTotal) * 100; // Percentage
+  }<span class="cstat-no" title="statement not covered" ></span>
+  
+  pr<span class="fstat-no" title="function not covered" >iv</span>ate calculateRiskScore(events: SecurityEvent[]): number {
+    if (events.length === 0) re<span class="cstat-no" title="statement not covered" >turn 0;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    let riskScore = 0;<span class="cstat-no" title="statement not covered" ></span>
+    const weights = {<span class="cstat-no" title="statement not covered" ></span>
+      [SecuritySeverity.LOW]:<span class="cstat-no" title="statement not covered" > 0</span>.1,
+      [Secur<span class="cstat-no" title="statement not covered" >itySeverity.MEDIUM<span class="cstat-no" title="statement not covered" >]: 0.3,</span></span>
+      [SecuritySeverity.HIGH]: 0.<span class="cstat-no" title="statement not covered" >6,</span>
+      [SecurityS<span class="cstat-no" title="statement not covered" >everity.CRITICAL]: 1.0</span>
     };
     <span class="cstat-no" title="statement not covered" ></span>
-    events.forEach(event =&gt; {
+    events.forEa<span class="cstat-no" title="statement not covered" >ch(event =&gt; {</span>
       riskScore += weights[event.severity];
-    });<span class="cstat-no" title="statement not covered" ></span>
+    });
     
 <span class="fstat-no" title="function not covered" >    //</span> Normalize to 0-100 scale
-    return Math.min(riskScore *<span class="cstat-no" title="statement not covered" > 10, 100);<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  <span class="cstat-no" title="statement not covered" ></span>
-  private setupEventCleanup():<span class="cstat-no" title="statement not covered" > void {</span>
-    // Clean up old events ev<span class="cstat-no" title="statement not covered" >er</span>y hour
-    setInter<span class="cstat-no" title="statement not covered" >val(() =&gt; {<span class="cstat-no" title="statement not covered" ></span></span>
-      const cutoff = new Date(Dat<span class="cstat-no" title="statement not covered" >e.now() - 24 * 60 * 60 * </span>1000); // 24 hours ago
-      this.event<span class="cstat-no" title="statement not covered" >s = this.events.filter(event =&gt; event.timestamp &gt;= </span>cutoff);
+    return Math.min(riskSco<span class="cstat-no" title="statement not covered" >re * 10, 100);</span>
+  }
+  
+  private setupEventCleanup(): void {
+    // Clean up old events every hour
+    setInterval(() =&gt; {
+      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+      this.events = this.events.filter(event =&gt; event.timestamp &gt;= cutoff);
       
-      // Kee<span class="cstat-no" title="statement not covered" >p only the most recent events if we have too many</span>
-      if (this.e<span class="cstat-no" title="statement not covered" >vents.length &gt; this.maxEventHistory) {</span>
+      // Keep only the most recent events if we have too many
+      if<span class="cstat-no" title="statement not covered" > (this.events.length &gt; this.maxEventHistory) {</span>
         this.events = this.events.slice(-this.maxEventHistory);
-      }
+      }<span class="cstat-no" title="statement not covered" ></span>
     }, 60 * 60 * 1000);
-  }<span class="fstat-no" title="function not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   <span class="cstat-no" title="statement not covered" ></span>
   public recordSecurityEvent(
     type: SecurityEventType,
-    severity: SecuritySeverity,
-    source: string,
-    details: Record&lt;string, any&gt;,
+<span class="fstat-no" title="function not covered" >    se</span>verity: SecuritySeverity,
+    sour<span class="cstat-no" title="statement not covered" >ce: string,</span>
+    details:<span class="cstat-no" title="statement not covered" > Record&lt;string, unknown&gt;,</span>
     context?: {
-      correlationId?: string;
+      correlationId?: string;<span class="cstat-no" title="statement not covered" ></span>
       userId?: string;
       sessionId?: string;
-      ip<span class="cstat-no" title="statement not covered" >Address?: string;</span>
+      ipAddress?: string;
       userAgent?: string;
-    }<span class="cstat-no" title="statement not covered" ></span>
+    }
   ): string {
-    cons<span class="cstat-no" title="statement not covered" >t eventId = this.genera<span class="fstat-no" title="function not covered" >te</span>EventId();</span>
+    const eventId = this.generateEventId();
     <span class="cstat-no" title="statement not covered" ></span>
-    const event: SecurityEvent = {
+    const event: Sec<span class="cstat-no" title="statement not covered" >urityEvent = {</span>
       id: eventId,
-<span class="fstat-no" title="function not covered" ></span>      type,
-      se<span class="cstat-no" title="statement not covered" >verity,</span>
-      timest<span class="cstat-no" title="statement not covered" >amp: new Date(),</span>
-      source,
-      details: this.sanitizeEvent<span class="cstat-no" title="statement not covered" >Details(details),</span>
+      type,
+      severity,<span class="cstat-no" title="statement not covered" ></span>
+      timestamp: new Date(),
+      source,<span class="cstat-no" title="statement not covered" ></span>
+      details: this.sanitizeEventDetails(details),
       ...context
     };
     
     this.events.push(event);
     
-    // Update event counts for alerting
+    // Updat<span class="cstat-no" title="statement not covered" >e event counts for alerting</span>
     const countKey = `${type}:${Math.floor(Date.now() / 60000)}`; // Per-minute buckets
-    this.eventCo<span class="cstat-no" title="statement not covered" >unts.set(countKey, (this.eventCounts.get(countKey) || 0) + 1);</span>
-    <span class="cstat-no" title="statement not covered" ></span>
+    this.eventCounts.set(countKey, (this.eventCounts.get(countKey) || 0) + 1);
+    
     // Check for alerts
     this.checkAlerts(type);
-    <span class="cstat-no" title="statement not covered" ></span>
-    // Emit event
-    this.emit('s<span class="cstat-no" title="statement not covered" >ecurityEvent', event);</span>
+    <span class="fstat-no" title="function not covered" ></span>
+    // Emit event<span class="cstat-no" title="statement not covered" ></span>
+    this<span class="cstat-no" title="statement not covered" >.emit('securityEvent', event);</span>
     
     // Log the event
     logger.warn('Security event recorded', {
       eventId,
-      type,
-      severity,
-      source<span class="cstat-no" title="statement not covered" >,</span>
-      correlationId: context?.correlationId,
-      ipAddress: context?.ipAddress ? this.hashIP(context.ipAddress) : undefined
+<span class="fstat-no" title="function not covered" ></span>      type,
+      se<span class="cstat-no" title="statement not covered" >verity,</span>
+      source,
+<span class="fstat-no" title="function not covered" ></span>      correlationId: context<span class="branch-0 cbranch-no" title="branch not covered" >?.co</span>rrelationId,
+      ip<span class="cstat-no" title="statement not covered" >Address: context?.ipAddress ? this</span>.hashIP(context.ipAddress) : undefined
     });
-    
-    return eventId;
-  }<span class="fstat-no" title="function not covered" ></span>
-  <span class="cstat-no" title="statement not covered" ></span>
-  privat<span class="cstat-no" title="statement not covered" >e generateEventId(): string {</span>
-    return `sec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
+    <span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+    retu<span class="cstat-no" title="statement not covered" >rn eventId;</span>
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   
-  private sanitizeEventDetails(details: Record&lt;string, any&gt;): Record&lt;string, any&gt; {
-<span class="fstat-no" title="function not covered" >    co</span>nst sanitized: Record&lt;string, any&gt; = {};
+  private generateEventId(): string {
+<span class="fstat-no" title="function not covered" >    re</span>turn `sec_${Date.<span class="branch-0 cbranch-no" title="branch not covered" >no</span>w()}_${Math.random().toString(36).substr(2, 9)}`;
+  }<span class="cstat-no" title="statement not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  private sanitizeEventDetails(details: Record&lt;string, unknown&gt;): Record&lt;string, unknown&gt; {
+<span class="fstat-no" title="function not covered" >    co</span>nst sanitized: Record&lt;string, unknown&gt; = {};
     <span class="cstat-no" title="statement not covered" ></span>
-    for (const [key, value] of Object.entries(details)) {
-<span class="fstat-no" title="function not covered" ></span>      if (typeof value === '<span class="branch-0 cbranch-no" title="branch not covered" >stri</span>ng') {
-<span class="cstat-no" title="statement not covered" >        // Remove potential secrets and se</span>nsitive data
-        if (/password|secret|token|key|auth/i.test(key)) {
-<span class="fstat-no" title="function not covered" ></span>          sanitized[key] = '[REDAC<span class="branch-0 cbranch-no" title="branch not covered" >TED]</span>';
-<span class="cstat-no" title="statement not covered" >        } else {</span>
-          sanitized[<span class="fstat-no" title="function not covered" >ke</span>y] = va<span class="cstat-no" title="statement not covered" >lue.substring(0, 100</span>0); // Limit string length
+    for (const [key, value] of Ob<span class="cstat-no" title="statement not covered" >jec</span>t.entries(details)) {
+      if<span class="cstat-no" title="statement not covered" > (typeof value === '<span class="fstat-no" title="function not covered" >st</span>ring') {</span>
+        // R<span class="cstat-no" title="statement not covered" >emove potential secrets and sensitive data</span>
+        if (<span class="cstat-no" title="statement not covered" >/password|secret|token|key|auth/i.test(key)) {</span>
+          sanitized[key] = '[REDACTED]';
+        } else {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          sanitized[key] = value.substring(0, 1000); // Limit string length</span>
         }
       } else if (typeof value === 'object' &amp;&amp; value !== null) {
-<span class="fstat-no" title="function not covered" ></span>        sanitized[key] <span class="branch-0 cbranch-no" title="branch not covered" >= </span>'[OBJECT]';
-      } else {<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        sanitized[key] = value;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        sanitized[key] = '[OBJECT]';
+      } else {
+        sanitized[key] = value;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       }
-<span class="fstat-no" title="function not covered" >    }</span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    return sanitized;<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    }
+    
+<span class="fstat-no" title="function not covered" >    re</span>turn sanitized;
+  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
   <span class="cstat-no" title="statement not covered" ></span>
-  private ch<span class="cstat-no" title="statement not covered" >eckAlerts(eventType: SecurityEventType): void {</span>
+  private ch<span class="cstat-no" title="statement not covered" >eckAlerts(eventType: SecurityEventTyp</span>e): void {
     const relevantAlerts = this.alerts.filter(alert =&gt; 
-      alert.enabled &amp;&amp; alert<span class="cstat-no" title="statement not covered" >.type === eventType</span>
+      alert.enabled &amp;&amp; alert.type === eventType
     );<span class="cstat-no" title="statement not covered" ></span>
     
-    relevantAlerts.forEach(alert =&gt; {
+    rele<span class="cstat-no" title="statement not covered" >vantAlerts.forEach(alert =&gt; {</span>
       const windowStart = Math.floor((Date.now() - alert.timeWindow) / 60000);
       const windowEnd = Math.floor(Date.now() / 60000);
-      <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      
       let eventCount = 0;
       for (let minute = windowStart; minute &lt;= windowEnd; minute++) {
         const countKey = `${eventType}:${minute}`;
 <span class="fstat-no" title="function not covered" ></span>        eventCount += this.eventCounts.get(countKey) || 0;
-      }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      }<span class="cstat-no" title="statement not covered" ></span>
       <span class="cstat-no" title="statement not covered" ></span>
-      if (ev<span class="cstat-no" title="statement not covered" >entCount &gt;= alert.threshold) {</span>
-        this.triggerAlert(alert, eventCount);
-      }
-    });<span class="cstat-no" title="statement not covered" ></span>
+      if (eventCount &gt;= alert.threshold) {
+<span class="cstat-no" title="statement not covered" >        this.triggerAlert(alert, ev</span>entCount);
+      }<span class="cstat-no" title="statement not covered" ></span>
+    });
   }
-  <span class="cstat-no" title="statement not covered" ></span>
-  private triggerAlert(alert: AlertConfig, eventCount: number): void {
+  
+  private triggerAlert(alert: Aler<span class="cstat-no" title="statement not covered" >tConfig, eventCount: number): v</span>oid {
     const alertEvent = {
-      id: this.generateEventId(),
-      type: 'SECURITY_ALERT',
-      severity: alert.severity,
+      id: this.g<span class="fstat-no" title="function not covered" >enerateEventId(),</span>
+<span class="cstat-no" title="statement not covered" >      type:<span class="fstat-no" title="function not covered" > '</span>SECURITY_ALERT',</span>
+      severity: alert.seve<span class="cstat-no" title="statement not covered" >rity,</span>
       message: `Security alert triggered: ${alert.type}`,
-<span class="fstat-no" title="function not covered" ></span>      eventCount,
-      th<span class="cstat-no" title="statement not covered" >reshold: alert.threshold,</span>
-      timeWi<span class="cstat-no" title="statement not covered" >ndow: alert.timeWindow,</span>
+      eventCount,<span class="cstat-no" title="statement not covered" ></span>
+      threshold: alert.threshold<span class="cstat-no" title="statement not covered" >,</span>
+      ti<span class="cstat-no" title="statement not covered" >meWindow: alert.timeWindow,</span>
       timestamp: new Date()
-    };<span class="cstat-no" title="statement not covered" ></span>
-    <span class="cstat-no" title="statement not covered" ></span>
+    };
+    
     logger.error('Security alert triggered', alertEvent);
     
     // Emit alert event
-    this.emit('securityAlert', ale<span class="cstat-no" title="statement not covered" >rtEvent);</span>
-    
-    // Send to c<span class="fstat-no" title="function not covered" >onfigured channels (implement webho</span>ok/email sending here)
-<span class="cstat-no" title="statement not covered" >    alert.c<span class="fstat-no" title="function not covered" >ha</span>nnels.forEach(channel =&gt; {</span>
-      this.sendAlertToChan<span class="cstat-no" title="statement not covered" >nel(channel</span>, alertEvent);
-    });
+    this<span class="cstat-no" title="statement not covered" >.emit('securityAl<span class="fstat-no" title="function not covered" >er</span>t', alertEvent);</span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    // Send to configured channels (implement webhook/email sending here)
+    alert.ch<span class="cstat-no" title="statement not covered" >annels.forEach(channel =&gt; {</span>
+      this.sendAlertToChannel(channel, alertEvent);
+    });<span class="cstat-no" title="statement not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
   
-  private async sendAlertToChannel(channel: string, alert: any): Promise&lt;void&gt; {
+  private async sendAlertToChannel(channel: string, alert: { type: string; [key: string]: unknown }): Promise&lt;void&gt; {
     try {
       if (channel.startsWith('http')) {
         // Webhook notification
-        const response = await fetch(channel, {
-<span class="cstat-no" title="statement not covered" >          method: 'POST',<span class="fstat-no" title="function not covered" ></span></span>
-          headers: {<span class="cstat-no" title="statement not covered" ></span>
+        const res<span class="cstat-no" title="statement not covered" >ponse = await fetch(channel, {</span>
+          method<span class="cstat-no" title="statement not covered" >: 'POST',</span>
+          headers: {
             'Content-Type': 'application/json',
-<span class="cstat-no" title="statement not covered" >            'User-Agent': 'MakeServer-SecurityMonitoring/1.0'</span>
+            'User-Agent': 'MakeServer-SecurityMonitoring/1.0'
           },
-          bo<span class="cstat-no" title="statement not covered" >dy: JSON.stringify(alert)</span>
+          body: JSON.stringify(alert)
         });<span class="cstat-no" title="statement not covered" ></span>
-        
+        <span class="cstat-no" title="statement not covered" ></span>
         if (!response.ok) {
           throw new Error(`Webhook failed: ${response.status}`);
         }
       } else if (channel.includes('@')) {
-        // Email <span class="cstat-no" title="statement not covered" >notification (placeholder - implement with your email service)</span>
-        logger.i<span class="cstat-no" title="statement not covered" >nfo('Email alert would be sent', { </span>
-          email: channel, 
+        // Email notification (placeholder - implement with your email service)
+        logger.info('Email alert would be sent', { 
+<span class="cstat-no" title="statement not covered" >          email:</span> channel, 
           alertType: alert.type 
         });
       }
-    } catch (error) {
-      logger.erro<span class="cstat-no" title="statement not covered" >r('Failed to send alert to channel', {</span>
-        channel:<span class="cstat-no" title="statement not covered" > channel.substring(0, 50),</span>
-        error: error instanceof Error ? error.message : String(error)
-      });
+    } catch (err<span class="fstat-no" title="function not covered" >or) {</span>
+<span class="cstat-no" title="statement not covered" >      logger.error('Failed to send alert to channel', {</span>
+        channel: channel.substring(0, 50),
+        error: e<span class="fstat-no" title="function not covered" >rror instanceof Error</span> ? error.message : String(error)
+<span class="cstat-no" title="statement not covered" >      });</span>
     }
-  }
-  
-  private hashIP(ip: string): string {
-    cons<span class="cstat-no" title="statement not covered" >t crypto</span> = require('crypto');
-    return crypto.createHash('sha256')
-      .update(ip + (process.env.IP_HASH_SALT || 'default-salt'))
-      .digest('hex')
-      .substring<span class="fstat-no" title="function not covered" >(0, 16);</span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-  
-  public updateM<span class="fstat-no" title="function not covered" >etric(key: Exclude&lt;ke</span>yof SecurityMetrics, 'timestamp'&gt;, value: number): void {
-<span class="cstat-no" title="statement not covered" >    this.currentMetrics[key] = value;</span>
-  }
-  <span class="fstat-no" title="function not covered" ></span>
-  pu<span class="cstat-no" title="statement not covered" >blic getRecentEvents(limit: number = 100): SecurityEvent[] {</span>
-    return this.events.slice(-limit);
   }<span class="fstat-no" title="function not covered" ></span>
   <span class="cstat-no" title="statement not covered" ></span>
+  private hashIP(ip: string): string {
+    const crypto<span class="fstat-no" title="function not covered" > = require('crypto')</span>;
+<span class="cstat-no" title="statement not covered" >    return crypto.createHash('sha256')</span>
+      .update(ip + (process.env.IP_HASH_SALT || 'default-salt'))
+      .digest('hex')
+      .substring(0, 16);
+  }
+  
+  public updateMetric(key: Exclude&lt;keyof SecurityMetrics, 'timestamp'&gt;, value: number): void {
+    this.currentMetrics[key] = value;
+  }
+  
+  public getRecentEvents(limit: number = 100): SecurityEvent[] {
+    return this.events.slice(-limit);
+  }
+  
   public getEventsByType(type: SecurityEventType, limit: number = 100): SecurityEvent[] {
     return this.events
       .filter(event =&gt; event.type === type)
@@ -1725,16 +1776,19 @@ export class SecurityMonitoringSystem extends EventEmitter {
 export const securityMonitoring = new SecurityMonitoringSystem();
 &nbsp;
 // Middleware for automatic security event recording
-export function createSecurityMonitoringMiddleware() {
-  return (req: any, res: any, next: any): void =&gt; {
+export function createSecurityMonitoringMiddleware(): (req: HttpRequest, res: HttpResponse, next: NextFunction) =&gt; void {
+  return (req: HttpRequest, res: HttpResponse, next: NextFunction): void =&gt; {
     const startTime = Date.now();
     
     // Record request start
+    const correlationIdHeader = req.headers['x-correlation-id'];
+    const userAgentHeader = req.headers['user-agent'];
+    
     req.securityContext = {
-      correlationId: req.headers['x-correlation-id'] || securityMonitoring['generateEventId'](),
+      correlationId: (Array.isArray(correlationIdHeader) ? correlationIdHeader[0] : correlationIdHeader) || securityMonitoring['generateEventId'](),
       startTime,
       ipAddress: req.ip || req.connection?.remoteAddress,
-      userAgent: req.headers['user-agent']
+      userAgent: Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader
     };
     
     // Track response completion
@@ -1789,7 +1843,7 @@ export function createSecurityMonitoringMiddleware() {
 }
 &nbsp;
 // Utility functions for manual event recording
-export function recordAuthenticationFailure(details: Record&lt;string, any&gt;, context?: any): string {
+export function recordAuthenticationFailure(details: Record&lt;string, unknown&gt;, context?: Record&lt;string, unknown&gt;): string {
   return securityMonitoring.recordSecurityEvent(
     SecurityEventType.AUTHENTICATION_FAILURE,
     SecuritySeverity.HIGH,
@@ -1799,7 +1853,7 @@ export function recordAuthenticationFailure(details: Record&lt;string, any&gt;, 
   );
 }
 &nbsp;
-export function recordMaliciousInput(details: Record&lt;string, any&gt;, context?: any): string {
+export function recordMaliciousInput(details: Record&lt;string, unknown&gt;, context?: Record&lt;string, unknown&gt;): string {
   return securityMonitoring.recordSecurityEvent(
     SecurityEventType.MALICIOUS_INPUT_DETECTED,
     SecuritySeverity.HIGH,
@@ -1809,7 +1863,7 @@ export function recordMaliciousInput(details: Record&lt;string, any&gt;, context
   );
 }
 &nbsp;
-export function recordSuspiciousBehavior(details: Record&lt;string, any&gt;, context?: any): string {
+export function recordSuspiciousBehavior(details: Record&lt;string, unknown&gt;, context?: Record&lt;string, unknown&gt;): string {
   return securityMonitoring.recordSecurityEvent(
     SecurityEventType.SUSPICIOUS_BEHAVIOR,
     SecuritySeverity.MEDIUM,
@@ -1819,7 +1873,7 @@ export function recordSuspiciousBehavior(details: Record&lt;string, any&gt;, con
   );
 }
 &nbsp;
-export function recordVulnerability(details: Record&lt;string, any&gt;, context?: any): string {
+export function recordVulnerability(details: Record&lt;string, unknown&gt;, context?: Record&lt;string, unknown&gt;): string {
   return securityMonitoring.recordSecurityEvent(
     SecurityEventType.VULNERABILITY_DETECTED,
     SecuritySeverity.CRITICAL,
@@ -1834,7 +1888,7 @@ export function recordVulnerability(details: Record&lt;string, any&gt;, context?
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:52:47.351Z
+                at 2025-08-22T11:07:23.286Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

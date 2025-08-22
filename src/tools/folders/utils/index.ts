@@ -51,7 +51,7 @@ export function generateOperationId(prefix = 'folders'): string {
 export function safeJsonParse<T = unknown>(json: string, defaultValue?: T): T | undefined {
   try {
     return JSON.parse(json) as T;
-  } catch (error) {
+  } catch {
     return defaultValue;
   }
 }

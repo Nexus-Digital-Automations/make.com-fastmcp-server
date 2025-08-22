@@ -448,7 +448,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
             if (usageResponse.success) {
               usage = usageResponse.data;
             }
-          } catch (error) {
+          } catch {
             log.warn('Failed to retrieve agent usage statistics', { agentId });
           }
         }
@@ -461,7 +461,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
             if (historyResponse.success) {
               history = historyResponse.data;
             }
-          } catch (error) {
+          } catch {
             log.warn('Failed to retrieve agent conversation history', { agentId });
           }
         }

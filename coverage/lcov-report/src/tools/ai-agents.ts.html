@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/244</span>
+                <span class='fraction'>0/248</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/241</span>
+                <span class='fraction'>0/245</span>
             </div>
         
             
@@ -928,6 +928,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -940,8 +941,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1007,7 +1007,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1017,7 +1017,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1777,7 +1777,7 @@ export interface MakeAIAgent {
   id: number;
   name: string;
   description?: string;
-  type: 'chat' | 'completion' | 'embedding' | 'image' | 'function_calling';
+  type: 'chat' | 'completion' | 'embedding' | 'image' | 'f<span class="fstat-no" title="function not covered" >un</span>ction<span class="cstat-no" title="statement not covered" >_ca</span>lling';
   status: 'active' | 'inactive' | 'training' | 'error';
   configuration: {
     model: string;
@@ -1790,7 +1790,7 @@ export interface MakeAIAgent {
     frequencyPenalty?: number;
     presencePenalty?: number;
   };
-  context: {
+  context: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     maxHistoryLength: number;
     memoryType: 'none' | 'conversation' | 'semantic' | 'hybrid';
     memorySize?: number;
@@ -1848,7 +1848,7 @@ const AIAgentCreateSchema = z.object({
   configuration: z.object({
     model: z.string().min(1).describe('Model identifier (e.g., gpt-4, claude-3)'),
     provider: z.string().min(1).describe('LLM provider name'),
-    parameters: z.record(z.any()).default({}).describe('Model-specific parameters'),
+    parameters: z.record(z.string(), z.any()).default(() =&gt; ({})).describe('Model-specific parameters'),
     systemPrompt: z.string().optional().describe('System prompt for the agent'),
     temperature: z.number().min(0).max(2).optional().describe('Sampling temperature (0-2)'),
     maxTokens: z.number().min(1).max(200000).optional().describe('Maximum tokens in response'),
@@ -1856,17 +1856,17 @@ const AIAgentCreateSchema = z.object({
     frequencyPenalty: z.number().min(-2).max(2).optional().describe('Frequency penalty (-2 to 2)'),
     presencePenalty: z.number().min(-2).max(2).optional().describe('Presence penalty (-2 to 2)'),
   }).describe('Agent configuration'),
-  context: z.object({
+  context: z.ob<span class="fstat-no" title="function not covered" >je</span>ct({<span class="cstat-no" title="statement not covered" ></span>
     maxHistoryLength: z.number().min(0).max(1000).default(10).describe('Maximum conversation history length'),
     memoryType: z.enum([<span class="cstat-no" title="statement not covered" >'none', 'conversation', 'semantic', 'hybrid']).default('conversation').describe('Memory management type'),</span>
     memorySize: z.number().min(0).optional().describe('Memory size limit (MB)'),
     instructions: z.string().optional().describe('Additional context instructions'),
-  }).default({}).describe('Context and memory configuration'),
+  }).default(() =&gt; ({ maxHistoryLength: 10, memoryType: 'conversation' as const })).describe('Context and memory configuration'),
   capabilities: z.array(z.string()).default([]).describe('Agent capabilities (function names, tools)'),
   organizationId: z.number().min(1).optional().describe('Organization ID (for organization-scoped agents)'),
   teamId: z.number().min(1).optional().describe('Team ID (for team-scoped agents)'),
   scenarioId: z.number().min(1).optional().describe('Scenario ID (for scenario-scoped agents)'),
-  isPublic: z.boolean().default(false).describe('Whether agent is publicly accessible'),
+  isPublic: z.b<span class="fstat-no" title="function not covered" >oo</span>lean(<span class="cstat-no" title="statement not covered" >).default(false).describe('Whether agent is publicly accessible')</span>,
 }).strict();
 &nbsp;
 const AIAgentUpdateSchema = z.object({
@@ -1876,7 +1876,7 @@ const AIAgentUpdateSchema = z.object({
   co<span class="cstat-no" title="statement not covered" >nfiguration: z.object({</span>
     model: z.string().min(1).optional(),
 <span class="cstat-no" title="statement not covered" >    provider: z.string().min(1).optional(),</span>
-    parameters: z.record(z.any()).optional(),
+    parameters: z.record(z.string(), z.any()).optional(),
     systemPrompt: z.string().optional(),
     temperature: z.number().min(0).max(2).optional(),
     maxTokens: z.number().min(1).max(200000).optional(),
@@ -1917,7 +1917,7 @@ const LLMProviderCreateSchema = z.object({
     baseUrl: z.string().url().optional().describe('Custom API base URL'),
     apiVersion: z.string().optional().describe('API version (for Azure/custom)'),
     organization: z.string().optional().describe('Organization ID (for OpenAI)'),
-    customHeaders: z.record(z.string()).optional().describe('Custom HTTP headers'),
+    customHeaders: z.record(z.string(), z.string()).optional().describe('Custom HTTP headers'),
   }).describe('Provider configuration'),
   models: z.array(z.object({
     id: z.string().min(1).describe('Model ID'),
@@ -1930,7 +1930,7 @@ const LLMProviderCreateSchema = z.object({
   rateLimit: z.object({
     requestsPerMinute: z.number().min(1).default(60).describe('Requests per minute limit'),
     tokensPerMinute: z.number()<span class="cstat-no" title="statement not covered" >.min(1).defau</span>lt(60000).describe('Tokens per minute limit'),
-  }).default({})<span class="cstat-no" title="statement not covered" >.describe('Rate limiting configuration'),</span>
+  }).default(() <span class="cstat-no" title="statement not covered" >=&gt; ({ requestsPerMinute: 60, tokensPerMinute: 60000 })).describe('Rate limiting configuration'),</span>
 }).strict();<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 const AgentTestSchema<span class="cstat-no" title="statement not covered" > = z.object({</span>
@@ -1941,7 +1941,7 @@ const AgentTestSchema<span class="cstat-no" title="statement not covered" > = z.
     includeMetrics: z.boolean().default(true).describe('Include performance metrics'),
     timeout: z.number().min(1000)<span class="cstat-no" title="statement not covered" >.max(60000).default(30000).describe('Test </span>timeout in milliseconds'),
     validateResp<span class="cstat-no" title="statement not covered" >onse: z.boolean().default(true).describe('Validate response format'),</span>
-  }).default({}).des<span class="cstat-no" title="statement not covered" >cribe('Test options'),</span>
+  }).default(() =&gt; (<span class="cstat-no" title="statement not covered" >{ includeMetrics: true, timeout: 30000, validateResponse: true })).describe('Test options'),</span>
 }).strict();
 <span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
@@ -2617,7 +2617,7 @@ export default addAIAgentTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:52:47.089Z
+                at 2025-08-22T11:07:22.948Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

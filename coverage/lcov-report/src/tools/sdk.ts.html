@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/223</span>
+                <span class='fraction'>0/224</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/29</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/223</span>
+                <span class='fraction'>0/224</span>
             </div>
         
             
@@ -1020,7 +1020,10 @@
 <a name='L955'></a><a href='#L955'>955</a>
 <a name='L956'></a><a href='#L956'>956</a>
 <a name='L957'></a><a href='#L957'>957</a>
-<a name='L958'></a><a href='#L958'>958</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L958'></a><a href='#L958'>958</a>
+<a name='L959'></a><a href='#L959'>959</a>
+<a name='L960'></a><a href='#L960'>960</a>
+<a name='L961'></a><a href='#L961'>961</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1036,6 +1039,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1995,21 +2001,21 @@ export interface MakeSDKApp {
   description?: string;
   version: string;
   publisher: string;
-  category: 'productivity' | 'integration' | 'automation' | 'analytics' | 'communication' | 'utility' | 'custom';
+  category: 'pr<span class="fstat-no" title="function not covered" >od</span>uctiv<span class="cstat-no" title="statement not covered" >ity' | 'integration' | 'automation' | 'analytics' | 'communication' | 'utility' | 'custom';</span>
   status: 'available' | 'installed' | 'updating' | 'deprecated' | 'suspended';
   organizationId?: number;
   teamId?: number;
-  installation: {<span class="cstat-no" title="statement not covered" ></span>
+  installation: {
     installedAt?: string;
     installedBy?: number;
-    installedByName?: string;
+    installedByName?: strin<span class="cstat-no" title="statement not covered" >g;</span>
     version: string;
     autoUpdate: boolean;
     configuration: Record&lt;string, unknown&gt;;
-    permissions: {<span class="cstat-no" title="statement not covered" ></span>
+    permissions: {
       granted: string[];
       requested: string[];
-      denied: string[];
+      denied: string[];<span class="cstat-no" title="statement not covered" ></span>
     };
   };
   metadata: {
@@ -2019,10 +2025,10 @@ export interface MakeSDKApp {
     repository?: string;
     license: string;
     tags: string[];
-    screenshots: string[];<span class="cstat-no" title="statement not covered" ></span>
+    screenshots: string[];
     icon?: string;
   };
-  requirements: {
+  requirements: {<span class="cstat-no" title="statement not covered" ></span>
     makeVersion: string;
     dependencies: Record&lt;string, string&gt;;
     features: string[];
@@ -2031,14 +2037,14 @@ export interface MakeSDKApp {
   usage: {
     installations: number;
     rating: number;
-    reviews: num<span class="fstat-no" title="function not covered" >ber;</span>
-    activeUsers: number;<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    executions: number;</span>
-    lastUsed?: string;
+    reviews: number;
+    activeUsers: number;
+    executions: number;
+    lastUsed?: s<span class="fstat-no" title="function not covered" >tring;</span>
   };<span class="cstat-no" title="statement not covered" ></span>
-  integration: {
+  in<span class="cstat-no" title="statement not covered" >tegration: {</span>
     endpoints: Array&lt;{
-      name: string;
+<span class="cstat-no" title="statement not covered" >      name: string;</span>
       method: string;
       path: string;
       description?: string;
@@ -2060,85 +2066,88 @@ export interface MakeSDKApp {
     }&gt;;
   };
   compatibility: {
-    platforms: st<span class="fstat-no" title="function not covered" >ri</span>ng[];
-    regions: string[];<span class="cstat-no" title="statement not covered" ></span>
-    language<span class="cstat-no" title="statement not covered" >s: string[];</span>
-  };
-  security: {
-    verified: boolean;
+    platforms: string[];
+    regions: string[];
+    languages: string[];
+  };<span class="fstat-no" title="function not covered" ></span>
+  security: {<span class="cstat-no" title="statement not covered" ></span>
+    verified<span class="cstat-no" title="statement not covered" >: boolean;</span>
     sandboxed: boolean;
     permissions: string[];
     dataAccess: 'none' | 'read' | 'write' | 'full';
     networkAccess: boolean;
-  };<span class="cstat-no" title="statement not covered" ></span>
-  createdAt: string;<span class="cstat-no" title="statement not covered" ></span>
+  };
+  createdAt: string;
   updatedAt: string;
-  publishedAt: string;
-}
+  publishedA<span class="cstat-no" title="statement not covered" >t: string;</span>
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 export interface SDKAppVersion {
-  version: strin<span class="cstat-no" title="statement not covered" >g;</span>
-  releaseDate: strin<span class="cstat-no" title="statement not covered" >g;</span>
-  releaseNotes: <span class="cstat-no" title="statement not covered" >string;</span>
-  breaking: boolean;<span class="cstat-no" title="statement not covered" ></span>
-  security: bool<span class="cstat-no" title="statement not covered" >ean;</span>
-  features: string[]<span class="cstat-no" title="statement not covered" >;</span>
-  bugfixes: stri<span class="cstat-no" title="statement not covered" >ng[];</span>
-  deprecated: string<span class="cstat-no" title="statement not covered" >[];</span>
-  downloadUrl?: <span class="cstat-no" title="statement not covered" >string;</span>
+  version: string;
+  releaseDate: string;
+  releaseNotes: string;
+  breaking: bool<span class="cstat-no" title="statement not covered" >ean;</span>
+  security: boolean;<span class="cstat-no" title="statement not covered" ></span>
+  features: stri<span class="cstat-no" title="statement not covered" >ng[];</span>
+  bugfixes: string[]<span class="cstat-no" title="statement not covered" >;</span>
+  deprecated: st<span class="cstat-no" title="statement not covered" >ring[];</span>
+  downloadUrl?: stri<span class="cstat-no" title="statement not covered" >ng;</span>
   checksums: {<span class="cstat-no" title="statement not covered" ></span>
     md5: string;<span class="cstat-no" title="statement not covered" ></span>
-    sha256: string;<span class="cstat-no" title="statement not covered" ></span>
+    sha256: stri<span class="cstat-no" title="statement not covered" >ng;</span>
   };<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-export interface SDK<span class="cstat-no" title="statement not covered" >AppWorkflow {</span>
+export interface<span class="cstat-no" title="statement not covered" > SDKAppWorkflow {</span>
   id: number;<span class="cstat-no" title="statement not covered" ></span>
   name: string;<span class="cstat-no" title="statement not covered" ></span>
-  description?: string;<span class="cstat-no" title="statement not covered" ></span>
+  description?: stri<span class="cstat-no" title="statement not covered" >ng;</span>
   appId: number;<span class="cstat-no" title="statement not covered" ></span>
   appName: string;<span class="cstat-no" title="statement not covered" ></span>
-  version: string;
-  template: Record&lt;string, un<span class="cstat-no" title="statement not covered" >known&gt;; // Workflow </span>template JSON
-  category: 'starter' | 'advanced<span class="cstat-no" title="statement not covered" >' | 'integration' </span>| 'example';
-  difficulty: 'b<span class="cstat-no" title="statement not covered" >eginner' | 'intermediate' | 'advanced' | 'expert';</span>
-  tags: string[];
-  usage: {
-    installs: number;
+  version: string;<span class="cstat-no" title="statement not covered" ></span>
+  template: Reco<span class="cstat-no" title="statement not covered" >rd&lt;string, unknown&gt;; // Workflow template JSON</span>
+  category: 'starter<span class="cstat-no" title="statement not covered" >' | 'advanced' | 'integration' | 'example';</span>
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  tags: string[];<span class="cstat-no" title="statement not covered" ></span>
+  usage: {<span class="cstat-no" title="statement not covered" ></span>
+    installs: nu<span class="cstat-no" title="statement not covered" >mber;</span>
     rating: number;
     reviews: number;
-  };<span class="cstat-no" title="statement not covered" ></span>
-  requirements: {
-    apps: Array&lt;{<span class="fstat-no" title="function not covered" ></span>
-      name: string;<span class="cstat-no" title="statement not covered" ></span>
-      version?: string;<span class="cstat-no" title="statement not covered" ></span>
-      required: boolean;
-    }&gt;;<span class="fstat-no" title="function not covered" ></span>
-    features: string[];<span class="cstat-no" title="statement not covered" ></span>
-    permissions: string[<span class="cstat-no" title="statement not covered" >];</span>
   };
-  documentation: {
-    setup: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    usage: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  requirements: {
+    apps: Array&lt;{
+      name: string;<span class="cstat-no" title="statement not covered" ></span>
+      version?: string;
+      required: boolean;<span class="fstat-no" title="function not covered" ></span>
+    }&gt;;<span class="cstat-no" title="statement not covered" ></span>
+    features: string[];<span class="cstat-no" title="statement not covered" ></span>
+    permissions: string[];
+  };<span class="fstat-no" title="function not covered" ></span>
+  documentation: {<span class="cstat-no" title="statement not covered" ></span>
+    setup: string;<span class="cstat-no" title="statement not covered" ></span>
+    usage: string;
     troubleshooting?: string;
-    examples?: string;
+    examples?: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  createdAt: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  updatedAt: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  createdAt: string;
+  updatedAt: string;
   createdBy: number;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-}
-&nbsp;
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 // Input validation schemas<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 const SDKAppInstallSchema = z.object({
-  appId: z.number().min(1).de<span class="fstat-no" title="function not covered" >sc</span>ribe<span class="cstat-no" title="statement not covered" >('SDK app ID to install'),</span>
-  version: z.string().optional().describe('Specific version to install (defaults to latest)'),
+  appId: z.number().min(1).describe('SDK app ID to install'),
+  version: z.string().optional<span class="fstat-no" title="function not covered" >()</span>.describ<span class="cstat-no" title="statement not covered" >e('Specific version to install (defaults to la</span>test)'),
   organizationId: z.number().min(1).optional().describe('Organization ID to install for'),
-  teamId: z.number().min(1).optional().describe('Team ID to install for'),
-  configuration: z.record(z.any()).default({}).describe('App configuration settings'),
+  teamId: z.number().min(1).o<span class="fstat-no" title="function not covered" >pt</span>iona<span class="cstat-no" title="statement not covered" >l().describe('Team ID to install for'),</span>
+  configuration: z.record(z.string(), z.any()).default({}).describe('App configuration settings'),
   permissions: z.object({
     autoGrant: z.boolean().default(false).describe('Automatically grant requested permissions'),
-    restrictions: z.record(z.any()).default({}).describe('Permission restrictions'),
-  }).default({}).describe('Permission settings'),
+    restrictions: z.record(z.string(), z.any()).default({}).describe('Permission restrictions'),
+  }).default(() =&gt; ({
+    autoGrant: false,
+    restrictions: {},
+  })).describe('Permission settings'),
   autoUpdate: z.<span class="cstat-no" title="statement not covered" >boolean().default(true).describe('Enable automatic updates'),</span>
   skipValidation: z.boolean().defau<span class="fstat-no" title="function not covered" >lt</span>(false<span class="cstat-no" title="statement not covered" >).describe('Skip compatibility validation'),</span>
 }).strict();
@@ -2153,7 +2162,7 @@ const SDKAppUpdateSchema = z.object({
 &nbsp;
 const SDKAppConfigureSchema = z.object({
   appId: z.number().min(1).describe('SDK app ID to configure'),
-  configuration: z.record(z.any()).describe('New configuration settings'),
+  configuration: z.record(z.string(), z.any()).describe('New configuration settings'),
   permissions: z.object({
     grant: z.array(z.string()).default([]).describe('Permissions to grant'),
     revoke: z.array(z.string()).default([]).describe('Permissions to revoke'),
@@ -2161,7 +2170,7 @@ const SDKAppConfigureSchema = z.object({
   integrations: z.object({
     enable: z.array(z.string()).default([]).describe('Integrations to enable'),
     disable: z.array(z.string()).default([]).describe('Integrations to disable'),
-    configure: z.record(z.any()).default({}).describe('Integration configurations'),
+    configure: z.record(z.string(), z.any()).default({}).describe('Integration configurations'),
   }).optional().describe('Integration settings'),
 }).strict();
 &nbsp;
@@ -2170,7 +2179,7 @@ const WorkflowInstallSchema = z.object({
   name: z.string().min(1).max(100).describe('Name for the installed workflow'),
   teamId: z.number().min(1).optional().describe('Team ID to install workflow in'),
   folderId: z.number().min(1).optional().describe('Folder ID to organize workflow'),
-  configuration: z.record(z.any()).default({}).describe('Workflow configuration overrides'),
+  configuration: z.record(z.string(), z.any()).default({}).describe('Workflow configuration overrides'),
   autoStart: z.boolean().default(false).describe('Automatically start workflow after installation'),
   installDependencies: z.boolean().default(true).describe('Install required app dependencies'),
 }).strict();<span class="cstat-no" title="statement not covered" ></span>
@@ -2941,7 +2950,7 @@ export default addSDKTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:52:47.089Z
+                at 2025-08-22T11:07:22.948Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

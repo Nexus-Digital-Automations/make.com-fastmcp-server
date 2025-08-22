@@ -438,7 +438,11 @@
 <a name='L373'></a><a href='#L373'>373</a>
 <a name='L374'></a><a href='#L374'>374</a>
 <a name='L375'></a><a href='#L375'>375</a>
-<a name='L376'></a><a href='#L376'>376</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a>
+<a name='L379'></a><a href='#L379'>379</a>
+<a name='L380'></a><a href='#L380'>380</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -453,7 +457,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -681,6 +684,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -820,16 +828,20 @@
  */
 &nbsp;
 // Import all security middleware components
+import type { RequestHandler, ErrorRequestHandler } from 'express';
 import { rateLimitManager, createRateLimitMiddleware, ddosProtectionMiddleware } from './rate-limiting.js';
 import { securityHeadersManager, createSecurityMiddleware, createCSRFMiddleware } from './security-headers.js';
 import { errorSanitizationMiddleware, developmentErrorHandler } from './error-sanitization.js';
 import { ddosProtection, circuitBreakerManager, createDDoSProtectionMiddleware } from './circuit-breaker.js';
 import { securityMonitoring, createSecurityMonitoringMiddleware } from './security-monitoring.js';
 import logger from '../lib/logger.js';
+<span class="fstat-no" title="function not covered" ></span>
+// Middl<span class="cstat-no" title="statement not covered" >eware function type for Express compatibility</span>
+type MiddlewareFunction = RequestHandler | ErrorRequestHandler;
 &nbsp;
 // Security configuration interface
-inte<span class="fstat-no" title="function not covered" >rf</span>ace SecurityConfig {
-  rateLi<span class="cstat-no" title="statement not covered" >miting: {</span>
+interface SecurityConfig {
+  rateLimiting: {
     enabled: boolean;
     redis: {
       enabled: boolean;
@@ -867,195 +879,195 @@ inte<span class="fstat-no" title="function not covered" >rf</span>ace SecurityCo
   monitoring: {
     enabled: boolean;
     realTimeAlerts: boolean;
-    metricsCollection: boolean;
+    metr<span class="cstat-no" title="statement not covered" >icsCollection: bool</span>ean;
   };
-}
-&nbsp;
+}<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 // Integrated security management class
-export c<span class="cstat-no" title="statement not covered" >lass IntegratedSecu</span>rityManager {
+export class IntegratedSecurityManager {
   private config: SecurityConfig;
-  <span class="fstat-no" title="function not covered" ></span>
-  constr<span class="cstat-no" title="statement not covered" >uctor(config?: Partial&lt;SecurityConfig&gt;) {</span>
+  
+  constructor(config?: Partial&lt;SecurityConfig&gt;) {
     this.config = {
       rateLimiting: {
         enabled: true,
-        redis: {
-          enabled: !!process.env.REDIS_URL,
+<span class="fstat-no" title="function not covered" ></span>        redis: {
+          enabled: !!process<span class="cstat-no" title="statement not covered" >.en</span>v.REDIS_URL,
           url: process.env.REDIS_URL
-        },
-        tiers: {
-<span class="fstat-no" title="function not covered" ></span>          auth: true,
-          standard: true,<span class="cstat-no" title="statement not covered" ></span>
-          sensitive: true,
-<span class="cstat-no" title="statement not covered" >          webhooks: true</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        },</span>
+        tier<span class="cstat-no" title="statement not covered" >s: {</span>
+          auth: true,
+          standard: true,
+<span class="cstat-no" title="statement not covered" >          sensitive: true,</span>
+          we<span class="cstat-no" title="statement not covered" >bhooks: true</span>
+        }
       },
-      ddosProtection: {
-<span class="cstat-no" title="statement not covered" >        enabled: true,</span>
+      dd<span class="cstat-no" title="statement not covered" >osProtection: {</span>
+        enab<span class="cstat-no" title="statement not covered" >led: true,</span>
         beha<span class="cstat-no" title="statement not covered" >viorAnalysis: true,</span>
-        ipReputation: true
+        ipReputa<span class="cstat-no" title="statement not covered" >tion: true</span>
       },
-      he<span class="cstat-no" title="statement not covered" >aders: {</span>
-        enab<span class="cstat-no" title="statement not covered" >led: true,</span>
-        cont<span class="cstat-no" title="statement not covered" >entValidation: true,</span>
-        requestS<span class="cstat-no" title="statement not covered" >izing: true,</span>
-        csrf: process.env.NODE_ENV !== 'test',
-        secu<span class="cstat-no" title="statement not covered" >rityAudit: true</span>
-      },<span class="cstat-no" title="statement not covered" ></span>
+      header<span class="cstat-no" title="statement not covered" >s: {</span>
+        enabled:<span class="cstat-no" title="statement not covered" > true,</span>
+        contentValidation: true,
+        requ<span class="cstat-no" title="statement not covered" >estSizing: true,</span>
+        csrf: pr<span class="cstat-no" title="statement not covered" >ocess.env.NODE_ENV !== 'test',</span>
+        securityAudit: true
+      },
       errorSanitization: {
-        enab<span class="cstat-no" title="statement not covered" >led: true,</span>
-        developm<span class="cstat-no" title="statement not covered" >entMode: process.env.NODE_ENV === 'develop</span>ment',
-        logSanitization: true
+<span class="cstat-no" title="statement not covered" >        enabled: true,</span>
+        deve<span class="cstat-no" title="statement not covered" >lopmentMode: process.env.NODE_ENV === 'development',</span>
+        logSanit<span class="cstat-no" title="statement not covered" >ization: true</span>
       },
       circuitBreaker: {
 <span class="cstat-no" title="statement not covered" >        enabled: true,</span>
-        make<span class="cstat-no" title="statement not covered" >Api: true,</span>
-        external<span class="cstat-no" title="statement not covered" >Services: true</span>
-      },
-      monitoring: {
-<span class="cstat-no" title="statement not covered" >        enabled: true,</span>
-        realTimeAlerts: true,
-<span class="fstat-no" title="function not covered" ></span>        metricsCollection: true
+        makeApi: true,
+<span class="fstat-no" title="function not covered" ></span>        externalServices: true
       },<span class="cstat-no" title="statement not covered" ></span>
-      ..<span class="cstat-no" title="statement not covered" >.config</span>
+      mo<span class="cstat-no" title="statement not covered" >nitoring: {</span>
+        enab<span class="cstat-no" title="statement not covered" >led: true,</span>
+        realTimeAlerts: true,
+<span class="cstat-no" title="statement not covered" >        metricsCollection: t</span>rue
+      },
+<span class="fstat-no" title="function not covered" ></span>      ...config
     };<span class="cstat-no" title="statement not covered" ></span>
-    
-    this<span class="cstat-no" title="statement not covered" >.initialize();</span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    this.ini<span class="cstat-no" title="statement not covered" >tialize();</span>
   }
-  <span class="fstat-no" title="function not covered" ></span>
-  private initialize(): void<span class="cstat-no" title="statement not covered" > {</span>
-    logg<span class="cstat-no" title="statement not covered" >er.info('Initializing integrated security manager', {</span>
-      rateLi<span class="cstat-no" title="statement not covered" >miting: this.config.rateLimiting.enabled,</span>
-      ddosProtection: this.config.ddosProtection.enabled,
-      he<span class="cstat-no" title="statement not covered" >aders: this.config.h</span>eaders.enabled,
+  <span class="cstat-no" title="statement not covered" ></span>
+  private initialize(): void {
+<span class="fstat-no" title="function not covered" >    lo</span>gger.info('Initializing integrated security manager', {
+      rateLimiting: this.con<span class="cstat-no" title="statement not covered" >fig</span>.rateLimiting.enabled,
+      dd<span class="cstat-no" title="statement not covered" >osProtection: this.config.ddosProtection.enabled,</span>
+      header<span class="cstat-no" title="statement not covered" >s: this.config.headers.enabled,</span>
       errorSanitization: this.config.errorSanitization.enabled,
-<span class="fstat-no" title="function not covered" ></span>      circuitBreaker: this.config.circuitBreaker.enabled,
-      monitoring: this.confi<span class="cstat-no" title="statement not covered" >g.m</span>onitoring.enabled
-    });<span class="cstat-no" title="statement not covered" ></span>
+      ci<span class="cstat-no" title="statement not covered" >rcuitBreaker: this.c</span>onfig.circuitBreaker.enabled,
+      monitoring: this.config.monitoring.enabled
+<span class="fstat-no" title="function not covered" >    })</span>;
   }<span class="cstat-no" title="statement not covered" ></span>
-  
-  public<span class="cstat-no" title="statement not covered" > getSecurityMiddlewa</span>reStack(): any[] {
-    const middlewares: any[] = [];
-    <span class="fstat-no" title="function not covered" ></span>
-    // 1. Security monitorin<span class="cstat-no" title="statement not covered" >g (</span>first to track all requests)
-    if (<span class="cstat-no" title="statement not covered" >this.config.monitoring.enabled) {</span>
-      middle<span class="cstat-no" title="statement not covered" >wares.push(createSecurityMonitoringMiddleware());</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  public get<span class="cstat-no" title="statement not covered" >SecurityMiddlewareStack(): MiddlewareFunction[] {</span>
+    const middle<span class="cstat-no" title="statement not covered" >wares: MiddlewareFunction[] = [];</span>
     
-    // 2. DDoS protection (early filtering)
-    if (this.con<span class="cstat-no" title="statement not covered" >fig.ddosProtection.enabled) {</span>
-      middlewares.push(createDDoSProtectionMiddleware());
+    // 1. Security monitoring (first to track all requests)
+    if (this.con<span class="cstat-no" title="statement not covered" >fig.monitoring.enabled) {</span>
+      middlewares.push(createSecurityMonitoringMiddleware());
     }
     <span class="cstat-no" title="statement not covered" ></span>
-    // 3. Security headers (comprehensive header protection)
-<span class="fstat-no" title="function not covered" >    if</span> (this.config.headers.enabled) {
-      mi<span class="cstat-no" title="statement not covered" >ddlewares.push(createSecurityMiddleware());</span>
+    // 2. DDoS protection (early filtering)
+<span class="fstat-no" title="function not covered" >    if</span> (this.config.ddosProtection.enabled) {
+      mi<span class="cstat-no" title="statement not covered" >ddlewares.push(createDDoSProtectionMiddleware());</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+    
+    // 3<span class="cstat-no" title="statement not covered" >. Security headers (comprehensive header protection)</span>
+    if (this.config.headers.enabled) {
+      middlewares.push(createSecurit<span class="cstat-no" title="statement not covered" >yMiddleware());<span class="fstat-no" title="function not covered" ></span></span>
       <span class="cstat-no" title="statement not covered" ></span>
-      if (this.config.headers.contentValidation) {
-<span class="cstat-no" title="statement not covered" >        middlewares.push(securityHeadersManager.getContentTypeValidation());</span>
+      if (this.c<span class="cstat-no" title="statement not covered" >onfig.headers.contentValidation) {</span>
+        middlewares.<span class="cstat-no" title="statement not covered" >push(securityHeadersManager.getContentTypeValidation());</span>
       }
-      <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      if (this.config.headers.requestSizing) {<span class="cstat-no" title="statement not covered" ></span>
-        middlewa<span class="cstat-no" title="statement not covered" >res.push(securityHeadersManager.getRequestSizeLimiter());</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
+      <span class="cstat-no" title="statement not covered" ></span>
+      if (this.config.headers.requestSizing) {
+        middlewares.push(securityHeadersManager.getRequestSizeLimiter());
+      }
       
-      if (this.c<span class="cstat-no" title="statement not covered" >onfig.headers.csrf) {</span>
+      if (this.config.headers.csrf) {
         middlewares.push(createCSRFMiddleware());
-      }
+      }<span class="cstat-no" title="statement not covered" ></span>
     }
     
-    // 4. Rate limiting (after headers but before business logic)
-    if (this.config.rateLimiting.enabled) {
-      if (th<span class="cstat-no" title="statement not covered" >is.config.rateLimiting.tiers.standard) {</span>
+<span class="fstat-no" title="function not covered" >    //</span> 4. Rate limiting (after headers but before business logic)
+    if (this.config.rat<span class="cstat-no" title="statement not covered" >eLimiting.enabled) {</span>
+      if (this.config.rateLimiting.tiers.standard) {
         middlewares.push(createRateLimitMiddleware('standard'));
       }
-<span class="fstat-no" title="function not covered" >    }</span>
-    <span class="cstat-no" title="statement not covered" ></span>
+    }
+    
     return middlewares;
   }
-  
-  public getAuthSecurityMiddleware(): any[] {
-    const middlewares: any[] = [];
-    
-    if (this.config.rateLimiting.enabled &amp;&amp; this.config.rateLimiting.tiers.auth) {
-      middlewares.pus<span class="cstat-no" title="statement not covered" >h(</span>createRateLimitMiddleware('auth'));
-    }<span class="cstat-no" title="statement not covered" ></span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    return middlewares;
-  }<span class="cstat-no" title="statement not covered" ></span>
   <span class="cstat-no" title="statement not covered" ></span>
-  public getSensitiveEndpointMiddleware(): any[] {
-    cons<span class="cstat-no" title="statement not covered" >t middlewares: any[] = [];</span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    if (this.config.rateLimiting.enabled &amp;&amp; this.config.rateLimiting.tiers.sensitive) {
-      middlew<span class="cstat-no" title="statement not covered" >ares.push(createRateLimitMiddleware('sensitive'));</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+  public<span class="cstat-no" title="statement not covered" > getAuthSecurityMiddleware(): MiddlewareFunction[] {</span>
+    const mi<span class="cstat-no" title="statement not covered" >ddlewares:</span> MiddlewareFunction[] = [];
     
-    return middlewares;
-  }<span class="cstat-no" title="statement not covered" ></span>
-  
-  public<span class="cstat-no" title="statement not covered" > getWebhookMidd</span>leware(): any[] {
-    const middlewares: any[] = [];
-    <span class="fstat-no" title="function not covered" ></span>
-    if (<span class="cstat-no" title="statement not covered" >this.config.rateLimiting.enabled &amp;&amp; this.config</span>.rateLimiting.tiers.webhooks) {
-      middlewares.push(createRate<span class="cstat-no" title="statement not covered" >Lim</span>itMiddleware('webhooks'));
-    }<span class="cstat-no" title="statement not covered" ></span>
+    if (<span class="cstat-no" title="statement not covered" >this.config.rateLimiting.enabled &amp;&amp; this.config.rateLimiting.tiers.auth) {</span>
+      middle<span class="cstat-no" title="statement not covered" >wares.push</span>(createRateLimitMiddleware('auth'));
+    }
     <span class="cstat-no" title="statement not covered" ></span>
-    return middlewares;
-  }<span class="cstat-no" title="statement not covered" ></span>
+    return m<span class="cstat-no" title="statement not covered" >iddlewares;</span>
+  }
   <span class="cstat-no" title="statement not covered" ></span>
-  public getErrorHandlingMiddleware(): any[] {
-    cons<span class="cstat-no" title="statement not covered" >t middlewares: any[] = [];</span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    if (this.config.errorSanitization.enabled) {
-      if<span class="cstat-no" title="statement not covered" > (this.config.errorSanitization.devel</span>opmentMode) {
-<span class="cstat-no" title="statement not covered" >        middlewares.push(developmentErrorHandler());</span>
-      } else {
-<span class="fstat-no" title="function not covered" ></span>        middlewares.push(errorSanitizationMiddleware());
-      }<span class="cstat-no" title="statement not covered" ></span>
+  public get<span class="cstat-no" title="statement not covered" >SensitiveEndpointMiddleware()</span>: MiddlewareFunction[] {
+    const middlewares: MiddlewareFunction[] = [];
+    
+    if (this<span class="cstat-no" title="statement not covered" >.config.rateLimiting.enabled &amp;</span>&amp; this.config.rateLimiting.tiers.sensitive) {
+      middlewares.push(createRateLimitMiddleware('sensitive'));
     }<span class="cstat-no" title="statement not covered" ></span>
     
 <span class="fstat-no" title="function not covered" >    re</span>turn middlewares;
   }<span class="cstat-no" title="statement not covered" ></span>
-  
-  public async initializeCircuitBreakers(apiClient: any): Promise&lt;void&gt; {
-    if (!this.config.circuitBreaker.enabled) {
-      return;<span class="cstat-no" title="statement not covered" ></span>
-    }
+  <span class="cstat-no" title="statement not covered" ></span>
+  public<span class="cstat-no" title="statement not covered" > getWebhookMiddleware(): MiddlewareFunction[] {</span>
+    const mi<span class="cstat-no" title="statement not covered" >ddlewares: MiddlewareFunction[] = [];</span>
     
-    if (this.config.circuitBreaker.makeApi &amp;&amp; apiClient) {
-      // Create <span class="fstat-no" title="function not covered" >circuit breaker for Make.c</span>om API calls
-<span class="cstat-no" title="statement not covered" >      const<span class="fstat-no" title="function not covered" > _</span>makeApiBreaker = circuitBreakerManager.createCircuitBreaker(</span>
-        'make-api',<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        async (...args: unknown[]) =&gt; {</span>
-          const [operation, ...restArgs] = args;
-          if (typeof operation !== 'string') {
-            throw new Error('First argument must be a string operation name');
-          }
-          return await (apiClient as any)[operation](...restArgs);
-        },
-        {<span class="fstat-no" title="function not covered" ></span>
-          timeout: <span class="cstat-no" title="statement not covered" >100</span>00, // 10 second timeout for API calls
-          errorThresh<span class="cstat-no" title="statement not covered" >old</span>Percentage: 60, // Trip at 60% error rate for external API
-          resetTime<span class="cstat-no" title="statement not covered" >out: 60000, // Try again aft</span>er 1 minute
-          volumeThreshold: 5 // Minimum 5 requests before circuit can trip
-<span class="cstat-no" title="statement not covered" >        }</span>
-      );<span class="cstat-no" title="statement not covered" ></span>
-      
-<span class="cstat-no" title="statement not covered" >      logger.info('Circuit breaker initialized for Make.com API');</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+    if (<span class="cstat-no" title="statement not covered" >this.config.rateLimiting.enabled &amp;&amp; this.config.rateLimiting.tiers.webhooks) {</span>
+      middle<span class="cstat-no" title="statement not covered" >wares.push(createRateLimitMiddleware('webhooks'));</span>
+    }
+    <span class="cstat-no" title="statement not covered" ></span>
+    return m<span class="cstat-no" title="statement not covered" >iddlewares;</span>
   }
   <span class="cstat-no" title="statement not covered" ></span>
-  public<span class="cstat-no" title="statement not covered" > getSecurityStatus(): {</span>
-    rateLimiting: any;
-    ddosProtection: any;
-<span class="cstat-no" title="statement not covered" >    circuitBreakers: any;</span>
-    moni<span class="cstat-no" title="statement not covered" >toring: any;</span>
+  public<span class="cstat-no" title="statement not covered" > getErrorHandlingMiddleware(): MiddlewareFunction[] </span>{
+    const middlewares: MiddlewareFunction[] = [];
+    <span class="fstat-no" title="function not covered" ></span>
+    if (<span class="cstat-no" title="statement not covered" >this.config.errorSanitization.enabled) {</span>
+      if<span class="cstat-no" title="statement not covered" > (this.config.errorSanitization.developmentMode) {</span>
+        middlewares.push(developmentErrorHandler());
+<span class="fstat-no" title="function not covered" ></span>      } else {
+<span class="cstat-no" title="statement not covered" >        middlewares.push(errorSanit</span>izationMiddleware());
+      }
+    }
+    
+    return middlewares;<span class="cstat-no" title="statement not covered" ></span>
+  }
+  
+  public async initializeCircuitBreakers(apiClient: unknown): Promise&lt;void&gt; {
+    if (!this.co<span class="fstat-no" title="function not covered" >nfig.circuitBreaker.enable</span>d) {
+<span class="cstat-no" title="statement not covered" >      retur<span class="fstat-no" title="function not covered" >n;</span></span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    if (this.config.circuitBreaker.makeApi &amp;&amp; apiClient) {
+      // Create circuit breaker for Make.com API calls
+      const _makeApiBreaker = circuitBreakerManager.createCircuitBreaker(
+        'make-api',
+        async (...args: unknown[]) =&gt; {
+          const [operation, ...restArgs] = args;
+          if (ty<span class="fstat-no" title="function not covered" >peof operation !== 'string') {</span>
+            throw n<span class="cstat-no" title="statement not covered" >ew </span>Error('First argument must be a string operation name');
+          }<span class="cstat-no" title="statement not covered" ></span>
+          return aw<span class="cstat-no" title="statement not covered" >ait (apiClient as Record&lt;str</span>ing, (...args: unknown[]) =&gt; Promise&lt;unknown&gt;&gt;)[operation](...restArgs);
+        },
+<span class="cstat-no" title="statement not covered" >        {</span>
+<span class="cstat-no" title="statement not covered" >          timeout: 10000, // 10 second timeout for API calls</span>
+          errorThresholdPercentage: 60, // Trip at 60% error rate for external API
+<span class="cstat-no" title="statement not covered" >          resetTimeout: 60000, // Try again after 1 minute</span>
+<span class="cstat-no" title="statement not covered" >          volumeThreshold: 5 // Minimum 5 requests before circuit can trip</span>
+        }
+<span class="cstat-no" title="statement not covered" >      );</span>
+      <span class="cstat-no" title="statement not covered" ></span>
+      logger.info('Circuit breaker initialized for Make.com API');
+    }
+  }<span class="cstat-no" title="statement not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  public getSecurityStatus(): {
+<span class="cstat-no" title="statement not covered" >    rateLimiting: Record&lt;string, unknown&gt;;</span>
+    ddos<span class="cstat-no" title="statement not covered" >Protection: Record&lt;string, unknown&gt;;</span>
+    circuitBreakers: Record&lt;string, unknown&gt;;
+<span class="cstat-no" title="statement not covered" >    monitoring: Record&lt;string, unknown&gt;;</span>
     overall: string;
-  } <span class="cstat-no" title="statement not covered" >{</span>
-    cons<span class="cstat-no" title="statement not covered" >t status = {</span>
+  } {
+    const status = {
       rateLimiting: this.config.rateLimiting.enabled ? rateLimitManager.getSystemStatus() : { enabled: false },
-<span class="cstat-no" title="statement not covered" >      ddosProtection: this.config.ddosProtection.enabled ? ddosProtection.getStats() : { enabled: false },</span>
+      ddosProtection: this.config.ddosProtection.enabled ? ddosProtection.getStats() : { enabled: false },
       circuitBreakers: this.config.circuitBreaker.enabled ? circuitBreakerManager.getAllStats() : { enabled: false },
       monitoring: this.config.monitoring.enabled ? securityMonitoring.getSecuritySummary() : { enabled: false },
       overall: 'healthy'
@@ -1139,7 +1151,7 @@ export {
 export function createSecurityHealthCheck() {
   return async (): Promise&lt;{
     healthy: boolean;
-    status: any;
+    status: Record&lt;string, unknown&gt;;
     timestamp: string;
   }&gt; =&gt; {
     const status = securityManager.getSecurityStatus();
@@ -1195,7 +1207,7 @@ export function validateSecurityConfiguration(): {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:52:47.089Z
+                at 2025-08-22T11:07:22.948Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

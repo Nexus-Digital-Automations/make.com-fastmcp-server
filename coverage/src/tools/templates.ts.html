@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/207</span>
+                <span class='fraction'>0/212</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/204</span>
+                <span class='fraction'>0/209</span>
             </div>
         
             
@@ -798,13 +798,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -854,9 +854,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1506,13 +1506,13 @@ export interface MakeExtendedTemplate extends MakeTemplate {
   }&gt;;
   usage: {
     totalUses: number;
-    lastUsed?: string;
+    lastUsed?: <span class="fstat-no" title="function not covered" >st</span>ring;<span class="cstat-no" title="statement not covered" ></span>
     activeScenarios: number;
   };
   sharing: {
     isPublic: boolean;
     organizationVisible: boolean;
-    teamVisible: boolean;
+    teamVisible<span class="fstat-no" title="function not covered" >: </span>boole<span class="cstat-no" title="statement not covered" >an;</span>
     sharedWith: Array&lt;{
       type: 'user' | 'team' |<span class="cstat-no" title="statement not covered" > 'organization';</span>
       id: number;
@@ -1562,9 +1562,9 @@ const TemplateCreateSchema = z.object({
   tags: z.array(z.string().max(30)).max(20).default([]).describe('Template tags (max 20 tags, 30 chars each)'),
   folderId: z.number().min(1).optional().describe('Folder ID to place template in'),
   organizationId: z.number().min(1).optional().describe('Organization ID (for organization templates)'),
-  teamId: z.number().min(1).optional().describe('Team ID (for team templates)'),
-  isPublic: z.boolean().default(false).describe('Whether template is publicly visible'),
-  sharing: z.object({
+  teamId: z.number().min(1).optional().describe('Team ID (<span class="fstat-no" title="function not covered" >fo</span>r tea<span class="cstat-no" title="statement not covered" >m t</span>emplates)'),
+  isPublic: z.boolean().default(false).describe('Whether template is pub<span class="fstat-no" title="function not covered" >li</span>cly v<span class="cstat-no" title="statement not covered" >isi</span>ble'),
+  sharing: z.object({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
     organizationVisible: z.boolean().default(true).describe('Visible to organization members'),
     teamVisible: z.boolean().default(true).describe('Visible to team members'),
     specificShares: z.array(z.object({
@@ -1572,13 +1572,13 @@ const TemplateCreateSchema = z.object({
       id: z.number().min(1),
       permissions: z.array(z.enum(['view', 'use', 'edit', 'admin'])).default(['view', 'use']),
     })).default([]).describe('Specific sharing permissions'),
-  }).default({}).describe('Sharing configuration'),
+  }).default(() =&gt; ({ organizationVisible: false, teamVisible: false, specificShares: [] })).describe('Sharing configuration'),
   metadata: z.ob<span class="fstat-no" title="function not covered" >ject({</span>
     estimatedSetupTime: z.nu<span class="cstat-no" title="statement not covered" >mber().min(0).optional().describe('Estimated </span>setup time in minutes'),
 <span class="cstat-no" title="statement not covered" >    requiredConnections: z.array(z.string()).default([]).descr</span>ibe('Required connection types'),
     supportedRegions: z.array(z.string()).optional().describe('Supported regions'),
 <span class="cstat-no" title="statement not covered" >    complexity: z.enum(['simple', 'moderate', 'complex']).optional().describe('Template complexity level'),</span>
-  }).default({}).describe('Template metadata'),
+  }).default(() =&gt; ({ requiredConnections: [] })).describe('Template metadata'),
 }).strict();
 &nbsp;
 const TemplateUpdateSchema = z.object({
@@ -1631,9 +1631,9 @@ const TemplateUseSchema = z.object({
   templateId: z.number().min(1).describe('Template ID to use'),
   scenarioName: z.string().min(1).max(100).describe('Name for the new scenario'),
   folderId: z.number().min(1).o<span class="cstat-no" title="statement not covered" >ptional().des</span>cribe('Folder to place the new scenario'),
-  customizations<span class="cstat-no" title="statement not covered" >: z.record(z.any()).default({}).describe('Customizations to apply to the template'),</span>
-  connectionMappings<span class="cstat-no" title="statement not covered" >: z.record(z.number().min(1)).default({}).describe('Map t</span>emplate connections to existing connections'),
-  variableOverrides: z.record(z.any()).default({}).describe('Override template variables'),
+  customizations<span class="cstat-no" title="statement not covered" >: z.record(z.string(), z.any()).default(() =&gt; ({})).describe('Customizations to apply to the template'),</span>
+  connectionMappings<span class="cstat-no" title="statement not covered" >: z.record(z.string(), z.number().min(1)).default(() =&gt; (</span>{})).describe('Map template connections to existing connections'),
+  variableOverrides: z.record(z.string(), z.any()).default(() =&gt; ({})).describe('Override template variables'),
   schedulingOverride:<span class="cstat-no" title="statement not covered" > z.object({</span>
     type: z.enum(['i<span class="cstat-no" title="statement not covered" >mmediate', 'indefinitely', 'on-demand']).</span>optional(),
     interval: z.number().min(60).optional(),
@@ -2194,7 +2194,7 @@ export default addTemplateTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:52:47.351Z
+                at 2025-08-22T11:07:23.286Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

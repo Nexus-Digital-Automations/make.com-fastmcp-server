@@ -387,23 +387,23 @@ export async function configureAutomatedRemediation(context: FastMCPToolContext,
           text: `# Automated Remediation Configuration
 
 ## 🤖 Workflow Configuration
-**Workflow ID**: ${data.workflowId}
-**Triggered By**: ${data.triggeredBy}
-**Severity**: ${data.severity}
-**Automation Level**: ${data.automatedExecution ? 'Fully Automated' : 'Manual Approval Required'}
-**Estimated Duration**: ${data.estimatedDuration} minutes
+**Workflows Count**: ${data.workflows.length}
+**Estimated Execution Time**: ${data.estimatedExecutionTime} minutes
+**Requires Approval**: ${data.requiresApproval ? 'Yes' : 'No'}
+${data.dryRunResults ? `**Dry Run Status**: Available (${data.dryRunResults.length} results)` : ''}
 
-## 🔧 Remediation Steps
-${data.steps.map((step, index) => `${index + 1}. **${step.action}** ${step.automated ? '(Automated)' : '(Manual)'}
-   - Duration: ${step.duration} minutes
-   - Dependencies: ${step.dependencies.join(', ') || 'None'}
-   - Success Criteria: ${step.successCriteria.join(', ')}`).join('\n\n')}
+## 🔧 Configured Workflows
+${data.workflows.map((workflow, index) => `${index + 1}. **${workflow.name}** (${workflow.id})
+   - Type: ${workflow.type}
+   - Status: ${workflow.status}
+   - Steps: ${workflow.steps.length}
+   - Priority: ${workflow.priority}
+`).join('\n')}
 
-## 📈 Escalation Path
-${data.escalationPath.map(esc => `- **Level ${esc.level}**: ${esc.condition} → ${esc.action} (${esc.timeframe}min)`).join('\n')}
-
-## ✅ Success Criteria
-${data.successCriteria.map(criteria => `- ${criteria}`).join('\n')}
+## 📋 Execution Summary
+- **Total Workflows**: ${data.workflows.length}
+- **Estimated Time**: ${data.estimatedExecutionTime} minutes
+- **Approval Required**: ${data.requiresApproval ? 'Yes' : 'No'}
 
 Automated remediation workflow configured and ready for deployment.`,
         },
@@ -470,7 +470,8 @@ export async function generateGovernanceInsights(context: FastMCPToolContext, ar
       };
     }
 
-    const insights = result.data!;
+    const data = result.data!;
+    const insights = data.insights;
     return {
       success: true,
       message: result.message,

@@ -38,7 +38,7 @@ export class SecurityValidator {
 
     try {
       SecurityPolicySchema.parse(config);
-    } catch (error) {
+    } catch {
       violations.push('Invalid security policy configuration');
       riskLevel = 'high';
       recommendations.push('Review and correct security policy configuration');

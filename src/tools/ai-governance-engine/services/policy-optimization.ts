@@ -471,7 +471,7 @@ export class PolicyOptimizationService {
 
   private async analyzeOptimizationImpact(
     optimizations: OptimizationResult[], 
-    currentPolicies: Policy[]
+    _currentPolicies: Policy[]
   ): Promise<ConflictImpactAnalysis> {
     const affectedSystems = new Set<string>();
     let totalEstimatedCost = 0;

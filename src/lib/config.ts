@@ -7,8 +7,12 @@ import { config as dotenvConfig } from 'dotenv';
 import { z } from 'zod';
 import { ServerConfig, MakeApiConfig, RateLimitConfig } from '../types/index.js';
 
-// Load environment variables
+// Load environment variables (suppress promotional output for MCP protocol compatibility)
+// Temporarily redirect stdout to stderr during dotenv loading to prevent MCP protocol corruption
+const originalStdoutWrite = process.stdout.write;
+process.stdout.write = process.stderr.write.bind(process.stderr);
 dotenvConfig();
+process.stdout.write = originalStdoutWrite;
 
 // Configuration validation schemas
 const MakeApiConfigSchema = z.object({
@@ -366,10 +370,10 @@ class ConfigManager {
 
 // Configuration validation utility functions
 export function createConfigurationValidator(): {
-  validateMakeApiKey: (_key: string) => boolean;
-  validatePort: (_port: number) => boolean;
-  validateTimeout: (_timeout: number) => boolean;
-  validateLogLevel: (_level: string) => boolean;
+  validateMakeApiKey: (key: string) => boolean;
+  validatePort: (port: number) => boolean;
+  validateTimeout: (timeout: number) => boolean;
+  validateLogLevel: (level: string) => boolean;
   generateSecureSecret: () => string;
 } {
   return {

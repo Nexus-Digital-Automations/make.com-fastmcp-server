@@ -511,7 +511,7 @@ export class RemediationService {
     return baseCriteria;
   }
 
-  private async performDryRun(workflows: RemediationWorkflow[], context: RemediationContext): Promise<string[]> {
+  private async performDryRun(workflows: RemediationWorkflow[], _context: RemediationContext): Promise<string[]> {
     const results: string[] = [];
 
     for (const workflow of workflows) {
