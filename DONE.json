@@ -14401,9 +14401,50 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755845995238_v7nji8xug",
+      "title": "Fix TypeScript linting warnings in error-sanitization.ts",
+      "description": "Replace explicit any types with proper TypeScript types in error-sanitization.ts middleware. 4 warnings to fix related to @typescript-eslint/no-explicit-any rule violations.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T06:59:55.238Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T07:00:02.259Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T07:02:57.488Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T07:02:57.489Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 323,
-  "last_completion": "2025-08-22T06:57:56.190Z",
+  "total_completed": 324,
+  "last_completion": "2025-08-22T07:02:57.489Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

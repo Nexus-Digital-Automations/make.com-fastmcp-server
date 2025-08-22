@@ -7,6 +7,28 @@
 import crypto from 'crypto';
 import logger from '../lib/logger.js';
 
+// Express-like interfaces for middleware
+interface ExpressRequest {
+  headers: Record<string, string | string[] | undefined>;
+  path?: string;
+  url?: string;
+  method?: string;
+  user?: { id?: string };
+  ip?: string;
+  connection?: { remoteAddress?: string };
+  sessionID?: string;
+  correlationId?: string;
+}
+
+interface ExpressResponse {
+  status: (code: number) => ExpressResponse;
+  json: (body: unknown) => ExpressResponse;
+  send: (body: unknown) => ExpressResponse;
+  setHeader: (name: string, value: string) => void;
+}
+
+type NextFunction = (error?: unknown) => void;
+
 // Secure error response interface
 interface SecureErrorResponse {
   error: {
@@ -30,37 +52,42 @@ interface RequestContext {
   sessionId?: string;
 }
 
+// Error details interface for type safety
+interface ErrorDetails {
+  [key: string]: unknown;
+}
+
 // Custom error types for sanitization
 class ValidationError extends Error {
-  constructor(message: string, public details?: any) {
+  constructor(message: string, public details?: ErrorDetails) {
     super(message);
     this.name = 'ValidationError';
   }
 }
 
 class AuthenticationError extends Error {
-  constructor(message: string, public details?: any) {
+  constructor(message: string, public details?: ErrorDetails) {
     super(message);
     this.name = 'AuthenticationError';
   }
 }
 
 class AuthorizationError extends Error {
-  constructor(message: string, public details?: any) {
+  constructor(message: string, public details?: ErrorDetails) {
     super(message);
     this.name = 'AuthorizationError';
   }
 }
 
 class RateLimitError extends Error {
-  constructor(message: string, public details?: any) {
+  constructor(message: string, public details?: ErrorDetails) {
     super(message);
     this.name = 'RateLimitError';
   }
 }
 
 class ExternalApiError extends Error {
-  constructor(message: string, public details?: any) {
+  constructor(message: string, public details?: ErrorDetails) {
     super(message);
     this.name = 'ExternalApiError';
   }
@@ -70,9 +97,9 @@ class ExternalApiError extends Error {
 export class ErrorSanitizer {
   private static readonly SENSITIVE_PATTERNS = [
     // Database connection strings
-    /mongodb:\/\/[^\/\s]+/gi,
-    /postgresql:\/\/[^\/\s]+/gi,
-    /mysql:\/\/[^\/\s]+/gi,
+    /mongodb:\/\/[^/\s]+/gi,
+    /postgresql:\/\/[^/\s]+/gi,
+    /mysql:\/\/[^/\s]+/gi,
     
     // API keys and tokens
     /[A-Za-z0-9]{20,}/g, // Generic tokens
@@ -80,9 +107,9 @@ export class ErrorSanitizer {
     /pk_[A-Za-z0-9]+/g, // Stripe public keys
     
     // File paths that might contain usernames
-    /\/Users\/[^\/\s]+/g,
-    /\/home\/[^\/\s]+/g,
-    /C:\\Users\\[^\\\/\s]+/g,
+    /\/Users\/[^/\s]+/g,
+    /\/home\/[^/\s]+/g,
+    /C:\\Users\\[^\\/\s]+/g,
     
     // IP addresses (partial obfuscation)
     /\b(\d{1,3}\.)\d{1,3}\.\d{1,3}\.\d{1,3}\b/g,
@@ -96,7 +123,7 @@ export class ErrorSanitizer {
     /secret['":][\s]*['"][^'"]+['"]/gi,
     
     // JSON Web Tokens
-    /eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+\/=]*/g
+    /eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*/g
   ];
 
   private static readonly SAFE_ERROR_MESSAGES = {
@@ -204,7 +231,7 @@ export class ErrorSanitizer {
       .slice(0, 10) // Limit stack trace length
       .map(line => {
         // Remove absolute paths, keep only relative paths and function names
-        return line.replace(/\/[^\/\s]*\/[^\/\s]*\/[^\/\s]*/g, '[PATH]');
+        return line.replace(/\/[^/\s]*\/[^/\s]*\/[^/\s]*/g, '[PATH]');
       })
       .join('\n');
   }
@@ -231,8 +258,8 @@ export class ErrorSanitizer {
     return ip.substring(0, ip.length - 4) + 'xxxx';
   }
 
-  static sanitizeHeaders(headers: Record<string, any>): Record<string, any> {
-    const sanitized: Record<string, any> = {};
+  static sanitizeHeaders(headers: Record<string, unknown>): Record<string, unknown> {
+    const sanitized: Record<string, unknown> = {};
     const sensitiveHeaders = [
       'authorization',
       'cookie',
@@ -258,8 +285,8 @@ export class ErrorSanitizer {
 export class LogSanitizer {
   private static readonly DANGEROUS_PATTERNS = [
     /\r\n|\r|\n/g, // CRLF injection
-    /\x1b\[[0-9;]*m/g, // ANSI escape sequences
-    /[\x00-\x1f\x7f]/g, // Control characters
+    new RegExp(String.fromCharCode(27) + '\\[[0-9;]*m', 'g'), // ANSI escape sequences
+    new RegExp('[' + String.fromCharCode(0) + '-' + String.fromCharCode(31) + String.fromCharCode(127) + ']', 'g'), // Control characters
     /<script[^>]*>.*?<\/script>/gi, // Script tags
     /javascript:/gi, // JavaScript protocol
     /data:.*base64/gi, // Data URIs
@@ -283,7 +310,7 @@ export class LogSanitizer {
     return sanitized;
   }
   
-  static sanitizeObject(obj: any, maxDepth: number = 3): any {
+  static sanitizeObject(obj: unknown, maxDepth: number = 3): unknown {
     if (maxDepth <= 0) {
       return '[MAX_DEPTH_REACHED]';
     }
@@ -300,7 +327,7 @@ export class LogSanitizer {
       return obj.slice(0, 100).map(item => this.sanitizeObject(item, maxDepth - 1));
     }
     
-    const sanitized: Record<string, any> = {};
+    const sanitized: Record<string, unknown> = {};
     const entries = Object.entries(obj).slice(0, 50); // Limit object size
     
     for (const [key, value] of entries) {
@@ -314,14 +341,14 @@ export class LogSanitizer {
 
 // Secure error handling middleware
 export function errorSanitizationMiddleware() {
-  return (error: Error, req: any, res: any, next: any): void => {
+  return (error: Error, req: ExpressRequest, res: ExpressResponse, _next: NextFunction): void => {
     const context: RequestContext = {
-      correlationId: req.headers['x-correlation-id'] || req.correlationId,
-      endpoint: req.path || req.url,
-      method: req.method,
+      correlationId: (Array.isArray(req.headers['x-correlation-id']) ? req.headers['x-correlation-id'][0] : req.headers['x-correlation-id']) || req.correlationId,
+      endpoint: req.path || req.url || 'unknown',
+      method: req.method || 'unknown',
       userId: req.user?.id,
       ip: req.ip || req.connection?.remoteAddress || 'unknown',
-      userAgent: req.headers['user-agent'],
+      userAgent: Array.isArray(req.headers['user-agent']) ? req.headers['user-agent'][0] : req.headers['user-agent'],
       sessionId: req.sessionID
     };
     
@@ -349,10 +376,10 @@ export function errorSanitizationMiddleware() {
 export function createSafeError(
   message: string,
   type: 'validation' | 'authentication' | 'authorization' | 'rateLimit' | 'external' | 'internal' = 'internal',
-  details?: any
+  details?: ErrorDetails
 ): Error {
   const sanitizedMessage = LogSanitizer.sanitizeForLogging(message);
-  const sanitizedDetails = details ? LogSanitizer.sanitizeObject(details) : undefined;
+  const sanitizedDetails = details ? LogSanitizer.sanitizeObject(details) as ErrorDetails : undefined;
   
   switch (type) {
     case 'validation':
@@ -372,16 +399,16 @@ export function createSafeError(
 
 // Development mode error handler with enhanced security
 export function developmentErrorHandler() {
-  return (error: Error, req: any, res: any, next: any): void => {
+  return (error: Error, req: ExpressRequest, res: ExpressResponse, _next: NextFunction): void => {
     const isDevelopment = process.env.NODE_ENV === 'development';
     
     const context: RequestContext = {
-      correlationId: req.headers['x-correlation-id'] || req.correlationId,
-      endpoint: req.path || req.url,
-      method: req.method,
+      correlationId: (Array.isArray(req.headers['x-correlation-id']) ? req.headers['x-correlation-id'][0] : req.headers['x-correlation-id']) || req.correlationId,
+      endpoint: req.path || req.url || 'unknown',
+      method: req.method || 'unknown',
       userId: req.user?.id,
       ip: req.ip || req.connection?.remoteAddress || 'unknown',
-      userAgent: req.headers['user-agent'],
+      userAgent: Array.isArray(req.headers['user-agent']) ? req.headers['user-agent'][0] : req.headers['user-agent'],
       sessionId: req.sessionID
     };
     

@@ -7,6 +7,9 @@
 import { EventEmitter } from 'events';
 import logger from '../lib/logger.js';
 
+// For Node.js fetch (18.0+ built-in, earlier versions need node-fetch)
+declare const fetch: typeof global.fetch;
+
 // Security event types
 export enum SecurityEventType {
   AUTHENTICATION_FAILURE = 'authentication_failure',

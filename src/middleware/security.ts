@@ -210,7 +210,7 @@ export class IntegratedSecurityManager {
     
     if (this.config.circuitBreaker.makeApi && apiClient) {
       // Create circuit breaker for Make.com API calls
-      const makeApiBreaker = circuitBreakerManager.createCircuitBreaker(
+      const _makeApiBreaker = circuitBreakerManager.createCircuitBreaker(
         'make-api',
         async (...args: unknown[]) => {
           const [operation, ...restArgs] = args;

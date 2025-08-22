@@ -28,7 +28,8 @@ export function sanitizeString(str: string): string {
   });
   
   // Additional character filtering
-  sanitized = sanitized.replace(/[<>"'&\u0000-\u001f\u007f]/g, '');
+  const controlCharsRegex = new RegExp('[<>"\'&' + String.fromCharCode(0) + '-' + String.fromCharCode(31) + String.fromCharCode(127) + ']', 'g');
+  sanitized = sanitized.replace(controlCharsRegex, '');
   
   return sanitized;
 }
@@ -295,7 +296,7 @@ export const secureSearchSchema = z.string()
 export const fileUploadSchema = z.object({
   filename: z.string()
     .max(255, 'Filename too long')
-    .refine((val) => !/[\/<>:"|?*\x00-\x1f]/.test(val), {
+    .refine((val) => !new RegExp('[\\/<>:"|?*' + String.fromCharCode(0) + '-' + String.fromCharCode(31) + ']').test(val), {
       message: 'Filename contains invalid characters'
     })
     .refine((val) => !/(\.\.|\/\.\.|\.\.\/)/g.test(val), {

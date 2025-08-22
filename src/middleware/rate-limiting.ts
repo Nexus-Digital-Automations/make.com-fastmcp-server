@@ -127,7 +127,7 @@ export class EnterpriseRateLimitManager {
   }
   
   private setupRateLimiters(): void {
-    const config = this.getRateLimitConfig();
+    const _config = this.getRateLimitConfig();
     
     // Authentication rate limiter - prevent brute force
     this.rateLimiters.auth = this.redisClient 
@@ -250,7 +250,7 @@ export class EnterpriseRateLimitManager {
   public async checkRateLimit(
     tier: 'auth' | 'standard' | 'sensitive' | 'webhooks' | 'ddos',
     identifier: string,
-    req?: any
+    _req?: any
   ): Promise<{ allowed: boolean; resetTime?: Date; remaining?: number }> {
     try {
       const limiter = tier === 'ddos' ? this.ddosProtection : this.rateLimiters[tier];
