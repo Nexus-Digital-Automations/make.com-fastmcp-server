@@ -14626,9 +14626,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755847974887_4103oytki",
+      "title": "Fix scenarios test validation failures",
+      "description": "Multiple test failures in tests/unit/tools/scenarios.test.ts with expect().rejects.toThrow() not working - promises resolving instead of rejecting. Test assertion logic issues need to be fixed.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T07:32:54.887Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755847510133_1_general_7c3ee381",
+      "started_at": "2025-08-22T07:33:00.818Z",
+      "claimed_by": "development_session_1755847510133_1_general_7c3ee381",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755847510133_1_general_7c3ee381",
+          "role": "primary",
+          "assignedAt": "2025-08-22T07:33:00.818Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T07:34:40.654Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T07:34:40.656Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 328,
-  "last_completion": "2025-08-22T07:30:28.376Z",
+  "total_completed": 329,
+  "last_completion": "2025-08-22T07:34:40.656Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
