@@ -6,12 +6,19 @@
 
 import helmet from 'helmet';
 import { doubleCsrf } from 'csrf-csrf';
+import type { Request, Response, NextFunction as ExpressNextFunction } from 'express';
 import logger from '../lib/logger.js';
 
-// Compatible request/response types for middleware - using any for Express compatibility
-type HttpRequest = any;
-type HttpResponse = any;
-type NextFunction = (error?: unknown) => void;
+// Express-compatible types for middleware
+interface ExtendedRequest extends Request {
+  sessionID?: string;
+  user?: { id: string };
+  csrfToken?: () => string;
+}
+
+type HttpRequest = ExtendedRequest;
+type HttpResponse = Response;
+type NextFunction = ExpressNextFunction;
 
 // Security configuration interface
 interface SecurityConfig {
@@ -167,14 +174,15 @@ export class SecurityHeadersManager {
           maxAge: 3600000 // 1 hour
         },
         ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
-        getCsrfTokenFromRequest: (req: HttpRequest) => {
+        getCsrfTokenFromRequest: (req: HttpRequest): string => {
           // Extract CSRF token from multiple possible locations
-          return req.body?._csrf ||
-                 req.query?._csrf ||
-                 req.headers?.['csrf-token'] ||
-                 req.headers?.['x-csrf-token'] ||
-                 req.headers?.['x-xsrf-token'] ||
-                 '';
+          const token = req.body?._csrf ||
+                       req.query?._csrf ||
+                       req.headers?.['csrf-token'] ||
+                       req.headers?.['x-csrf-token'] ||
+                       req.headers?.['x-xsrf-token'] ||
+                       '';
+          return String(token || '');
         },
         errorConfig: {
           statusCode: 403,
@@ -219,7 +227,7 @@ export class SecurityHeadersManager {
         const csrfToken = this.csrfUtilities.generateCsrfToken(req, res);
         
         // Add token to request for access
-        (req as any).csrfToken = (): string => csrfToken;
+        req.csrfToken = (): string => csrfToken;
         
         // Add token to response locals for templates
         if (res.locals) {
@@ -234,7 +242,11 @@ export class SecurityHeadersManager {
         if (err) {
           logger.warn('CSRF protection triggered', {
             ip: req.ip,
-            userAgent: req.headers['user-agent']?.substring(0, 100),
+            userAgent: ((): string => {
+              const ua = req.headers['user-agent'];
+              const userAgent = typeof ua === 'string' ? ua : Array.isArray(ua) ? ua[0] : '';
+              return userAgent?.substring(0, 100) || '';
+            })(),
             endpoint: req.path,
             method: req.method,
             error: err instanceof Error ? err.message : String(err)
@@ -323,19 +335,9 @@ export class SecurityHeadersManager {
   // Content type validation middleware
   public getContentTypeValidation(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
     return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
-      const request = req as {
-        method?: string;
-        headers: Record<string, string | string[] | undefined>;
-        ip?: string;
-        path?: string;
-      };
-      const response = res as {
-        status(code: number): { json(body: unknown): void };
-      };
-      
       // Only validate content type for requests with body
-      if (request.method && ['POST', 'PUT', 'PATCH'].includes(request.method)) {
-        const contentType = request.headers['content-type'];
+      if (req.method && ['POST', 'PUT', 'PATCH'].includes(req.method)) {
+        const contentType = req.headers['content-type'];
         const contentTypeString = Array.isArray(contentType) ? contentType[0] : contentType;
         
         // Allow common content types
@@ -349,18 +351,19 @@ export class SecurityHeadersManager {
         if (contentTypeString && !allowedTypes.some(type => contentTypeString.includes(type))) {
           logger.warn('Invalid content type detected', {
             contentType: contentTypeString,
-            ip: request.ip,
-            endpoint: request.path,
-            method: request.method
+            ip: req.ip,
+            endpoint: req.path,
+            method: req.method
           });
           
-          return response.status(415).json({
+          res.status(415).json({
             error: {
               code: 'UNSUPPORTED_MEDIA_TYPE',
               message: 'Content type not supported',
               allowedTypes
             }
           });
+          return;
         }
       }
       
@@ -384,13 +387,14 @@ export class SecurityHeadersManager {
           endpoint: req.path
         });
         
-        return res.status(413).json({
+        res.status(413).json({
           error: {
             code: 'PAYLOAD_TOO_LARGE',
             message: 'Request payload too large',
             maxSize: `${maxSize / (1024 * 1024)}MB`
           }
         });
+        return;
       }
       
       next();

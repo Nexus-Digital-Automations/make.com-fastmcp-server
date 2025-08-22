@@ -5,6 +5,7 @@
  */
 
 // Import all security middleware components
+import type { RequestHandler, ErrorRequestHandler } from 'express';
 import { rateLimitManager, createRateLimitMiddleware, ddosProtectionMiddleware } from './rate-limiting.js';
 import { securityHeadersManager, createSecurityMiddleware, createCSRFMiddleware } from './security-headers.js';
 import { errorSanitizationMiddleware, developmentErrorHandler } from './error-sanitization.js';
@@ -12,8 +13,8 @@ import { ddosProtection, circuitBreakerManager, createDDoSProtectionMiddleware }
 import { securityMonitoring, createSecurityMonitoringMiddleware } from './security-monitoring.js';
 import logger from '../lib/logger.js';
 
-// Middleware function type - using any for Express compatibility
-type MiddlewareFunction = any;
+// Middleware function type for Express compatibility
+type MiddlewareFunction = RequestHandler | ErrorRequestHandler;
 
 // Security configuration interface
 interface SecurityConfig {

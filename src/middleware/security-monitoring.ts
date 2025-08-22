@@ -5,15 +5,25 @@
  */
 
 import { EventEmitter } from 'events';
+import type { Request, Response, NextFunction as ExpressNextFunction } from 'express';
 import logger from '../lib/logger.js';
 
 // For Node.js fetch (18.0+ built-in, earlier versions need node-fetch)
 declare const fetch: typeof global.fetch;
 
-// Compatible request/response types for middleware - using any for Express compatibility
-type HttpRequest = any;
-type HttpResponse = any;
-type NextFunction = (error?: unknown) => void;
+// Express-compatible types for middleware
+interface ExtendedRequest extends Request {
+  securityContext?: {
+    correlationId: string;
+    startTime: number;
+    ipAddress?: string;
+    userAgent?: string;
+  };
+}
+
+type HttpRequest = ExtendedRequest;
+type HttpResponse = Response;
+type NextFunction = ExpressNextFunction;
 
 // Security event types
 export enum SecurityEventType {
@@ -370,7 +380,7 @@ export class SecurityMonitoringSystem extends EventEmitter {
     });
   }
   
-  private async sendAlertToChannel(channel: string, alert: unknown): Promise<void> {
+  private async sendAlertToChannel(channel: string, alert: { type: string; [key: string]: unknown }): Promise<void> {
     try {
       if (channel.startsWith('http')) {
         // Webhook notification
@@ -390,7 +400,7 @@ export class SecurityMonitoringSystem extends EventEmitter {
         // Email notification (placeholder - implement with your email service)
         logger.info('Email alert would be sent', { 
           email: channel, 
-          alertType: (alert as any).type 
+          alertType: alert.type 
         });
       }
     } catch (error) {
@@ -494,11 +504,14 @@ export function createSecurityMonitoringMiddleware(): (req: HttpRequest, res: Ht
     const startTime = Date.now();
     
     // Record request start
+    const correlationIdHeader = req.headers['x-correlation-id'];
+    const userAgentHeader = req.headers['user-agent'];
+    
     req.securityContext = {
-      correlationId: req.headers['x-correlation-id'] || securityMonitoring['generateEventId'](),
+      correlationId: (Array.isArray(correlationIdHeader) ? correlationIdHeader[0] : correlationIdHeader) || securityMonitoring['generateEventId'](),
       startTime,
       ipAddress: req.ip || req.connection?.remoteAddress,
-      userAgent: req.headers['user-agent']
+      userAgent: Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader
     };
     
     // Track response completion
