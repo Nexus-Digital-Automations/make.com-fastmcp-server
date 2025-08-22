@@ -3,7 +3,7 @@
  * Standardized validation patterns and helpers
  */
 
-import { z, ZodSchema, ZodError } from 'zod';
+import { z, ZodSchema, ZodError, ZodIssue } from 'zod';
 import { UserError } from 'fastmcp';
 import { ApiError } from '../types/api-client.js';
 
@@ -56,11 +56,11 @@ export function validateInput<T>(
     };
   } catch (error) {
     if (error instanceof ZodError) {
-      const validationErrors: ValidationError[] = error.issues.map((err: any) => ({
-        field: err.path.join('.') || 'root',
+      const validationErrors: ValidationError[] = error.issues.map((err: ZodIssue) => ({
+        field: err.path.map(p => String(p)).join('.') || 'root',
         message: err.message,
         code: err.code,
-        value: err.path.length > 0 ? getNestedValue(data, err.path) : data,
+        value: err.path.length > 0 ? getNestedValue(data, err.path.map(p => String(p))) : data,
       }));
 
       return {
@@ -288,10 +288,10 @@ export function isEmpty(value: unknown): boolean {
  * @param path - Path array
  * @returns Nested value
  */
-function getNestedValue(obj: unknown, path: (string | number)[]): unknown {
+function getNestedValue(obj: unknown, path: string[]): unknown {
   return path.reduce((current, key) => {
     if (current && typeof current === 'object' && key in current) {
-      return (current as Record<string | number, unknown>)[key];
+      return (current as Record<string, unknown>)[key];
     }
     return undefined;
   }, obj);
