@@ -200,6 +200,99 @@ const WorkflowInstallSchema = z.object({
 }).strict();
 
 /**
+ * Build search parameters for SDK apps marketplace
+ */
+function buildSdkAppSearchParams(input: any): Record<string, unknown> {
+  const { query, category, publisher, verified, rating, features, compatibility, sortBy, sortOrder, limit, offset } = input;
+  
+  const params: Record<string, unknown> = {
+    limit,
+    offset,
+    sortBy,
+    sortOrder,
+  };
+
+  if (query) {params.q = query;}
+  if (category !== 'all') {params.category = category;}
+  if (publisher) {params.publisher = publisher;}
+  if (verified !== undefined) {params.verified = verified;}
+  if (rating) {params.minRating = rating;}
+  if (features.length > 0) {params.features = features.join(',');}
+  if (compatibility?.platform) {params.platform = compatibility.platform;}
+  if (compatibility?.region) {params.region = compatibility.region;}
+  if (compatibility?.language) {params.language = compatibility.language;}
+
+  return params;
+}
+
+/**
+ * Generate marketplace analysis from apps
+ */
+function generateMarketplaceAnalysis(apps: any[], metadata: any): any {
+  return {
+    totalApps: metadata?.total || apps.length,
+    categoryBreakdown: apps.reduce((acc: Record<string, number>, app) => {
+      acc[app.category] = (acc[app.category] || 0) + 1;
+      return acc;
+    }, {}),
+    publisherBreakdown: apps.reduce((acc: Record<string, number>, app) => {
+      acc[app.publisher] = (acc[app.publisher] || 0) + 1;
+      return acc;
+    }, {}),
+    verificationStatus: {
+      verified: apps.filter(a => a.security.verified).length,
+      unverified: apps.filter(a => !a.security.verified).length,
+    },
+    ratingDistribution: {
+      excellent: apps.filter(a => a.usage.rating >= 4.5).length,
+      good: apps.filter(a => a.usage.rating >= 3.5 && a.usage.rating < 4.5).length,
+      average: apps.filter(a => a.usage.rating >= 2.5 && a.usage.rating < 3.5).length,
+      poor: apps.filter(a => a.usage.rating < 2.5).length,
+    },
+    popularApps: apps
+      .sort((a, b) => b.usage.installations - a.usage.installations)
+      .slice(0, 5)
+      .map(a => ({
+        id: a.id,
+        name: a.name,
+        publisher: a.publisher,
+        installations: a.usage.installations,
+        rating: a.usage.rating,
+        category: a.category,
+      })),
+  };
+}
+
+/**
+ * Transform app data for response
+ */
+function transformAppForResponse(app: any): any {
+  return {
+    id: app.id,
+    name: app.name,
+    description: app.description,
+    version: app.version,
+    publisher: app.publisher,
+    category: app.category,
+    status: app.status,
+    usage: app.usage,
+    metadata: {
+      ...app.metadata,
+      screenshots: app.metadata.screenshots.slice(0, 3), // Limited screenshots
+    },
+    security: app.security,
+    compatibility: app.compatibility,
+    integration: {
+      ...app.integration,
+      endpoints: app.integration.endpoints.length,
+      webhooks: app.integration.webhooks.length,
+      triggers: app.integration.triggers.length,
+      actions: app.integration.actions.length,
+    },
+  };
+}
+
+/**
  * Helper function to add search SDK apps tool
  */
 function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -241,22 +334,7 @@ function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
       });
 
       try {
-        const params: Record<string, unknown> = {
-          limit,
-          offset,
-          sortBy,
-          sortOrder,
-        };
-
-        if (query) {params.q = query;}
-        if (category !== 'all') {params.category = category;}
-        if (publisher) {params.publisher = publisher;}
-        if (verified !== undefined) {params.verified = verified;}
-        if (rating) {params.minRating = rating;}
-        if (features.length > 0) {params.features = features.join(',');}
-        if (compatibility?.platform) {params.platform = compatibility.platform;}
-        if (compatibility?.region) {params.region = compatibility.region;}
-        if (compatibility?.language) {params.language = compatibility.language;}
+        const params = buildSdkAppSearchParams(input);
 
         const response = await apiClient.get('/sdk-apps/marketplace', { params });
 
@@ -274,63 +352,10 @@ function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
         });
 
         // Create marketplace analysis
-        const analysis = {
-          totalApps: metadata?.total || apps.length,
-          categoryBreakdown: apps.reduce((acc: Record<string, number>, app) => {
-            acc[app.category] = (acc[app.category] || 0) + 1;
-            return acc;
-          }, {}),
-          publisherBreakdown: apps.reduce((acc: Record<string, number>, app) => {
-            acc[app.publisher] = (acc[app.publisher] || 0) + 1;
-            return acc;
-          }, {}),
-          verificationStatus: {
-            verified: apps.filter(a => a.security.verified).length,
-            unverified: apps.filter(a => !a.security.verified).length,
-          },
-          ratingDistribution: {
-            excellent: apps.filter(a => a.usage.rating >= 4.5).length,
-            good: apps.filter(a => a.usage.rating >= 3.5 && a.usage.rating < 4.5).length,
-            average: apps.filter(a => a.usage.rating >= 2.5 && a.usage.rating < 3.5).length,
-            poor: apps.filter(a => a.usage.rating < 2.5).length,
-          },
-          popularApps: apps
-            .sort((a, b) => b.usage.installations - a.usage.installations)
-            .slice(0, 5)
-            .map(a => ({
-              id: a.id,
-              name: a.name,
-              publisher: a.publisher,
-              installations: a.usage.installations,
-              rating: a.usage.rating,
-              category: a.category,
-            })),
-        };
+        const analysis = generateMarketplaceAnalysis(apps, metadata);
 
         return formatSuccessResponse({
-          apps: apps.map(app => ({
-            id: app.id,
-            name: app.name,
-            description: app.description,
-            version: app.version,
-            publisher: app.publisher,
-            category: app.category,
-            status: app.status,
-            usage: app.usage,
-            metadata: {
-              ...app.metadata,
-              screenshots: app.metadata.screenshots.slice(0, 3), // Limited screenshots
-            },
-            security: app.security,
-            compatibility: app.compatibility,
-            integration: {
-              ...app.integration,
-              endpoints: app.integration.endpoints.length,
-              webhooks: app.integration.webhooks.length,
-              triggers: app.integration.triggers.length,
-              actions: app.integration.actions.length,
-            },
-          })),
+          apps: apps.map(transformAppForResponse),
           analysis,
           pagination: {
             total: metadata?.total || apps.length,

@@ -19675,9 +19675,157 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755898521379_luwewvzmg",
+      "title": "Refactor notification-manager.ts execute function - complexity 32 violation",
+      "description": "Break down the 32-complexity execute function in notification-manager.ts (line 822). Extract helper functions to reduce complexity below 25. This is the third highest complexity violation.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T21:35:21.380Z",
+      "auto_research_created": false,
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755898437583_1_general_e32f5a76",
+          "role": "primary",
+          "assignedAt": "2025-08-22T21:35:30.060Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T22:22:27.920Z",
+          "reason": "Task stale for 47 minutes"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T22:23:03.517Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T22:23:03.518Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755898402797_8yvu1b136",
+      "title": "Refactor sdk.ts execute function - complexity 36 violation",
+      "description": "Break down the 36-complexity execute function in sdk.ts (line 849). Extract helper functions to reduce complexity below 25. This is the second highest complexity violation after the datastructure-manager delete function.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T21:33:22.797Z",
+      "auto_research_created": false,
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755897154932_1_general_0ba10dfa",
+          "role": "primary",
+          "assignedAt": "2025-08-22T21:33:30.532Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T22:22:27.920Z",
+          "reason": "Task stale for 49 minutes"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T22:23:08.726Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T22:23:08.727Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755898030418_pkhqjgvc3",
+      "title": "Refactor datastructure-manager.ts delete function - complexity 42 violation",
+      "description": "Break down the 42-complexity execute function in delete data structure tool (line 703). Extract helper functions to reduce complexity below 25. This is now the highest complexity violation after update function success.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T21:27:10.418Z",
+      "auto_research_created": false,
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755898057975",
+          "action": "claimed",
+          "timestamp": "2025-08-22T21:27:37.975Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T22:22:27.920Z",
+          "reason": "Task stale for 55 minutes"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T22:23:13.422Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T22:23:13.423Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 448,
-  "last_completion": "2025-08-22T21:32:36.855Z",
+  "total_completed": 451,
+  "last_completion": "2025-08-22T22:23:13.423Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
