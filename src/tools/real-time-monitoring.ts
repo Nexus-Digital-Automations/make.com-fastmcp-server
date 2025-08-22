@@ -582,7 +582,7 @@ class RealTimeExecutionMonitor extends EventEmitter {
     );
 
     return {
-      executionId: session.executionId,
+      executionId: session.executionId || '',
       scenarioId: session.scenarioId,
       status,
       startTime,
@@ -637,6 +637,11 @@ class RealTimeExecutionMonitor extends EventEmitter {
       }
 
       const moduleProgress = moduleMap.get(moduleId);
+      
+      // Guard against undefined moduleProgress
+      if (!moduleProgress) {
+        continue;
+      }
       
       // Update based on log information
       const metrics = log.metrics as Record<string, unknown> || {};
