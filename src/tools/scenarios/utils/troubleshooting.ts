@@ -145,8 +145,10 @@ export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFin
       const issueKey = `${diagnostic.category || 'unknown'}:${diagnostic.title || 'unknown'}`;
       if (commonIssuesMap.has(issueKey)) {
         const issue = commonIssuesMap.get(issueKey);
-        issue.count++;
-        issue.affectedScenarios.push(analysis.scenarioId);
+        if (issue) {
+          issue.count++;
+          issue.affectedScenarios.push(analysis.scenarioId);
+        }
       } else {
         commonIssuesMap.set(issueKey, {
           category: diagnostic.category || 'unknown',
@@ -228,9 +230,27 @@ export function generateSystemOverview(
  * Generate action plan from consolidated findings
  */
 export function generateActionPlan(findings: ConsolidatedFindings, includeTimeline: boolean): ActionPlan {
-  const immediate = [];
-  const shortTerm = [];
-  const longTerm = [];
+  const immediate: Array<{
+    priority: string;
+    action: string;
+    description: string;
+    estimatedTime: string;
+    estimatedImpact: string;
+  }> = [];
+  const shortTerm: Array<{
+    priority: string;
+    action: string;
+    description: string;
+    estimatedTime: string;
+    estimatedImpact: string;
+  }> = [];
+  const longTerm: Array<{
+    priority: string;
+    action: string;
+    description: string;
+    estimatedTime: string;
+    estimatedImpact: string;
+  }> = [];
 
   // Critical issues need immediate attention
   if (findings.criticalScenarios > 0) {

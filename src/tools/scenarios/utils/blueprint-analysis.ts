@@ -269,7 +269,10 @@ export function extractBlueprintConnections(blueprint: unknown, includeOptional:
           if (!serviceMap.has(connection.service)) {
             serviceMap.set(connection.service, []);
           }
-          serviceMap.get(connection.service).push(module.id);
+          const serviceModules = serviceMap.get(connection.service);
+          if (serviceModules) {
+            serviceModules.push(module.id);
+          }
         }
       }
     });

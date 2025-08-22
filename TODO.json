@@ -28,6 +28,23 @@
       "auto_created_for": "task_1755871773159_nxdykhwrk"
     },
     {
+      "id": "task_1755872553881_8l19f47n5",
+      "title": "Fix TypeScript strict mode errors in scenarios utils files",
+      "description": "Fix all TypeScript compilation errors in blueprint-analysis.ts and troubleshooting.ts including undefined property access and array typing issues",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T14:22:33.881Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755871906956_gre3lehm1",
       "title": "Fix TypeScript strict mode errors in AI governance engine module",
       "description": "Fix compilation errors in insights.ts, policy-optimization.ts, risk-assessment.ts, and tools/index.ts - including array push errors, undefined property access, and type assignment issues",
