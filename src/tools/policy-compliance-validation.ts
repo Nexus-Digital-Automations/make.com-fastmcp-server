@@ -285,7 +285,7 @@ class PolicyComplianceManager {
  */
 class PolicyComplianceValidator {
   private readonly componentLogger: ReturnType<typeof logger.child>;
-  private readonly complianceManager: PolicyComplianceManager;
+  public readonly complianceManager: PolicyComplianceManager;
 
   constructor(private readonly apiClient: MakeApiClient) {
     this.componentLogger = logger.child({ component: 'PolicyComplianceValidator' });

@@ -294,7 +294,7 @@ interface SessionInfo {
 
 class ZeroTrustAuthEngine {
   private static instance: ZeroTrustAuthEngine;
-  private readonly sessions: Map<string, SessionInfo> = new Map();
+  public readonly sessions: Map<string, SessionInfo> = new Map();
   private readonly userBaselines: Map<string, UserBehaviorBaseline> = new Map();
   private readonly deviceFingerprints: Map<string, Record<string, unknown>> = new Map();
 
@@ -324,7 +324,7 @@ class ZeroTrustAuthEngine {
   /**
    * Calculate risk score based on multiple factors
    */
-  private calculateRiskScore(factors: {
+  public calculateRiskScore(factors: {
     userBehaviorScore: number;
     deviceTrustScore: number;
     networkScore: number;

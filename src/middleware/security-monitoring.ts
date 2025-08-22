@@ -311,7 +311,7 @@ export class SecurityMonitoringSystem extends EventEmitter {
     return eventId;
   }
   
-  private generateEventId(): string {
+  public generateEventId(): string {
     return `sec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
   

@@ -269,7 +269,7 @@ export class EnterpriseRateLimitManager {
     };
   }
   
-  private getClientIP(req: HttpRequest): string {
+  public getClientIP(req: HttpRequest): string {
     const forwardedFor = req.headers['x-forwarded-for'];
     const forwardedIp = Array.isArray(forwardedFor) 
       ? forwardedFor[0] 

@@ -318,7 +318,7 @@ export class SecurityHeadersManager {
     }
   }
   
-  private isSensitiveEndpoint(path: string | undefined): boolean {
+  public isSensitiveEndpoint(path: string | undefined): boolean {
     const sensitivePatterns = [
       '/api/auth',
       '/api/users',
