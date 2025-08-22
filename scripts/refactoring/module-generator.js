@@ -1,1250 +1,1190 @@
 #!/usr/bin/env node
+
 /**
- * Module Generator Script for Make.com FastMCP Server Refactoring
- * 
- * This script generates a complete modular architecture structure for refactoring
- * large TypeScript files into maintainable, focused modules.
- * 
- * Usage:
- *   node scripts/refactoring/module-generator.js --name <module-name> --tools <tool1,tool2,...>
- * 
- * Example:
- *   node scripts/refactoring/module-generator.js --name folders --tools "list-folders,create-folder,update-folder"
+ * Automated Module Generator
+ * Creates complete modular structure with all necessary files
  */
 
-const fs = require('fs').promises;
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import readline from 'readline';
 
 class ModuleGenerator {
-  constructor() {
-    this.projectRoot = process.cwd();
-    this.templatesDir = path.join(__dirname, 'templates');
+  constructor(basePath = './src/tools') {
+    this.basePath = basePath;
   }
 
-  async generateModule(config) {
-    console.log(`🚀 Generating module: ${config.name}`);
-    console.log(`📝 Description: ${config.description || 'No description provided'}`);
-    console.log(`🔧 Tools: ${config.tools.join(', ')}`);
+  async generateModule(name, options = {}) {
+    const {
+      tools = [],
+      description = '',
+      hasTypes = true,
+      hasSchemas = true,
+      hasServices = true,
+      hasUtils = true
+    } = options;
+
+    const modulePath = path.join(this.basePath, name);
+    
+    // Create directory structure
+    this.createDirectoryStructure(modulePath, {
+      hasTypes,
+      hasSchemas,
+      hasServices,
+      hasUtils
+    });
+
+    // Generate files
+    if (hasTypes) {
+      this.generateTypesFile(modulePath, name, tools);
+    }
+    
+    if (hasSchemas) {
+      this.generateSchemasFile(modulePath, name, tools);
+    }
+
+    this.generateCoreFile(modulePath, name, tools, description);
+    
+    if (hasServices) {
+      this.generateServicesFile(modulePath, name);
+    }
+    
+    if (hasUtils) {
+      this.generateUtilsFile(modulePath, name);
+    }
+
+    this.generateToolsFile(modulePath, name, tools);
+    this.generateIndexFile(modulePath, name, { hasTypes, hasSchemas, hasServices, hasUtils });
+    this.generateTestFile(modulePath, name, tools);
+
+    console.log(`✅ Module '${name}' generated successfully at ${modulePath}`);
+    this.printModuleStructure(modulePath);
+    
+    return modulePath;
+  }
+
+  createDirectoryStructure(modulePath, options) {
+    const { hasTypes, hasSchemas, hasServices, hasUtils } = options;
+
+    // Create main module directory
+    fs.mkdirSync(modulePath, { recursive: true });
+
+    // Create subdirectories
+    if (hasTypes) fs.mkdirSync(path.join(modulePath, 'types'), { recursive: true });
+    if (hasSchemas) fs.mkdirSync(path.join(modulePath, 'schemas'), { recursive: true });
+    fs.mkdirSync(path.join(modulePath, 'core'), { recursive: true });
+    if (hasServices) fs.mkdirSync(path.join(modulePath, 'services'), { recursive: true });
+    if (hasUtils) fs.mkdirSync(path.join(modulePath, 'utils'), { recursive: true });
+    fs.mkdirSync(path.join(modulePath, 'tools'), { recursive: true });
+
+    console.log(`📁 Directory structure created for ${path.basename(modulePath)}`);
+  }
+
+  generateTypesFile(modulePath, name, tools) {
+    const content = `/**
+ * TypeScript type definitions for ${name} module
+ * Generated on ${new Date().toISOString()}
+ */
+
+import type { ToolContext } from '../../types/index.js';
+
+// Base interfaces for ${name} functionality
+export interface ${this.toPascalCase(name)}Config {
+  enabled: boolean;
+  settings: Record<string, unknown>;
+  metadata?: {
+    version: string;
+    createdAt: Date;
+    updatedAt?: Date;
+  };
+}
+
+export interface ${this.toPascalCase(name)}Context extends ToolContext {
+  config: ${this.toPascalCase(name)}Config;
+  // Add module-specific context properties
+}
+
+export interface ${this.toPascalCase(name)}Result {
+  success: boolean;
+  data?: unknown;
+  message?: string;
+  errors?: string[];
+  metadata?: {
+    operationId: string;
+    timestamp: Date;
+    duration?: number;
+  };
+}
+
+// Tool-specific interfaces
+${tools.map(tool => `
+export interface ${this.toPascalCase(tool)}Request {
+  // Define request structure for ${tool}
+  [key: string]: unknown;
+}
+
+export interface ${this.toPascalCase(tool)}Response extends ${this.toPascalCase(name)}Result {
+  // Define response structure for ${tool}
+}
+`).join('')}
+
+// Event types for module communication
+export type ${this.toPascalCase(name)}Event = 
+${tools.map(tool => `  | { type: '${tool.replace(/([A-Z])/g, '_$1').toLowerCase()}'; payload: ${this.toPascalCase(tool)}Request }`).join('\n')}
+  | { type: 'module_error'; payload: { error: string; context?: unknown } };
+
+// Module state interface
+export interface ${this.toPascalCase(name)}State {
+  initialized: boolean;
+  config: ${this.toPascalCase(name)}Config;
+  statistics: {
+    totalOperations: number;
+    successfulOperations: number;
+    failedOperations: number;
+    lastOperation?: Date;
+  };
+}
+`;
+
+    fs.writeFileSync(path.join(modulePath, 'types', 'index.ts'), content);
+    console.log(`✅ Generated types/index.ts`);
+  }
+
+  generateSchemasFile(modulePath, name, tools) {
+    const content = `/**
+ * Zod validation schemas for ${name} module
+ * Generated on ${new Date().toISOString()}
+ */
+
+import { z } from 'zod';
+
+// Base schemas
+export const ${this.toCamelCase(name)}ConfigSchema = z.object({
+  enabled: z.boolean(),
+  settings: z.record(z.unknown()),
+  metadata: z.object({
+    version: z.string(),
+    createdAt: z.date(),
+    updatedAt: z.date().optional()
+  }).optional()
+});
+
+export const ${this.toCamelCase(name)}ResultSchema = z.object({
+  success: z.boolean(),
+  data: z.unknown().optional(),
+  message: z.string().optional(),
+  errors: z.array(z.string()).optional(),
+  metadata: z.object({
+    operationId: z.string(),
+    timestamp: z.date(),
+    duration: z.number().optional()
+  }).optional()
+});
+
+// Tool-specific schemas
+${tools.map(tool => `
+export const ${this.toCamelCase(tool)}RequestSchema = z.object({
+  // Define validation schema for ${tool} request
+});
+
+export const ${this.toCamelCase(tool)}ResponseSchema = ${this.toCamelCase(name)}ResultSchema.extend({
+  // Extend with tool-specific response validation
+});
+`).join('')}
+
+// Validation helper functions
+export const validate${this.toPascalCase(name)}Config = (data: unknown) => {
+  return ${this.toCamelCase(name)}ConfigSchema.parse(data);
+};
+
+export const validate${this.toPascalCase(name)}Result = (data: unknown) => {
+  return ${this.toCamelCase(name)}ResultSchema.parse(data);
+};
+
+${tools.map(tool => `
+export const validate${this.toPascalCase(tool)}Request = (data: unknown) => {
+  return ${this.toCamelCase(tool)}RequestSchema.parse(data);
+};
+
+export const validate${this.toPascalCase(tool)}Response = (data: unknown) => {
+  return ${this.toCamelCase(tool)}ResponseSchema.parse(data);
+};
+`).join('')}
+`;
+
+    fs.writeFileSync(path.join(modulePath, 'schemas', 'index.ts'), content);
+    console.log(`✅ Generated schemas/index.ts`);
+  }
+
+  generateCoreFile(modulePath, name, tools, description) {
+    const content = `/**
+ * Core business logic for ${name} module
+ * ${description}
+ * Generated on ${new Date().toISOString()}
+ */
+
+import type { 
+  ${this.toPascalCase(name)}Config,
+  ${this.toPascalCase(name)}Context,
+  ${this.toPascalCase(name)}Result,
+  ${this.toPascalCase(name)}State,
+  ${this.toPascalCase(name)}Event
+} from '../types/index.js';
+
+import { 
+  validate${this.toPascalCase(name)}Config,
+  validate${this.toPascalCase(name)}Result
+} from '../schemas/index.js';
+
+import logger from '../../../lib/logger.js';
+
+/**
+ * Core ${name} module class
+ * Handles all business logic and state management
+ */
+export class ${this.toPascalCase(name)}Manager {
+  private state: ${this.toPascalCase(name)}State;
+  private context: ${this.toPascalCase(name)}Context;
+
+  constructor(context: ${this.toPascalCase(name)}Context) {
+    this.context = context;
+    this.state = {
+      initialized: false,
+      config: context.config,
+      statistics: {
+        totalOperations: 0,
+        successfulOperations: 0,
+        failedOperations: 0
+      }
+    };
+  }
+
+  /**
+   * Initialize the ${name} module
+   */
+  async initialize(): Promise<${this.toPascalCase(name)}Result> {
+    try {
+      // Validate configuration
+      validate${this.toPascalCase(name)}Config(this.context.config);
+
+      // Perform initialization logic
+      await this.setupModule();
+
+      this.state.initialized = true;
+      
+      logger.info(\`${this.toPascalCase(name)} module initialized successfully\`, {
+        module: '${name}',
+        config: this.context.config
+      });
+
+      return {
+        success: true,
+        message: '${this.toPascalCase(name)} module initialized successfully',
+        metadata: {
+          operationId: this.generateOperationId(),
+          timestamp: new Date()
+        }
+      };
+    } catch (error) {
+      logger.error(\`Failed to initialize ${name} module\`, {
+        error: error instanceof Error ? error.message : String(error),
+        module: '${name}'
+      });
+
+      return {
+        success: false,
+        message: 'Failed to initialize ${name} module',
+        errors: [error instanceof Error ? error.message : String(error)],
+        metadata: {
+          operationId: this.generateOperationId(),
+          timestamp: new Date()
+        }
+      };
+    }
+  }
+
+  /**
+   * Setup module-specific initialization logic
+   */
+  private async setupModule(): Promise<void> {
+    // Implement module-specific setup logic here
+    // This might include:
+    // - Setting up database connections
+    // - Initializing external service clients
+    // - Loading configuration data
+    // - Setting up event listeners
+  }
+
+${tools.map(tool => `
+  /**
+   * ${tool} operation handler
+   */
+  async ${this.toCamelCase(tool)}(request: unknown): Promise<${this.toPascalCase(name)}Result> {
+    const operationId = this.generateOperationId();
+    const startTime = Date.now();
 
     try {
-      // 1. Create directory structure
-      await this.createDirectoryStructure(config);
-      
-      // 2. Generate template files
-      await this.generateTemplateFiles(config);
-      
-      // 3. Update main exports
-      await this.updateMainExports(config);
-      
-      // 4. Generate test templates
-      await this.generateTestTemplates(config);
-      
-      // 5. Update documentation
-      await this.updateDocumentation(config);
-      
-      // 6. Setup initial git tracking
-      await this.setupGitTracking(config);
+      this.incrementStatistics('total');
 
-      console.log(`✅ Module ${config.name} generated successfully!`);
-      console.log(`\n📋 Next steps:`);
-      console.log(`   1. Implement core logic in src/tools/${config.name}/core/`);
-      console.log(`   2. Add tool implementations in src/tools/${config.name}/tools/`);
-      console.log(`   3. Write tests in tests/unit/tools/${config.name}/`);
-      console.log(`   4. Run: npm run test:${config.name}`);
-      console.log(`   5. Run: npm run lint:${config.name}`);
+      // Validate request
+      // const validRequest = validate${this.toPascalCase(tool)}Request(request);
 
+      logger.info(\`Starting ${tool} operation\`, {
+        operationId,
+        module: '${name}',
+        operation: '${tool}'
+      });
+
+      // Implement ${tool} business logic here
+      const result = await this.execute${this.toPascalCase(tool)}(request);
+
+      this.incrementStatistics('successful');
+
+      logger.info(\`${tool} operation completed successfully\`, {
+        operationId,
+        module: '${name}',
+        operation: '${tool}',
+        duration: Date.now() - startTime
+      });
+
+      return {
+        success: true,
+        data: result,
+        message: '${tool} completed successfully',
+        metadata: {
+          operationId,
+          timestamp: new Date(),
+          duration: Date.now() - startTime
+        }
+      };
     } catch (error) {
-      console.error(`❌ Error generating module ${config.name}:`, error.message);
+      this.incrementStatistics('failed');
+
+      logger.error(\`${tool} operation failed\`, {
+        operationId,
+        module: '${name}',
+        operation: '${tool}',
+        error: error instanceof Error ? error.message : String(error),
+        duration: Date.now() - startTime
+      });
+
+      return {
+        success: false,
+        message: \`${tool} operation failed\`,
+        errors: [error instanceof Error ? error.message : String(error)],
+        metadata: {
+          operationId,
+          timestamp: new Date(),
+          duration: Date.now() - startTime
+        }
+      };
+    }
+  }
+
+  /**
+   * Execute ${tool} business logic
+   */
+  private async execute${this.toPascalCase(tool)}(request: unknown): Promise<unknown> {
+    // TODO: Implement ${tool} business logic
+    // This is where the core functionality for ${tool} would be implemented
+    
+    throw new Error('${tool} implementation not yet completed');
+  }
+`).join('')}
+
+  /**
+   * Get current module state
+   */
+  getState(): ${this.toPascalCase(name)}State {
+    return { ...this.state };
+  }
+
+  /**
+   * Get module statistics
+   */
+  getStatistics() {
+    return { ...this.state.statistics };
+  }
+
+  /**
+   * Handle module events
+   */
+  async handleEvent(event: ${this.toPascalCase(name)}Event): Promise<${this.toPascalCase(name)}Result> {
+    try {
+      switch (event.type) {
+${tools.map(tool => `        case '${tool.replace(/([A-Z])/g, '_$1').toLowerCase()}':
+          return await this.${this.toCamelCase(tool)}(event.payload);`).join('\n')}
+        
+        case 'module_error':
+          logger.error('Module error event received', {
+            module: '${name}',
+            error: event.payload.error,
+            context: event.payload.context
+          });
+          return {
+            success: false,
+            message: 'Module error handled',
+            errors: [event.payload.error],
+            metadata: {
+              operationId: this.generateOperationId(),
+              timestamp: new Date()
+            }
+          };
+
+        default:
+          throw new Error(\`Unknown event type: \${(event as any).type}\`);
+      }
+    } catch (error) {
+      logger.error('Failed to handle event', {
+        module: '${name}',
+        event: event.type,
+        error: error instanceof Error ? error.message : String(error)
+      });
+
+      return {
+        success: false,
+        message: 'Failed to handle event',
+        errors: [error instanceof Error ? error.message : String(error)],
+        metadata: {
+          operationId: this.generateOperationId(),
+          timestamp: new Date()
+        }
+      };
+    }
+  }
+
+  /**
+   * Shutdown the module gracefully
+   */
+  async shutdown(): Promise<void> {
+    logger.info(\`Shutting down ${name} module\`, {
+      module: '${name}',
+      statistics: this.state.statistics
+    });
+
+    // Implement cleanup logic here
+    // - Close database connections
+    // - Clean up resources
+    // - Save state if needed
+
+    this.state.initialized = false;
+  }
+
+  /**
+   * Generate unique operation ID
+   */
+  private generateOperationId(): string {
+    return \`${name}_\${Date.now()}_\${Math.random().toString(36).substr(2, 9)}\`;
+  }
+
+  /**
+   * Increment operation statistics
+   */
+  private incrementStatistics(type: 'total' | 'successful' | 'failed'): void {
+    switch (type) {
+      case 'total':
+        this.state.statistics.totalOperations++;
+        this.state.statistics.lastOperation = new Date();
+        break;
+      case 'successful':
+        this.state.statistics.successfulOperations++;
+        break;
+      case 'failed':
+        this.state.statistics.failedOperations++;
+        break;
+    }
+  }
+}
+`;
+
+    fs.writeFileSync(path.join(modulePath, 'core', 'index.ts'), content);
+    console.log(`✅ Generated core/index.ts`);
+  }
+
+  generateServicesFile(modulePath, name) {
+    const content = `/**
+ * External service integrations for ${name} module
+ * Generated on ${new Date().toISOString()}
+ */
+
+import logger from '../../../lib/logger.js';
+
+/**
+ * Service client for external integrations
+ */
+export class ${this.toPascalCase(name)}ServiceClient {
+  private baseUrl: string;
+  private headers: Record<string, string>;
+
+  constructor(baseUrl: string, apiKey?: string) {
+    this.baseUrl = baseUrl;
+    this.headers = {
+      'Content-Type': 'application/json',
+      'User-Agent': 'Make-FastMCP-${this.toPascalCase(name)}/1.0'
+    };
+
+    if (apiKey) {
+      this.headers['Authorization'] = \`Bearer \${apiKey}\`;
+    }
+  }
+
+  /**
+   * Make HTTP request to external service
+   */
+  async makeRequest(endpoint: string, options: {
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    data?: unknown;
+    params?: Record<string, string>;
+  } = {}): Promise<unknown> {
+    const { method = 'GET', data, params } = options;
+
+    try {
+      const url = new URL(endpoint, this.baseUrl);
+      
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          url.searchParams.append(key, value);
+        });
+      }
+
+      const response = await fetch(url.toString(), {
+        method,
+        headers: this.headers,
+        body: data ? JSON.stringify(data) : undefined
+      });
+
+      if (!response.ok) {
+        throw new Error(\`HTTP \${response.status}: \${response.statusText}\`);
+      }
+
+      const result = await response.json();
+      
+      logger.debug('External service request completed', {
+        module: '${name}',
+        endpoint,
+        method,
+        status: response.status
+      });
+
+      return result;
+    } catch (error) {
+      logger.error('External service request failed', {
+        module: '${name}',
+        endpoint,
+        method,
+        error: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   }
 
-  async createDirectoryStructure(config) {
-    const basePath = path.join(this.projectRoot, 'src', 'tools', config.name);
-    
-    const directories = [
-      basePath,
-      path.join(basePath, 'types'),
-      path.join(basePath, 'schemas'),
-      path.join(basePath, 'core'),
-      path.join(basePath, 'services'),
-      path.join(basePath, 'utils'),
-      path.join(basePath, 'tools'),
-      // Test directories
-      path.join(this.projectRoot, 'tests', 'unit', 'tools', config.name),
-      path.join(this.projectRoot, 'tests', 'integration', 'tools', config.name),
-      path.join(this.projectRoot, 'tests', 'performance', 'tools', config.name),
-    ];
-
-    for (const dir of directories) {
-      await fs.mkdir(dir, { recursive: true });
-      console.log(`📁 Created directory: ${path.relative(this.projectRoot, dir)}`);
-    }
-  }
-
-  async generateTemplateFiles(config) {
-    const templates = this.getTemplates(config);
-    
-    for (const [filePath, content] of Object.entries(templates)) {
-      const fullPath = path.join(this.projectRoot, filePath);
-      await fs.writeFile(fullPath, content, 'utf8');
-      console.log(`📄 Generated file: ${filePath}`);
-    }
-  }
-
-  getTemplates(config) {
-    const moduleName = config.name;
-    const moduleNamePascal = this.toPascalCase(moduleName);
-    const moduleNameCamel = this.toCamelCase(moduleName);
-    const toolCount = config.tools.length;
-    const toolCategories = JSON.stringify(['CRUD', 'management', 'utilities']);
-
-    return {
-      // Main module index
-      [`src/tools/${moduleName}/index.ts`]: this.getIndexTemplate(config),
-      
-      // Type definitions
-      [`src/tools/${moduleName}/types/index.ts`]: this.getTypesIndexTemplate(config),
-      [`src/tools/${moduleName}/types/core-types.ts`]: this.getCoreTypesTemplate(config),
-      [`src/tools/${moduleName}/types/api-types.ts`]: this.getApiTypesTemplate(config),
-      [`src/tools/${moduleName}/types/config-types.ts`]: this.getConfigTypesTemplate(config),
-      [`src/tools/${moduleName}/types/validation-types.ts`]: this.getValidationTypesTemplate(config),
-      
-      // Schemas
-      [`src/tools/${moduleName}/schemas/index.ts`]: this.getSchemasIndexTemplate(config),
-      [`src/tools/${moduleName}/schemas/input-schemas.ts`]: this.getInputSchemasTemplate(config),
-      [`src/tools/${moduleName}/schemas/output-schemas.ts`]: this.getOutputSchemasTemplate(config),
-      [`src/tools/${moduleName}/schemas/config-schemas.ts`]: this.getConfigSchemasTemplate(config),
-      
-      // Core logic
-      [`src/tools/${moduleName}/core/index.ts`]: this.getCoreIndexTemplate(config),
-      [`src/tools/${moduleName}/core/domain-engine.ts`]: this.getDomainEngineTemplate(config),
-      [`src/tools/${moduleName}/core/processor.ts`]: this.getProcessorTemplate(config),
-      [`src/tools/${moduleName}/core/validator.ts`]: this.getValidatorTemplate(config),
-      
-      // Services
-      [`src/tools/${moduleName}/services/index.ts`]: this.getServicesIndexTemplate(config),
-      [`src/tools/${moduleName}/services/api-service.ts`]: this.getApiServiceTemplate(config),
-      [`src/tools/${moduleName}/services/data-service.ts`]: this.getDataServiceTemplate(config),
-      
-      // Utils
-      [`src/tools/${moduleName}/utils/index.ts`]: this.getUtilsIndexTemplate(config),
-      [`src/tools/${moduleName}/utils/calculations.ts`]: this.getCalculationsTemplate(config),
-      [`src/tools/${moduleName}/utils/formatters.ts`]: this.getFormattersTemplate(config),
-      [`src/tools/${moduleName}/utils/transformers.ts`]: this.getTransformersTemplate(config),
-      
-      // Tools
-      [`src/tools/${moduleName}/tools/index.ts`]: this.getToolsIndexTemplate(config),
-      
-      // Individual tool files
-      ...this.generateToolFiles(config),
-      
-      // Constants and README
-      [`src/tools/${moduleName}/constants.ts`]: this.getConstantsTemplate(config),
-      [`src/tools/${moduleName}/README.md`]: this.getReadmeTemplate(config),
-      
-      // Test files
-      [`tests/unit/tools/${moduleName}/core/domain-engine.test.ts`]: this.getDomainEngineTestTemplate(config),
-      [`tests/integration/tools/${moduleName}/module-integration.test.ts`]: this.getIntegrationTestTemplate(config),
-      [`tests/performance/tools/${moduleName}/performance-benchmarks.test.ts`]: this.getPerformanceTestTemplate(config),
-    };
-  }
-
-  generateToolFiles(config) {
-    const toolFiles = {};
-    
-    config.tools.forEach(toolName => {
-      const toolFileName = this.toKebabCase(toolName);
-      const toolFilePath = `src/tools/${config.name}/tools/${toolFileName}.ts`;
-      toolFiles[toolFilePath] = this.getToolTemplate(config, toolName);
-    });
-    
-    return toolFiles;
-  }
-
-  // Template generators
-  getIndexTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} Module
- * ${config.description || `${moduleNamePascal} management and operations`}
- * 
- * This module provides comprehensive ${config.name} management capabilities
- * following the modular architecture pattern for maintainability and scalability.
- */
-
-import { FastMCP } from 'fastmcp';
-import MakeApiClient from '../../lib/make-api-client.js';
-import logger from '../../lib/logger.js';
-import { ToolContext } from '../shared/types/tool-context.js';
-
-// Import tool registrations
-import { registerTools } from './tools/index.js';
-
-/**
- * Add ${config.name} tools to FastMCP server
- * 
- * @param server - FastMCP server instance
- * @param apiClient - Make.com API client
- */
-export function add${moduleNamePascal}Tools(server: FastMCP, apiClient: MakeApiClient): void {
-  const moduleLogger = logger.child({ component: '${moduleNamePascal}Tools' });
-  
-  moduleLogger.info('Adding ${config.name} tools');
-
-  const context: ToolContext = {
-    server,
-    apiClient,
-    logger: moduleLogger,
-  };
-
-  registerTools(context);
-
-  moduleLogger.info('${moduleNamePascal} tools added successfully', {
-    toolCount: ${config.tools.length},
-    categories: ${JSON.stringify(['management', 'operations', 'utilities'])},
-    tools: ${JSON.stringify(config.tools)}
-  });
-}
-
-export default add${moduleNamePascal}Tools;
-
-// Re-export types for external use
-export type * from './types/index.js';
-
-// Re-export core functionality
-export { ${moduleNamePascal}Engine } from './core/domain-engine.js';
-export { ${moduleNamePascal}Processor } from './core/processor.js';
-export { ${moduleNamePascal}Validator } from './core/validator.js';
-`;
-  }
-
-  getTypesIndexTemplate(config) {
-    return `/**
- * @fileoverview ${this.toPascalCase(config.name)} Type Definitions
- * 
- * Centralized type definitions for the ${config.name} module.
- * This file aggregates all type definitions for easy importing.
- */
-
-// Core entity and business logic types
-export type * from './core-types.js';
-
-// API request/response types
-export type * from './api-types.js';
-
-// Configuration and settings types
-export type * from './config-types.js';
-
-// Validation and error handling types
-export type * from './validation-types.js';
-`;
-  }
-
-  getCoreTypesTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview Core ${moduleNamePascal} Types
- * 
- * Core entity types and business logic interfaces for the ${config.name} module.
- */
-
-import { z } from 'zod';
-
-/**
- * Core ${moduleNamePascal} entity
- */
-export interface ${moduleNamePascal}Entity {
-  id: string;
-  name: string;
-  description?: string;
-  status: ${moduleNamePascal}Status;
-  createdAt: Date;
-  updatedAt: Date;
-  metadata?: Record<string, unknown>;
-}
-
-/**
- * ${moduleNamePascal} status enumeration
- */
-export type ${moduleNamePascal}Status = 'active' | 'inactive' | 'pending' | 'error';
-
-/**
- * ${moduleNamePascal} configuration interface
- */
-export interface ${moduleNamePascal}Config {
-  enabled: boolean;
-  options: ${moduleNamePascal}Options;
-  limits: ${moduleNamePascal}Limits;
-}
-
-/**
- * ${moduleNamePascal} operational options
- */
-export interface ${moduleNamePascal}Options {
-  autoRefresh: boolean;
-  cacheDuration: number;
-  retryAttempts: number;
-  timeoutMs: number;
-}
-
-/**
- * ${moduleNamePascal} operational limits
- */
-export interface ${moduleNamePascal}Limits {
-  maxItems: number;
-  maxSize: number;
-  rateLimit: number;
-}
-
-/**
- * ${moduleNamePascal} health status
- */
-export interface ${moduleNamePascal}HealthStatus {
-  healthy: boolean;
-  lastChecked: Date;
-  responseTime: number;
-  details?: Record<string, unknown>;
-  issues?: string[];
-}
-
-/**
- * ${moduleNamePascal} operation result
- */
-export interface ${moduleNamePascal}OperationResult<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  metadata?: {
-    timestamp: Date;
-    duration: number;
-    retryCount?: number;
-  };
-}
-`;
-  }
-
-  getApiTypesTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} API Types
- * 
- * Type definitions for API requests and responses in the ${config.name} module.
- */
-
-import { ${moduleNamePascal}Entity, ${moduleNamePascal}Status } from './core-types.js';
-
-/**
- * Base API request interface
- */
-export interface ${moduleNamePascal}ApiRequest {
-  requestId?: string;
-  timestamp?: Date;
-}
-
-/**
- * Base API response interface
- */
-export interface ${moduleNamePascal}ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: {
-    code: string;
-    message: string;
-    details?: Record<string, unknown>;
-  };
-  metadata?: {
-    requestId: string;
-    timestamp: Date;
-    duration: number;
-  };
-}
-
-/**
- * List ${config.name} request
- */
-export interface List${moduleNamePascal}Request extends ${moduleNamePascal}ApiRequest {
-  filters?: {
-    status?: ${moduleNamePascal}Status;
-    search?: string;
-    tags?: string[];
-  };
-  pagination?: {
-    limit: number;
-    offset: number;
-  };
-  sorting?: {
-    field: string;
-    direction: 'asc' | 'desc';
-  };
-}
-
-/**
- * List ${config.name} response
- */
-export interface List${moduleNamePascal}Response extends ${moduleNamePascal}ApiResponse<${moduleNamePascal}Entity[]> {
-  pagination?: {
-    total: number;
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
-}
-
-/**
- * Create ${config.name} request
- */
-export interface Create${moduleNamePascal}Request extends ${moduleNamePascal}ApiRequest {
-  name: string;
-  description?: string;
-  options?: Record<string, unknown>;
-  metadata?: Record<string, unknown>;
-}
-
-/**
- * Create ${config.name} response
- */
-export interface Create${moduleNamePascal}Response extends ${moduleNamePascal}ApiResponse<${moduleNamePascal}Entity> {}
-
-/**
- * Update ${config.name} request
- */
-export interface Update${moduleNamePascal}Request extends ${moduleNamePascal}ApiRequest {
-  id: string;
-  name?: string;
-  description?: string;
-  status?: ${moduleNamePascal}Status;
-  options?: Record<string, unknown>;
-  metadata?: Record<string, unknown>;
-}
-
-/**
- * Update ${config.name} response
- */
-export interface Update${moduleNamePascal}Response extends ${moduleNamePascal}ApiResponse<${moduleNamePascal}Entity> {}
-
-/**
- * Delete ${config.name} request
- */
-export interface Delete${moduleNamePascal}Request extends ${moduleNamePascal}ApiRequest {
-  id: string;
-  force?: boolean;
-}
-
-/**
- * Delete ${config.name} response
- */
-export interface Delete${moduleNamePascal}Response extends ${moduleNamePascal}ApiResponse<{ deleted: boolean }> {}
-`;
-  }
-
-  getConfigTypesTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} Configuration Types
- * 
- * Configuration interfaces and types for the ${config.name} module.
- */
-
-/**
- * Module-wide configuration
- */
-export interface ${moduleNamePascal}ModuleConfig {
-  enabled: boolean;
-  logLevel: 'debug' | 'info' | 'warn' | 'error';
-  cache: ${moduleNamePascal}CacheConfig;
-  api: ${moduleNamePascal}ApiConfig;
-  monitoring: ${moduleNamePascal}MonitoringConfig;
-}
-
-/**
- * Cache configuration
- */
-export interface ${moduleNamePascal}CacheConfig {
-  enabled: boolean;
-  ttl: number; // Time to live in seconds
-  maxSize: number; // Maximum number of cached items
-  strategy: 'lru' | 'lfu' | 'ttl';
-}
-
-/**
- * API configuration
- */
-export interface ${moduleNamePascal}ApiConfig {
-  timeout: number; // Request timeout in milliseconds
-  retries: number; // Number of retry attempts
-  backoff: {
-    initial: number; // Initial backoff delay
-    multiplier: number; // Backoff multiplier
-    maxDelay: number; // Maximum backoff delay
-  };
-  rateLimit: {
-    requests: number; // Requests per window
-    windowMs: number; // Rate limit window in milliseconds
-  };
-}
-
-/**
- * Monitoring configuration
- */
-export interface ${moduleNamePascal}MonitoringConfig {
-  enabled: boolean;
-  metricsInterval: number; // Metrics collection interval in milliseconds
-  healthCheckInterval: number; // Health check interval in milliseconds
-  alertThresholds: {
-    errorRate: number; // Error rate threshold (0-1)
-    responseTime: number; // Response time threshold in milliseconds
-    memoryUsage: number; // Memory usage threshold (0-1)
-  };
-}
-
-/**
- * Runtime configuration that can be updated dynamically
- */
-export interface ${moduleNamePascal}RuntimeConfig {
-  maintenanceMode: boolean;
-  debugMode: boolean;
-  featureFlags: {
-    [key: string]: boolean;
-  };
-  overrides: {
-    [key: string]: unknown;
-  };
-}
-`;
-  }
-
-  getValidationTypesTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} Validation Types
- * 
- * Validation interfaces and error types for the ${config.name} module.
- */
-
-/**
- * Validation result interface
- */
-export interface ${moduleNamePascal}ValidationResult {
-  isValid: boolean;
-  errors: ${moduleNamePascal}ValidationError[];
-  warnings: ${moduleNamePascal}ValidationWarning[];
-}
-
-/**
- * Validation error interface
- */
-export interface ${moduleNamePascal}ValidationError {
-  field: string;
-  code: string;
-  message: string;
-  value?: unknown;
-  context?: Record<string, unknown>;
-}
-
-/**
- * Validation warning interface
- */
-export interface ${moduleNamePascal}ValidationWarning {
-  field: string;
-  code: string;
-  message: string;
-  suggestion?: string;
-}
-
-/**
- * ${moduleNamePascal} error types
- */
-export type ${moduleNamePascal}ErrorType = 
-  | 'validation'
-  | 'not_found'
-  | 'permission_denied'
-  | 'rate_limited'
-  | 'service_unavailable'
-  | 'internal_error';
-
-/**
- * ${moduleNamePascal} error interface
- */
-export interface ${moduleNamePascal}Error extends Error {
-  code: string;
-  type: ${moduleNamePascal}ErrorType;
-  details?: Record<string, unknown>;
-  cause?: Error;
-}
-
-/**
- * ${moduleNamePascal} operation context
- */
-export interface ${moduleNamePascal}OperationContext {
-  requestId: string;
-  userId?: string;
-  sessionId?: string;
-  timestamp: Date;
-  metadata?: Record<string, unknown>;
-}
-`;
-  }
-
-  getToolTemplate(config, toolName) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    const toolNamePascal = this.toPascalCase(toolName);
-    const toolNameCamel = this.toCamelCase(toolName);
-    const toolNameKebab = this.toKebabCase(toolName);
-    
-    return `/**
- * @fileoverview ${toolNamePascal} Tool Implementation
- * 
- * FastMCP tool for ${toolName} operations in the ${config.name} module.
- * This tool provides a focused, single-responsibility implementation.
- */
-
-import { UserError } from 'fastmcp';
-import { z } from 'zod';
-
-import { ToolContext } from '../../shared/types/tool-context.js';
-import { ${toolNamePascal}Schema } from '../schemas/input-schemas.js';
-import { ${moduleNamePascal}ApiResponse } from '../types/api-types.js';
-import { ${moduleNamePascal}Engine } from '../core/domain-engine.js';
-
-/**
- * Create ${toolName} tool configuration
- */
-export function create${toolNamePascal}Tool(context: ToolContext) {
-  const { apiClient, logger } = context;
-  const engine = new ${moduleNamePascal}Engine(apiClient, logger);
-  
-  return {
-    name: '${toolNameKebab}',
-    description: 'Handle ${toolName} operations for ${config.name} management',
-    parameters: ${toolNamePascal}Schema,
-    annotations: {
-      title: '${toolNamePascal}',
-      readOnlyHint: ${toolName.toLowerCase().includes('list') || toolName.toLowerCase().includes('get')},
-      destructiveHint: ${toolName.toLowerCase().includes('delete') || toolName.toLowerCase().includes('remove')},
-      openWorldHint: true,
-    },
-    execute: async (args: unknown, { log, reportProgress }) => {
-      const operationId = \`\${Date.now()}-\${Math.random().toString(36).substr(2, 9)}\`;
-      
-      log?.info?.('Starting ${toolName} operation', { 
-        operationId, 
-        args: JSON.stringify(args, null, 2) 
+  /**
+   * Health check for external service
+   */
+  async healthCheck(): Promise<boolean> {
+    try {
+      await this.makeRequest('/health');
+      return true;
+    } catch (error) {
+      logger.warn('External service health check failed', {
+        module: '${name}',
+        error: error instanceof Error ? error.message : String(error)
       });
-      
-      reportProgress({ progress: 0, total: 100 });
-
-      try {
-        // Input validation
-        const validatedArgs = ${toolNamePascal}Schema.parse(args);
-        reportProgress({ progress: 20, total: 100 });
-        
-        // Business logic execution
-        log?.info?.('Executing ${toolName} business logic', { operationId });
-        const result = await engine.${toolNameCamel}(validatedArgs);
-        reportProgress({ progress: 80, total: 100 });
-        
-        // Response formatting
-        const response = format${toolNamePascal}Response(result);
-        reportProgress({ progress: 100, total: 100 });
-        
-        log?.info?.('${toolNamePascal} operation completed successfully', { 
-          operationId,
-          resultSummary: {
-            success: response.success,
-            dataType: typeof response.data,
-            duration: Date.now() - parseInt(operationId.split('-')[0])
-          }
-        });
-        
-        return JSON.stringify(response, null, 2);
-        
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        
-        logger.error('${toolNamePascal} operation failed', { 
-          operationId,
-          error: errorMessage,
-          stack: error instanceof Error ? error.stack : undefined,
-          args: JSON.stringify(args, null, 2)
-        });
-        
-        if (error instanceof UserError) {
-          throw error;
-        }
-        
-        throw new UserError(
-          \`Failed to execute ${toolName}: \${errorMessage}\`,
-          error instanceof Error ? error : undefined
-        );
-      }
-    },
-  };
+      return false;
+    }
+  }
 }
 
 /**
- * Format the ${toolName} response for consistent output
+ * Factory function to create service client
  */
-function format${toolNamePascal}Response(result: any): ${moduleNamePascal}ApiResponse {
+export function create${this.toPascalCase(name)}ServiceClient(): ${this.toPascalCase(name)}ServiceClient {
+  const baseUrl = process.env.${name.toUpperCase()}_SERVICE_URL || 'http://localhost:3000';
+  const apiKey = process.env.${name.toUpperCase()}_API_KEY;
+  
+  return new ${this.toPascalCase(name)}ServiceClient(baseUrl, apiKey);
+}
+`;
+
+    fs.writeFileSync(path.join(modulePath, 'services', 'index.ts'), content);
+    console.log(`✅ Generated services/index.ts`);
+  }
+
+  generateUtilsFile(modulePath, name) {
+    const content = `/**
+ * Utility functions for ${name} module
+ * Generated on ${new Date().toISOString()}
+ */
+
+import type { ${this.toPascalCase(name)}Result } from '../types/index.js';
+
+/**
+ * Create a standardized success result
+ */
+export function createSuccessResult(data?: unknown, message?: string): ${this.toPascalCase(name)}Result {
   return {
     success: true,
-    data: result,
+    data,
+    message: message || 'Operation completed successfully',
     metadata: {
-      requestId: \`\${Date.now()}-\${Math.random().toString(36).substr(2, 9)}\`,
-      timestamp: new Date(),
-      duration: 0, // Will be calculated by the caller
-    },
+      operationId: generateOperationId('${name}'),
+      timestamp: new Date()
+    }
   };
 }
-`;
-  }
-
-  getToolsIndexTemplate(config) {
-    const toolImports = config.tools.map(toolName => {
-      const toolNamePascal = this.toPascalCase(toolName);
-      const toolNameKebab = this.toKebabCase(toolName);
-      return `import { create${toolNamePascal}Tool } from './${toolNameKebab}.js';`;
-    }).join('\n');
-
-    const toolRegistrations = config.tools.map(toolName => {
-      const toolNamePascal = this.toPascalCase(toolName);
-      return `  server.addTool(create${toolNamePascal}Tool(context));`;
-    }).join('\n');
-
-    return `/**
- * @fileoverview ${this.toPascalCase(config.name)} Tool Registration
- * 
- * Central tool registration for all ${config.name} module tools.
- * This module handles the registration of individual FastMCP tools.
- */
-
-import { ToolContext } from '../../shared/types/tool-context.js';
-
-// Import individual tool creators
-${toolImports}
 
 /**
- * Register all ${config.name} tools with the FastMCP server
- * 
- * @param context - Tool execution context with server and dependencies
+ * Create a standardized error result
  */
-export function registerTools(context: ToolContext): void {
-  const { server, logger } = context;
+export function createErrorResult(error: string | Error, data?: unknown): ${this.toPascalCase(name)}Result {
+  const errorMessage = error instanceof Error ? error.message : error;
+  
+  return {
+    success: false,
+    data,
+    message: 'Operation failed',
+    errors: [errorMessage],
+    metadata: {
+      operationId: generateOperationId('${name}'),
+      timestamp: new Date()
+    }
+  };
+}
 
-  logger.info('Registering ${config.name} tools', {
-    toolCount: ${config.tools.length},
-    tools: ${JSON.stringify(config.tools)}
-  });
+/**
+ * Generate unique operation ID
+ */
+export function generateOperationId(prefix = '${name}'): string {
+  return \`\${prefix}_\${Date.now()}_\${Math.random().toString(36).substr(2, 9)}\`;
+}
 
+/**
+ * Safe JSON parsing with error handling
+ */
+export function safeJsonParse<T = unknown>(json: string, defaultValue?: T): T | undefined {
   try {
-${toolRegistrations}
-
-    logger.info('All ${config.name} tools registered successfully');
-    
+    return JSON.parse(json) as T;
   } catch (error) {
-    logger.error('Failed to register ${config.name} tools', { error });
-    throw error;
+    return defaultValue;
   }
 }
 
-// Export individual tool creators for testing and selective registration
-export {
-${config.tools.map(toolName => {
-  const toolNamePascal = this.toPascalCase(toolName);
-  return `  create${toolNamePascal}Tool,`;
-}).join('\n')}
-};
-`;
+/**
+ * Deep clone object safely
+ */
+export function deepClone<T>(obj: T): T {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
   }
 
-  // Helper methods for string transformations
+  if (obj instanceof Date) {
+    return new Date(obj.getTime()) as T;
+  }
+
+  if (obj instanceof Array) {
+    return obj.map(item => deepClone(item)) as T;
+  }
+
+  if (typeof obj === 'object') {
+    const cloned = {} as T;
+    Object.keys(obj).forEach(key => {
+      (cloned as any)[key] = deepClone((obj as any)[key]);
+    });
+    return cloned;
+  }
+
+  return obj;
+}
+
+/**
+ * Retry async operation with exponential backoff
+ */
+export async function retryOperation<T>(
+  operation: () => Promise<T>,
+  options: {
+    maxRetries?: number;
+    baseDelay?: number;
+    maxDelay?: number;
+    backoffMultiplier?: number;
+  } = {}
+): Promise<T> {
+  const {
+    maxRetries = 3,
+    baseDelay = 1000,
+    maxDelay = 10000,
+    backoffMultiplier = 2
+  } = options;
+
+  let lastError: Error;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      if (attempt === maxRetries) {
+        throw lastError;
+      }
+
+      const delay = Math.min(baseDelay * Math.pow(backoffMultiplier, attempt), maxDelay);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError!;
+}
+
+/**
+ * Validate required environment variables
+ */
+export function validateEnvironmentVariables(requiredVars: string[]): void {
+  const missing = requiredVars.filter(varName => !process.env[varName]);
+  
+  if (missing.length > 0) {
+    throw new Error(\`Missing required environment variables: \${missing.join(', ')}\`);
+  }
+}
+
+/**
+ * Sanitize sensitive data for logging
+ */
+export function sanitizeForLogging(data: unknown): unknown {
+  if (typeof data !== 'object' || data === null) {
+    return data;
+  }
+
+  const sensitiveKeys = ['password', 'token', 'key', 'secret', 'auth', 'credential'];
+  const sanitized = deepClone(data);
+
+  function sanitizeObject(obj: any): void {
+    if (typeof obj !== 'object' || obj === null) return;
+
+    Object.keys(obj).forEach(key => {
+      const lowerKey = key.toLowerCase();
+      
+      if (sensitiveKeys.some(sensitive => lowerKey.includes(sensitive))) {
+        obj[key] = '[REDACTED]';
+      } else if (typeof obj[key] === 'object') {
+        sanitizeObject(obj[key]);
+      }
+    });
+  }
+
+  sanitizeObject(sanitized);
+  return sanitized;
+}
+`;
+
+    fs.writeFileSync(path.join(modulePath, 'utils', 'index.ts'), content);
+    console.log(`✅ Generated utils/index.ts`);
+  }
+
+  generateToolsFile(modulePath, name, tools) {
+    const content = `/**
+ * FastMCP tool implementations for ${name} module
+ * Generated on ${new Date().toISOString()}
+ */
+
+import type { FastMCPToolContext } from '../../../types/index.js';
+import type { ${this.toPascalCase(name)}Context } from '../types/index.js';
+import { ${this.toPascalCase(name)}Manager } from '../core/index.js';
+import logger from '../../../lib/logger.js';
+
+/**
+ * Initialize ${name} module manager
+ */
+function create${this.toPascalCase(name)}Manager(context: FastMCPToolContext): ${this.toPascalCase(name)}Manager {
+  const ${this.toCamelCase(name)}Context: ${this.toPascalCase(name)}Context = {
+    ...context,
+    config: {
+      enabled: true,
+      settings: {
+        // Add default settings here
+      },
+      metadata: {
+        version: '1.0.0',
+        createdAt: new Date()
+      }
+    }
+  };
+
+  return new ${this.toPascalCase(name)}Manager(${this.toCamelCase(name)}Context);
+}
+
+${tools.map(tool => `
+/**
+ * ${tool} FastMCP tool
+ */
+export async function ${this.toCamelCase(tool)}(context: FastMCPToolContext, args: Record<string, unknown>) {
+  const manager = create${this.toPascalCase(name)}Manager(context);
+  
+  try {
+    // Initialize manager if not already done
+    const initResult = await manager.initialize();
+    if (!initResult.success) {
+      return {
+        error: 'Failed to initialize ${name} manager',
+        details: initResult.errors
+      };
+    }
+
+    logger.info('${tool} tool called', {
+      tool: '${tool}',
+      module: '${name}',
+      args: Object.keys(args)
+    });
+
+    // Execute the operation
+    const result = await manager.${this.toCamelCase(tool)}(args);
+    
+    if (!result.success) {
+      return {
+        error: result.message || '${tool} operation failed',
+        details: result.errors
+      };
+    }
+
+    return {
+      success: true,
+      message: result.message,
+      data: result.data,
+      metadata: result.metadata
+    };
+  } catch (error) {
+    logger.error('${tool} tool error', {
+      tool: '${tool}',
+      module: '${name}',
+      error: error instanceof Error ? error.message : String(error)
+    });
+
+    return {
+      error: 'Internal error in ${tool} tool',
+      details: error instanceof Error ? error.message : String(error)
+    };
+  } finally {
+    await manager.shutdown();
+  }
+}
+
+${this.toCamelCase(tool)}.metadata = {
+  name: '${tool.replace(/([A-Z])/g, '-$1').toLowerCase()}',
+  description: 'Execute ${tool} operation in ${name} module',
+  parameters: {
+    type: 'object',
+    properties: {
+      // Define tool parameters here
+      // Example:
+      // id: { type: 'string', description: 'Resource identifier' },
+      // options: { type: 'object', description: 'Additional options' }
+    },
+    required: [
+      // List required parameters
+    ]
+  }
+};
+`).join('')}
+
+// Export all tools
+export const ${this.toCamelCase(name)}Tools = {
+${tools.map(tool => `  ${this.toCamelCase(tool)}`).join(',\n')}
+};
+`;
+
+    fs.writeFileSync(path.join(modulePath, 'tools', 'index.ts'), content);
+    console.log(`✅ Generated tools/index.ts`);
+  }
+
+  generateIndexFile(modulePath, name, options) {
+    const { hasTypes, hasSchemas, hasServices, hasUtils } = options;
+
+    const content = `/**
+ * ${name} module entry point
+ * Generated on ${new Date().toISOString()}
+ */
+
+// Export all module components
+${hasTypes ? `export * from './types/index.js';` : ''}
+${hasSchemas ? `export * from './schemas/index.js';` : ''}
+export * from './core/index.js';
+${hasServices ? `export * from './services/index.js';` : ''}
+${hasUtils ? `export * from './utils/index.js';` : ''}
+export * from './tools/index.js';
+
+// Default export
+export { ${this.toPascalCase(name)}Manager } from './core/index.js';
+export { ${this.toCamelCase(name)}Tools } from './tools/index.js';
+
+// Module metadata
+export const moduleInfo = {
+  name: '${name}',
+  version: '1.0.0',
+  description: 'Modular ${name} implementation for FastMCP server',
+  generatedAt: '${new Date().toISOString()}',
+  components: {
+    types: ${hasTypes},
+    schemas: ${hasSchemas},
+    core: true,
+    services: ${hasServices},
+    utils: ${hasUtils},
+    tools: true
+  }
+};
+`;
+
+    fs.writeFileSync(path.join(modulePath, 'index.ts'), content);
+    console.log(`✅ Generated index.ts`);
+  }
+
+  generateTestFile(modulePath, name, tools) {
+    const testDir = path.join(modulePath, '__tests__');
+    fs.mkdirSync(testDir, { recursive: true });
+
+    const content = `/**
+ * Test suite for ${name} module
+ * Generated on ${new Date().toISOString()}
+ */
+
+import { ${this.toPascalCase(name)}Manager } from '../core/index.js';
+import type { ${this.toPascalCase(name)}Context } from '../types/index.js';
+
+// Mock context for testing
+const mockContext: ${this.toPascalCase(name)}Context = {
+  config: {
+    enabled: true,
+    settings: {},
+    metadata: {
+      version: '1.0.0',
+      createdAt: new Date()
+    }
+  },
+  // Add other required context properties
+} as any;
+
+describe('${this.toPascalCase(name)}Manager', () => {
+  let manager: ${this.toPascalCase(name)}Manager;
+
+  beforeEach(() => {
+    manager = new ${this.toPascalCase(name)}Manager(mockContext);
+  });
+
+  afterEach(async () => {
+    await manager.shutdown();
+  });
+
+  describe('Initialization', () => {
+    it('should initialize successfully', async () => {
+      const result = await manager.initialize();
+      
+      expect(result.success).toBe(true);
+      expect(result.message).toContain('initialized successfully');
+    });
+
+    it('should have correct initial state', () => {
+      const state = manager.getState();
+      
+      expect(state.initialized).toBe(false);
+      expect(state.statistics.totalOperations).toBe(0);
+      expect(state.statistics.successfulOperations).toBe(0);
+      expect(state.statistics.failedOperations).toBe(0);
+    });
+  });
+
+${tools.map(tool => `
+  describe('${tool}', () => {
+    beforeEach(async () => {
+      await manager.initialize();
+    });
+
+    it('should handle ${tool} request', async () => {
+      const request = {
+        // Add test request data
+      };
+
+      const result = await manager.${this.toCamelCase(tool)}(request);
+      
+      // Note: This will fail until implementation is complete
+      expect(result.success).toBe(false);
+      expect(result.errors).toContain('${tool} implementation not yet completed');
+    });
+
+    it('should update statistics after ${tool} operation', async () => {
+      const request = {};
+      const initialStats = manager.getStatistics();
+
+      await manager.${this.toCamelCase(tool)}(request);
+
+      const updatedStats = manager.getStatistics();
+      expect(updatedStats.totalOperations).toBe(initialStats.totalOperations + 1);
+    });
+  });
+`).join('')}
+
+  describe('Event Handling', () => {
+    beforeEach(async () => {
+      await manager.initialize();
+    });
+
+    it('should handle unknown event type', async () => {
+      const unknownEvent = { type: 'unknown_event', payload: {} } as any;
+      
+      const result = await manager.handleEvent(unknownEvent);
+      
+      expect(result.success).toBe(false);
+      expect(result.message).toContain('Failed to handle event');
+    });
+  });
+
+  describe('Statistics', () => {
+    it('should provide statistics', () => {
+      const stats = manager.getStatistics();
+      
+      expect(stats).toHaveProperty('totalOperations');
+      expect(stats).toHaveProperty('successfulOperations');
+      expect(stats).toHaveProperty('failedOperations');
+    });
+  });
+});
+
+// Tool integration tests
+describe('${this.toPascalCase(name)} Tools', () => {
+  const mockContext = {
+    // Add mock FastMCP context
+  } as any;
+
+${tools.map(tool => `
+  describe('${this.toCamelCase(tool)} tool', () => {
+    it('should be defined', async () => {
+      const { ${this.toCamelCase(tool)} } = await import('../tools/index.js');
+      expect(${this.toCamelCase(tool)}).toBeDefined();
+      expect(typeof ${this.toCamelCase(tool)}).toBe('function');
+    });
+
+    it('should have correct metadata', async () => {
+      const { ${this.toCamelCase(tool)} } = await import('../tools/index.js');
+      expect(${this.toCamelCase(tool)}.metadata).toBeDefined();
+      expect(${this.toCamelCase(tool)}.metadata.name).toBe('${tool.replace(/([A-Z])/g, '-$1').toLowerCase()}');
+    });
+  });
+`).join('')}
+});
+`;
+
+    fs.writeFileSync(path.join(testDir, `${name}.test.ts`), content);
+    console.log(`✅ Generated __tests__/${name}.test.ts`);
+  }
+
+  printModuleStructure(modulePath) {
+    console.log(`\n📁 Module structure created:\n`);
+    
+    const printDirectory = (dirPath, indent = '') => {
+      const items = fs.readdirSync(dirPath, { withFileTypes: true });
+      items.forEach((item, index) => {
+        const isLast = index === items.length - 1;
+        const prefix = indent + (isLast ? '└── ' : '├── ');
+        const fullPath = path.join(dirPath, item.name);
+        
+        console.log(`${prefix}${item.name}`);
+        
+        if (item.isDirectory() && !item.name.startsWith('.')) {
+          const newIndent = indent + (isLast ? '    ' : '│   ');
+          printDirectory(fullPath, newIndent);
+        }
+      });
+    };
+
+    printDirectory(modulePath);
+    console.log('');
+  }
+
+  // Interactive CLI
+  async runInteractiveGenerator() {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    const question = (prompt) => new Promise((resolve) => {
+      rl.question(prompt, resolve);
+    });
+
+    try {
+      console.log('🚀 Interactive Module Generator\n');
+      
+      const name = await question('Module name (e.g., folders, billing): ');
+      const description = await question('Description (optional): ');
+      const toolsInput = await question('Tools (comma-separated, e.g., listFolders,createFolder): ');
+      
+      const tools = toolsInput.split(',').map(t => t.trim()).filter(t => t.length > 0);
+      
+      const hasTypes = (await question('Include types? (Y/n): ')).toLowerCase() !== 'n';
+      const hasSchemas = (await question('Include schemas? (Y/n): ')).toLowerCase() !== 'n';
+      const hasServices = (await question('Include services? (Y/n): ')).toLowerCase() !== 'n';
+      const hasUtils = (await question('Include utils? (Y/n): ')).toLowerCase() !== 'n';
+
+      console.log('\n🔄 Generating module...\n');
+
+      await this.generateModule(name, {
+        tools,
+        description,
+        hasTypes,
+        hasSchemas,
+        hasServices,
+        hasUtils
+      });
+
+      console.log('\n✨ Module generation complete!');
+      console.log('\n📋 Next steps:');
+      console.log('1. Review the generated code');
+      console.log('2. Implement the core business logic');
+      console.log('3. Update the tool parameter definitions');
+      console.log('4. Run tests to verify the module works');
+      console.log('5. Register the tools in your main server file');
+
+    } finally {
+      rl.close();
+    }
+  }
+
+  // Utility methods
   toPascalCase(str) {
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
-      return word.toUpperCase();
-    }).replace(/\s+/g, '').replace(/-/g, '');
+    return str
+      .split(/[-_\s]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join('');
   }
 
   toCamelCase(str) {
     const pascal = this.toPascalCase(str);
     return pascal.charAt(0).toLowerCase() + pascal.slice(1);
   }
+}
 
-  toKebabCase(str) {
-    return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-  }
+// CLI Interface
+const generator = new ModuleGenerator();
+const args = process.argv.slice(2);
 
-  // Additional template methods would go here...
-  getSchemasIndexTemplate(config) {
-    return `/**
- * @fileoverview ${this.toPascalCase(config.name)} Validation Schemas
- */
+if (args.length === 0) {
+  // Interactive mode
+  generator.runInteractiveGenerator().catch(console.error);
+} else {
+  // Command line mode
+  let name = args[0];
+  let tools = [];
+  let description = '';
 
-export * from './input-schemas.js';
-export * from './output-schemas.js';
-export * from './config-schemas.js';
-`;
-  }
-
-  getInputSchemasTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    const toolSchemas = config.tools.map(toolName => {
-      const toolNamePascal = this.toPascalCase(toolName);
-      return `export const ${toolNamePascal}Schema = z.object({
-  // Define ${toolName} input schema here
-  id: z.string().optional(),
-  name: z.string().min(1).max(255).optional(),
-});`;
-    }).join('\n\n');
-
-    return `/**
- * @fileoverview Input Validation Schemas for ${moduleNamePascal}
- */
-
-import { z } from 'zod';
-
-// Common validation patterns
-const IdSchema = z.string().uuid('Invalid ID format');
-const NameSchema = z.string().min(1, 'Name is required').max(255, 'Name too long');
-const DescriptionSchema = z.string().max(1000, 'Description too long').optional();
-
-// Tool-specific schemas
-${toolSchemas}
-
-// Export common schemas for reuse
-export {
-  IdSchema,
-  NameSchema,
-  DescriptionSchema,
-};
-`;
-  }
-
-  getOutputSchemasTemplate(config) {
-    return `/**
- * @fileoverview Output Validation Schemas for ${this.toPascalCase(config.name)}
- */
-
-import { z } from 'zod';
-
-// Output response schemas would go here
-export const ResponseSchema = z.object({
-  success: z.boolean(),
-  data: z.unknown().optional(),
-  error: z.string().optional(),
-});
-`;
-  }
-
-  getConfigSchemasTemplate(config) {
-    return `/**
- * @fileoverview Configuration Validation Schemas for ${this.toPascalCase(config.name)}
- */
-
-import { z } from 'zod';
-
-// Configuration schemas would go here
-export const ModuleConfigSchema = z.object({
-  enabled: z.boolean().default(true),
-  logLevel: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
-});
-`;
-  }
-
-  getCoreIndexTemplate(config) {
-    return `/**
- * @fileoverview Core Logic Exports for ${this.toPascalCase(config.name)}
- */
-
-export { ${this.toPascalCase(config.name)}Engine } from './domain-engine.js';
-export { ${this.toPascalCase(config.name)}Processor } from './processor.js';
-export { ${this.toPascalCase(config.name)}Validator } from './validator.js';
-`;
-  }
-
-  getDomainEngineTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} Domain Engine
- * 
- * Core business logic engine for ${config.name} operations.
- * This class encapsulates all domain-specific business rules and operations.
- */
-
-import MakeApiClient from '../../../lib/make-api-client.js';
-import { Logger } from '../../../lib/logger.js';
-import { ${moduleNamePascal}Entity, ${moduleNamePascal}OperationResult } from '../types/core-types.js';
-
-export class ${moduleNamePascal}Engine {
-  constructor(
-    private apiClient: MakeApiClient,
-    private logger: Logger
-  ) {}
-
-  /**
-   * Core business logic methods will be implemented here
-   */
-  
-${config.tools.map(toolName => {
-  const methodName = this.toCamelCase(toolName);
-  return `  async ${methodName}(params: any): Promise<${moduleNamePascal}OperationResult> {
-    this.logger.info('Executing ${methodName}', { params });
-    
-    try {
-      // Implement ${toolName} business logic here
-      const result = await this.perform${this.toPascalCase(toolName)}Operation(params);
-      
-      return {
-        success: true,
-        data: result,
-        metadata: {
-          timestamp: new Date(),
-          duration: 0, // Calculate actual duration
-        },
-      };
-    } catch (error) {
-      this.logger.error('${methodName} failed', { error, params });
-      
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-        metadata: {
-          timestamp: new Date(),
-          duration: 0,
-        },
-      };
+  // Parse arguments
+  for (let i = 1; i < args.length; i++) {
+    if (args[i] === '--tools' && args[i + 1]) {
+      tools = args[i + 1].split(',').map(t => t.trim());
+      i++;
+    } else if (args[i] === '--description' && args[i + 1]) {
+      description = args[i + 1];
+      i++;
     }
   }
 
-  private async perform${this.toPascalCase(toolName)}Operation(params: any): Promise<any> {
-    // TODO: Implement ${toolName} operation logic
-    throw new Error('${toolName} operation not implemented');
-  }`;
-}).join('\n\n')}
-}
-`;
-  }
-
-  // Continue with other template methods...
-  getProcessorTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} Data Processor
- */
-
-export class ${moduleNamePascal}Processor {
-  // Data processing logic will be implemented here
-}
-`;
-  }
-
-  getValidatorTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} Business Rules Validator
- */
-
-export class ${moduleNamePascal}Validator {
-  // Validation logic will be implemented here
-}
-`;
-  }
-
-  getServicesIndexTemplate(config) {
-    return `/**
- * @fileoverview Services Exports for ${this.toPascalCase(config.name)}
- */
-
-export { ${this.toPascalCase(config.name)}ApiService } from './api-service.js';
-export { ${this.toPascalCase(config.name)}DataService } from './data-service.js';
-`;
-  }
-
-  getApiServiceTemplate(config) {
-    return `/**
- * @fileoverview ${this.toPascalCase(config.name)} API Service
- */
-
-export class ${this.toPascalCase(config.name)}ApiService {
-  // API integration logic will be implemented here
-}
-`;
-  }
-
-  getDataServiceTemplate(config) {
-    return `/**
- * @fileoverview ${this.toPascalCase(config.name)} Data Service
- */
-
-export class ${this.toPascalCase(config.name)}DataService {
-  // Data persistence logic will be implemented here
-}
-`;
-  }
-
-  getUtilsIndexTemplate(config) {
-    return `/**
- * @fileoverview Utility Exports for ${this.toPascalCase(config.name)}
- */
-
-export * from './calculations.js';
-export * from './formatters.js';
-export * from './transformers.js';
-`;
-  }
-
-  getCalculationsTemplate(config) {
-    return `/**
- * @fileoverview ${this.toPascalCase(config.name)} Calculations
- */
-
-// Mathematical and business calculation utilities
-`;
-  }
-
-  getFormattersTemplate(config) {
-    return `/**
- * @fileoverview ${this.toPascalCase(config.name)} Formatters
- */
-
-// Data formatting utilities
-`;
-  }
-
-  getTransformersTemplate(config) {
-    return `/**
- * @fileoverview ${this.toPascalCase(config.name)} Transformers
- */
-
-// Data transformation utilities
-`;
-  }
-
-  getConstantsTemplate(config) {
-    const moduleNameUpper = config.name.toUpperCase().replace(/-/g, '_');
-    
-    return `/**
- * @fileoverview ${this.toPascalCase(config.name)} Constants
- */
-
-export const ${moduleNameUpper}_CONSTANTS = {
-  // Module-specific constants will be defined here
-  DEFAULT_TIMEOUT: 30000,
-  MAX_RETRIES: 3,
-  CACHE_TTL: 300000, // 5 minutes
-} as const;
-`;
-  }
-
-  getReadmeTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `# ${moduleNamePascal} Module
-
-${config.description || `${moduleNamePascal} management and operations module`}
-
-## Architecture
-
-This module follows the standard modular architecture pattern:
-
-- \`types/\` - TypeScript type definitions
-- \`schemas/\` - Zod validation schemas  
-- \`core/\` - Core business logic
-- \`services/\` - External service integrations
-- \`utils/\` - Utility functions
-- \`tools/\` - FastMCP tool implementations
-
-## Tools
-
-${config.tools.map(toolName => `### ${toolName}
-${toolName} operations for ${config.name} management.
-
-**Usage**: Available as FastMCP tool \`${this.toKebabCase(toolName)}\`
-`).join('\n')}
-
-## Development
-
-### Adding New Tools
-1. Create tool implementation in \`tools/new-tool.ts\`
-2. Add tool registration in \`tools/index.ts\`
-3. Add unit tests in \`tests/unit/tools/${config.name}/new-tool.test.ts\`
-4. Update this README
-
-### Testing
-\`\`\`bash
-npm run test:unit -- --testPathPattern="${config.name}"
-npm run test:integration -- --testPathPattern="${config.name}"
-\`\`\`
-
-### Performance
-\`\`\`bash
-npm run test:performance -- --module="${config.name}"
-\`\`\`
-
-## API Reference
-
-[Generated API documentation will be available here]
-`;
-  }
-
-  // Test template methods
-  getDomainEngineTestTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} Domain Engine Tests
- */
-
-import { ${moduleNamePascal}Engine } from '../../../../src/tools/${config.name}/core/domain-engine';
-
-describe('${moduleNamePascal}Engine', () => {
-  let engine: ${moduleNamePascal}Engine;
-  
-  beforeEach(() => {
-    const mockApiClient = {} as any;
-    const mockLogger = {
-      info: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn(),
-    };
-    
-    engine = new ${moduleNamePascal}Engine(mockApiClient, mockLogger);
-  });
-
-  describe('core functionality', () => {
-    it('should be properly instantiated', () => {
-      expect(engine).toBeInstanceOf(${moduleNamePascal}Engine);
-    });
-  });
-});
-`;
-  }
-
-  getIntegrationTestTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} Integration Tests
- */
-
-describe('${moduleNamePascal} Module Integration', () => {
-  // Integration tests will be implemented here
-});
-`;
-  }
-
-  getPerformanceTestTemplate(config) {
-    const moduleNamePascal = this.toPascalCase(config.name);
-    
-    return `/**
- * @fileoverview ${moduleNamePascal} Performance Tests
- */
-
-describe('${moduleNamePascal} Performance', () => {
-  // Performance benchmarks will be implemented here
-});
-`;
-  }
-
-  async updateMainExports(config) {
-    // Update main tools index to include new module
-    const mainIndexPath = path.join(this.projectRoot, 'src', 'tools', 'index.ts');
-    
-    try {
-      let content = '';
-      try {
-        content = await fs.readFile(mainIndexPath, 'utf8');
-      } catch (error) {
-        // File doesn't exist, create basic structure
-        content = '// Main tools exports\n\n';
-      }
-
-      const moduleExport = `export { add${this.toPascalCase(config.name)}Tools } from './${config.name}/index.js';`;
-      
-      if (!content.includes(moduleExport)) {
-        content += `${moduleExport}\n`;
-        await fs.writeFile(mainIndexPath, content, 'utf8');
-        console.log('📄 Updated main tools index');
-      }
-    } catch (error) {
-      console.warn('⚠️  Could not update main tools index:', error.message);
-    }
-  }
-
-  async generateTestTemplates(config) {
-    // Test templates are already included in getTemplates()
-    console.log('📋 Test templates generated');
-  }
-
-  async updateDocumentation(config) {
-    // Documentation is already included in getTemplates()
-    console.log('📚 Documentation generated');
-  }
-
-  async setupGitTracking(config) {
-    try {
-      const modulePath = path.join('src', 'tools', config.name);
-      execSync(`git add ${modulePath}`, { cwd: this.projectRoot, stdio: 'pipe' });
-      console.log('📦 Added module to git tracking');
-    } catch (error) {
-      console.warn('⚠️  Could not add module to git:', error.message);
-    }
-  }
+  generator.generateModule(name, { tools, description }).catch(console.error);
 }
 
-// CLI interface
-if (require.main === module) {
-  const args = process.argv.slice(2);
-  const config = {
-    name: '',
-    description: '',
-    tools: [],
-  };
-
-  // Parse command line arguments
-  for (let i = 0; i < args.length; i += 2) {
-    const flag = args[i];
-    const value = args[i + 1];
-
-    switch (flag) {
-      case '--name':
-        config.name = value;
-        break;
-      case '--description':
-        config.description = value;
-        break;
-      case '--tools':
-        config.tools = value.split(',').map(tool => tool.trim());
-        break;
-    }
-  }
-
-  // Validate required parameters
-  if (!config.name) {
-    console.error('❌ Module name is required. Use --name <module-name>');
-    process.exit(1);
-  }
-
-  if (config.tools.length === 0) {
-    console.error('❌ At least one tool is required. Use --tools <tool1,tool2,...>');
-    process.exit(1);
-  }
-
-  // Generate the module
-  const generator = new ModuleGenerator();
-  generator.generateModule(config).catch(error => {
-    console.error('❌ Module generation failed:', error);
-    process.exit(1);
-  });
-}
-
-module.exports = { ModuleGenerator };
+export default ModuleGenerator;

@@ -1,655 +1,314 @@
 #!/usr/bin/env node
+
 /**
- * Refactoring Analyzer Script for Make.com FastMCP Server
- * 
- * This script analyzes large TypeScript files and provides detailed refactoring
- * recommendations, complexity metrics, and splitting strategies.
- * 
- * Usage:
- *   node scripts/refactoring/refactoring-analyzer.js [options]
- * 
- * Options:
- *   --file <path>     Analyze specific file
- *   --threshold <n>   Line count threshold (default: 400)
- *   --output <json|table|markdown>  Output format (default: table)
- *   --save <path>     Save analysis to file
+ * Advanced Refactoring Analyzer
+ * Analyzes complexity metrics and provides specific refactoring recommendations
  */
 
-const fs = require('fs').promises;
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { Project } from 'ts-morph';
 
 class RefactoringAnalyzer {
-  constructor(options = {}) {
-    this.options = {
-      threshold: 400,
-      outputFormat: 'table',
-      ...options
-    };
-    this.projectRoot = process.cwd();
-    this.results = [];
+  constructor(projectPath = './') {
+    this.projectPath = projectPath;
+    this.project = new Project({
+      tsConfigFilePath: path.join(projectPath, 'tsconfig.json'),
+    });
   }
 
-  async analyzeProject() {
-    console.log('🔍 Starting refactoring analysis...');
-    console.log(`📏 Using threshold: ${this.options.threshold} lines`);
-
-    try {
-      // Find all TypeScript files
-      const tsFiles = await this.findTypeScriptFiles();
-      
-      // Analyze each file
-      for (const file of tsFiles) {
-        const analysis = await this.analyzeFile(file);
-        if (analysis) {
-          this.results.push(analysis);
-        }
-      }
-
-      // Sort by line count (descending)
-      this.results.sort((a, b) => b.lineCount - a.lineCount);
-
-      // Generate output
-      return this.generateOutput();
-
-    } catch (error) {
-      console.error('❌ Analysis failed:', error);
-      throw error;
-    }
-  }
-
-  async findTypeScriptFiles() {
-    const toolsDir = path.join(this.projectRoot, 'src', 'tools');
+  analyzeFile(filePath) {
+    const sourceFile = this.project.getSourceFileOrThrow(filePath);
+    const fullText = sourceFile.getFullText();
     
-    try {
-      const files = await fs.readdir(toolsDir);
-      const tsFiles = [];
-
-      for (const file of files) {
-        if (file.endsWith('.ts') && !file.endsWith('.test.ts') && !file.endsWith('.spec.ts')) {
-          const fullPath = path.join(toolsDir, file);
-          const stat = await fs.stat(fullPath);
-          
-          if (stat.isFile()) {
-            tsFiles.push(fullPath);
-          }
-        }
-      }
-
-      return tsFiles;
-    } catch (error) {
-      console.error('❌ Could not find TypeScript files:', error);
-      return [];
-    }
-  }
-
-  async analyzeFile(filePath) {
-    try {
-      const content = await fs.readFile(filePath, 'utf8');
-      const lines = content.split('\n');
-      const lineCount = lines.length;
-
-      // Skip files under threshold
-      if (lineCount < this.options.threshold) {
-        return null;
-      }
-
-      console.log(`📄 Analyzing ${path.basename(filePath)} (${lineCount} lines)...`);
-
-      const analysis = {
-        fileName: path.basename(filePath),
-        filePath: path.relative(this.projectRoot, filePath),
-        lineCount,
-        ...await this.analyzeCodeStructure(content, lines),
-        ...await this.calculateComplexityMetrics(content),
-        refactoringRecommendations: await this.generateRefactoringRecommendations(filePath, content, lineCount)
-      };
-
-      return analysis;
-
-    } catch (error) {
-      console.warn(`⚠️  Could not analyze ${filePath}:`, error.message);
-      return null;
-    }
-  }
-
-  async analyzeCodeStructure(content, lines) {
-    const structure = {
-      imports: 0,
-      exports: 0,
-      interfaces: 0,
-      types: 0,
-      classes: 0,
-      functions: 0,
-      constants: 0,
-      comments: 0,
-      emptyLines: 0,
-      toolRegistrations: 0,
+    const analysis = {
+      filePath,
+      totalLines: fullText.split('\n').length,
+      functions: this.analyzeFunctions(sourceFile),
+      classes: this.analyzeClasses(sourceFile),
+      interfaces: this.analyzeInterfaces(sourceFile),
+      imports: this.analyzeImports(sourceFile),
+      exports: this.analyzeExports(sourceFile),
+      complexity: this.calculateComplexity(sourceFile),
+      recommendations: []
     };
 
-    lines.forEach(line => {
-      const trimmed = line.trim();
-      
-      if (!trimmed) {
-        structure.emptyLines++;
-      } else if (trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*')) {
-        structure.comments++;
-      } else if (trimmed.startsWith('import ')) {
-        structure.imports++;
-      } else if (trimmed.startsWith('export ')) {
-        structure.exports++;
-      } else if (trimmed.includes('interface ')) {
-        structure.interfaces++;
-      } else if (trimmed.includes('type ') && trimmed.includes('=')) {
-        structure.types++;
-      } else if (trimmed.includes('class ')) {
-        structure.classes++;
-      } else if (trimmed.includes('function ') || /^\s*(async\s+)?function/.test(line)) {
-        structure.functions++;
-      } else if (trimmed.includes('const ') && trimmed.includes('=')) {
-        structure.constants++;
-      } else if (trimmed.includes('server.addTool(')) {
-        structure.toolRegistrations++;
-      }
+    analysis.recommendations = this.generateRecommendations(analysis);
+    return analysis;
+  }
+
+  analyzeFunctions(sourceFile) {
+    const functions = sourceFile.getFunctions();
+    return functions.map(func => ({
+      name: func.getName() || 'anonymous',
+      lineCount: func.getEndLineNumber() - func.getStartLineNumber() + 1,
+      parameterCount: func.getParameters().length,
+      isAsync: func.isAsync(),
+      isExported: func.isExported()
+    }));
+  }
+
+  analyzeClasses(sourceFile) {
+    const classes = sourceFile.getClasses();
+    return classes.map(cls => ({
+      name: cls.getName() || 'anonymous',
+      lineCount: cls.getEndLineNumber() - cls.getStartLineNumber() + 1,
+      methodCount: cls.getMethods().length,
+      propertyCount: cls.getProperties().length,
+      isExported: cls.isExported()
+    }));
+  }
+
+  analyzeInterfaces(sourceFile) {
+    const interfaces = sourceFile.getInterfaces();
+    return interfaces.map(iface => ({
+      name: iface.getName(),
+      propertyCount: iface.getProperties().length,
+      methodCount: iface.getMethods().length,
+      isExported: iface.isExported()
+    }));
+  }
+
+  analyzeImports(sourceFile) {
+    const imports = sourceFile.getImportDeclarations();
+    return imports.map(imp => ({
+      moduleSpecifier: imp.getModuleSpecifierValue(),
+      namedImports: imp.getNamedImports().map(ni => ni.getName()),
+      defaultImport: imp.getDefaultImport()?.getText(),
+      namespaceImport: imp.getNamespaceImport()?.getText()
+    }));
+  }
+
+  analyzeExports(sourceFile) {
+    const exports = sourceFile.getExportDeclarations();
+    return exports.map(exp => ({
+      moduleSpecifier: exp.getModuleSpecifierValue(),
+      namedExports: exp.getNamedExports().map(ne => ne.getName())
+    }));
+  }
+
+  calculateComplexity(sourceFile) {
+    const functions = sourceFile.getFunctions();
+    let totalComplexity = 0;
+    let maxComplexity = 0;
+
+    functions.forEach(func => {
+      // Simple complexity calculation based on control flow statements
+      const text = func.getFullText();
+      const complexity = (text.match(/if|else|while|for|switch|case|catch|\?/g) || []).length + 1;
+      totalComplexity += complexity;
+      maxComplexity = Math.max(maxComplexity, complexity);
     });
-
-    // Calculate code density
-    const codeLines = lines.length - structure.comments - structure.emptyLines;
-    structure.codeDensity = codeLines / lines.length;
-    structure.commentRatio = structure.comments / lines.length;
-
-    return structure;
-  }
-
-  async calculateComplexityMetrics(content) {
-    const metrics = {
-      cyclomaticComplexity: 0,
-      cognitiveComplexity: 0,
-      nestingDepth: 0,
-      functionComplexity: [],
-    };
-
-    try {
-      // Use ts-complexity for detailed analysis
-      const tempFile = path.join(__dirname, 'temp-analysis.ts');
-      await fs.writeFile(tempFile, content);
-
-      try {
-        const complexityOutput = execSync(`npx ts-complexity ${tempFile} --format json`, {
-          encoding: 'utf8',
-          stdio: 'pipe'
-        });
-
-        const complexityData = JSON.parse(complexityOutput);
-        
-        if (complexityData && complexityData.length > 0) {
-          const fileData = complexityData[0];
-          metrics.cyclomaticComplexity = fileData.complexity || 0;
-          metrics.functionComplexity = fileData.functions || [];
-        }
-
-      } catch (complexityError) {
-        // Fallback to basic complexity analysis
-        metrics.cyclomaticComplexity = this.calculateBasicComplexity(content);
-      }
-
-      // Clean up temp file
-      try {
-        await fs.unlink(tempFile);
-      } catch (unlinkError) {
-        // Ignore cleanup errors
-      }
-
-      // Calculate nesting depth
-      metrics.nestingDepth = this.calculateNestingDepth(content);
-
-    } catch (error) {
-      console.warn('⚠️  Could not calculate complexity metrics:', error.message);
-    }
-
-    return metrics;
-  }
-
-  calculateBasicComplexity(content) {
-    // Basic cyclomatic complexity calculation
-    const complexityIndicators = [
-      /\bif\b/g,
-      /\belse\b/g,
-      /\bwhile\b/g,
-      /\bfor\b/g,
-      /\bswitch\b/g,
-      /\bcase\b/g,
-      /\bcatch\b/g,
-      /\b\?\s*:/g, // Ternary operators
-      /\&\&/g,
-      /\|\|/g,
-    ];
-
-    let complexity = 1; // Base complexity
-
-    complexityIndicators.forEach(pattern => {
-      const matches = content.match(pattern);
-      if (matches) {
-        complexity += matches.length;
-      }
-    });
-
-    return complexity;
-  }
-
-  calculateNestingDepth(content) {
-    const lines = content.split('\n');
-    let maxDepth = 0;
-    let currentDepth = 0;
-
-    lines.forEach(line => {
-      const trimmed = line.trim();
-      
-      // Count opening braces
-      const openBraces = (line.match(/{/g) || []).length;
-      const closeBraces = (line.match(/}/g) || []).length;
-      
-      currentDepth += openBraces - closeBraces;
-      maxDepth = Math.max(maxDepth, currentDepth);
-    });
-
-    return maxDepth;
-  }
-
-  async generateRefactoringRecommendations(filePath, content, lineCount) {
-    const recommendations = [];
-    const fileName = path.basename(filePath, '.ts');
-
-    // Line count recommendations
-    if (lineCount > 2000) {
-      recommendations.push({
-        type: 'critical',
-        category: 'size',
-        message: `File is extremely large (${lineCount} lines). Immediate refactoring required.`,
-        priority: 'high',
-        effort: 'high',
-        suggestedSplit: Math.ceil(lineCount / 400)
-      });
-    } else if (lineCount > 1000) {
-      recommendations.push({
-        type: 'warning',
-        category: 'size',
-        message: `File is large (${lineCount} lines). Consider splitting into modules.`,
-        priority: 'medium',
-        effort: 'medium',
-        suggestedSplit: Math.ceil(lineCount / 400)
-      });
-    }
-
-    // Tool registration analysis
-    const toolMatches = content.match(/server\.addTool\(/g);
-    const toolCount = toolMatches ? toolMatches.length : 0;
-    
-    if (toolCount > 10) {
-      recommendations.push({
-        type: 'warning',
-        category: 'tools',
-        message: `High number of tools (${toolCount}). Consider individual tool files.`,
-        priority: 'medium',
-        effort: 'medium',
-        suggestedApproach: 'Split into individual tool files in tools/ directory'
-      });
-    }
-
-    // Type definition analysis
-    const typeMatches = content.match(/(?:interface|type)\s+\w+/g);
-    const typeCount = typeMatches ? typeMatches.length : 0;
-    
-    if (typeCount > 20) {
-      recommendations.push({
-        type: 'info',
-        category: 'types',
-        message: `Many type definitions (${typeCount}). Consider separate types module.`,
-        priority: 'low',
-        effort: 'low',
-        suggestedApproach: 'Extract to types/ directory'
-      });
-    }
-
-    // Function analysis
-    const functionMatches = content.match(/(?:function|async\s+function|\w+\s*=\s*(?:async\s+)?\()/g);
-    const functionCount = functionMatches ? functionMatches.length : 0;
-    
-    if (functionCount > 30) {
-      recommendations.push({
-        type: 'info',
-        category: 'functions',
-        message: `Many functions (${functionCount}). Consider utility modules.`,
-        priority: 'low',
-        effort: 'low',
-        suggestedApproach: 'Extract to utils/ directory'
-      });
-    }
-
-    // Specific patterns for each large file
-    const specificRecommendations = this.getFileSpecificRecommendations(fileName, content);
-    recommendations.push(...specificRecommendations);
-
-    return recommendations;
-  }
-
-  getFileSpecificRecommendations(fileName, content) {
-    const recommendations = [];
-
-    switch (fileName) {
-      case 'ai-governance-engine':
-        recommendations.push({
-          type: 'info',
-          category: 'ml',
-          message: 'Contains ML logic. Consider ml/, governance/, and compliance/ modules.',
-          priority: 'high',
-          effort: 'high',
-          suggestedStructure: ['ml/', 'governance/', 'compliance/', 'types/', 'utils/']
-        });
-        break;
-
-      case 'blueprint-collaboration':
-        recommendations.push({
-          type: 'info',
-          category: 'realtime',
-          message: 'Contains real-time logic. Consider versioning/, collaboration/, conflict/ modules.',
-          priority: 'high',
-          effort: 'high',
-          suggestedStructure: ['versioning/', 'collaboration/', 'conflict/', 'deployment/']
-        });
-        break;
-
-      case 'connections':
-        recommendations.push({
-          type: 'info',
-          category: 'services',
-          message: 'Service integration logic. Consider adapters/, webhooks/, diagnostics/ modules.',
-          priority: 'medium',
-          effort: 'medium',
-          suggestedStructure: ['adapters/', 'webhooks/', 'diagnostics/', 'security/']
-        });
-        break;
-
-      case 'notifications':
-        recommendations.push({
-          type: 'info',
-          category: 'channels',
-          message: 'Multi-channel logic. Consider channels/, templates/, scheduling/ modules.',
-          priority: 'medium',
-          effort: 'medium',
-          suggestedStructure: ['channels/', 'templates/', 'scheduling/', 'tracking/']
-        });
-        break;
-
-      case 'billing':
-        recommendations.push({
-          type: 'info',
-          category: 'financial',
-          message: 'Financial logic. Consider accounts/, usage/, invoicing/, budgets/ modules.',
-          priority: 'medium',
-          effort: 'medium',
-          suggestedStructure: ['accounts/', 'usage/', 'invoicing/', 'budgets/']
-        });
-        break;
-
-      default:
-        if (content.includes('compliance') || content.includes('policy')) {
-          recommendations.push({
-            type: 'info',
-            category: 'compliance',
-            message: 'Contains compliance logic. Consider policy/, validation/, audit/ modules.',
-            priority: 'medium',
-            effort: 'medium'
-          });
-        }
-        break;
-    }
-
-    return recommendations;
-  }
-
-  generateOutput() {
-    const summary = this.generateSummary();
-    
-    switch (this.options.outputFormat) {
-      case 'json':
-        return this.generateJsonOutput(summary);
-      case 'markdown':
-        return this.generateMarkdownOutput(summary);
-      case 'table':
-      default:
-        return this.generateTableOutput(summary);
-    }
-  }
-
-  generateSummary() {
-    const totalFiles = this.results.length;
-    const totalLines = this.results.reduce((sum, result) => sum + result.lineCount, 0);
-    const avgLines = totalFiles > 0 ? Math.round(totalLines / totalFiles) : 0;
-    const maxLines = totalFiles > 0 ? Math.max(...this.results.map(r => r.lineCount)) : 0;
-    const criticalFiles = this.results.filter(r => r.lineCount > 2000).length;
-    const warningFiles = this.results.filter(r => r.lineCount > 1000 && r.lineCount <= 2000).length;
 
     return {
-      totalFiles,
-      totalLines,
-      avgLines,
-      maxLines,
-      criticalFiles,
-      warningFiles,
-      filesUnderThreshold: 0, // These aren't included in results
+      totalComplexity,
+      maxComplexity,
+      averageComplexity: functions.length > 0 ? totalComplexity / functions.length : 0
     };
   }
 
-  generateTableOutput(summary) {
-    let output = '\n🔍 REFACTORING ANALYSIS RESULTS\n';
-    output += '=' .repeat(50) + '\n\n';
+  generateRecommendations(analysis) {
+    const recommendations = [];
 
-    // Summary
-    output += '📊 SUMMARY:\n';
-    output += `   Files analyzed: ${summary.totalFiles}\n`;
-    output += `   Total lines: ${summary.totalLines.toLocaleString()}\n`;
-    output += `   Average lines: ${summary.avgLines}\n`;
-    output += `   Largest file: ${summary.maxLines.toLocaleString()} lines\n`;
-    output += `   🚨 Critical files (>2000 lines): ${summary.criticalFiles}\n`;
-    output += `   ⚠️  Warning files (1000-2000 lines): ${summary.warningFiles}\n\n`;
-
-    // Detailed results
-    if (this.results.length > 0) {
-      output += '📋 DETAILED ANALYSIS:\n\n';
-      
-      // Table header
-      output += '┌' + '─'.repeat(30) + '┬' + '─'.repeat(8) + '┬' + '─'.repeat(10) + '┬' + '─'.repeat(12) + '┬' + '─'.repeat(15) + '┐\n';
-      output += '│' + ' File'.padEnd(30) + '│' + ' Lines'.padEnd(8) + '│' + ' Tools'.padEnd(10) + '│' + ' Complexity'.padEnd(12) + '│' + ' Priority'.padEnd(15) + '│\n';
-      output += '├' + '─'.repeat(30) + '┼' + '─'.repeat(8) + '┼' + '─'.repeat(10) + '┼' + '─'.repeat(12) + '┼' + '─'.repeat(15) + '┤\n';
-
-      this.results.forEach(result => {
-        const fileName = result.fileName.length > 28 ? result.fileName.substring(0, 25) + '...' : result.fileName;
-        const priority = result.lineCount > 2000 ? '🚨 Critical' : result.lineCount > 1000 ? '⚠️  Warning' : '✅ Good';
-        
-        output += '│' + ` ${fileName}`.padEnd(30) + 
-                  '│' + ` ${result.lineCount.toLocaleString()}`.padEnd(8) + 
-                  '│' + ` ${result.toolRegistrations}`.padEnd(10) + 
-                  '│' + ` ${result.cyclomaticComplexity}`.padEnd(12) + 
-                  '│' + ` ${priority}`.padEnd(15) + '│\n';
-      });
-
-      output += '└' + '─'.repeat(30) + '┴' + '─'.repeat(8) + '┴' + '─'.repeat(10) + '┴' + '─'.repeat(12) + '┴' + '─'.repeat(15) + '┘\n\n';
-
-      // Recommendations
-      output += '💡 REFACTORING RECOMMENDATIONS:\n\n';
-      
-      this.results.forEach((result, index) => {
-        if (result.refactoringRecommendations.length > 0) {
-          output += `📄 ${result.fileName}:\n`;
-          
-          result.refactoringRecommendations.forEach(rec => {
-            const icon = rec.type === 'critical' ? '🚨' : rec.type === 'warning' ? '⚠️' : 'ℹ️';
-            output += `   ${icon} ${rec.message}\n`;
-            
-            if (rec.suggestedStructure) {
-              output += `      Suggested modules: ${rec.suggestedStructure.join(', ')}\n`;
-            }
-            if (rec.suggestedSplit) {
-              output += `      Suggested split: ${rec.suggestedSplit} modules\n`;
-            }
-          });
-          
-          output += '\n';
-        }
+    // File size recommendations
+    if (analysis.totalLines > 1000) {
+      recommendations.push({
+        type: 'file-size',
+        severity: 'high',
+        message: `File has ${analysis.totalLines} lines. Consider splitting into multiple modules.`,
+        suggestion: 'Split into domain-specific modules (types, core, services, tools)'
       });
     }
 
-    // Next steps
-    output += '🚀 NEXT STEPS:\n';
-    output += '   1. Start with critical files (>2000 lines)\n';
-    output += '   2. Use module generator: npm run generate:module\n';
-    output += '   3. Follow phase-based refactoring approach\n';
-    output += '   4. Maintain backward compatibility\n';
-    output += '   5. Add comprehensive tests\n\n';
-
-    return output;
-  }
-
-  generateJsonOutput(summary) {
-    return JSON.stringify({
-      summary,
-      results: this.results,
-      generatedAt: new Date().toISOString(),
-    }, null, 2);
-  }
-
-  generateMarkdownOutput(summary) {
-    let output = '# Refactoring Analysis Results\n\n';
-    
-    output += `**Generated**: ${new Date().toLocaleString()}\n\n`;
-    
-    output += '## Summary\n\n';
-    output += `- **Files analyzed**: ${summary.totalFiles}\n`;
-    output += `- **Total lines**: ${summary.totalLines.toLocaleString()}\n`;
-    output += `- **Average lines**: ${summary.avgLines}\n`;
-    output += `- **Largest file**: ${summary.maxLines.toLocaleString()} lines\n`;
-    output += `- **🚨 Critical files** (>2000 lines): ${summary.criticalFiles}\n`;
-    output += `- **⚠️ Warning files** (1000-2000 lines): ${summary.warningFiles}\n\n`;
-
-    if (this.results.length > 0) {
-      output += '## Detailed Analysis\n\n';
-      output += '| File | Lines | Tools | Complexity | Priority |\n';
-      output += '|------|-------|-------|------------|----------|\n';
-
-      this.results.forEach(result => {
-        const priority = result.lineCount > 2000 ? '🚨 Critical' : result.lineCount > 1000 ? '⚠️ Warning' : '✅ Good';
-        output += `| ${result.fileName} | ${result.lineCount.toLocaleString()} | ${result.toolRegistrations} | ${result.cyclomaticComplexity} | ${priority} |\n`;
-      });
-
-      output += '\n## Refactoring Recommendations\n\n';
-
-      this.results.forEach(result => {
-        if (result.refactoringRecommendations.length > 0) {
-          output += `### ${result.fileName}\n\n`;
-          
-          result.refactoringRecommendations.forEach(rec => {
-            const icon = rec.type === 'critical' ? '🚨' : rec.type === 'warning' ? '⚠️' : 'ℹ️';
-            output += `- ${icon} **${rec.category}**: ${rec.message}\n`;
-            
-            if (rec.suggestedStructure) {
-              output += `  - Suggested modules: ${rec.suggestedStructure.join(', ')}\n`;
-            }
-            if (rec.suggestedSplit) {
-              output += `  - Suggested split: ${rec.suggestedSplit} modules\n`;
-            }
-          });
-          
-          output += '\n';
-        }
-      });
-    }
-
-    output += '## Next Steps\n\n';
-    output += '1. Start with critical files (>2000 lines)\n';
-    output += '2. Use module generator: `npm run generate:module`\n';
-    output += '3. Follow phase-based refactoring approach\n';
-    output += '4. Maintain backward compatibility\n';
-    output += '5. Add comprehensive tests\n';
-
-    return output;
-  }
-
-  async saveResults(filePath, content) {
-    try {
-      await fs.writeFile(filePath, content, 'utf8');
-      console.log(`💾 Analysis saved to ${filePath}`);
-    } catch (error) {
-      console.error('❌ Could not save analysis:', error);
-    }
-  }
-}
-
-// CLI interface
-if (require.main === module) {
-  const args = process.argv.slice(2);
-  const options = {
-    file: null,
-    threshold: 400,
-    outputFormat: 'table',
-    saveFile: null,
-  };
-
-  // Parse command line arguments
-  for (let i = 0; i < args.length; i += 2) {
-    const flag = args[i];
-    const value = args[i + 1];
-
-    switch (flag) {
-      case '--file':
-        options.file = value;
-        break;
-      case '--threshold':
-        options.threshold = parseInt(value, 10);
-        break;
-      case '--output':
-        options.outputFormat = value;
-        break;
-      case '--save':
-        options.saveFile = value;
-        break;
-      case '--help':
-        console.log(`
-Refactoring Analyzer - Analyze TypeScript files for refactoring opportunities
-
-Usage: node scripts/refactoring/refactoring-analyzer.js [options]
-
-Options:
-  --file <path>         Analyze specific file
-  --threshold <n>       Line count threshold (default: 400)
-  --output <format>     Output format: json, table, markdown (default: table)
-  --save <path>         Save analysis to file
-  --help               Show this help message
-
-Examples:
-  node scripts/refactoring/refactoring-analyzer.js
-  node scripts/refactoring/refactoring-analyzer.js --threshold 500 --output markdown
-  node scripts/refactoring/refactoring-analyzer.js --save analysis-results.md --output markdown
-        `);
-        process.exit(0);
-        break;
-    }
-  }
-
-  // Run the analysis
-  const analyzer = new RefactoringAnalyzer(options);
-  analyzer.analyzeProject()
-    .then(output => {
-      console.log(output);
-      
-      if (options.saveFile) {
-        return analyzer.saveResults(options.saveFile, output);
+    // Function size recommendations
+    analysis.functions.forEach(func => {
+      if (func.lineCount > 50) {
+        recommendations.push({
+          type: 'function-size',
+          severity: 'medium',
+          message: `Function '${func.name}' has ${func.lineCount} lines. Consider breaking it down.`,
+          suggestion: 'Extract smaller, focused functions with single responsibilities'
+        });
       }
-    })
-    .catch(error => {
-      console.error('❌ Analysis failed:', error);
-      process.exit(1);
     });
+
+    // Class size recommendations
+    analysis.classes.forEach(cls => {
+      if (cls.lineCount > 300) {
+        recommendations.push({
+          type: 'class-size',
+          severity: 'high',
+          message: `Class '${cls.name}' has ${cls.lineCount} lines. Consider splitting responsibilities.`,
+          suggestion: 'Apply Single Responsibility Principle and extract related classes'
+        });
+      }
+    });
+
+    // Complexity recommendations
+    if (analysis.complexity.maxComplexity > 15) {
+      recommendations.push({
+        type: 'complexity',
+        severity: 'high',
+        message: `Maximum cyclomatic complexity is ${analysis.complexity.maxComplexity}. Reduce complexity.`,
+        suggestion: 'Break down complex functions and reduce nested conditions'
+      });
+    }
+
+    return recommendations;
+  }
+
+  analyzeProject(targetFiles = []) {
+    if (targetFiles.length === 0) {
+      // Default to large files that need refactoring
+      targetFiles = [
+        'src/tools/ai-governance-engine.ts',
+        'src/tools/blueprint-collaboration.ts',
+        'src/tools/connections.ts',
+        'src/tools/notifications.ts',
+        'src/tools/billing.ts',
+        'src/tools/policy-compliance-validation.ts',
+        'src/tools/compliance-policy.ts',
+        'src/tools/folders.ts',
+        'src/tools/zero-trust-auth.ts'
+      ];
+    }
+
+    const results = {};
+    
+    targetFiles.forEach(filePath => {
+      const fullPath = path.join(this.projectPath, filePath);
+      if (fs.existsSync(fullPath)) {
+        try {
+          results[filePath] = this.analyzeFile(filePath);
+        } catch (error) {
+          console.error(`Error analyzing ${filePath}:`, error.message);
+          results[filePath] = { error: error.message };
+        }
+      }
+    });
+
+    return results;
+  }
+
+  generateReport(analysis, format = 'table') {
+    if (format === 'json') {
+      return JSON.stringify(analysis, null, 2);
+    }
+
+    if (format === 'markdown') {
+      return this.generateMarkdownReport(analysis);
+    }
+
+    // Default table format
+    return this.generateTableReport(analysis);
+  }
+
+  generateTableReport(analysis) {
+    console.log('\n📊 REFACTORING ANALYSIS REPORT\n');
+    console.log('┌─────────────────────────────────┬──────────┬─────────────┬───────────────┬─────────────────┐');
+    console.log('│ File                            │ Lines    │ Functions   │ Max Complexity│ Recommendations │');
+    console.log('├─────────────────────────────────┼──────────┼─────────────┼───────────────┼─────────────────┤');
+
+    Object.entries(analysis).forEach(([filePath, data]) => {
+      if (data.error) {
+        console.log(`│ ${filePath.padEnd(31)} │ ERROR    │ -           │ -             │ ${data.error.substring(0, 13).padEnd(15)} │`);
+      } else {
+        const fileName = path.basename(filePath).padEnd(31);
+        const lines = String(data.totalLines).padEnd(8);
+        const functions = String(data.functions.length).padEnd(11);
+        const complexity = String(data.complexity.maxComplexity).padEnd(13);
+        const recommendations = String(data.recommendations.length).padEnd(15);
+        
+        console.log(`│ ${fileName} │ ${lines} │ ${functions} │ ${complexity} │ ${recommendations} │`);
+      }
+    });
+
+    console.log('└─────────────────────────────────┴──────────┴─────────────┴───────────────┴─────────────────┘');
+
+    // Show recommendations
+    console.log('\n🔧 REFACTORING RECOMMENDATIONS\n');
+    Object.entries(analysis).forEach(([filePath, data]) => {
+      if (!data.error && data.recommendations.length > 0) {
+        console.log(`📁 ${filePath}:`);
+        data.recommendations.forEach((rec, index) => {
+          const severity = rec.severity === 'high' ? '🔴' : rec.severity === 'medium' ? '🟡' : '🟢';
+          console.log(`  ${index + 1}. ${severity} ${rec.message}`);
+          console.log(`     💡 ${rec.suggestion}`);
+        });
+        console.log('');
+      }
+    });
+
+    return analysis;
+  }
+
+  generateMarkdownReport(analysis) {
+    let markdown = '# Refactoring Analysis Report\n\n';
+    markdown += `Generated: ${new Date().toISOString()}\n\n`;
+    markdown += '## File Analysis Summary\n\n';
+    markdown += '| File | Lines | Functions | Max Complexity | Recommendations |\n';
+    markdown += '|------|-------|-----------|----------------|-----------------|\n';
+
+    Object.entries(analysis).forEach(([filePath, data]) => {
+      if (data.error) {
+        markdown += `| ${path.basename(filePath)} | ERROR | - | - | ${data.error} |\n`;
+      } else {
+        markdown += `| ${path.basename(filePath)} | ${data.totalLines} | ${data.functions.length} | ${data.complexity.maxComplexity} | ${data.recommendations.length} |\n`;
+      }
+    });
+
+    markdown += '\n## Detailed Recommendations\n\n';
+    Object.entries(analysis).forEach(([filePath, data]) => {
+      if (!data.error && data.recommendations.length > 0) {
+        markdown += `### ${path.basename(filePath)}\n\n`;
+        data.recommendations.forEach((rec, index) => {
+          const severity = rec.severity === 'high' ? '🔴' : rec.severity === 'medium' ? '🟡' : '🟢';
+          markdown += `${index + 1}. ${severity} **${rec.type}**: ${rec.message}\n`;
+          markdown += `   - **Suggestion**: ${rec.suggestion}\n\n`;
+        });
+      }
+    });
+
+    return markdown;
+  }
 }
 
-module.exports = { RefactoringAnalyzer };
+// CLI Interface
+const analyzer = new RefactoringAnalyzer();
+const args = process.argv.slice(2);
+
+let format = 'table';
+let outputFile = null;
+let targetFiles = [];
+
+// Parse arguments
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--format' && args[i + 1]) {
+    format = args[i + 1];
+    i++;
+  } else if (args[i] === '--output' && args[i + 1]) {
+    outputFile = args[i + 1];
+    i++;
+  } else if (args[i] === '--files' && args[i + 1]) {
+    targetFiles = args[i + 1].split(',');
+    i++;
+  }
+}
+
+console.log('🔍 Analyzing files for refactoring opportunities...\n');
+
+const analysis = analyzer.analyzeProject(targetFiles);
+const report = analyzer.generateReport(analysis, format);
+
+if (outputFile) {
+  fs.writeFileSync(outputFile, typeof report === 'string' ? report : JSON.stringify(report, null, 2));
+  console.log(`\n📄 Report saved to: ${outputFile}`);
+}
+
+if (format === 'table') {
+  // Report was already printed in generateTableReport
+} else {
+  console.log(report);
+}
+
+export default RefactoringAnalyzer;
