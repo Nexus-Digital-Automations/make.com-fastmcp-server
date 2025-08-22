@@ -189,8 +189,8 @@ async function executeMonitoringLoop(
 function processNewLogs(
   newLogs: MakeLogEntry[],
   executionData: Record<string, unknown>,
-  monitoring: any,
-  alerts: any
+  monitoring: { includePerformanceMetrics: boolean; updateIntervalMs: number },
+  alerts: { enabled: boolean; errorThreshold: number; performanceThreshold: number; moduleFailureAlert: boolean }
 ): void {
   for (const logEntry of newLogs) {
     const existingLogs = executionData.logs as MakeLogEntry[];
@@ -243,7 +243,7 @@ function updatePerformanceMetrics(
 function generateAlerts(
   executionData: Record<string, unknown>,
   logEntry: MakeLogEntry,
-  alerts: any,
+  alerts: { enabled: boolean; errorThreshold: number; performanceThreshold: number; moduleFailureAlert: boolean },
   existingLogs: MakeLogEntry[]
 ): void {
   const alertList = executionData.alerts as Array<Record<string, unknown>>;
@@ -290,7 +290,7 @@ function generateMonitoringResult(
   executionData: Record<string, unknown>,
   streamId: string,
   startTime: number,
-  output: any
+  output: { format: 'json' | 'structured' | 'streaming'; includeVisualization: boolean; realTimeUpdate: boolean }
 ): Record<string, unknown> {
   let visualization: string | undefined;
   if (output.includeVisualization) {

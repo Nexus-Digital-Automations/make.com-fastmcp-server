@@ -118,12 +118,12 @@ async function executeScenario(
  * Poll for execution completion with timeout handling
  */
 async function pollExecutionStatus(
-  apiClient: any,
+  apiClient: MakeApiClient,
   scenarioId: string,
   executionId: string,
   timeoutSeconds: number,
-  reportProgress?: any,
-  log?: any
+  reportProgress?: (progress: { progress: number; total: number }) => void,
+  log?: LogInterface
 ): Promise<{ status: string; completedAt?: string; duration?: number; result?: unknown }> {
   const startTime = Date.now();
   const timeoutMs = timeoutSeconds * 1000;

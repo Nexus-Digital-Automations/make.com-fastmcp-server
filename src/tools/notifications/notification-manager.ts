@@ -745,7 +745,7 @@ function buildNotificationQueryParams(
   type: string, 
   status: string, 
   priority: string, 
-  dateRange: any, 
+  dateRange: { startDate?: string; endDate?: string } | undefined, 
   limit: number, 
   offset: number, 
   sortBy: string, 
@@ -774,7 +774,12 @@ function buildNotificationQueryParams(
 /**
  * Generate delivery analytics from notifications
  */
-function generateDeliveryAnalytics(notifications: any[]): any {
+function generateDeliveryAnalytics(notifications: MakeNotification[]): {
+  totalRecipients: number;
+  successfulDeliveries: number;
+  failedDeliveries: number;
+  averageDeliveryRate: number;
+} {
   return {
     totalRecipients: notifications.reduce((sum, n) => sum + n.delivery.totalRecipients, 0),
     successfulDeliveries: notifications.reduce((sum, n) => sum + n.delivery.successfulDeliveries, 0),
@@ -787,7 +792,7 @@ function generateDeliveryAnalytics(notifications: any[]): any {
 /**
  * Generate channel usage analytics from notifications
  */
-function generateChannelUsage(notifications: any[]): Record<string, number> {
+function generateChannelUsage(notifications: MakeNotification[]): Record<string, number> {
   return notifications.reduce((acc: Record<string, number>, notif) => {
     Object.entries(notif.channels).forEach(([channel, enabled]) => {
       if (enabled) {
@@ -801,7 +806,23 @@ function generateChannelUsage(notifications: any[]): Record<string, number> {
 /**
  * Generate comprehensive analytics for notifications
  */
-function generateNotificationAnalytics(notifications: any[], metadata: any, includeDelivery: boolean): any {
+function generateNotificationAnalytics(
+  notifications: MakeNotification[], 
+  metadata: { total?: number; [key: string]: unknown }, 
+  includeDelivery: boolean
+): {
+  totalNotifications: number;
+  typeBreakdown: Record<string, number>;
+  statusBreakdown: Record<string, number>;
+  priorityBreakdown: Record<string, number>;
+  channelUsage: Record<string, number>;
+  deliveryAnalytics?: {
+    totalRecipients: number;
+    successfulDeliveries: number;
+    failedDeliveries: number;
+    averageDeliveryRate: number;
+  };
+} {
   return {
     totalNotifications: metadata?.total || notifications.length,
     typeBreakdown: notifications.reduce((acc: Record<string, number>, notif) => {
@@ -824,7 +845,13 @@ function generateNotificationAnalytics(notifications: any[], metadata: any, incl
 /**
  * Format notifications list response with privacy protection
  */
-function formatNotificationsListResponse(notifications: any[], analytics: any, metadata: any, limit: number, offset: number): any {
+function formatNotificationsListResponse(
+  notifications: MakeNotification[], 
+  analytics: Record<string, unknown>, 
+  metadata: { total?: number; [key: string]: unknown }, 
+  limit: number, 
+  offset: number
+): import('../../utils/response-formatter.js').ToolResponse {
   return formatSuccessResponse({
     notifications: notifications.map(notif => ({
       ...notif,
@@ -846,7 +873,7 @@ function formatNotificationsListResponse(notifications: any[], analytics: any, m
 /**
  * Validate notification recipients
  */
-function validateNotificationRecipients(recipients: any): void {
+function validateNotificationRecipients(recipients: MakeNotification['recipients']): void {
   const totalRecipients = recipients.users.length + recipients.teams.length + recipients.organizations.length + recipients.emails.length;
   if (totalRecipients === 0) {
     throw new UserError('At least one recipient must be specified');
@@ -856,7 +883,7 @@ function validateNotificationRecipients(recipients: any): void {
 /**
  * Validate notification channels
  */
-function validateNotificationChannels(channels: any): void {
+function validateNotificationChannels(channels: MakeNotification['channels']): void {
   const enabledChannels = Object.values(channels).filter(Boolean);
   if (enabledChannels.length === 0) {
     throw new UserError('At least one delivery channel must be enabled');
@@ -866,7 +893,7 @@ function validateNotificationChannels(channels: any): void {
 /**
  * Build notification data payload
  */
-function buildNotificationData(input: any): any {
+function buildNotificationData(input: Record<string, unknown>): Partial<MakeNotification> {
   const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
   
   return {
@@ -890,7 +917,7 @@ function buildNotificationData(input: any): any {
 /**
  * Format create notification response
  */
-function formatCreateNotificationResponse(notification: any, title: string, schedule: any): any {
+function formatCreateNotificationResponse(notification: MakeNotification, title: string, schedule: MakeNotification['schedule']): import('../../utils/response-formatter.js').ToolResponse {
   return formatSuccessResponse({
     notification: {
       ...notification,

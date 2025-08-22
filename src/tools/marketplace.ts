@@ -293,10 +293,10 @@ function buildSearchParameters(
 /**
  * Process search response and extract results
  */
-function processSearchResponse(searchResponse: any): {
-  apps: any[];
+function processSearchResponse(searchResponse: { data?: { apps?: MakePublicApp[]; total?: number; facets?: Record<string, unknown> } }): {
+  apps: MakePublicApp[];
   totalCount: number;
-  facets: any;
+  facets: Record<string, unknown>;
 } {
   const searchResults = searchResponse.data?.apps || [];
   const totalCount = searchResponse.data?.total || searchResults.length;
@@ -313,14 +313,14 @@ function processSearchResponse(searchResponse: any): {
  * Format search results into final response structure
  */
 function formatSearchResults(
-  apps: any[],
+  apps: MakePublicApp[],
   totalCount: number,
-  facets: any,
-  pagination: any,
+  facets: Record<string, unknown>,
+  pagination: { limit?: number; offset?: number },
   query: string,
-  filters: any,
-  sorting: any
-): any {
+  filters: MakeAppSearchFilters,
+  sorting: { field?: string; order?: string }
+): Record<string, unknown> {
   return {
     apps,
     pagination: {
