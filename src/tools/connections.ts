@@ -955,7 +955,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
         reportProgress({ progress: 20, total: 100 });
 
         // Step 2: Run diagnostics for each connection
-        const connectionResults = [];
+        const connectionResults: ConnectionResult[] = [];
         const totalConnections = connectionsToAnalyze.length;
         
         for (let i = 0; i < connectionsToAnalyze.length; i++) {
@@ -1198,7 +1198,7 @@ async function diagnoseIndividualConnection(
  * Check basic connection health
  */
 async function checkConnectionHealth(connection: ConnectionData): Promise<ConnectionDiagnosticResult> {
-  const issues = [];
+  const issues: string[] = [];
   
   // Check if connection has required fields
   if (!connection.name) {
@@ -1534,7 +1534,7 @@ async function analyzeConnectionPerformance(
     let severity: 'info' | 'warning' | 'error' = 'info';
     let title = 'Performance: Good';
     let description = 'Connection performance is within acceptable ranges';
-    const recommendations = [];
+    const recommendations: string[] = [];
     
     if (avgResponseTime > 2000) {
       severity = 'warning';
@@ -1590,8 +1590,8 @@ async function analyzeConnectionPerformance(
 async function assessConnectionSecurity(connection: ConnectionData): Promise<ConnectionDiagnosticResult> {
   const connectionId = connection.id;
   const service = connection.service;
-  const securityIssues = [];
-  const recommendations = [];
+  const securityIssues: string[] = [];
+  const recommendations: string[] = [];
   
   // Check for hardcoded credentials (basic check)
   const credentials = connection.credentials || {};

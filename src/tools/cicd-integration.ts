@@ -252,8 +252,10 @@ async function runLintCheck(): Promise<{ passed: boolean; score: number; issues:
   const errorRegex = /(\d+) error/;
   const warningRegex = /(\d+) warning/;
   
-  const errors = errorRegex.exec(stderr)?.[1] ? parseInt(errorRegex.exec(stderr)[1]) : 0;
-  const warnings = warningRegex.exec(stderr)?.[1] ? parseInt(warningRegex.exec(stderr)[1]) : 0;
+  const errorMatch = errorRegex.exec(stderr);
+  const warningMatch = warningRegex.exec(stderr);
+  const errors = errorMatch?.[1] ? parseInt(errorMatch[1]) : 0;
+  const warnings = warningMatch?.[1] ? parseInt(warningMatch[1]) : 0;
   
   const totalIssues = errors + warnings;
   const score = Math.max(0, 100 - (errors * 10 + warnings * 2));
