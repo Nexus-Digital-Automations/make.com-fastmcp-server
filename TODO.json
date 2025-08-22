@@ -62,61 +62,6 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755868885034_moy8dtie9",
-      "title": "Refactor large files for better maintainability",
-      "description": "Refactor files over 1500 lines for better maintainability. Priority targets: folders/core/index.ts (2141 lines), blueprint-collaboration.ts (1953 lines), connections.ts (1916 lines). Break into logical modules while preserving functionality.",
-      "mode": "DEVELOPMENT",
-      "category": "refactor",
-      "priority": "medium",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T13:21:25.035Z",
-      "auto_research_created": false,
-      "started_at": null,
-      "claimed_by": null,
-      "assigned_agent": null,
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755869109000",
-          "action": "claimed",
-          "timestamp": "2025-08-22T13:25:09.000Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-22T13:47:53.727Z",
-          "reason": "Task stale for 23 minutes"
-        },
-        {
-          "agent": "agent_1755870493599",
-          "action": "claimed",
-          "timestamp": "2025-08-22T13:48:13.599Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-22T14:05:13.830Z",
-          "reason": "Task stale for 17 minutes"
-        },
-        {
-          "agent": "agent_1755871560255",
-          "action": "claimed",
-          "timestamp": "2025-08-22T14:06:00.255Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-22T14:42:05.036Z",
-          "reason": "Task stale for 36 minutes"
-        }
-      ]
-    },
-    {
       "id": "task_1755869726475_je0c80mix",
       "title": "Research test infrastructure quality and performance optimization opportunities",
       "description": "Comprehensive analysis of current test setup, helper functions, performance bottlenecks, coverage gaps, and optimization opportunities. Focus on expectInvalidZodParse warnings and test code quality improvements.",
@@ -187,13 +132,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755875593804_1_general_7313af48": {
+    "development_session_1755877522923_1_general_a45d8dd9": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T15:13:13.804Z",
+      "lastHeartbeat": "2025-08-22T15:45:22.924Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -204,8 +149,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T15:13:13.804Z",
-      "sessionId": "session_1755875593804",
+      "createdAt": "2025-08-22T15:45:22.924Z",
+      "sessionId": "session_1755877522923",
       "metadata": {}
     }
   },
