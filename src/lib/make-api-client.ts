@@ -167,7 +167,7 @@ export class MakeApiClient {
     operationName: string,
     retries: number = this.config.retries || 3
   ): Promise<ApiResponse<T>> {
-    let lastError: MakeApiError;
+    let lastError: MakeApiError | undefined;
     
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
@@ -205,9 +205,9 @@ export class MakeApiClient {
     return {
       success: false,
       error: {
-        message: lastError.message,
-        code: lastError.code,
-        details: lastError.details,
+        message: lastError?.message ?? 'Unknown error',
+        code: lastError?.code ?? 'UNKNOWN',
+        details: lastError?.details ?? 'No error details available',
       },
     };
   }

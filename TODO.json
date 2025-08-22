@@ -2,13 +2,44 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755871139350_ov219p2oe",
+      "title": "Enable TypeScript strict mode with proper null safety",
+      "description": "Implement TypeScript strictNullChecks and strict mode to improve type safety. Address the 291 compilation errors that arise when strict null checking is enabled. This will enable the prefer-nullish-coalescing ESLint rule and significantly improve code quality.",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [
+        "development/research-reports/comprehensive-code-quality-infrastructure-optimization-research-2025.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T13:58:59.350Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755870479853_1_general_a2aee26e",
+      "started_at": "2025-08-22T13:59:06.625Z",
+      "claimed_by": "development_session_1755870479853_1_general_a2aee26e",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755870479853_1_general_a2aee26e",
+          "role": "primary",
+          "assignedAt": "2025-08-22T13:59:06.625Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
       "id": "task_1755871057174_8ztv1nuhj",
       "title": "Complete optional-chain ESLint style improvements",
       "description": "Fix remaining 107 @typescript-eslint/prefer-optional-chain violations. Convert patterns like obj && obj.prop to obj?.prop for improved code style and readability. Non-blocking quality improvements.",
       "mode": "DEVELOPMENT",
       "category": "enhancement",
       "priority": "low",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -16,7 +47,17 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-22T13:57:37.174Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "started_at": "2025-08-22T13:57:57.883Z",
+      "claimed_by": "agent_1755871077883",
+      "assigned_agent": "agent_1755871077883",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755871077883",
+          "action": "claimed",
+          "timestamp": "2025-08-22T13:57:57.883Z"
+        }
+      ]
     },
     {
       "id": "task_1755868885034_moy8dtie9",
