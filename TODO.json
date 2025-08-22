@@ -2,6 +2,33 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755894168830_w7256npq5",
+      "title": "Refactor addPolicyComplianceValidationTools function - 207-line violation",
+      "description": "Break down the 207-line addPolicyComplianceValidationTools function by extracting tool logic into helper functions. Target: reduce to under 200 lines while maintaining functionality.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T20:22:48.830Z",
+      "auto_research_created": false,
+      "started_at": "2025-08-22T20:23:16.991Z",
+      "claimed_by": "agent_1755894196991",
+      "assigned_agent": "agent_1755894196991",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755894196991",
+          "action": "claimed",
+          "timestamp": "2025-08-22T20:23:16.991Z"
+        }
+      ]
+    },
+    {
       "id": "task_1755891438474_cu00hfqul",
       "title": "Refactor addMultiTenantSecurityTools function - massive 505-line violation",
       "description": "Break down the 505-line addMultiTenantSecurityTools function. Extract individual tool registrations into helper functions. Target: reduce to under 200 lines.",
@@ -17,14 +44,25 @@
       "subtasks": [],
       "created_at": "2025-08-22T19:37:18.474Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T20:03:15.291Z",
-      "claimed_by": "agent_1755892995291",
-      "assigned_agent": "agent_1755892995291",
+      "started_at": "2025-08-22T20:27:14.226Z",
+      "claimed_by": "agent_1755894434226",
+      "assigned_agent": "agent_1755894434226",
       "agent_assignment_history": [
         {
           "agent": "agent_1755892995291",
           "action": "claimed",
           "timestamp": "2025-08-22T20:03:15.291Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T20:23:02.033Z",
+          "reason": "Task stale for 20 minutes"
+        },
+        {
+          "agent": "agent_1755894434226",
+          "action": "claimed",
+          "timestamp": "2025-08-22T20:27:14.226Z"
         }
       ]
     }
@@ -36,13 +74,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755892666168_1_general_f93dfd1a": {
+    "development_session_1755893809944_1_general_985e2607": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T19:57:46.169Z",
+      "lastHeartbeat": "2025-08-22T20:16:49.945Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -53,8 +91,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T19:57:46.169Z",
-      "sessionId": "session_1755892666168",
+      "createdAt": "2025-08-22T20:16:49.945Z",
+      "sessionId": "session_1755893809944",
       "metadata": {}
     }
   },

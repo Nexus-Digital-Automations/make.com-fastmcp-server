@@ -383,7 +383,7 @@ function addGetScenarioLogsTool(server: FastMCP, apiClient: MakeApiClient): void
       const { scenarioId } = input;
 
       if (log?.info) {
-        log.info('Getting scenario logs', { scenarioId, ...input });
+        log.info('Getting scenario logs', { ...input });
       }
 
       try {
@@ -771,7 +771,7 @@ function addGetHookLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
       const { hookId } = input;
 
       if (log?.info) {
-        log.info('Getting hook logs', { hookId, ...input });
+        log.info('Getting hook logs', { ...input });
       }
 
       try {
@@ -940,7 +940,7 @@ function addGetPerformanceMetricsTool(server: FastMCP, apiClient: MakeApiClient)
       const { organizationId } = input;
 
       if (log?.info) {
-        log.info('Getting performance metrics', { organizationId, ...input });
+        log.info('Getting performance metrics', { ...input });
       }
 
       try {

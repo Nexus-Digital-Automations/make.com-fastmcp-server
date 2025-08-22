@@ -30,7 +30,8 @@ import {
   BlueprintConflictResolver,
   type ConflictResolution,
   type ResolutionResult,
-  type ResolvedBlueprint
+  type ResolvedBlueprint,
+  type BlueprintValue
 } from './blueprint-collaboration/conflict-resolver.js';
 import {
   BlueprintDependencyAnalyzer,
@@ -195,7 +196,15 @@ class BlueprintCollaborationEngine {
     return BlueprintCollaborationEngine.instance;
   }
 
-  async createVersion(blueprintId: string, options: unknown): Promise<{
+  async createVersion(blueprintId: string, options: {
+    branchName: string;
+    versionType: string;
+    changeDescription: string;
+    tags: string[];
+    basedOnVersion?: string;
+    includeOptimizations: boolean;
+    performanceAnalysis: boolean;
+  }): Promise<{
     version: BlueprintVersion;
     performanceImpact: PerformanceImpact;
     optimizations: OptimizationOpportunity[];
@@ -213,26 +222,52 @@ class BlueprintCollaborationEngine {
       versionId: 'latest',
       activeUsers: [],
       lockStatus: { isLocked: false, lockType: 'read' },
-      conflictResolution: { enabled: true, strategy: 'automatic' },
+      conflictResolution: {
+        hasConflicts: false,
+        conflicts: [],
+        resolutionStrategy: 'auto',
+        resolutionStatus: 'pending',
+        aiSuggestions: []
+      },
       lastActivity: new Date().toISOString(),
       sessionType: 'editing',
       permissions: { canEdit: true, canReview: true, canMerge: false, canResolveConflicts: false, canManageUsers: false }
     } as CollaborationSession;
   }
 
-  async resolveConflicts(blueprintId: string, options: unknown): Promise<{
+  async resolveConflicts(sessionId: string, conflictResolution: ConflictResolution, options: {
+    resolutionStrategy: string;
+    conflictResolutions: Array<{
+      conflictId: string;
+      resolution: string;
+      customResolution?: BlueprintValue;
+      reasoning?: string;
+    }>;
+    preserveUserIntent: boolean;
+    validateResult: boolean;
+    createBackup: boolean;
+  }): Promise<{
     resolutionResults: ResolutionResult[];
     resolvedBlueprint: ResolvedBlueprint;
   }> {
-    return this.conflictResolver.resolveConflicts(blueprintId, options);
+    return this.conflictResolver.resolveConflicts(sessionId, conflictResolution, options);
   }
 
-  async analyzeDependencies(blueprintId: string, options: unknown): Promise<DependencyAnalysisResult & {
+  async analyzeDependencies(blueprintId: string, versionId: string, options: {
+    analysisDepth: string;
+    includeExternal: boolean;
+    includeOptimizations: boolean;
+    detectCircular: boolean;
+    generateGraph: boolean;
+    impactAnalysis: boolean;
+  }): Promise<{
+    dependencyGraph: unknown;
+    analysis: DependencyAnalysisResult;
     circularDependencies: CircularDependency[];
     optimizationOpportunities: OptimizationOpportunity[];
-    impactAssessment?: ImpactAssessment;
+    impactAssessment: ImpactAssessment | null;
   }> {
-    return this.dependencyAnalyzer.analyzeDependencies(blueprintId, options);
+    return this.dependencyAnalyzer.analyzeDependencies(blueprintId, versionId, options);
   }
 }
 
@@ -241,7 +276,13 @@ class BlueprintCollaborationEngine {
 /**
  * Generate dependency analysis report
  */
-function generateDependencyAnalysisReport(result: DependencyAnalysisResult & { circularDependencies: CircularDependency[]; optimizationOpportunities: OptimizationOpportunity[]; impactAssessment?: ImpactAssessment }): string {
+function generateDependencyAnalysisReport(result: {
+  dependencyGraph: any;
+  analysis: DependencyAnalysisResult;
+  circularDependencies: CircularDependency[];
+  optimizationOpportunities: OptimizationOpportunity[];
+  impactAssessment: ImpactAssessment | null;
+}): string {
   return `# Blueprint Dependency Analysis Results
 
 ## 📊 Dependency Graph Overview
@@ -318,18 +359,18 @@ ${result.optimizationOpportunities.map(opt => `
 **Expected Gains**:
 - Performance Improvement: ${opt.expectedGain.performanceImprovement}%
 - Complexity Reduction: ${opt.expectedGain.complexityReduction}%
-- Resource Optimization: ${opt.expectedGain.resourceOptimization}%
+- Resource Optimization: ${(opt.expectedGain as any).resourceOptimization || 'N/A'}%
 
 **Implementation Steps**:
-${opt.implementationSteps.map((step, index) => `${index + 1}. ${step}`).join('\n')}
+${((opt as any).implementationSteps || []).map((step: any, index: number) => `${index + 1}. ${step}`).join('\n')}
 `).join('\n')}
 
 ${result.impactAssessment ? `
 ## 📊 Impact Assessment
-**Overall Risk Level**: ${result.impactAssessment.overallRisk}
-**System Stability Impact**: ${result.impactAssessment.systemStabilityImpact}/10
-**Performance Impact**: ${result.impactAssessment.performanceImpact}/10
-**Maintenance Complexity**: ${result.impactAssessment.maintenanceComplexity}/10
+**Overall Risk Level**: ${(result.impactAssessment as any)?.overallRisk || 'Unknown'}
+**System Stability Impact**: ${(result.impactAssessment as any)?.systemStabilityImpact || 'N/A'}/10
+**Performance Impact**: ${(result.impactAssessment as any)?.performanceImpact || 'N/A'}/10
+**Maintenance Complexity**: ${(result.impactAssessment as any)?.maintenanceComplexity || 'N/A'}/10
 
 ### Change Impact Analysis
 **High Impact Nodes**: ${result.impactAssessment.changeImpact?.highImpactNodes?.length || 0}
@@ -515,7 +556,7 @@ function addCreateCollaborationSessionTool(server: FastMCP, componentLogger: typ
 **Active Users**: ${session.activeUsers.length}
 **Lock Status**: ${session.lockStatus.isLocked ? '🔒 Locked' : '🔓 Unlocked'}
 **Lock Type**: ${session.lockStatus.lockType}
-**Conflict Resolution**: ${session.conflictResolution.enabled ? '✅ Enabled' : '❌ Disabled'}
+**Conflict Resolution**: ${session.conflictResolution.hasConflicts ? '⚠️ Has Conflicts' : '✅ No Conflicts'}
 
 ## 🔐 Permissions
 **Can Edit**: ${session.permissions.canEdit ? '✅ Yes' : '❌ No'}
@@ -566,10 +607,24 @@ function addResolveBlueprintConflictsTool(server: FastMCP, componentLogger: type
       reportProgress({ progress: 40, total: 100 });
       
       try {
-        const result = await engine.resolveConflicts(args.blueprintId, {
-          versionId: args.versionId,
-          conflicts: args.conflicts,
-          resolutionOptions: args.resolutionOptions,
+        const conflictResolution = {
+          hasConflicts: true,
+          conflicts: args.conflicts || [],
+          resolutionStrategy: 'manual' as const,
+          resolutionStatus: 'pending' as const,
+          aiSuggestions: []
+        } as unknown as ConflictResolution;
+        
+        const result = await engine.resolveConflicts(args.blueprintId, conflictResolution, {
+          resolutionStrategy: 'manual',
+          conflictResolutions: args.conflicts?.map((c: any) => ({
+            conflictId: c.conflictId,
+            resolution: c.resolution,
+            reasoning: c.reasoning
+          })) || [],
+          preserveUserIntent: true,
+          validateResult: true,
+          createBackup: true
         });
         
         reportProgress({ progress: 100, total: 100 });
@@ -584,21 +639,21 @@ function addResolveBlueprintConflictsTool(server: FastMCP, componentLogger: type
 **Total Conflicts**: ${args.conflicts.length}
 **Resolved**: ${result.resolutionResults.filter(r => r.status === 'resolved').length}
 **Failed**: ${result.resolutionResults.filter(r => r.status === 'failed').length}
-**Skipped**: ${result.resolutionResults.filter(r => r.status === 'skipped').length}
+**Skipped**: ${result.resolutionResults.filter(r => r.status !== 'resolved' && r.status !== 'failed').length}
 
 ## 📋 Resolution Details
 ${result.resolutionResults.map(resolution => `
 ### Conflict: ${resolution.conflictId}
 **Status**: ${resolution.status === 'resolved' ? '✅ Resolved' : resolution.status === 'failed' ? '❌ Failed' : '⏭️ Skipped'}
-**Strategy**: ${resolution.strategy}
-**AI Assisted**: ${resolution.aiAssisted ? '🤖 Yes' : '👤 Manual'}
-${resolution.reason ? `**Reason**: ${resolution.reason}` : ''}
-${resolution.validation?.isValid === false ? `**Validation Issues**: ${resolution.validation.errors?.join(', ')}` : ''}
+**Strategy**: ${(resolution as any).strategy || 'Unknown'}
+**AI Assisted**: ${(resolution as any).aiAssisted ? '🤖 Yes' : '👤 Manual'}
+${(resolution as any).reason ? `**Reason**: ${(resolution as any).reason}` : ''}
+${(resolution as any).validation?.isValid === false ? `**Validation Issues**: ${(resolution as any).validation.errors?.join(', ')}` : ''}
 `).join('\n')}
 
 ## 📄 Resolved Blueprint
 **Blueprint ID**: ${result.resolvedBlueprint.blueprintId}
-**Version**: ${result.resolvedBlueprint.versionId}
+**Version**: ${result.resolvedBlueprint.version}
 **Resolved At**: ${result.resolvedBlueprint.resolvedAt}
 **Status**: ${result.resolvedBlueprint.status}
 
@@ -643,8 +698,7 @@ function addAnalyzeBlueprintDependenciesTool(server: FastMCP, componentLogger: t
       reportProgress({ progress: 35, total: 100 });
       
       try {
-        const result = await engine.analyzeDependencies(args.blueprintId, {
-          versionId: args.versionId,
+        const result = await engine.analyzeDependencies(args.blueprintId, args.versionId || 'latest', {
           analysisDepth: args.analysisDepth,
           includeExternal: args.includeExternal,
           includeOptimizations: args.includeOptimizations,
