@@ -2,6 +2,35 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755905898759_pvtkirr08",
+      "title": "Fix multiple complexity violations (27-37) across codebase",
+      "description": "Fix 10+ complexity violations ranging from 27-37 (above 25 limit) in multiple execute methods and processStreamingExport function. Extract helper functions to reduce cyclomatic complexity and improve maintainability.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T23:38:18.759Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755905534883_1_general_5f1c194a",
+      "started_at": "2025-08-22T23:38:25.928Z",
+      "claimed_by": "development_session_1755905534883_1_general_5f1c194a",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755905534883_1_general_5f1c194a",
+          "role": "primary",
+          "assignedAt": "2025-08-22T23:38:25.928Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
       "id": "task_1755902641686_kdkhtzr96",
       "title": "Fix multiple high complexity violations (34-37) across codebase",
       "description": "Fix 5+ complexity violations ranging from 34-37 (well above 25 limit) in multiple files including budget-control.ts, compliance-policy.ts, and others. Extract helper functions to reduce cyclomatic complexity.",

@@ -250,6 +250,177 @@ const ScenarioControlSchema = z.object({
   approvalRequired: z.boolean().default(true).describe('Require approval for execution'),
 }).strict();
 
+// Helper function interfaces for budget creation
+interface BudgetCreationInput {
+  name: string;
+  description?: string;
+  tenantId?: string;
+  organizationId?: number;
+  budgetLimits: {
+    monthly: number;
+    daily?: number;
+    perScenario?: number;
+    credits?: number;
+  };
+  budgetPeriod: {
+    type: 'monthly' | 'weekly' | 'daily' | 'custom';
+    startDate?: string;
+    endDate?: string;
+    timezone: string;
+  };
+  alertThresholds: Array<{
+    percentage: number;
+    type: 'actual' | 'forecasted' | 'trend';
+    severity: 'info' | 'warning' | 'critical' | 'emergency';
+    channels: ('email' | 'webhook' | 'slack' | 'sms')[];
+    cooldownMinutes: number;
+  }>;
+  automatedActions?: Array<{
+    trigger: 'threshold_50' | 'threshold_75' | 'threshold_90' | 'threshold_100';
+    action: 'notify' | 'throttle' | 'pause_non_critical' | 'pause_all' | 'custom';
+    parameters?: Record<string, unknown>;
+    requiresApproval: boolean;
+  }>;
+  scope?: {
+    scenarioIds?: number[];
+    scenarioTags?: string[];
+    teamIds?: number[];
+    excludeScenarios?: number[];
+  };
+  isActive: boolean;
+}
+
+/**
+ * Validates organization access for budget creation
+ */
+async function validateOrganizationAccess(
+  organizationId: number | undefined,
+  apiClient: MakeApiClient
+): Promise<void> {
+  if (organizationId) {
+    const orgResponse = await apiClient.get(`/organizations/${organizationId}`);
+    if (!orgResponse.success) {
+      throw new UserError(`Organization ${organizationId} not accessible or does not exist`);
+    }
+  }
+}
+
+/**
+ * Validates alert threshold configurations
+ */
+function validateAlertThresholds(
+  alertThresholds: BudgetCreationInput['alertThresholds'],
+  log: { warn: (message: string, data?: unknown) => void }
+): void {
+  for (const threshold of alertThresholds) {
+    if (threshold.percentage > 100 && threshold.type === 'actual') {
+      log.warn('Alert threshold above 100% for actual spend', {
+        percentage: threshold.percentage,
+        severity: threshold.severity,
+      });
+    }
+  }
+}
+
+/**
+ * Validates automated actions for budget creation
+ */
+function validateAutomatedActions(
+  automatedActions: BudgetCreationInput['automatedActions']
+): void {
+  if (automatedActions) {
+    for (const action of automatedActions) {
+      if (action.action === 'pause_all' && !action.requiresApproval) {
+        throw new UserError('Pause all scenarios action requires approval for safety');
+      }
+    }
+  }
+}
+
+/**
+ * Creates a budget configuration object from input data
+ */
+function createBudgetConfiguration(
+  input: BudgetCreationInput,
+  budgetId: string,
+  currentTime: string,
+  session: UserSession
+): BudgetConfiguration {
+  const { name, description, tenantId, organizationId, budgetLimits, budgetPeriod, alertThresholds, automatedActions, scope, isActive } = input;
+
+  return {
+    id: budgetId,
+    tenantId: tenantId || session?.user?.id || 'default',
+    organizationId,
+    name,
+    description,
+    budgetLimits: {
+      monthly: budgetLimits.monthly || 1000,
+      daily: budgetLimits.daily,
+      perScenario: budgetLimits.perScenario,
+      credits: budgetLimits.credits,
+    },
+    budgetPeriod: {
+      type: budgetPeriod.type || 'monthly',
+      startDate: budgetPeriod.startDate,
+      endDate: budgetPeriod.endDate,
+      timezone: budgetPeriod.timezone || 'UTC',
+    },
+    alertThresholds: alertThresholds.map((threshold, index) => ({
+      id: `threshold_${budgetId}_${index}`,
+      percentage: threshold.percentage || 80,
+      type: threshold.type || 'actual',
+      severity: threshold.severity || 'warning',
+      channels: threshold.channels || ['email'],
+      cooldownMinutes: threshold.cooldownMinutes || 60,
+      isEnabled: true,
+    })),
+    automatedActions: automatedActions?.map((action, index) => ({
+      id: `action_${budgetId}_${index}`,
+      trigger: action.trigger || 'threshold_90',
+      action: action.action || 'notify',
+      parameters: action.parameters,
+      requiresApproval: action.requiresApproval || false,
+      isEnabled: true,
+    })) || [],
+    scope,
+    isActive,
+    createdAt: currentTime,
+    updatedAt: currentTime,
+    createdBy: session?.user?.id || 'system',
+  };
+}
+
+/**
+ * Formats the success response for budget creation
+ */
+function formatBudgetCreationResponse(
+  budgetConfig: BudgetConfiguration,
+  name: string
+): string {
+  return formatSuccessResponse({
+    budget: budgetConfig,
+    message: `Budget configuration "${name}" created successfully`,
+    configuration: {
+      budgetId: budgetConfig.id,
+      monthlyLimit: budgetConfig.budgetLimits.monthly,
+      alertThresholds: budgetConfig.alertThresholds.length,
+      automatedActions: budgetConfig.automatedActions.length,
+      monitoring: {
+        scenarios: budgetConfig.scope?.scenarioIds?.length || 'all',
+        teams: budgetConfig.scope?.teamIds?.length || 'all',
+        excludedScenarios: budgetConfig.scope?.excludeScenarios?.length || 0,
+      },
+    },
+    nextSteps: [
+      'Budget monitoring will begin immediately',
+      'Configure webhook endpoints for real-time alerts',
+      'Review automated action configurations',
+      'Set up cost projection schedules',
+    ],
+  }).content[0].text;
+}
+
 /**
  * Add create budget tool to FastMCP server
  */
@@ -266,90 +437,35 @@ function addCreateBudgetTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log, session }) => {
-      const { name, description, tenantId, organizationId, budgetLimits, budgetPeriod, alertThresholds, automatedActions, scope, isActive } = input;
+      const typedInput = input as BudgetCreationInput;
+      const { name } = typedInput;
 
       log.info('Creating budget configuration', {
         name,
-        tenantId,
-        organizationId,
-        monthlyLimit: budgetLimits.monthly,
+        tenantId: typedInput.tenantId,
+        organizationId: typedInput.organizationId,
+        monthlyLimit: typedInput.budgetLimits.monthly,
       });
 
       try {
-        // Generate unique budget ID
+        // Generate unique budget ID and timestamp
         const budgetId = `budget_${Date.now()}_${Math.random().toString(36).substring(2)}`;
         const currentTime = new Date().toISOString();
 
-        // Validate organization access if specified
-        if (organizationId) {
-          const orgResponse = await apiClient.get(`/organizations/${organizationId}`);
-          if (!orgResponse.success) {
-            throw new UserError(`Organization ${organizationId} not accessible or does not exist`);
-          }
-        }
+        // Perform validations
+        await validateOrganizationAccess(typedInput.organizationId, apiClient);
+        validateAlertThresholds(typedInput.alertThresholds, log);
+        validateAutomatedActions(typedInput.automatedActions);
 
-        // Validate alert threshold configurations
-        for (const threshold of alertThresholds) {
-          if (threshold.percentage > 100 && threshold.type === 'actual') {
-            log.warn('Alert threshold above 100% for actual spend', {
-              percentage: threshold.percentage,
-              severity: threshold.severity,
-            });
-          }
-        }
+        // Create budget configuration
+        const budgetConfig = createBudgetConfiguration(
+          typedInput,
+          budgetId,
+          currentTime,
+          session as UserSession
+        );
 
-        // Validate automated actions
-        if (automatedActions) {
-          for (const action of automatedActions) {
-            if (action.action === 'pause_all' && !action.requiresApproval) {
-              throw new UserError('Pause all scenarios action requires approval for safety');
-            }
-          }
-        }
-
-        const budgetConfig: BudgetConfiguration = {
-          id: budgetId,
-          tenantId: tenantId || (session as UserSession)?.user?.id || 'default',
-          organizationId,
-          name,
-          description,
-          budgetLimits: {
-            monthly: budgetLimits.monthly || 1000,
-            daily: budgetLimits.daily,
-            perScenario: budgetLimits.perScenario,
-            credits: budgetLimits.credits,
-          },
-          budgetPeriod: {
-            type: budgetPeriod.type || 'monthly',
-            startDate: budgetPeriod.startDate,
-            endDate: budgetPeriod.endDate,
-            timezone: budgetPeriod.timezone || 'UTC',
-          },
-          alertThresholds: alertThresholds.map((threshold, index) => ({
-            id: `threshold_${budgetId}_${index}`,
-            percentage: threshold.percentage || 80,
-            type: threshold.type || 'actual',
-            severity: threshold.severity || 'warning',
-            channels: threshold.channels || ['email'],
-            cooldownMinutes: threshold.cooldownMinutes || 60,
-            isEnabled: true,
-          })),
-          automatedActions: automatedActions?.map((action, index) => ({
-            id: `action_${budgetId}_${index}`,
-            trigger: action.trigger || 'threshold_90',
-            action: action.action || 'notify',
-            parameters: action.parameters,
-            requiresApproval: action.requiresApproval || false,
-            isEnabled: true,
-          })) || [],
-          scope,
-          isActive,
-          createdAt: currentTime,
-          updatedAt: currentTime,
-          createdBy: (session as UserSession)?.user?.id || 'system',
-        };
-
-        // Simulate budget storage (in real implementation, store in database)
+        // Log successful creation
         log.info('Budget configuration created successfully', {
           budgetId,
           name: budgetConfig.name,
@@ -358,35 +474,233 @@ function addCreateBudgetTool(server: FastMCP, apiClient: MakeApiClient): void {
           actionCount: budgetConfig.automatedActions.length,
         });
 
-        return formatSuccessResponse({
-          budget: budgetConfig,
-          message: `Budget configuration "${name}" created successfully`,
-          configuration: {
-            budgetId,
-            monthlyLimit: budgetConfig.budgetLimits.monthly,
-            alertThresholds: budgetConfig.alertThresholds.length,
-            automatedActions: budgetConfig.automatedActions.length,
-            monitoring: {
-              scenarios: budgetConfig.scope?.scenarioIds?.length || 'all',
-              teams: budgetConfig.scope?.teamIds?.length || 'all',
-              excludedScenarios: budgetConfig.scope?.excludeScenarios?.length || 0,
-            },
-          },
-          nextSteps: [
-            'Budget monitoring will begin immediately',
-            'Configure webhook endpoints for real-time alerts',
-            'Review automated action configurations',
-            'Set up cost projection schedules',
-          ],
-        }).content[0].text;
+        return formatBudgetCreationResponse(budgetConfig, name);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating budget configuration', { name, error: errorMessage });
-        if (error instanceof UserError) {throw error;}
+        if (error instanceof UserError) { throw error; }
         throw new UserError(`Failed to create budget configuration: ${errorMessage}`);
       }
     },
   });
+}
+
+// Interface for API response data
+interface BudgetStatusApiData {
+  currentSpend?: number;
+  budgetLimit?: number;
+  riskLevel?: 'minimal' | 'low' | 'medium' | 'high' | 'critical';
+  triggeredThresholds?: Array<{
+    thresholdId: string;
+    percentage: number;
+    severity: string;
+    triggeredAt: string;
+  }>;
+  tenantId?: string;
+}
+
+// Interface for budget status calculations
+interface BudgetCalculations {
+  currentTime: Date;
+  daysInMonth: number;
+  daysElapsed: number;
+  daysRemaining: number;
+  currentSpend: number;
+  monthlyLimit: number;
+  percentUsed: number;
+  dailyAverage: number;
+  projectedSpend: number;
+  percentProjected: number;
+}
+
+/**
+ * Fetches budget status data from the API
+ */
+async function fetchBudgetStatusData(
+  budgetId: string,
+  apiClient: MakeApiClient
+): Promise<BudgetStatusApiData> {
+  const statusResponse = await apiClient.get(`/budget/${budgetId}/status`);
+  if (!statusResponse.success) {
+    throw new UserError(`Failed to get budget status for ${budgetId}`);
+  }
+  return statusResponse.data as BudgetStatusApiData;
+}
+
+/**
+ * Calculates budget-related metrics and projections
+ */
+function calculateBudgetMetrics(apiData: BudgetStatusApiData): BudgetCalculations {
+  const currentTime = new Date();
+  const daysInMonth = new Date(currentTime.getFullYear(), currentTime.getMonth() + 1, 0).getDate();
+  const daysElapsed = currentTime.getDate();
+  const daysRemaining = daysInMonth - daysElapsed;
+
+  const currentSpend = apiData?.currentSpend || Math.random() * 800 + 100; // $100-$900
+  const monthlyLimit = apiData?.budgetLimit || 1000; // $1000 budget
+  const percentUsed = (currentSpend / monthlyLimit) * 100;
+  
+  const dailyAverage = currentSpend / daysElapsed;
+  const projectedSpend = currentSpend + (dailyAverage * daysRemaining);
+  const percentProjected = (projectedSpend / monthlyLimit) * 100;
+
+  return {
+    currentTime,
+    daysInMonth,
+    daysElapsed,
+    daysRemaining,
+    currentSpend,
+    monthlyLimit,
+    percentUsed,
+    dailyAverage,
+    projectedSpend,
+    percentProjected,
+  };
+}
+
+/**
+ * Determines risk level based on projected spending
+ */
+function determineRiskLevel(
+  apiData: BudgetStatusApiData,
+  percentProjected: number
+): 'minimal' | 'low' | 'medium' | 'high' | 'critical' {
+  if (apiData?.riskLevel) {
+    return apiData.riskLevel;
+  }
+
+  if (percentProjected > 120) { return 'critical'; }
+  if (percentProjected > 100) { return 'high'; }
+  if (percentProjected > 80) { return 'medium'; }
+  if (percentProjected > 60) { return 'low'; }
+  return 'minimal';
+}
+
+/**
+ * Generates triggered thresholds based on current usage
+ */
+function generateTriggeredThresholds(
+  apiData: BudgetStatusApiData,
+  budgetId: string,
+  percentUsed: number
+): Array<{ thresholdId: string; percentage: number; severity: string; triggeredAt: string }> {
+  const triggeredThresholds = apiData?.triggeredThresholds || [];
+  
+  if (!apiData?.triggeredThresholds) {
+    if (percentUsed >= 50) {
+      triggeredThresholds.push({
+        thresholdId: `threshold_${budgetId}_0`,
+        percentage: 50,
+        severity: 'info',
+        triggeredAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+      });
+    }
+    if (percentUsed >= 75) {
+      triggeredThresholds.push({
+        thresholdId: `threshold_${budgetId}_1`,
+        percentage: 75,
+        severity: 'warning',
+        triggeredAt: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
+      });
+    }
+  }
+  
+  return triggeredThresholds;
+}
+
+/**
+ * Creates the budget status object
+ */
+function createBudgetStatus(
+  budgetId: string,
+  apiData: BudgetStatusApiData,
+  calculations: BudgetCalculations,
+  riskLevel: 'minimal' | 'low' | 'medium' | 'high' | 'critical',
+  triggeredThresholds: Array<{ thresholdId: string; percentage: number; severity: string; triggeredAt: string }>
+): BudgetStatus {
+  return {
+    budgetId,
+    tenantId: apiData?.tenantId || 'default',
+    currentSpend: calculations.currentSpend,
+    projectedSpend: calculations.projectedSpend,
+    budgetLimit: calculations.monthlyLimit,
+    percentUsed: Math.round(calculations.percentUsed * 100) / 100,
+    percentProjected: Math.round(calculations.percentProjected * 100) / 100,
+    remainingBudget: calculations.monthlyLimit - calculations.currentSpend,
+    daysRemaining: calculations.daysRemaining,
+    confidence: 0.85,
+    lastUpdated: calculations.currentTime.toISOString(),
+    trends: {
+      dailyAverage: Math.round(calculations.dailyAverage * 100) / 100,
+      weeklyTrend: calculations.dailyAverage * 7,
+      seasonalFactors: {
+        'Q1': 0.9,
+        'Q2': 1.1,
+        'Q3': 0.95,
+        'Q4': 1.15,
+      },
+    },
+    riskLevel,
+    triggeredThresholds,
+  };
+}
+
+/**
+ * Builds the analysis result object
+ */
+function buildAnalysisResult(
+  budgetStatus: BudgetStatus,
+  calculations: BudgetCalculations,
+  includeProjections: boolean,
+  includeRecommendations: boolean
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {
+    budgetStatus,
+    analysis: {
+      summary: `Budget is ${budgetStatus.riskLevel} risk with ${budgetStatus.percentUsed.toFixed(1)}% used and ${budgetStatus.percentProjected.toFixed(1)}% projected`,
+      spendingVelocity: {
+        current: calculations.dailyAverage,
+        trend: calculations.dailyAverage > 30 ? 'increasing' : calculations.dailyAverage > 20 ? 'stable' : 'decreasing',
+        compareToLimit: `${((calculations.dailyAverage / (calculations.monthlyLimit / calculations.daysInMonth)) * 100).toFixed(1)}% of daily target`,
+      },
+      alerts: {
+        active: budgetStatus.triggeredThresholds.length,
+        nextThreshold: budgetStatus.percentUsed < 90 ? 90 : budgetStatus.percentUsed < 100 ? 100 : null,
+        estimatedTimeToNext: budgetStatus.percentUsed < 90 && calculations.dailyAverage > 0
+          ? Math.ceil(((90 - budgetStatus.percentUsed) / 100 * calculations.monthlyLimit) / calculations.dailyAverage)
+          : null,
+      },
+    },
+  };
+
+  if (includeProjections) {
+    result.projections = {
+      conservative: calculations.projectedSpend * 0.9,
+      expected: calculations.projectedSpend,
+      optimistic: calculations.projectedSpend * 1.1,
+      confidence: 0.85,
+      methodology: 'linear trend with seasonal adjustment',
+    };
+  }
+
+  if (includeRecommendations && budgetStatus.riskLevel !== 'minimal') {
+    result.recommendations = [
+      {
+        type: 'cost_optimization',
+        description: 'Review high-cost scenarios and optimize inefficient workflows',
+        estimatedSavings: Math.round((calculations.projectedSpend - calculations.monthlyLimit) * 0.3),
+        implementationEffort: 'medium',
+      },
+      {
+        type: 'usage_adjustment',
+        description: 'Consider reducing non-critical scenario frequency during peak usage periods',
+        estimatedSavings: Math.round((calculations.projectedSpend - calculations.monthlyLimit) * 0.2),
+        implementationEffort: 'low',
+      },
+    ];
+  }
+
+  return result;
 }
 
 /**
@@ -416,146 +730,25 @@ function addGetBudgetStatusTool(server: FastMCP, apiClient: MakeApiClient): void
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        // Get budget status from API
-        const statusResponse = await apiClient.get(`/budget/${budgetId}/status`);
-        if (!statusResponse.success) {
-          throw new UserError(`Failed to get budget status for ${budgetId}`);
-        }
-
+        // Fetch API data
+        const apiData = await fetchBudgetStatusData(budgetId, apiClient);
         reportProgress({ progress: 25, total: 100 });
 
-        // Use API data or simulate if not available
-        const apiData = statusResponse.data as {
-          currentSpend?: number;
-          budgetLimit?: number;
-          riskLevel?: 'minimal' | 'low' | 'medium' | 'high' | 'critical';
-          triggeredThresholds?: Array<{ thresholdId: string; percentage: number; severity: string; triggeredAt: string; }>;
-          tenantId?: string;
-        };
-        const currentTime = new Date();
-        const _periodStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), 1);
-        const daysInMonth = new Date(currentTime.getFullYear(), currentTime.getMonth() + 1, 0).getDate();
-        const daysElapsed = currentTime.getDate();
-        const daysRemaining = daysInMonth - daysElapsed;
-
+        // Calculate metrics
+        const calculations = calculateBudgetMetrics(apiData);
         reportProgress({ progress: 50, total: 100 });
 
-        // Use mock data or simulate current spending calculation
-        const currentSpend = apiData?.currentSpend || Math.random() * 800 + 100; // $100-$900
-        const monthlyLimit = apiData?.budgetLimit || 1000; // $1000 budget
-        const percentUsed = (currentSpend / monthlyLimit) * 100;
-
+        // Determine risk and thresholds
+        const riskLevel = determineRiskLevel(apiData, calculations.percentProjected);
+        const triggeredThresholds = generateTriggeredThresholds(apiData, budgetId, calculations.percentUsed);
         reportProgress({ progress: 75, total: 100 });
 
-        // Calculate trend and projection
-        const dailyAverage = currentSpend / daysElapsed;
-        const projectedSpend = currentSpend + (dailyAverage * daysRemaining);
-        const percentProjected = (projectedSpend / monthlyLimit) * 100;
-
-        // Determine risk level
-        let riskLevel: 'minimal' | 'low' | 'medium' | 'high' | 'critical' = apiData?.riskLevel || 'minimal';
-        if (!apiData?.riskLevel) {
-          if (percentProjected > 120) {riskLevel = 'critical';}
-          else if (percentProjected > 100) {riskLevel = 'high';}
-          else if (percentProjected > 80) {riskLevel = 'medium';}
-          else if (percentProjected > 60) {riskLevel = 'low';}
-        }
-
-        // Use existing triggered thresholds or simulate
-        const triggeredThresholds = apiData?.triggeredThresholds || [];
-        if (!apiData?.triggeredThresholds) {
-          if (percentUsed >= 50) {
-            triggeredThresholds.push({
-              thresholdId: `threshold_${budgetId}_0`,
-              percentage: 50,
-              severity: 'info',
-              triggeredAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-            });
-          }
-          if (percentUsed >= 75) {
-            triggeredThresholds.push({
-              thresholdId: `threshold_${budgetId}_1`,
-              percentage: 75,
-              severity: 'warning',
-              triggeredAt: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
-            });
-          }
-        }
-
-        const budgetStatus: BudgetStatus = {
-          budgetId,
-          tenantId: apiData?.tenantId || 'default',
-          currentSpend,
-          projectedSpend,
-          budgetLimit: monthlyLimit,
-          percentUsed: Math.round(percentUsed * 100) / 100,
-          percentProjected: Math.round(percentProjected * 100) / 100,
-          remainingBudget: monthlyLimit - currentSpend,
-          daysRemaining,
-          confidence: 0.85,
-          lastUpdated: currentTime.toISOString(),
-          trends: {
-            dailyAverage: Math.round(dailyAverage * 100) / 100,
-            weeklyTrend: dailyAverage * 7,
-            seasonalFactors: {
-              'Q1': 0.9,
-              'Q2': 1.1,
-              'Q3': 0.95,
-              'Q4': 1.15,
-            },
-          },
-          riskLevel,
-          triggeredThresholds,
-        };
-
+        // Build budget status
+        const budgetStatus = createBudgetStatus(budgetId, apiData, calculations, riskLevel, triggeredThresholds);
         reportProgress({ progress: 90, total: 100 });
 
-        const result: Record<string, unknown> = {
-          budgetStatus,
-          analysis: {
-            summary: `Budget is ${riskLevel} risk with ${percentUsed.toFixed(1)}% used and ${percentProjected.toFixed(1)}% projected`,
-            spendingVelocity: {
-              current: dailyAverage,
-              trend: dailyAverage > 30 ? 'increasing' : dailyAverage > 20 ? 'stable' : 'decreasing',
-              compareToLimit: `${((dailyAverage / (monthlyLimit / daysInMonth)) * 100).toFixed(1)}% of daily target`,
-            },
-            alerts: {
-              active: triggeredThresholds.length,
-              nextThreshold: percentUsed < 90 ? 90 : percentUsed < 100 ? 100 : null,
-              estimatedTimeToNext: percentUsed < 90 && dailyAverage > 0 
-                ? Math.ceil(((90 - percentUsed) / 100 * monthlyLimit) / dailyAverage) 
-                : null,
-            },
-          },
-        };
-
-        if (includeProjections) {
-          result.projections = {
-            conservative: projectedSpend * 0.9,
-            expected: projectedSpend,
-            optimistic: projectedSpend * 1.1,
-            confidence: 0.85,
-            methodology: 'linear trend with seasonal adjustment',
-          };
-        }
-
-        if (includeRecommendations && riskLevel !== 'minimal') {
-          result.recommendations = [
-            {
-              type: 'cost_optimization',
-              description: 'Review high-cost scenarios and optimize inefficient workflows',
-              estimatedSavings: Math.round((projectedSpend - monthlyLimit) * 0.3),
-              implementationEffort: 'medium',
-            },
-            {
-              type: 'usage_adjustment',
-              description: 'Consider reducing non-critical scenario frequency during peak usage periods',
-              estimatedSavings: Math.round((projectedSpend - monthlyLimit) * 0.2),
-              implementationEffort: 'low',
-            },
-          ];
-        }
-
+        // Build final result
+        const result = buildAnalysisResult(budgetStatus, calculations, includeProjections, includeRecommendations);
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Budget status retrieved successfully', {
@@ -569,11 +762,201 @@ function addGetBudgetStatusTool(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting budget status', { budgetId, error: errorMessage });
-        if (error instanceof UserError) {throw error;}
+        if (error instanceof UserError) { throw error; }
         throw new UserError(`Failed to get budget status: ${errorMessage}`);
       }
     },
   });
+}
+
+// Interface for cost projection input parameters
+interface CostProjectionInput {
+  budgetId: string;
+  projectionDays: number;
+  includeSeasonality: boolean;
+  confidenceLevel: number;
+  projectionModel: 'linear' | 'seasonal' | 'ml_ensemble' | 'hybrid';
+}
+
+/**
+ * Collects data for cost projection generation
+ */
+async function collectProjectionData(
+  budgetId: string,
+  includeSeasonality: boolean,
+  reportProgress: (args: { progress: number; total: number }) => void
+): Promise<{
+  historicalData: HistoricalBudgetData;
+  currentUsage: CurrentUsageData;
+  seasonalPatterns: Record<string, number> | null;
+}> {
+  reportProgress({ progress: 10, total: 100 });
+  const historicalData = await simulateHistoricalDataCollection(budgetId);
+  
+  reportProgress({ progress: 25, total: 100 });
+  const currentUsage = await simulateCurrentUsageAnalysis(budgetId);
+
+  reportProgress({ progress: 40, total: 100 });
+  const seasonalPatterns = includeSeasonality 
+    ? await simulateSeasonalityAnalysis(historicalData)
+    : null;
+
+  reportProgress({ progress: 55, total: 100 });
+  await simulateTrendAnalysis(historicalData); // Keep for side effects but don't use result
+
+  return { historicalData, currentUsage, seasonalPatterns };
+}
+
+/**
+ * Generates base projection and confidence metrics
+ */
+async function generateProjectionAndConfidence(
+  historicalData: HistoricalBudgetData,
+  currentUsage: CurrentUsageData,
+  projectionDays: number,
+  projectionModel: string,
+  confidenceLevel: number,
+  reportProgress: (args: { progress: number; total: number }) => void
+): Promise<{ baseProjection: ProjectionData; confidence: ConfidenceMetrics }> {
+  reportProgress({ progress: 70, total: 100 });
+  const baseProjection = await simulateProjectionGeneration(
+    historicalData,
+    currentUsage,
+    projectionDays,
+    projectionModel
+  );
+
+  reportProgress({ progress: 85, total: 100 });
+  const confidence = await simulateConfidenceCalculation(
+    baseProjection,
+    historicalData,
+    confidenceLevel
+  );
+
+  return { baseProjection, confidence };
+}
+
+/**
+ * Validates projection data before creating the final projection object
+ */
+function validateProjectionData(
+  baseProjection: ProjectionData,
+  confidence: ConfidenceMetrics
+): void {
+  if (!baseProjection || typeof baseProjection.currentSpend !== 'number' || typeof baseProjection.projected !== 'number') {
+    throw new UserError('Failed to generate projection: invalid base projection data');
+  }
+  
+  if (!confidence || typeof confidence.overall !== 'number') {
+    throw new UserError('Failed to generate projection: invalid confidence data');
+  }
+}
+
+/**
+ * Creates the cost projection object
+ */
+function createCostProjection(
+  input: CostProjectionInput,
+  baseProjection: ProjectionData,
+  confidence: ConfidenceMetrics,
+  historicalData: HistoricalBudgetData,
+  seasonalPatterns: Record<string, number> | null
+): CostProjection {
+  const currentTime = new Date();
+  const projectionEnd = new Date(currentTime.getTime() + input.projectionDays * 24 * 60 * 60 * 1000);
+
+  return {
+    budgetId: input.budgetId,
+    tenantId: 'default',
+    projectionPeriod: {
+      startDate: currentTime.toISOString(),
+      endDate: projectionEnd.toISOString(),
+      daysTotal: input.projectionDays,
+      daysRemaining: input.projectionDays,
+    },
+    currentSpend: baseProjection.currentSpend || 0,
+    projectedSpend: {
+      conservative: (baseProjection.projected || 0) * 0.8,
+      expected: baseProjection.projected || 0,
+      optimistic: (baseProjection.projected || 0) * 1.2,
+    },
+    confidence: {
+      overall: confidence.overall,
+      factors: {
+        dataQuality: confidence.dataQuality,
+        seasonality: seasonalPatterns ? 0.9 : 0.7,
+        trendStability: confidence.trendStability,
+        historicalAccuracy: confidence.historicalAccuracy,
+      },
+    },
+    methodology: {
+      model: input.projectionModel,
+      dataPoints: historicalData.dataPoints.length,
+      trainingPeriod: '90 days',
+      features: [
+        'historical_spend',
+        'day_of_week',
+        'time_of_day',
+        ...(seasonalPatterns ? ['seasonal_patterns'] : []),
+        'scenario_activity',
+        'user_count',
+      ],
+    },
+    recommendations: [
+      {
+        type: 'cost_optimization',
+        description: 'Implement intelligent scenario scheduling to reduce peak-time costs',
+        estimatedSavings: Math.round(baseProjection.projected * 0.15),
+        implementationEffort: 'medium',
+      },
+      {
+        type: 'usage_adjustment',
+        description: 'Review and optimize data transfer patterns for efficiency',
+        estimatedSavings: Math.round(baseProjection.projected * 0.08),
+        implementationEffort: 'low',
+      },
+      {
+        type: 'threshold_adjustment',
+        description: 'Adjust alert thresholds based on projected spending patterns',
+        implementationEffort: 'low',
+      },
+    ],
+    generatedAt: currentTime.toISOString(),
+  };
+}
+
+/**
+ * Creates the analysis result for cost projection
+ */
+function createProjectionAnalysis(
+  projection: CostProjection,
+  baseProjection: ProjectionData,
+  confidence: ConfidenceMetrics,
+  seasonalPatterns: Record<string, number> | null,
+  projectionDays: number
+): Record<string, unknown> {
+  return {
+    projection,
+    analysis: {
+      summary: `${projectionDays}-day cost projection: $${(projection.projectedSpend.expected || 0).toFixed(2)} (${((projection.confidence.overall || 0) * 100).toFixed(1)}% confidence)`,
+      trends: {
+        spending: (baseProjection.projected || 0) > (baseProjection.currentSpend || 0) * 2 ? 'increasing' : 'stable',
+        seasonality: seasonalPatterns ? 'detected' : 'not_detected',
+        volatility: (confidence.trendStability || 0) > 0.8 ? 'low' : (confidence.trendStability || 0) > 0.6 ? 'medium' : 'high',
+      },
+      riskFactors: [
+        ...((projection.confidence.overall || 0) < 0.7 ? ['Low prediction confidence due to insufficient data'] : []),
+        ...((projection.projectedSpend.expected || 0) > (projection.currentSpend || 0) * 3 ? ['Unusually high projected growth rate'] : []),
+        ...((confidence.trendStability || 0) < 0.6 ? ['High spending volatility detected'] : []),
+      ],
+    },
+    actionItems: [
+      'Monitor spending closely during projected period',
+      'Consider implementing recommended optimizations',
+      'Update budget thresholds based on projections',
+      'Schedule regular projection reviews',
+    ],
+  };
 }
 
 /**
@@ -592,7 +975,8 @@ function addGenerateCostProjectionTool(server: FastMCP, _apiClient: MakeApiClien
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { budgetId, projectionDays, includeSeasonality, confidenceLevel, projectionModel } = input;
+      const typedInput = input as CostProjectionInput;
+      const { budgetId, projectionDays, projectionModel, confidenceLevel } = typedInput;
 
       log.info('Generating cost projection', {
         budgetId,
@@ -605,107 +989,32 @@ function addGenerateCostProjectionTool(server: FastMCP, _apiClient: MakeApiClien
         reportProgress({ progress: 0, total: 100 });
 
         // Phase 1: Data Collection
-        reportProgress({ progress: 10, total: 100 });
-        const historicalData = await simulateHistoricalDataCollection(budgetId);
-        
-        reportProgress({ progress: 25, total: 100 });
-        const currentUsage = await simulateCurrentUsageAnalysis(budgetId);
+        const { historicalData, currentUsage, seasonalPatterns } = await collectProjectionData(
+          budgetId,
+          typedInput.includeSeasonality,
+          reportProgress
+        );
 
-        // Phase 2: Model Training and Analysis
-        reportProgress({ progress: 40, total: 100 });
-        const seasonalPatterns = includeSeasonality 
-          ? await simulateSeasonalityAnalysis(historicalData)
-          : null;
-
-        reportProgress({ progress: 55, total: 100 });
-        const _trendAnalysis = await simulateTrendAnalysis(historicalData);
-
-        // Phase 3: Projection Generation
-        reportProgress({ progress: 70, total: 100 });
-        const baseProjection = await simulateProjectionGeneration(
+        // Phase 2: Projection Generation
+        const { baseProjection, confidence } = await generateProjectionAndConfidence(
           historicalData,
           currentUsage,
           projectionDays,
-          projectionModel
+          projectionModel,
+          confidenceLevel,
+          reportProgress
         );
 
-        reportProgress({ progress: 85, total: 100 });
-        const confidence = await simulateConfidenceCalculation(
-          baseProjection,
-          historicalData,
-          confidenceLevel
-        );
-
-        const currentTime = new Date();
-        const projectionEnd = new Date(currentTime.getTime() + projectionDays * 24 * 60 * 60 * 1000);
-
-        // Ensure all required data is available before constructing projection
-        if (!baseProjection || typeof baseProjection.currentSpend !== 'number' || typeof baseProjection.projected !== 'number') {
-          throw new UserError('Failed to generate projection: invalid base projection data');
-        }
+        // Phase 3: Validation and Construction
+        validateProjectionData(baseProjection, confidence);
         
-        if (!confidence || typeof confidence.overall !== 'number') {
-          throw new UserError('Failed to generate projection: invalid confidence data');
-        }
-
-        const projection: CostProjection = {
-          budgetId,
-          tenantId: 'default',
-          projectionPeriod: {
-            startDate: currentTime.toISOString(),
-            endDate: projectionEnd.toISOString(),
-            daysTotal: projectionDays,
-            daysRemaining: projectionDays,
-          },
-          currentSpend: baseProjection.currentSpend || 0,
-          projectedSpend: {
-            conservative: (baseProjection.projected || 0) * 0.8,
-            expected: baseProjection.projected || 0,
-            optimistic: (baseProjection.projected || 0) * 1.2,
-          },
-          confidence: {
-            overall: confidence.overall,
-            factors: {
-              dataQuality: confidence.dataQuality,
-              seasonality: seasonalPatterns ? 0.9 : 0.7,
-              trendStability: confidence.trendStability,
-              historicalAccuracy: confidence.historicalAccuracy,
-            },
-          },
-          methodology: {
-            model: projectionModel,
-            dataPoints: historicalData.dataPoints.length,
-            trainingPeriod: '90 days',
-            features: [
-              'historical_spend',
-              'day_of_week',
-              'time_of_day',
-              ...(seasonalPatterns ? ['seasonal_patterns'] : []),
-              'scenario_activity',
-              'user_count',
-            ],
-          },
-          recommendations: [
-            {
-              type: 'cost_optimization',
-              description: 'Implement intelligent scenario scheduling to reduce peak-time costs',
-              estimatedSavings: Math.round(baseProjection.projected * 0.15),
-              implementationEffort: 'medium',
-            },
-            {
-              type: 'usage_adjustment',
-              description: 'Review and optimize data transfer patterns for efficiency',
-              estimatedSavings: Math.round(baseProjection.projected * 0.08),
-              implementationEffort: 'low',
-            },
-            {
-              type: 'threshold_adjustment',
-              description: 'Adjust alert thresholds based on projected spending patterns',
-              implementationEffort: 'low',
-            },
-          ],
-          generatedAt: currentTime.toISOString(),
-        };
+        const projection = createCostProjection(
+          typedInput,
+          baseProjection,
+          confidence,
+          historicalData,
+          seasonalPatterns
+        );
 
         reportProgress({ progress: 100, total: 100 });
 
@@ -722,34 +1031,19 @@ function addGenerateCostProjectionTool(server: FastMCP, _apiClient: MakeApiClien
           throw new UserError('Failed to construct valid projection object');
         }
 
-        const result = {
+        const result = createProjectionAnalysis(
           projection,
-          analysis: {
-            summary: `${projectionDays}-day cost projection: $${(projection.projectedSpend.expected || 0).toFixed(2)} (${((projection.confidence.overall || 0) * 100).toFixed(1)}% confidence)`,
-            trends: {
-              spending: (baseProjection.projected || 0) > (baseProjection.currentSpend || 0) * 2 ? 'increasing' : 'stable',
-              seasonality: seasonalPatterns ? 'detected' : 'not_detected',
-              volatility: (confidence.trendStability || 0) > 0.8 ? 'low' : (confidence.trendStability || 0) > 0.6 ? 'medium' : 'high',
-            },
-            riskFactors: [
-              ...((projection.confidence.overall || 0) < 0.7 ? ['Low prediction confidence due to insufficient data'] : []),
-              ...((projection.projectedSpend.expected || 0) > (projection.currentSpend || 0) * 3 ? ['Unusually high projected growth rate'] : []),
-              ...((confidence.trendStability || 0) < 0.6 ? ['High spending volatility detected'] : []),
-            ],
-          },
-          actionItems: [
-            'Monitor spending closely during projected period',
-            'Consider implementing recommended optimizations',
-            'Update budget thresholds based on projections',
-            'Schedule regular projection reviews',
-          ],
-        };
+          baseProjection,
+          confidence,
+          seasonalPatterns,
+          projectionDays
+        );
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error generating cost projection', { budgetId, error: errorMessage });
-        if (error instanceof UserError) {throw error;}
+        if (error instanceof UserError) { throw error; }
         throw new UserError(`Failed to generate cost projection: ${errorMessage}`);
       }
     },

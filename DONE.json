@@ -20219,9 +20219,114 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755905954851_frah31jna",
+      "title": "Research: Refactor certificate validation function - reduce complexity from 37 to under 25",
+      "description": "Research and analysis required for implementing: \"Refactor certificate validation function - reduce complexity from 37 to under 25\"\n\n**Implementation Task Details:**\nAnalyze certificates.ts execute function starting line 580, extract helper functions for validation data preparation, API calling, and response formatting\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755905954851_ke8nx3hcy\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755905954851_frah31jna.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755905954851_frah31jna.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T23:39:14.851Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755905954851_ke8nx3hcy",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T23:40:16.778Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T23:40:16.779Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755905954851_ke8nx3hcy",
+      "title": "Refactor certificate validation function - reduce complexity from 37 to under 25",
+      "description": "Analyze certificates.ts execute function starting line 580, extract helper functions for validation data preparation, API calling, and response formatting",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-22T23:39:14.855Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T23:42:27.994Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T23:42:27.995Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755906190107_v2tmjr9ks",
+      "title": "Fix complexity violations in budget-control.ts",
+      "description": "Fix complexity violations at lines 268, 411, and 594 by extracting helper functions while maintaining functionality",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T23:43:10.108Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T23:46:57.997Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T23:46:57.998Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 460,
-  "last_completion": "2025-08-22T23:37:15.372Z",
+  "total_completed": 463,
+  "last_completion": "2025-08-22T23:46:57.998Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
