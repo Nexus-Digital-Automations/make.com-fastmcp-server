@@ -83,6 +83,37 @@ const ExportDataSchema = z.object({
 }).strict();
 
 /**
+ * Build analytics query parameters
+ */
+function buildAnalyticsParams(input: { startDate?: string; endDate?: string; period: string; includeUsage: boolean; includePerformance: boolean; includeBilling: boolean }): Record<string, unknown> {
+  const { startDate, endDate, period, includeUsage, includePerformance, includeBilling } = input;
+  const params: Record<string, unknown> = {
+    period,
+    includeUsage,
+    includePerformance,
+    includeBilling,
+  };
+
+  if (startDate) {params.startDate = startDate;}
+  if (endDate) {params.endDate = endDate;}
+
+  return params;
+}
+
+/**
+ * Create analytics summary
+ */
+function createAnalyticsSummary(analytics: MakeAnalytics): Record<string, unknown> {
+  return {
+    totalExecutions: analytics.usage.executions,
+    totalOperations: analytics.usage.operations,
+    successRate: Math.round((analytics.usage.successfulExecutions / analytics.usage.executions) * 100),
+    averageExecutionTime: analytics.performance.averageExecutionTime,
+    operationsUtilization: Math.round((analytics.billing.operationsUsed / analytics.billing.operationsLimit) * 100),
+  };
+}
+
+/**
  * Add get organization analytics tool
  */
 function addGetOrganizationAnalyticsTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -99,28 +130,14 @@ function addGetOrganizationAnalyticsTool(server: FastMCP, apiClient: MakeApiClie
     },
     execute: async (input, context) => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
-      const { organizationId, startDate, endDate, period, includeUsage, includePerformance, includeBilling } = input;
+      const { organizationId } = input;
 
       if (log?.info) {
-        log.info('Getting organization analytics', {
-          organizationId,
-          period,
-          startDate,
-          endDate,
-        });
+        log.info('Getting organization analytics', { organizationId });
       }
 
       try {
-        const params: Record<string, unknown> = {
-          period,
-          includeUsage,
-          includePerformance,
-          includeBilling,
-        };
-
-        if (startDate) {params.startDate = startDate;}
-        if (endDate) {params.endDate = endDate;}
-
+        const params = buildAnalyticsParams(input);
         const response = await apiClient.get(`/analytics/${organizationId}`, { params });
 
         if (!response.success) {
@@ -143,13 +160,7 @@ function addGetOrganizationAnalyticsTool(server: FastMCP, apiClient: MakeApiClie
 
         return formatSuccessResponse({
           analytics,
-          summary: {
-            totalExecutions: analytics.usage.executions,
-            totalOperations: analytics.usage.operations,
-            successRate: Math.round((analytics.usage.successfulExecutions / analytics.usage.executions) * 100),
-            averageExecutionTime: analytics.performance.averageExecutionTime,
-            operationsUtilization: Math.round((analytics.billing.operationsUsed / analytics.billing.operationsLimit) * 100),
-          },
+          summary: createAnalyticsSummary(analytics),
         }, "Organization analytics retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -164,10 +175,43 @@ function addGetOrganizationAnalyticsTool(server: FastMCP, apiClient: MakeApiClie
 }
 
 /**
+ * Build audit log query parameters
+ */
+function buildAuditLogParams(input: { organizationId?: number; teamId?: number; userId?: number; action?: string; resource?: string; startDate?: string; endDate?: string; limit: number; offset: number }): Record<string, unknown> {
+  const { organizationId, teamId, userId, action, resource, startDate, endDate, limit, offset } = input;
+  const params: Record<string, unknown> = { limit, offset };
+
+  if (organizationId) {params.organizationId = organizationId;}
+  if (teamId) {params.teamId = teamId;}
+  if (userId) {params.userId = userId;}
+  if (action) {params.action = action;}
+  if (resource) {params.resource = resource;}
+  if (startDate) {params.startDate = startDate;}
+  if (endDate) {params.endDate = endDate;}
+
+  return params;
+}
+
+/**
+ * Create audit log summary statistics
+ */
+function createAuditLogSummary(auditLogs: MakeAuditLog[], metadata: Record<string, unknown> | undefined): Record<string, unknown> {
+  return {
+    totalLogs: metadata?.total || auditLogs.length,
+    actionTypes: [...new Set(auditLogs.map(log => log.action))],
+    resourceTypes: [...new Set(auditLogs.map(log => log.resource))],
+    uniqueUsers: [...new Set(auditLogs.map(log => log.userId))].length,
+    dateRange: auditLogs.length > 0 ? {
+      earliest: auditLogs[auditLogs.length - 1]?.timestamp,
+      latest: auditLogs[0]?.timestamp,
+    } : null,
+  };
+}
+
+/**
  * Add list audit logs tool
  */
 function addListAuditLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
-
   server.addTool({
     name: 'list-audit-logs',
     description: 'List and filter audit logs for security and compliance monitoring',
@@ -181,34 +225,13 @@ function addListAuditLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
     },
     execute: async (input, context) => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
-      const { organizationId, teamId, userId, action, resource, startDate, endDate, limit, offset } = input;
 
       if (log?.info) {
-        log.info('Listing audit logs', {
-          organizationId,
-          teamId,
-          userId,
-          action,
-          resource,
-          limit,
-          offset,
-        });
+        log.info('Listing audit logs', input);
       }
 
       try {
-        const params: Record<string, unknown> = {
-          limit,
-          offset,
-        };
-
-        if (organizationId) {params.organizationId = organizationId;}
-        if (teamId) {params.teamId = teamId;}
-        if (userId) {params.userId = userId;}
-        if (action) {params.action = action;}
-        if (resource) {params.resource = resource;}
-        if (startDate) {params.startDate = startDate;}
-        if (endDate) {params.endDate = endDate;}
-
+        const params = buildAuditLogParams(input);
         const response = await apiClient.get('/audit-logs', { params });
 
         if (!response.success) {
@@ -225,26 +248,16 @@ function addListAuditLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
           });
         }
 
-        // Create summary statistics
-        const summary = {
-          totalLogs: metadata?.total || auditLogs.length,
-          actionTypes: [...new Set(auditLogs.map(log => log.action))],
-          resourceTypes: [...new Set(auditLogs.map(log => log.resource))],
-          uniqueUsers: [...new Set(auditLogs.map(log => log.userId))].length,
-          dateRange: auditLogs.length > 0 ? {
-            earliest: auditLogs[auditLogs.length - 1]?.timestamp,
-            latest: auditLogs[0]?.timestamp,
-          } : null,
-        };
+        const summary = createAuditLogSummary(auditLogs, metadata);
 
         return formatSuccessResponse({
           auditLogs,
           summary,
           pagination: {
             total: metadata?.total || auditLogs.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) > (offset + auditLogs.length),
+            limit: input.limit,
+            offset: input.offset,
+            hasMore: (metadata?.total || 0) > (input.offset + auditLogs.length),
           },
         }, "Audit logs retrieved successfully");
       } catch (error: unknown) {
@@ -319,6 +332,38 @@ function addGetAuditLogTool(server: FastMCP, apiClient: MakeApiClient): void {
 }
 
 /**
+ * Build scenario log query parameters
+ */
+function buildScenarioLogParams(input: { executionId?: number; level?: string; startDate?: string; endDate?: string; limit: number; offset: number }): Record<string, unknown> {
+  const { executionId, level, startDate, endDate, limit, offset } = input;
+  const params: Record<string, unknown> = { limit, offset };
+
+  if (executionId) {params.executionId = executionId;}
+  if (level) {params.level = level;}
+  if (startDate) {params.startDate = startDate;}
+  if (endDate) {params.endDate = endDate;}
+
+  return params;
+}
+
+/**
+ * Create scenario log summary
+ */
+function createScenarioLogSummary(scenarioLogs: MakeScenarioLog[], metadata: Record<string, unknown> | undefined): Record<string, unknown> {
+  return {
+    totalLogs: metadata?.total || scenarioLogs.length,
+    logLevels: {
+      info: scenarioLogs.filter(log => log.level === 'info').length,
+      warning: scenarioLogs.filter(log => log.level === 'warning').length,
+      error: scenarioLogs.filter(log => log.level === 'error').length,
+      debug: scenarioLogs.filter(log => log.level === 'debug').length,
+    },
+    uniqueExecutions: [...new Set(scenarioLogs.map(log => log.executionId))].length,
+    uniqueModules: [...new Set(scenarioLogs.map(log => log.moduleName).filter(Boolean))],
+  };
+}
+
+/**
  * Add get scenario logs tool
  */
 function addGetScenarioLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -335,29 +380,14 @@ function addGetScenarioLogsTool(server: FastMCP, apiClient: MakeApiClient): void
     parameters: ScenarioLogFiltersSchema,
     execute: async (input, context) => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
-      const { scenarioId, executionId, level, startDate, endDate, limit, offset } = input;
+      const { scenarioId } = input;
 
       if (log?.info) {
-        log.info('Getting scenario logs', {
-          scenarioId,
-          executionId,
-          level,
-          limit,
-          offset,
-        });
+        log.info('Getting scenario logs', { scenarioId, ...input });
       }
 
       try {
-        const params: Record<string, unknown> = {
-          limit,
-          offset,
-        };
-
-        if (executionId) {params.executionId = executionId;}
-        if (level) {params.level = level;}
-        if (startDate) {params.startDate = startDate;}
-        if (endDate) {params.endDate = endDate;}
-
+        const params = buildScenarioLogParams(input);
         const response = await apiClient.get(`/scenarios/${scenarioId}/logs`, { params });
 
         if (!response.success) {
@@ -375,27 +405,16 @@ function addGetScenarioLogsTool(server: FastMCP, apiClient: MakeApiClient): void
           });
         }
 
-        // Create log level summary
-        const summary = {
-          totalLogs: metadata?.total || scenarioLogs.length,
-          logLevels: {
-            info: scenarioLogs.filter(log => log.level === 'info').length,
-            warning: scenarioLogs.filter(log => log.level === 'warning').length,
-            error: scenarioLogs.filter(log => log.level === 'error').length,
-            debug: scenarioLogs.filter(log => log.level === 'debug').length,
-          },
-          uniqueExecutions: [...new Set(scenarioLogs.map(log => log.executionId))].length,
-          uniqueModules: [...new Set(scenarioLogs.map(log => log.moduleName).filter(Boolean))],
-        };
+        const summary = createScenarioLogSummary(scenarioLogs, metadata);
 
         return formatSuccessResponse({
           scenarioLogs,
           summary,
           pagination: {
             total: metadata?.total || scenarioLogs.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) > (offset + scenarioLogs.length),
+            limit: input.limit,
+            offset: input.offset,
+            hasMore: (metadata?.total || 0) > (input.offset + scenarioLogs.length),
           },
         }, "Scenario logs retrieved successfully");
       } catch (error: unknown) {
@@ -408,6 +427,63 @@ function addGetScenarioLogsTool(server: FastMCP, apiClient: MakeApiClient): void
       }
     },
   });
+}
+
+/**
+ * Build execution history query parameters
+ */
+function buildExecutionHistoryParams(input: { scenarioId?: number; organizationId?: number; teamId?: number; status?: string; startDate?: string; endDate?: string; limit: number; offset: number }): Record<string, unknown> {
+  const { scenarioId, organizationId, teamId, status, startDate, endDate, limit, offset } = input;
+  const params: Record<string, unknown> = { limit, offset };
+
+  if (scenarioId) {params.scenarioId = scenarioId;}
+  if (organizationId) {params.organizationId = organizationId;}
+  if (teamId) {params.teamId = teamId;}
+  if (status) {params.status = status;}
+  if (startDate) {params.startDate = startDate;}
+  if (endDate) {params.endDate = endDate;}
+
+  return params;
+}
+
+/**
+ * Calculate execution performance metrics
+ */
+function calculateExecutionMetrics(executions: MakeExecution[]): Record<string, unknown> {
+  const totalOperations = executions.reduce((sum, exec) => sum + exec.operations, 0);
+  const totalDataTransfer = executions.reduce((sum, exec) => sum + exec.dataTransfer, 0);
+  
+  const completedExecutions = executions.filter(exec => exec.finishedAt);
+  const averageExecutionTime = completedExecutions.length > 0 ? 
+    completedExecutions.reduce((sum, exec) => {
+      const startTime = new Date(exec.startedAt).getTime();
+      const endTime = new Date(exec.finishedAt!).getTime();
+      return sum + (endTime - startTime);
+    }, 0) / completedExecutions.length : 0;
+
+  return {
+    totalOperations,
+    totalDataTransfer,
+    averageExecutionTime,
+  };
+}
+
+/**
+ * Create execution history summary
+ */
+function createExecutionHistorySummary(executions: MakeExecution[], metadata: Record<string, unknown> | undefined): Record<string, unknown> {
+  const metrics = calculateExecutionMetrics(executions);
+  
+  return {
+    totalExecutions: metadata?.total || executions.length,
+    statusBreakdown: {
+      success: executions.filter(exec => exec.status === 'success').length,
+      error: executions.filter(exec => exec.status === 'error').length,
+      warning: executions.filter(exec => exec.status === 'warning').length,
+      incomplete: executions.filter(exec => exec.status === 'incomplete').length,
+    },
+    ...metrics,
+  };
 }
 
 /**
@@ -427,37 +503,15 @@ function addGetExecutionHistoryTool(server: FastMCP, apiClient: MakeApiClient): 
     parameters: ExecutionHistoryFiltersSchema,
     execute: async (input, context) => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
-      const { scenarioId, organizationId, teamId, status, startDate, endDate, limit, offset } = input;
+      const { scenarioId } = input;
 
       if (log?.info) {
-        log.info('Getting execution history', {
-          scenarioId,
-          organizationId,
-          teamId,
-          status,
-          limit,
-          offset,
-        });
+        log.info('Getting execution history', input);
       }
 
       try {
-        const params: Record<string, unknown> = {
-          limit,
-          offset,
-        };
-
-        if (scenarioId) {params.scenarioId = scenarioId;}
-        if (organizationId) {params.organizationId = organizationId;}
-        if (teamId) {params.teamId = teamId;}
-        if (status) {params.status = status;}
-        if (startDate) {params.startDate = startDate;}
-        if (endDate) {params.endDate = endDate;}
-
-        let endpoint = '/executions';
-        if (scenarioId) {
-          endpoint = `/scenarios/${scenarioId}/executions`;
-        }
-
+        const params = buildExecutionHistoryParams(input);
+        const endpoint = scenarioId ? `/scenarios/${scenarioId}/executions` : '/executions';
         const response = await apiClient.get(endpoint, { params });
 
         if (!response.success) {
@@ -474,34 +528,16 @@ function addGetExecutionHistoryTool(server: FastMCP, apiClient: MakeApiClient): 
           });
         }
 
-        // Calculate performance metrics
-        const summary = {
-          totalExecutions: metadata?.total || executions.length,
-          statusBreakdown: {
-            success: executions.filter(exec => exec.status === 'success').length,
-            error: executions.filter(exec => exec.status === 'error').length,
-            warning: executions.filter(exec => exec.status === 'warning').length,
-            incomplete: executions.filter(exec => exec.status === 'incomplete').length,
-          },
-          totalOperations: executions.reduce((sum, exec) => sum + exec.operations, 0),
-          totalDataTransfer: executions.reduce((sum, exec) => sum + exec.dataTransfer, 0),
-          averageExecutionTime: executions.length > 0 ? executions
-            .filter(exec => exec.finishedAt)
-            .reduce((sum, exec) => {
-              const startTime = new Date(exec.startedAt).getTime();
-              const endTime = new Date(exec.finishedAt!).getTime();
-              return sum + (endTime - startTime);
-            }, 0) / executions.filter(exec => exec.finishedAt).length : 0,
-        };
+        const summary = createExecutionHistorySummary(executions, metadata);
 
         return formatSuccessResponse({
           executions,
           summary,
           pagination: {
             total: metadata?.total || executions.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) > (offset + executions.length),
+            limit: input.limit,
+            offset: input.offset,
+            hasMore: (metadata?.total || 0) > (input.offset + executions.length),
           },
         }, "Execution history retrieved successfully");
       } catch (error: unknown) {
@@ -514,6 +550,38 @@ function addGetExecutionHistoryTool(server: FastMCP, apiClient: MakeApiClient): 
       }
     },
   });
+}
+
+/**
+ * Build incomplete execution query parameters
+ */
+function buildIncompleteExecutionParams(input: { scenarioId?: number; organizationId?: number; status?: string; canResume?: boolean; limit: number; offset: number }): Record<string, unknown> {
+  const { scenarioId, organizationId, status, canResume, limit, offset } = input;
+  const params: Record<string, unknown> = { limit, offset };
+
+  if (scenarioId) {params.scenarioId = scenarioId;}
+  if (organizationId) {params.organizationId = organizationId;}
+  if (status) {params.status = status;}
+  if (canResume !== undefined) {params.canResume = canResume;}
+
+  return params;
+}
+
+/**
+ * Create incomplete execution summary
+ */
+function createIncompleteExecutionSummary(incompleteExecutions: MakeIncompleteExecution[], metadata: Record<string, unknown> | undefined): Record<string, unknown> {
+  return {
+    totalIncomplete: metadata?.total || incompleteExecutions.length,
+    statusBreakdown: {
+      waiting: incompleteExecutions.filter(exec => exec.status === 'waiting').length,
+      paused: incompleteExecutions.filter(exec => exec.status === 'paused').length,
+      failed: incompleteExecutions.filter(exec => exec.status === 'failed').length,
+    },
+    resumableCount: incompleteExecutions.filter(exec => exec.canResume).length,
+    totalOperationsAffected: incompleteExecutions.reduce((sum, exec) => sum + exec.operations, 0),
+    uniqueScenarios: [...new Set(incompleteExecutions.map(exec => exec.scenarioId))].length,
+  };
 }
 
 /**
@@ -533,30 +601,13 @@ function addListIncompleteExecutionsTool(server: FastMCP, apiClient: MakeApiClie
     parameters: IncompleteExecutionFiltersSchema,
     execute: async (input, context) => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
-      const { scenarioId, organizationId, status, canResume, limit, offset } = input;
 
       if (log?.info) {
-        log.info('Listing incomplete executions', {
-          scenarioId,
-          organizationId,
-          status,
-          canResume,
-          limit,
-          offset,
-        });
+        log.info('Listing incomplete executions', input);
       }
 
       try {
-        const params: Record<string, unknown> = {
-          limit,
-          offset,
-        };
-
-        if (scenarioId) {params.scenarioId = scenarioId;}
-        if (organizationId) {params.organizationId = organizationId;}
-        if (status) {params.status = status;}
-        if (canResume !== undefined) {params.canResume = canResume;}
-
+        const params = buildIncompleteExecutionParams(input);
         const response = await apiClient.get('/incomplete-executions', { params });
 
         if (!response.success) {
@@ -573,26 +624,16 @@ function addListIncompleteExecutionsTool(server: FastMCP, apiClient: MakeApiClie
           });
         }
 
-        const summary = {
-          totalIncomplete: metadata?.total || incompleteExecutions.length,
-          statusBreakdown: {
-            waiting: incompleteExecutions.filter(exec => exec.status === 'waiting').length,
-            paused: incompleteExecutions.filter(exec => exec.status === 'paused').length,
-            failed: incompleteExecutions.filter(exec => exec.status === 'failed').length,
-          },
-          resumableCount: incompleteExecutions.filter(exec => exec.canResume).length,
-          totalOperationsAffected: incompleteExecutions.reduce((sum, exec) => sum + exec.operations, 0),
-          uniqueScenarios: [...new Set(incompleteExecutions.map(exec => exec.scenarioId))].length,
-        };
+        const summary = createIncompleteExecutionSummary(incompleteExecutions, metadata);
 
         return formatSuccessResponse({
           incompleteExecutions,
           summary,
           pagination: {
             total: metadata?.total || incompleteExecutions.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) > (offset + incompleteExecutions.length),
+            limit: input.limit,
+            offset: input.offset,
+            hasMore: (metadata?.total || 0) > (input.offset + incompleteExecutions.length),
           },
         }, "Incomplete executions retrieved successfully");
       } catch (error: unknown) {
@@ -672,6 +713,45 @@ function addResolveIncompleteExecutionTool(server: FastMCP, apiClient: MakeApiCl
 }
 
 /**
+ * Build hook log query parameters
+ */
+function buildHookLogParams(input: { success?: boolean; method?: string; startDate?: string; endDate?: string; limit: number; offset: number }): Record<string, unknown> {
+  const { success, method, startDate, endDate, limit, offset } = input;
+  const params: Record<string, unknown> = { limit, offset };
+
+  if (success !== undefined) {params.success = success;}
+  if (method) {params.method = method;}
+  if (startDate) {params.startDate = startDate;}
+  if (endDate) {params.endDate = endDate;}
+
+  return params;
+}
+
+/**
+ * Create hook log summary
+ */
+function createHookLogSummary(hookLogs: MakeHookLog[], metadata: Record<string, unknown> | undefined): Record<string, unknown> {
+  const successRate = hookLogs.length > 0 ? 
+    Math.round((hookLogs.filter(log => log.success).length / hookLogs.length) * 100) : 0;
+  
+  const methodBreakdown = hookLogs.reduce((acc: Record<string, number>, log) => {
+    acc[log.method] = (acc[log.method] || 0) + 1;
+    return acc;
+  }, {});
+  
+  const averageProcessingTime = hookLogs.length > 0 ? 
+    hookLogs.reduce((sum, log) => sum + log.processingTime, 0) / hookLogs.length : 0;
+
+  return {
+    totalLogs: metadata?.total || hookLogs.length,
+    successRate,
+    methodBreakdown,
+    averageProcessingTime,
+    errorCount: hookLogs.filter(log => !log.success).length,
+  };
+}
+
+/**
  * Add get hook logs tool
  */
 function addGetHookLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -688,29 +768,14 @@ function addGetHookLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
     parameters: HookLogFiltersSchema,
     execute: async (input, context) => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
-      const { hookId, success, method, startDate, endDate, limit, offset } = input;
+      const { hookId } = input;
 
       if (log?.info) {
-        log.info('Getting hook logs', {
-          hookId,
-          success,
-          method,
-          limit,
-          offset,
-        });
+        log.info('Getting hook logs', { hookId, ...input });
       }
 
       try {
-        const params: Record<string, unknown> = {
-          limit,
-          offset,
-        };
-
-        if (success !== undefined) {params.success = success;}
-        if (method) {params.method = method;}
-        if (startDate) {params.startDate = startDate;}
-        if (endDate) {params.endDate = endDate;}
-
+        const params = buildHookLogParams(input);
         const response = await apiClient.get(`/hooks/${hookId}/logs`, { params });
 
         if (!response.success) {
@@ -728,27 +793,16 @@ function addGetHookLogsTool(server: FastMCP, apiClient: MakeApiClient): void {
           });
         }
 
-        const summary = {
-          totalLogs: metadata?.total || hookLogs.length,
-          successRate: hookLogs.length > 0 ? 
-            Math.round((hookLogs.filter(log => log.success).length / hookLogs.length) * 100) : 0,
-          methodBreakdown: hookLogs.reduce((acc: Record<string, number>, log) => {
-            acc[log.method] = (acc[log.method] || 0) + 1;
-            return acc;
-          }, {}),
-          averageProcessingTime: hookLogs.length > 0 ? 
-            hookLogs.reduce((sum, log) => sum + log.processingTime, 0) / hookLogs.length : 0,
-          errorCount: hookLogs.filter(log => !log.success).length,
-        };
+        const summary = createHookLogSummary(hookLogs, metadata);
 
         return formatSuccessResponse({
           hookLogs,
           summary,
           pagination: {
             total: metadata?.total || hookLogs.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) > (offset + hookLogs.length),
+            limit: input.limit,
+            offset: input.offset,
+            hasMore: (metadata?.total || 0) > (input.offset + hookLogs.length),
           },
         }, "Hook logs retrieved successfully");
       } catch (error: unknown) {
@@ -836,6 +890,31 @@ function addExportAnalyticsDataTool(server: FastMCP, apiClient: MakeApiClient): 
 }
 
 /**
+ * Build performance metrics query parameters
+ */
+function buildPerformanceMetricsParams(input: { metric: string; period: string; startDate?: string; endDate?: string }): Record<string, unknown> {
+  const { metric, period, startDate, endDate } = input;
+  const params: Record<string, unknown> = { metric, period };
+
+  if (startDate) {params.startDate = startDate;}
+  if (endDate) {params.endDate = endDate;}
+
+  return params;
+}
+
+/**
+ * Create performance metrics analysis
+ */
+function createPerformanceAnalysis(metrics: Record<string, unknown>): Record<string, unknown> {
+  return {
+    trend: metrics?.trend || 'stable',
+    currentValue: metrics?.currentValue,
+    percentageChange: metrics?.percentageChange,
+    recommendations: (metrics?.recommendations as unknown[]) || [],
+  };
+}
+
+/**
  * Add get performance metrics tool
  */
 function addGetPerformanceMetricsTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -858,25 +937,14 @@ function addGetPerformanceMetricsTool(server: FastMCP, apiClient: MakeApiClient)
     }),
     execute: async (input, context) => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
-      const { organizationId, metric, period, startDate, endDate } = input;
+      const { organizationId } = input;
 
       if (log?.info) {
-        log.info('Getting performance metrics', {
-          organizationId,
-          metric,
-          period,
-        });
+        log.info('Getting performance metrics', { organizationId, ...input });
       }
 
       try {
-        const params: Record<string, unknown> = {
-          metric,
-          period,
-        };
-
-        if (startDate) {params.startDate = startDate;}
-        if (endDate) {params.endDate = endDate;}
-
+        const params = buildPerformanceMetricsParams(input);
         const response = await apiClient.get(`/organizations/${organizationId}/metrics`, { params });
 
         if (!response.success) {
@@ -888,19 +956,14 @@ function addGetPerformanceMetricsTool(server: FastMCP, apiClient: MakeApiClient)
         if (log?.info) {
           log.info('Successfully retrieved performance metrics', {
             organizationId,
-            metric,
+            metric: input.metric,
             dataPoints: (metrics?.dataPoints as unknown[])?.length || 0,
           });
         }
 
         return formatSuccessResponse({
           metrics,
-          analysis: {
-            trend: metrics?.trend || 'stable',
-            currentValue: metrics?.currentValue,
-            percentageChange: metrics?.percentageChange,
-            recommendations: (metrics?.recommendations as unknown[]) || [],
-          },
+          analysis: createPerformanceAnalysis(metrics),
         }, "Performance metrics retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
