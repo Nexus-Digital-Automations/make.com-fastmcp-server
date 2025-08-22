@@ -44,7 +44,21 @@
     "lint:fix": "eslint 'src/**/*.ts' --fix",
     "typecheck": "tsc --noEmit",
     "inspect": "fastmcp inspect src/index.ts",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "refactor:analyze": "node scripts/refactoring/refactoring-analyzer.js",
+    "refactor:analyze:json": "node scripts/refactoring/refactoring-analyzer.js --output json",
+    "refactor:analyze:markdown": "node scripts/refactoring/refactoring-analyzer.js --output markdown",
+    "refactor:analyze:save": "node scripts/refactoring/refactoring-analyzer.js --output markdown --save refactoring-analysis.md",
+    "refactor:generate": "node scripts/refactoring/module-generator.js",
+    "refactor:dependencies": "madge --circular --extensions ts ./src",
+    "refactor:complexity": "ts-complexity src/**/*.ts --max 15",
+    "refactor:unused": "ts-unused-exports tsconfig.json",
+    "refactor:validate": "npm run refactor:dependencies && npm run refactor:complexity && npm run refactor:unused",
+    "analyze:all": "npm run refactor:analyze && npm run refactor:validate",
+    "analyze:dependencies": "madge --extensions ts --image dependency-graph.svg ./src",
+    "analyze:complexity": "ts-complexity src/**/*.ts --format json > complexity-report.json",
+    "analyze:bundle": "npm run build && webpack-bundle-analyzer dist/bundle.js",
+    "generate:module": "node scripts/refactoring/module-generator.js"
   },
   "keywords": [
     "mcp",
