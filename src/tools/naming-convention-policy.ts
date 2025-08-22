@@ -1338,7 +1338,7 @@ function addUpdateNamingConventionPolicyTool(server: FastMCP, apiClient: MakeApi
 /**
  * Helper function to add the get naming policy templates tool
  */
-function addGetNamingPolicyTemplatesTool(server: FastMCP, apiClient: MakeApiClient): void {
+function addGetNamingPolicyTemplatesTool(server: FastMCP, _apiClient: MakeApiClient): void {
 
   /**
    * Get policy templates and examples

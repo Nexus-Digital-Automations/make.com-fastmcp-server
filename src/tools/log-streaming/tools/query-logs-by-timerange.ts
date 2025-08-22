@@ -9,6 +9,224 @@ import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js'
 import { MakeLogEntry } from '../types/streaming.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
+// Types for better organization
+interface QueryParams {
+  scenarioId?: number;
+  organizationId?: number;
+  teamId?: number;
+  executionId?: string;
+  timeRange: {
+    startTime: string;
+    endTime: string;
+    timezone: string;
+  };
+  filtering: {
+    logLevels: string[];
+    executionStatus?: string;
+    moduleTypes?: string[];
+    moduleNames?: string[];
+    searchText?: string;
+    errorCodesOnly: boolean;
+    performanceThreshold?: number;
+    dataSizeThreshold?: number;
+    operationsThreshold?: number;
+    excludeSuccess: boolean;
+    includeMetrics: boolean;
+    correlationIds?: string[];
+  };
+  pagination: {
+    limit: number;
+    offset: number;
+    sortBy: string;
+    sortOrder: string;
+    cursor?: string;
+  };
+  aggregation: {
+    enabled: boolean;
+    groupBy?: string;
+    includeStats: boolean;
+    includeTimeDistribution: boolean;
+    includePerformanceAnalysis: boolean;
+    includeErrorAnalysis: boolean;
+  };
+  analysis: {
+    performanceTrends: boolean;
+    errorPatterns: boolean;
+    usageMetrics: boolean;
+    executionFlow: boolean;
+    anomalyDetection: boolean;
+  };
+  export?: {
+    format: string;
+    includeCharts: boolean;
+    compression: boolean;
+  };
+}
+
+/**
+ * Build query parameters for the API request
+ */
+function buildQueryParameters(params: QueryParams): Record<string, unknown> {
+  const { scenarioId, organizationId, teamId, executionId, timeRange, filtering, pagination } = params;
+  
+  const queryParams: Record<string, unknown> = {
+    startDate: timeRange.startTime,
+    endDate: timeRange.endTime,
+    timezone: timeRange.timezone,
+    limit: pagination.limit,
+    offset: pagination.offset,
+    sortBy: pagination.sortBy,
+    sortOrder: pagination.sortOrder,
+  };
+
+  // Add cursor-based pagination if provided
+  if (pagination.cursor) {
+    queryParams.cursor = pagination.cursor;
+  }
+
+  // Apply filtering parameters
+  if (scenarioId) {queryParams.scenarioId = scenarioId;}
+  if (organizationId) {queryParams.organizationId = organizationId;}
+  if (teamId) {queryParams.teamId = teamId;}
+  if (executionId) {queryParams.executionId = executionId;}
+  if (filtering.logLevels.length > 0) {queryParams.level = filtering.logLevels.join(',');}
+  if (filtering.executionStatus) {queryParams.status = filtering.executionStatus;}
+  if (filtering.moduleTypes?.length) {queryParams.moduleTypes = filtering.moduleTypes.join(',');}
+  if (filtering.moduleNames?.length) {queryParams.moduleNames = filtering.moduleNames.join(',');}
+  if (filtering.searchText) {
+    queryParams.search = filtering.searchText;
+    queryParams.searchType = 'regex'; // Enable regex search
+  }
+  if (filtering.errorCodesOnly) {queryParams.errorsOnly = true;}
+  if (filtering.performanceThreshold) {queryParams.minProcessingTime = filtering.performanceThreshold;}
+  if (filtering.dataSizeThreshold) {queryParams.minDataSize = filtering.dataSizeThreshold;}
+  if (filtering.operationsThreshold) {queryParams.minOperations = filtering.operationsThreshold;}
+  if (filtering.excludeSuccess) {queryParams.excludeSuccess = true;}
+  if (!filtering.includeMetrics) {queryParams.excludeMetrics = true;}
+  if (filtering.correlationIds?.length) {queryParams.correlationIds = filtering.correlationIds.join(',');}
+
+  return queryParams;
+}
+
+/**
+ * Determine the optimal API endpoint based on scope
+ */
+function determineEndpoint(params: QueryParams): string {
+  const { executionId, scenarioId, organizationId, teamId } = params;
+  
+  if (executionId) {
+    return `/executions/${executionId}/logs`;
+  } else if (scenarioId) {
+    return `/scenarios/${scenarioId}/logs`;
+  } else if (organizationId) {
+    return `/organizations/${organizationId}/logs`;
+  } else if (teamId) {
+    return `/teams/${teamId}/logs`;
+  }
+  
+  return '/logs';
+}
+
+/**
+ * Build comprehensive result object with query info
+ */
+function buildQueryResult(logs: MakeLogEntry[], metadata: unknown, queryDuration: number, params: QueryParams): Record<string, unknown> {
+  const { timeRange, filtering, pagination } = params;
+  
+  return {
+    queryInfo: {
+      executedAt: new Date().toISOString(),
+      duration: `${queryDuration}ms`,
+      timeRange: {
+        ...timeRange,
+        actualDuration: new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime(),
+        humanReadable: `${Math.ceil((new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime()) / (1000 * 60 * 60))} hours`,
+      },
+      filtering,
+      pagination: {
+        ...pagination,
+        total: (metadata as Record<string, unknown>)?.total || logs.length,
+        hasMore: ((metadata as Record<string, unknown>)?.total || 0) > (pagination.offset + logs.length),
+        nextCursor: (metadata as Record<string, unknown>)?.nextCursor as string,
+      },
+      endpoint: determineEndpoint(params),
+      performance: {
+        queryTime: queryDuration,
+        averageProcessingTime: queryDuration / Math.max(logs.length, 1),
+        dataRetrievalRate: `${logs.length}/${queryDuration}ms`,
+      },
+    },
+    logs: logs,
+    summary: generateLogSummary(logs),
+  };
+}
+
+/**
+ * Add aggregation analysis to the result
+ */
+async function addAggregationAnalysis(
+  result: Record<string, unknown>, 
+  logs: MakeLogEntry[], 
+  aggregation: QueryParams['aggregation'],
+  log?: unknown
+): Promise<void> {
+  if (aggregation.enabled && aggregation.groupBy) {
+    (log as { info?: (msg: string) => void })?.info?.('Generating advanced aggregation analysis');
+    result.aggregation = generateLogAggregation(
+      logs,
+      aggregation.groupBy as 'level' | 'module' | 'hour',
+      aggregation.includeStats
+    );
+  }
+}
+
+/**
+ * Add advanced analysis features to the result
+ */
+async function addAdvancedAnalysis(
+  result: Record<string, unknown>,
+  logs: MakeLogEntry[],
+  analysis: QueryParams['analysis'],
+  timeRange: QueryParams['timeRange'],
+  log?: unknown
+): Promise<void> {
+  if (analysis.performanceTrends || analysis.errorPatterns || 
+      analysis.usageMetrics || analysis.executionFlow || analysis.anomalyDetection) {
+    
+    (log as { info?: (msg: string, data?: unknown) => void })?.info?.('Performing advanced log analysis', {
+      performanceTrends: analysis.performanceTrends,
+      errorPatterns: analysis.errorPatterns,
+      usageMetrics: analysis.usageMetrics,
+      executionFlow: analysis.executionFlow,
+      anomalyDetection: analysis.anomalyDetection,
+    });
+    
+    result.analysis = await performAdvancedLogAnalysis(logs, analysis, {
+      startTime: timeRange.startTime,
+      endTime: timeRange.endTime,
+    });
+  }
+}
+
+/**
+ * Add export capabilities to the result
+ */
+async function addExportCapabilities(
+  result: Record<string, unknown>,
+  logs: MakeLogEntry[],
+  exportConfig: QueryParams['export'],
+  log?: unknown
+): Promise<void> {
+  if (exportConfig?.format) {
+    (log as { info?: (msg: string, data?: unknown) => void })?.info?.('Preparing export data', { format: exportConfig.format });
+    result.export = await prepareLogExport(logs, {
+      format: exportConfig.format,
+      includeCharts: exportConfig.includeCharts,
+      compression: exportConfig.compression,
+    });
+  }
+}
+
 /**
  * Create query logs by time range tool configuration
  */
@@ -27,134 +245,35 @@ export function createQueryLogsByTimeRangeTool(context: ToolContext): ToolDefini
       openWorldHint: true,
     },
     execute: async (input: unknown, { log }): Promise<string> => {
-      const { 
-        scenarioId, organizationId, teamId, executionId, timeRange, 
-        filtering, pagination, aggregation, analysis, export: exportConfig
-      } = input as {
-        scenarioId?: number;
-        organizationId?: number;
-        teamId?: number;
-        executionId?: string;
-        timeRange: {
-          startTime: string;
-          endTime: string;
-          timezone: string;
-        };
-        filtering: {
-          logLevels: string[];
-          executionStatus?: string;
-          moduleTypes?: string[];
-          moduleNames?: string[];
-          searchText?: string;
-          errorCodesOnly: boolean;
-          performanceThreshold?: number;
-          dataSizeThreshold?: number;
-          operationsThreshold?: number;
-          excludeSuccess: boolean;
-          includeMetrics: boolean;
-          correlationIds?: string[];
-        };
-        pagination: {
-          limit: number;
-          offset: number;
-          sortBy: string;
-          sortOrder: string;
-          cursor?: string;
-        };
-        aggregation: {
-          enabled: boolean;
-          groupBy?: string;
-          includeStats: boolean;
-          includeTimeDistribution: boolean;
-          includePerformanceAnalysis: boolean;
-          includeErrorAnalysis: boolean;
-        };
-        analysis: {
-          performanceTrends: boolean;
-          errorPatterns: boolean;
-          usageMetrics: boolean;
-          executionFlow: boolean;
-          anomalyDetection: boolean;
-        };
-        export?: {
-          format: string;
-          includeCharts: boolean;
-          compression: boolean;
-        };
-      };
+      const params = input as QueryParams;
 
       log?.info?.('Starting advanced historical log query', {
-        scenarioId,
-        organizationId,
-        teamId,
-        executionId,
-        timeRange,
-        filtering,
-        pagination,
-        aggregation,
-        analysis,
+        scenarioId: params.scenarioId,
+        organizationId: params.organizationId,
+        teamId: params.teamId,
+        executionId: params.executionId,
+        timeRange: params.timeRange,
+        filtering: params.filtering,
+        pagination: params.pagination,
+        aggregation: params.aggregation,
+        analysis: params.analysis,
       });
 
       try {
         const queryStartTime = Date.now();
         
-        // Build comprehensive query parameters
-        const params: Record<string, unknown> = {
-          startDate: timeRange.startTime,
-          endDate: timeRange.endTime,
-          timezone: timeRange.timezone,
-          limit: pagination.limit,
-          offset: pagination.offset,
-          sortBy: pagination.sortBy,
-          sortOrder: pagination.sortOrder,
-        };
-
-        // Add cursor-based pagination if provided
-        if (pagination.cursor) {
-          params.cursor = pagination.cursor;
-        }
-
-        // Apply filtering parameters
-        if (scenarioId) {params.scenarioId = scenarioId;}
-        if (organizationId) {params.organizationId = organizationId;}
-        if (teamId) {params.teamId = teamId;}
-        if (executionId) {params.executionId = executionId;}
-        if (filtering.logLevels.length > 0) {params.level = filtering.logLevels.join(',');}
-        if (filtering.executionStatus) {params.status = filtering.executionStatus;}
-        if (filtering.moduleTypes?.length) {params.moduleTypes = filtering.moduleTypes.join(',');}
-        if (filtering.moduleNames?.length) {params.moduleNames = filtering.moduleNames.join(',');}
-        if (filtering.searchText) {
-          params.search = filtering.searchText;
-          params.searchType = 'regex'; // Enable regex search
-        }
-        if (filtering.errorCodesOnly) {params.errorsOnly = true;}
-        if (filtering.performanceThreshold) {params.minProcessingTime = filtering.performanceThreshold;}
-        if (filtering.dataSizeThreshold) {params.minDataSize = filtering.dataSizeThreshold;}
-        if (filtering.operationsThreshold) {params.minOperations = filtering.operationsThreshold;}
-        if (filtering.excludeSuccess) {params.excludeSuccess = true;}
-        if (!filtering.includeMetrics) {params.excludeMetrics = true;}
-        if (filtering.correlationIds?.length) {params.correlationIds = filtering.correlationIds.join(',');}
-
-        // Determine optimal endpoint based on scope and query parameters
-        let endpoint = '/logs';
-        if (executionId) {
-          endpoint = `/executions/${executionId}/logs`;
-        } else if (scenarioId) {
-          endpoint = `/scenarios/${scenarioId}/logs`;
-        } else if (organizationId) {
-          endpoint = `/organizations/${organizationId}/logs`;
-        } else if (teamId) {
-          endpoint = `/teams/${teamId}/logs`;
-        }
+        // Build query parameters and determine endpoint
+        const queryParams = buildQueryParameters(params);
+        const endpoint = determineEndpoint(params);
 
         log?.info?.('Executing historical log query', {
           endpoint,
-          paramsCount: Object.keys(params).length,
+          paramsCount: Object.keys(queryParams).length,
           queryStrategy: 'time-range-optimized',
         });
 
         // Execute the primary log query
-        const response = await apiClient.get(endpoint, { params });
+        const response = await apiClient.get(endpoint, { params: queryParams });
 
         if (!response.success) {
           throw new UserError(`Failed to query historical logs: ${response.error?.message || 'Unknown error'}`);
@@ -165,77 +284,19 @@ export function createQueryLogsByTimeRangeTool(context: ToolContext): ToolDefini
         const queryDuration = Date.now() - queryStartTime;
 
         // Build comprehensive result object
-        const result: Record<string, unknown> = {
-          queryInfo: {
-            executedAt: new Date().toISOString(),
-            duration: `${queryDuration}ms`,
-            timeRange: {
-              ...timeRange,
-              actualDuration: new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime(),
-              humanReadable: `${Math.ceil((new Date(timeRange.endTime).getTime() - new Date(timeRange.startTime).getTime()) / (1000 * 60 * 60))} hours`,
-            },
-            filtering,
-            pagination: {
-              ...pagination,
-              total: metadata?.total || logs.length,
-              hasMore: (metadata?.total || 0) > (pagination.offset + logs.length),
-              nextCursor: (metadata as Record<string, unknown>)?.nextCursor as string,
-            },
-            endpoint,
-            performance: {
-              queryTime: queryDuration,
-              averageProcessingTime: queryDuration / Math.max(logs.length, 1),
-              dataRetrievalRate: `${logs.length}/${queryDuration}ms`,
-            },
-          },
-          logs: logs,
-          summary: generateLogSummary(logs),
-        };
+        const result = buildQueryResult(logs, metadata, queryDuration, params);
 
-        // Add comprehensive aggregation analysis
-        if (aggregation.enabled && aggregation.groupBy) {
-          log?.info?.('Generating advanced aggregation analysis');
-          result.aggregation = generateLogAggregation(
-            logs,
-            aggregation.groupBy as 'level' | 'module' | 'hour',
-            aggregation.includeStats
-          );
-        }
-
-        // Add advanced analysis features
-        if (analysis.performanceTrends || analysis.errorPatterns || 
-            analysis.usageMetrics || analysis.executionFlow || analysis.anomalyDetection) {
-          
-          log?.info?.('Performing advanced log analysis', {
-            performanceTrends: analysis.performanceTrends,
-            errorPatterns: analysis.errorPatterns,
-            usageMetrics: analysis.usageMetrics,
-            executionFlow: analysis.executionFlow,
-            anomalyDetection: analysis.anomalyDetection,
-          });
-          
-          result.analysis = await performAdvancedLogAnalysis(logs, analysis, {
-            startTime: timeRange.startTime,
-            endTime: timeRange.endTime,
-          });
-        }
-
-        // Add export capabilities if requested
-        if (exportConfig?.format) {
-          log?.info?.('Preparing export data', { format: exportConfig.format });
-          result.export = await prepareLogExport(logs, {
-            format: exportConfig.format,
-            includeCharts: exportConfig.includeCharts,
-            compression: exportConfig.compression,
-          });
-        }
+        // Add optional features
+        await addAggregationAnalysis(result, logs, params.aggregation, log);
+        await addAdvancedAnalysis(result, logs, params.analysis, params.timeRange, log);
+        await addExportCapabilities(result, logs, params.export, log);
 
         log?.info?.('Historical log query completed successfully', {
           logsReturned: logs.length,
           queryDuration: `${queryDuration}ms`,
-          aggregationEnabled: aggregation.enabled,
-          analysisEnabled: Object.values(analysis).some(Boolean),
-          exportEnabled: !!exportConfig?.format,
+          aggregationEnabled: params.aggregation.enabled,
+          analysisEnabled: Object.values(params.analysis).some(Boolean),
+          exportEnabled: !!params.export?.format,
         });
 
         return formatSuccessResponse(result).content[0].text;
@@ -244,11 +305,11 @@ export function createQueryLogsByTimeRangeTool(context: ToolContext): ToolDefini
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Error querying historical logs', {
           error: errorMessage,
-          scenarioId,
-          organizationId,
-          teamId,
-          executionId,
-          timeRange,
+          scenarioId: params.scenarioId,
+          organizationId: params.organizationId,
+          teamId: params.teamId,
+          executionId: params.executionId,
+          timeRange: params.timeRange,
         });
         
         if (error instanceof UserError) {
