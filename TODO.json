@@ -1,24 +1,6 @@
 {
   "project": "root_files",
-  "tasks": [
-    {
-      "id": "task_1755848806808_ml6ec9wgk",
-      "title": "Fix variables-basic test JSON assertion failures",
-      "description": "Multiple tests in variables-basic.test.ts failing with expect().toContain() errors - receiving complex objects instead of expected strings. Complex JSON assertion pattern needs fixing.",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T07:46:46.808Z",
-      "auto_research_created": false
-    }
-  ],
+  "tasks": [],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,

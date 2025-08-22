@@ -14934,9 +14934,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755848806808_ml6ec9wgk",
+      "title": "Fix variables-basic test JSON assertion failures",
+      "description": "Multiple tests in variables-basic.test.ts failing with expect().toContain() errors - receiving complex objects instead of expected strings. Complex JSON assertion pattern needs fixing.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T07:46:46.808Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755848784527_1_general_7f9a8740",
+      "started_at": "2025-08-22T07:51:41.680Z",
+      "claimed_by": "development_session_1755848784527_1_general_7f9a8740",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755848784527_1_general_7f9a8740",
+          "role": "primary",
+          "assignedAt": "2025-08-22T07:51:41.680Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T07:52:59.082Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T07:52:59.082Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 335,
-  "last_completion": "2025-08-22T07:51:11.826Z",
+  "total_completed": 336,
+  "last_completion": "2025-08-22T07:52:59.082Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
