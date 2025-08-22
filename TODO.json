@@ -8,7 +8,7 @@
       "mode": "DEVELOPMENT",
       "category": "linter-error",
       "priority": "critical",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -16,7 +16,17 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-22T19:37:18.474Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "started_at": "2025-08-22T20:03:15.291Z",
+      "claimed_by": "agent_1755892995291",
+      "assigned_agent": "agent_1755892995291",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755892995291",
+          "action": "claimed",
+          "timestamp": "2025-08-22T20:03:15.291Z"
+        }
+      ]
     }
   ],
   "current_mode": "DEVELOPMENT",

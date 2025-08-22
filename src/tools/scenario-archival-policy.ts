@@ -697,6 +697,241 @@ class ScenarioArchivalPolicyEngine {
 }
 
 /**
+ * Validate policy conditions
+ */
+function validatePolicyConditions(
+  conditions: any[],
+  policyEngine: ScenarioArchivalPolicyEngine
+): { conditionValidation: Record<string, unknown>; invalidConditions: string[] } {
+  const conditionValidation: Record<string, unknown> = {};
+  const invalidConditions: string[] = [];
+
+  for (const condition of conditions) {
+    try {
+      // Validate condition parameters based on trigger type
+      switch (condition.trigger) {
+        case ArchivalTrigger.INACTIVITY:
+          if (!condition.inactivityPeriodDays) {
+            throw new Error('inactivityPeriodDays required for inactivity trigger');
+          }
+          break;
+        case ArchivalTrigger.LOW_SUCCESS_RATE:
+          if (condition.successRateThreshold === undefined) {
+            throw new Error('successRateThreshold required for low_success_rate trigger');
+          }
+          break;
+        case ArchivalTrigger.RESOURCE_USAGE:
+          if (!condition.maxCpuUsage && !condition.maxMemoryUsage && !condition.maxOperationsPerExecution) {
+            throw new Error('At least one resource threshold required for resource_usage trigger');
+          }
+          break;
+        case ArchivalTrigger.CUSTOM:
+          if (!condition.customEvaluationFunction) {
+            throw new Error('customEvaluationFunction required for custom trigger');
+          }
+          // Test custom function validity
+          try {
+            if (!policyEngine.isSafeCustomFunction(condition.customEvaluationFunction)) {
+              throw new Error('Custom function contains unsafe operations');
+            }
+            // Basic syntax validation would be done here
+            // For now, just check that it's safe
+          } catch (error) {
+            throw new Error(`Invalid custom function: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+          break;
+      }
+
+      conditionValidation[condition.id] = {
+        isValid: true,
+        message: 'Condition validation passed',
+      };
+    } catch (error) {
+      invalidConditions.push(condition.id);
+      conditionValidation[condition.id] = {
+        isValid: false,
+        error: error instanceof Error ? error.message : 'Unknown validation error',
+      };
+    }
+  }
+
+  return { conditionValidation, invalidConditions };
+}
+
+/**
+ * Estimate policy impact
+ */
+async function estimatePolicyImpact(
+  input: any,
+  policyEngine: ScenarioArchivalPolicyEngine,
+  timestamp: string,
+  componentLogger: ReturnType<typeof logger.child>
+): Promise<any> {
+  let estimatedImpact = {
+    totalScenariosInScope: 0,
+    potentiallyAffected: 0,
+    highRiskScenarios: 0,
+    estimationDate: timestamp,
+    sampleSize: 0,
+  };
+
+  try {
+    // Get a sample of scenarios for impact estimation
+    const sampleMetrics = await policyEngine.gatherUsageMetrics();
+    const sampleSize = Math.min(sampleMetrics.length, 100);
+    
+    if (sampleSize > 0) {
+      const evaluationResults = await policyEngine.evaluateConditions(
+        sampleMetrics.slice(0, sampleSize),
+        input.conditions,
+        input.conditionLogic
+      );
+
+      const affected = evaluationResults.filter((r: any) => r.shouldArchive);
+      const highRisk = evaluationResults.filter((r: any) => r.score > 0.8);
+
+      estimatedImpact = {
+        totalScenariosInScope: sampleSize,
+        potentiallyAffected: affected.length,
+        highRiskScenarios: highRisk.length,
+        estimationDate: timestamp,
+        sampleSize,
+      };
+    }
+  } catch (error) {
+    componentLogger.warn('Failed to estimate policy impact', { error: (error as Error).message });
+  }
+
+  return estimatedImpact;
+}
+
+/**
+ * Create policy object
+ */
+function createPolicyObject(
+  input: any,
+  policyId: string,
+  timestamp: string,
+  estimatedImpact: any
+): any {
+  return {
+    id: policyId,
+    name: input.name,
+    description: input.description || '',
+    scope: input.scope,
+    conditions: input.conditions.sort((a: any, b: any) => (a.priority || 50) - (b.priority || 50)),
+    conditionLogic: input.conditionLogic,
+    customLogicExpression: input.customLogicExpression,
+    enforcement: {
+      ...{
+        level: ArchivalEnforcement.REVIEW_REQUIRED,
+        action: ArchivalAction.DISABLE,
+        batchSize: 10,
+        skipWeekends: true,
+      },
+      ...input.enforcement,
+    },
+    gracePeriod: {
+      ...{
+        enabled: true,
+        durationDays: 7,
+        notificationSchedule: [7, 3, 1],
+        allowOwnerOverride: true,
+        allowTeamOverride: true,
+      },
+      ...input.gracePeriod,
+    },
+    rollback: {
+      ...{
+        enabled: true,
+        retentionPeriodDays: 30,
+        automaticRollbackTriggers: ['execution_request', 'dependency_activation', 'owner_request'],
+        requireApproval: false,
+        notifyOnRollback: true,
+      },
+      ...input.rollback,
+    },
+    monitoring: {
+      ...{
+        enableUsageTracking: true,
+        trackingPeriodDays: 90,
+        metricsRetentionDays: 365,
+        alertThresholds: {
+          highArchivalRate: 10,
+          lowRecoveryRate: 20,
+        },
+      },
+      ...input.monitoring,
+    },
+    active: input.active !== false,
+    effectiveFrom: input.effectiveFrom || timestamp,
+    effectiveUntil: input.effectiveUntil,
+    notificationSettings: {
+      notifyOnArchival: true,
+      notifyOnRecovery: true,
+      notifyOnPolicyUpdate: false,
+      recipients: [],
+      channels: ['email'],
+      ...input.notificationSettings,
+    },
+    metadata: {
+      ...input.metadata,
+      conditionsCount: input.conditions.length,
+      triggersUsed: [...new Set(input.conditions.map((c: any) => c.trigger))],
+      enforcementLevel: input.enforcement.level,
+      estimatedImpact: estimatedImpact.potentiallyAffected,
+    },
+    stats: {
+      scenariosEvaluated: 0,
+      scenariosArchived: 0,
+      scenariosRecovered: 0,
+      lastEvaluationAt: null,
+      lastEnforcementAt: null,
+    },
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    version: '1.0.0',
+  };
+}
+
+/**
+ * Store policy and create audit logs
+ */
+async function storePolicyAndAudit(
+  policy: any,
+  input: any,
+  estimatedImpact: any,
+  apiClient: MakeApiClient
+): Promise<any> {
+  // Store policy (in production, this would be stored in database)
+  const response = await apiClient.post('/policies/scenario-archival', policy);
+  
+  if (!response.success) {
+    throw new UserError(`Failed to create archival policy: ${response.error?.message || 'Unknown error'}`);
+  }
+
+  // Log policy creation audit event
+  await auditLogger.logEvent({
+    level: 'info',
+    category: 'configuration',
+    action: 'scenario_archival_policy_created',
+    resource: `policy:${policy.id}`,
+    success: true,
+    details: {
+      policyId: policy.id,
+      name: input.name,
+      conditionsCount: input.conditions.length,
+      enforcementLevel: input.enforcement.level,
+      scope: input.scope,
+      estimatedImpact: estimatedImpact.potentiallyAffected,
+    },
+    riskLevel: input.enforcement.action === ArchivalAction.DELETE ? 'high' : 'medium',
+  });
+
+  return response;
+}
+
+/**
  * Helper function to add set scenario archival policy tool
  */
 function addSetScenarioArchivalPolicyTool(
@@ -733,58 +968,8 @@ function addSetScenarioArchivalPolicyTool(
 
         reportProgress({ progress: 10, total: 100 });
 
-        // Validate conditions
-        const conditionValidation: Record<string, unknown> = {};
-        const invalidConditions: string[] = [];
-
-        for (const condition of input.conditions) {
-          try {
-            // Validate condition parameters based on trigger type
-            switch (condition.trigger) {
-              case ArchivalTrigger.INACTIVITY:
-                if (!condition.inactivityPeriodDays) {
-                  throw new Error('inactivityPeriodDays required for inactivity trigger');
-                }
-                break;
-              case ArchivalTrigger.LOW_SUCCESS_RATE:
-                if (condition.successRateThreshold === undefined) {
-                  throw new Error('successRateThreshold required for low_success_rate trigger');
-                }
-                break;
-              case ArchivalTrigger.RESOURCE_USAGE:
-                if (!condition.maxCpuUsage && !condition.maxMemoryUsage && !condition.maxOperationsPerExecution) {
-                  throw new Error('At least one resource threshold required for resource_usage trigger');
-                }
-                break;
-              case ArchivalTrigger.CUSTOM:
-                if (!condition.customEvaluationFunction) {
-                  throw new Error('customEvaluationFunction required for custom trigger');
-                }
-                // Test custom function validity
-                try {
-                  if (!policyEngine.isSafeCustomFunction(condition.customEvaluationFunction)) {
-                    throw new Error('Custom function contains unsafe operations');
-                  }
-                  // Basic syntax validation would be done here
-                  // For now, just check that it's safe
-                } catch (error) {
-                  throw new Error(`Invalid custom function: ${error instanceof Error ? error.message : 'Unknown error'}`);
-                }
-                break;
-            }
-
-            conditionValidation[condition.id] = {
-              isValid: true,
-              message: 'Condition validation passed',
-            };
-          } catch (error) {
-            invalidConditions.push(condition.id);
-            conditionValidation[condition.id] = {
-              isValid: false,
-              error: error instanceof Error ? error.message : 'Unknown validation error',
-            };
-          }
-        }
+        // Validate conditions using helper function
+        const { conditionValidation, invalidConditions } = validatePolicyConditions(input.conditions, policyEngine);
 
         if (invalidConditions.length > 0) {
           throw new UserError(`Policy contains invalid conditions: ${invalidConditions.join(', ')}`);
@@ -792,150 +977,18 @@ function addSetScenarioArchivalPolicyTool(
 
         reportProgress({ progress: 30, total: 100 });
 
-        // Estimate policy impact (dry run on sample scenarios)
-        let estimatedImpact = {
-          totalScenariosInScope: 0,
-          potentiallyAffected: 0,
-          highRiskScenarios: 0,
-          estimationDate: timestamp,
-          sampleSize: 0,
-        };
-
-        try {
-          // Get a sample of scenarios for impact estimation
-          const sampleMetrics = await policyEngine.gatherUsageMetrics();
-          const sampleSize = Math.min(sampleMetrics.length, 100);
-          
-          if (sampleSize > 0) {
-            const evaluationResults = await policyEngine.evaluateConditions(
-              sampleMetrics.slice(0, sampleSize),
-              input.conditions,
-              input.conditionLogic
-            );
-
-            const affected = evaluationResults.filter(r => r.shouldArchive);
-            const highRisk = evaluationResults.filter(r => r.score > 0.8);
-
-            estimatedImpact = {
-              totalScenariosInScope: sampleSize,
-              potentiallyAffected: affected.length,
-              highRiskScenarios: highRisk.length,
-              estimationDate: timestamp,
-              sampleSize,
-            };
-          }
-        } catch (error) {
-          componentLogger.warn('Failed to estimate policy impact', { error: (error as Error).message });
-        }
+        // Estimate policy impact using helper function
+        const estimatedImpact = await estimatePolicyImpact(input, policyEngine, timestamp, componentLogger);
 
         reportProgress({ progress: 60, total: 100 });
 
-        // Create policy object
-        const policy = {
-          id: policyId,
-          name: input.name,
-          description: input.description || '',
-          scope: input.scope,
-          conditions: input.conditions.sort((a, b) => (a.priority || 50) - (b.priority || 50)),
-          conditionLogic: input.conditionLogic,
-          customLogicExpression: input.customLogicExpression,
-          enforcement: {
-            ...{
-              level: ArchivalEnforcement.REVIEW_REQUIRED,
-              action: ArchivalAction.DISABLE,
-              batchSize: 10,
-              skipWeekends: true,
-            },
-            ...input.enforcement,
-          },
-          gracePeriod: {
-            ...{
-              enabled: true,
-              durationDays: 7,
-              notificationSchedule: [7, 3, 1],
-              allowOwnerOverride: true,
-              allowTeamOverride: true,
-            },
-            ...input.gracePeriod,
-          },
-          rollback: {
-            ...{
-              enabled: true,
-              retentionPeriodDays: 30,
-              automaticRollbackTriggers: ['execution_request', 'dependency_activation', 'owner_request'],
-              requireApproval: false,
-              notifyOnRollback: true,
-            },
-            ...input.rollback,
-          },
-          monitoring: {
-            ...{
-              enableUsageTracking: true,
-              trackingPeriodDays: 90,
-              metricsRetentionDays: 365,
-              alertThresholds: {
-                highArchivalRate: 10,
-                lowRecoveryRate: 20,
-              },
-            },
-            ...input.monitoring,
-          },
-          active: input.active !== false,
-          effectiveFrom: input.effectiveFrom || timestamp,
-          effectiveUntil: input.effectiveUntil,
-          notificationSettings: {
-            notifyOnArchival: true,
-            notifyOnRecovery: true,
-            notifyOnPolicyUpdate: false,
-            recipients: [],
-            channels: ['email'],
-            ...input.notificationSettings,
-          },
-          metadata: {
-            ...input.metadata,
-            conditionsCount: input.conditions.length,
-            triggersUsed: [...new Set(input.conditions.map(c => c.trigger))],
-            enforcementLevel: input.enforcement.level,
-            estimatedImpact: estimatedImpact.potentiallyAffected,
-          },
-          stats: {
-            scenariosEvaluated: 0,
-            scenariosArchived: 0,
-            scenariosRecovered: 0,
-            lastEvaluationAt: null,
-            lastEnforcementAt: null,
-          },
-          createdAt: timestamp,
-          updatedAt: timestamp,
-          version: '1.0.0',
-        };
+        // Create policy object using helper function
+        const policy = createPolicyObject(input, policyId, timestamp, estimatedImpact);
 
         reportProgress({ progress: 80, total: 100 });
 
-        // Store policy (in production, this would be stored in database)
-        const response = await apiClient.post('/policies/scenario-archival', policy);
-        
-        if (!response.success) {
-          throw new UserError(`Failed to create archival policy: ${response.error?.message || 'Unknown error'}`);
-        }
-
-        // Log policy creation audit event
-        await auditLogger.logEvent({
-          level: 'info',
-          category: 'configuration',
-          action: 'scenario_archival_policy_created',
-          resource: `policy:${policyId}`,
-          success: true,
-          details: {
-            policyId,
-            name: input.name,
-            conditionsCount: input.conditions.length,
-            enforcementLevel: input.enforcement.level,
-            scope: input.scope,
-            estimatedImpact: estimatedImpact.potentiallyAffected,
-          },
-          riskLevel: input.enforcement.action === ArchivalAction.DELETE ? 'high' : 'medium',
-        });
+        // Store policy and create audit logs using helper function
+        await storePolicyAndAudit(policy, input, estimatedImpact, apiClient);
 
         reportProgress({ progress: 100, total: 100 });
 
