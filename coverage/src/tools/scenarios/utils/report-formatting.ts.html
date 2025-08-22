@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.28% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/70</span>
+                <span class='fraction'>0/67</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.28% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/70</span>
+                <span class='fraction'>0/67</span>
             </div>
         
             
@@ -232,10 +232,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -338,6 +334,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -392,70 +392,70 @@
  * @version 1.0.0
  */
 &nbsp;
-import { ConsolidatedFindings, ActionPlan } from './troubleshooting.js';
-&nbsp;
+import { Consoli<span class="fstat-no" title="function not covered" >datedFindings, Ac</span>tionPlan } from './troubleshooting.js';
+<span class="cstat-no" title="statement not covered" ></span>
 // Local interfaces for report formatting
-interface ReportMetadata {
-  reportI<span class="fstat-no" title="function not covered" >d?: string;</span>
-  generatedAt?: str<span class="cstat-no" title="statement not covered" >ing;</span>
-  analysisScope?: {
-    scenarioCount?: n<span class="cstat-no" title="statement not covered" >umber;</span>
-<span class="cstat-no" title="statement not covered" >    timeRangeHours?: number;</span>
+interface ReportMetad<span class="cstat-no" title="statement not covered" >ata {</span>
+  re<span class="cstat-no" title="statement not covered" >portId?: string;</span>
+  genera<span class="cstat-no" title="statement not covered" >tedAt?: string;</span>
+  analys<span class="cstat-no" title="statement not covered" >isScope?: {</span>
+    scen<span class="cstat-no" title="statement not covered" >arioCount?: number;</span>
+    timeRangeHours?: number;
   };<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-interface TroubleshootingReportData {
-  metadata?: ReportMetadata;<span class="cstat-no" title="statement not covered" ></span>
-  ex<span class="cstat-no" title="statement not covered" >ecutiveSummary?: {</span>
-    keyF<span class="cstat-no" title="statement not covered" >indings: string[];</span>
+interfac<span class="cstat-no" title="statement not covered" >e TroubleshootingReportData {</span>
+  metada<span class="cstat-no" title="statement not covered" >ta?: ReportMetadata;<span class="fstat-no" title="function not covered" ></span></span>
+  executiveS<span class="cstat-no" title="statement not covered" >ummary?: {</span>
+    keyFindings: string[];
     crit<span class="cstat-no" title="statement not covered" >icalRecommendations: string[];</span>
     busi<span class="cstat-no" title="statement not covered" >nessImpact: {<span class="fstat-no" title="function not covered" ></span></span>
       riskLe<span class="cstat-no" title="statement not covered" >vel: 'high' | 'medium' | 'low'</span>;
       operationalReadiness: 'ready' | 'needs_attention';
       re<span class="cstat-no" title="statement not covered" >commendedActions: string;</span>
-    };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    };<span class="cstat-no" title="statement not covered" ></span>
   };<span class="cstat-no" title="statement not covered" ></span>
-  systemOverview?: {
-    syst<span class="cstat-no" title="statement not covered" >emHealthScore: number;</span>
-    perf<span class="cstat-no" title="statement not covered" >ormanceStatus: string;</span>
-    overallS<span class="cstat-no" title="statement not covered" >tatus: string;</span>
+  systemOver<span class="cstat-no" title="statement not covered" >view?: {</span>
+    systemHe<span class="cstat-no" title="statement not covered" >althScore: number;</span>
+    performanceStatus: string;
+    overallStatus: string;
   };<span class="cstat-no" title="statement not covered" ></span>
-  consolidat<span class="cstat-no" title="statement not covered" >edFindings?: ConsolidatedFindings;</span>
-  actionPlan?: ActionPlan;
-  [key: string]: unknown;
+  co<span class="cstat-no" title="statement not covered" >nsolidatedFindings?: ConsolidatedFindings;</span>
+  action<span class="cstat-no" title="statement not covered" >Plan?: ActionPlan;</span>
+  [key: <span class="cstat-no" title="statement not covered" >string]: unknown;</span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-// Forma<span class="cstat-no" title="statement not covered" >t report as Markdown</span>
-export f<span class="cstat-no" title="statement not covered" >unction formatAsMarkdown(report: Record&lt;string, unknown&gt;): string {</span>
-  let ma<span class="cstat-no" title="statement not covered" >rkdown = '# Comprehensive Troubleshooting Report\n\n';</span>
+// Format report as Markdown
+export function formatAsMarkdown(<span class="cstat-no" title="statement not covered" >report: Record&lt;string, unkno</span>wn&gt;): string {
+  le<span class="cstat-no" title="statement not covered" >t markdown = '# Comprehensive Troubleshooting Report\n\n';</span>
   <span class="cstat-no" title="statement not covered" ></span>
-  // Add metadata if available
-  const metadata = report.metadat<span class="cstat-no" title="statement not covered" >a as ReportMetadata | undefi</span>ned;
-  if<span class="cstat-no" title="statement not covered" > (metadata) {</span>
-    mark<span class="cstat-no" title="statement not covered" >down += `**Report ID:** ${metadata.reportId </span>|| 'N/A'}  \n`;
-    mark<span class="cstat-no" title="statement not covered" >down += `**Generated:** ${metadata.generatedAt || 'N/A'}  \n`;</span>
-    mark<span class="cstat-no" title="statement not covered" >down += `**Scenarios Analyzed:** ${metadata.analysisScope?.scenarioCount || 0}  \n\n`;</span>
+  // Add<span class="cstat-no" title="statement not covered" > metadata if available</span>
+  const <span class="cstat-no" title="statement not covered" >metadata = report.metadata as ReportMetadata | undefined;</span>
+  if (me<span class="cstat-no" title="statement not covered" >tadata) {</span>
+    markdown += `**Report ID:** ${metadata.reportId || 'N/A'}  \n`;
+    markdown += `**Gene<span class="cstat-no" title="statement not covered" >rated:** ${metadat</span>a.generatedAt || 'N/A'}  \n`;
+<span class="cstat-no" title="statement not covered" >    markdown += `**Scenarios Analyzed:** ${metadata.analysisScope?.scenarioCount || 0}  \n\n`;</span>
   }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  const executiveSummar<span class="cstat-no" title="statement not covered" >y = report.executi</span>veSummary as TroubleshootingReportData['executiveSummary'];
-  if<span class="cstat-no" title="statement not covered" > (executiveSummary) {</span>
-    mark<span class="cstat-no" title="statement not covered" >down += `## Executive Summary\n\n`</span>;
+<span class="cstat-no" title="statement not covered" ></span>
+  const <span class="cstat-no" title="statement not covered" >executiveSummary = report.exec<span class="fstat-no" title="function not covered" >ut</span>iveSummary as TroubleshootingReportData['executiveSummary'];</span>
+  if (execut<span class="cstat-no" title="statement not covered" >iveSummary) {</span>
+    markdown += `## Executive Summary\n\n`;
     <span class="cstat-no" title="statement not covered" ></span>
     mark<span class="cstat-no" title="statement not covered" >down += `### Key Findings\n`;<span class="fstat-no" title="function not covered" ></span></span>
-    executiv<span class="cstat-no" title="statement not covered" >eSummary.keyFindings?.forEach((finding: string) =&gt; {</span>
+    executiv<span class="cstat-no" title="statement not covered" >eSummary.keyFindings?.forEach((findi</span>ng: string) =&gt; {
       markdown += `- ${finding}\n`;
     });<span class="cstat-no" title="statement not covered" ></span>
-    <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    markdown<span class="cstat-no" title="statement not covered" > += `\n### Critical Recommendations\</span>n`;
+    
+<span class="cstat-no" title="statement not covered" >    markdown += `\n##</span># Critical Recommendations\n`;
     executiveSummary.criticalRecommendations?.forEach((rec: string) =&gt; {
-      ma<span class="cstat-no" title="statement not covered" >rkdown += `- **${r</span>ec}**\n`;
-    });
-    <span class="cstat-no" title="statement not covered" ></span>
-    markdown += `\n### Business Impact\n`;
+      markdown += `- **${rec}**\n`;
+    });<span class="fstat-no" title="function not covered" ></span>
+    
+    markdown +=<span class="cstat-no" title="statement not covered" > `\n### Business Impact\n`;</span>
     if (executiveSummary.businessImpact) {
-      mar<span class="fstat-no" title="function not covered" >kdown += `- **Ris</span>k Level:** ${executiveSummary.businessImpact.riskLevel.toUpperCase()}\n`;
+      markdown += `- **Risk Level:** ${executiveSummary.businessImpact.riskLevel.toUpperCase()}\n`;
       markdown += `- **Operational Readiness:** ${executiveSummary.businessImpact.operationalReadiness}\n`;
-      markdown <span class="cstat-no" title="statement not covered" >+= `- **Recommended Actions:** ${executiveSummary.businessImpact.recommendedActions}\n\n`;</span>
+      markdown += `- **Recommended Actions:** ${executiveSummary.businessImpact.recommendedActions}\n\n`;
     }
   }
 &nbsp;
@@ -467,37 +467,37 @@ export f<span class="cstat-no" title="statement not covered" >unction formatAsMa
     markdown += `- **Overall Status:** ${systemOverview.overallStatus}\n\n`;
   }
 &nbsp;
-  const consolidatedFindings = report.consolidatedFindings as ConsolidatedFindings;
-  if (consolidatedFindings) {
-    markdown += `## Consolidated Findings\n\n`;
-    markdown += `- **Total Issues:** ${consolidatedFindings.commonIssues.length}\n`;
-<span class="cstat-no" title="statement not covered" >    markdown += `- **Critical Issues:** ${consolidatedFinding</span>s.securitySummary.criticalSecurityIssues}\n`;
-    markdown += `- **<span class="cstat-no" title="statement not covered" >Critical Scenari</span>os:** ${consolidatedFindings.criticalScenarios}\n\n`;
+  co<span class="cstat-no" title="statement not covered" >nst consolidatedFindings = report.consolidatedFindings as</span> ConsolidatedFindings;
+  if (consolidatedFin<span class="cstat-no" title="statement not covered" >dings) {</span>
+<span class="cstat-no" title="statement not covered" >    markdown += `## Consolidated Findings\n\n`;</span>
+<span class="cstat-no" title="statement not covered" >    markdown += `- **Total Issues:** ${consolidatedFindings.commonIssues.length}\n`;</span>
+<span class="cstat-no" title="statement not covered" >    markdown += `- **Critical Issues:** ${consolidatedFindings.securitySummary.criticalSecurityIssues}\n`;</span>
+    markdown += `- **Critical<span class="cstat-no" title="statement not covered" > Scenarios:** ${consolid</span>atedFindings.criticalScenarios}\n\n`;
   }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  co<span class="cstat-no" title="statement not covered" >nst actionPlan = report.actionPlan as ActionPlan;</span>
-  if (actionPlan) {<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    markdown += `## Action Plan\n\n`;</span>
-    mark<span class="cstat-no" title="statement not covered" >down += `### Immediate Actions (0-24 </span>hours)\n`;
-    acti<span class="cstat-no" title="statement not covered" >onPlan.immediate?.forEach((action: Act</span>ionPlan['immediate'][0]) =&gt; {
-      ma<span class="cstat-no" title="statement not covered" >rkdown += `- **[${action.priority.toU</span>pperCase()}]** ${action.action}\n`;
+  const <span class="cstat-no" title="statement not covered" >actionPlan = report.actionPlan as Acti</span>onPlan;
+  if (ac<span class="cstat-no" title="statement not covered" >tionPlan) {</span>
+    mark<span class="cstat-no" title="statement not covered" >down += `## Action Plan\n\n`;<span class="fstat-no" title="function not covered" ></span></span>
+    markdown<span class="cstat-no" title="statement not covered" > += `### Immediate Actions (0-2</span>4 hours)\n`;
+    actionPlan.immediate?.forEach((action: ActionPlan['immediate'][0]) =&gt; {
+      ma<span class="cstat-no" title="statement not covered" >rkdown += `- **[${action.priority.toUpperCase()}]** ${</span>action.action}\n`;
     });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    markdown<span class="cstat-no" title="statement not covered" > += `\n### Short Term Actions (</span>1-4 weeks)\n`;
+    markdown<span class="cstat-no" title="statement not covered" > += `\n### Short Term Actions (1-4 weeks)\n`</span>;
     actionPlan.shortTerm?.forEach((action: ActionPlan['shortTerm'][0]) =&gt; {
-      ma<span class="cstat-no" title="statement not covered" >rkdown += `- ${action.action}\n`;</span>
-    });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    markdown<span class="cstat-no" title="statement not covered" > += `\n`;</span>
-  }
+      ma<span class="cstat-no" title="statement not covered" >rkdown += `- ${action.a</span>ction}\n`;
+    });
+    markdown += `\n`;<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  return markdown;
+  return<span class="cstat-no" title="statement not covered" > markdown;</span>
 }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-// Forma<span class="cstat-no" title="statement not covered" >t report as PDF-ready HTML</span>
-export f<span class="cstat-no" title="statement not covered" >unction formatAsPdfReady(report: Record&lt;string, unknown&gt;): string {</span>
-  // Thi<span class="cstat-no" title="statement not covered" >s would generate HTML suitable for PDF generation</span>
+&nbsp;
+// F<span class="cstat-no" title="statement not covered" >ormat report as PDF-ready </span>HTML
+expo<span class="cstat-no" title="statement not covered" >rt function f</span>ormatAsPdfReady(report: Record&lt;string, unknown&gt;): string {
+  // This would generate HTML suitable for PDF generation
   let html = `&lt;!DOCTYPE html&gt;
-&lt;htm<span class="cstat-no" title="statement not covered" >l&gt;</span>
-&lt;hea<span class="cstat-no" title="statement not covered" >d&gt;</span>
+&lt;html&gt;
+&lt;head&gt;
   &lt;title&gt;Troubleshooting Report - ${(report.metadata as ReportMetadata)?.reportId || 'N/A'}&lt;/title&gt;
   &lt;style&gt;
     body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
@@ -550,7 +550,7 @@ export f<span class="cstat-no" title="statement not covered" >unction formatAsPd
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T05:01:57.968Z
+                at 2025-08-22T05:06:51.011Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

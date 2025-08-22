@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -1027,12 +1027,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1774,6 +1768,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1970,18 +1970,18 @@
  * @author Make.com FastMCP Server - Enterprise Compliance Team
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >// Template definitions for compliance policy frameworks</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >// Re-export the compliance policy schema types for tem</span>plate usage
-<span class="cstat-no" title="statement not covered" >export type RegulatoryFramework = 'sox' | 'gdpr' | 'hipaa' </span>| 'pci_dss' | 'iso27001' | 'custom';
-<span class="cstat-no" title="statement not covered" ></span>
-// Compliance policy template interface
+// Template definitions for compliance policy frameworks
+&nbsp;
+// Re-export the compliance policy schema types for template usage
+export type RegulatoryFramework = 'sox' | 'gdpr' | 'hipaa' | 'pci_dss' | 'iso27001' | 'custom';
+&nbsp;
+// Compliance policy template interface<span class="cstat-no" title="statement not covered" ></span>
 export interface CompliancePolicyTemplate {
   templateId: string;
   templateName: string;
   description: string;
   framework: RegulatoryFramework[];
-<span class="cstat-no" title="statement not covered" >  version: string;</span>
+  version: string;
   lastUpdated: string;
   template: {
     policyName: string;
@@ -2215,13 +2215,13 @@ export const SOX_COMPLIANCE_TEMPLATE: CompliancePolicyTemplate = {
           frequency: 'continuous',
           owner: 'Internal Audit',
           evidence: ['audit_logs', 'monitoring_reports', 'exception_reports'],
-        },
+        },<span class="cstat-no" title="statement not covered" ></span>
         {
           controlId: 'SOX-DET-002',
           name: 'Financial Data Integrity Checks',
           description: 'Automated validation of financial data accuracy and completeness throughout processing workflows',
           framework: ['sox'],
-<span class="cstat-no" title="statement not covered" >          category: 'detective',</span>
+          category: 'detective',
           automationLevel: 'fully-automated',
           frequency: 'daily',
           owner: 'Data Quality Manager',
@@ -2453,13 +2453,13 @@ export const GDPR_COMPLIANCE_TEMPLATE: CompliancePolicyTemplate = {
           category: 'detective',
           automationLevel: 'fully-automated',
           frequency: 'continuous',
-          owner: 'Data Protection Team',
+          owner: 'Data Protection Team',<span class="cstat-no" title="statement not covered" ></span>
           evidence: ['data_flow_logs', 'processing_records', 'transfer_monitoring'],
         },
         {
           controlId: 'GDPR-DET-002',
           name: 'Data Subject Rights Request Monitoring',
-<span class="cstat-no" title="statement not covered" >          description: 'Tracks and monitors data subject rights requests to ensure timely and compliant responses',</span>
+          description: 'Tracks and monitors data subject rights requests to ensure timely and compliant responses',
           framework: ['gdpr'],
           category: 'detective',
           automationLevel: 'semi-automated',
@@ -2688,35 +2688,35 @@ export const HIPAA_COMPLIANCE_TEMPLATE: CompliancePolicyTemplate = {
           controlId: 'HIPAA-DET-001',
           name: 'PHI Access Monitoring',
           description: 'Comprehensive monitoring and logging of all PHI access and usage',
-          framework: ['hipaa'],
+          framework: ['hipaa'],<span class="cstat-no" title="statement not covered" ></span>
           category: 'detective',
           automationLevel: 'fully-automated',
           frequency: 'continuous',
           owner: 'Security Operations Center',
           evidence: ['access_logs', 'audit_trails', 'usage_reports'],
-<span class="cstat-no" title="statement not covered" >        },</span>
+        },
         {
           controlId: 'HIPAA-DET-002',
-          name: 'Unauthorized PHI Access Detection',
-          description: 'Automated detection of unauthorized or suspicious PHI access patterns',
+          name: <span class="fstat-no" title="function not covered" >'Unauthorized PHI Acce</span>ss Detection',
+<span class="cstat-no" title="statement not covered" >          description: 'Automated detection of unaut</span>horized or suspicious PHI access patterns',
           framework: ['hipaa'],
           category: 'detective',
           automationLevel: 'fully-automated',
           frequency: 'continuous',
-<span class="fstat-no" title="function not covered" >          owner: 'Security Anal</span>yst',
-<span class="cstat-no" title="statement not covered" >          evidence: ['anomaly_detection_logs', 'security_ale</span>rts', 'investigation_reports'],
+          owner:<span class="fstat-no" title="function not covered" > 'Security Analyst',</span>
+<span class="cstat-no" title="statement not covered" >          evidence: ['anomaly_detection_logs', '</span>security_alerts', 'investigation_reports'],
         },
         {
           controlId: 'HIPAA-DET-003',
           name: 'PHI Breach Detection',
-<span class="fstat-no" title="function not covered" >          description: 'Real-time</span> detection of potential PHI breaches and security incidents',
-<span class="cstat-no" title="statement not covered" >          framework: ['hipaa'],</span>
+          descri<span class="fstat-no" title="function not covered" >ption: 'Real-time de</span>tection of potential PHI breaches and security incidents',
+<span class="cstat-no" title="statement not covered" >          framework: ['hipaa'],<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
           category: 'detective',
           automationLevel: 'fully-automated',
           frequency: 'continuous',
           owner: 'Incident Response Team',
-<span class="fstat-no" title="function not covered" >          evidence: ['breach_</span>detection_logs', 'incident_reports', 'forensic_evidence'],
-<span class="cstat-no" title="statement not covered" >        },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+          evidence: ['breach_detection_logs', 'incident_reports', 'forensic_evidence'],
+        },
       ],
       corrective: [
         {
@@ -2899,7 +2899,7 @@ export function getTemplateMetadata(): Array&lt;{
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.277Z
+                at 2025-08-22T05:07:11.612Z
             </div>
         <script src="../prettify.js"></script>
         <script>

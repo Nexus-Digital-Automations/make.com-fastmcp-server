@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/303</span>
+                <span class='fraction'>0/291</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/243</span>
+                <span class='fraction'>0/236</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/51</span>
+                <span class='fraction'>0/50</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/291</span>
+                <span class='fraction'>0/279</span>
             </div>
         
             
@@ -1268,19 +1268,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2168,7 +2162,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2457,20 +2457,20 @@
  * @see {@link https://docs.make.com/api} Make.com API Documentation
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError } from 'fastmcp';
+import { z } from 'zod';
 import { EventEmitter } from 'events';
-<span class="cstat-no" title="statement not covered" >import MakeApiClient from '../lib/make-api-client.js';</span>
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-import { SSETransp<span class="cstat-no" title="statement not covered" >ortEnhancer } from </span>'../lib/sse-transport-enhancer.js';
-import Perform<span class="cstat-no" title="statement not covered" >anceMonitor fro</span>m '../lib/performance-monitor.js';
-import { formatSu<span class="cstat-no" title="statement not covered" >ccessResponse } fr</span>om '../utils/response-formatter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// Core interfaces for real-time mon<span class="cstat-no" title="statement not covered" >itoring</span>
-interface ExecutionState {<span class="cstat-no" title="statement not covered" ></span>
-  executionId: string;<span class="cstat-no" title="statement not covered" ></span>
+import MakeApiClient from '../lib/make-api-client.js';
+import logger from '../lib/logger.js';
+import { SSETransportEnhancer } from '../lib/sse-transport-enhancer.js';
+import PerformanceMonitor from '../lib/performance-monitor.js';
+import { formatSuccessResponse } <span class="cstat-no" title="statement not covered" >from '../utils/response-formatter.js';</span>
+&nbsp;
+// Core interfaces for real-time monitoring
+interface ExecutionState {
+  executionId: string;
   scenarioId: number;
-  status: 'initializing' | 'runni<span class="cstat-no" title="statement not covered" >ng' | 'completed' | 'failed' | 'paused' | 'cancelled';</span>
+  status: 'initializing' | 'running' | 'completed' | 'failed' | 'paused' | 'cancelled';
   startTime: string;
   endTime?: string;
   duration?: number;
@@ -2503,77 +2503,77 @@ interface ModuleProgress {
   startTime?: string;
   endTime?: string;
   duration?: number;
-  inputBundles: number;
+  inputBundles: number;<span class="cstat-no" title="statement not covered" ></span>
   outputBundles: number;
   operations: number;
   dataSize: number;
-  error?: {
+  error?: {<span class="cstat-no" title="statement not covered" ></span>
     code: string;
-    message: string;<span class="cstat-no" title="statement not covered" ></span>
+    message: string;
     type: string;
     retryable: boolean;
   };
-}<span class="cstat-no" title="statement not covered" ></span>
+}
 &nbsp;
 interface RealTimePerformanceMetrics {
-  totalDuration: number;
-  averageModuleDuration: number;
+  totalDuration: numb<span class="cstat-no" title="statement not covered" >er;</span>
+  averageModuleDura<span class="cstat-no" title="statement not covered" >tion:</span> number;
   totalDataProcessed: number;
   totalOperations: number;
-  throughputOpsPerSec: number;
-  memoryUsage: number;
-  cpuUsage: number;<span class="cstat-no" title="statement not covered" ></span>
-  networkLatency: n<span class="cstat-no" title="statement not covered" >umber</span>;
-  errorRate: number;
-  successRate: number;
-  re<span class="fstat-no" title="function not covered" >so</span>urceEfficiency: number;
+  th<span class="fstat-no" title="function not covered" >ro</span>ughputOpsPerSec: number;
+  memory<span class="cstat-no" title="statement not covered" >Usage: nu</span>mber;
+  cpuUsa<span class="cstat-no" title="statement not covered" >ge: number;</span>
+  networ<span class="cstat-no" title="statement not covered" >kLatency: number;</span>
+  errorR<span class="cstat-no" title="statement not covered" >ate: number;</span>
+  succes<span class="cstat-no" title="statement not covered" >sRate: number;</span>
+  resourceEfficiency: number;
   trends<span class="cstat-no" title="statement not covered" >: {</span>
-    perf<span class="cstat-no" title="statement not covered" >ormance: 'improving' | 'stab</span>le' | 'degrading';
-    reli<span class="cstat-no" title="statement not covered" >ability: 'improving' | 'stable' | 'degrading';</span>
-    effi<span class="cstat-no" title="statement not covered" >ciency: 'improving' | 'stable' | 'degrading';</span>
-  };<span class="cstat-no" title="statement not covered" ></span>
-}
+    performance: 'improving' | 'stable' | 'degrading';
+    reliability: 'improving' | 'stable' | 'degrading';
+    efficiency: 'improving' | 'stable' | 'degrading';
+  };
+}<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-interface RealTimeAlert {
+interface Re<span class="cstat-no" title="statement not covered" >alTimeAlert {</span>
   id: string;
   type: 'performance' | 'error' | 'resource' | 'threshold' | 'prediction';
   severity: 'info' | 'warning' | 'critical' | 'fatal';
-  ti<span class="fstat-no" title="function not covered" >me</span>stamp: string;
-  messag<span class="cstat-no" title="statement not covered" >e: string;</span>
-  details: R<span class="cstat-no" title="statement not covered" >ecord&lt;string, unknown&gt;;</span>
+  timestamp: string;
+  message: string;
+  details: Record&lt;string, unknown&gt;;
   moduleId?: string;
   correlationId?: string;
   resolved: boolean;
-  resolvedAt?: string;
+  resolvedAt<span class="cstat-no" title="statement not covered" >?: string;</span>
   actions: string[];
 }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
 interface DataFlowState {
   sourceModuleId: string;
-  targetModu<span class="cstat-no" title="statement not covered" >leId: string;</span>
+  targetModuleId: string;
   dataSize: number;
   transferTime: number;
-  status: 'p<span class="cstat-no" title="statement not covered" >ending' | 'transferring' | 'completed' | 'failed';</span>
-  error?: string;
+  st<span class="fstat-no" title="function not covered" >at</span>us: 'pending' | 'transferring' | 'completed' | 'failed';
+  error?: string;<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+interface MonitoringSession {
+  monitorId: string;<span class="cstat-no" title="statement not covered" ></span>
+  scenar<span class="cstat-no" title="statement not covered" >ioId: number;</span>
+  executionId?: string;<span class="cstat-no" title="statement not covered" ></span>
+  startTime:<span class="cstat-no" title="statement not covered" > Date;</span>
+  config: RealTi<span class="cstat-no" title="statement not covered" >meMonitoringConfig;</span>
+  state: ExecutionState | null;
+  sseConnect<span class="cstat-no" title="statement not covered" >ion?: string;</span>
+  alertThresholds: AlertThresholds;
+  isActive: boolean;
+  lastUpdate: Date;<span class="cstat-no" title="statement not covered" ></span>
+  updateCount: number;
+  errorCount: number;
 }
 &nbsp;
-interface MonitoringSession {
-  monitorId: string;
-  sc<span class="fstat-no" title="function not covered" >en</span>arioId: number;
-  executionId?: string;<span class="cstat-no" title="statement not covered" ></span>
-  startTime: Date;<span class="cstat-no" title="statement not covered" ></span>
-  config<span class="cstat-no" title="statement not covered" >: RealTimeMonitoringConfig;</span>
-  state: ExecutionState | null;
-  sseConnection?: string;<span class="cstat-no" title="statement not covered" ></span>
-  alertT<span class="cstat-no" title="statement not covered" >hresholds: AlertThresholds;</span>
-  isActive: boolean;<span class="cstat-no" title="statement not covered" ></span>
-  lastUpdate<span class="cstat-no" title="statement not covered" >: Date;</span>
-  updateCount: n<span class="cstat-no" title="statement not covered" >umber;</span>
-  errorCount: number;
-}<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
 interface RealTimeMonitoringConfig {
-  updateInterval: number<span class="cstat-no" title="statement not covered" >;</span>
+  updateInterval: number;
   enableProgressVisualization: boolean;
   enablePerformanceAlerts: boolean;
   enableDataFlowTracking: boolean;
@@ -2581,210 +2581,210 @@ interface RealTimeMonitoringConfig {
   enableSSEStreaming: boolean;
   alertThresholds: AlertThresholds;
   visualization: {
-    format: 'ascii' | 'structured' | 'compact';
-    colorEnabled: boolean;
-    includeMetrics: boolean;
-    includeDataFlow: boolean;
+    form<span class="cstat-no" title="statement not covered" >at: 'ascii' | 'structured' | 'compact';</span>
+    colorEna<span class="cstat-no" title="statement not covered" >bled: boolean;</span>
+    includeMetrics: boolean;<span class="cstat-no" title="statement not covered" ></span>
+    includeDataF<span class="cstat-no" title="statement not covered" >low: boolean;</span>
   };
 }
 <span class="cstat-no" title="statement not covered" ></span>
-interface Al<span class="cstat-no" title="statement not covered" >ertThresholds {</span>
-  performance: {<span class="cstat-no" title="statement not covered" ></span>
-    maxModuleDur<span class="cstat-no" title="statement not covered" >ation: number;</span>
+interface AlertThresholds {
+  performance: {
+    maxM<span class="cstat-no" title="statement not covered" >oduleDuration: number;</span>
     maxTotalDuration: number;
-    minThroughput: number;
-    maxErrorRate<span class="cstat-no" title="statement not covered" >: number;</span>
+    minT<span class="cstat-no" title="statement not covered" >hroughput: number;</span>
+    maxE<span class="cstat-no" title="statement not covered" >rrorRate: number;</span>
   };
   resource: {
-    maxM<span class="cstat-no" title="statement not covered" >emoryUsage: number;</span>
+    maxMemoryUsage: number;
     maxCpuUsage: number;
-    maxN<span class="cstat-no" title="statement not covered" >etworkLatency: number;</span>
-  };<span class="cstat-no" title="statement not covered" ></span>
+    maxN<span class="cstat-no" title="statement not covered" >etworkLatency: num</span>ber;
+  };
   execution: {
     maxStuckTime: number;
     maxRetries: number;
-    minSuccessRate: number;
+<span class="fstat-no" title="function not covered" >    mi</span>nSuccessRate: number;
   };<span class="cstat-no" title="statement not covered" ></span>
-}
-&nbsp;
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 // Input validation schemas
-const RealTimeMonitoringSchema = z.object({
-  sc<span class="fstat-no" title="function not covered" >en</span>arioId: z.number().min(1).describe('Scenario ID to monitor in real-time'),
-  executionId: z.string(<span class="cstat-no" title="statement not covered" >).optional().describe('Specific exe</span>cution ID to monitor (leave empty to monitor next execution)'),
-  monito<span class="cstat-no" title="statement not covered" >ringConfig: z.object({</span>
-    updateIn<span class="cstat-no" title="statement not covered" >terval: z.numb</span>er().min(500).max(10000).default(1000).describe('Update interval in milliseconds'),
-    monitorDuration: z.number().min(10000).max(3600000).default(300000).describe('Maximum monitoring duration in milliseconds'),
-    enab<span class="cstat-no" title="statement not covered" >leProgressVisualization: z</span>.boolean().default(true).describe('Enable real-time progress visualization'),
+const Re<span class="cstat-no" title="statement not covered" >alTimeMonitoringSchema = z</span>.object({
+  scenarioId: z.number().min(1).describe('Scenario ID to monitor in real-time'),
+  execut<span class="cstat-no" title="statement not covered" >ionId: z.string().optional().describe('Specific execution ID to monitor (leave empty to monitor next execution)'),</span>
+  monitoring<span class="cstat-no" title="statement not covered" >Config: z.object({</span>
+    updateInterval: z.number().min(500).max(10000).default(1000).describe('Update interval in milliseconds'),
+    moni<span class="cstat-no" title="statement not covered" >torDuration: z.number().min(10000).max(</span>3600000).default(300000).describe('Maximum monitoring duration in milliseconds'),
+    enab<span class="cstat-no" title="statement not covered" >leProgressVisualization: z.boolean().default(true).describe('Enable real-time progress visualization'),</span>
     enablePerformanceAlerts: z.boolean().default(true).describe('Enable performance-based alerts'),
-    enab<span class="cstat-no" title="statement not covered" >leDataFlowTracking: z.boolean().default(true).describe('Track data flow between modules'),</span>
-    enablePr<span class="cstat-no" title="statement not covered" >edictiveAnalysis: z.boolean().default(false).describe</span>('Enable predictive performance analysis'),
+    enableDataFlowTracking: z.boolean().default(true).describe('Track data flow between modules'),
+    enablePredictiveAnalysis: z.boolean().default(false).describe('Enable predictive performance analysis'),
     enableSSEStreaming: z.boolean().default(true).describe('Enable Server-Sent Events streaming'),
-  }).def<span class="cstat-no" title="statement not covered" >ault({}),</span>
-  alertT<span class="cstat-no" title="statement not covered" >hresholds: z.object({</span>
+  }).default({}),
+  alertT<span class="cstat-no" title="statement not covered" >hresholds: z.</span>object({
     performance: z.object({
       maxModuleDuration: z.number().min(1000).default(60000).describe('Maximum acceptable module duration (ms)'),
       maxTotalDuration: z.number().min(5000).default(300000).describe('Maximum acceptable total duration (ms)'),
       minThroughput: z.number().min(0.1).default(1.0).describe('Minimum acceptable throughput (ops/sec)'),
-      maxErrorRate: z.number().min(0).max(1).default(0.1).describe('Maximum acceptable error rate (0-1)'),
+<span class="fstat-no" title="function not covered" ></span>      maxErrorRate: z.number().min(0).max(1).default(0.1).describe('Maximum acceptable error rate (0-1)'),
     }).d<span class="cstat-no" title="statement not covered" >efault({}),</span>
-    resource: z.object({
-      maxMemoryUsage: z.number().min(0).max(1).default(0.8).describe('Maximum memory usage threshold (0-1)'),
-      maxCpuUsage: z.number().min(0).max(1).default(0.8).describe('Maximum CPU usage threshold (0-1)'),
+    resource: z.object({<span class="cstat-no" title="statement not covered" ></span>
+      maxMem<span class="cstat-no" title="statement not covered" >oryUsage: z.number().min(0).max(1).default(0.8).describe('Maximum memory usage threshold (0-1)'),</span>
+      maxCpuUsag<span class="cstat-no" title="statement not covered" >e: z.number().min(0).max(1).default(0.8).describe(</span>'Maximum CPU usage threshold (0-1)'),
       maxNetworkLatency: z.number().min(100).default(2000).describe('Maximum network latency threshold (ms)'),
-<span class="fstat-no" title="function not covered" >    })</span>.default({}),
-    exec<span class="cstat-no" title="statement not covered" >ution: z.object({</span>
-      maxStuckTime: z.number<span class="cstat-no" title="statement not covered" >().min(5000).default(30000).describ</span>e('Maximum time module can be stuck (ms)'),
-      maxRet<span class="cstat-no" title="statement not covered" >ries: z.number().min(1).default(3).describe('Maximum retry attempts before alert'),</span>
-      minSuccess<span class="cstat-no" title="statement not covered" >Rate: z.number().min(0).max(1).default(0.95).descr</span>ibe('Minimum success rate threshold (0-1)'),
+    }).defau<span class="cstat-no" title="statement not covered" >lt({}),</span>
+    execution: z.object({
+      maxStuckTime: z.number().min(5000).default(30000).describe('Maximum time module can be stuck (ms)'),
+      maxRetries: z.numbe<span class="cstat-no" title="statement not covered" >r().min(1).default(3).describe('Maximum retry<span class="fstat-no" title="function not covered" > a</span>ttempts b<span class="cstat-no" title="statement not covered" >efore alert'),</span></span>
+      mi<span class="cstat-no" title="statement not covered" >nSuccessRate: z.number().min(0).max(1).default(0.95).describe('Minimum success rate threshold (0-1)'),</span>
     }).default({}),
-  }).default<span class="cstat-no" title="statement not covered" >({}),</span>
+  }).default({}),
   visualization: z.object({
     format: z.enum(['ascii', 'structured', 'compact']).default('structured').describe('Visualization format'),
-    colorEnabled: z.boole<span class="cstat-no" title="statement not covered" >an().default(true).describe('Enable color cod<span class="fstat-no" title="function not covered" >in</span>g in visu<span class="cstat-no" title="statement not covered" >alization'),</span></span>
-    incl<span class="cstat-no" title="statement not covered" >udeMetrics: z.boolean().default(true).describe('Include performance metrics in output'),</span>
+    colorEnabled: z.boolean().default(true).describe('Enable color coding in visualization'),
+    includeMetrics: z.boolean().default(true).describe('Include performance metrics in output'),
     includeDataFlow: z.boolean().default(true).describe('Include data flow visualization'),
     includeTimeline: z.boolean().default(true).describe('Include execution timeline'),
     includePredictions: z.boolean().default(false).describe('Include predictive analysis'),
   }).default({}),
 }).strict();
 &nbsp;
-const StopMonitoringSchema = z.object({
+cons<span class="fstat-no" title="function not covered" >t </span>StopMonitoringSchema = z.object({
   monitorId: z.string().describe('Monitor session ID to stop'),
-  reason: z.string().optional().describe('Reason for stopping monitoring'),
+  reason: z.string().optional().<span class="cstat-no" title="statement not covered" >describe('Reason for stopping monitoring'),</span>
 }).strict();
 &nbsp;
 const GetMonitoringStatusSchema = z.object({
-  mo<span class="fstat-no" title="function not covered" >ni</span>torId: z.string().optional().describe('Specific monitor ID to get status for'),
+  monitorId: z.string().optional().describe('Specific monitor ID to get status for'),
   includeHistory: z.boolean().default(false).describe('Include historical monitoring data'),
-}).strict();<span class="cstat-no" title="statement not covered" ></span>
+}).strict();
 &nbsp;
-/**
- * Real-time execution monitoring manager
- */
-class RealTimeExecutionMonitor extends EventEmitter {
-  private activeSessions = new Map&lt;string, MonitoringSession&gt;();
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Real-time execution monitori<span class="cstat-no" title="statement not covered" >ng manager</span>
+ */<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+class RealTi<span class="cstat-no" title="statement not covered" >meExecutionMonitor extends EventEmitter {</span>
+  private active<span class="cstat-no" title="statement not covered" >Sessions = new Map&lt;string, M</span>onitoringSession&gt;();
   private sseTransport: SSETransportEnhancer | null = null;
-  privat<span class="cstat-no" title="statement not covered" >e performanceMonitor: PerformanceMonitor;</span>
-  private componentLogger: Retu<span class="cstat-no" title="statement not covered" >rnType&lt;typeof logger.</span>child&gt;;
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  constructo<span class="cstat-no" title="statement not covered" >r(private apiClient: MakeApiClient) {</span>
-    super();<span class="cstat-no" title="statement not covered" ></span>
+  private performanceMonitor: PerformanceMonitor;
+  private componentLogger: ReturnType&lt;typeof logger.child&gt;;
+<span class="cstat-no" title="statement not covered" ></span>
+  constructor(private apiClient: MakeApiClient) {
+    super();
     this.componentLogger = logger.child({ component: 'RealTimeExecutionMonitor' });
     this.performanceMonitor = new PerformanceMonitor();
     this.setMaxListeners(100); // Support many concurrent monitoring sessions
-<span class="cstat-no" title="statement not covered" ></span>
-    // Initialize SSE transport for real-time streaming
-    this.initializeSSETransport();
-  }
 &nbsp;
+    // I<span class="cstat-no" title="statement not covered" >nitialize SSE transport for real-time streaming</span>
+    this.initializeSSETransport<span class="cstat-no" title="statement not covered" >();</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
    * Initialize SSE transport for real-time streaming
    */<span class="cstat-no" title="statement not covered" ></span>
-  private initializeSSETranspor<span class="cstat-no" title="statement not covered" >t(): void {</span>
-    try {<span class="cstat-no" title="statement not covered" ></span>
-      this.sseTr<span class="cstat-no" title="statement not covered" >ansport = new SSETranspor</span>tEnhancer({
+  private initializeSSETransport(): void {
+    try {
+      this.sseTransport = new SSETransportEnhancer({
         endpoint: '/monitoring/sse',
-        heartbeatInterval: 15000,
-<span class="cstat-no" title="statement not covered" >        security: {</span>
-          rateLimitEnabled: true,
-          maxConnections: 50,
-          connectionTimeout: 300000, // 5 minutes
+<span class="fstat-no" title="function not covered" ></span>        heartbeatInterval: 15000,
+        security: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          ra<span class="cstat-no" title="statement not covered" >teLimitEnabled: true,</span>
+          maxCon<span class="cstat-no" title="statement not covered" >nections: 50,</span>
+          connec<span class="cstat-no" title="statement not covered" >tionTime</span>out: 300000, // 5 minutes
           maxMessageSize: 1048576, // 1MB
-<span class="fstat-no" title="function not covered" ></span>        },
-      });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      this.c<span class="cstat-no" title="statement not covered" >omponentLogger.info('SSE transport initialized for real-time monitoring');</span>
+        },<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+      this.compo<span class="cstat-no" title="statement not covered" >nentLogger.info('SSE tr</span>ansport initialized for real-time monitoring');
     } catch (err<span class="cstat-no" title="statement not covered" >or) {</span>
-      this.compo<span class="cstat-no" title="statement not covered" >nentLogg</span>er.warn('Failed to initialize SSE transport', { error });
+      this.componentLogger.warn('Failed to initialize SSE transport', { error });
     }
   }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Start real-<span class="cstat-no" title="statement not covered" >time monitoring session</span>
+  /**
+   * Start real-time monitoring session
    */
   async startMonitoring(
-    scenarioId: <span class="cstat-no" title="statement not covered" >number,</span>
+    scenarioId: number,
     executionId:<span class="cstat-no" title="statement not covered" > string | undefined,</span>
-    config: RealTimeMonitoringConfig
+    config: RealTime<span class="cstat-no" title="statement not covered" >MonitoringConfig</span>
   ): Promise&lt;string&gt; {
     const monitorId = `monitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const componentLogger = this.componentLogger.child({ monitorId, scenarioId, executionId });
 &nbsp;
-    componentLog<span class="cstat-no" title="statement not covered" >ger.info('Starting real-time execution monitoring', { config });</span>
+    comp<span class="cstat-no" title="statement not covered" >onentLogger<span class="fstat-no" title="function not covered" >.i</span>nfo('Starting real-time execution monitoring', { config });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-    // Resolve execution ID if not provided
+    // Resolve e<span class="cstat-no" title="statement not covered" >xecution ID if not provided</span>
     let targetExecutionId = executionId;
     if (!targetExecutionId) {
       const foundExecutionId = await this.findOrWaitForExecution(scenarioId);
-      if<span class="cstat-no" title="statement not covered" > (!foundExe<span class="fstat-no" title="function not covered" >cu</span>tionId) {</span>
-        thro<span class="cstat-no" title="statement not covered" >w new UserError('No active or recent execution found for monitoring');</span>
-      }<span class="cstat-no" title="statement not covered" ></span>
-      targetExecutionId = foundExecutionId;
-    }
-&nbsp;
+      if (!foundExecutionId) {
+        throw new UserError('No active or recent execution found for monitoring');
+      }
+<span class="fstat-no" title="function not covered" ></span>      targetExecutionId = foundExecutionId;
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
     // Create monitoring session
-    const session: MonitoringSession = {
-      monitorId,
-<span class="fstat-no" title="function not covered" ></span>      scenarioId,
-      ex<span class="cstat-no" title="statement not covered" >ecutionId: targetExecutionId,</span>
-      startT<span class="cstat-no" title="statement not covered" >ime: new</span> Date(),
+    const session: MonitoringSessi<span class="cstat-no" title="statement not covered" >on = {</span>
+      mo<span class="cstat-no" title="statement not covered" >nitorId,</span>
+      scenar<span class="cstat-no" title="statement not covered" >ioId,</span>
+      executionId: targetExecutionId,
+      startTime: new Date(),<span class="cstat-no" title="statement not covered" ></span>
       config,
       state: null,<span class="cstat-no" title="statement not covered" ></span>
-      al<span class="cstat-no" title="statement not covered" >ertThresholds: config.alertThresholds,</span>
-      isActi<span class="cstat-no" title="statement not covered" >ve: true,</span>
+      alertThresholds: config.alertThresholds,
+      isActive: true,
       lastUpdate: new Date(),
-      updateCount: 0,<span class="cstat-no" title="statement not covered" ></span>
+      updateCount: 0,
       errorCount: 0,
-    };<span class="cstat-no" title="statement not covered" ></span>
+    };
 &nbsp;
-    // Initialize SSE connection if enabled
+    // Initialize SSE<span class="cstat-no" title="statement not covered" > connection if enabled</span>
     if (config.enableSSEStreaming &amp;&amp; this.sseTransport) {
-      try {
+      try {<span class="cstat-no" title="statement not covered" ></span>
         const sseConnectionId = await this.createSSEConnection(session);
-        session.sseConnection = sseConnectionId;
-      } catch (error) {
-        componentLogg<span class="cstat-no" title="statement not covered" >er.warn('Failed to create SSE connection', { e</span>rror });
+<span class="cstat-no" title="statement not covered" >        session.sseConnection = sseConnectionId;</span>
+      } catc<span class="cstat-no" title="statement not covered" >h (error) {</span>
+        componentLogger.warn('Failed to create SSE connection', { error });
       }
     }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
     this<span class="cstat-no" title="statement not covered" >.activeSessions.set(monitorId, session);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-    // Start monitoring loop
+    // Start<span class="cstat-no" title="statement not covered" > monitoring loop</span>
     this.startMonitoringLoop(session);
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     componentLogger.info('Real-time monitoring session started', {
-      mo<span class="cstat-no" title="statement not covered" >nitorId,</span>
-      executionId: targetEx<span class="cstat-no" title="statement not covered" >ecutionId,</span>
-      sseEna<span class="cstat-no" title="statement not covered" >bled: !!session.sseConnection,</span>
+      monitorId,
+      executionId: targetExecutionId,
+      ss<span class="cstat-no" title="statement not covered" >eEnabled: !!session.sseConnection,</span>
     });
 &nbsp;
     return monitorId;
   }
 &nbsp;
-  /**<span class="cstat-no" title="statement not covered" ></span>
+  /**
    * Stop monitoring session
-   */
-  stopMonitoring(monitorId: string, reason?: string): boolean {
-    const session = this.activeSessions.get(monitorId);
-    if (!session) {
+   *<span class="fstat-no" title="function not covered" >/</span>
+  stopMonitoring(monitorId<span class="cstat-no" title="statement not covered" >: string, reason?: string): boolean {</span>
+    const session = this<span class="cstat-no" title="statement not covered" >.activeSessions.get(monitorId);</span>
+    if (!session) {<span class="cstat-no" title="statement not covered" ></span>
       return false;
-    }
-<span class="fstat-no" title="function not covered" ></span>
-    session.isActive = fal<span class="cstat-no" title="statement not covered" >se;</span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    // Close SSE connect<span class="cstat-no" title="statement not covered" >ion if exists</span>
-    if (session.sseConnection &amp;&amp; this.sseTransport) {
-      this.sseTransport.disconn<span class="cstat-no" title="statement not covered" >ect(session.sseConnection);</span>
     }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
+    session.isActive = fa<span class="cstat-no" title="statement not covered" >lse;</span>
+    
+    // Close SSE connection i<span class="cstat-no" title="statement not covered" >f exists</span>
+    if (session.sseConnection &amp;&amp; <span class="cstat-no" title="statement not covered" >this.sseTransport) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      this.sseTransport.disconnect(se<span class="cstat-no" title="statement not covered" >ssion.sseConnection);</span>
+    }
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
     this.activeSessions.delete(monitorId);
 <span class="cstat-no" title="statement not covered" ></span>
-    this.componentLogger.info('Mo<span class="cstat-no" title="statement not covered" >nitoring session stopp<span class="fstat-no" title="function not covered" >ed</span>', <span class="cstat-no" title="statement not covered" >{</span></span>
-      monitorId,<span class="cstat-no" title="statement not covered" ></span>
+    this<span class="cstat-no" title="statement not covered" >.componentLogger.info('Monitoring session stopped', {</span>
+      monitorId,
       reason,
-      duration: Date.now() - s<span class="cstat-no" title="statement not covered" >ession.startTime.get<span class="fstat-no" title="function not covered" >Ti</span>me(<span class="cstat-no" title="statement not covered" >),</span></span>
+      duration: Date.now() - session.startTime.getTime(),
       updateCount: session.updateCount,
-    });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+    });
+&nbsp;
     return true;
   }
 &nbsp;
@@ -2809,104 +2809,104 @@ class RealTimeExecutionMonitor extends EventEmitter {
       totalActiveSessions: sessions.length,
       sessions,
       systemStatus: {
-        sseTransportActive: !!this.sseTransport,
-        totalConnections: this.sseTransport?.getStatistics?.()?.activeConnections || 0,
-        performanceMonitorActive: true,
-      },
-    };
-  }
-<span class="fstat-no" title="function not covered" ></span>
+<span class="fstat-no" title="function not covered" ></span>        sseTransportActive: !!this.sseTransport,
+        totalConnections: <span class="cstat-no" title="statement not covered" >this.sseTr</span>ansport?.getStatistics?.()?.activeConnections || 0,
+<span class="cstat-no" title="statement not covered" >        performanceMonitorActive: true,</span>
+      },<span class="cstat-no" title="statement not covered" ></span>
+    };<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * Fin<span class="cstat-no" title="statement not covered" >d or wait for execution to monitor</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
-  private async findOrWaitFor<span class="cstat-no" title="statement not covered" >Execution(scenarioId: n</span>umber): Promise&lt;string | null&gt; {
-    // First, try to find a run<span class="cstat-no" title="statement not covered" >ning execution</span>
-    const runningResponse = awa<span class="cstat-no" title="statement not covered" >it this.apiClient.get(`/s</span>cenarios/${scenarioId}/executions`, {
-      params<span class="cstat-no" title="statement not covered" >: { </span>
-        limit: 5<span class="cstat-no" title="statement not covered" >, </span>
+   * Find or wai<span class="cstat-no" title="statement not covered" >t for execution to monitor</span>
+   */
+  private async findOrWaitForExecution(scenarioId: number): Promise&lt;string | null&gt; {
+    // First, try to find a running execution
+    const runningResponse = await this.apiClient.get(`/scenarios/${scenarioId}/executions`, {
+      params: { 
+        limit: 5, 
         sortBy: 'startTime', 
         sortOrder: 'desc',
         status: 'running',
       }
     });
-&nbsp;
-    if (runningResponse.success &amp;&amp; runningResponse.data) {
-      const executions = runningResponse.data as Array&lt;{ id: string; status: string }&gt;;
-      const runningExecution = executions.find(exec =&gt; exec.status === 'running');
-      if (runningExecution) {
-        return runningExecution.id;
-      }<span class="cstat-no" title="statement not covered" ></span>
-    }
 <span class="cstat-no" title="statement not covered" ></span>
-    // If no running execu<span class="cstat-no" title="statement not covered" >tion, get the most</span> recent one
-    const recentResponse = await this.apiClient.get(`/scenarios/${scenarioId}/executions`, {
-      params<span class="cstat-no" title="statement not covered" >: { </span>
-        limit: 1<span class="cstat-no" title="statement not covered" >, </span>
-        sortBy: <span class="cstat-no" title="statement not covered" >'startTime', </span>
-        sortOrder: 'desc',
-      }
-    });
+    if (runningResponse.success &amp;&amp; runningResponse.data) {
+      const executions = run<span class="cstat-no" title="statement not covered" >ningResponse.data </span>as Array&lt;{ id: string; status: string }&gt;;
+      const runningExecuti<span class="cstat-no" title="statement not covered" >on = executions.fi</span>nd(exec =&gt; exec.status === 'running');
+      if (runningExecution) {
+        retu<span class="cstat-no" title="statement not covered" >rn runningExecution.id;</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+    }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-    if (recentResponse.success &amp;&amp; recentResponse.data) {
-      const executions = recentResponse.data as Array&lt;{ id: string }&gt;;
-      if (executions.length &gt; 0) {
-        return executions[0].id;<span class="cstat-no" title="statement not covered" ></span>
+    // If no running execution, get the most recent one
+    const recentResponse = await this.apiClient.get(`/scenarios/${scenarioId}/executions`, {
+      params: { 
+        limit: 1, 
+        sortBy: 'startTime', 
+        sortOrder: 'desc',
+      }<span class="cstat-no" title="statement not covered" ></span>
+    });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    if (recentRespon<span class="cstat-no" title="statement not covered" >se.success &amp;&amp; recentResponse.data) {</span>
+      const executions =<span class="cstat-no" title="statement not covered" > recentResponse.data as Array&lt;{ id: st</span>ring }&gt;;
+      if (executions.len<span class="cstat-no" title="statement not covered" >gth &gt; 0) {</span>
+        return executions[0].id;
       }<span class="cstat-no" title="statement not covered" ></span>
     }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
     return null;<span class="cstat-no" title="statement not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Start monitoring lo<span class="cstat-no" title="statement not covered" >op for a session</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
-  private startMonitorin<span class="cstat-no" title="statement not covered" >gLoop(session: MonitoringSession): void {</span>
-    const monitoringInterval<span class="cstat-no" title="statement not covered" > = setInterval(async () =&gt; {</span>
-      if (!session.isActive) {
-        clearInterval(monitoringInterval);
-        return;
-      }
-&nbsp;
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        awai<span class="cstat-no" title="statement not covered" >t this.updateExecutionState(session);</span>
-        sess<span class="cstat-no" title="statement not covered" >ion.updateCount++;</span>
-        sess<span class="cstat-no" title="statement not covered" >ion.lastUpdate = new Date();</span>
-      } catch (error) {
-<span class="cstat-no" title="statement not covered" >        session.errorCount++;</span>
-        this.componentLogger.error('Error updating execution state', {
-          monitorId: session.monitorId,
-          error: error instanceof Error ? error.message : String(error),
-          errorCount: session.errorCount,
-<span class="fstat-no" title="function not covered" ></span>        });
-<span class="cstat-no" title="statement not covered" ></span>
-        // Stop monitoring a<span class="cstat-no" title="statement not covered" >fter too ma</span>ny errors
-        if (session.errorCount<span class="cstat-no" title="statement not covered" > &gt;= 5) {</span>
-          this.stopMonitoring(session.monitorId, 'Too many consecutive errors');
-        }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    }, session.config.update<span class="cstat-no" title="statement not covered" >Interval);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // Set timeout for maximum monitoring duration
-    setTimeout(() =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      if (session.isActive) <span class="cstat-no" title="statement not covered" >{</span>
-        this<span class="cstat-no" title="statement not covered" >.stopMonitoring(session.monitorId, 'Ma</span>ximum monitoring duration reached');
-      }
-    }, 300000); // 5 minutes max<span class="cstat-no" title="statement not covered" >imum</span>
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Update execution state for a mon<span class="fstat-no" title="function not covered" >it</span>oring session<span class="cstat-no" title="statement not covered" ></span>
+  /**
+   * Start monitoring loop for a session
    */
-  private async updateExec<span class="cstat-no" title="statement not covered" >utionState(s<span class="fstat-no" title="function not covered" >es</span>sion:<span class="cstat-no" title="statement not covered" > Monitorin</span>g</span>Session): Promise&lt;void&gt; {
-    if (!session.execution<span class="cstat-no" title="statement not covered" >Id) return;</span>
+  private startMonitoringLoop(session: MonitoringSession): void {
+    const mo<span class="cstat-no" title="statement not covered" >nitoringInterval = setInterval(async () =&gt; {</span>
+      if (!s<span class="cstat-no" title="statement not covered" >ession.isActive) {</span>
+        clea<span class="cstat-no" title="statement not covered" >rInterval(monitoringInterval);</span>
+        retu<span class="cstat-no" title="statement not covered" >rn;</span>
+      }
 <span class="cstat-no" title="statement not covered" ></span>
-    // Get execution details<span class="cstat-no" title="statement not covered" ></span>
+      try {
+        await this.updateExecutionState(session);
+        session.updateCount++;
+        session.lastUpdate = new Date();
+<span class="fstat-no" title="function not covered" ></span>      } catch (error) {
+        session.errorCount<span class="cstat-no" title="statement not covered" >++;</span>
+        this.componentLogger<span class="cstat-no" title="statement not covered" >.error('Err</span>or updating execution state', {
+          monitorId: session.m<span class="cstat-no" title="statement not covered" >onitorId,</span>
+          error: error instanceof Error ? error.message : String(error),
+          errorCount: session.<span class="cstat-no" title="statement not covered" >errorCount,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+        // S<span class="cstat-no" title="statement not covered" >top monitoring after too many errors</span>
+        if (session.errorCount &gt;= 5) {
+          this.stopMonitoring(sessi<span class="cstat-no" title="statement not covered" >on.monitorId, 'Too ma<span class="fstat-no" title="function not covered" >ny</span> consecutive errors');</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+    }, session.config.updateInterval);
+<span class="cstat-no" title="statement not covered" ></span>
+    // Set timeou<span class="fstat-no" title="function not covered" >t </span>for m<span class="cstat-no" title="statement not covered" >aximum monitoring duration</span>
+    setTimeout(() =&gt;<span class="fstat-no" title="function not covered" > {<span class="cstat-no" title="statement not covered" ></span></span>
+      if (session.isActive) {<span class="cstat-no" title="statement not covered" ></span>
+        this.stopMonitoring(session.m<span class="fstat-no" title="function not covered" >on</span>itorId, 'Maxi<span class="cstat-no" title="statement not covered" >mum monitor</span>ing duration reached');
+      }
+    }, 300000); // 5 minut<span class="cstat-no" title="statement not covered" >es maximum<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Update execution state for a monitoring session
+   */<span class="cstat-no" title="statement not covered" ></span>
+  private async updateExecut<span class="cstat-no" title="statement not covered" >ionState(session: MonitoringSession): P</span>romise&lt;void&gt; {
+    if (!session.executio<span class="cstat-no" title="statement not covered" >nId) return;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    // G<span class="cstat-no" title="statement not covered" >et execution details</span>
     const executionResponse = await this.apiClient.get(`/executions/${session.executionId}`);
-    if (!executionRespons<span class="cstat-no" title="statement not covered" >e.success) {</span>
-      throw new Error(`Faile<span class="cstat-no" title="statement not covered" >d to get execution details: ${execution</span>Response.error?.message}`);
-    }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    cons<span class="cstat-no" title="statement not covered" >t executionData = executionResponse.data as Record&lt;string, unknown&gt;;</span>
+    if (!executionResponse.success) {
+      throw new Error(`Failed to get execution details: ${executionResponse.error?.message}`);
+    }
+&nbsp;
+    const executionData = executionResponse.data as Record&lt;string, unknown&gt;;
 &nbsp;
     // Get execution logs for module progress
     const logsResponse = await this.apiClient.get(`/executions/${session.executionId}/logs`, {
@@ -2922,54 +2922,54 @@ class RealTimeExecutionMonitor extends EventEmitter {
 &nbsp;
     // Build execution state
     const newState = await this.buildExecutionState(session, executionData, logs);
-    
-    // Check for alerts
+    <span class="fstat-no" title="function not covered" ></span>
+    // Check for alerts<span class="cstat-no" title="statement not covered" ></span>
     if (session.config.enablePerformanceAlerts) {
       await this.checkAlerts(session, newState);
-    }
-&nbsp;
-<span class="fstat-no" title="function not covered" >    //</span> Update session state
-    session.state = newSta<span class="cstat-no" title="statement not covered" >te;</span>
-&nbsp;
-    // Send real-time update via SSE
-    if (session.sseConnect<span class="cstat-no" title="statement not covered" >ion &amp;&amp; this.sseTransp<span class="fstat-no" title="function not covered" >or</span>t) {</span>
-      const update = this.forma<span class="cstat-no" title="statement not covered" >tRealtimeUpdate(s</span>ession, newState);
-      this.sseTr<span class="cstat-no" title="statement not covered" >ansport.sendMessag</span>e(session.sseConnection, {
-        event: 'execution_update',
-<span class="cstat-no" title="statement not covered" >        data: JSON.st<span class="cstat-no" title="statement not covered" >ri</span>ngify(update),</span>
-      });<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-    // Emit update event<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    this.emit('execution_update<span class="cstat-no" title="statement not covered" >', {</span>
-      monitorId:<span class="cstat-no" title="statement not covered" > session.monitorId,</span>
-      state: newState,
-    });<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
+    // Update se<span class="cstat-no" title="statement not covered" >ssion state</span>
+    session.state = newState;
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+    // Send real-time update via SS<span class="cstat-no" title="statement not covered" >E</span>
+    if (session.sseConnection &amp;&amp; th<span class="cstat-no" title="statement not covered" >is.sseTransport) </span>{
+      const update = this.formatRealtimeUpdate(session, newState);
+      this.sseTransport.sendMessa<span class="cstat-no" title="statement not covered" >ge(session.s<span class="fstat-no" title="function not covered" >se</span>Connection, {</span>
+        event: 'execution_updat<span class="cstat-no" title="statement not covered" >e',</span>
+        data: JS<span class="cstat-no" title="statement not covered" >ON.stringify(update),</span>
+      });
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    // Emit update event<span class="cstat-no" title="statement not covered" ></span>
+    this.emit('execu<span class="cstat-no" title="statement not covered" >tion_update', {</span>
+      monitorId: session.monitorId,
+      state: new<span class="cstat-no" title="statement not covered" >State,</span>
+    });
+  }
+&nbsp;
+  /**
    * Build execution state from API data and logs
-   */<span class="cstat-no" title="statement not covered" ></span>
+   */
   private async buildExecutionState(
     session: MonitoringSession,
-    executionData: Record&lt;string, unknown&gt;,
+    exec<span class="cstat-no" title="statement not covered" >utionData: Record&lt;</span>string, unknown&gt;,
     logs: Array&lt;Record&lt;string, unknown&gt;&gt;
   ): Promise&lt;ExecutionState&gt; {
     const startTime = executionData.startTime as string || new Date().toISOString();
     const endTime = executionData.endTime as string || undefined;
-    const status = (executionData.status as string || 'running') as ExecutionState['status'];
+<span class="fstat-no" title="function not covered" >    co</span>nst status = (executionData.status as string || 'running') as ExecutionState['status'];
     <span class="cstat-no" title="statement not covered" ></span>
-    // Analyze logs to determine module progress
-    const moduleProgress = this.analyzeModuleProgress(logs);
+    // Analyze logs to dete<span class="cstat-no" title="statement not covered" >rmine module progress</span>
+    const moduleProgress =<span class="cstat-no" title="statement not covered" > this.analyzeModuleProgre</span>ss(logs);
     const performance = this.calculatePerformanceMetrics(executionData, logs);
-    const dataFlow = this.analyzeDataFlow(logs);
-<span class="fstat-no" title="function not covered" ></span>
-    // Calculate progre<span class="cstat-no" title="statement not covered" >ss percentage</span>
-    const totalModules = mo<span class="cstat-no" title="statement not covered" >duleProgress.length || 1</span>;
-    const completedModules<span class="cstat-no" title="statement not covered" > = moduleProgress.filter(</span>m =&gt; m.status === 'completed').length;
-    const completionPercentage = (completedModules / totalModules) * 100;
+    cons<span class="cstat-no" title="statement not covered" >t dataFlow = this.analyzeDataFlow(logs);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-    // Find <span class="cstat-no" title="statement not covered" >current module</span>
+    // Calculate progress percentage
+    const totalModules = moduleProgress.length || 1;
+    const completedModules = moduleProgress.filter(m =&gt; m.status === 'completed').length;
+    const completionPercentage = (completedModules / totalModules) * 100;
+&nbsp;
+    // Find current module
     const currentModule = moduleProgress.find(m =&gt; m.status === 'running') || null;
 &nbsp;
     // Estimate completion time
@@ -2979,14 +2979,14 @@ class RealTimeExecutionMonitor extends EventEmitter {
       performance.averageModuleDuration
     );
 &nbsp;
-    return {
-      executionId: session.executionId!,
+    retu<span class="cstat-no" title="statement not covered" >rn {</span>
+      execut<span class="cstat-no" title="statement not covered" >ionId: session.executionId!,</span>
       scenarioId: session.scenarioId,
       status,
       startTime,
       endTime,
-      du<span class="cstat-no" title="statement not covered" >ration: endTime ? new Date(endTime).getTime() - new Date(startTime).getTime() : </span>
-<span class="cstat-no" title="statement not covered" >                Date.now() - new Date(startTime).getTime(),</span>
+      duration: endTime ? new Date(endTime).getTime() - new Date(startTime).getTime() : 
+                Date.now() - new Date(startTime).getTime(),
       progress: {
         totalModules,
         completedModules,
@@ -2996,14 +2996,14 @@ class RealTimeExecutionMonitor extends EventEmitter {
       },
       performance,
       alerts: session.state?.alerts || [],
-      dataFlow,
-      metadata: {
+      da<span class="cstat-no" title="statement not covered" >taFlow,</span>
+      metada<span class="cstat-no" title="statement not covered" >ta: {</span>
         organizationId: executionData.organizationId as number || 0,
         teamId: executionData.teamId as number || 0,
         userId: executionData.userId as number || undefined,
         scenarioName: executionData.scenarioName as string || `Scenario ${session.scenarioId}`,
-<span class="cstat-no" title="statement not covered" >        blueprintId: executionData.blueprintId as string || undefined,</span>
-        trig<span class="cstat-no" title="statement not covered" >gerType: executionData.triggerType as ExecutionState['metadata']['triggerType'] || 'manual',</span>
+        blueprintId: executionData.blueprintId as string || undefined,
+        triggerType: executionData.triggerType as ExecutionState['metadata']['triggerType'] || 'manual',
       },
     };
   }
@@ -3012,69 +3012,69 @@ class RealTimeExecutionMonitor extends EventEmitter {
    * Analyze module progress from logs
    */
   private analyzeModuleProgress(logs: Array&lt;Record&lt;string, unknown&gt;&gt;): ModuleProgress[] {
-    const moduleMap = new Map&lt;string, ModuleProgress&gt;();
+    cons<span class="cstat-no" title="statement not covered" >t moduleMap = new Map&lt;s</span>tring, ModuleProgress&gt;();
 &nbsp;
     for (const log of logs) {
       const module = log.module as Record&lt;string, unknown&gt; || {};
       const moduleId = module.id as string || 'unknown';
-      const moduleName = module.name as string || 'Unknown Module';
-      co<span class="cstat-no" title="statement not covered" >nst moduleType = module</span>.type as string || 'unknown';
-&nbsp;
-      if (!moduleMap.has(moduleId)) {
-        moduleMap.set(moduleId, {
-          moduleId,
-<span class="fstat-no" title="function not covered" ></span>          moduleName,
-<span class="cstat-no" title="statement not covered" >          moduleType,</span>
-          po<span class="cstat-no" title="statement not covered" >sition: (modu</span>le.position as { x: number; y: number }) || { x: 0, y: 0 },
-          status: 'pendi<span class="cstat-no" title="statement not covered" >ng',</span>
-          inputBundles: 0,<span class="cstat-no" title="statement not covered" ></span>
-          outputBundles: 0<span class="cstat-no" title="statement not covered" >,</span>
+<span class="fstat-no" title="function not covered" ></span>      const moduleName = module.name as string || 'Unknown Module';
+      co<span class="cstat-no" title="statement not covered" >nst moduleType = module.type as string || 'unknown';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+      if (!moduleMap.has<span class="cstat-no" title="statement not covered" >(moduleId)) {</span>
+        moduleMap.set(moduleId,<span class="cstat-no" title="statement not covered" > {</span>
+          moduleId,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          moduleName,</span>
+          moduleType,
+          position: (module.position as { x: number; y: number }) || { x: 0, y: 0 },
+          status: 'pending',
+          inputBundles: 0,
+<span class="fstat-no" title="function not covered" ></span>          outputBundles: 0,
 <span class="cstat-no" title="statement not covered" >          operations: 0,</span>
-          dataSize: 0,
+          da<span class="cstat-no" title="statement not covered" >taSize: 0,</span>
         });
       }
 &nbsp;
-<span class="fstat-no" title="function not covered" ></span>      const moduleProgress = moduleMap.get(moduleId)!;
+      const moduleProgress = <span class="cstat-no" title="statement not covered" >moduleMap.get(moduleId)!;</span>
       <span class="cstat-no" title="statement not covered" ></span>
-      // Upd<span class="cstat-no" title="statement not covered" >ate based on log information</span>
+      // Update based on log information
       const metrics = log.metrics as Record&lt;string, unknown&gt; || {};
       const error = log.error as Record&lt;string, unknown&gt; || null;
-&nbsp;
-      // Update status based <span class="cstat-no" title="statement not covered" >on log level and content</span>
-      if<span class="cstat-no" title="statement not covered" > (error) {</span>
+<span class="cstat-no" title="statement not covered" ></span>
+      // Update status based on log level and content
+      if (error) {
         moduleProgress.status = 'failed';
         moduleProgress.error = {
-          code: error.code as string || 'UNKNOWN_ERROR',
-<span class="cstat-no" title="statement not covered" >          message: error.mess</span>age as string || 'Unknown error',
+<span class="fstat-no" title="function not covered" ></span>          code: error.code as string || 'UNKNOWN_ERROR',
+<span class="cstat-no" title="statement not covered" >          message: error.message as string || 'Unknown error',</span>
           type: error.type as string || 'runtime',
           retryable: error.retryable as boolean || false,
         };
       } else {
-<span class="fstat-no" title="function not covered" ></span>        const timestamp = log.timestamp as string;
-<span class="cstat-no" title="statement not covered" >        const level = log.level as string;</span>
+        const timestamp = log.timestamp as string;
+        const level = log.level as string;
         
         if (level === 'info' &amp;&amp; log.message) {
           if (!moduleProgress.startTime) {
             moduleProgress.startTime = timestamp;
             moduleProgress.status = 'running';
           } else if (log.message.toString().includes('completed') || level === 'info') {
-            moduleProgress.endTime = timestamp;
+            moduleProgress.endTime = tim<span class="fstat-no" title="function not covered" >es</span>tamp;<span class="cstat-no" title="statement not covered" ></span>
             moduleProgress.status = 'completed';
             if (moduleProgress.startTime) {
               moduleProgress.duration = new Date(timestamp).getTime() - new Date(moduleProgress.startTime).getTime();
             }
           }
-        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        }
       }
 &nbsp;
-      // Update metrics
-      moduleProgress.inputBundles += (metrics.inputBundles as number) || 0;
+<span class="fstat-no" title="function not covered" ></span>      // Update metrics
+      mo<span class="cstat-no" title="statement not covered" >duleProgress.inputBundles += (metrics.inputBundles as number) || 0;</span>
       moduleProgress.outputBundles += (metrics.outputBundles as number) || 0;
       moduleProgress.operations += (metrics.operations as number) || 0;
       moduleProgress.dataSize += (metrics.dataSize as number) || 0;
     }
-<span class="fstat-no" title="function not covered" ></span>
-    retu<span class="cstat-no" title="statement not covered" >rn Array.from(moduleMap.values());</span>
+&nbsp;
+    return Array.from(moduleMap.values());
   }
 &nbsp;
   /**
@@ -3085,65 +3085,65 @@ class RealTimeExecutionMonitor extends EventEmitter {
     logs: Array&lt;Record&lt;string, unknown&gt;&gt;
   ): RealTimePerformanceMetrics {
     const startTime = new Date(executionData.startTime as string || new Date());
-    const currentTime = new Date();
-    const totalDuration = currentTime.getTime() - startTime.getTime();
-&nbsp;
-    // Calculate metrics from logs
+<span class="fstat-no" title="function not covered" >    co</span>nst currentTime = new Date();
+    const totalDuration = currentTime.get<span class="cstat-no" title="statement not covered" >Time() </span>- startTime.getTime();
+<span class="cstat-no" title="statement not covered" ></span>
+    // Calcu<span class="cstat-no" title="statement not covered" >late metrics from logs</span>
     const processedLogs = logs.filter(log =&gt; log.metrics);
-    const totalOperations = processedLogs.reduce((sum, log) =&gt; {
-<span class="fstat-no" title="function not covered" ></span>      const metrics = log.metrics as Record&lt;string, unknown&gt; || {};
-      return sum + ((metrics.operations a<span class="cstat-no" title="statement not covered" >s numbe</span>r) || 0);
-    }, 0<span class="cstat-no" title="statement not covered" >);</span>
+    const tot<span class="cstat-no" title="statement not covered" >alOperations = processedLogs.reduce((sum, log) =&gt; {</span>
+      const <span class="cstat-no" title="statement not covered" >metrics = log.metrics as Record&lt;string, unknown&gt; </span>|| {};
+      return sum + ((metrics.operations as number) || 0);
+    }, 0);
 <span class="cstat-no" title="statement not covered" ></span>
     const totalDataProcessed = processedLogs.reduce((sum, log) =&gt; {
-      const m<span class="cstat-no" title="statement not covered" >etrics = log.metrics as Record&lt;string, unknown&gt; || {};</span>
-      return<span class="cstat-no" title="statement not covered" > sum + ((metrics.dataSize as number) || 0);</span>
+      const metrics = log.metrics as Record&lt;string, unknown&gt; || {};
+      return sum + ((metrics.dataSize as number) || 0);
     }, 0);
 &nbsp;
-    const pr<span class="cstat-no" title="statement not covered" >ocessingTimes = processedLogs</span>
-      .map(log =&gt; (log.metrics as Record&lt;string, unknown&gt;)?.processingTime as number)
-      .filter(time =&gt; typeof time === 'number' &amp;&amp; time &gt; 0);
+<span class="fstat-no" title="function not covered" >    co</span>nst processingTimes = processedLogs
+      .map(log =&gt; (log.metric<span class="cstat-no" title="statement not covered" >s as R</span>ecord&lt;string, unknown&gt;)?.processingTime as number)
+      .filter(time =&gt; <span class="cstat-no" title="statement not covered" >typ</span>eof time === 'number' &amp;&amp; time &gt; 0);
+<span class="cstat-no" title="statement not covered" ></span>
+    const averageModul<span class="cstat-no" title="statement not covered" >eDuration = pro</span>cessingTimes.length &gt; 0 
+      ? processingTimes.redu<span class="cstat-no" title="statement not covered" >ce((sum, time) =&gt; sum + time, 0) / proc</span>essingTimes.length
+      : 0;<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    const errorLogs = logs.filter(log =&gt; log.error);
+    const errorRate = logs.length &gt; 0 ? (errorLogs.length / logs.length) : 0;
+    const successRate = 1 - errorRate;
 &nbsp;
-    const averageModuleDuration = processingTimes.length &gt; 0 
-      ? processingTimes.reduce((sum, time) =&gt; sum + time, 0) / processingTimes.length
-<span class="fstat-no" title="function not covered" ></span>      : 0;
+    const throughputOpsPerSec = totalDuration &gt; 0 ? (totalOperations / (totalDuration / 1000)) : 0;
 <span class="cstat-no" title="statement not covered" ></span>
-    const errorLogs = <span class="cstat-no" title="statement not covered" >log</span>s.filter(log =&gt; log.error);
-    const errorRate = l<span class="cstat-no" title="statement not covered" >ogs.length &gt; 0 ? (errorLogs.length / logs.length) : 0;</span>
-    const successRate <span class="cstat-no" title="statement not covered" >= 1 - errorRate</span>;
-<span class="cstat-no" title="statement not covered" ></span>
-    const throughputOpsPerS<span class="cstat-no" title="statement not covered" >ec = totalDuration &gt; 0 ? (totalOperations / (to</span>talDuration / 1000)) : 0;
-<span class="cstat-no" title="statement not covered" ></span>
-    // Get system metrics
+    // Get s<span class="cstat-no" title="statement not covered" >ystem metrics</span>
     const memUsage = process.memoryUsage();
     const memoryUsage = memUsage.heapUsed / memUsage.heapTotal;
     const cpuUsage = process.cpuUsage();
-    const cpuUsagePercent = (cpuUsage.user + cpuUsage.system) / 1000000 / 1000; // Simplified
+    cons<span class="cstat-no" title="statement not covered" >t cpuUsagePercent = (cpu<span class="fstat-no" title="function not covered" >Us</span>age<span class="cstat-no" title="statement not covered" >.user + cpuU</span>sage.system) / 1000000 / 1000; // Simplified</span>
 <span class="cstat-no" title="statement not covered" ></span>
-    return {<span class="cstat-no" title="statement not covered" ></span>
+    return {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       totalDuration,
       averageModuleDuration,
-      totalDataProcessed,
-      to<span class="cstat-no" title="statement not covered" >talOperations,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      throug<span class="cstat-no" title="statement not covered" >hputOpsPerSec,</span>
-      memoryUsage,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      to<span class="cstat-no" title="statement not covered" >talDataProcessed,</span>
+      totalOperations,
+      throughputOpsPerSec,
+      memoryUsage,
       cpuUsage: cpuUsagePercent,
-      networkLatency: 0, // Would need actual network measurements
-      er<span class="cstat-no" title="statement not covered" >rorRate,</span>
-      successRate,
+<span class="fstat-no" title="function not covered" ></span>      networkLatency: 0, // Would need actual network measurements
+      errorRate,<span class="cstat-no" title="statement not covered" ></span>
+      su<span class="cstat-no" title="statement not covered" >ccessRate,</span>
       resourceEfficiency: Math.min(1, (throughputOpsPerSec / 10) * (1 - errorRate)), // Simplified efficiency score
       trends: {
         performance: 'stable', // Would need historical data for trend analysis
-<span class="fstat-no" title="function not covered" ></span>        reliability: errorRate &lt; 0.1 ? 'stable' : 'degrading',
-        efficiency: 'stable',<span class="cstat-no" title="statement not covered" ></span>
+        reliability: errorRate &lt; 0.1 ? 'stable' : 'degrading',
+<span class="fstat-no" title="function not covered" ></span>        efficiency: 'stable',
       },<span class="cstat-no" title="statement not covered" ></span>
-    };
+    };<span class="cstat-no" title="statement not covered" ></span>
   }
 &nbsp;
   /**
-   *<span class="fstat-no" title="function not covered" > A</span>nalyze data flow between modules
-   */<span class="cstat-no" title="statement not covered" ></span>
-  private analyzeDataFlow(lo<span class="cstat-no" title="statement not covered" >gs: Array&lt;Record&lt;string, unknown&gt;&gt;): DataFlowState[] {</span>
+   * Analyze data flow between modules
+   */
+  private analyzeDataFlow(logs: Array&lt;Record&lt;string, unknown&gt;&gt;): DataFlowState[] {
     const dataFlows: DataFlowState[] = [];
     
     // This is a simplified implementation - in reality, you'd need to analyze
@@ -3151,83 +3151,83 @@ class RealTimeExecutionMonitor extends EventEmitter {
     const moduleIds = [...new Set(logs.map(log =&gt; {
       const module = log.module as Record&lt;string, unknown&gt; || {};
       return module.id as string;
-    }).filter(Boolean))];
-&nbsp;
+    }).f<span class="cstat-no" title="statement not covered" >ilter(Boolean))];</span>
+<span class="cstat-no" title="statement not covered" ></span>
     for (let i = 0; i &lt; moduleIds.length - 1; i++) {
       const sourceModuleId = moduleIds[i];
       const targetModuleId = moduleIds[i + 1];
       
-      //<span class="cstat-no" title="statement not covered" > Find logs related to data transfer between these modules</span>
-      const <span class="cstat-no" title="statement not covered" >transferLogs = logs.filter(log =&gt; {</span>
+      // Find logs related to data transfer between these modules
+      const transferLogs = logs.filter(log =&gt; {
         const module = log.module as Record&lt;string, unknown&gt; || {};
         return module.id === sourceModuleId || module.id === targetModuleId;
-      });
-&nbsp;
-      if (transferLogs.length &gt; 0) {
+      });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+      if (tr<span class="cstat-no" title="statement not covered" >ansferLogs.length &gt; 0) {</span>
         const totalDataSize = transferLogs.reduce((sum, log) =&gt; {
           const metrics = log.metrics as Record&lt;string, unknown&gt; || {};
-          return sum + ((metrics.dataSize as number) || 0);
-        }, 0);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-        data<span class="cstat-no" title="statement not covered" >Flows.push({</span>
-          sourceModuleId,
+          re<span class="cstat-no" title="statement not covered" >turn sum + ((metrics.dataSize as <span class="fstat-no" title="function not covered" >nu</span>mber) || 0);</span>
+        }, 0);<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        dataFlows.push({
+<span class="cstat-no" title="statement not covered" >          sourceModuleId,</span>
           targetModuleId,
-          da<span class="cstat-no" title="statement not covered" >taSize: totalDataSize,<span class="fstat-no" title="function not covered" ></span></span>
-          transf<span class="cstat-no" title="statement not covered" >erTime: 0, // Would need actual timing measurements</span>
+          dataSize: totalDataSize,
+          transferTime: 0, // Would need actual timing measurements
           status: 'completed',
-        });
+<span class="fstat-no" title="function not covered" ></span>        });
       }<span class="cstat-no" title="statement not covered" ></span>
     }
+<span class="cstat-no" title="statement not covered" ></span>
+    retu<span class="cstat-no" title="statement not covered" >rn dataFlows;</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-    return dataFlows;
-  }
-<span class="fstat-no" title="function not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Check for alerts based on thresholds and performance
+  /**
+   * Che<span class="cstat-no" title="statement not covered" >ck for alerts based on thresholds and performance</span>
    */<span class="cstat-no" title="statement not covered" ></span>
-  privat<span class="cstat-no" title="statement not covered" >e async checkAlerts(session: MonitoringSession, state: ExecutionState): Promise&lt;void&gt; {</span>
-    const al<span class="cstat-no" title="statement not covered" >erts: RealTimeAlert[] = [...(state.alerts || [])];</span>
+  private async checkAlerts(session: MonitoringSession, state: ExecutionState): Promise&lt;void&gt; {
+    cons<span class="cstat-no" title="statement not covered" >t alerts: RealTimeAlert[] = [...(state.alerts || [])];</span>
     const thresholds = session.alertThresholds;
     const timestamp = new Date().toISOString();
-<span class="cstat-no" title="statement not covered" ></span>
-    // Perfo<span class="cstat-no" title="statement not covered" >rmance alerts</span>
-    if (state.performance.averageModuleDuration &gt; thresholds.performance.maxModuleDuration) {
-      al<span class="cstat-no" title="statement not covered" >erts.push({</span>
-        id: `alert_${Date.now()}_perf_module_duration`,
-        type: 'performance',
-        severity: 'warning',
-        timestamp,
-        message: `Average module duration (${Math.round(state.performance.averageModuleDuration)}ms) exceeds threshold (${thresholds.performance.maxModuleDuration}ms)`,
-        details: {
-          averageDuration: state.performance.averageModuleDuration,
-<span class="fstat-no" title="function not covered" >          threshold: thresholds.perf</span>ormance.maxModuleDuration,
-          trend: state.perfo<span class="cstat-no" title="statement not covered" >rmance.trends.performance,</span>
-        },<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        resolved: false,</span>
-        actions: ['Optimize slow modules', 'Check resource constraints', 'Review module configuration'],
-<span class="cstat-no" title="statement not covered" >      });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    // Error rate alerts</span>
+    // Performance alerts
+    if (state.performance.averageModuleDuration &gt; thresholds.performance.maxModuleDuration) {
+      alerts.push({
+        id: `alert_${Date.now()}_perf_module_duration`,
+        type: 'p<span class="fstat-no" title="function not covered" >erformance',</span>
+        severity: 'warning',<span class="cstat-no" title="statement not covered" ></span>
+        timestamp,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        message: `Average module duration (${Math.round(state.p</span>erformance.averageModuleDuration)}ms) exceeds threshold (${thresholds.performance.maxModuleDuration}ms)`,
+        details: {
+<span class="cstat-no" title="statement not covered" >          averageDuration<span class="fstat-no" title="function not covered" >: </span>stat<span class="cstat-no" title="statement not covered" >e.performance.aver</span>ag</span>eModuleDuration,
+<span class="cstat-no" title="statement not covered" >          threshold: thres<span class="fstat-no" title="function not covered" >ho</span>lds.<span class="cstat-no" title="statement not covered" >performance.maxMod</span>ul</span>eDuration,
+          trend: state.performance.trends.performance,
+<span class="cstat-no" title="statement not covered" >        },</span>
+        resolved: false,
+        actions: ['Optimize slow modules', 'Check resource constraints', 'Review module configuration'],
+      });
+    }
+&nbsp;
+    // Error rate alerts
     if (state.performance.errorRate &gt; thresholds.performance.maxErrorRate) {
       alerts.push({
         id: `alert_${Date.now()}_error_rate`,
         type: 'error',
-        severity: state.performance.errorRate &gt; 0.2 ? 'critical' : 'warning',
-        timestamp,
-        message: `Error rate (${(state.performance.errorRate * 100).toFixed(1)}%) exceeds threshold (${(thresholds.performance.maxErrorRate * 100).toFixed(1)}%)`,
+        severity:<span class="fstat-no" title="function not covered" > s</span>tate.performance.errorRate &gt; 0.2 ? 'critical' : 'warning',
+        timestamp,<span class="cstat-no" title="statement not covered" ></span>
+        mess<span class="cstat-no" title="statement not covered" >age: `Error rate (${(state.performance.errorRate * 100).toFixed(1)}%) exceeds threshold (${(thresholds.performance.maxErrorRate * 100).toFixed(1)}%)`,</span>
         details: {
           errorRate: state.performance.errorRate,
           threshold: thresholds.performance.maxErrorRate,
-          totalEr<span class="fstat-no" title="function not covered" >ro</span>rs: Math.round(state.performance.errorRate * (state.progress.completedModules || 1)),
+          totalErrors: Math.round(state.performance.errorRate * (state.progress.completedModules || 1)),
         },<span class="cstat-no" title="statement not covered" ></span>
-        reso<span class="cstat-no" title="statement not covered" >lved: false,</span>
+        resolved: false,<span class="cstat-no" title="statement not covered" ></span>
         actions: ['Review error patterns', 'Implement retry logic', 'Check external service availability'],
       });
     }
 &nbsp;
-    // Resou<span class="cstat-no" title="statement not covered" >rce usage alerts</span>
-    if (state.performance.memor<span class="cstat-no" title="statement not covered" >yUsage &gt; thresholds.resource.maxMemoryUsage) {</span>
+    // Resource usage alerts
+    if (state.performance.memoryUsage &gt; thresholds.resource.maxMemoryUsage) {
       alerts.push({
         id: `alert_${Date.now()}_memory_usage`,
         type: 'resource',
@@ -3253,17 +3253,17 @@ class RealTimeExecutionMonitor extends EventEmitter {
   private estimateCompletion(
     startTime: string,
     completionPercentage: number,
-    _averageModuleDuration: number
+    _averageModuleDuration: number<span class="cstat-no" title="statement not covered" ></span>
   ): Date | null {
-    if (completionPercentage === 0) return null;
-&nbsp;
-    const elapsed = Date.now() - new Date(startTime).getTime();
-    const totalEstimated = (elapsed / completionPercentage) * 100;
-    const remaining = totalEstimat<span class="cstat-no" title="statement not covered" >ed - elapsed;</span>
-&nbsp;
-    return new D<span class="cstat-no" title="statement not covered" >ate(Date.now() + r<span class="fstat-no" title="function not covered" >em</span>aining);<span class="cstat-no" title="statement not covered" ></span></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+    if (completi<span class="cstat-no" title="statement not covered" >onPercentage === 0<span class="fstat-no" title="function not covered" >) </span>return nu<span class="cstat-no" title="statement not covered" >ll;</span></span>
 <span class="cstat-no" title="statement not covered" ></span>
+    const elapse<span class="cstat-no" title="statement not covered" >d = Date.now() - new Date(startTime).getTime();</span>
+    const totalEstimated = (elapsed / completionPercentage) * 100;
+    const remaining = totalEstimated - elapsed;
+&nbsp;
+    return new Date(Date.now() + remaining);
+  }
+&nbsp;
   /**
    * Create SSE connection for real-time updates
    */
@@ -3273,91 +3273,91 @@ class RealTimeExecutionMonitor extends EventEmitter {
     }
 &nbsp;
     // This would typically be handled by the SSE transport layer
-    // For now, we'll return a mock connection ID
-    const connectionId = `sse_${session.monitorId}_${Date.now()}`;
-    
-    this.componentLogger.debug('SSE connection created for monitoring', {
-      monitorId: session.monitorId,
+    // For now, we'll return a mock c<span class="cstat-no" title="statement not covered" >onnection ID</span>
+    const connec<span class="cstat-no" title="statement not covered" >tionId = `sse_${session.monitorId}_${Date.now()}`;</span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    this.componentLo<span class="cstat-no" title="statement not covered" >gger.debug('S</span>SE connection created for monitoring', {
+      monitorId:<span class="cstat-no" title="statement not covered" > session.monitorId,</span>
       connectionId,
-    });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    return conne<span class="cstat-no" title="statement not covered" >ctionId;</span>
+    });
+&nbsp;
+    return connectionId;
   }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   /**
    * Format real-time update for SSE streaming
    */
   private formatRealtimeUpdate(session: MonitoringSession, state: ExecutionState): Record&lt;string, unknown&gt; {
-<span class="cstat-no" title="statement not covered" >    return {</span>
+    return {
       monitorId: session.monitorId,
       timestamp: new Date().toISOString(),
       executionId: state.executionId,
       scenarioId: state.scenarioId,
-      status: state.status,
-      progress: state.progress,
-      performance: {
-        duration: state.performance.totalDuration,
-        throughput: state.performance.throughputOpsPerSec,
-        errorRate: state.performance.errorRate,
-        completio<span class="fstat-no" title="function not covered" >nP</span>ercentage: state.progress.completionPercentage,
-      },<span class="cstat-no" title="statement not covered" ></span>
-      alerts<span class="cstat-no" title="statement not covered" >: state.alerts.filter(alert =&gt; !alert.resolved),</span>
-      curren<span class="cstat-no" title="statement not covered" >tModule: state.progress.currentModule,</span>
-      visualization: session.con<span class="cstat-no" title="statement not covered" >fig.enableProgressVisualization ? </span>
-        this.gen<span class="cstat-no" title="statement not covered" >erateVisualization(state, session.config.visualization) : undefined,</span>
-    };<span class="cstat-no" title="statement not covered" ></span>
+      status: sta<span class="fstat-no" title="function not covered" >te</span>.status,
+      progress: state.progress,<span class="cstat-no" title="statement not covered" ></span>
+      perfor<span class="cstat-no" title="statement not covered" >mance: {</span>
+        dura<span class="cstat-no" title="statement not covered" >tion: state.performance.totalDuration,</span>
+        throughput: state.perfor<span class="cstat-no" title="statement not covered" >mance.throughputOpsPerSec,</span>
+        errorRat<span class="cstat-no" title="statement not covered" >e: state.performance.errorRate,</span>
+        completionPe<span class="cstat-no" title="statement not covered" >rcentage: state.progress.completionPercentage,</span>
+      },
+      alerts: st<span class="cstat-no" title="statement not covered" >ate.alerts.filter(alert =&gt; !alert.resolved),</span>
+      currentModule: state.progress.currentModule,
+      visualization: session.config.enableProgressVisualization ? 
+        this.generateVisualization(state, session.config.visualization) : undefined,
+    };
   }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   /**
    * Format session status
-   */
-  private formatSessionStatus(session: MonitoringSession): Record&lt;string, unknown&gt; {
-    return {
-      monitorId: session.monitorId,
-      scenarioId: session.scenarioId,
+   */<span class="cstat-no" title="statement not covered" ></span>
+  private format<span class="cstat-no" title="statement not covered" >SessionStatus(session: MonitoringSession): Record&lt;string, unknown&gt; {</span>
+    return {<span class="cstat-no" title="statement not covered" ></span>
+      monitorId: ses<span class="cstat-no" title="statement not covered" >sion.monitorI</span>d,
+      scenarioId<span class="cstat-no" title="statement not covered" >: session.scenarioId,</span>
       executionId: session.executionId,
-      startTime: session.startTime.to<span class="cstat-no" title="statement not covered" >ISOString(),</span>
-      isActive: <span class="cstat-no" title="statement not covered" >session.isActive,</span>
-      updateCoun<span class="cstat-no" title="statement not covered" >t: session.updateCount,</span>
-      errorCount: se<span class="cstat-no" title="statement not covered" >ssion.errorCo</span>unt,
-      lastUpdate<span class="cstat-no" title="statement not covered" >: session.lastUpdate.toISOString(),</span>
+      startTime: session.startTime.toISOString(),
+      isActive: session.isActive,
+      updateCount: session.updateCount,
+<span class="cstat-no" title="statement not covered" >      errorCount: session.errorCount,</span>
+      lastUpdate: session.lastUpdate.toISOString(),
       config: session.config,
       state: session.state,
       sseConnected: !!session.sseConnection,
     };
-  }<span class="cstat-no" title="statement not covered" ></span>
+  }
 &nbsp;
   /**
    * Generate visualization based on current state
    */
-  private generateVisualization(state: ExecutionState, config: Record&lt;string, unknown&gt;): string {
-    const { format, colorEnabled } = config;
-    
-    if (format === 'ascii') {
-      return this.generateASCIIVisualization(state, Boolean(colorEnabled));
-    } else if (format === 'compact') {
-      return this<span class="fstat-no" title="function not covered" >.g</span>enerateCompactVisualization(state);
-    } else {<span class="cstat-no" title="statement not covered" ></span>
-      return<span class="cstat-no" title="statement not covered" > this.generateStructuredVisualization(state, config);</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  private generat<span class="fstat-no" title="function not covered" >eV</span>isualization(state: ExecutionState, config: Record&lt;string, unknown&gt;): string {
+    const { format, colorEnabled } = config;<span class="cstat-no" title="statement not covered" ></span>
+    <span class="cstat-no" title="statement not covered" ></span>
+    if (form<span class="cstat-no" title="statement not covered" >at === 'ascii') {</span>
+      return this.generateASCII<span class="cstat-no" title="statement not covered" >Visualization(state, Boolean(colorEnabl</span>ed));
+    } else if (f<span class="cstat-no" title="statement not covered" >ormat === 'compact') {</span>
+      return this.generateCompactVisualization(state);
+    } else {
+      return this.generateStructuredVisualization(state, config);
+    }
+  }
+&nbsp;
   /**
-   * Generate ASCII art visualization
-   */
-  private generateASCIIVisualization(state: ExecutionState, _colorEnabled: boolean): string {
+   * Generate ASCII art visualization<span class="cstat-no" title="statement not covered" ></span>
+   */<span class="cstat-no" title="statement not covered" ></span>
+  private genera<span class="cstat-no" title="statement not covered" >teASCIIVisualization(state: ExecutionState, _colorEnabled: boolean): stri</span>ng {
     const { progress } = state;
     const width = 50;
     const filled = Math.round((progress.completionPercentage / 100) * width);
-    const empty = width - filled;<span class="cstat-no" title="statement not covered" ></span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    const progre<span class="cstat-no" title="statement not covered" >ssBar = '█'.repeat(filled) + '░'.repeat(empty);</span>
+<span class="cstat-no" title="statement not covered" >    const empty = width - filled;</span>
+    
+    const progressBar = '█'.repeat(filled) + '░'.repeat(empty);
     const percentage = `${progress.completionPercentage.toFixed(1)}%`;
     
     let visualization = `
-┌─ E<span class="cstat-no" title="statement not covered" >xecution Progress ────────────────────────────────────┐</span>
+┌─ Execution Progress ────────────────────────────────────┐
 │ ${progressBar} ${percentage.padStart(6)} │
-<span class="cstat-no" title="statement not covered" >│ Status: ${state.status.toUpperCase().padEnd(12)}</span> Modules: ${progress.completedModules}/${progress.totalModules} │
+│ Status: ${state.status.toUpperCase().padEnd(12)} Modules: ${progress.completedModules}/${progress.totalModules} │
 └─────────────────────────────────────────────────────────┘
 `;
 &nbsp;
@@ -3637,7 +3637,7 @@ export default { addRealTimeMonitoringTools };</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.110Z
+                at 2025-08-22T05:07:11.447Z
             </div>
         <script src="../prettify.js"></script>
         <script>

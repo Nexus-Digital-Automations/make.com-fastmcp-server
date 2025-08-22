@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">54.11% </span>
+                <span class="strong">55.41% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>125/231</span>
+                <span class='fraction'>128/231</span>
             </div>
         
             
@@ -1893,7 +1893,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2069,19 +2069,19 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2915,7 +2915,7 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
           remainingBudget: monthlyLimit - currentSpend,
           daysRemaining,<span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" ></span></span>
           confidence: 0.85,<span class="branch-1 cbranch-no" title="branch not covered" ></span>
-          lastUpdated: currentTime.toISOString(),<span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" ></span></span>
+          lastUpdated: currentTime.toISOString(),<span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" ></span></span></span>
           trends: {
             dailyAverage: Math.round(dailyAverage * 100) / 100,
             weeklyTrend: dailyAverage * 7,<span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" ></span></span>
@@ -3276,7 +3276,7 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
               'Execute with dryRun=false when ready',
               .<span class="fstat-no" title="function not covered" >..(approvalRequired ? [</span>'Obtain required approvals'] : []),
             ],
-<span class="cstat-no" title="statement not covered" >          });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >          }).content[0<span class="fstat-no" title="function not covered" >].</span>text;<span class="cstat-no" title="statement not covered" ></span></span>
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
         // Phase 4:<span class="cstat-no" title="statement not covered" > Ex</span>ecute control action (if not dry run)
@@ -3301,7 +3301,7 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
               approvalCode: generateApprovalCode(budgetId, action),
             },
             instructions: 'Provide approval code to execute this action',
-          });
+          }).content[0].text;
         }
 &nbsp;
         // Special handling for 'analyze' action - return analysis structure
@@ -3382,7 +3382,7 @@ export function addB<span class="cstat-no" title="statement not covered" >udgetC
             trackingEnabled: true,
             nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error executing scenario control', { budgetId, action, error: errorMessage });
@@ -3604,7 +3604,7 @@ export default addBudgetControlTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.277Z
+                at 2025-08-22T05:07:11.612Z
             </div>
         <script src="../prettify.js"></script>
         <script>

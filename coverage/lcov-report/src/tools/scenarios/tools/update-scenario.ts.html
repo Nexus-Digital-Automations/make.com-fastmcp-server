@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.42% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/38</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.28% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/7</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.42% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/38</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
@@ -149,17 +149,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -210,10 +207,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -235,73 +235,73 @@ import { UpdateScenarioSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
-/**
- * Create update scenario tool configuration
- */
+/**<span class="fstat-no" title="function not covered" ></span>
+ * Create update scenario <span class="cstat-no" title="statement not covered" >tool con</span>figuration
+ */<span class="cstat-no" title="statement not covered" ></span>
 export function createUpdateScenarioTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
+  const { apiClient } = context;
   
   return {
     name: 'update-scenario',
     description: 'Update an existing Make.com scenario configuration',
     parameters: UpdateScenarioSchema,
     annotations: {
-      title: 'Update Scenario',
-      readOnlyHint: false,
-      openWorldHint: false,
-    },<span class="fstat-no" title="function not covered" ></span>
-    execute: async (args: <span class="branch-0 cbranch-no" title="branch not covered" >unknown,<span class="fstat-no" title="function not covered" > c</span>ontext): Promise<span class="fstat-no" title="function not covered" >&lt;s</span>tring&gt; =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
-      const { log = { info: ()<span class="cstat-no" title="statement not covered" >: voi</span>d =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
+      title: 'Upd<span class="fstat-no" title="function not covered" >at</span>e Scenario',
+      readOnlyHint: false,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+      openWorldHint: false,<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (args: unknown, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
       const <span class="cstat-no" title="statement not covered" >typedArgs = args as {</span>
-        scenario<span class="cstat-no" title="statement not covered" >Id: string;</span>
-        name?: string;
-        acti<span class="cstat-no" title="statement not covered" >ve?: boolean;</span>
-        blue<span class="cstat-no" title="statement not covered" >print?: unknown;</span>
-        scheduling?: { type: string<span class="cstat-no" title="statement not covered" >; i</span>nterval?: number; cron?: string };
+        scen<span class="cstat-no" title="statement not covered" >arioId: string;</span>
+        name?: string;<span class="cstat-no" title="statement not covered" ></span>
+        active?:<span class="cstat-no" title="statement not covered" > boolean;</span>
+        blueprint?: <span class="cstat-no" title="statement not covered" >unknown;</span>
+        scheduli<span class="cstat-no" title="statement not covered" >ng?: { type: string; interval?: number; cron?: string };</span>
       };<span class="cstat-no" title="statement not covered" ></span>
       <span class="cstat-no" title="statement not covered" ></span>
-      if (log &amp;&amp;<span class="cstat-no" title="statement not covered" > log.info) { log.info('Updating scenario', { scenarioId: typedArgs.scenarioId }); }</span>
-      reportProgress<span class="cstat-no" title="statement not covered" >?.({ progress: 0, total: 100 });</span>
+      if (log &amp;&amp; log<span class="cstat-no" title="statement not covered" >.info) { log.info('Updating scenario', { sce</span>narioId: typedArgs.scenarioId }); }
+      reportProg<span class="cstat-no" title="statement not covered" >ress?.({ progress: 0, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
       try {<span class="cstat-no" title="statement not covered" ></span>
-        const up<span class="cstat-no" title="statement not covered" >dateData: Record&lt;string, unknown&gt; = {};</span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        if (type<span class="cstat-no" title="statement not covered" >dArgs.name !== undefined) updateData.name = typedArgs.name;</span>
-        if (typedArg<span class="cstat-no" title="statement not covered" >s.active !== undefined) updateData.active = typedArgs.active;</span>
-        if (typedArgs.blueprint !== undefined) updateData.blueprint = typedArgs.blueprint;
-        if (type<span class="cstat-no" title="statement not covered" >dArgs.scheduling !== undefined) updateData.sched</span>uling = typedArgs.scheduling;
+        const update<span class="cstat-no" title="statement not covered" >Data: Record&lt;string, unknown&gt; = {};</span>
+        
+        if (type<span class="cstat-no" title="statement not covered" >dArgs.name !== undefined) updateData.name = type</span>dArgs.name;
+        if (typedArgs.active !== <span class="cstat-no" title="statement not covered" >undefined) updateData.active = typedArgs.active;</span>
+        if (type<span class="cstat-no" title="statement not covered" >dArgs.blueprint !== undefined) updateData.bluepr</span>int = typedArgs.blueprint;
+        if (type<span class="cstat-no" title="statement not covered" >dArgs.scheduling !== undefined) updateData.scheduling = typedArgs.scheduling;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        if (Obje<span class="cstat-no" title="statement not covered" >ct.keys(updateData).length === 0) {</span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError('No update parameters provided');</span>
+        if (Object.keys(updateData).length === 0) {
+          throw new UserError('No update<span class="cstat-no" title="statement not covered" > parameters pr</span>ovided');
         }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        reportProgress?.({ progress: 25,<span class="cstat-no" title="statement not covered" > total: 100 })</span>;
 <span class="cstat-no" title="statement not covered" ></span>
-        const response = await <span class="cstat-no" title="statement not covered" >apiClient.patch(`/scenarios/${typedArgs.scenarioId}`, updateData);</span>
+        reportProgress?.({ progress: 25, total: 100 });
+&nbsp;
+        const response = await apiClient.patch(`/scenarios/${typedArgs.scenarioId}`, updateData);
         reportProgress?.({ progress: 75, total: 100 });
 &nbsp;
-        if (!response.success) {
-          throw new UserError(`Failed to update scenario: ${response.error?.message}`);
+        if (!res<span class="cstat-no" title="statement not covered" >ponse.success) {</span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Failed to update scenario: ${response.error?.message}`);</span>
         }
 <span class="cstat-no" title="statement not covered" ></span>
-        const update<span class="cstat-no" title="statement not covered" >dScenario = response.data;</span>
+        const updatedScenario = response.data;
         reportProgress?.({ progress: 100, total: 100 });
 <span class="cstat-no" title="statement not covered" ></span>
-        const result = {
-          scenario: updatedScenario,
-          updates: updateData,<span class="cstat-no" title="statement not covered" ></span>
-          messag<span class="cstat-no" title="statement not covered" >e: `Scenario updated successfully`,</span>
+        const re<span class="cstat-no" title="statement not covered" >sult = {</span>
+          scenario: <span class="cstat-no" title="statement not covered" >updatedScenario,</span>
+          updates: updateData,
+          message: `Scenario updated successfully`,
           timestamp: new Date().toISOString(),
         };
-&nbsp;
-        if (log <span class="cstat-no" title="statement not covered" >&amp;&amp; log.info) { log.info('Scenario updated successfully', { scenarioId: typedA</span>rgs.scenarioId }); }
+<span class="cstat-no" title="statement not covered" ></span>
+        if (log &amp;&amp; log.info) { log.info('Scenario updated successfully', { scenarioId: typedArgs.scenarioId }); }
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('Failed to update scenario', { 
+        if (log &amp;&amp; log.error) { log.error('Failed to update scenario', { 
           scenarioId: typedArgs.scenarioId, 
           error: errorMessage 
-        });
+        }); }
         throw new UserError(`Failed to update scenario: ${errorMessage}`);
       }
     },
@@ -313,7 +313,7 @@ export function createUpdateScenarioTool(context: ToolContext): ToolDefinition {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T05:01:57.534Z
+                at 2025-08-22T05:06:50.846Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/405</span>
+                <span class='fraction'>0/394</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/345</span>
+                <span class='fraction'>0/338</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/59</span>
+                <span class='fraction'>0/58</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/391</span>
+                <span class='fraction'>0/380</span>
             </div>
         
             
@@ -1636,22 +1636,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3059,7 +3052,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3193,78 +3193,78 @@
  * @see {@link https://docs.make.com/api} Make.com API Documentation
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError } from 'fastmcp';
+import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-<span class="cstat-no" title="statement not covered" >import { auditLogger } from '../lib/audit-logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../utils/response-formatter.js';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-// Define comp<span class="cstat-no" title="statement not covered" >rehensive namin</span>g convention policy interfaces and schemas
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Supported resource types for <span class="cstat-no" title="statement not covered" >naming conventions</span>
- */
-export enum ResourceType {
-  SCENARIO = 'scenario',
-  CONNECTION = 'connection',
-  TEMPLATE = 'template',
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  F</span>OLDER = 'folder',</span>
+import { auditLogger } from '../lib/audit-logger.js';
+import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
+&nbsp;
+// Define comprehensive naming convention policy interfaces and schemas
+&nbsp;
+<span class="cstat-no" title="statement not covered" >/<span class="fstat-no" title="function not covered" >**</span></span>
+ * S<span class="cstat-no" title="statement not covered" >upported resource types for naming conv</span>entions
+ */<span class="cstat-no" title="statement not covered" ></span>
+expo<span class="cstat-no" title="statement not covered" >rt enum ResourceType {</span>
+  SC<span class="cstat-no" title="statement not covered" >ENARIO = 'scenario',</span>
+  CO<span class="cstat-no" title="statement not covered" >NNECTION = 'connection',</span>
+  TE<span class="cstat-no" title="statement not covered" >MPLATE = 'template',</span>
+  FO<span class="cstat-no" title="statement not covered" >LDER = 'folder',</span>
   VA<span class="cstat-no" title="statement not covered" >RIABLE = 'variable',</span>
   WE<span class="cstat-no" title="statement not covered" >BHOOK = 'webhook',</span>
   TE<span class="cstat-no" title="statement not covered" >AM = 'team',</span>
   OR<span class="cstat-no" title="statement not covered" >GANIZATION = 'organization',</span>
   DA<span class="cstat-no" title="statement not covered" >TA_STORE = 'data_store',</span>
   FU<span class="cstat-no" title="statement not covered" >NCTION = 'function',</span>
-  AP<span class="cstat-no" title="statement not covered" >P = 'app',</span>
-  CE<span class="cstat-no" title="statement not covered" >RTIFICATE = 'certificate',</span>
-  PR<span class="cstat-no" title="statement not covered" >OCEDURE = 'procedure',</span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
+  APP = 'app',
+  CERTIFICATE = 'certificate',
+  PROCEDURE = 'procedure',
+}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >/<span class="fstat-no" title="function not covered" >**</span></span>
  * P<span class="cstat-no" title="statement not covered" >attern validation types</span>
- */
-export enum PatternType {
-  REGEX = 'regex',
-  TEMPLATE = 'template',
-  CUSTOM = 'custom',
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  S</span>TARTS_WITH = 'starts_with',</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+expo<span class="cstat-no" title="statement not covered" >rt enum PatternType {</span>
+  RE<span class="cstat-no" title="statement not covered" >GEX = 'regex',</span>
+  TE<span class="cstat-no" title="statement not covered" >MPLATE = 'template',</span>
+  CU<span class="cstat-no" title="statement not covered" >STOM = 'custom',</span>
+  ST<span class="cstat-no" title="statement not covered" >ARTS_WITH = 'starts_with',</span>
   EN<span class="cstat-no" title="statement not covered" >DS_WITH = 'ends_with',</span>
-  CO<span class="cstat-no" title="statement not covered" >NTAINS = 'contains',</span>
-  LE<span class="cstat-no" title="statement not covered" >NGTH = 'length',</span>
-  CA<span class="cstat-no" title="statement not covered" >SE = 'case',</span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
+  CONTAINS = 'contains',
+  LENGTH = 'length',
+  CASE = 'case',
+}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >/<span class="fstat-no" title="function not covered" >**</span></span>
  * C<span class="cstat-no" title="statement not covered" >ase enforcement options</span>
- */
-export enum CaseType {
-  CAMEL_CASE = 'camelCase',
-  PASCAL_CASE = 'PascalCase',
-  SNAKE_CASE = 'snake_case',
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  K</span>EBAB_CASE = 'kebab-case',</span>
-  UP<span class="cstat-no" title="statement not covered" >PER_CASE = 'UPPER_CASE',</span>
-  LO<span class="cstat-no" title="statement not covered" >WER_CASE = 'lower_case',</span>
-  TI<span class="cstat-no" title="statement not covered" >TLE_CASE = 'Title Case',</span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+expo<span class="cstat-no" title="statement not covered" >rt enum CaseType {</span>
+  CA<span class="cstat-no" title="statement not covered" >MEL_CASE = 'camelCase',</span>
+  PA<span class="cstat-no" title="statement not covered" >SCAL_CASE = 'PascalCase',</span>
+  SN<span class="cstat-no" title="statement not covered" >AKE_CASE = 'snake_case',</span>
+  KE<span class="cstat-no" title="statement not covered" >BAB_CASE = 'kebab-case',</span>
+  UPPER_CASE = 'UPPER_CASE',
+  LOWER_CASE = 'lower_case',
+  TITLE_CASE = 'Title Case',
+}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >/<span class="fstat-no" title="function not covered" >**</span></span>
  * P<span class="cstat-no" title="statement not covered" >olicy enforcement levels</span>
- */
-export enum EnforcementLevel {
-  STRICT = 'strict',      // Blocks non-compliant operations
+ */<span class="cstat-no" title="statement not covered" ></span>
+expo<span class="cstat-no" title="statement not covered" >rt enum EnforcementLevel {</span>
+  ST<span class="cstat-no" title="statement not covered" >RICT = 'strict',      // Blocks non-complia</span>nt operations
   WARNING = 'warning',    // Warns but allows operations
   ADVISORY = 'advisory',  // Informational only
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  D</span>ISABLED = 'disabled',  // Policy exists but not enforced</span>
-}<span class="cstat-no" title="statement not covered" ></span>
+  DISABLED = 'disabled',  // Policy exists but not enforced
+}
 <span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * N<span class="cstat-no" title="statement not covered" >aming rule definition schema</span>
+/**
+ * Naming rule definition schema
  */
 const NamingRuleSchema = z.object({
   id: z.string().min(1).describe('Unique rule identifier'),
   name: z.string().min(1).describe('Human-readable rule name'),
-  description: z.string()<span class="cstat-no" title="statement not covered" >.optional().describe('Rule description and purpose'),</span>
+  description: z.string().optional().describe('Rule description and purpose'),
   resourceTypes: z.array(z.nativeEnum(ResourceType)).min(1).describe('Resource types this rule applies to'),
   patternType: z.nativeEnum(PatternType).describe('Type of pattern validation'),
   pattern: z.string().min(1).describe('Pattern definition (regex, template, etc.)'),
@@ -3283,25 +3283,25 @@ const NamingRuleSchema = z.object({
   createdAt: z.string().optional().describe('Rule creation timestamp'),
   updatedAt: z.string().optional().describe('Rule last update timestamp'),
   createdBy: z.string().optional().describe('User who created the rule'),
-}).strict();
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 /**
  * Policy template definition schema
  */
 const PolicyTemplateSchema = z.object({
   id: z.string().min(1).describe('Template identifier'),
-  name: z.string().min(1).des<span class="cstat-no" title="statement not covered" >cribe('Template name'),</span>
+  name: z.string().min(1).describe('Template name'),
   description: z.string().describe('Template description'),
   category: z.string().describe('Template category (enterprise, startup, government, etc.)'),
   rules: z.array(NamingRuleSchema).describe('Predefined rules in this template'),
-  metadata: z.record(z.unknown()).optional().describe('Additional template metadata'),
+  metadata: z.record(z.unknown())<span class="cstat-no" title="statement not covered" >.optional().describe('Additional template metadata'),</span>
 }).strict();
 &nbsp;
 /**
  * Create naming convention policy schema
  */
 const CreateNamingPolicySchema = z.object({
-  name: z.string().min(1).max(100<span class="cstat-no" title="statement not covered" >).describe('Policy name'),</span>
+  name: z.string().min(1).max(100).describe('Policy name'),
   description: z.string().max(500).optional().describe('Policy description'),
   scope: z.object({
     organizationId: z.number().optional().describe('Organization scope'),
@@ -3318,27 +3318,27 @@ const CreateNamingPolicySchema = z.object({
     notifyOnViolation: z.boolean().default(true).describe('Send notifications on violations'),
     notifyOnUpdate: z.boolean().default(false).describe('Send notifications on policy updates'),
     recipients: z.array(z.string()).optional().describe('Notification recipient emails'),
-  }).optional().describe('Notification configuration'),
+  }).optional().describe('No<span class="cstat-no" title="statement not covered" >tification configuration'),</span>
   metadata: z.record(z.unknown()).optional().describe('Additional policy metadata'),
 }).strict();
 &nbsp;
 /**
  * Validate names against policy schema
  */
-const ValidateNamesSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
+const ValidateNamesSchema = z.object({
   policyId: z.string().min(1).describe('Policy ID to validate against'),
   names: z.array(z.object({
     resourceType: z.nativeEnum(ResourceType).describe('Type of resource'),
     name: z.string().min(1).describe('Name to validate'),
     resourceId: z.string().optional().describe('Resource identifier'),
-    metadata: z.record(z.unknown()).optional().describe('Additional resource metadata'),
+    metadata: z.record(z.unknown(<span class="cstat-no" title="statement not covered" >)).optional().describe('Additional resource metadata'),</span>
   })).min(1).describe('Names to validate'),
   returnDetails: z.boolean().default(true).describe('Return detailed validation results'),
 }).strict();
 &nbsp;
 /**
  * Update naming policy schema
- */<span class="cstat-no" title="statement not covered" ></span>
+ */
 const UpdateNamingPolicySchema = z.object({
   policyId: z.string().min(1).describe('Policy ID to update'),
   name: z.string().min(1).max(100).optional().describe('New policy name'),
@@ -3350,27 +3350,27 @@ const UpdateNamingPolicySchema = z.object({
   effectiveUntil: z.string().optional().describe('New expiration date'),
   notificationSettings: z.object({
     notifyOnViolation: z.boolean().optional(),
-    notifyOnUpdate: z.boolean().optional(),
+    notifyOnUpdate: z.boolea<span class="cstat-no" title="statement not covered" >n().optional(),</span>
     recipients: z.array(z.string()).optional(),
   }).optional().describe('Updated notification settings'),
   metadata: z.record(z.unknown()).optional().describe('Updated metadata'),
 }).strict();
 &nbsp;
 /**
- * Policy filters schema<span class="cstat-no" title="statement not covered" ></span>
+ * Policy filters schema
  */
 const PolicyFiltersSchema = z.object({
   organizationId: z.number().optional().describe('Filter by organization'),
   teamId: z.number().optional().describe('Filter by team'),
   active: z.boolean().optional().describe('Filter by active status'),
-  resourceType: z.nativeEnum(ResourceType).optional().describe('Filter by resource type'),
+  resourceType: z.nativeE<span class="cstat-no" title="statement not covered" >num(ResourceType).optional().describe('Filter by resource type'),</span>
   enforcementLevel: z.nativeEnum(EnforcementLevel).optional().describe('Filter by enforcement level'),
   search: z.string().optional().describe('Search by name or description'),
   limit: z.number().min(1).max(100).default(20).describe('Maximum policies to return'),
   offset: z.number().min(0).default(0).describe('Pagination offset'),
 }).strict();
 &nbsp;
-/**<span class="cstat-no" title="statement not covered" ></span>
+/**
  * Built-in policy templates
  */
 const POLICY_TEMPLATES: Record&lt;string, z.infer&lt;typeof PolicyTemplateSchema&gt;&gt; = {
@@ -3514,29 +3514,29 @@ const POLICY_TEMPLATES: Record&lt;string, z.infer&lt;typeof PolicyTemplateSchema
         priority: 8,
         tags: ['audit', 'compliance'],
       },
-    ],
-  },
-};
-&nbsp;
+<span class="fstat-no" title="function not covered" >    ],</span>
+  },<span class="cstat-no" title="statement not covered" ></span>
+};<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 /**
- * Naming convention validation utilities
- */
-clas<span class="fstat-no" title="function not covered" >s </span>NamingConventionValidator {
+ * Naming co<span class="cstat-no" title="statement not covered" >nvention validation utilities</span>
+ */<span class="cstat-no" title="statement not covered" ></span>
+class NamingConventionValidator {
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * Validate a name agai<span class="cstat-no" title="statement not covered" >nst</span> a specific rule
-   */<span class="cstat-no" title="statement not covered" ></span>
+   * Validate a <span class="cstat-no" title="statement not covered" >name against a specific rule</span>
+   */
   static validateAgainstRule(name: string, rule: z.infer&lt;typeof NamingRuleSchema&gt;): {
     isValid:<span class="cstat-no" title="statement not covered" > boolean;</span>
-    errors: stri<span class="cstat-no" title="statement not covered" >ng[];</span>
-    warnings: string[];
+    errors: string[];<span class="cstat-no" title="statement not covered" ></span>
+    warnings: st<span class="cstat-no" title="statement not covered" >ring[];</span>
   } {<span class="cstat-no" title="statement not covered" ></span>
-    const errors<span class="cstat-no" title="statement not covered" >: string[] = [];</span>
+    const errors: string[] = [];
     const warnings: string[] = [];
 &nbsp;
     try {<span class="cstat-no" title="statement not covered" ></span>
       // Length validation<span class="cstat-no" title="statement not covered" ></span>
       if (rule.m<span class="cstat-no" title="statement not covered" >inLength &amp;&amp; name.length &lt; rule.minLength) {</span>
-        errors.push(<span class="cstat-no" title="statement not covered" >`Name too short. Minimum length: ${rule.minLength}, actual: ${name.len</span>gth}`);
+        errors.push(<span class="cstat-no" title="statement not covered" >`Name too short. Minimum length: ${rule.minLength}, actual: ${name.length}`)</span>;
       }
       if (rule.maxLength &amp;&amp; name.length &gt; rule.maxLength) {
         errors.push(`Name too long. Maximum length: ${rule.maxLength}, actual: ${name.length}`);
@@ -3549,37 +3549,37 @@ clas<span class="fstat-no" title="function not covered" >s </span>NamingConventi
           errors.push(`Name does not match required pattern: ${rule.pattern}`);
         }<span class="cstat-no" title="statement not covered" ></span>
       }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-      // Case valida<span class="cstat-no" title="statement not covered" >tion</span>
-      if (rule.caseType) {
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      // Case va<span class="cstat-no" title="statement not covered" >lidation</span>
+      if (rule.caseT<span class="cstat-no" title="statement not covered" >ype) {</span>
         const isValidCase = this.validateCaseFormat(name, rule.caseType);
         if (!isValidCase) {
-          er<span class="cstat-no" title="statement not covered" >rors.push(`Name does not follow required case format: ${rule.caseType}`);</span>
+          errors.push(`Name does not follow required case format: ${rule.caseType}`);
         }<span class="cstat-no" title="statement not covered" ></span>
-      }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-      // Character s<span class="cstat-no" title="statement not covered" >et validation</span>
-      if (rule.allowedCharacters) {
+      }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+      // Cha<span class="cstat-no" title="statement not covered" >racter set validation</span>
+      if (rule.a<span class="cstat-no" title="statement not covered" >llowedCharacters) {</span>
         const allowedRegex = new RegExp(`^${rule.allowedCharacters}+$`);
         if (!allowedRegex.test(name)) {
           er<span class="cstat-no" title="statement not covered" >rors.push(`Name contains invalid characters. Allowed: ${rule.allowedCharacters}`);</span>
         }<span class="cstat-no" title="statement not covered" ></span>
       }
 <span class="cstat-no" title="statement not covered" ></span>
-      // Forbidd<span class="cstat-no" title="statement not covered" >en words validation</span>
-      if (rule.forbiddenWords &amp;&amp; rule.forbiddenWords.length &gt; 0) {
-        const lowerName = name.toLowerCase();
-        cons<span class="cstat-no" title="statement not covered" >t foundForbidden = rule.forbiddenWords.filter(word =&gt; </span>
-          lowerN<span class="cstat-no" title="statement not covered" >ame.includes(word.toLowerCase())</span>
+      // Forbidden words validation<span class="cstat-no" title="statement not covered" ></span>
+      if (rule.forbi<span class="cstat-no" title="statement not covered" >ddenWords &amp;&amp; rule.forbiddenWords.length &gt; 0) {</span>
+        const lowerName <span class="cstat-no" title="statement not covered" >= name.toLowerCase();</span>
+        const foundForbidden = rule.forbiddenWords.filter(word =&gt; 
+          lowerName.includes(word.toLowerCase())
         );
-        if (foundForbidden.length &gt; 0) {<span class="cstat-no" title="statement not covered" ></span>
-          errors.push(`Name contains forb<span class="cstat-no" title="statement not covered" >idden words: ${foundForbidd</span>en.join(', ')}`);
-        }<span class="cstat-no" title="statement not covered" ></span>
+        if (foundFor<span class="cstat-no" title="statement not covered" >bidden.length &gt; 0) {</span>
+          errors.push(`Name contains forbidden words: ${foundForbidden.join(', ')}`);
+        }
       }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
       // Prefix/suffix validation
       if (rule.requiredPrefix &amp;&amp; !name.startsWith(rule.requiredPrefix)) {
-        errors.push(<span class="cstat-no" title="statement not covered" >`Name must start with: ${rule.requiredPrefix}`);</span>
+        errors.push(`Name must start with: ${rule.requiredPrefix}`);
       }
       if (rule.requiredSuffix &amp;&amp; !name.endsWith(rule.requiredSuffix)) {
         erro<span class="cstat-no" title="statement not covered" >rs.push(`Name must end with: ${rule.requiredSuffix}`);</span>
@@ -3589,122 +3589,122 @@ clas<span class="fstat-no" title="function not covered" >s </span>NamingConventi
       if (rule.customValidationFunction) {
         try {
           // Safely evaluate custom function (in production, this would be more secure)
-          co<span class="cstat-no" title="statement not covered" >nst customFunction = new Function('name', 'rule', rule.customValidationFunction);</span>
+          const customFunction = new Function('name', 'rule', rule.customValidationFunction);
           const customResult = customFunction(name, rule);
           if (customResult !== true &amp;&amp; typeof customResult === 'string') {
-            errors.push(`Custom validation failed: ${customResult}`);
-          }
+<span class="fstat-no" title="function not covered" ></span>            errors.push(`Custom validation failed: ${customResult}`);
+<span class="cstat-no" title="statement not covered" >          }</span>
         } catch (error) {
-          warnings.push(`Custom validation function error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          warnin<span class="cstat-no" title="statement not covered" >gs.push(`Custom validation function error</span>: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
-      }
+      }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-<span class="fstat-no" title="function not covered" ></span>      return {
-<span class="cstat-no" title="statement not covered" >        isValid: errors.length === 0,</span>
-        errors,
-        warnings<span class="cstat-no" title="statement not covered" >,</span>
-      };
-    } catch (err<span class="cstat-no" title="statement not covered" >or) {</span>
-      return {
-        isValid:<span class="cstat-no" title="statement not covered" > false,</span>
-        errors: [`Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`],
-        warnings<span class="cstat-no" title="statement not covered" >,</span>
+      return {<span class="cstat-no" title="statement not covered" ></span>
+        isValid: errors.length === 0,
+        errors,<span class="cstat-no" title="statement not covered" ></span>
+        warnings,
+      };<span class="cstat-no" title="statement not covered" ></span>
+    } catch (error) {
+      return {<span class="cstat-no" title="statement not covered" ></span>
+        isValid: false,
+        errors: <span class="cstat-no" title="statement not covered" >[`Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`],</span>
+        warnings,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       };
     }<span class="cstat-no" title="statement not covered" ></span>
   }
+&nbsp;
+  /**
+   * Validate case format
+   */
+  pr<span class="fstat-no" title="function not covered" >iv</span>ate static validateCaseFormat(name: string, caseType: CaseType): boolean {
+    switch (caseType) {<span class="cstat-no" title="statement not covered" ></span>
+      case CaseType.CAMEL_CASE:<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        return /^[a-z][a-zA-Z0-9]*$/.test(name);</span>
+      case C<span class="cstat-no" title="statement not covered" >aseType.PASCAL_CASE:</span>
+        return /^[A-Z][a-zA-Z0-9]<span class="cstat-no" title="statement not covered" >*$/</span>.test(name);
+      case CaseType.SNAKE_CASE:
+        return /<span class="cstat-no" title="statement not covered" >^[a-z][a-z0-9_]*[a-z0-9]$/.test(name);</span>
+      case CaseType.KEBAB_CASE:
+        return /^[a-z][a<span class="cstat-no" title="statement not covered" >-z0-9-]*[a-z0-9]$/.test(name);</span>
+      case CaseType.UPPE<span class="cstat-no" title="statement not covered" >R_CASE:</span>
+        return /^[A-Z][A-Z0-9_]*$/.test(name);
+      case CaseType.LOWE<span class="cstat-no" title="statement not covered" >R_CASE:</span>
+        return /^[a-z][a<span class="cstat-no" title="statement not covered" >-z0-9]*</span>$/.test(name);
+      case CaseType.TITLE_CASE:
+        return /^[A-Z][a<span class="cstat-no" title="statement not covered" >-zA-Z0-9\s]*$/.test(name) &amp;&amp; </span>
+               name.spli<span class="cstat-no" title="statement not covered" >t(' ').</span>every(word =&gt; /^[A-Z][a-z]*$/.test(word));
+      default:
+        return true;<span class="cstat-no" title="statement not covered" ></span>
+    }
+  }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
   /**
-   * Validate ca<span class="cstat-no" title="statement not covered" >se format</span>
-   */<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  private static validateCaseFormat(name: string, caseType: CaseType): boolean {
-    switch (case<span class="cstat-no" title="statement not covered" >Type) {</span>
-      case CaseType.CAMEL_CASE:
-        return /^[a-z][a-zA-Z0-9]*$/.test(name);
-      case CaseType.PASCAL_CASE:
-        return /^[A-Z][a-zA-Z0-9]*$/.test(name);
-      case CaseType.SNAKE_CASE:
-<span class="fstat-no" title="function not covered" ></span>        return /^[a-z][a-z0-9_]*[a-z0-9]$/.test(name);
-      case CaseType.KEBAB_CA<span class="cstat-no" title="statement not covered" >SE:</span>
-        return /^[a-z][a-z0-9-]*<span class="cstat-no" title="statement not covered" >[a-z0-9]$/.te<span class="fstat-no" title="function not covered" >st</span>(name)<span class="cstat-no" title="statement not covered" >;</span></span>
-      ca<span class="cstat-no" title="statement not covered" >se CaseType.UPPER_CASE:</span>
-        retu<span class="cstat-no" title="statement not covered" >rn /^[A-Z][A-Z0-9_]*$/.test(name);</span>
-      case CaseType.LOWER_CASE:<span class="cstat-no" title="statement not covered" ></span>
-        return /^[a-z][a-z0-9]*$/.test(name);
-      case CaseT<span class="cstat-no" title="statement not covered" >ype.TITLE_CASE:</span>
-        return /^[A-Z][a-zA-Z0-9\s]*$/.test(name) &amp;&amp; 
-               name.spli<span class="cstat-no" title="statement not covered" >t(' ').every(word =&gt; /^[A-Z][a-z]*$/.test(word));</span>
-      default:<span class="cstat-no" title="statement not covered" ></span>
-        return true;
-    }<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Generate name sugge<span class="cstat-no" title="statement not covered" >stions </span>based on rules
+   * Generate name suggestions based on rules
    */
-  static generateNameSug<span class="cstat-no" title="statement not covered" >gestions(resourceType: ResourceType, rules: z.infer&lt;typeof </span>NamingRuleSchema&gt;[]): string[] {
+  static generateNameSuggestions(resourceType: ResourceType, rules: z.infer&lt;typeof NamingRuleSchema&gt;[]): string[] {
     const suggestions: string[] = [];
-    const applic<span class="cstat-no" title="statement not covered" >ableRules = rules.filter(rule =&gt; rule.resourceTypes.includes(resourceType));</span>
+    const applicableRules = rules.filter(rule =&gt; rule.resourceTypes.includes(resourceType));
 <span class="cstat-no" title="statement not covered" ></span>
     for (const rule of applicableRules.slice(0, 3)) { // Limit to top 3 rules
-      try {
-        let suggestion = '';
+<span class="fstat-no" title="function not covered" ></span>      try {
+<span class="cstat-no" title="statement not covered" >        let suggestion = '';</span>
         
         // Generate based on pattern type
         switch (rule.patternType) {
-<span class="cstat-no" title="statement not covered" >          case PatternType.T</span>EMPLATE:
+          case PatternType.TEMPLATE:
             suggestion = this.generateFromTemplate(rule.pattern);
-<span class="fstat-no" title="function not covered" ></span>            break;
-<span class="cstat-no" title="statement not covered" >          case PatternType.STARTS_WITH:</span>
-            suggestion = `${rule.pattern}ExampleName`;
             break;
-          case PatternType.ENDS_WITH:
-            suggestion = `ExampleName${rule.pattern}`;
+<span class="fstat-no" title="function not covered" ></span>          case PatternType.STARTS_WITH:
+            suggestio<span class="cstat-no" title="statement not covered" >n = `${rule.pattern}ExampleName`;</span>
+            break;<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          case PatternType.ENDS_WITH:</span>
+<span class="cstat-no" title="statement not covered" >            suggestion = `ExampleName${rule.pattern}`;</span>
             break;
-          default:
-<span class="fstat-no" title="function not covered" ></span>            suggestion = this.generateFromPattern(rule, resourceType);
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          default:</span>
+<span class="cstat-no" title="statement not covered" >            suggestion = this.generateFromPattern(rule, resource</span>Type);
+        }
+&nbsp;
 <span class="cstat-no" title="statement not covered" >        if (suggestion &amp;&amp; !suggestions.includes(suggestion)) {</span>
           su<span class="cstat-no" title="statement not covered" >ggestions.push(suggestion);</span>
         }
       } <span class="cstat-no" title="statement not covered" >catch (error) {</span>
-        // S<span class="cstat-no" title="statement not covered" >kip invalid patterns</span>
-      }
-    }
-<span class="cstat-no" title="statement not covered" ></span>
-    return s<span class="cstat-no" title="statement not covered" >uggestions;</span>
+        // Skip invalid patterns
+<span class="fstat-no" title="function not covered" ></span>      }
+    }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+    return sugge<span class="cstat-no" title="statement not covered" >stions;</span>
   }
 <span class="cstat-no" title="statement not covered" ></span>
   private static generateFromTemplate(template: string): string {
-<span class="fstat-no" title="function not covered" >    re</span>turn template
-      .r<span class="cstat-no" title="statement not covered" >eplace('{service}', 'api')</span>
-      .replace('{environment}', 'prod')
-      .replace('<span class="cstat-no" title="statement not covered" >{purpose}', 'integration')</span>
-      .replace('{department}', 'OPS')
-      .replace('<span class="cstat-no" title="statement not covered" >{version}', 'v1.0');</span>
-  }
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  private static generateFromPattern(rule: z.infer&lt;typeof NamingRuleSchema&gt;, resourceType: ResourceType): string {
-    const base =<span class="cstat-no" title="statement not covered" > resourceType.charAt(0).toUpperCase() + reso<span class="fstat-no" title="function not covered" >ur</span>ceType.s<span class="cstat-no" title="statement not covered" >lice(1);</span></span>
+    return templ<span class="cstat-no" title="statement not covered" >ate<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      .replace('{service}', 'api')
+      .replace('<span class="cstat-no" title="statement not covered" >{environment}', 'prod')<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      .replace('{purpose}', 'integration')
+      .replace('<span class="cstat-no" title="statement not covered" >{department}', 'OPS')</span>
+      .replace('{version}', 'v1.0');
+  }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  private static<span class="cstat-no" title="statement not covered" > generateFrom</span>Pattern(rule: z.infer&lt;typeof NamingRuleSchema&gt;, resourceType: ResourceType): string {
+    const base = resourceType.charAt(0).toUpperCase() + resourceType.slice(1);
     let suggestion = base;
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     if (rule.requiredPrefix) {
-      suggestion<span class="cstat-no" title="statement not covered" > = `${rule.requiredPrefix}$</span>{suggestion}`;
+      suggestion = `${rule.requiredPrefix}${suggestion}`;
     }
-    if (rule.req<span class="cstat-no" title="statement not covered" >uiredSuffix) </span>{
+    if (rule.requiredSuffix) {
       suggestion = `${suggestion}${rule.requiredSuffix}`;
     }
 &nbsp;
-    // Apply case format
-    if (rule.caseType) {
-      suggestion = this.applyCaseFormat(suggestion, rule.caseType);
+    // Apply cas<span class="fstat-no" title="function not covered" >e format</span>
+    if (rule.caseType) {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      suggestion = this.applyCaseFormat(suggestion, rule.caseType);</span>
     }
 &nbsp;
     return suggestion;
   }
-<span class="fstat-no" title="function not covered" ></span>
-  private static applyCaseFo<span class="cstat-no" title="statement not covered" >rmat(text: string, caseType: CaseType): string {</span>
-<span class="cstat-no" title="statement not covered" >    switch (caseType) {</span>
+&nbsp;
+  private static applyCaseFormat(text: string, caseType: CaseType): string {
+    switch (caseType) {
       case CaseType.CAMEL_CASE:
         return text.charAt(0).toLowerCase() + text.slice(1);
       case CaseType.PASCAL_CASE:
@@ -3753,52 +3753,52 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
    * @param {string} [args.templateId] - Base template identifier
    * @param {string} [args.enforcementLevel] - Default enforcement level
    * @param {boolean} [args.active] - Policy active status
-   * @param {string} [args.effectiveFrom] - Policy effective date
+   *<span class="cstat-no" title="statement not covered" > @param {string} [args.effectiveFrom] - Policy effective date</span>
    * @param {string} [args.effectiveUntil] - Policy expiration date
    * @param {Object} [args.notificationSettings] - Notification configuration
    * @param {Object} [args.metadata] - Additional metadata
    * 
    * @returns {Promise&lt;string&gt;} JSON response containing:
    * - policy: Complete policy object with generated ID
-   *<span class="cstat-no" title="statement not covered" > - validationResults: Results of rule validation</span>
+   * - validationResults: Results of rule validation
    * - suggestions: Generated name suggestions based on rules
    * - enforcementCapabilities: Available enforcement mechanisms
    * - auditTrail: Policy creation audit information
-   * 
-   * @throws {UserError} When policy creation fails or validation errors occur
+   * <span class="fstat-no" title="function not covered" ></span>
+   * @throws<span class="cstat-no" title="statement not covered" > {UserError} When policy creation fails or validation errors occur</span>
    * 
    * @example
    * ```typescript
    * // Create enterprise naming policy
    * const policy = await createNamingConventionPolicy({
-   *   name: "Ent<span class="fstat-no" title="function not covered" >er</span>prise Standard Naming Policy",
-   *   descr<span class="cstat-no" title="statement not covered" >iption: "Comprehensive enterprise naming conventions",</span>
-   *   scope: { organizationId: 123, global: false },
-   *   rules: [
+   *   name:<span class="cstat-no" title="statement not covered" > "Enterprise Standard Naming Policy",</span>
+   *   description: "Comprehensive enterprise naming conventions",
+   *   scope: { organizationId: 1<span class="cstat-no" title="statement not covered" >23, global: false },</span>
+   *   rules: [<span class="cstat-no" title="statement not covered" ></span>
    *     {
-   *       id: "scenario-prefix",
-   *       name: "Scenario Department Prefix",
-   *       r<span class="cstat-no" title="statement not covered" >esourceTypes: ["scenario"],</span>
-   *       patternType: "regex",
-   *       pattern: "^(HR|FIN|OPS<span class="cstat-no" title="statement not covered" >)-[A-Za-z0-9_-]+$",</span>
-   *       enforcementLevel: "stri<span class="cstat-no" title="statement not covered" >ct",</span>
+   *       id: "scenario-prefix",<span class="cstat-no" title="statement not covered" ></span>
+   *       name:<span class="cstat-no" title="statement not covered" > "Scenario Department Prefix",</span>
+   *       resourceTypes: ["scenario"<span class="cstat-no" title="statement not covered" >],</span>
+   *       patternTy<span class="cstat-no" title="statement not covered" >pe: "regex",</span>
+   *       pattern: <span class="cstat-no" title="statement not covered" >"^(HR|FIN|OPS)-[A-Za-z0-9_-]+$",</span>
+   *       enforcementLevel: "strict",
    *       priority: 10
-   *     }<span class="cstat-no" title="statement not covered" ></span>
-   *   ],<span class="cstat-no" title="statement not covered" ></span>
+   *     }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+   *   ],
    *   enforcementLevel: "strict",<span class="cstat-no" title="statement not covered" ></span>
-   *   active: true<span class="cstat-no" title="statement not covered" ></span>
+   *   active: true<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
    * });<span class="cstat-no" title="statement not covered" ></span>
-   * ```
+   * ```<span class="cstat-no" title="statement not covered" ></span>
    */
-  server.addTool<span class="cstat-no" title="statement not covered" >({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-    name: 'create-naming-convention-policy',
-    description: 'Create a comprehensive n<span class="cstat-no" title="statement not covered" >ami</span>ng convention policy with flexible rules and enforcement',
-    parameters: CreateNamingPolicySchema<span class="cstat-no" title="statement not covered" >,<span class="fstat-no" title="function not covered" ></span></span>
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
-      title: 'Create<span class="cstat-no" title="statement not covered" > Naming Convention Policy',</span>
+  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+    name: 'create-naming-con<span class="cstat-no" title="statement not covered" >vention-policy',</span>
+    description: 'Create a comprehensive naming convention policy with flexible rules and enforcement',
+    parameters: CreateNa<span class="cstat-no" title="statement not covered" >mingPolicySchema,</span>
+    annotations: {
+      title: 'Create Naming Convention Policy',
       readOnlyHint: false,
       destructiveHint: t<span class="cstat-no" title="statement not covered" >rue,</span>
-      idempotentHint: false,<span class="cstat-no" title="statement not covered" ></span>
+      idempotentHint: false,
       openWorldHint: true,
     },<span class="cstat-no" title="statement not covered" ></span>
     execute: async (input, { log }) =&gt; {
@@ -3807,24 +3807,24 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
         rulesCount: inpu<span class="cstat-no" title="statement not covered" >t.rules.length,</span>
         scope: input.scope,
         enforcementLevel: input.enforcementLevel,
-      });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-      try {
-        // Generate unique policy ID
-        const policyId =<span class="cstat-no" title="statement not covered" > `policy_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;</span>
-        const timestamp = new Date().toISOString();
-&nbsp;
-        // Apply template if specifie<span class="cstat-no" title="statement not covered" >d<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        let fina<span class="cstat-no" title="statement not covered" >lRules = [...input.rules];</span>
-        if (input.te<span class="cstat-no" title="statement not covered" >mplateId &amp;&amp; POLICY_TEMPLATES[input.templateId]) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-          const template = POLICY_TEMPLATES[input.templateId];
-          finalRules = [...template.rules, ...input.rules];
-          log.info('Applied policy t<span class="cstat-no" title="statement not covered" >emp</span>late', { templateId: input.templateId, templateRulesCount: template.rules.length });
-        }<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        // Generate unique policy ID
+        const policyId = `policy_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const timestamp = new Date()<span class="cstat-no" title="statement not covered" >.to</span>ISOString();
+<span class="cstat-no" title="statement not covered" ></span>
+        // Apply tem<span class="cstat-no" title="statement not covered" >plate if specified</span>
+        let finalRules = [...input.rules];
+        if (input.templateId &amp;&amp; POLICY_TEMPLATES[input.templateId]) {
+          const template = POLI<span class="cstat-no" title="statement not covered" >CY_TEMPLATES[input.templateId];</span>
+          finalRules = [...template.rules, ...input.rules];
+          log.info('Applied policy template', { templateId: input.templateId, templateRulesCount: template.rules.length });
+        }
+&nbsp;
         // Sort rules by priority
         finalRules.sort((a, b) =&gt; (a.priority || 50) - (b.priority || 50));
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         // Validate policy rules
         const validationResults: Record&lt;string, unknown&gt; = {};
         const ruleValidations = finalRules.map(rule =&gt; {
@@ -3837,27 +3837,27 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             
             validationResults[ruleId] = {
               isValid: true,
-              message: 'Rule validation passed',
-            };
+              message: 'Rule validation passed',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+            };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
             
             return { ruleId, isValid: true };
           } catch (error) {
             validationResults[ruleId] = {
               isValid: false,
-              error: error instanceof Error ? error.message : 'Unknown <span class="fstat-no" title="function not covered" >va</span>lid<span class="cstat-no" title="statement not covered" >ation error',</span>
-            };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-            
-            return { ruleId, isValid: false, error: error instanceof Error ? error.message : 'Unknown error' };
+              error: error instanceof Error ? error.message : 'Unknown validation error',
+            };<span class="cstat-no" title="statement not covered" ></span>
+            <span class="cstat-no" title="statement not covered" ></span>
+            return {<span class="cstat-no" title="statement not covered" > ruleId, isValid: false, error: error instanceof Error ? error.message : 'Unknown error' };</span>
           }
         });
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
         const invalidRules = ruleValidations.filter(r =&gt; !r.isValid);
-        if (invalidRules.length &gt;<span class="cstat-no" title="statement not covered" > 0) {</span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Policy contains invalid rules: ${invalidRules.map(r =&gt; r.ruleId).join(', ')}`);</span>
-        }<span class="cstat-no" title="statement not covered" ></span>
+        if (invalidRules.length &gt; 0) {
+          throw new UserError(`Policy contains invalid rules: ${invalidRules.map(r =&gt; r.ruleId).join(', ')}`);
+        }
 &nbsp;
         // Generate name suggestions for each resource type
-        const su<span class="cstat-no" title="statement not covered" >ggestions: Record&lt;string, string[]&gt; = {};</span>
+        const suggestions: Record&lt;string, string[]&gt; = {};
         for (const resourceType of Object.values(ResourceType)) {
           suggestions[resourceType] = NamingConventionValidator.generateNameSuggestions(resourceType, finalRules);
         }
@@ -3866,20 +3866,20 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
         const policy = {
           id: policyId,
           name: input.name,
-          description: input.description || '',
+          descri<span class="cstat-no" title="statement not covered" >ption: input.description || '',</span>
           scope: input.scope,
           rules: finalRules,
           templateId: input.templateId,
           enforcementLevel: input.enforcementLevel || EnforcementLevel.STRICT,
           active: input.active !== false,
-          effectiveFrom: input.effectiveFrom || timestamp,
-          effect<span class="cstat-no" title="statement not covered" >iveUntil: input.effectiveUntil,</span>
+          effect<span class="cstat-no" title="statement not covered" >iveFrom: input.effectiveFrom || timestamp,</span>
+          effectiveUntil: input.effectiveUntil,
           notificationSettings: {
             notifyOnViolation: true,
             notifyOnUpdate: false,
             recipients: [],
             ...input.notificationSettings,
-          },<span class="cstat-no" title="statement not covered" ></span>
+          },
           metadata: {
             ...input.metadata,
             rulesCount: finalRules.length,
@@ -3896,120 +3896,120 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
         
         if (!response.success) {
           throw new UserError(`Failed to create naming policy: ${response.error?.message || 'Unknown error'}`);
-        }
-&nbsp;
+        }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
         // Log policy creation audit event
-        await auditLogger.logEvent({
+        await au<span class="cstat-no" title="statement not covered" >ditLogger.logEvent({</span>
           level: 'info',
           category: 'configuration',
           action: 'naming_policy_created',
-          resource: `policy:${policyI<span class="cstat-no" title="statement not covered" >d}`,</span>
-          succes<span class="cstat-no" title="statement not covered" >s: true,</span>
+          resource: `policy:${policyId}`,
+          success: true,
           details: {
-            poli<span class="cstat-no" title="statement not covered" >cyId,</span>
+            policyId,
             name: input.name,
             rulesCount: finalRules.length,
             enforcementLevel: input.enforcementLevel,
             scope: input.scope,
-            templateUsed: input.templateId || null,
-          },
-          riskLevel: 'medium',
+            temp<span class="cstat-no" title="statement not covered" >lateUsed: input.templateId || null,</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+          riskLe<span class="cstat-no" title="statement not covered" >vel: 'medium',</span>
         });
 &nbsp;
         log.info('Successfully created naming convention policy', {
           policyId,
-          name: <span class="cstat-no" title="statement not covered" >input.name,</span>
-          rulesCount<span class="cstat-no" title="statement not covered" >: finalRules.</span>length,
-          resour<span class="cstat-no" title="statement not covered" >ceTypes: Object.keys(suggestions).length,</span>
+          name: input.name,
+          rulesCount: finalRules.length,
+          resourceTypes: Object.keys(suggestions).length,
         });
 &nbsp;
         return formatSuccessResponse({
           success: true,
           policy,
           validationResults,
-          suggestions,
+<span class="cstat-no" title="statement not covered" >          suggestions,</span>
           enforcementCapabilities: {
             realTimeValidation: true,
             batchValidation: true,
             auditLogging: true,
             notificationSystem: true,
             customValidation: true,
-<span class="cstat-no" title="statement not covered" >            templateSupport: true,</span>
+            templateSupport: true,
           },
           auditTrail: {
             createdAt: timestamp,
-            action: 'policy_created',
-            policyId,
+            actio<span class="fstat-no" title="function not covered" >n:</span> 'policy_created',
+<span class="cstat-no" title="statement not covered" >            policyId,</span>
             rulesValidated: finalRules.length,
             templateApplied: input.templateId || null,
           },
           message: `Naming convention policy "${input.name}" created successfully with ${finalRules.length} rules`,
-        }).content[0].text;
-      } catch (er<span class="fstat-no" title="function not covered" >ro</span>r: unknown) {
-        cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('Error creating naming convention policy', { error: errorMessage, name: input.name });
-        
+        }).c<span class="cstat-no" title="statement not covered" >ontent[0].text;</span>
+      } catch (error: unknown) {
+        const errorMessage = error inst<span class="cstat-no" title="statement not covered" >anceof Error ? error.message : String(error);</span>
+        log.erro<span class="cstat-no" title="statement not covered" >r('Error creating naming convention policy', { error: errorMessage, name: input.name });</span>
+        <span class="cstat-no" title="statement not covered" ></span>
         // Log failure audit event
-        await auditLogger.logEvent({
-          le<span class="cstat-no" title="statement not covered" >vel: 'error',</span>
-          category: 'configuration',
-          action: 'naming_policy_creati<span class="cstat-no" title="statement not covered" >on_failed',</span>
-          succes<span class="cstat-no" title="statement not covered" >s: false,</span>
-          details: {<span class="cstat-no" title="statement not covered" ></span>
+        await auditLogger.logEv<span class="cstat-no" title="statement not covered" >ent({</span>
+          level: 'error',<span class="cstat-no" title="statement not covered" ></span>
+          category: 'configuration',<span class="cstat-no" title="statement not covered" ></span>
+          action: 'naming_policy_creation_failed',
+          success: false,
+          details: {
             name: input.name,
-            error: errorMessage<span class="cstat-no" title="statement not covered" >,</span>
-            rulesCount: input.rules.length<span class="cstat-no" title="statement not covered" >,</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-          riskLevel: 'low',
-        });
-        
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to create naming convention policy: ${errorMessage}`);
+            error: errorMessage,
+            rulesCount: input.rules.length,
+          },
+          riskLe<span class="cstat-no" title="statement not covered" >vel: 'low',</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+        <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
+        throw new UserEr<span class="cstat-no" title="statement not covered" >ror(`Failed to create naming convention policy: ${errorMessage}`);</span>
       }
     },
-  });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-   * Validate names <span class="cstat-no" title="statement not covered" >against a naming convention policy</span>
+  });
+&nbsp;
+  /**
+   * Validate names against a naming convention policy
    * <span class="cstat-no" title="statement not covered" ></span>
-   * Validates one or more resource names against specified policy rules,
+   * Validates one or mo<span class="cstat-no" title="statement not covered" >re resourc</span>e names against specified policy rules,
    * returning detailed compliance results and suggestions for improvement.
-   * 
-   * @tool validate-names-against-policy
-   * @category Policy Management
+   * <span class="cstat-no" title="statement not covered" ></span>
+   * @tool validate-names-against-po<span class="cstat-no" title="statement not covered" >licy</span>
+   * @category Policy Management<span class="cstat-no" title="statement not covered" ></span>
    * @permission policy_read
    */<span class="cstat-no" title="statement not covered" ></span>
   server.addTool({<span class="cstat-no" title="statement not covered" ></span>
-    name: 'validate-names-against-policy',
-    description: 'Validate resource name<span class="cstat-no" title="statement not covered" >s a</span>gainst naming convention policy rules',
-    parameters: ValidateNamesSchema,<span class="cstat-no" title="statement not covered" ></span>
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+    name: 'validate-name<span class="cstat-no" title="statement not covered" >s-against-policy',</span>
+    description: 'Validate resource names against naming convention policy rules',
+    parameters: ValidateNamesSchema,
+    annotations: {
       title: 'Validate Names Against Policy',
-      readOnlyHint: <span class="cstat-no" title="statement not covered" >true,</span>
-      destructiveHint: false,<span class="cstat-no" title="statement not covered" ></span>
-      idempotentHint: tr<span class="cstat-no" title="statement not covered" >ue,</span>
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
       openWorldHint: true,
-    },
-    execute: async (input, { log }) =&gt; {
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (input, {<span class="cstat-no" title="statement not covered" > log }) =&gt; {</span>
       log.info('Validating names against policy', {
-        policyId: input.policyId,
-        namesCount: input.names.length,
+        policyId: input.polic<span class="cstat-no" title="statement not covered" >yId,</span>
+        namesCount: input.na<span class="cstat-no" title="statement not covered" >mes.length,</span>
         returnDetails: input.returnDetails,
       });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
       try {<span class="cstat-no" title="statement not covered" ></span>
-        // Fetch policy (in production, from database)
-        const policyResponse <span class="cstat-no" title="statement not covered" >= await apiClient.get(`/policies/naming-conventions/${input.policyId}`);</span>
-        <span class="cstat-no" title="statement not covered" ></span>
-        if (!policyResponse.success) {
-          throw new UserError(`Policy not found: ${input.policyId}`);
+        // Fetch pol<span class="cstat-no" title="statement not covered" >icy (in production, from database)</span>
+        const policyResp<span class="cstat-no" title="statement not covered" >onse = await apiClient.get(`/policies/naming-conventions/${input.policyId}`);</span>
+        
+        if (!policyResponse.success) {<span class="cstat-no" title="statement not covered" ></span>
+          throw new <span class="cstat-no" title="statement not covered" >UserError(`Policy not found: ${input.policyId}`);</span>
         }
-<span class="cstat-no" title="statement not covered" ></span>
-        const policy<span class="cstat-no" title="statement not covered" > = policyResponse.data as { </span>
-          name: string; <span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        const policy = policyResponse.data as { 
+          name: string; 
           rules: Array&lt;{ resourceTypes: ResourceType[]; enforcementLevel: EnforcementLevel; [key: string]: unknown }&gt; 
-        };<span class="cstat-no" title="statement not covered" ></span>
-        const valida<span class="cstat-no" title="statement not covered" >tionResults: Record&lt;string, unknown&gt; = {};</span>
+        };
+        const validationResults: Record&lt;string, unknown&gt; = {};
         const summaryStats = {
           totalNames: input.names.length,
           validNames: 0,
@@ -4019,22 +4019,22 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
         };
 &nbsp;
         // Validate each name
-        for (const nameInput of input.names) {
-          const nameId = nameInput.resourceId || `${nameInput.resourceType}_${nameInput.name}`;
-          const applicableRules = policy.rules.filter((rule: { resourceTypes: ResourceType[]; }) =&gt; 
-            rule.resourceTypes.includes(nameInput.resourceType)
+        for (const n<span class="cstat-no" title="statement not covered" >ameInput of input.names) {</span>
+          const nameId =<span class="cstat-no" title="statement not covered" > nameInput.resourceId || `$</span>{nameInput.resourceType}_${nameInput.name}`;
+          const applicabl<span class="cstat-no" title="statement not covered" >eRules = policy.rules.filter((rule: { resourceTypes: ResourceType[]; }) =&gt; </span>
+            rule.resourc<span class="cstat-no" title="statement not covered" >eTypes.includes(nameInput.res</span>ourceType)
           );
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
           if (applicableRules.length === 0) {
-            validati<span class="cstat-no" title="statement not covered" >onResults[nameId] = {</span>
-              name: name<span class="cstat-no" title="statement not covered" >Input.name,</span>
-              resourceTyp<span class="cstat-no" title="statement not covered" >e: nameInput.resourceType,</span>
-              status: 's<span class="cstat-no" title="statement not covered" >kipped',</span>
+            validationResults[nameId] = {
+              na<span class="cstat-no" title="statement not covered" >me: nameInput.name,</span>
+              resourceType: nameInput.resourceType,
+              status: 'skipped',
               message: 'No applicable rules for this resource type',
-              details: i<span class="cstat-no" title="statement not covered" >nput.returnDetails ? { applic</span>ableRulesCount: 0 } : undefined,
+              details: input.returnDetails ? { applicableRulesCount: 0 } : undefined,
             };
             summaryStats.skippedNames++;
-            cont<span class="cstat-no" title="statement not covered" >inue;</span>
+            continue;
           }
 &nbsp;
           const ruleResults: unknown[] = [];
@@ -4042,7 +4042,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           let hasWarnings = false;
 &nbsp;
           // Apply each applicable rule
-          for (const rule of applicableRules) {
+          for (c<span class="cstat-no" title="statement not covered" >onst rule of applicableRules) {</span>
             const ruleResult = NamingConventionValidator.validateAgainstRule(nameInput.name, rule as z.infer&lt;typeof NamingRuleSchema&gt;);
             
             ruleResults.push({
@@ -4056,110 +4056,110 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             });
 &nbsp;
             if (!ruleResult.isValid &amp;&amp; rule.enforcementLevel === EnforcementLevel.STRICT) {
-              ha<span class="cstat-no" title="statement not covered" >sErrors = true;</span>
+              hasErrors = true;
             } else if (ruleResult.errors.length &gt; 0 || ruleResult.warnings.length &gt; 0) {
-              hasWarnings = true;
+              hasWarnings = true;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
             }
           }
 &nbsp;
           // Generate suggestions if name is invalid
           let suggestions: string[] = [];
           if (hasErrors || hasWarnings) {
-            suggestions = NamingConventionValidator.generateNameSuggestions(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+            suggestions = NamingConventionValidator.generateNameSuggestions(
               nameInput.resourceType,
               applicableRules as z.infer&lt;typeof NamingRuleSchema&gt;[]
-            ).slice(0, 3);
-          }
-&nbsp;
-          const overallStatus = hasErrors ? 'invalid' : hasWarnings ? 'warning' : 'valid';
-          
+            ).slice(0, 3);<span class="cstat-no" title="statement not covered" ></span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+          const over<span class="cstat-no" title="statement not covered" >allStatus = h</span>asErrors ? 'invalid' : hasWarnings ? 'warning' : 'valid';
+          <span class="cstat-no" title="statement not covered" ></span>
           validationResults[nameId] = {
             name: nameInput.name,
-            resourceType: nameInput.r<span class="cstat-no" title="statement not covered" >esourceType,</span>
-            stat<span class="cstat-no" title="statement not covered" >us: overallStatus,</span>
-            mess<span class="cstat-no" title="statement not covered" >age: hasErrors </span>
-              ? 'Nam<span class="cstat-no" title="statement not covered" >e violates st</span>rict naming rules'
-              : <span class="cstat-no" title="statement not covered" >hasWarnings </span>
+            resourceType: nameInput.resourceType,
+            status: overallStatus,
+            message: hasErrors 
+              ? 'Name violates strict naming rules'
+              : hasWarnings 
               ? 'Name has warnings but is acceptable'
               : 'Name complies with all applicable rules',
             suggestions: suggestions.length &gt; 0 ? suggestions : undefined,
             details: input.returnDetails ? {
               applicableRulesCount: applicableRules.length,
               ruleResults,
-              metadata: nameInput.metadata,
+<span class="cstat-no" title="statement not covered" >              metadata: nameInput.metadata,</span>
             } : undefined,
           };
 &nbsp;
           // Update summary stats
           if (overallStatus === 'valid') summaryStats.validNames++;
           else if (overallStatus === 'invalid') summaryStats.invalidNames++;
-<span class="cstat-no" title="statement not covered" >          else summaryStats.warningNames++;</span>
+          else summaryStats.warningNames++;
         }
 &nbsp;
         // Log validation audit event
-        await auditLogger.logEvent({
-          level: summaryStats.invalidNames &gt; 0 ? 'warn' : 'info',
+        await aud<span class="fstat-no" title="function not covered" >it</span>Logger.logEvent({
+          le<span class="cstat-no" title="statement not covered" >vel: summaryStats.invalidNames &gt; 0 ? 'warn' : 'info',</span>
           category: 'data_access',
           action: 'naming_policy_validation',
           resource: `policy:${input.policyId}`,
           success: summaryStats.invalidNames === 0,
-          details: {
-            polic<span class="fstat-no" title="function not covered" >yI</span>d: input.policyId,
-<span class="cstat-no" title="statement not covered" >            validatedCount: input.names.length,</span>
+          de<span class="cstat-no" title="statement not covered" >tails: {</span>
+            policyId: input.pol<span class="cstat-no" title="statement not covered" >icyId,</span>
+            validatedCount: input.names.length,
             validNames: summaryStats.validNames,
             invalidNames: summaryStats.invalidNames,
             warningNames: summaryStats.warningNames,
-          },
-          ri<span class="cstat-no" title="statement not covered" >skLevel: summaryStats.invalidNames &gt; 0 ? 'medium' : 'low',</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+          riskLe<span class="cstat-no" title="statement not covered" >vel: summaryStats.invalidNames &gt; 0 ? 'medium' : 'low',</span>
         });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        log.info('Name validation completed', {
-          policyId: input.policyId,
+        log.info('Name validation<span class="cstat-no" title="statement not covered" > completed', {</span>
+          policyId: input.policyI<span class="cstat-no" title="statement not covered" >d,</span>
           totalNames: summaryStats.totalNames,
-          validNames: summaryStat<span class="cstat-no" title="statement not covered" >s.validNames,</span>
-          invali<span class="cstat-no" title="statement not covered" >dNames: summaryStats.invalidNames,</span>
-          warningNam<span class="cstat-no" title="statement not covered" >es: summaryStats.warningNames,</span>
-        });
-<span class="cstat-no" title="statement not covered" ></span>
-        return formatSuccessRespo<span class="cstat-no" title="statement not covered" >nse({</span>
-          success: true,
+          validNames: summaryStats.va<span class="cstat-no" title="statement not covered" >lidNames,</span>
+          invalidNames: summaryStats.invalidNames,
+          warningNames: summaryStats.warningNames,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
+        return formatSuccessResponse({<span class="fstat-no" title="function not covered" ></span>
+          success: true,<span class="cstat-no" title="statement not covered" ></span>
           policyId: input.policyId,<span class="cstat-no" title="statement not covered" ></span>
-          policyName: policy.name,
-          validationResults,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          summary: summaryStats,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          policyName: policy.nam<span class="cstat-no" title="statement not covered" >e,</span>
+          validationResults,
+          summary: summarySt<span class="cstat-no" title="statement not covered" >ats,</span>
           compliance: {
-            overallScore: Math.round((summ<span class="fstat-no" title="function not covered" >ar</span>yStats.validNames / summaryStats.totalNames) * 100),
-            strictCompliance<span class="cstat-no" title="statement not covered" >: summaryStats.invalidNames === 0,</span>
-            recommendationsCount: Object.value<span class="cstat-no" title="statement not covered" >s(validationResults).fil</span>ter(
-              (r: unknown): r is<span class="cstat-no" title="statement not covered" > { suggestions?: string[] } =&gt; </span>
-                typeof r === 'object' &amp;&amp; 
-                r !== null &amp;<span class="cstat-no" title="statement not covered" >&amp; </span>
-                'suggestions' in r &amp;&amp; 
-                Array.isArray((r as { suggestions?: unknown }).suggestions)
-            ).length,
-          },<span class="fstat-no" title="function not covered" ></span>
-          timestamp: new Dat<span class="cstat-no" title="statement not covered" >e().toISOString(),</span>
-          message: `Validated ${summaryStats.t<span class="cstat-no" title="statement not covered" >otalName</span>s} names: ${summaryStats.validNames} valid, ${summaryStats.invalidNames} invalid, ${summaryStats.warningNames} warnings`,
-        });<span class="cstat-no" title="statement not covered" ></span>
-      } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        const errorMessage = error insta<span class="cstat-no" title="statement not covered" >nceof Error ? error.message : String(error);</span>
-        log.error('Error validating names against policy', { error<span class="cstat-no" title="statement not covered" >: errorMessage, </span>policyId: input.policyId });
-        <span class="cstat-no" title="statement not covered" ></span>
+            overallScore: Math.round((summaryStats.validNames / summaryStats.totalNames) * 100),
+            strictCompliance: summaryStats.invalidNames === 0,
+            recommendationsCount: Object.values(val<span class="fstat-no" title="function not covered" >id</span>ationResults).filter(
+              (r: unknown): <span class="cstat-no" title="statement not covered" >r is { suggestions?: string[] } =&gt; </span>
+                typeof r === 'object' &amp;&amp; <span class="cstat-no" title="statement not covered" ></span>
+                r !== null &amp;&amp; <span class="cstat-no" title="statement not covered" ></span>
+                'suggestions' in r &amp;<span class="cstat-no" title="statement not covered" >&amp; <span class="fstat-no" title="function not covered" ></span></span>
+                Array.isArray((r as { su<span class="cstat-no" title="statement not covered" >ggestions?: unknown }).suggestions)</span>
+            ).length,<span class="cstat-no" title="statement not covered" ></span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+          timestamp: new Date().toISOString(),
+          message: `Validated ${summaryS<span class="cstat-no" title="statement not covered" >tats.totalN</span>ames} names: ${summaryStats.validNames} valid, ${summaryStats.invalidNames} invalid, ${summaryStats.warningNames} warnings`,
+        });
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error val<span class="cstat-no" title="statement not covered" >idating nam</span>es against policy', { error: errorMessage, policyId: input.policyId });
+        
         if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to v<span class="cstat-no" title="statement not covered" >alidate nam</span>es against policy: ${errorMessage}`);
-      }
+        throw new UserError(`Failed to validate names against policy: ${errorMessage}`);
+      }<span class="cstat-no" title="statement not covered" ></span>
     },
   });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   /**
-   * List naming convention policies with filtering
+   * List naming<span class="cstat-no" title="statement not covered" > convention policies with filtering</span>
    * 
-   * Retrieves a<span class="cstat-no" title="statement not covered" >nd filters naming convention policies with pagination support</span>
+   * Retrieves and filters naming convention policies with pagination support
    * and detailed policy information.
    * 
    * @tool list-naming-convention-policies
    * @category Policy Management
-   * @permission<span class="cstat-no" title="statement not covered" > policy_read</span>
+   * @permission policy_read
    */
   server.addTool({
     name: 'list-naming-convention-policies',
@@ -4170,95 +4170,95 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
       readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
-      openWorldHint: true,
-    },
-    execute: async (input, { log }) =&gt; {
-      log.info('Listing naming convention policies', {
-        filters: input,
+      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: asy<span class="cstat-no" title="statement not covered" >nc (input, { log }) =&gt; {</span>
+      log.info('List<span class="cstat-no" title="statement not covered" >ing naming co</span>nvention policies', {
+        filters:<span class="cstat-no" title="statement not covered" > input,</span>
         limit: input.limit,
         offset: input.offset,
-      });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const params<span class="cstat-no" title="statement not covered" > = {</span>
-          ...inp<span class="cstat-no" title="statement not covered" >ut,</span>
+      });
+&nbsp;
+      try {
+        const params = {
+          ...input,
           limit: input.limit,
           offset: input.offset,
         };
 &nbsp;
         const response = await apiClient.get('/policies/naming-conventions', { params });
         
-        if (!response.success) {
+<span class="cstat-no" title="statement not covered" >        if (!response.success) {</span>
           throw new UserError(`Failed to list policies: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
         const policies = response.data || [];
         const metadata = response.metadata;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        // Calculate summary statistics</span>
+        // Calculate summary statistics
         const summaryStats = {
           totalPolicies: Array.isArray(policies) ? policies.length : 0,
           activePolicies: Array.isArray(policies) ? policies.filter((p: unknown) =&gt; 
-            typeof p === 'object' &amp;&amp; p !== null &amp;&amp; 'active' in p &amp;&amp; (p as { active: boolean }).active
-          ).length : 0,
+            typeo<span class="fstat-no" title="function not covered" >f </span>p === 'object' &amp;&amp; p !== null &amp;&amp; 'active' in p &amp;&amp; (p as { active: boolean }).active
+          ).<span class="cstat-no" title="statement not covered" >length : 0,</span>
           inactivePolicies: Array.isArray(policies) ? policies.filter((p: unknown) =&gt; 
-            typeof p === 'object' &amp;&amp; p !== null &amp;&amp; 'active' in p &amp;&amp; !(p as { active: boolean }).active
+            typeof p === 'object' &amp;&amp; p !== null &amp;&amp; <span class="fstat-no" title="function not covered" >'a</span>cti<span class="cstat-no" title="statement not covered" >ve' in p &amp;&amp; !(p as { active: boolean }).act</span>ive
           ).length : 0,
-          enforcementLevels: Array.isArray(policies) 
+          en<span class="cstat-no" title="statement not covered" >forcementLevels: Array.isArray(policies) </span>
             ? policies.reduce((acc: Record&lt;string, number&gt;, policy: unknown) =&gt; {
-                i<span class="fstat-no" title="function not covered" >f </span>(typeof policy === 'object' &amp;&amp; policy !== null &amp;&amp; 'enforcementLevel' in policy) {
+                if (typeof policy === 'ob<span class="cstat-no" title="statement not covered" >ject' &amp;&amp; policy !== null &amp;&amp; 'enforcementLevel' in policy) {</span>
 <span class="cstat-no" title="statement not covered" >                  const level = (policy as { enforcementLevel: string }).enforcementLevel;</span>
-                  acc[level] = (acc[level] || 0) + 1;
-                }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-                return acc;
-<span class="cstat-no" title="statement not covered" >              }, {})</span>
+                  ac<span class="cstat-no" title="statement not covered" >c[level] = (acc[level] || 0) + 1;</span>
+                }
+                return acc;<span class="cstat-no" title="statement not covered" ></span>
+              }, {})<span class="cstat-no" title="statement not covered" ></span>
             : {},
-          resourceTypeCoverage: Array.isA<span class="cstat-no" title="statement not covered" >rray(policies)</span>
-            ? ne<span class="cstat-no" title="statement not covered" >w Set(policies.flatMap((p: unknown) =&gt; {</span>
-                if (<span class="cstat-no" title="statement not covered" >typeof p === 'object' &amp;&amp; p !== null &amp;&amp; 'rules' in p) {</span>
+          resourceTypeCoverage: Arr<span class="cstat-no" title="statement not covered" >ay.isArray(policies)</span>
+            ? new Set(policies.flatMap((p: unknown) =&gt; {
+                if (typeof p === 'object' &amp;&amp; p !== null &amp;&amp; 'rules' in p) {
                   const rules = (p as { rules?: unknown[] }).rules;
-                  if (Array.isArray(rul<span class="cstat-no" title="statement not covered" >es)) {</span>
-                    return rules.f<span class="cstat-no" title="statement not covered" >latMap((r: unknown) =&gt; {</span>
-                      if (typeof r === 'object' &amp;&amp; r !== null &amp;&amp; 'resourceTypes' in r) {
-                        const resou<span class="cstat-no" title="statement not covered" >rceTypes = (r as { resourceTypes?: unknown }).resourceTypes;</span>
-                        return Array.isArray(resourceTypes) ? resourceTypes : [];
-                      }
+                  if (Array.isArray(rules)) {
+<span class="cstat-no" title="statement not covered" >                    return rules.flatMap((r: unknown) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                      if (typeof r === 'object' &amp;&amp;</span> r !== null &amp;&amp; 'resourceTypes' in r) {
+<span class="cstat-no" title="statement not covered" >                        const resourceTypes = (r as { resourceTypes?: unknown }).resourceTypes;</span>
+<span class="cstat-no" title="statement not covered" >                        return Array.isArray(resourceTypes) ? re</span>sourceTypes : [];
+<span class="cstat-no" title="statement not covered" >                      }</span>
                       return [];
-                    });
-<span class="cstat-no" title="statement not covered" >                  }</span>
+<span class="cstat-no" title="statement not covered" >                    });</span>
+                  }<span class="cstat-no" title="statement not covered" ></span>
                 }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >                return [];</span>
-              })).si<span class="cstat-no" title="statement not covered" >ze</span>
-            : 0,<span class="cstat-no" title="statement not covered" ></span>
-        };
-<span class="cstat-no" title="statement not covered" ></span>
-        log.info('Succes<span class="cstat-no" title="statement not covered" >sfully retrieved naming convention policies', {</span>
-          count: summaryStat<span class="cstat-no" title="statement not covered" >s.totalPolicies,</span>
-          active: summaryStats.a<span class="cstat-no" title="statement not covered" >ctivePolicies,</span>
-          inactive: summaryStats.inactivePolicies,
-        });
-<span class="cstat-no" title="statement not covered" ></span>
+                return [];<span class="cstat-no" title="statement not covered" ></span>
+              })).size
+            : 0,
+        };<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+        log.info('Successfully retrieved naming convention policies', {
+          count: summaryStats.totalPolicies,
+          active: su<span class="cstat-no" title="statement not covered" >mmaryStats.activePolicies,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+          inactive: summaryStats.inactive<span class="cstat-no" title="statement not covered" >Policies,</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         return formatSuccessResponse({
-          success: true,
-          policies: Array.isArray(policies) ? policies : [],
-          summary: s<span class="cstat-no" title="statement not covered" >ummaryStats,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-          pagination: {<span class="cstat-no" title="statement not covered" ></span>
-            total: m<span class="cstat-no" title="statement not covered" >etadata?.total || summaryStats.totalPolicies,</span>
-            limit: input.limit,
-            offset: input.offset,
-            hasMore: (metadata?.total || 0) &gt; (input.offset + summarySta<span class="fstat-no" title="function not covered" >ts</span>.to<span class="cstat-no" title="statement not covered" >talPolicies),</span>
-          },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          templates: {
-            available: Object.keys(POLICY_TEMPLATES),
-            count: Object.keys(POLICY_TEMPLATES).length,
+          success: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          policies: Array.isArray(policies) ? policies : [],<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          summary: summaryStats,
+          pagination: {
+            total: metadata?.total || summaryStats.totalPolicies,
+            limi<span class="cstat-no" title="statement not covered" >t: input.limit,</span>
+            offset: <span class="cstat-no" title="statement not covered" >input.offset,</span>
+            hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; (input.offset + summaryStats.totalPolicies),</span>
           },<span class="cstat-no" title="statement not covered" ></span>
-          timestamp:<span class="cstat-no" title="statement not covered" > new Date().toISOString(),</span>
+          templa<span class="cstat-no" title="statement not covered" >tes: {</span>
+            availabl<span class="cstat-no" title="statement not covered" >e: Object.keys(POLICY_TEMPLATES),</span>
+            coun<span class="cstat-no" title="statement not covered" >t: Object.keys(POLICY_TEMPLATES).length,</span>
+          },<span class="cstat-no" title="statement not covered" ></span>
+          timest<span class="cstat-no" title="statement not covered" >amp: new Date().toISOString(),</span>
         });<span class="cstat-no" title="statement not covered" ></span>
       } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        log.error('E<span class="cstat-no" title="statement not covered" >rror listing naming convention policies', { erro</span>r: errorMessage });
-        <span class="cstat-no" title="statement not covered" ></span>
-        if (error in<span class="cstat-no" title="statement not covered" >stanceof UserError) throw error;</span>
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error('Error listing naming convention policies', { error: errorMessage });
+        
+        if (error instanceof UserError) throw error;
         throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to list naming convention policies: ${errorMessage}`);</span>
       }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
@@ -4266,91 +4266,91 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
 &nbsp;
   /**
    * Update naming convention policy
-   * <span class="cstat-no" title="statement not covered" ></span>
-   * Updates an existing naming convention po<span class="cstat-no" title="statement not covered" >licy with new rules, settings,</span>
-   * or enforcement <span class="cstat-no" title="statement not covered" >levels.</span>
    * 
-   * @tool update-naming-convention-policy
+   * Updates an existing naming convention policy with new rules, settings,
+   * or enforcement levels.<span class="cstat-no" title="statement not covered" ></span>
+   * <span class="cstat-no" title="statement not covered" ></span>
+   * @tool update-na<span class="cstat-no" title="statement not covered" >ming-convention-policy</span>
    * @category Policy Management
-   * @permission policy_admin
+   * @permission policy_admin<span class="cstat-no" title="statement not covered" ></span>
    */
-  server.addTool({
-    name: 'update-naming-conventi<span class="cstat-no" title="statement not covered" >on-policy',</span>
-    description:<span class="cstat-no" title="statement not covered" > 'Update an existing naming convention policy',</span>
-    parameters: Upda<span class="cstat-no" title="statement not covered" >teNamingPolicySchema,</span>
+  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
+    name: 'update-naming-convention-policy',
+    description: 'Update an existing naming convention policy',
+    parameters: UpdateNamingPolicySchema,
     annotations: {
-      title: 'Update Naming Convention<span class="cstat-no" title="statement not covered" > Policy',</span>
+      title: 'Update Naming Convention Policy',
       readOnlyHint: false,
-      destructiv<span class="cstat-no" title="statement not covered" >eHint: true,</span>
-      idempotentHint: true,
+      destructiveHint: true,
+      idempotentHint: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
       log.info('Updating naming convention policy', {
         policyId: input.policyId,
         updates: Object.keys(input).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined),
-      });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
       try {
-        // Get existing policy
+        // Get existing policy<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         const existingResponse = await apiClient.get(`/policies/naming-conventions/${input.policyId}`);
-        
-        if (!existingResponse.success) {
-          throw <span class="cstat-no" title="statement not covered" >new UserError(`Policy not found: ${input.policyId}`);</span>
-        }
-&nbsp;
-        const existingPolicy = existingResponse.data as Recor<span class="fstat-no" title="function not covered" >d&lt;</span>str<span class="cstat-no" title="statement not covered" >ing, unknown&gt;;</span>
-        const timestamp = new Date().toISOString();
         <span class="cstat-no" title="statement not covered" ></span>
+        if (!existingResponse.success) {
+          throw new UserError(`Policy not found: ${input.policyId}`);
+        }
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        const existingPolicy = existingResponse.data as Record&lt;string, unknown&gt;;
+        const timestamp = new Date().toISOString();
+        
         // Prepare update data
         const updateData: Record&lt;string, unknown&gt; = {
           ...(typeof existingPolicy === 'object' &amp;&amp; existingPolicy !== null ? existingPolicy : {}),
-          updatedAt: timestamp,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        };
+          updatedAt: timestamp,
+        };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
         // Apply updates
         if (input.name !== undefined) updateData.name = input.name;
         if (input.description !== undefined) updateData.description = input.description;
         if (input.rules !== undefined) {
-          // Validate new rules
-          for (const rule of input.rules) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+          // Validate new rules<span class="cstat-no" title="statement not covered" ></span>
+          for (c<span class="cstat-no" title="statement not covered" >onst rule of input.rules) {</span>
             if (rule.patternType === PatternType.REGEX) {
-              try {
+              tr<span class="cstat-no" title="statement not covered" >y {</span>
                 new RegExp(rule.pattern);
               } catch (error) {
                 throw new UserError(`Invalid regex pattern in rule ${rule.id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-              }<span class="cstat-no" title="statement not covered" ></span>
-            }<span class="cstat-no" title="statement not covered" ></span>
+              }
+            }
           }
-          update<span class="cstat-no" title="statement not covered" >Data.rules = input.rules.sort((a, b) =&gt; (a.priority || 50) - (b.priority || 50));</span>
+          updateData.rules = input.rules.sort((a, b) =&gt; (a.priority || 50) - (b.priority || 50));
           const existingMeta = (existingPolicy.metadata as Record&lt;string, unknown&gt;) || {};
           updateData.metadata = {
             ...existingMeta,
             rulesCount: input.rules.length,
-            resourceTypesCount: new Set(input.rules.flatMap(r =&gt; r.resourceTypes)).size,
-            averagePriority: input.rules.reduce((sum, r) =&gt; sum + (r.priority || 50), 0) / input.rules.length,
-            lastRulesUpdate: timestamp,
+            reso<span class="cstat-no" title="statement not covered" >urceTypesCount: new Set(input.rules.flatMap(r =&gt; r.resourceTypes)).size,</span>
+            averageP<span class="cstat-no" title="statement not covered" >riority: inpu</span>t.rules.reduce((sum, r) =&gt; sum + (r.priority || 50), 0) / input.rules.length,
+            last<span class="cstat-no" title="statement not covered" >RulesUpdate: timestamp,</span>
           };
         }
         if (input.enforcementLevel !== undefined) updateData.enforcementLevel = input.enforcementLevel;
         if (input.active !== undefined) updateData.active = input.active;
-        if (inpu<span class="cstat-no" title="statement not covered" >t.effectiveFrom !== undefined) updateData.effectiveFrom = input.effectiveFrom;</span>
-        if (input.ef<span class="cstat-no" title="statement not covered" >fectiveUntil </span>!== undefined) updateData.effectiveUntil = input.effectiveUntil;
-        if (inpu<span class="cstat-no" title="statement not covered" >t.notificationSettings !== undefined) {</span>
+        if (input.effectiveFrom !== undefined) updateData.effectiveFrom = input.effectiveFrom;
+        if (input.effectiveUntil !== undefined) updateData.effectiveUntil = input.effectiveUntil;
+        if (input.notificationSettings !== undefined) {
           const existingNotifications = (existingPolicy.notificationSettings as Record&lt;string, unknown&gt;) || {};
           updateData.notificationSettings = {
             ...existingNotifications,
             ...input.notificationSettings,
           };
         }
-        if (input.metadata !== undefined) {
+<span class="cstat-no" title="statement not covered" >        if (input.metadata !== undefined) {</span>
           const existingMetadata = (existingPolicy.metadata as Record&lt;string, unknown&gt;) || {};
           updateData.metadata = {
             ...existingMetadata,
             ...input.metadata,
             lastMetadataUpdate: timestamp,
           };
-<span class="cstat-no" title="statement not covered" >        }</span>
+        }
 &nbsp;
         // Update policy
         const response = await apiClient.patch(`/policies/naming-conventions/${input.policyId}`, updateData);
@@ -4358,134 +4358,134 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
         if (!response.success) {
           throw new UserError(`Failed to update policy: ${response.error?.message || 'Unknown error'}`);
         }
-&nbsp;
-        const updatedPolicy = response.data as { name: string; [key: string]: unknown };
+<span class="fstat-no" title="function not covered" ></span>
+        cons<span class="cstat-no" title="statement not covered" >t updatedPolicy = response.data as { name: string; [key: string]: unknown };</span>
 &nbsp;
         // Log policy update audit event
         await auditLogger.logEvent({
           level: 'info',
-          category: 'configuration',
-          action:<span class="fstat-no" title="function not covered" > '</span>naming_policy_updated',
-          re<span class="cstat-no" title="statement not covered" >source: `policy:${input.policyId}`,</span>
-          success: true,
+          ca<span class="cstat-no" title="statement not covered" >tegory: 'configuration',</span>
+          action: 'naming_policy_updated',<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+          resource: `policy:${input.policyId}<span class="cstat-no" title="statement not covered" >`,<span class="fstat-no" title="function not covered" ></span></span>
+          success: true,<span class="cstat-no" title="statement not covered" ></span>
           details: {
             policyId: input.policyId,
-            updatedFields: Object.keys(input).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined),
-<span class="cstat-no" title="statement not covered" >            rulesCount: input.rules?.length || (existingPolicy.rules as unknown[] | undefined)?.length || 0,</span>
-            enforcementLevel: input.enforc<span class="cstat-no" title="statement not covered" >ementLevel || (existingPolicy.enforceme<span class="fstat-no" title="function not covered" >nt</span>Level as s<span class="cstat-no" title="statement not covered" >tring | undefined),</span></span>
-            active: input.active !== undefine<span class="cstat-no" title="statement not covered" >d ? input.active : (ex<span class="fstat-no" title="function not covered" >is</span>tingPolicy.active as boolean | undefined),</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
+            updatedFields: Object.keys(input).filter(k =&gt; k !== 'polic<span class="fstat-no" title="function not covered" >yI</span>d' <span class="cstat-no" title="statement not covered" >&amp;&amp; input[k as ke</span>yof typeof input] !== undefined),
+            rulesCount: input.rules?.length || (existingPolicy.ru<span class="fstat-no" title="function not covered" >le</span>s as unknown[] | undefined)?.length || 0,
+            enforcementLevel<span class="cstat-no" title="statement not covered" >: input.enforcementLevel || (existingPolicy.enforcementLevel as stri</span>ng | undefined),
+            active: input.ac<span class="cstat-no" title="statement not covered" >tive !== und</span>efined ? input.active : (existingPolicy.active as boolean | undefined),
+          },
           riskLevel: 'medium',
-        });
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        log.info('Successfully updated naming convention policy',<span class="fstat-no" title="function not covered" > {</span>
-          policyId: input.po<span class="cstat-no" title="statement not covered" >licyId,</span>
-          name: updatedPolic<span class="cstat-no" title="statement not covered" >y.name,</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        log.info('Successfully updated naming convention policy', {
+          policyId: input.policyId,
+          name: updatedPolicy.name,
           updatedFields: Object.keys(input).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined).length,
         });
-<span class="cstat-no" title="statement not covered" ></span>
-        return formatSuc<span class="cstat-no" title="statement not covered" >cessResponse({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+        return formatSuccessResponse({
           success: true,
           policy: updatedPolicy,
           changes: {
             updatedFields: Object.keys(input).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined),
-            timestamp,
-            version: `${(existingPolicy.version as string | undefined) || '1.0.0'}-updated`,
+            timestam<span class="cstat-no" title="statement not covered" >p,</span>
+            version: `${<span class="cstat-no" title="statement not covered" >(existingPolicy.version as string | undefined) || '1.0.0'}-updated`,</span>
           },
           auditTrail: {
             updatedAt: timestamp,
             action: 'policy_updated',
             policyId: input.policyId,
-            fieldsCh<span class="cstat-no" title="statement not covered" >anged: Object.keys(input).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined).length,</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
-          message: `Naming convention policy "${updatedPolicy.name}" updated successfully`,
-        });
+            fieldsCh<span class="cstat-no" title="statement not covered" >anged: Object.keys(in</span>put).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined).length,
+          },
+          message: `Naming conventi<span class="cstat-no" title="statement not covered" >on policy "${updatedPolicy.name}" updated successfully`<span class="fstat-no" title="function not covered" >,<span class="cstat-no" title="statement not covered" ></span></span></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error updating naming convention policy', { error: errorMessage, policyId: input.policyId });
-        <span class="cstat-no" title="statement not covered" ></span>
+        log.error('Error updating naming convention polic<span class="fstat-no" title="function not covered" >y'</span>, { error:<span class="cstat-no" title="statement not covered" > errorMessage, policy</span>Id: input.policyId });
+        <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
         // Log failure audit event
-        await auditLogger.logEvent(<span class="cstat-no" title="statement not covered" >{<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-          level: 'error',<span class="cstat-no" title="statement not covered" ></span>
+        await au<span class="cstat-no" title="statement not covered" >ditLogger.logEvent({</span>
+          level: 'error',
           category: 'configuration',
           action: 'naming_policy_update_failed',
-          resource: `policy:${input.policyId}`,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          success: false,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+          resource: `policy:${input.policyId}`,
+          succes<span class="cstat-no" title="statement not covered" >s: false,</span>
           details: {
-            poli<span class="cstat-no" title="statement not covered" >cyId: input.policyId,</span>
+            policyId: input.policyId,
             error: errorMessage,
-          },
+          },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           riskLevel: 'low',
-        });
-        <span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to update naming convention policy: ${errorMessage}`);
       }
-    },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    },
   });
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
   /**
    * Get policy templates and examples
    * 
    * Retrieves available policy templates with detailed rule definitions
-   * and usage examples for different organizational contexts.
-   * 
-   * @tool get-naming-policy-templates
-   * @category Policy Management
-   * @permission policy_read
+   * and usage examples for different<span class="cstat-no" title="statement not covered" > organizational contexts.</span>
+   * <span class="cstat-no" title="statement not covered" ></span>
+   * @tool get-n<span class="cstat-no" title="statement not covered" >aming-policy-templates</span>
+   * @category Polic<span class="cstat-no" title="statement not covered" >y Management</span>
+   * @permission<span class="cstat-no" title="statement not covered" > policy_read</span>
    */
   server.addTool({
-    name: 'get-naming-policy-template<span class="cstat-no" title="statement not covered" >s',</span>
-    description:<span class="cstat-no" title="statement not covered" > 'Get available naming convention policy templates and examples',</span>
-    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
-      category: z.st<span class="cstat-no" title="statement not covered" >ring().option</span>al().describe('Filter templates by category'),
-      includeExa<span class="cstat-no" title="statement not covered" >mples: z.boolean().default(true).describe('Include usage examples'),</span>
+    name: 'get-naming-policy-templates',
+    description: 'Get available naming convention policy templates and examples',
+    parameters: z.object({
+      category: z.string().optional().describe('Filter templates by category'),
+      includeExamples: z.boolean().default(true).describe('Include usage examples'),
       includeRuleDetails: z.boolean().default(true).describe('Include detailed rule information'),
     }),
     annotations: {
       title: 'Get Naming Policy Templates',
       readOnlyHint: true,
       destructiveHint: false,
-      idempotentHint: true,
+<span class="cstat-no" title="statement not covered" >      idempotentHint: true,</span>
       openWorldHint: true,
     },
     execute: async (input, { log }) =&gt; {
       log.info('Retrieving naming policy templates', {
         category: input.category,
         includeExamples: input.includeExamples,
-<span class="cstat-no" title="statement not covered" >        includeRuleDetails: input.includeRuleDetails,</span>
+        includeRuleDetails: input.includeRuleDetails,
       });
 &nbsp;
       try {
         const filteredTemplates = Object.values(POLICY_TEMPLATES).filter(template =&gt;
           !input.category || template.category === input.category
         );
-&nbsp;
-        const templatesWithDetails = filteredTemplates.map(template =&gt; {
-          const templateData: Record&lt;string, unknown&gt; = {
-            ...template,
-            rulesCount: template.rules.length,
+<span class="fstat-no" title="function not covered" ></span>
+        cons<span class="cstat-no" title="statement not covered" >t templatesWithDetails = filteredTemplates.map(template =&gt; {</span>
+          co<span class="cstat-no" title="statement not covered" >nst templateData: Record&lt;string, unknown&gt; = {</span>
+            ...t<span class="cstat-no" title="statement not covered" >emplate,</span>
+            rulesCou<span class="cstat-no" title="statement not covered" >nt: template.rules.length,</span>
             resourceTypes: new Set(template.rules.flatMap(r =&gt; r.resourceTypes)).size,
             enforcementLevels: template.rules.reduce((acc, rule) =&gt; {
-              acc<span class="fstat-no" title="function not covered" >[r</span>ule.enforcementLevel] = (acc[rule.enforcementLevel] || 0) + 1;
-<span class="cstat-no" title="statement not covered" >              return acc;</span>
-<span class="cstat-no" title="statement not covered" >            }, {} as Record&lt;string, number&gt;),</span>
-          };<span class="cstat-no" title="statement not covered" ></span>
+              acc[rule.enforcementLevel<span class="cstat-no" title="statement not covered" >] = (acc[rule.enforcementLevel] || 0) + 1;</span>
+              re<span class="cstat-no" title="statement not covered" >turn acc;</span>
+            }, {} as<span class="cstat-no" title="statement not covered" > Record&lt;string, number&gt;),</span>
+          };
 <span class="cstat-no" title="statement not covered" ></span>
           if (input.includeRuleDetails) {
-            templateData.ruleDetails = template.rules.map(rule =&gt; ({
-              id: rule.id,<span class="cstat-no" title="statement not covered" ></span>
-              na<span class="cstat-no" title="statement not covered" >me: rule.name,</span>
-              descri<span class="cstat-no" title="statement not covered" >ption: rule.description,</span>
+            templateData.ruleDeta<span class="cstat-no" title="statement not covered" >ils = template.rules.map(rule =&gt; ({</span>
+              id<span class="cstat-no" title="statement not covered" >: rule.id,</span>
+              name: <span class="cstat-no" title="statement not covered" >rule.name,</span>
+              description: rule.description,
               resourceTypes: rule.resourceTypes,
-              patternType: rule<span class="cstat-no" title="statement not covered" >.patternType,</span>
+              pa<span class="cstat-no" title="statement not covered" >tternType: rule.patternType,</span>
               pattern: rule.pattern,
-              enforcementLevel: r<span class="cstat-no" title="statement not covered" >ule.enforcementLevel,</span>
-              pr<span class="cstat-no" title="statement not covered" >iority: rule.priority,</span>
-              tags: <span class="cstat-no" title="statement not covered" >rule.tags,</span>
+              enforcementLevel: rule.enforcementLevel,
+              priority: rule.priority,
+              tags: rule.tags,
             }));
           }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
           if (input.includeExamples) {
             templateData.examples = {
               validNames: generateExampleNames(template.rules, true),
@@ -4493,18 +4493,18 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
               useCases: generateUseCases(template.category),
             };
           }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
           return templateData;
         });
 &nbsp;
-        const categories = Array.from(new Set(Object.values(POLICY_TEMPLATES).map(t =&gt; t.category)));
+        const ca<span class="cstat-no" title="statement not covered" >tegories = Array.from(new Set(Object.values(POLICY_TEMPLATES).map(t =&gt; t.category)));</span>
         const summary = {
           totalTemplates: filteredTemplates.length,
-          catego<span class="cstat-no" title="statement not covered" >ries,</span>
+          categories,
           totalRules: filteredTemplates.reduce((sum, t) =&gt; sum + t.rules.length, 0),
           resourceTypesCovered: new Set(
             filteredTemplates.flatMap(t =&gt; t.rules.flatMap(r =&gt; r.resourceTypes))
-          ).size<span class="cstat-no" title="statement not covered" >,</span>
+          ).size,
         };
 &nbsp;
         log.info('Successfully retrieved naming policy templates', {
@@ -4515,68 +4515,68 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
 &nbsp;
         return formatSuccessResponse({
           success: true,
-          templates: templatesWithDetails,
-          summary,
+          templates: templatesWithDet<span class="cstat-no" title="statement not covered" >ails,</span>
+          summar<span class="cstat-no" title="statement not covered" >y,</span>
           categories: categories.map(cat =&gt; ({
-            name: cat,
+            name<span class="cstat-no" title="statement not covered" >: cat,</span>
             count: filteredTemplates.filter(t =&gt; t.category === cat).length,
             description: getCategoryDescription(cat),
           })),
-          usage: {<span class="cstat-no" title="statement not covered" ></span>
-            howT<span class="cstat-no" title="statement not covered" >oUse: 'Specify templateId in create-naming-convention-policy to apply template rules',</span>
+          usage: {
+            howToUse: 'Specify templateId in create-naming-convention-policy to apply template rules',
             customization: 'Template rules can be extended with additional custom rules',
-            enfo<span class="cstat-no" title="statement not covered" >rcement: 'Templates include recommended enforcement levels that can be adjusted',</span>
+            enforcement: 'Templates include recommended enforcement levels that can be adjusted',
           },
           timestamp: new Date().toISOString(),
         });
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error retrieving naming policy templates', { error: errorMessage });
-        
+        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
+        log.error('E<span class="cstat-no" title="statement not covered" >rror retrievi</span>ng naming policy templates', { error: errorMessage });
+        <span class="cstat-no" title="statement not covered" ></span>
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to retrieve naming policy templates: ${errorMessage}`);
       }
     },
-  });<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * Delete naming convention policy
-   * 
-   * Safely deletes a naming convention policy with proper validation
-   * and audit logging.
-   * <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-   * @tool delete-naming-<span class="cstat-no" title="statement not covered" >con</span>vention-policy
-   * @ca<span class="cstat-no" title="statement not covered" >tegory Policy Management</span>
-   * @permission policy_admin<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+   * Delete naming convention policy<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+   * <span class="cstat-no" title="statement not covered" ></span>
+   * Safely dele<span class="cstat-no" title="statement not covered" >tes a nami</span>ng convention policy with proper validation
+   * and aud<span class="cstat-no" title="statement not covered" >it logging.</span>
+   * <span class="cstat-no" title="statement not covered" ></span>
+   * @tool delet<span class="cstat-no" title="statement not covered" >e-naming-convention-policy</span>
+   * @category Policy Management
+   * @permission pol<span class="cstat-no" title="statement not covered" >icy_admin</span>
    */<span class="cstat-no" title="statement not covered" ></span>
-  server.addTool<span class="cstat-no" title="statement not covered" >({</span>
-    name: 'd<span class="cstat-no" title="statement not covered" >elete-naming-convention-polic</span>y',
-    descript<span class="cstat-no" title="statement not covered" >ion: 'Delete a naming convention policy',</span>
-    parameters: <span class="cstat-no" title="statement not covered" >z.object({</span>
-      policyId: z.string().min(1).describe('Policy ID to delete'),
-      confirmDeletio<span class="cstat-no" title="statement not covered" >n: z.boolean().default(false).describe('Confirm policy deletion'),</span>
-    }),<span class="cstat-no" title="statement not covered" ></span>
-    annotations: {
-      title: 'Delete Naming Conv<span class="cstat-no" title="statement not covered" >ention Policy',</span>
-      readOnlyHint: false,<span class="cstat-no" title="statement not covered" ></span>
+  server.addTool({
+    name: 'delete-naming-convent<span class="cstat-no" title="statement not covered" >ion-policy',</span>
+    description: 'Delete a namin<span class="cstat-no" title="statement not covered" >g conve</span>ntion policy',
+    parameters: z.object({
+      policyId: z.string().min(1<span class="cstat-no" title="statement not covered" >).describe('Policy ID to delete'),</span>
+      confirmDeletion: z.boolean<span class="cstat-no" title="statement not covered" >().defa</span>ult(false).describe('Confirm policy deletion'),
+    }),
+    annotations: {<span class="cstat-no" title="statement not covered" ></span>
+      title: 'Delete Naming Convention Policy',
+      readOnlyHint: false,
       destructiveHint: true,
-      idempotentHint: true,<span class="cstat-no" title="statement not covered" ></span>
-      openWorldHint: true,<span class="cstat-no" title="statement not covered" ></span>
-    },
-    execute: async (input, { log<span class="cstat-no" title="statement not covered" > }) =&gt; {</span>
+      idempotentHint: true,
+      openWorldHint: true,
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (input, { log }) =&gt; {
       log.info('Deleting naming convention policy', { policyId: input.policyId });
 &nbsp;
-      try {
+      tr<span class="cstat-no" title="statement not covered" >y {</span>
         if (!input.confirmDeletion) {
-          throw new UserError('Policy deletion requires explicit confirmation. Set confirmDeletion to true.');
-        }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-        // Get policy details before deletion
-        const policyResponse = await apiClient.get(`/policies/naming-conventions/${input.policyId}`);
-        <span class="cstat-no" title="statement not covered" ></span>
-        if (!policyResponse.success) {
-          throw new UserError<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(`</span>Policy not found: ${input.policyId}`);</span>
+          throw new UserError<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >('</span>Policy deletion requires explicit confirmation. Set confirmDeletion to true.');</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
+&nbsp;
+        // Get p<span class="cstat-no" title="statement not covered" >olicy details before deletion</span>
+        const policyResponse = await apiClient.get(`/policies/naming-conventions/${input.policyId}`);
+        
+        if (!policyResponse.success) {
+          throw new UserError(`Policy not found: ${input.policyId}`);
+        }
 &nbsp;
         const po<span class="cstat-no" title="statement not covered" >licy = policyResponse.data as { </span>
           name: string; 
@@ -4595,28 +4595,28 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
 <span class="cstat-no" title="statement not covered" ></span>
         // Log policy deletion audit event
         await auditLogger.logEvent({
-          level: 'warn',
-          category: 'configuration',
+          level: 'warn',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >          category: 'configuration',</span>
           action: 'naming_policy_deleted',
-          resource: `policy:${input.policyId}`,
-          succes<span class="cstat-no" title="statement not covered" >s: true,</span>
-          details: {
+          resour<span class="cstat-no" title="statement not covered" >ce: `policy:${input.policyId}`,</span>
+          success: true,
+          detail<span class="cstat-no" title="statement not covered" >s: {</span>
             policyId: input.policyId,
-            policyName: policy.name<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >,</span></span>
-<span class="cstat-no" title="statement not covered" >            rulesCount: policy.rules?.length || 0,</span>
-            wasActive: policy.active,
-            enfo<span class="cstat-no" title="statement not covered" >rcementLevel: policy.enforcementLevel,</span>
+            poli<span class="cstat-no" title="statement not covered" >cyName: policy.name,</span>
+            rulesCount: policy.rules?.length || 0,
+            wasA<span class="cstat-no" title="statement not covered" >ctive: policy.active,</span>
+            enforcementLevel: policy.enforcementLevel,
           },
-          riskLe<span class="cstat-no" title="statement not covered" >vel: 'medium',</span>
+<span class="cstat-no" title="statement not covered" >          riskLevel: 'medium',</span>
         });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         log.info('Successfully deleted naming convention policy', {
-          policy<span class="cstat-no" title="statement not covered" >Id: input.policyId,</span>
+          policyId: input.policyId,
           name: policy.name,
         });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         return formatSuccessResponse({
-<span class="cstat-no" title="statement not covered" >          success: true,</span>
+          success: true,
           deletedPolicy: {
             id: input.policyId,
             name: policy.name,
@@ -4741,7 +4741,7 @@ export default addNamingConventionPolicyTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.277Z
+                at 2025-08-22T05:07:11.612Z
             </div>
         <script src="../prettify.js"></script>
         <script>

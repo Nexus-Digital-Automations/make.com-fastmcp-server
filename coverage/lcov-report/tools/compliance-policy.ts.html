@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">47.79% </span>
+                <span class="strong">48.28% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>195/408</span>
+                <span class='fraction'>197/408</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">34.68% </span>
+                <span class="strong">35.05% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>94/271</span>
+                <span class='fraction'>95/271</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">46.92% </span>
+                <span class="strong">47.43% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>183/390</span>
+                <span class='fraction'>185/390</span>
             </div>
         
             
@@ -2037,7 +2037,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2464,12 +2464,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2558,11 +2558,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-yes">30x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">30x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3112,10 +3112,10 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3179,7 +3179,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3205,7 +3205,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -4881,8 +4881,8 @@ async functi<span class="cstat-no" title="statement not covered" >on performComp
       compliant: false,
       violations: [{
         controlId: 'VALIDATION_ERROR',
-    <span class="missing-if-branch" title="if path not taken" >I</span>    severity: 'high',
-<span class="cstat-no" title="statement not covered" >        description: `Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,</span>
+    <span class="missing-if-branch" title="else path not taken" >E</span>    severity: 'high',
+        description: `Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       }],
       riskScore: 100,
       complianceScore: 0,
@@ -4907,9 +4907,9 @@ async function validateControl(
       // SOX requires audit trails and segregation of duties
       if (ctrl.name.toLowerCase().includes('audit')) {
         return !(_target as { auditEnabled?: boolean })?.auditEnabled;
-      }<span class="missing-if-branch" title="if path not taken" >I</span>
-      return<span class="cstat-no" title="statement not covered" > false;</span>
-    },
+      }<span class="missing-if-branch" title="else path not taken" >E</span>
+      return false;
+    },<span class="branch-0 cbranch-no" title="branch not covered" ></span>
     gdpr: (ctrl, _target, _type) =&gt; {
       // GDPR requires data protection and consent
       if (ctrl.name.toLowerCase().includes('consent')) {
@@ -5179,7 +5179,7 @@ export default addCompliancePolicyTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.110Z
+                at 2025-08-22T05:07:11.447Z
             </div>
         <script src="../prettify.js"></script>
         <script>

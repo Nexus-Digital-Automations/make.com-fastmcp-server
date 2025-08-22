@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/248</span>
+                <span class='fraction'>0/243</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/240</span>
+                <span class='fraction'>0/235</span>
             </div>
         
             
@@ -877,15 +877,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1516,6 +1513,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1686,17 +1686,17 @@
  * Advanced log export tool with multi-format output, real-time streaming, and external analytics platform integration
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { ExportLogsForAnalysisSchema } from '../schemas/export-config.js';</span>
-import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition </span>} from '../../shared/types/tool-context.js';
-import { MakeLogEntry } fro<span class="cstat-no" title="statement not covered" >m '../types/streaming.js';</span>
-import { <span class="cstat-no" title="statement not covered" ></span>
-  ExportConfig, 
-  OutputConfig, 
-  DestinationConfig, 
-  Analyti<span class="fstat-no" title="function not covered" >csConfig,</span>
-  ExternalSystemConfig,<span class="cstat-no" title="statement not covered" ></span>
-  Da<span class="cstat-no" title="statement not covered" >taTransformation</span>
+import { UserError } from 'fastmcp';
+import { ExportLogsForAnalysisSchema } from '../schemas/export-config.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { MakeLogEntry } from '../types/streaming.js';
+import { 
+  ExportConfig, <span class="fstat-no" title="function not covered" ></span>
+  OutputConfig, <span class="cstat-no" title="statement not covered" ></span>
+  De<span class="cstat-no" title="statement not covered" >stinationConfig, </span>
+  AnalyticsConfig,
+  ExternalSystemConfig,
+  DataTransformation
 } from '../types/export.js';
 import MakeApiClient from '../../../lib/make-api-client.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
@@ -1704,21 +1704,21 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 /**
  * Create export logs for analysis tool configuration
  */
-export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefinition {
-  const { apiClient, logger } = context;
-  
-  return {<span class="fstat-no" title="function not covered" ></span>
-    name: 'export_logs_for_analysis',<span class="cstat-no" title="statement not covered" ></span>
-    descript<span class="cstat-no" title="statement not covered" >ion: 'Advanced log export tool with multi-format output, real-time streaming, external analytics platform integration, and comprehensive delivery options',</span>
+export function c<span class="fstat-no" title="function not covered" >re</span>ateExportLogsForAnalysisTool(context: ToolContext): ToolDefinition {
+  const { apiClient, logger } = context;<span class="cstat-no" title="statement not covered" ></span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  return {
+    name: 'export_logs_for_analysis',
+    description: 'Advanced log export tool with multi-format output, real-time streaming, external analytics platform integration, and comprehensive delivery options',
     parameters: ExportLogsForAnalysisSchema,
     annotations: {
       title: 'Export Logs for Analysis',
       readOnlyHint: false,
-      destructiveHint: true,
-      idempotentHint: false,
+      destru<span class="cstat-no" title="statement not covered" >ctiveHint: true,</span>
+      idempotentHint: false,<span class="cstat-no" title="statement not covered" ></span>
       openWorldHint: true,
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute: async (input: unknown, { l<span class="cstat-no" title="statement not covered" >og }): Promise&lt;string&gt; =&gt; {</span>
+    },
+    execute: async (input: unknown, { log }): Promise&lt;string&gt; =&gt; {
       const { exportConfig, outputConfig, destination, analytics } = input as {
         exportConfig: ExportConfig;
         outputConfig: OutputConfig;
@@ -1726,17 +1726,17 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
         analytics: AnalyticsConfig;
       };
 &nbsp;
-      log?.info?.('Starting enhanced log export for analysis', {
+      log?.info?.('Starting enh<span class="cstat-no" title="statement not covered" >anced log export for analysis', {</span>
         timeRange: `${exportConfig.timeRange?.startTime || 'earliest'} to ${exportConfig.timeRange?.endTime || 'latest'}`,
         format: outputConfig.format,
-        streaming: exportConfig<span class="cstat-no" title="statement not covered" >.streaming?.enabled || false,</span>
+        streaming: exportConfig.streaming?.enabled || false,
         external: destination.externalSystemConfig?.type,
         analytics: analytics.enabled,
         scenarioCount: exportConfig.scenarioIds?.length || 0,
       });
 &nbsp;
-      try {
-        const exportMetadata = {
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const export<span class="cstat-no" title="statement not covered" >Metadata = {</span>
           exportId: `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           timest<span class="cstat-no" title="statement not covered" >amp: new Date().toISOString(),</span>
           requestedB<span class="cstat-no" title="statement not covered" >y: 'fastmcp-server',</span>
@@ -1756,28 +1756,28 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
           sortBy<span class="cstat-no" title="statement not covered" >: 'timestamp',</span>
           sortOrder:<span class="cstat-no" title="statement not covered" > 'asc',</span>
         };
-<span class="cstat-no" title="statement not covered" ></span>
-        // Apply com<span class="cstat-no" title="statement not covered" >prehensive filtering</span>
-        if (exportConfig.scenarioIds?.length) {
-          params.scenarioIds = exportConfig.scenarioIds.join(',');
-        }<span class="cstat-no" title="statement not covered" ></span>
-        if (expo<span class="cstat-no" title="statement not covered" >rtConfig.organizationId) {</span>
-          params.org<span class="cstat-no" title="statement not covered" >anizationId = exportConfig.organizationId;</span>
+&nbsp;
+        // Apply comprehensive <span class="cstat-no" title="statement not covered" >filterin</span>g
+        if (expo<span class="cstat-no" title="statement not covered" >rtConfig.scenarioIds?.length) {</span>
+          params.sce<span class="cstat-no" title="statement not covered" >narioIds = exportConfig.scenarioIds.join(',');</span>
         }
-        if (exportConfig.filtering?.logLevels?.length) {
-          params.level = exportConfig.fi<span class="cstat-no" title="statement not covered" >ltering.logLevels.join(',');</span>
+        if (exportConfig.organizationId) {
+          params.organizationId = export<span class="cstat-no" title="statement not covered" >Config.organizationId;</span>
         }
-        if (exportConfig.filtering?.moduleTypes<span class="cstat-no" title="statement not covered" >?.length) {</span>
+        if (exportConfig.filtering?.logLevels?.<span class="cstat-no" title="statement not covered" >length) {</span>
+          params.level = exportConfig.filtering.logLevels.join(',');
+        }
+        if (exportConfig.filtering?.moduleTypes?.length) {
           params.moduleTypes = exportConfig.filtering.moduleTypes.join(',');
         }
         if (exportConfig.filtering?.correlationIds?.length) {
           params.correlationIds = exportConfig.filtering.correlationIds.join(',');
         }
         if (exportConfig.filtering?.errorCodesOnly) {
-          params.errorsOnly = true;
+          params.errorsOnly = true;<span class="cstat-no" title="statement not covered" ></span>
         }
         if (exportConfig.filtering?.performanceThreshold) {
-          params.minProcessingTime = exportCon<span class="cstat-no" title="statement not covered" >fig.filtering.performanceThreshold;</span>
+          params.minProcessingTime = exportConfig.filtering.performanceThreshold;
         }
 &nbsp;
         // Determine optimal endpoint
@@ -1793,25 +1793,25 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
         const normalizedExportConfig: ExportConfig = {
           ...exportConfig,
           streaming: {
-            enabled: exportConfig.streaming?.enabled ?? false,
-            batchSize: exportConfig.streaming?.batchSize ?? 50,
+            enab<span class="cstat-no" title="statement not covered" >led: exportConfig.streaming?.enabled ?? false,</span>
+            batchSiz<span class="cstat-no" title="statement not covered" >e: exportConfig.streaming?.batchSize ?? 50,</span>
             intervalMs: exportConfig.streaming?.intervalMs ?? 5000,
-            maxD<span class="cstat-no" title="statement not covered" >uration: exportConfig.streaming?.maxDuration ?? 3600</span>
+            maxDuration: exportConfig.streaming?.maxDuration ?? 3600
           }<span class="cstat-no" title="statement not covered" ></span>
         };
         
-        // Normalize<span class="cstat-no" title="statement not covered" > destination to match DestinationConfig interface</span>
-        const normalizedDestination: DestinationConfig = {
-          type: destination.type as 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook' | 'external-system' | 'stream' | 'download',
+        // Normalize destination to match DestinationConfig interface
+        const normalizedDestination: <span class="cstat-no" title="statement not covered" >DestinationConfig = {</span>
+          type: <span class="cstat-no" title="statement not covered" >destination.type as 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook' | 'external-system' | 'stream' | 'download',</span>
           path: destination.webhookUrl || '/tmp/log-export',
-          externalSystemConfig: desti<span class="cstat-no" title="statement not covered" >nation.externalSystemConfig ? {</span>
-            type<span class="cstat-no" title="statement not covered" >: destination.externalSystemConfig.type,</span>
-            endpoint: destination.externalSystemConfig.connection?.url,
-            authentication: destination.externalSystemConfig.authentication ? {
-              type: destination.externalSystemConfig.authentication.type || 'api_key',
-              cr<span class="cstat-no" title="statement not covered" >edentials: destination.externalSystemConfig.authentication.credentials || {}</span>
-            } : unde<span class="cstat-no" title="statement not covered" >fined,</span>
-            opti<span class="cstat-no" title="statement not covered" >ons: {</span>
+          externalSystemConfig: destination.externalSystemConfig ? {
+            type: destination.externalSystemConfig.type,
+            endp<span class="cstat-no" title="statement not covered" >oint: destination.externalSystemConfig.connection?.url,</span>
+            authenti<span class="cstat-no" title="statement not covered" >cation: desti</span>nation.externalSystemConfig.authentication ? {
+              ty<span class="cstat-no" title="statement not covered" >pe: destination.externalSystemConfig.authentication.type || 'api_key',</span>
+              credentials: destination.externalSystemConfig.authentication.credentials || {}
+            } : undefined,
+            options: {
               timeout: 30000,
               retries: destination.externalSystemConfig.retryPolicy?.maxRetries || 3,
               batchSize: 100,
@@ -1820,68 +1820,68 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
           } : undefined
         };
 &nbsp;
-        // Handle streaming vs batch export
-        if (normalizedExportConfig.streaming?.enabled) {
-          return await exportProcessor.processStreamingExport(
-<span class="fstat-no" title="function not covered" ></span>            endpoint,
-<span class="cstat-no" title="statement not covered" >            params,</span>
-<span class="cstat-no" title="statement not covered" >            normalizedExportConfig,</span>
-<span class="cstat-no" title="statement not covered" >            outputConfig,</span>
-            normalizedDestination,
-            analytics
-          );
-        } else {
-<span class="fstat-no" title="function not covered" ></span>          return await exportProcessor.processBatchExport(
+<span class="fstat-no" title="function not covered" ></span>        // Handle streaming vs batch export
+<span class="cstat-no" title="statement not covered" >        if (normalizedExportConfig.s</span>treaming?.enabled) {
+<span class="cstat-no" title="statement not covered" >          return await exportProcessor.process</span>StreamingExport(
 <span class="cstat-no" title="statement not covered" >            endpoint,</span>
-            params,<span class="cstat-no" title="statement not covered" ></span>
-            normalized<span class="cstat-no" title="statement not covered" >Expor</span>tConfig,
-            outputCon<span class="cstat-no" title="statement not covered" >fi</span>g,
-            normalizedDestina<span class="cstat-no" title="statement not covered" >ti</span>on,
-            analytics
+            params,
+            normalizedExportConfig,
+            outputConfig,
+            normalizedDestination,
+<span class="fstat-no" title="function not covered" ></span>            analytics
 <span class="cstat-no" title="statement not covered" >          );</span>
+        } else {<span class="cstat-no" title="statement not covered" ></span>
+          return await<span class="cstat-no" title="statement not covered" > expo</span>rtProcessor.processBatchExport(
+            endpoint,<span class="cstat-no" title="statement not covered" ></span>
+            params,<span class="cstat-no" title="statement not covered" ></span>
+            normalizedExportConfig,
+<span class="cstat-no" title="statement not covered" >            outputConfig,</span>
+<span class="cstat-no" title="statement not covered" >            normalizedDestination,</span>
+            analytics<span class="cstat-no" title="statement not covered" ></span>
+          );<span class="cstat-no" title="statement not covered" ></span>
         }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-      } catc<span class="cstat-no" title="statement not covered" >h (error) {</span>
-        const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
-        logger.error?.('Error exporting logs for analysis', { 
-          exportConfig: J<span class="cstat-no" title="statement not covered" >SON.stringify(export</span>Config), 
-          er<span class="cstat-no" title="statement not covered" >ror: errorMessage </span>
-        });<span class="cstat-no" title="statement not covered" ></span>
-        if (error instanceof UserError) throw error;
-        throw new UserError(`Failed to export logs for analysis: ${errorMessage}`);
-      }
+&nbsp;
+      } catch (error) {<span class="cstat-no" title="statement not covered" ></span>
+        cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : String(error);</span>
+        logger.e<span class="cstat-no" title="statement not covered" >rror?.('Error exp</span>orting logs for analysis', { 
+          exportConfig: JSON.stringify(exportConfig), 
+          error: errorMessage 
+        });
+        if (error instanceof UserErro<span class="cstat-no" title="statement not covered" >r) throw error;</span>
+        throw ne<span class="cstat-no" title="statement not covered" >w UserError(`Failed to export l</span>ogs for analysis: ${errorMessage}`);
+      }<span class="cstat-no" title="statement not covered" ></span>
     },<span class="cstat-no" title="statement not covered" ></span>
-  };<span class="cstat-no" title="statement not covered" ></span>
+  };
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-/**
- * Enhanced Log Export Processor <span class="cstat-no" title="statement not covered" >for advanced analy</span>tics integration
- */<span class="cstat-no" title="statement not covered" ></span>
-class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortProcessor {</span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Enhanced Log Export Processor for advanced analytics integration
+ */
+class Enhanc<span class="cstat-no" title="statement not covered" >edLogExportProcessor {</span>
   private apiClient: MakeApiClient;
   private exportMetadata: Record&lt;string, unknown&gt;;
-  private lo<span class="cstat-no" title="statement not covered" >gger: ToolContext['logger'];</span>
+  private logger: ToolContext['logger'];
 &nbsp;
   constructor(apiClient: MakeApiClient, exportMetadata: Record&lt;string, unknown&gt;, logger: ToolContext['logger']) {
     this.apiClient = apiClient;
     this.exportMetadata = exportMetadata;
-    this.logger = logger;
+    this.logger = logger;<span class="cstat-no" title="statement not covered" ></span>
   }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * Process batch export (traditional export)
-   */<span class="cstat-no" title="statement not covered" ></span>
-  async <span class="cstat-no" title="statement not covered" >processBatchExport(</span>
-    endpoint<span class="cstat-no" title="statement not covered" >: string,</span>
+   * Process<span class="cstat-no" title="statement not covered" > batch export (traditional export)</span>
+   */
+  async processBatchExport(
+    endpoint: string,<span class="cstat-no" title="statement not covered" ></span>
     params: Record&lt;string, unknown&gt;,
-    exportConfig: ExportConfig,
-    outputConfig: OutputCon<span class="cstat-no" title="statement not covered" >fig,</span>
-    destination: DestinationConfig,
-    analytics: AnalyticsConfig<span class="cstat-no" title="statement not covered" ></span>
-  ): Pro<span class="cstat-no" title="statement not covered" >mise&lt;string&gt; {</span>
-    this.log<span class="cstat-no" title="statement not covered" >ger.info?.('Starting batch export processing');</span>
+    exportConfig: ExportConfig<span class="cstat-no" title="statement not covered" >,</span>
+    outp<span class="cstat-no" title="statement not covered" >utConfig: OutputConfig,</span>
+    destinat<span class="cstat-no" title="statement not covered" >ion: DestinationConfig,</span>
+    analytics: AnalyticsConfig
+  ): Promise&lt;string&gt; {<span class="cstat-no" title="statement not covered" ></span>
+    this.logger.info?.('Starting batch export processing');
 &nbsp;
-    const allLogs: Make<span class="cstat-no" title="statement not covered" >LogEntry[] = [];</span>
+    const allLogs: MakeLogEntry[] = [];
     let hasMore = true;
     let offset = 0;
     let totalProcessed = 0;
@@ -1892,87 +1892,87 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
       
       const response = await this.apiClient.get(endpoint, { params });
       
-      if (!response.success) {
+      if<span class="cstat-no" title="statement not covered" > (!response.success) {</span>
         throw new UserError(`Failed to fetch logs: ${response.error?.message || 'Unknown error'}`);
       }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
       const logs = (response.data as MakeLogEntry[]) || [];
       
-      if (logs.length === 0) {
+      if<span class="cstat-no" title="statement not covered" > (logs.length === 0) {</span>
         hasMore = false;
       } else {
-<span class="cstat-no" title="statement not covered" >        // Apply enhanced filtering</span>
+        // Apply enhanced filtering
         const filteredLogs = this.applyAdvancedFiltering(logs, exportConfig.filtering);
-        allLogs.push(...filteredLogs);
-        totalProcessed += logs.length;
+<span class="fstat-no" title="function not covered" ></span>        allLogs.push(...filteredLogs);
+<span class="cstat-no" title="statement not covered" >        totalProcessed += logs.length;</span>
         offset += outputConfig.chunkSize || 1000;
-<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Check if we've reached the end</span>
+&nbsp;
+        // Check if we've reached the end
         const metadata = response.metadata;
-        if (metadata?.total &amp;&amp; totalProcessed &gt;= metadata.total) {
+        if (metadata?.total &amp;&amp; to<span class="cstat-no" title="statement not covered" >talProcessed &gt;= metadata.total) {</span>
           hasMore = false;
         }
-      }<span class="cstat-no" title="statement not covered" ></span>
+      }
 &nbsp;
       this.logger.info?.('Processing log export chunk', {
         offset,
         chunkSize: logs.length,
         totalProcessed,
-        totalFiltered: allLogs.length,
-      });
+        totalFiltered: allLogs.<span class="cstat-no" title="statement not covered" >length,</span>
+      });<span class="cstat-no" title="statement not covered" ></span>
     }
 <span class="cstat-no" title="statement not covered" ></span>
-    // Apply data transformati<span class="cstat-no" title="statement not covered" >ons</span>
-    const transformedLogs = this.applyDataTransformations(allLogs, outputConfig.transformations);
+    // A<span class="cstat-no" title="statement not covered" >pply data transformations</span>
+    const tr<span class="cstat-no" title="statement not covered" >ansformedLogs = this.applyDataTransformations(allLogs, outputConfig.transformations);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-    // G<span class="cstat-no" title="statement not covered" >enerate analytics insights if enabled</span>
-    let anal<span class="cstat-no" title="statement not covered" >yticsResults: Record&lt;string, unknown&gt; = {};</span>
+    // Generate analytics insights if enabled
+    let <span class="cstat-no" title="statement not covered" >analyticsResults: Record&lt;string, unknown&gt; = {};</span>
     if (anal<span class="cstat-no" title="statement not covered" >ytics.enabled) {</span>
       analyticsResults = await this.performAdvancedAnalytics(transformedLogs, analytics);
     }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     // Format logs for export
-    const exportData = await this.fo<span class="cstat-no" title="statement not covered" >rmatLogsForExport(</span>
+    const exportData = await this.formatLogsForExport(
       transformedLogs,
       outputConfig,
-      this.exportMetadata,
-      analyticsResults
-    );
+      this.exportMetadata,<span class="cstat-no" title="statement not covered" ></span>
+      analyticsR<span class="cstat-no" title="statement not covered" >esults</span>
+    );<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    // Handle ex<span class="cstat-no" title="statement not covered" >ternal system delivery</span>
-    let deliveryResults: Record&lt;s<span class="cstat-no" title="statement not covered" >tring, unknown</span>&gt; = {};
-    if (destination.<span class="cstat-no" title="statement not covered" >type === 'external-system' &amp;&amp; destination.externalSystemConfig) {</span>
-      deliveryResults = await this.deliverToExternalSystem(
+    // Handle external system delivery
+    let deliveryResults: Record&lt;string, unkno<span class="cstat-no" title="statement not covered" >wn&gt; = {};</span>
+    if (destination.type === 'external-system' &amp;<span class="cstat-no" title="statement not covered" >&amp; destination.externalSystemConfig) {</span>
+      deliveryResults = <span class="cstat-no" title="statement not covered" >await this.deliverToExternalSystem(</span>
         exportData,<span class="cstat-no" title="statement not covered" ></span>
-        destination.externalSystemConfig,<span class="cstat-no" title="statement not covered" ></span>
-        outputConfig.for<span class="cstat-no" title="statement not covered" >mat || 'json'</span>
+        destination.externalSystemConfig,
+        outputConfig.format <span class="cstat-no" title="statement not covered" >|| 'json'</span>
       );<span class="cstat-no" title="statement not covered" ></span>
-    }
-<span class="cstat-no" title="statement not covered" ></span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     const result = {<span class="cstat-no" title="statement not covered" ></span>
-      exportMetadata: this.expor<span class="cstat-no" title="statement not covered" >tMetadata,</span>
-      dataInfo: {
-        format: outputConfig<span class="cstat-no" title="statement not covered" >.format,</span>
-        compression: outputC<span class="cstat-no" title="statement not covered" >onfig.compression,</span>
-        totalLogs: transform<span class="cstat-no" title="statement not covered" >edLogs.length,</span>
+      exportMetadata: this.e<span class="cstat-no" title="statement not covered" >xportMetadata,</span>
+      dataInfo: {<span class="cstat-no" title="statement not covered" ></span>
+        format: outputConfig.format,
+        compression: outputConfig.compression,
+        totalLogs: transformedLogs.length,
         sizeEstimate: JSON.stringify(exportData).length,
         processingTime: Date.now() - new Date(this.exportMetadata.timestamp as string).getTime(),
-      },
-      data: exportData,
-      analytics: analyticsResults,
-      delivery: deliveryResults,<span class="cstat-no" title="statement not covered" ></span>
-      summary: t<span class="cstat-no" title="statement not covered" >his.generateEnhancedSummary(transformedLogs, exportConfig),</span>
-    };<span class="cstat-no" title="statement not covered" ></span>
+      },<span class="cstat-no" title="statement not covered" ></span>
+      data: expo<span class="cstat-no" title="statement not covered" >rtData,</span>
+      analytics:<span class="cstat-no" title="statement not covered" > analyticsResults,</span>
+      delivery: deliveryResults,
+      summary: this.generateEnhancedSummary(transformedLogs, exportConfig),
+    };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 &nbsp;
     this.logger.info?.('Batch export completed successfully', {
-      export<span class="cstat-no" title="statement not covered" >Id: String(this.ex<span class="fstat-no" title="function not covered" >po</span>rtMetadat<span class="cstat-no" title="statement not covered" >a.exportId),</span></span>
-      totalLogs: transformedLogs.length,
+      ex<span class="cstat-no" title="statement not covered" >portId: String(this.exportMetadata.exportId),</span>
+      totalL<span class="cstat-no" title="statement not covered" >ogs: transformedLogs.length,</span>
       format: outputConfig.format || 'json',
-      ex<span class="cstat-no" title="statement not covered" >ternal: destination.externalSystemConfig?.type || 'none',</span>
+      ex<span class="cstat-no" title="statement not covered" >ternal: destination.externalSystemConfig?.type || 'no</span>ne',
     });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-    retu<span class="cstat-no" title="statement not covered" >rn formatSuccessResponse(result).content[0].text;</span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+    return formatSuccessResponse(result).content[0].text;
+  }
 &nbsp;
   /**
    * Process streaming export (real-time export)
@@ -1980,129 +1980,129 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
   async processStreamingExport(
     endpoint: string,
     params: Record&lt;string, unknown&gt;,
-    exportConfig: ExportConfig,
+    expo<span class="cstat-no" title="statement not covered" >rtConfig: ExportConfig,</span>
     outputConfig: OutputConfig,
     destination: DestinationConfig,
-    _ana<span class="cstat-no" title="statement not covered" >lytics: AnalyticsConfig</span>
+    _analytics: AnalyticsConfig
   ): Promise&lt;string&gt; {
-    this.logger.info?.('Starting streaming export processing', {
+    this<span class="cstat-no" title="statement not covered" >.logger.info?.('Starting streaming export processing',</span> {
       batchSize: exportConfig.streaming?.batchSize || 1000,
       intervalMs: exportConfig.streaming?.intervalMs || 5000,
-      ma<span class="cstat-no" title="statement not covered" >xDuration: exportConfig.streaming?.maxDuration || 300,</span>
+      maxDuration: exportConfig.streaming?.maxDuration || 300,
     });
-&nbsp;
-    const streamingResults = {
-      streamId: `stream_${this.exportMetadata.exportId}`,
-<span class="fstat-no" title="function not covered" ></span>      startTime: new Date().toISOString(),
-      en<span class="cstat-no" title="statement not covered" >dTime: '',</span>
-      batche<span class="cstat-no" title="statement not covered" >sProcessed: 0</span>,
-      to<span class="cstat-no" title="statement not covered" >talLogsStreamed: 0,<span class="fstat-no" title="function not covered" ></span></span>
+<span class="fstat-no" title="function not covered" ></span>
+    cons<span class="cstat-no" title="statement not covered" >t streamingResults = {</span>
+      stream<span class="cstat-no" title="statement not covered" >Id: `stream_$</span>{this.exportMetadata.exportId}`,
+      st<span class="cstat-no" title="statement not covered" >artTime: new Date()<span class="fstat-no" title="function not covered" >.t</span>oISOString(),</span>
+      endTime: '',
+      batche<span class="cstat-no" title="statement not covered" >sProcessed: 0,</span>
+      totalLogsS<span class="cstat-no" title="statement not covered" >treamed: 0,</span>
       errors: [] as string[],
-      delive<span class="cstat-no" title="statement not covered" >ryResults: [] as Record&lt;string, unknown&gt;[],</span>
+      deliveryResults: [] as Record&lt;string, unknown&gt;[],
     };<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-    let lastLogTimestamp = exportConfig.timeRange?.start || exportConfig.timeRange?.startTime || new Date(0).toISOString();
-    const st<span class="cstat-no" title="statement not covered" >reamEndTime = Date.now() + ((exportConfig.streaming?.maxDuration || 300) * 1000);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-    // Initialize external system connection if needed
+    let lastLogTimestamp = exportConfig.timeRange?.start || exportConfig.timeRange?.startTime || new Date(0).toISOString();
+    const streamEndTime = Date.now() + ((exportConfig.streaming?.maxDuration || 300) * 1000);
+<span class="cstat-no" title="statement not covered" ></span>
+    // Initializ<span class="cstat-no" title="statement not covered" >e external sys</span>tem connection if needed
     let externalConnector: ExternalSystemConnector | null = null;
-    if (dest<span class="cstat-no" title="statement not covered" >ination.type === 'external-system' &amp;&amp; destination.externalSystemConfig) {</span>
-      externalCo<span class="cstat-no" title="statement not covered" >nnector = new </span>ExternalSystemConnector(
+    if (destination.type === 'external-system' &amp;&amp; destination.externalSystemConfig) {
+      extern<span class="cstat-no" title="statement not covered" >alConnector = new ExternalSystemConnector(</span>
         destination.externalSystemConfig,
-        this.logger
-      );<span class="cstat-no" title="statement not covered" ></span>
+        this.log<span class="cstat-no" title="statement not covered" >ger</span>
+      );
       await externalConnector.connect();
     }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
     while (Date.now() &lt; streamEndTime) {
       try {<span class="cstat-no" title="statement not covered" ></span>
         // Fetch<span class="cstat-no" title="statement not covered" > next batch of</span> logs
         const batchParams = {
           ..<span class="cstat-no" title="statement not covered" >.params,</span>
-          limit:<span class="cstat-no" title="statement not covered" > exportConfig.</span>streaming?.batchSize || 1000,
+          limit: exportConfig.streaming?.batchSize || 1000,
           offset: 0,
-          da<span class="cstat-no" title="statement not covered" >teFrom: lastL</span>ogTimestamp,
+          dateFrom: lastLogTimestamp,
         };
 &nbsp;
-        const response = await this.apiClient.get(endpoint, { params: batchParams });
-&nbsp;
-        if (response.success &amp;&amp; response.data) {
-<span class="fstat-no" title="function not covered" ></span>          const logs = response.data as MakeLogEntry[];
-        <span class="cstat-no" title="statement not covered" >  </span>
-          if<span class="cstat-no" title="statement not covered" > (logs.length</span> &gt; 0) {
-            // Process batch<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            const filteredLogs = this.applyAdvancedFiltering(logs, exportConfig.filtering);</span>
-<span class="cstat-no" title="statement not covered" >            const transformedLogs = this.applyDataTransformations(filteredLogs, outputConfig.transformations);</span>
-            
-            if (transformedLogs.length &gt; 0) {
-              const <span class="cstat-no" title="statement not covered" >batchData = await this.formatLogsForEx<span class="fstat-no" title="function not covered" >po</span>rt(<span class="cstat-no" title="statement not covered" ></span></span>
-                tran<span class="cstat-no" title="statement not covered" >sformed</span>Logs,
-                outputConfig,
-                this.exportMetadata
-              );<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" ></span>        const response = await this.apiClient.get(endpoint, { params: batchParams });
 <span class="cstat-no" title="statement not covered" ></span>
-              // Deliver batch to external system
+        if (<span class="cstat-no" title="statement not covered" >response.succ</span>ess &amp;&amp; response.data) {
+          const logs = respons<span class="cstat-no" title="statement not covered" >e.data as </span>MakeLogEntry[];
+        <span class="cstat-no" title="statement not covered" >  </span>
+          if<span class="cstat-no" title="statement not covered" > (logs.length &gt; 0) {</span>
+            // Process batch
+            const filteredLogs = this.applyAdvancedFiltering(logs, exportConfig.filtering);
+            const tr<span class="cstat-no" title="statement not covered" >ansformedLogs = this.applyDataTransfor<span class="fstat-no" title="function not covered" >ma</span>tions<span class="cstat-no" title="statement not covered" >(filteredLogs, outputConfig.transformations);</span></span>
+            <span class="cstat-no" title="statement not covered" ></span>
+            if (transformedLogs.length &gt; 0) {
+              const batchData = await this.formatLogsForExport(
+                tran<span class="cstat-no" title="statement not covered" >sformedLogs,</span>
+                outp<span class="cstat-no" title="statement not covered" >utConfi</span>g,
+                this.exportMetadata
+              );
+<span class="cstat-no" title="statement not covered" ></span>
+              // Del<span class="cstat-no" title="statement not covered" >iver ba</span>tch to external system
               if (externalConnector) {
-                cons<span class="cstat-no" title="statement not covered" >t deliveryResult = await externalConnector.sendBatch(batchData, outputConfig.format || 'jso</span>n');
-                stre<span class="cstat-no" title="statement not covered" >amingRe</span>sults.deliveryResults.push(deliveryResult);
+                const deliveryResult = await externalConnector.sendBatch(batchData, outputConfig.format || 'json');
+<span class="cstat-no" title="statement not covered" >                streamingResults</span>.deliveryResults.push(deliveryResult);
               }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >              streamingResults.b</span>atchesProcessed++;
+              streamingResults.batchesProcessed++;
               streamingResults.totalLogsStreamed += transformedLogs.length;
-              lastLogTimestamp = logs[logs.length - 1].timestamp;
+<span class="fstat-no" title="function not covered" ></span>              lastLogTimestamp = logs[logs.length - 1].timestamp;
             }
-          }
-<span class="fstat-no" title="function not covered" ></span>        }
+<span class="cstat-no" title="statement not covered" >          }</span>
+        }
       } catch (error) {
-<span class="cstat-no" title="statement not covered" >        const errorM</span>essage = error instanceof Error ? error.message : String(error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
         this.logger.warn?.('Error processing streaming batch', { error: errorMessage });
-        streamingResults.errors.push(errorMessage);
+<span class="fstat-no" title="function not covered" ></span>        streamingResults.errors.push(errorMessage);
       }
-&nbsp;
-<span class="fstat-no" title="function not covered" ></span>      // Wait for next interval
+<span class="cstat-no" title="statement not covered" ></span>
+      // Wait for next interval
       await new Promise(resolve =&gt; setTimeout(resolve, exportConfig.streaming?.intervalMs || 5000));
-    }<span class="cstat-no" title="statement not covered" ></span>
+    }
 &nbsp;
-    // Cleanup external connection
+<span class="fstat-no" title="function not covered" >    //</span> Cleanup external connection
     if (externalConnector) {
-      await externalConnector.disconnect();
-<span class="fstat-no" title="function not covered" >    }</span>
+      aw<span class="cstat-no" title="statement not covered" >ait externalC</span>onnector.disconnect();
+    }
 &nbsp;
-    stre<span class="cstat-no" title="statement not covered" >amingResults.</span>endTime = new Date().toISOString();
+    streamingResults.endTime = new Date().toISOString();
 &nbsp;
-    const result = {
-      exportMetadata: this.exportMetadata,
-      streaming: streamingResults,
-<span class="fstat-no" title="function not covered" ></span>      summary: {
-        mode: 'streaming<span class="cstat-no" title="statement not covered" >',</span>
+<span class="fstat-no" title="function not covered" >    co</span>nst result = {
+      exportMetadata: th<span class="cstat-no" title="statement not covered" >is.</span>exportMetadata,
+      st<span class="cstat-no" title="statement not covered" >reaming: streamingResults,</span>
+      summar<span class="cstat-no" title="statement not covered" >y: {</span>
+        mode: 'streaming',
 <span class="cstat-no" title="statement not covered" >        duration: `${exportConfig.streaming?.maxDuration || 300}s`,</span>
-        tota<span class="cstat-no" title="statement not covered" >lBatches: streamingResults.batchesProcessed,</span>
+        tota<span class="cstat-no" title="statement not covered" >lBatches: streamingResults.batchesProcessed</span>,
         totalLogs: streamingResults.totalLogsStreamed,
 <span class="cstat-no" title="statement not covered" >        errors: streamingResults.errors.length,</span>
       },<span class="cstat-no" title="statement not covered" ></span>
     };
 <span class="cstat-no" title="statement not covered" ></span>
-    this.log<span class="cstat-no" title="statement not covered" >ger.info?.('Streaming export completed successful</span>ly', {
+    this.log<span class="cstat-no" title="statement not covered" >ger.info?.('Streaming export completed succ</span>essfully', {
       exportId: String(this.exportMetadata.exportId),
-      to<span class="cstat-no" title="statement not covered" >talBatches: streamingResults.batchesProcessed,</span>
-      totalL<span class="cstat-no" title="statement not covered" >ogs: streamingResults.totalLogsStreamed,</span>
+      to<span class="cstat-no" title="statement not covered" >talBatches: stre</span>amingResults.batchesProcessed,
+      totalLogs: streamingResults.totalLogsStreamed,
     });
-<span class="cstat-no" title="statement not covered" ></span>
-    return formatSuccessResponse(result).content[0].text;
-  }
 &nbsp;
-  /**
-   *<span class="fstat-no" title="function not covered" > A</span>pply advanced filtering to logs
+    return formatSuccessResponse(result).content[0].text;
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+   * Apply advanc<span class="fstat-no" title="function not covered" >ed</span> filt<span class="cstat-no" title="statement not covered" >ering to logs</span>
    */<span class="cstat-no" title="statement not covered" ></span>
-  private applyAdvan<span class="fstat-no" title="function not covered" >ce</span>dFilt<span class="cstat-no" title="statement not covered" >ering(logs: MakeLogEntry[], </span>filtering?: ExportConfig['filtering']): MakeLogEntry[] {
-    if (!filterin<span class="fstat-no" title="function not covered" >g)</span> retu<span class="cstat-no" title="statement not covered" >rn logs;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-    return l<span class="cstat-no" title="statement not covered" >ogs.filter(log =&gt; {</span>
-      // Log level filtering
-      if (filtering.logLevel<span class="cstat-no" title="statement not covered" >s?.length &amp;&amp; !filtering<span class="fstat-no" title="function not covered" >.l</span>ogLevels<span class="cstat-no" title="statement not covered" >.includes(log.level</span>)) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-        return false;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  private ap<span class="cstat-no" title="statement not covered" >plyAdvancedFiltering(logs: MakeLogEntry[], filtering?</span>: ExportConfig['filtering']): MakeLogEntry[] {
+    if (!filtering) return logs;
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
+    return logs.filter(l<span class="cstat-no" title="statement not covered" >og =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+      // Log level filt<span class="cstat-no" title="statement not covered" >ering</span>
+      if<span class="cstat-no" title="statement not covered" > (filtering.logLevels?.length &amp;&amp; !filtering.logLevels.includes(log.level)) {</span>
+        return false;
+      }
+&nbsp;
       // Module filtering
       if (filtering.modules?.length &amp;&amp; !filtering.modules.includes(log.module.name)) {
         return false;
@@ -2110,129 +2110,129 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
 &nbsp;
       // Error code filtering
       if (filtering.errorCodesOnly &amp;&amp; !log.error) {
-        return false;
-      }
-&nbsp;
-<span class="fstat-no" title="function not covered" ></span>      // Performance threshold filtering
-      if (filtering.perfor<span class="cstat-no" title="statement not covered" >manceThresho<span class="fstat-no" title="function not covered" >ld</span> &amp;&amp; <span class="cstat-no" title="statement not covered" ></span></span>
-          (!log.metrics?.pr<span class="cstat-no" title="statement not covered" >oce</span>ssingTime || log.metrics.processingTime &lt; filtering.performanceThreshold)) {
-<span class="cstat-no" title="statement not covered" >        return false;<span class="fstat-no" title="function not covered" ></span></span>
-      }<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" ></span>        return false;
+      }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
-      // Success/failure filtering
-      if<span class="cstat-no" title="statement not covered" > (filtering.includeSuccessfulExecutions === false &amp;&amp; !log.error) {</span>
+      //<span class="cstat-no" title="statement not covered" > Performance thres<span class="fstat-no" title="function not covered" >ho</span>ld filtering</span>
+      if (filtering.performanc<span class="cstat-no" title="statement not covered" >eThreshold &amp;&amp; </span>
+          (!<span class="cstat-no" title="statement not covered" >log.metrics?.processingTime || log.metrics.processingTime </span>&lt; filtering.performanceThreshold)) {
         return false;
-      }
-      if (filtering.includeFailedExecutions === false &amp;&amp; log.error) {
+      }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+      // Success/failure filtering
+      if (filtering.includeSuccessfulExecutions === false &amp;&amp; !log.error) {
         return false;
       }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      if (filtering.includeFailedExecutions === false &amp;&amp; log.error) {
+        return false;
+      }
 &nbsp;
       return true;
     });
-  }
-&nbsp;
-  /**
-   *<span class="fstat-no" title="function not covered" > A</span>pply data transformations
-   */<span class="cstat-no" title="statement not covered" ></span>
-  private applyDataTransformations(<span class="cstat-no" title="statement not covered" >log</span>s: MakeLogEntry[], transformations?: DataTransformation[]): MakeLogEntry[] {
-    if (<span class="cstat-no" title="statement not covered" >!transformati<span class="fstat-no" title="function not covered" >on</span>s?.length) return logs;</span>
-&nbsp;
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * App<span class="cstat-no" title="statement not covered" >ly data trans<span class="fstat-no" title="function not covered" >fo</span>rmations</span>
+   */
+  private ap<span class="cstat-no" title="statement not covered" >plyDataTransformations(logs: MakeLogEntry[], transformations?: DataTrans</span>formation[]): MakeLogEntry[] {
+    if (!transformations?.length) return logs;
+<span class="cstat-no" title="statement not covered" ></span>
     let tran<span class="cstat-no" title="statement not covered" >sformedLogs = [...logs];</span>
 &nbsp;
-    for (const transforma<span class="cstat-no" title="statement not covered" >tion of transformations) {</span>
-      switch<span class="cstat-no" title="statement not covered" > (transformation.type) {</span>
+    for <span class="cstat-no" title="statement not covered" >(const transformation of transformations) {</span>
+      switch (transformation.type) {
         case 'field_mapping':
-<span class="cstat-no" title="statement not covered" >          // Apply field mapping transformation</span>
-          transformedLogs = transformedLogs.map(log =&gt; this.applyFieldMapping(log, transformation.config || {}));
+          // Apply field mapping transformation
+          transformedL<span class="fstat-no" title="function not covered" >og</span>s = transformedL<span class="cstat-no" title="statement not covered" >ogs.ma</span>p(log =&gt; this.applyFieldMapping(log, transformation.config || {}));
           break;
         case 'aggregation':
-          // Apply agg<span class="fstat-no" title="function not covered" >re</span>gation transform<span class="cstat-no" title="statement not covered" >ation</span>
+          // Apply aggregation transformation
           transformedLogs = this.applyAggregation(transformedLogs, transformation.config || {});
           break;
         case 'filtering':
-          // Apply additional filtering
+<span class="fstat-no" title="function not covered" ></span>          // Apply additional filtering
           transformedLogs = this.applyCustomFiltering(transformedLogs, transformation.config || {});
-          break;
-<span class="fstat-no" title="function not covered" ></span>      }
-    }
+          break;<span class="cstat-no" title="statement not covered" ></span>
+      }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-    retu<span class="cstat-no" title="statement not covered" >rn transforme<span class="fstat-no" title="function not covered" >dL</span>ogs;</span>
+    return transformedLogs;
   }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
   /**
-   * Apply field mappin<span class="cstat-no" title="statement not covered" >g transformation</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
+   * App<span class="cstat-no" title="statement not covered" >ly field mapping transformation</span>
+   */
   private applyFieldMapping(log: MakeLogEntry, _config: Record&lt;string, unknown&gt;): MakeLogEntry {
-    // I<span class="cstat-no" title="statement not covered" >mplement field mapping logic</span>
+    // Implement field mapping logic
     return log;
   }
 &nbsp;
   /**
    * Apply aggregation transformation
-   */
-  private applyAggregation(logs: MakeLogEntry[], _config: Record&lt;string, unknown&gt;): MakeLogEntry[] {
+   *<span class="fstat-no" title="function not covered" >/</span>
+  private applyAggregatio<span class="cstat-no" title="statement not covered" >n(logs: MakeLogEntry[], _config: Record&lt;string, unknown&gt;): MakeLogEntry[] {</span>
     // Implement aggregation logic
-<span class="fstat-no" title="function not covered" >    re</span>turn logs;
-  }<span class="cstat-no" title="statement not covered" ></span>
+    return logs;
+  }
 &nbsp;
   /**
-   * Apply custom filtering
+   * App<span class="cstat-no" title="statement not covered" >ly custom filtering</span>
    */
-  private applyCustomFiltering(logs: MakeLogEntry[], _config: Record&lt;string, unknown&gt;): MakeLogEntry[] {
-    // I<span class="cstat-no" title="statement not covered" >mplement custom filtering logic</span>
-    return logs;
-  }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Perform advanced analytics
-   */<span class="cstat-no" title="statement not covered" ></span>
+  private applyC<span class="cstat-no" title="statement not covered" >ustomFiltering(lo</span>gs: MakeLogEntry[], _config: Record&lt;string, unknown&gt;): MakeLogEntry[] {
+    // Implement custom filtering logic
+    return logs;<span class="cstat-no" title="statement not covered" ></span>
+  }
+<span class="cstat-no" title="statement not covered" ></span>
+  /**
+   * Perform adv<span class="cstat-no" title="statement not covered" >anced analytics</span>
+   */
   private async performAdvancedAnalytics(logs: MakeLogEntry[], analytics: AnalyticsConfig): Promise&lt;Record&lt;string, unknown&gt;&gt; {
-    const result<span class="cstat-no" title="statement not covered" >s: Record&lt;string,</span> unknown&gt; = {};
+    const results: Record&lt;string, unknown&gt; = {};
 &nbsp;
     if (analytics.performanceAnalysis) {
-      results.performance = this.analyzePerformance(logs);
+<span class="fstat-no" title="function not covered" ></span>      results.performance = this.analyzePerformance(logs);
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    if (analytics.errorAnalysis) {
+      results.errors = this.analyzeErrors(logs);
     }
-&nbsp;
-<span class="fstat-no" title="function not covered" >    if</span> (analytics.errorAnalysis) {
-      results.errors = t<span class="cstat-no" title="statement not covered" >his.analyzeErrors(logs);</span>
-    }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 &nbsp;
     if (analytics.usagePatterns) {
       results.usage = this.analyzeUsagePatterns(logs);
     }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
     if (analytics.trendAnalysis) {
       results.trends = this.analyzeTrends(logs);
-    }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    }
 &nbsp;
-    return results;
-  }
-&nbsp;
-  /*<span class="fstat-no" title="function not covered" >*</span>
-   * Analyze performance m<span class="cstat-no" title="statement not covered" >etrics</span>
+<span class="fstat-no" title="function not covered" >    re</span>turn results;
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Analyze performance me<span class="cstat-no" title="statement not covered" >trics</span>
    */<span class="cstat-no" title="statement not covered" ></span>
-  private an<span class="cstat-no" title="statement not covered" >alyzePerformance(logs: Make</span>LogEntry[]): Record&lt;string, unknown&gt; {
-    const processingTimes =<span class="cstat-no" title="statement not covered" > logs</span>
-      .filte<span class="cstat-no" title="statement not covered" >r(log =&gt; log.metrics?.processi</span>ngTime)
-      .map(l<span class="cstat-no" title="statement not covered" >og =&gt; log.metri</span>cs!.processingTime);
-&nbsp;
+  private an<span class="cstat-no" title="statement not covered" >alyzePerformanc</span>e(logs: MakeLogEntry[]): Record&lt;string, unknown&gt; {
+    const processingTimes = logs
+      .filter(log =&gt; log.metrics?.processingTime)
+      .map(l<span class="cstat-no" title="statement not covered" >og =&gt; log.metrics!.processingT</span>ime);
+<span class="cstat-no" title="statement not covered" ></span>
     if (processingTimes.length === 0) {
-      return<span class="cstat-no" title="statement not covered" > { message: 'No performance da</span>ta available' };
-    }<span class="cstat-no" title="statement not covered" ></span>
+      return { message: 'No performance data available' };
+    }
 &nbsp;
     const sortedTimes = processingTimes.filter((time): time is number =&gt; time !== undefined).sort((a, b) =&gt; a - b);
-    const average = sortedTimes.reduce((sum, time) =&gt; sum + time, 0) / sortedTimes.length;
-    const median = sortedTimes[Math.floor(sortedTimes.length / 2)];
+<span class="fstat-no" title="function not covered" >    co</span>nst average = sortedTimes.reduce((sum, time) =&gt; sum + time, 0) / sortedTimes.length;
+    cons<span class="cstat-no" title="statement not covered" >t median = sortedTimes[Math.floor(sortedTimes.length / 2)];</span>
     
-<span class="fstat-no" title="function not covered" >    re</span>turn {
-      av<span class="cstat-no" title="statement not covered" >erage,</span>
-      median: median || 0,
-      min: Math.min(...sortedTimes),
+    return {
+      average,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      median: median || 0,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      min: Math.min(...sortedTimes),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       max: Math.max(...sortedTimes),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       count: sortedTimes.length,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    };
+  }
+&nbsp;
   /**
    * Analyze error patterns
    */
@@ -2240,16 +2240,16 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
     const errorLogs = logs.filter(log =&gt; log.error);
     const errorTypes: Record&lt;string, number&gt; = {};
 &nbsp;
-    errorLogs.forEach(log =&gt; {
-      const errorType = log.error?.type || 'unknown';
-      errorTypes[errorType] = (errorTypes[errorType] || 0) + 1;
-<span class="fstat-no" title="function not covered" >    })</span>;
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" >    er</span>rorLogs.forEach(log =&gt; {
+      co<span class="cstat-no" title="statement not covered" >nst errorType = log.er</span>ror?.type || 'unknown';
+      er<span class="cstat-no" title="statement not covered" >rorTypes[errorType] = </span>(errorTypes[errorType] || 0) + 1;
+    });
+<span class="fstat-no" title="function not covered" ></span>
     retu<span class="cstat-no" title="statement not covered" >rn {</span>
-      totalErrors: errorLogs.length,
-<span class="fstat-no" title="function not covered" ></span>      errorRate: (errorLogs.length / logs.length) * 100,
-      er<span class="cstat-no" title="statement not covered" >rorTypes,</span>
-      to<span class="cstat-no" title="statement not covered" >pErrors: Object.entries(errorTypes)</span>
+      to<span class="cstat-no" title="statement not covered" >talErrors: errorLogs.length,</span>
+      errorRate: (errorLogs.length / logs.length) * 100,
+      errorTypes<span class="cstat-no" title="statement not covered" >,</span>
+      topErrors:<span class="cstat-no" title="statement not covered" > Object</span>.entries(errorTypes)
         .sort(([, a], [, b]) =&gt; b - a)
         .slice(0<span class="cstat-no" title="statement not covered" >, 5),</span>
     };<span class="cstat-no" title="statement not covered" ></span>
@@ -2260,15 +2260,15 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
    */<span class="cstat-no" title="statement not covered" ></span>
   private analyz<span class="cstat-no" title="statement not covered" >eUsageP</span>atterns(logs: MakeLogEntry[]): Record&lt;string, unknown&gt; {
     const moduleUsage: Record&lt;string, number&gt; = {};
-    const hourly<span class="cstat-no" title="statement not covered" >Distribution: Record&lt;string, number&gt; = {};</span>
+    const hourlyDistribution: Record&lt;string, number&gt; = {};
+<span class="fstat-no" title="function not covered" ></span>
+    logs.forEach(log =&gt; {<span class="cstat-no" title="statement not covered" ></span>
+      //<span class="cstat-no" title="statement not covered" > Module usage</span>
+      moduleUsage[log.module.name] = (moduleUsage[log.module.name] || 0) + 1;
 <span class="cstat-no" title="statement not covered" ></span>
-    logs.forEach(log =&gt; {
-      // Module usage
-<span class="fstat-no" title="function not covered" ></span>      moduleUsage[log.module.name] = (moduleUsage[log.module.name] || 0) + 1;
-<span class="cstat-no" title="statement not covered" ></span>
-      //<span class="cstat-no" title="statement not covered" > Hourly distribution</span>
-      const hour = new Date(log.timestamp).getHours();
-      hourly<span class="cstat-no" title="statement not covered" >Distribution[hour] = (hourlyDistribution[hour] || 0) + 1;</span>
+      // Hourly distribution
+      const hour = n<span class="cstat-no" title="statement not covered" >ew Date(log.timestamp).getHours();</span>
+      hourlyDistribu<span class="cstat-no" title="statement not covered" >tion[ho</span>ur] = (hourlyDistribution[hour] || 0) + 1;
     });
 <span class="cstat-no" title="statement not covered" ></span>
     return {<span class="cstat-no" title="statement not covered" ></span>
@@ -2280,29 +2280,29 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
     };<span class="cstat-no" title="statement not covered" ></span>
   }
 <span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
+  /**
    * Analyze trends
-   */<span class="cstat-no" title="statement not covered" ></span>
+   */
   private analyzeTrends(logs: MakeLogEntry[]): Record&lt;string, unknown&gt; {
     // Group logs by time intervals
     const timeIntervals: Record&lt;string, number&gt; = {};
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
     logs.forEach(log =&gt; {
       const interval = new Date(log.timestamp).toISOString().slice(0, 13); // Hour-based intervals
-      timeIn<span class="cstat-no" title="statement not covered" >tervals[interval] = (timeIntervals[interval] || 0) + 1;</span>
+      timeIntervals[interval] = (timeIntervals[interval] || 0) + 1;
     });
 &nbsp;
     const values = Object.values(timeIntervals);
-    const trend = values.length &gt; 1 ? 
-      (values[values.length - 1] - values[0]) / values.length : 0;
+<span class="fstat-no" title="function not covered" >    co</span>nst trend = values.length &gt; 1 ? 
+      (v<span class="cstat-no" title="statement not covered" >alues[values.length - 1] - values[0]</span>) / values.length : 0;
 &nbsp;
 <span class="fstat-no" title="function not covered" >    re</span>turn {
       ti<span class="cstat-no" title="statement not covered" >meIntervals,</span>
-      trend: trend &gt; 0 ? 'increasing' : trend &lt; 0 ? 'decreasing' : 'stable',
-<span class="fstat-no" title="function not covered" ></span>      trendValue: trend,
-    };<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
+      tr<span class="cstat-no" title="statement not covered" >end: trend &gt; 0 ? 'increa</span>sing' : trend &lt; 0 ? 'decreasing' : 'stable',
+      trendValue: trend,
+    };
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
    *<span class="fstat-no" title="function not covered" > F</span>ormat logs for export
    */<span class="cstat-no" title="statement not covered" ></span>
@@ -2310,9 +2310,9 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
 <span class="fstat-no" title="function not covered" >    lo</span>gs: MakeLogEntry[], 
     outp<span class="cstat-no" title="statement not covered" >utConfig: OutputConfig, </span>
     metadata: Record&lt;string, unknown&gt;,
-<span class="fstat-no" title="function not covered" >    an</span>alytics?: Record&lt;string, unknown&gt;
-  ): Pro<span class="cstat-no" title="statement not covered" >mise&lt;Record&lt;string, unknown&gt;&gt; {</span>
-    const baseData = {
+    analytics?: Record&lt;string, unknown&gt;
+  ):<span class="fstat-no" title="function not covered" > P</span>romise&lt;Record&lt;string, unknown&gt;&gt; {
+    cons<span class="cstat-no" title="statement not covered" >t baseData = {</span>
       metadata,
 <span class="fstat-no" title="function not covered" ></span>      logs,
       an<span class="cstat-no" title="statement not covered" >alytics,</span>
@@ -2323,8 +2323,8 @@ class EnhancedLogExp<span class="cstat-no" title="statement not covered" >ortPro
 <span class="fstat-no" title="function not covered" ></span>      case 'json':
 <span class="cstat-no" title="statement not covered" >        return baseData;</span>
       case 'csv':
-<span class="fstat-no" title="function not covered" ></span>        return { ...baseData, csvData: this.convertToCSV(logs) };
-      ca<span class="cstat-no" title="statement not covered" >se 'parquet':</span>
+        return { ...baseData, csvData: this.convertToCSV(logs) };
+      case 'parquet':
         return { ...baseData, parquetData: 'Parquet conversion would be implemented here' };
       default:
         return baseData;
@@ -2497,7 +2497,7 @@ class ExternalSystemConnector {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.110Z
+                at 2025-08-22T05:07:11.447Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

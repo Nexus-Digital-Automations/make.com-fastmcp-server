@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/287</span>
+                <span class='fraction'>0/276</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/227</span>
+                <span class='fraction'>0/220</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/52</span>
+                <span class='fraction'>0/51</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/279</span>
+                <span class='fraction'>0/268</span>
             </div>
         
             
@@ -1506,18 +1506,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2481,7 +2475,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2944,19 +2944,19 @@
  * Comprehensive performance monitoring, bottleneck detection, and optimization recommendations
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError } from 'fastmcp';
+import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import metrics from '../lib/metrics.js';</span>
-import Performance<span class="cstat-no" title="statement not covered" >Monitor from '../li</span>b/performance-monitor.js';
-import { forma<span class="cstat-no" title="statement not covered" >tSuccessRespons</span>e } from '../utils/response-formatter.js';
-import { <span class="cstat-no" title="statement not covered" ></span>
-  type SystemMemoryMe<span class="cstat-no" title="statement not covered" >trics, </span>
-  type CpuMetrics,<span class="cstat-no" title="statement not covered" ></span>
-  type PerformanceAnalysisOption<span class="cstat-no" title="statement not covered" >s,</span>
+import logger from '../lib/logger.js';
+import metrics from '../lib/metrics.js';
+import PerformanceMonitor from '../lib/performance-monitor.js';
+import { formatSuccessResponse } f<span class="cstat-no" title="statement not covered" >rom '../utils/response-formatter.js';</span>
+import { 
+  type SystemMemoryMetrics, 
+  type CpuMetrics,
+  type PerformanceAnalysisOptions,
   type PerformanceAnalysisFilters,
-  type AlertThresholds<span class="cstat-no" title="statement not covered" ></span>
+  type AlertThresholds
 } from '../types/index.js';
 &nbsp;
 // Performance analysis schemas
@@ -2969,22 +2969,22 @@ const PerformanceAnalysisSchema = z.object({
     includePerformanceMetrics: z.boolean().default(true).describe('Include performance metrics collection'),
     includeTrendAnalysis: z.boolean().default(true).describe('Include trend analysis over time'),
     includeOptimizationRecommendations: z.boolean().default(true).describe('Include optimization recommendations'),
-    includeCostAnalysis: z.boolean().default(false).describe('Include cost impact analysis'),
+    includeCostAnalysis: z.boolean()<span class="cstat-no" title="statement not covered" >.default(false).describe('Include cost impact analysis'),</span>
     performanceBenchmarking: z.boolean().default(true).describe('Compare against industry benchmarks'),
     detailedBreakdown: z.boolean().default(false).describe('Include detailed component-level breakdown')
   }).optional(),
   filters: z.object({
     minExecutionTime: z.number().optional().describe('Minimum execution time to consider (ms)'),
-    errorThreshold: z.number().min(0<span class="cstat-no" title="statement not covered" >).max(1).default(0.05).describe('Error rate threshold for concern'),</span>
+    errorThreshold: z.number().min(0).max(1).default(0.05).describe('Error rate threshold for concern'),
     severityFilter: z.enum(['all', 'warning', 'error', 'critical']).default('all').describe('Minimum severity to include')
   }).optional()
-}).strict();
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 const ComprehensiveAnalysisSchema = z.object({
   includeSystemMetrics: z.boolean().default(true).describe('Include system-wide performance metrics'),
   includeApiMetrics: z.boolean().default(true).describe('Include API performance metrics'),
   includeWebhookMetrics: z.boolean().default(true).describe('Include webhook performance metrics'),
-  includeScenarioMetrics: z<span class="cstat-no" title="statement not covered" >.boolean().default(true).describe('Include scenario execution metrics'),</span>
+  includeScenarioMetrics: z.boolean().default(true).describe('Include scenario execution metrics'),
   timeRangeHours: z.number().min(1).max(168).default(24).describe('Time range to analyze in hours'),
   generateRecommendations: z.boolean().default(true).describe('Generate optimization recommendations'),
   benchmarkComparison: z.boolean().default(true).describe('Compare against industry benchmarks')
@@ -2994,13 +2994,13 @@ const LiveAnalysisSchema = z.object({
   durationMinutes: z.number().min(1).max(60).default(5).describe('Duration to monitor in minutes'),
   samplingIntervalSeconds: z.number().min(1).max(60).default(10).describe('Sampling interval in seconds'),
   alertThresholds: z.object({
-    responseTime: z.number().default(1000).describe('Response time threshold in ms'),
+    responseTime: z.numbe<span class="cstat-no" title="statement not covered" >r().default(1000).describe('Response time threshold in ms'),</span>
     errorRate: z.number().default(0.05).describe('Error rate threshold (0-1)'),
     cpuUsage: z.number().default(0.8).describe('CPU usage threshold (0-1)'),
     memoryUsage: z.number().default(0.85).describe('Memory usage threshold (0-1)')
   }).optional()
 }).strict();
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 // Performance analysis interfaces
 &nbsp;
 // System metrics interfaces (imported from types/index.ts)
@@ -3014,50 +3014,50 @@ interface SystemCpuMetrics {
 interface _SystemMetrics {
   memory: SystemMemoryMetrics;
   cpu: SystemCpuMetrics;
-  uptime: number;
-  timestamp: number;
-}
+  up<span class="fstat-no" title="function not covered" >ti</span>me: number;
+  timest<span class="cstat-no" title="statement not covered" >amp: number;</span>
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 interface _ApiMetrics {
   responseTime: number;
-  he<span class="fstat-no" title="function not covered" >al</span>thy: boolean;
-  rateLi<span class="cstat-no" title="statement not covered" >miter?: {</span>
-    runn<span class="cstat-no" title="statement not covered" >ing: number;</span>
-    queued: number;
-  };
+  healthy: boolean;
+  ra<span class="fstat-no" title="function not covered" >te</span>Limiter?: {
+    running: number;<span class="cstat-no" title="statement not covered" ></span>
+    queued: number;<span class="cstat-no" title="statement not covered" ></span>
+  };<span class="cstat-no" title="statement not covered" ></span>
   error?: string;
   timestamp: number;
-}<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-interface _WebhookMetric<span class="cstat-no" title="statement not covered" >s {</span>
-  maxThr<span class="cstat-no" title="statement not covered" >oughput: number;</span>
-  queueSize: number;
+}
+&nbsp;
+interfac<span class="cstat-no" title="statement not covered" >e _WebhookMetrics {</span>
+  maxThroughput: number;
+  queueSize: number;<span class="cstat-no" title="statement not covered" ></span>
   processingTime: number;
   currentLoad: number;
   timestamp: number;
-}<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-interface _ScenarioExecution<span class="cstat-no" title="statement not covered" >Metrics {</span>
-  averageExecutionTime: number;
-  successRate: number;
-  errorRate: number;
 }
+&nbsp;
+interface _ScenarioExecutionMetr<span class="cstat-no" title="statement not covered" >ics {</span>
+  averageExecutionTime: number;
+  successRate: number;<span class="cstat-no" title="statement not covered" ></span>
+  errorRate: number;
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 interface _ScenarioMetrics {<span class="cstat-no" title="statement not covered" ></span>
   scenario?: Record&lt;string, unknown&gt;;
-  executionMetrics?: _Scena<span class="cstat-no" title="statement not covered" >rioExecutionMetrics;</span>
+  executionMetrics?: _ScenarioExecut<span class="cstat-no" title="statement not covered" >ionMetrics;</span>
   error?: string;
-  timestamp: number;<span class="cstat-no" title="statement not covered" ></span>
-}
+  timestamp: number;
+}<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
 interface _OrganizationUsage {
   operationsUsed: number;<span class="cstat-no" title="statement not covered" ></span>
   operationsLimit: number;
   utilizationRate: number;
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+}
+&nbsp;
 interface _OrganizationMetrics {
-  organization?: Record&lt;str<span class="cstat-no" title="statement not covered" >ing, unknown&gt;;</span>
+  organization?: Record&lt;string, unknown&gt;;
   usage?: _OrganizationUsage;
   error?: string;
   timestamp: number;
@@ -3069,7 +3069,7 @@ interface MetricsFormattingResult {
     p50: number;
     p95: number;
     p99: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: '<span class="cstat-no" title="statement not covered" >improving' | 'stable' | 'degrading';</span>
   };
   throughput: {
     requestsPerSecond: number;
@@ -3078,104 +3078,104 @@ interface MetricsFormattingResult {
   };<span class="cstat-no" title="statement not covered" ></span>
   reliability: {
     uptime: number;
-    errorRate: number;
+    errorRat<span class="cstat-no" title="statement not covered" >e: number;</span>
     successRate: number;
     trend: 'improving' | 'stable' | 'degrading';
-  };<span class="cstat-no" title="statement not covered" ></span>
+  };
   resources: {
-    cpuUsage: number;
-    memoryUs<span class="cstat-no" title="statement not covered" >age: number;</span>
+    cpuUsage<span class="cstat-no" title="statement not covered" >: number;</span>
+    memoryUsage: number;
     networkUtilization: number;
     trend: 'improving' | 'stable' | 'degrading';
   };
 }
+<span class="fstat-no" title="function not covered" ></span>
+// Optio<span class="cstat-no" title="statement not covered" >ns and Filters interfaces imported from types/index.ts</span>
 <span class="cstat-no" title="statement not covered" ></span>
-// Options and Filters interfaces imported from types/index.ts
-&nbsp;
-interface PerformanceMetrics {
+interface PerformanceMetrics <span class="cstat-no" title="statement not covered" >{</span>
   responseTime?: {
-    average: number;
-<span class="fstat-no" title="function not covered" >    p5</span>0: number;
-    p95:<span class="cstat-no" title="statement not covered" > number;</span>
-    p99:<span class="cstat-no" title="statement not covered" > number;</span>
-    trend: 'improving' | 'sta<span class="cstat-no" title="statement not covered" >ble</span>' | 'degrading';
-  } | number;
-  throughput<span class="cstat-no" title="statement not covered" >?: {</span>
-    requestsPerSecond: number;<span class="cstat-no" title="statement not covered" ></span>
-    requestsPerM<span class="cstat-no" title="statement not covered" >inute: number;</span>
+    average:<span class="cstat-no" title="statement not covered" > number;</span>
+    p50: number;<span class="cstat-no" title="statement not covered" ></span>
+    p95: number;<span class="cstat-no" title="statement not covered" ></span>
+    p99: number;
     trend: 'improving' | 'stable' | 'degrading';
-  };
-  reliabilit<span class="cstat-no" title="statement not covered" >y?: {</span>
-    uptime: number;<span class="cstat-no" title="statement not covered" ></span>
-    errorRate: n<span class="cstat-no" title="statement not covered" >umber;</span>
-    successRate: number;
+  } | number<span class="cstat-no" title="statement not covered" >;</span>
+  throughput?: {<span class="cstat-no" title="statement not covered" ></span>
+    requestsPerS<span class="cstat-no" title="statement not covered" >econd: number;</span>
+    requestsPerMinute: number;
     trend: 'improving' | 'stable' | 'degrading';
   };<span class="cstat-no" title="statement not covered" ></span>
-  resources?: {<span class="cstat-no" title="statement not covered" ></span>
-    cpuUsage: nu<span class="cstat-no" title="statement not covered" >mber;</span>
-    memoryUsage: number;
-    networkUtilization: number;
+  reliability?: {<span class="cstat-no" title="statement not covered" ></span>
+    uptime: numb<span class="cstat-no" title="statement not covered" >er;</span>
+    errorRate: number;
+    successRate: number;
     trend: 'improving' | 'stable' | '<span class="cstat-no" title="statement not covered" >degrading';</span>
   };<span class="cstat-no" title="statement not covered" ></span>
-  memory?: number | SystemMemoryMetrics;
+  resources?: {
+    cpuUsage: number;
+    memoryUsage: number;
+    networkU<span class="cstat-no" title="statement not covered" >tilization: number;</span>
+    trend: 'improving' | 'stable' | 'degrading';
+  };
+  memory?: n<span class="cstat-no" title="statement not covered" >umber | SystemMemoryMetrics;</span>
   cpu?: SystemCpuMetrics;
   uptime?: number;
   timestamp?<span class="cstat-no" title="statement not covered" >: number;</span>
   healthy?: boolean;
   error?: string;
-  rateLimite<span class="cstat-no" title="statement not covered" >r?: {</span>
+  rateLimiter?: {
     running: number;
     queued: number;
-  };<span class="cstat-no" title="statement not covered" ></span>
-  [key: string]: unknown;
-}
-&nbsp;
-interface TrendAnalysis {
-  performanceDirection: 'improving' | 'stable' | 'degrading';
-  pr<span class="fstat-no" title="function not covered" >ed</span>ictionConfidence: number;
-  projectedIssues: string[]<span class="cstat-no" title="statement not covered" >;</span>
+  };<span class="fstat-no" title="function not covered" ></span>
+  [key: string]: unknown;<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-interface BenchmarkCompari<span class="cstat-no" title="statement not covered" >son {</span>
-  indust<span class="cstat-no" title="statement not covered" >ryStandard: string;</span>
-  currentPerformance: string;
-  gap: string;
-  ranking: 'below_average' | 'average' | 'above_average' | 'excellent';
-}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-interface OptimizationRecommend<span class="cstat-no" title="statement not covered" >ations {</span>
-  immediate: str<span class="cstat-no" title="statement not covered" >ing[];</span>
-  shortTerm: str<span class="cstat-no" title="statement not covered" >ing[];</span>
-  longTerm: string[]<span class="cstat-no" title="statement not covered" >;</span>
+interface TrendAnalysis {<span class="cstat-no" title="statement not covered" ></span>
+  perfor<span class="cstat-no" title="statement not covered" >manceDirection: 'improving' | 'stable' | 'degrading';</span>
+  predictionConfidence: number;
+  projectedIssues: string[];
+}
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+interface Be<span class="cstat-no" title="statement not covered" >nchmarkComparison {</span>
+  industryStandard: string;<span class="cstat-no" title="statement not covered" ></span>
+  currentPerform<span class="cstat-no" title="statement not covered" >ance: string;</span>
+  gap: string;<span class="cstat-no" title="statement not covered" ></span>
+  ranking: 'below_av<span class="cstat-no" title="statement not covered" >erage' | 'average' | 'abov</span>e_average' | 'excellent';
+}
+&nbsp;
+interface Optimi<span class="cstat-no" title="statement not covered" >zationRecommendations {</span>
+  immediate: string[<span class="cstat-no" title="statement not covered" >];</span>
+  shortTerm: string[<span class="cstat-no" title="statement not covered" >];</span>
+  longTerm: string[];
   estimatedImpact: number;
 }
-<span class="cstat-no" title="statement not covered" ></span>
-interface CostAnalys<span class="cstat-no" title="statement not covered" >is {</span>
-  currentCost: numbe<span class="cstat-no" title="statement not covered" >r;</span>
-  optimizationPotential: number;
+&nbsp;
+interface CostAnalysis {
+  currentCost: number;
+  optimizationPo<span class="cstat-no" title="statement not covered" >tential: number;</span>
   recommendedActions: string[];
 }
 &nbsp;
 &nbsp;
 interface PerformanceBottleneck {
-  type: 'respons<span class="cstat-no" title="statement not covered" >e_time' | 'throughput' | 'error_rate' | 'resource_usage' | 'rate_limiting' | 'webhook_queue';</span>
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  description: string;
-  impact: string;
+  type: <span class="cstat-no" title="statement not covered" >'response_time' | '<span class="fstat-no" title="function not covered" >th</span>roughput' | 'error_rate' | 'resource_usage' | 'rate_limiting' | 'webhook_queue';</span>
+  severity: <span class="cstat-no" title="statement not covered" >'low' | 'me<span class="fstat-no" title="function not covered" >di</span>um' | 'high' | 'critical';</span>
+  description: s<span class="cstat-no" title="statement not covered" >tring;</span>
+  impact: string<span class="cstat-no" title="statement not covered" >;</span>
   affectedComponents: string[];
   metrics: {
-    curr<span class="cstat-no" title="statement not covered" >entValue: number;<span class="fstat-no" title="function not covered" ></span></span>
-    expected<span class="cstat-no" title="statement not covered" >Value: numb<span class="fstat-no" title="function not covered" >er</span>;</span>
-    unit: string<span class="cstat-no" title="statement not covered" >;</span>
-    trend: 'impr<span class="cstat-no" title="statement not covered" >oving' | 'stable' </span>| 'degrading';
-  };
-  rootCause: string;
-  recommendations: string[];
+    currentValue: number;
+    expectedValue: number;
+    unit: string;
+    trend: 'improving' | 'stable' | 'degrading';
+  };<span class="fstat-no" title="function not covered" ></span>
+  rootCause: string;<span class="cstat-no" title="statement not covered" ></span>
+  recomm<span class="cstat-no" title="statement not covered" >endations: string[];</span>
   estimatedImpact: {
-    performanceImprovement: number; // percentage
+    performanceI<span class="cstat-no" title="statement not covered" >mprovement: number; // percentage</span>
     costSavings: number; // percentage
-<span class="fstat-no" title="function not covered" >    im</span>plementationEffort: 'low' | 'medium' | 'high';
-  };<span class="cstat-no" title="statement not covered" ></span>
+    implementati<span class="cstat-no" title="statement not covered" >onEffort: 'low' | 'medium' | 'high';</span>
+  };
 }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 interface Perfor<span class="cstat-no" title="statement not covered" >manceAnalysisResult {</span>
@@ -3184,21 +3184,21 @@ interface Perfor<span class="cstat-no" title="statement not covered" >manceAnaly
   targetId?: string;
   timeRange: {<span class="cstat-no" title="statement not covered" ></span>
     startTime: string;
-    endTime: str<span class="cstat-no" title="statement not covered" >ing;</span>
+    endTime: string;
     durationHours: number;
-  };<span class="cstat-no" title="statement not covered" ></span>
+  };
   overallHealthScore: number; // 0-100
-  performanceGra<span class="cstat-no" title="statement not covered" >de: 'A' | 'B' | 'C' | 'D' | 'F';</span>
-  bottlenecks: PerformanceBottleneck[];
-  metrics: {
-    responseTime: {
-      average: number;
+  pe<span class="fstat-no" title="function not covered" >rf</span>ormanceGrade: 'A' | 'B' | 'C' | 'D' | 'F';
+  bottlenecks: Performanc<span class="cstat-no" title="statement not covered" >eBottleneck[];</span>
+  metrics: {<span class="cstat-no" title="statement not covered" ></span>
+    responseTime: {<span class="cstat-no" title="statement not covered" ></span>
+      av<span class="cstat-no" title="statement not covered" >erage: number;</span>
       p50: number;
-<span class="fstat-no" title="function not covered" ></span>      p95: number;
-      p99: number;<span class="cstat-no" title="statement not covered" ></span>
-      trend: 'improving' <span class="cstat-no" title="statement not covered" >| 'stable' | 'degra</span>ding';
-    };<span class="cstat-no" title="statement not covered" ></span>
-    thro<span class="cstat-no" title="statement not covered" >ughput: {</span>
+      p95: number;
+      p99: number;
+      trend: 'improving' | 'stable' | 'degrading';
+    };
+    throughput: {
       requestsPerSecond: number;
       requestsPerMinute: number;
       trend: 'improving' | 'stable' | 'degrading';
@@ -3210,121 +3210,121 @@ interface Perfor<span class="cstat-no" title="statement not covered" >manceAnaly
       trend: 'improving' | 'stable' | 'degrading';
     };
     resources: {
-      cpuUsage: number;
-      memoryUsage: number;
+<span class="fstat-no" title="function not covered" ></span>      cpuUsage: number;
+      me<span class="cstat-no" title="statement not covered" >moryUsage: number;</span>
       networkUtilization: number;
-      trend: 'improving' | 'stable' | 'degrading';
+      trend: 'improving' | 'stable' | <span class="cstat-no" title="statement not covered" >'degrading';</span>
     };
+  };<span class="cstat-no" title="statement not covered" ></span>
+  trends: {<span class="cstat-no" title="statement not covered" ></span>
+    performanceDirection: 'improv<span class="cstat-no" title="statement not covered" >ing' | 'stable' | 'degr</span>ading';
+    predicti<span class="cstat-no" title="statement not covered" >onConfidence: number;</span>
+    projectedIssues: string[];
   };
-  tr<span class="fstat-no" title="function not covered" >en</span>ds: {
-    perf<span class="cstat-no" title="statement not covered" >ormanceDirection: 'improving' | 'stable' | 'degrading';</span>
-    predictionConfidence: number;
-    projectedIssues: string[];<span class="cstat-no" title="statement not covered" ></span>
-  };
-  benchmarkComparison: {<span class="cstat-no" title="statement not covered" ></span>
-    industryStandard: string;<span class="cstat-no" title="statement not covered" ></span>
-    currentPerformance: string;<span class="cstat-no" title="statement not covered" ></span>
-    gap: str<span class="cstat-no" title="statement not covered" >ing;</span>
+  benchmarkComparison: {
+    industryStandard: string;
+    currentPerformance: string;
+    gap: string;
     ranking: 'below_average' | 'average' | 'above_average' | 'excellent';
-  };
+  };<span class="cstat-no" title="statement not covered" ></span>
   recommendations: {
     immediate: string[];
     shortTerm: string[];
     longTerm: string[];
     estimatedImpact: number;
-  };<span class="cstat-no" title="statement not covered" ></span>
+  };
   costAnalysis?: {
     currentCost: number;
     optimizationPotential: number;
     recommendedActions: string[];
-  };
+  };<span class="fstat-no" title="function not covered" ></span>
 }
 &nbsp;
-interface LivePerformanceUpdate {
+interfac<span class="cstat-no" title="statement not covered" >e LivePerformanceUpdate {</span>
   timestamp: string;
   metrics: {
-<span class="fstat-no" title="function not covered" >    re</span>sponseTime: number;
+    responseTime: number;
     requestRate: number;
     errorRate: number;
-    cpuU<span class="cstat-no" title="statement not covered" >sage: number;</span>
+    cpuUsage: number;
     memoryUsage: number;
   };
   alerts: Array&lt;{
     type: string;
-    severity: 'warning' | 'error' | 'critical';
-    message: string;
-    threshold: number;
+<span class="fstat-no" title="function not covered" >    se</span>verity: 'warning' | 'error' | 'critical';
+    mess<span class="cstat-no" title="statement not covered" >age: string;</span>
+    threshol<span class="cstat-no" title="statement not covered" >d: number;</span>
     currentValue: number;
-  }&gt;;
+  }&gt;;<span class="cstat-no" title="statement not covered" ></span>
   status: 'healthy' | 'warning' | 'critical';
-}<span class="fstat-no" title="function not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
  * Performance Analysis Engine
  */<span class="cstat-no" title="statement not covered" ></span>
 class PerformanceAnalysisEngine {
-  private componentLogger: ReturnType<span class="cstat-no" title="statement not covered" >&lt;typeof logger.child&gt;;</span>
-  private pe<span class="cstat-no" title="statement not covered" >rformanceMonitor: PerformanceMonitor;</span>
-  private readon<span class="cstat-no" title="statement not covered" >ly industryBenchmarks = {</span>
+  private componentLogger: ReturnType&lt;typeof logger.child&gt;;
+  private performanceMonitor: PerformanceMonitor;
+  private readonly industryBenchmarks = {
     responseTime: {
-      excell<span class="cstat-no" title="statement not covered" >ent: 100,</span>
+      excellent: 100,
       good: 500,
       acceptable: 1000,
       poor: 2000
     },
     errorRate: {
-      excellent: 0.001,
+      excell<span class="cstat-no" title="statement not covered" >ent: 0.001,</span>
       good: 0.01,
       acceptable: 0.05,
       poor: 0.1
     },
     uptime: {
-      excell<span class="cstat-no" title="statement not covered" >ent: 99.99,</span>
+      excellent: 99.99,
       good: 99.95,
       acceptable: 99.9,
-      poor: 99.5
-    }
-  };
+<span class="fstat-no" title="function not covered" ></span>      poor: 99.5
+    }<span class="cstat-no" title="statement not covered" ></span>
+  };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-  constructor() {
-    this.componentLogger = logger.child({ component: 'PerformanceAnalysisEngine' });
-<span class="fstat-no" title="function not covered" >    th</span>is.performanceMonitor = new PerformanceMonitor();
+  constr<span class="cstat-no" title="statement not covered" >uctor() {</span>
+    this.componentLogger = logge<span class="cstat-no" title="statement not covered" >r.child({ component: 'PerformanceAnalysisEngine</span>' });
+    this.per<span class="cstat-no" title="statement not covered" >formanceMonitor = new PerformanceMonitor();</span>
   }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  /**
-   * Ana<span class="cstat-no" title="statement not covered" >lyze performance bottlenecks for a specific target</span>
-   */<span class="cstat-no" title="statement not covered" ></span>
-  async anal<span class="cstat-no" title="statement not covered" >yzePerformanceBottlenecks(</span>
-    targetType: <span class="cstat-no" title="statement not covered" >string,</span>
+&nbsp;
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Analyze performance bottlenecks for a specific target
+   */
+  async analyzePerformanceBottlenecks(
+    targetType: string,
     targetId: string | undefined,
-    options:<span class="cstat-no" title="statement not covered" > PerformanceAnalysisOptions,</span>
+    options: PerformanceAnalysisOptions,
     filters: PerformanceAnalysisFilters,
     apiClient: MakeApiClient
   ): Promise&lt;PerformanceAnalysisResult&gt; {
     const startTime = Date.now();
     const endTime = startTime - (options.timeRangeHours * 60 * 60 * 1000);
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
     this.componentLogger.info('Starting performance bottleneck analysis', {
       targetType,
       targetId,
       timeRangeHours: options.timeRangeHours
     });
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
     try {
       // Collect performance metrics
-      const metrics = await this.collectPerformanceMetrics(targetType, targetId, {
-        startTime: endTime,
+<span class="fstat-no" title="function not covered" ></span>      const metrics = await this.collectPerformanceMetrics(targetType, targetId, {
+        startTime: endTime,<span class="cstat-no" title="statement not covered" ></span>
         endTime: startTime,
-        apiClient
+        apiClient<span class="cstat-no" title="statement not covered" ></span>
       });
-&nbsp;
-<span class="fstat-no" title="function not covered" ></span>      // Detect bottlenecks
-      const bottlenecks = aw<span class="cstat-no" title="statement not covered" >ait</span> this.detectBottlenecks(metrics, filters);
-&nbsp;
-      // Analyze trends<span class="cstat-no" title="statement not covered" ></span>
-      const trends = await this.analyzeTrends(metrics, options.timeRangeHours);
 <span class="cstat-no" title="statement not covered" ></span>
-      // Gen<span class="cstat-no" title="statement not covered" >erate benchmark comparison</span>
+      // Det<span class="cstat-no" title="statement not covered" >ect bottlenecks</span>
+      const bottlenecks = await this.detectBottlenecks(metrics, filters);
+&nbsp;
+      // Analyze trends
+      const trends = await this.analyzeTrends(metrics, options.timeRangeHours);
+&nbsp;
+      // Generate benchmark comparison
       const benchmarkComparison = this.compareToBenchmarks(metrics);
 &nbsp;
       // Calculate overall health score
@@ -3345,16 +3345,16 @@ class PerformanceAnalysisEngine {
         targetId,
         timeRange: {
           startTime: new Date(endTime).toISOString(),
-          endTime: new Date(startTime).toISOString(),
+          endTime: new Date(startT<span class="cstat-no" title="statement not covered" >ime).toISOString(),</span>
           durationHours: options.timeRangeHours
-        },
-        overallHealthScore,
+<span class="cstat-no" title="statement not covered" >        },</span>
+        over<span class="cstat-no" title="statement not covered" >allHealthScore,</span>
         performanceGrade: this.calculatePerformanceGrade(overallHealthScore),
         bottlenecks,
-        metrics: this.formatMetric<span class="cstat-no" title="statement not covered" >s(metrics),</span>
+        metrics: this.formatMetrics(metrics),
         trends,
-<span class="cstat-no" title="statement not covered" >        benchmarkComparison,</span>
-        reco<span class="cstat-no" title="statement not covered" >mmendations,</span>
+        benchmarkComparison,
+        recommendations,
         costAnalysis
       };
 &nbsp;
@@ -3375,14 +3375,14 @@ class PerformanceAnalysisEngine {
       });
       throw error;
     }
-  }
-&nbsp;
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**
    * Perform comprehensive system-wide performance analysis
    */
   async performComprehensiveAnalysis(
-    opti<span class="cstat-no" title="statement not covered" >ons: PerformanceAnalysisOptions,</span>
-    apiClien<span class="cstat-no" title="statement not covered" >t: MakeApiClient</span>
+    options: PerformanceAnalysisOptions,
+    apiClient: MakeApiClient
   ): Promise&lt;PerformanceAnalysisResult&gt; {
     this.componentLogger.info('Starting comprehensive performance analysis');
 &nbsp;
@@ -3402,65 +3402,65 @@ class PerformanceAnalysisEngine {
       }
 &nbsp;
       // API performance analysis
-      if (options.includeApiMetrics) {
+      if<span class="cstat-no" title="statement not covered" > (options.includeApiMetric<span class="fstat-no" title="function not covered" >s)</span> {<span class="cstat-no" title="statement not covered" ></span></span>
         const apiAnalysis = await this.analyzePerformanceBottlenecks(
           'api',
           undefined,
           { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true } as PerformanceAnalysisOptions,
-          { errorThreshold: 5, severityFilter: 'all' } as PerformanceAnalysisFilters,
-<span class="cstat-no" title="statement not covered" >          apiClient<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="fstat-no" title="function not covered" ></span>          { errorThreshold: 5, severityFilter: 'all' } as PerformanceAnalysisFilters,
+          apiClient
         );
-        analyses.push(apiAnalysis);
+<span class="cstat-no" title="statement not covered" >        analyses.push(apiAnalysis);</span>
       }
 &nbsp;
-<span class="fstat-no" title="function not covered" ></span>      // Webhook performance analysis
+      // Webhook performance analysis
       if (options.includeWebhookMetrics) {
         const webhookAnalysis = await this.analyzePerformanceBottlenecks(
-<span class="cstat-no" title="statement not covered" >          'webhook',</span>
+          'webhook',
           undefined,
           { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true } as PerformanceAnalysisOptions,
           { errorThreshold: 5, severityFilter: 'all' } as PerformanceAnalysisFilters,
           apiClient
         );
-        analyses.push(webhookAnalysis);
-      }
+<span class="fstat-no" title="function not covered" ></span>        analyses.push(webhookAnalysis);
+      }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-      // Aggregate results
-      const aggregatedResult = this.aggregateAnalysisResults(analyses);
-&nbsp;
-<span class="fstat-no" title="function not covered" ></span>      this.componentLogger.info('Comprehensive analysis completed', {
-        analysesPerformed: analyse<span class="cstat-no" title="statement not covered" >s.length,</span>
-        overallScore: aggregatedResult.overallHealthScore
-      });<span class="cstat-no" title="statement not covered" ></span>
+      // Aggregate results<span class="cstat-no" title="statement not covered" ></span>
+      co<span class="cstat-no" title="statement not covered" >nst aggregatedResult = this.aggregateAnalysisResults(analyses);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      return<span class="cstat-no" title="statement not covered" > aggregatedResult;</span>
+      this.compo<span class="cstat-no" title="statement not covered" >nentLogger.info('Comprehensive anal</span>ysis completed', {
+        analysesPerformed: analyses.length,
+        overallSc<span class="cstat-no" title="statement not covered" >ore: aggregatedResult.overallHealthScore</span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+      return aggr<span class="cstat-no" title="statement not covered" >egatedResult;</span>
 <span class="cstat-no" title="statement not covered" ></span>
     } catch (error) {
-      this.compon<span class="cstat-no" title="statement not covered" >entLogger.error('Comprehensive analysis failed', {</span>
+      this.componentLogger.error('Comprehensive analysis failed', {
         error: e<span class="cstat-no" title="statement not covered" >rror instanceof Error ? error.message :</span> String(error)
       });
-      throw error<span class="cstat-no" title="statement not covered" >;</span>
+      throw error;
     }<span class="cstat-no" title="statement not covered" ></span>
   }
 &nbsp;
-  /**<span class="cstat-no" title="statement not covered" ></span>
+  /**
    * Perform live performance monitoring
    */
-  async <span class="cstat-no" title="statement not covered" >performLiveAnalysis(</span>
+  async performLiveAnalysis(
     options: PerformanceAnalysisOptions,
     progressCallback?: (update: LivePerformanceUpdate) =&gt; void
   ): Promise&lt;LivePerformanceUpdate[]&gt; {
-    const durationMs = (options.durationMinutes || 5) * 60 * 1000;
-    const intervalMs = (options.samplingIntervalSeconds || 10) * 1000;
+<span class="fstat-no" title="function not covered" >    co</span>nst durationMs = (options.durationMinutes || 5) * 60 * 1000;
+    const intervalMs<span class="cstat-no" title="statement not covered" > = (</span>options.samplingIntervalSeconds || 10) * 1000;
     const updates: LivePerformanceUpdate[] = [];
-    const startTime = Date.now();
-&nbsp;
+    cons<span class="cstat-no" title="statement not covered" >t startTime = Date.now();</span>
+<span class="cstat-no" title="statement not covered" ></span>
     this.componentLogger.info('Starting live performance monitoring', {
-<span class="fstat-no" title="function not covered" ></span>      durationMinutes: options.durationMinutes,
-      samplingInterv<span class="cstat-no" title="statement not covered" >alSe</span>conds: options.samplingIntervalSeconds
+      durationMinute<span class="cstat-no" title="statement not covered" >s: options.du</span>rationMinutes,
+      samplingInterv<span class="cstat-no" title="statement not covered" >alSecon</span>ds: options.samplingIntervalSeconds
     });
 <span class="cstat-no" title="statement not covered" ></span>
-    const mo<span class="cstat-no" title="statement not covered" >nitoringInterval = setInterval(async () =&gt; {</span>
+    const monitoring<span class="cstat-no" title="statement not covered" >Interva</span>l = setInterval(async () =&gt; {
       try {
         const update<span class="cstat-no" title="statement not covered" > = await this</span>.collectLiveMetrics(options.alertThresholds || { errorRate: 5, responseTime: 1000, cpuUsage: 80, memoryUsage: 85 });
         updates.push<span class="cstat-no" title="statement not covered" >(update</span>);
@@ -3468,101 +3468,101 @@ class PerformanceAnalysisEngine {
         if (progress<span class="cstat-no" title="statement not covered" >Callback) {</span>
           progressCa<span class="cstat-no" title="statement not covered" >llback(</span>update);
         }
-<span class="cstat-no" title="statement not covered" ></span>
-        // Check if <span class="cstat-no" title="statement not covered" >monitor</span>ing duration is complete
-        if (Date.now() - startTime &gt;= durationMs) {
-          clearInter<span class="cstat-no" title="statement not covered" >val(monitori</span>ngInterval);
-          this.compo<span class="cstat-no" title="statement not covered" >nentLog</span>ger.info('Live monitoring completed', {
-            totalUpdates: updates.length,
+&nbsp;
+        // Check if monitoring duration is complete
+        if (Date.now() - startTime<span class="cstat-no" title="statement not covered" > &gt;= durationMs) {</span>
+          clearInterval(monitoringInterval);
+<span class="cstat-no" title="statement not covered" >          this.componentLogger.info('Live monitoring completed', {</span>
+<span class="cstat-no" title="statement not covered" >            totalUpdates: updates.length,</span>
             duration: Date.now() - startTime
           });
         }<span class="cstat-no" title="statement not covered" ></span>
       } catch (error) {
 <span class="cstat-no" title="statement not covered" >        this.componentLogger.error('Live monitoring update failed', {</span>
-          er<span class="cstat-no" title="statement not covered" >ror: error instanceof Error ? error.message : String(erro</span>r)
+          er<span class="cstat-no" title="statement not covered" >ror: error instanceof Error ? error.messa</span>ge : String(error)
         });
-      }
-    }, intervalMs);<span class="cstat-no" title="statement not covered" ></span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+    }, intervalMs);
 &nbsp;
-    // R<span class="cstat-no" title="statement not covered" >eturn promise that resolves when monitoring is complete</span>
-    return n<span class="cstat-no" title="statement not covered" >ew Promise((resolve) =&gt; {</span>
-      setTimeout(() =&gt; {
+    // Return promise that resolves when monitoring is complete
+    return new Promise((resolve) =&gt; {
+<span class="fstat-no" title="function not covered" ></span>      setTimeout(() =&gt; {
 <span class="cstat-no" title="statement not covered" >        clearInterval(monitoringInterval);</span>
-        resolve(updates);
-      }, durationMs);
-    });
-  }
-<span class="fstat-no" title="function not covered" ></span>
+        reso<span class="cstat-no" title="statement not covered" >lve(updates)</span>;
+      },<span class="cstat-no" title="statement not covered" > durationMs);</span>
+    });<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   /**<span class="cstat-no" title="statement not covered" ></span>
    * Collect<span class="cstat-no" title="statement not covered" > performance</span> metrics for analysis
    */<span class="cstat-no" title="statement not covered" ></span>
-  private as<span class="cstat-no" title="statement not covered" >ync collectP</span>erformanceMetrics(
-    targ<span class="cstat-no" title="statement not covered" >etType: string,</span>
-    targetId<span class="cstat-no" title="statement not covered" >: string | u</span>ndefined,
-    time<span class="cstat-no" title="statement not covered" >Range: { startTime: number; endTime: number; apiClient: MakeApiClient }</span>
-  ): Promise<span class="cstat-no" title="statement not covered" >&lt;Performance</span>Metrics&gt; {
-    cons<span class="cstat-no" title="statement not covered" >t { apiClien</span>t } = timeRange;
-&nbsp;
-    switch (targetType) {
+  private async collectPerformanceMetrics(
+    targetType: string,
+    targetId: string | undefined,
+    timeRange: { startTime: number; endTime: number; apiClient: MakeApiClient }
+  ):<span class="fstat-no" title="function not covered" > P</span>romise&lt;PerformanceMetrics&gt; {
+    const { apiClient } = <span class="cstat-no" title="statement not covered" >tim</span>eRange;
+<span class="cstat-no" title="statement not covered" ></span>
+    switch (targetType) {<span class="cstat-no" title="statement not covered" ></span>
       case 'system':
-        return this.collectSystemMetrics();
-<span class="fstat-no" title="function not covered" ></span>      case 'api':
-        return this.collec<span class="cstat-no" title="statement not covered" >tAp</span>iMetrics(apiClient);
-      case 'webhook':<span class="cstat-no" title="statement not covered" ></span>
-        return this.colle<span class="cstat-no" title="statement not covered" >ctW</span>ebhookMetrics(apiClient);
-      case 'scenario':
-<span class="cstat-no" title="statement not covered" >        return this.collectScenarioMetrics(targetId, apiClient);</span>
-      case '<span class="cstat-no" title="statement not covered" >organization':</span>
+<span class="cstat-no" title="statement not covered" >        return this.collectSystemMetrics();</span>
+      case '<span class="cstat-no" title="statement not covered" >api':</span>
+        return t<span class="cstat-no" title="statement not covered" >his.collectApiMetrics(apiClient);</span>
+      case 'webhook':
+        return th<span class="cstat-no" title="statement not covered" >is.collectWebhookMetrics(apiClient);</span>
+      case 'scen<span class="cstat-no" title="statement not covered" >ario':</span>
+        return this.collectScenarioMetrics(targetId, apiClient);
+      case 'organization':
         return t<span class="cstat-no" title="statement not covered" >his.collectOrganizationMetrics(targetId, apiClient);</span>
       default:
-        throw new<span class="cstat-no" title="statement not covered" > Error(`Unsupported target type: ${targetType}`);</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-  }
+        throw new Error(`Unsupported target type: ${targetType}`);
+    }
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   /**<span class="cstat-no" title="statement not covered" ></span>
-   * Collect system-level metrics
+   * Collect<span class="cstat-no" title="statement not covered" > system-level metrics</span>
    */
-  private async collectSystemMetrics(): Promise&lt;{
-    memory: SystemMemoryMetrics;<span class="cstat-no" title="statement not covered" ></span>
-    cpu: SystemCpuMetrics;
-    upti<span class="cstat-no" title="statement not covered" >me: number;</span>
-    timestam<span class="cstat-no" title="statement not covered" >p: number;</span>
-  }&gt; {
-    const memUsage = process.memor<span class="cstat-no" title="statement not covered" >yUsage();</span>
+  private async collectSystemMetri<span class="cstat-no" title="statement not covered" >cs(): Promise&lt;{</span>
+    memory: SystemMemoryMetrics;
+    cpu:<span class="cstat-no" title="statement not covered" > SystemCpuMetrics;</span>
+    uptime: <span class="cstat-no" title="statement not covered" >number;</span>
+    timestamp: number;
+  }&gt; {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    cons<span class="cstat-no" title="statement not covered" >t memUsage = process.memoryUsage();</span>
     const cpuUsage = process.cpuUsage();
-    cons<span class="cstat-no" title="statement not covered" >t uptime = process.uptime();</span>
-<span class="cstat-no" title="statement not covered" ></span>
+    const uptime = process.uptime();
+&nbsp;
     return {
-      memory: {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >        used: memUsage.heapUsed,</span>
+      memory: {
+        used: memUsage.heapUsed,
         total: memUsage.heapTotal,
         utilization: memUsage.heapUsed / memUsage.heapTotal
       },
-      cpu: {
-        user: cpuUsage.user,
-        system: cpuUsage.system,
+<span class="fstat-no" title="function not covered" ></span>      cpu: {
+        user: cpuUsage.user,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        system: cpuUsage.system,</span>
         utilization: (cpuUsage.user + cpuUsage.system) / 1000000 / uptime
       },
       uptime,
-<span class="fstat-no" title="function not covered" ></span>      timestamp: Date.now()
-    };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+      timestamp: Date.now()
+    };
+  }
 &nbsp;
   /**
    * Collect API-level metrics
    */
   private async collectApiMetrics(apiClient: MakeApiClient): Promise&lt;{
     responseTime: number;
-    healthy: boolean;
-    rateLimiter?: {
+<span class="fstat-no" title="function not covered" >    he</span>althy: boolean;
+    rateLimiter?: {<span class="cstat-no" title="statement not covered" ></span>
       running: number;
-      queued: number;
+      qu<span class="cstat-no" title="statement not covered" >eued: number;</span>
     };
     timestamp: number;
-<span class="fstat-no" title="function not covered" >    er</span>ror?: string;
-  }&gt; {<span class="cstat-no" title="statement not covered" ></span>
+    error?: string;
+  }&gt; {
     try {
-      //<span class="cstat-no" title="statement not covered" > Get rate limiter status</span>
+      // Get rate limiter status
       const rateLimiterStatus = apiClient.getRateLimiterStatus();
       
       // Perform health check to measure response time
@@ -3586,139 +3586,139 @@ class PerformanceAnalysisEngine {
     }
   }
 &nbsp;
-  /**
-   * Collect webhook-specific metrics
-   */
+  /*<span class="fstat-no" title="function not covered" >*</span>
+   * Collect webhook-specific m<span class="cstat-no" title="statement not covered" >etrics<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+   */<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
   private async collectWebhookMetrics(_apiClient: MakeApiClient): Promise&lt;{
-    maxThroughput: number;
-    queueSize: number;
-<span class="fstat-no" title="function not covered" >    pr</span>ocessingTime: number;
-    currentLoad: number;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-    timestamp: number;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    maxThroughput: number<span class="cstat-no" title="statement not covered" >;</span>
+    queu<span class="cstat-no" title="statement not covered" >eSize: number;</span>
+    processingTime: number;
+    currentLoad: number;
+    timestamp: number;
   }&gt; {
-    // This would typical<span class="cstat-no" title="statement not covered" >ly involve c</span>hecking webhook queue status, processing times, etc.
-    // F<span class="cstat-no" title="statement not covered" >or now, return estimated metrics based on Make.com documentation</span>
-    return {
-      maxThroughput: 30, // webhooks per second
-      queueSize: 50, // maximum queue size
-      processingTime: 5000, // 5 seconds timeout
+    // This would typically involve checking webhook queue status, processing times, etc.
+    // For now, return estimated metrics based on Make.com documentation
+    return {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      maxThroughput: 30, // webhooks per second<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      queueSize: 50, // maximum queue size<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      processingTime: 5000, // 5 seconds timeout<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       currentLoad: 0, // would need actual webhook monitoring
       timestamp: Date.now()
-    };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  /**<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-   * Collect scenario-specific metrics
-   */
-  private async collectScenarioMetrics(scenarioId: string | undefined, apiClient: MakeApiClient): Promise&lt;{
-    scenario?: Record&lt;string, unknown&gt;;
-    executionMetrics?: {
-      averageExecutionTime: number;
-<span class="fstat-no" title="function not covered" ></span>      successRate: number;
-      errorRate: number;<span class="cstat-no" title="statement not covered" ></span>
-    };<span class="cstat-no" title="statement not covered" ></span>
-    error?: string;<span class="cstat-no" title="statement not covered" ></span>
-    timestamp: number;
-  }&gt; {
-    if (!scenarioId) {
-      throw new Error('Scenario ID required for scenario analysis');
-    }
-&nbsp;
-    try {<span class="cstat-no" title="statement not covered" ></span>
-      // Get scenario<span class="cstat-no" title="statement not covered" > details</span>
-      const scenarioResponse = await apiClient.get(`/scenarios/${scenarioId}`);
-      <span class="cstat-no" title="statement not covered" ></span>
-      if (!s<span class="cstat-no" title="statement not covered" >cenarioResponse.success) {</span>
-        throw new Error(`Failed to fetch scenario: ${scenarioResponse.error?.message}`);
-      }
-&nbsp;
-      return {
-        scenario: scenarioResponse.data as Record&lt;string, unknown&gt;,
-        executionMetrics: {
-          //<span class="cstat-no" title="statement not covered" > These would come fr</span>om actual execution logs
-          averageExecutionTime: 5000,
-<span class="cstat-no" title="statement not covered" >          successRate: 0.95,</span>
-          er<span class="cstat-no" title="statement not covered" >rorRate: 0.05</span>
-        },
-        timestamp: Date.now()
-      };
-    } catch (error) {
-      return {
-        error: error instanceof Error ? error.message : String(error),
-        time<span class="cstat-no" title="statement not covered" >stamp: Date.now()</span>
-      };
-    }<span class="cstat-no" title="statement not covered" ></span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+    };
+  }
 &nbsp;
   /**
-   * Collect organization-level metrics
-   */
-  private async collectOrganizationMetrics(orgId: string | undefined, apiClient: MakeApiClient): Promise&lt;{
-    organization?: Record&lt;string, unknown&gt;;
-    usage?: <span class="cstat-no" title="statement not covered" >{</span>
-      operations<span class="cstat-no" title="statement not covered" >Used: number;</span>
-      operationsLimit: number;
-      ut<span class="cstat-no" title="statement not covered" >ilizationRate: number;</span>
+   *<span class="fstat-no" title="function not covered" > C</span>ollect scenario-specific metrics
+   */<span class="cstat-no" title="statement not covered" ></span>
+  private async collectSc<span class="cstat-no" title="statement not covered" >enarioMetrics(scena</span>rioId: string | undefined, apiClient: MakeApiClient): Promise&lt;{
+    scenario?: Record&lt;st<span class="cstat-no" title="statement not covered" >ring, unknown&gt;;</span>
+    executionMetrics?: {
+      averageExecutionTime: number;
+      successRate: number;
+      errorRate: number;
     };
     error?: string;
-    timestamp: number;
-  }&gt; {
-    if (!orgId) {
-      throw new Error('Organization ID required for organization analysis');
-    }
+    timestamp: number;<span class="cstat-no" title="statement not covered" ></span>
+  }&gt; {<span class="cstat-no" title="statement not covered" ></span>
+    if (!scenarioId) {
+      th<span class="cstat-no" title="statement not covered" >row new Error('Scenario ID required for scenario analysis');</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
     try {
-<span class="fstat-no" title="function not covered" ></span>      const orgResponse = await apiClient.get(`/organizations/${orgId}`);
-      <span class="cstat-no" title="statement not covered" ></span>
-      if (!o<span class="cstat-no" title="statement not covered" >rgResponse.su</span>ccess) {
-        throw new Error(`Failed<span class="cstat-no" title="statement not covered" > to fetch organization: ${orgResponse.</span>error?.message}`);
-      }<span class="cstat-no" title="statement not covered" ></span>
+      // Get scenario details
+      const scenarioResponse = await apiClient.get(`/scenarios/${scenarioId}`);
+      
+      if (!scenarioResponse.success) {
+        thro<span class="cstat-no" title="statement not covered" >w new Error(`Failed </span>to fetch scenario: ${scenarioResponse.error?.message}`);
+      }
 <span class="cstat-no" title="statement not covered" ></span>
-      re<span class="cstat-no" title="statement not covered" >turn {</span>
-        organization: orgResponse.data as Record&lt;string, unknown&gt;,
-        usage: {
-          // These would come from actual usage analytics
-          operationsUsed: 10000,
-          operationsLimit: 50000,
-<span class="fstat-no" title="function not covered" >          utilizationRate: 0.2</span>
+      return<span class="cstat-no" title="statement not covered" > {</span>
+        scenario: scenarioResponse.data as Record&lt;string, unknown&gt;,
+        executionMetrics: {
+          // These would come from actual execution logs
+          averageExecutionTime: 5000,
+          successRate: 0.95,
+          errorRate: 0.05
         },<span class="cstat-no" title="statement not covered" ></span>
-        timestamp: Date.now<span class="cstat-no" title="statement not covered" >()</span>
-<span class="cstat-no" title="statement not covered" >      };</span>
-    } catch (error) {
-<span class="cstat-no" title="statement not covered" >      return {</span>
+        timestamp: Date.now()
+      };<span class="cstat-no" title="statement not covered" ></span>
+    } catch <span class="cstat-no" title="statement not covered" >(error) {</span>
+      return {
         error: error instanceof Error ? error.message : String(error),
         timestamp: Date.now()
       };
     }
   }
+<span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Collect organization-level metrics
+   */<span class="cstat-no" title="statement not covered" ></span>
+  private async collectOrganizationMetrics(orgId: string | undefined, apiClient: MakeApiClient): Promise&lt;{
+    organization?: Record&lt;string, unknown&gt;;
+    usage?: {
+      operationsUsed: number;
+      operationsLimit: number;
+      utilizationRate: number;
+    };
+    error?: string;
+    timestamp: number;
+  }&gt;<span class="fstat-no" title="function not covered" > {</span>
+    if (<span class="cstat-no" title="statement not covered" >!orgId) {</span>
+      throw <span class="cstat-no" title="statement not covered" >new Error('Or</span>ganization ID required for organization analysis');
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    try {<span class="cstat-no" title="statement not covered" ></span>
+      co<span class="cstat-no" title="statement not covered" >nst orgResponse = await apiClient.get</span>(`/organizations/${orgId}`);
+      
+      if (!orgResponse.success) {
+        throw new Error(`Failed to fetch organization: ${orgResponse.error?.message}`);
+      }
 &nbsp;
+      return {<span class="fstat-no" title="function not covered" ></span>
+        organization: orgRes<span class="cstat-no" title="statement not covered" >ponse.data as Record&lt;string, unknown&gt;,</span>
+        usage: {<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          // These would come from actual usage analytics</span>
+          operationsUsed: 10000,
+<span class="cstat-no" title="statement not covered" >          operationsLimit: 50000,</span>
+          utilizationRate: 0.2
+        },
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: Date.now()
+      };
+    }
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="branch-0 cbranch-no" title="branch not covered" ></span>
   /**
    * Detect performance bottlenecks
    */
   private async detectBottlenecks(metrics: PerformanceMetrics, filters: PerformanceAnalysisFilters): Promise&lt;PerformanceBottleneck[]&gt; {
-    const bottlen<span class="fstat-no" title="function not covered" >ec</span>ks: PerformanceBottleneck[] = [];
-<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+    const bottlenecks: PerformanceBottleneck[] = [];
+&nbsp;
     // Response time bottleneck detection
     const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
-                             (typeof metrics.responseTime === 'object' &amp;&amp; metrics.responseTime ? metrics.responseTime.average : 0);
+<span class="branch-0 cbranch-no" title="branch not covered" >                             (typeof metrics.responseTime === 'object' &amp;&amp; metrics.responseTime ? metrics.responseTime.average : 0);</span>
     
     if (responseTimeValue &amp;&amp; responseTimeValue &gt; 1000) {
-      bottlenecks.push({
-        type: 'response_time',
+      bottlenecks.<span class="cstat-no" title="statement not covered" >push(</span>{
+        type<span class="cstat-no" title="statement not covered" >: 'response_time',</span>
         severity: responseTimeValue &gt; 5000 ? 'critical' : responseTimeValue &gt; 2000 ? 'high' : 'medium',
-        description: 'Hig<span class="branch-0 cbranch-no" title="branch not covered" >h API response time detected',</span>
+        description: 'High API response time detected',
         impact: 'Reduced user experience and workflow efficiency',
         affectedComponents: ['api', 'user_interface'],
-        metrics: {<span class="cstat-no" title="statement not covered" ></span>
+        metr<span class="cstat-no" title="statement not covered" >ics: {</span>
           cu<span class="cstat-no" title="statement not covered" >rrentValue: responseTimeValue,</span>
-          expectedValue: 500,
-          unit: 'ms',
+          expect<span class="cstat-no" title="statement not covered" >edValue: 500,</span>
+          unit: 'ms',<span class="cstat-no" title="statement not covered" ></span>
           trend: 'degrading'
         },
-        root<span class="cstat-no" title="statement not covered" >Cause: 'API server overload or network latency'</span>,
-        reco<span class="cstat-no" title="statement not covered" >mmendations: [</span>
-          'Imple<span class="cstat-no" title="statement not covered" >ment request caching',</span>
-          'Optimize API endpoin<span class="cstat-no" title="statement not covered" >t performance',</span>
+        rootCause: 'API server overload or network latency',
+        recommendations: [
+          'Implement request caching',
+          'Optimize API endpoint performance',
           'Add connection pooling',
           'Consider using regional endpoints'
         ],
@@ -3726,117 +3726,117 @@ class PerformanceAnalysisEngine {
           performanceImprovement: 40,
           costSavings: 15,
           implementationEffort: 'medium'
-        }
-      });
+        }<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
     }
 &nbsp;
     // Memory usage bottleneck detection
     const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-<span class="cstat-no" title="statement not covered" >                             (typeof metrics.memory === 'object' </span>&amp;&amp; metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : 0);
-    <span class="cstat-no" title="statement not covered" ></span>
+                             (typeof metrics.memory === 'object' &amp;<span class="fstat-no" title="function not covered" >&amp; </span>met<span class="cstat-no" title="statement not covered" >rics.memory ? (metrics.mem</span>ory as SystemMemoryMetrics).utilization : 0);
+    
     if (memoryUtilization &amp;&amp; memoryUtilization &gt; 0.85) {
       bottlenecks.push({
         type: 'resource_usage',
         severity: memoryUtilization &gt; 0.95 ? 'critical' : 'high',
-        description: 'High memory utilization detected',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        description: 'High memory utilization detected',
         impact: 'Potential system instability and performance degradation',
         affectedComponents: ['system', 'memory'],
-        metrics: {
+        metrics:<span class="cstat-no" title="statement not covered" > {</span>
           currentValue: memoryUtilization,
           expectedValue: 0.7,
           unit: 'ratio',
           trend: 'degrading'
         },
-        rootCaus<span class="cstat-no" title="statement not covered" >e: 'Memory leaks or insufficient memory allocation',</span>
-        recommendations: [
-          'Implement memory monitoring',
+        rootCause: 'Memory leaks or insufficient memory allocation',
+        recommen<span class="cstat-no" title="statement not covered" >dations: [</span>
+          'Imple<span class="cstat-no" title="statement not covered" >ment memory monitoring',</span>
           'Add garbage collection optimization',
           'Increase memory allocation',
-          'Fix potential memory leaks'
-        ],
+          'Fix potential memory leaks<span class="cstat-no" title="statement not covered" >'</span>
+        ],<span class="cstat-no" title="statement not covered" ></span>
         estimate<span class="cstat-no" title="statement not covered" >dImpact: {</span>
           perfor<span class="cstat-no" title="statement not covered" >manceImprovement: 30,</span>
           costSavings: 10,
           implementationEffort: 'high'
-        }<span class="cstat-no" title="statement not covered" ></span>
-      });<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+        }
+      });
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
     // Rate limiting bottleneck detection
     if (metrics.rateLimiter &amp;&amp; metrics.rateLimiter.queued &gt; 5) {
       bottlenecks.push({
         type: 'rate_limiting',
-<span class="cstat-no" title="statement not covered" >        severity: 'high',</span>
+        severity: 'high',
         description: 'Approaching rate limit threshold',
         impact: 'Request throttling and potential service interruption',
         affectedComponents: ['api', 'rate_limiter'],
         metrics: {
-          currentValue: metrics.rateLimiter.queued,
-          expectedValue: 0,
-          unit: 'queued requests',
-          trend: 'degrading'
-        },
+          current<span class="fstat-no" title="function not covered" >Va</span>lue: metrics.rateLimiter.queued,
+          ex<span class="cstat-no" title="statement not covered" >pectedValue: 0,</span>
+          un<span class="cstat-no" title="statement not covered" >it: 'queued requests',</span>
+          tr<span class="cstat-no" title="statement not covered" >end: 'degrading'</span>
+        },<span class="cstat-no" title="statement not covered" ></span>
         rootCause: 'High request volume or inefficient request patterns',
-        recommend<span class="fstat-no" title="function not covered" >at</span>ions: [
-          'I<span class="cstat-no" title="statement not covered" >mplement request batching',</span>
-          'A<span class="cstat-no" title="statement not covered" >dd intelligent caching',</span>
-          'O<span class="cstat-no" title="statement not covered" >ptimize request patterns',</span>
-          'Consider upgrading A<span class="cstat-no" title="statement not covered" >PI plan'</span>
+        recommendations: [
+          'Implement request batching',
+          'Add intelligent caching',
+          'Optimize request patterns',
+          'Consider upgrading API plan'
         ],
         estimatedImpact: {
-          performanceImprovement: 50,
-          costSavings: 25,
+          perfor<span class="cstat-no" title="statement not covered" >manceImprovement: 50,</span>
+          costSavings: 25,<span class="cstat-no" title="statement not covered" ></span>
           implementationEffort: 'medium'
         }
       });
     }
-<span class="cstat-no" title="statement not covered" ></span>
-    return bottlenecks.filter(b =<span class="cstat-no" title="statement not covered" >&gt; this.matchesSeverityFilter(b.severity, filters.severityFilter));</span>
+&nbsp;
+    return bottlenecks.filter(b =&gt; this.matchesSeverityFilter(b.se<span class="fstat-no" title="function not covered" >ve</span>rit<span class="cstat-no" title="statement not covered" >y, filters.severityFilter)</span>);
   }
 &nbsp;
   /**
    * Analyze performance trends
-   */
-  private async analyzeTrends(_metrics: PerformanceMetrics, _timeR<span class="fstat-no" title="function not covered" >an</span>geH<span class="cstat-no" title="statement not covered" >ours: number): Promise&lt;Tre</span>ndAnalysis&gt; {
+   */<span class="cstat-no" title="statement not covered" ></span>
+  private async analyzeTrends(_metrics: PerformanceMetrics, _timeRangeHours: number): Promise&lt;TrendAnalysis&gt; {
     // In a real implementation, this would analyze historical data
     // For now, we'll simulate trend analysis based on current metrics
-    
+    <span class="cstat-no" title="statement not covered" ></span>
     return {
-      performanc<span class="cstat-no" title="statement not covered" >eDirection: 'stable' as const,</span>
-      predictionConfidence: 0.8,
-      projectedIssues: [
-        'Memory usage trending upward - monitor for potential issues',
-        'Respons<span class="cstat-no" title="statement not covered" >e time variability suggests optimization opportunities'</span>
+      performanceDirection: 'stable' as const,
+      predictionConfidence: 0.8,<span class="cstat-no" title="statement not covered" ></span>
+      projectedI<span class="cstat-no" title="statement not covered" >ssues: [</span>
+        'Memory <span class="cstat-no" title="statement not covered" >usage trending upward - monitor for potential issues',</span>
+        'Response time variability suggests optimization opportunities'
       ]
     };
-  }<span class="cstat-no" title="statement not covered" ></span>
+  }
 <span class="cstat-no" title="statement not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
+  /**
    * Compare performance to industry benchmarks
    */
   private compareToBenchmarks(metrics: PerformanceMetrics): BenchmarkComparison {
     const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
-<span class="cstat-no" title="statement not covered" >                             (typeof metrics.responseTime === 'object' &amp;&amp; metrics.responseTime ? metrics.responseTime.average : 0);</span>
+                             (typeof metrics.responseTime === 'object' &amp;&amp; metrics.responseTime ? metrics.responseTime.average : 0);
     
     let responseTimeRanking: 'below_average' | 'average' | 'above_average' | 'excellent' = 'average';
     if (responseTimeValue) {
       if (responseTimeValue &lt;= this.industryBenchmarks.responseTime.excellent) {
-        responseTimeRanking = 'excellent';
-      } else if (responseTimeValue &lt;= this.industryBenchmarks.responseTime.good) {
+        responseT<span class="fstat-no" title="function not covered" >im</span>eRanking = 'excellent';
+      } else<span class="cstat-no" title="statement not covered" > if (responseTimeValue &lt;= this.industryBenchmarks.responseTime.good) {</span>
         responseTimeRanking = 'above_average';
       } else if (responseTimeValue &lt;= this.industryBenchmarks.responseTime.acceptable) {
         responseTimeRanking = 'average';
-      } else {
-        responseT<span class="fstat-no" title="function not covered" >im</span>eRanking = 'below_average';
+      } else<span class="cstat-no" title="statement not covered" > {</span>
+        responseTimeRanking = 'b<span class="cstat-no" title="statement not covered" >elo</span>w_average';
       }<span class="cstat-no" title="statement not covered" ></span>
-    }
-&nbsp;
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
     return {
-      indust<span class="cstat-no" title="statement not covered" >ryStandard: '&lt; 500ms response time, &gt; 99.95% uptime, &lt; 0.1% error rate',</span>
-      currentPerformance: `${res<span class="cstat-no" title="statement not covered" >pon</span>seTimeValue || 'N/A'}ms response time`,
-      gap: responseTimeValue &amp;&amp;<span class="cstat-no" title="statement not covered" > r</span>esponseTimeValue &gt; 500 ? `${responseTimeValue - 500}ms above target` : 'Within target',
-      ranking: responseTimeRanking<span class="cstat-no" title="statement not covered" ></span>
-    };<span class="cstat-no" title="statement not covered" ></span>
+      industryStandard: '&lt; 500ms response time, &gt; 99.95% uptime, &lt; 0.1% error rate',
+      currentPerformance: `${responseTimeValue || 'N/A'}ms response time`,
+      gap: responseTimeValue &amp;&amp; responseTimeValue &gt; 500 ? `${responseTimeValue - 500}ms above target` : 'Within target',
+      ranking: responseTimeRanking
+    };
   }
 &nbsp;
   /**
@@ -3845,81 +3845,81 @@ class PerformanceAnalysisEngine {
   private calculateHealthScore(metrics: PerformanceMetrics, bottlenecks: PerformanceBottleneck[]): number {
     let score = 100;
 &nbsp;
-    // Deduct points for bottlenecks
-    for (const bottleneck of bottlenecks) {
-      switch (bottleneck.severity) {
-        case 'critical':
+    // Deduct point<span class="fstat-no" title="function not covered" >s </span>for bottlenecks
+    for (const bottl<span class="cstat-no" title="statement not covered" >eneck of bottlenecks) </span>{
+      switch (bottle<span class="cstat-no" title="statement not covered" >neck.severity) {</span>
+        case 'critic<span class="cstat-no" title="statement not covered" >al':</span>
           score -= 25;
-          break;
-        case 'high'<span class="fstat-no" title="function not covered" >:</span>
-          score -= 1<span class="cstat-no" title="statement not covered" >5;</span>
           break;<span class="cstat-no" title="statement not covered" ></span>
-        case 'medium<span class="cstat-no" title="statement not covered" >':</span>
+        case 'high':<span class="cstat-no" title="statement not covered" ></span>
+          score -= 15;
+          break;
+        case 'medium':<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           score -= 10;
-          break;<span class="cstat-no" title="statement not covered" ></span>
-        case 'low':<span class="cstat-no" title="statement not covered" ></span>
-          score -= 5;
           break;
-      }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    }
-&nbsp;
-    // Deduct points for poor response time
-    const responseTimeValue = ty<span class="cstat-no" title="statement not covered" >peof metrics.responseTime === 'number' ? metrics.responseTime : </span>
-                             (typeof metrics.responseTime === 'object' &amp;&amp; metrics.responseTime ? metrics.responseTime.average : 0);
-    
-    if (responseTimeValue &amp;&amp; responseTimeValue &gt; 1000) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      score -= Math.min(20, (responseTimeValue - 1000) / 100);<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        case 'low':
+          score -= 5;<span class="cstat-no" title="statement not covered" ></span>
+          break;
+      }
     }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-&nbsp;
-    // Deduct points for high resource usage<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    const memoryUtilization = typeof metrics.memory === 'n<span class="fstat-no" title="function not covered" >um</span>ber<span class="cstat-no" title="statement not covered" >' ? metrics.memory : </span>
-                             (typeof metrics.memory === 'ob<span class="fstat-no" title="function not covered" >je</span>ct'<span class="cstat-no" title="statement not covered" > &amp;&amp; metrics.memory ? (me</span>trics.memory as SystemMemoryMetrics).utilization : 0);
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    // Deduct points for poor response time<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
+                             (typeof metrics.responseTime <span class="fstat-no" title="function not covered" >==</span>= '<span class="cstat-no" title="statement not covered" >object' &amp;&amp; metrics.resp</span>onseTime ? metrics.responseTime.average : 0);
+    <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    if (responseTimeValue &amp;&amp; responseTimeValue &gt; 1000) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      score -= Math.min(20, (responseTimeValue - 1000) / 100);
+    }
+<span class="cstat-no" title="statement not covered" ></span>
+    // Deduct points for high resource usage
+    const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
+                             (typeof metrics.memory === 'object' &amp;&amp; metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : 0);
     
-    if (memoryUtilization &amp;&amp; memoryUtilization &gt; 0.8) {
-      score -= (memoryUtilization<span class="cstat-no" title="statement not covered" > - 0.8) * 50;</span>
+    if (memoryUt<span class="cstat-no" title="statement not covered" >ilization &amp;&amp; memoryUtilization &gt; 0.8) {</span>
+      score -= (memoryUtilization - 0.8) * 50;
     }
 &nbsp;
     return Math.max(0, Math.round(score));
-  }
-<span class="cstat-no" title="statement not covered" ></span>
-  /**
-   * Calculate performance grade
-   */
-  private calculatePerformanceGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
-    if (score &gt;=<span class="cstat-no" title="statement not covered" > 90) return 'A';</span>
-    if (score &gt;= 80) return 'B';
-    if (score &gt;= 70) return 'C';
-    if (score &gt;= 60) return 'D';<span class="cstat-no" title="statement not covered" ></span>
-    return 'F';<span class="cstat-no" title="statement not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   /**
-   * Generate optimization recommendations
-   *<span class="cstat-no" title="statement not covered" >/</span>
-  private async generateRecommendations(bottlenecks: PerformanceBottleneck[], metrics: PerformanceMetrics): Promise&lt;OptimizationRecommendations&gt; {
-    const immediate: string[] = [];
-    const shortTerm: string[] = [];
-    const longTerm: string[] = [];
-<span class="fstat-no" title="function not covered" ></span>
-    // Generate recommendati<span class="cstat-no" title="statement not covered" >ons</span> based on bottlenecks
-    for (const bottleneck <span class="cstat-no" title="statement not covered" >of bottlenecks)<span class="fstat-no" title="function not covered" > {<span class="cstat-no" title="statement not covered" ></span></span></span>
-      if (bottleneck.seve<span class="cstat-no" title="statement not covered" >rity === 'criti<span class="fstat-no" title="function not covered" >ca</span>l')<span class="cstat-no" title="statement not covered" > {</span></span>
-<span class="cstat-no" title="statement not covered" >        immediate.push(...bottleneck.recommendations.slice(0, 2));</span>
-      } <span class="cstat-no" title="statement not covered" >else if (bottleneck.severity === 'high') {</span>
-        shortTerm.push(...bottleneck.recommendations.slice(0, 2));
-<span class="cstat-no" title="statement not covered" >      } else {</span>
+   * Calculate performance grade<span class="cstat-no" title="statement not covered" ></span>
+   */<span class="cstat-no" title="statement not covered" ></span>
+  private calcul<span class="cstat-no" title="statement not covered" >atePerformanceGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' </span>{
+    if (score &gt;= 90) return 'A';
+    if (score &gt;= 80) return 'B';
+    if (score &gt;= 70) return 'C';
+<span class="cstat-no" title="statement not covered" >    if (score &gt;= 60) return 'D';</span>
+    return 'F';
+  }
+&nbsp;
+  /**
+   * Gene<span class="fstat-no" title="function not covered" >rate optimization recommendations</span>
+   */<span class="cstat-no" title="statement not covered" ></span>
+  private async generateRe<span class="cstat-no" title="statement not covered" >commendations(b<span class="fstat-no" title="function not covered" >ot</span>tle<span class="cstat-no" title="statement not covered" >necks: PerformanceBottle</span>neck[], </span>metrics: PerformanceMetrics): Promise&lt;OptimizationRecommendations&gt; {
+    const immediate: stri<span class="cstat-no" title="statement not covered" >ng[] = [];<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >    const shortTerm: string[] = [];</span>
+    cons<span class="cstat-no" title="statement not covered" >t longTerm: string[] = [];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    // Generate recommendations based on bottlenecks</span>
+    for <span class="cstat-no" title="statement not covered" >(const bottleneck of bottlenecks) {</span>
+      if (bottleneck.severity === 'critical') {
+        immediate.push(...bo<span class="cstat-no" title="statement not covered" >ttleneck.recomm<span class="fstat-no" title="function not covered" >en</span>dations.sl<span class="cstat-no" title="statement not covered" >ice(0, 2));</span></span>
+<span class="cstat-no" title="statement not covered" >      } else if (bottleneck.severity === 'high') {</span>
+<span class="cstat-no" title="statement not covered" >        shortTerm.push(...bottleneck.recommendations.slice(0, 2));</span>
+      } else {
 <span class="cstat-no" title="statement not covered" >        longTerm.push(...bottleneck.recommendations.slice(0, 1));</span>
-      }
-    }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // A<span class="cstat-no" title="statement not covered" >dd general recommendations based on metrics</span>
-    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
-<span class="cstat-no" title="statement not covered" >                             (typeof metrics.responseTime === 'object' &amp;&amp; metrics.responseTime ? metrics.responseTime.average : 0);</span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    if (responseTimeValue &amp;&amp; responseTimeValue &gt; 500) {
-<span class="cstat-no" title="statement not covered" >      shortTerm.push('Implem</span>ent response caching strategy');
+      }<span class="cstat-no" title="statement not covered" ></span>
     }
 <span class="cstat-no" title="statement not covered" ></span>
+    // Add general recommendations based on metrics
+    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
+                             (typeof metrics.responseTime === 'object' &amp;&amp; metrics.responseTime ? metrics.responseTime.average : 0);
+    
+    if (responseTimeValue &amp;&amp; responseTimeValue &gt; 500) {
+      shortTerm.push('Implement response caching strategy');
+    }
+&nbsp;
     const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
                              (typeof metrics.memory === 'object' &amp;&amp; metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : 0);
     
@@ -4384,7 +4384,7 @@ export default addPerformanceAnalysisTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.110Z
+                at 2025-08-22T05:07:11.447Z
             </div>
         <script src="../prettify.js"></script>
         <script>

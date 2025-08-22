@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
@@ -489,9 +489,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -845,6 +842,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -910,12 +910,12 @@
  * Shared constants used across all Make.com FastMCP tools
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >/**</span>
-<span class="cstat-no" title="statement not covered" > * API configuration constants</span>
- */
+/**
+ * API configuration constants
+ */<span class="cstat-no" title="statement not covered" ></span>
 export const API_CONFIG = {
   /**
-<span class="cstat-no" title="statement not covered" >   * Default request timeout in milliseconds</span>
+   * Default request timeout in milliseconds
    */
   DEFAULT_TIMEOUT: 30000,
 &nbsp;
@@ -959,10 +959,10 @@ export const API_CONFIG = {
     INTERNAL_ERROR: 500,
     BAD_GATEWAY: 502,
     SERVICE_UNAVAILABLE: 503,
-    GATEWAY_TIMEOUT: 504,
+    GATEWAY_TIMEOUT: 504,<span class="cstat-no" title="statement not covered" ></span>
   },
 } as const;
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
 /**
  * FastMCP annotation defaults
  */
@@ -1045,10 +1045,10 @@ export const FASTMCP_ANNOTATIONS = {
     destructiveHint: false,
     idempotentHint: true,
     openWorldHint: false,
-  },
+  },<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   /**
-<span class="cstat-no" title="statement not covered" >   * Default annotations for delete tools</span>
+   * Default annotations for delete tools
    */
   DELETE: {
     readOnlyHint: false,
@@ -1071,10 +1071,10 @@ export const LOGGING_CONFIG = {
     INFO: 'info',
     DEBUG: 'debug',
     TRACE: 'trace',
-  },
+  },<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   /**
-<span class="cstat-no" title="statement not covered" >   * Tool operation contexts for logging</span>
+   * Tool operation contexts for logging
    */
   CONTEXTS: {
     TOOL_EXECUTION: 'tool_execution',
@@ -1110,10 +1110,10 @@ export const VALIDATION_CONFIG = {
     MIN_ID: 1,
     MAX_ID: Number.MAX_SAFE_INTEGER,
     MIN_PAGE_SIZE: 1,
-    MAX_PAGE_SIZE: 1000,
+    MAX_PAGE_SIZE: 1000,<span class="cstat-no" title="statement not covered" ></span>
     MIN_TIMEOUT: 1000,
     MAX_TIMEOUT: 300000,
-<span class="cstat-no" title="statement not covered" >  },</span>
+  },
 &nbsp;
   /**
    * Regular expressions for validation
@@ -1143,10 +1143,10 @@ export const CACHE_CONFIG = {
   },
 &nbsp;
   /**
-   * Cache key prefixes
+   * Cache key prefixes<span class="cstat-no" title="statement not covered" ></span>
    */
   KEY_PREFIXES: {
-<span class="cstat-no" title="statement not covered" >    API_RESPONSE: 'api_response',</span>
+    API_RESPONSE: 'api_response',
     USER_DATA: 'user_data',
     TEAM_DATA: 'team_data',
     SCENARIO_DATA: 'scenario_data',
@@ -1175,10 +1175,10 @@ export const PERFORMANCE_CONFIG = {
     FAST: 500,
     ACCEPTABLE: 2000,
     SLOW: 5000,
-    VERY_SLOW: 10000,
+    VERY_SLOW: 10000,<span class="cstat-no" title="statement not covered" ></span>
   },
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  /**</span>
+  /**
    * Memory usage thresholds in bytes
    */
   MEMORY_THRESHOLDS: {
@@ -1223,10 +1223,10 @@ export const ERROR_MESSAGES = {
 &nbsp;
   AUTHORIZATION: {
     FORBIDDEN: 'Access denied: insufficient permissions',
-    TEAM_ACCESS_DENIED: 'Access denied: team membership required',
+    TEAM_ACCESS_DENIED: 'Access<span class="cstat-no" title="statement not covered" > denied: team membership required',</span>
     ORGANIZATION_ACCESS_DENIED: 'Access denied: organization membership required',
     RESOURCE_ACCESS_DENIED: 'Access denied: resource access not allowed',
-<span class="cstat-no" title="statement not covered" >  },</span>
+  },
 &nbsp;
   NOT_FOUND: {
     GENERIC: '{resource} not found',
@@ -1262,10 +1262,10 @@ export const TOOL_CATEGORIES = {
   SCENARIOS: 'scenarios',
   CONNECTIONS: 'connections',
   BLUEPRINTS: 'blueprints',
-  TEMPLATES: 'templates',
+  TEMPLATES: 'templates',<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   // Data management
-<span class="cstat-no" title="statement not covered" >  DATA_STORES: 'data_stores',</span>
+  DATA_STORES: 'data_stores',
   VARIABLES: 'variables',
   FOLDERS: 'folders',
 &nbsp;
@@ -1333,7 +1333,7 @@ export const PROGRESS_CONFIG = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.110Z
+                at 2025-08-22T05:07:11.447Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

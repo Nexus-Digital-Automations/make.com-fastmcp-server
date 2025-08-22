@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/253</span>
+                <span class='fraction'>0/246</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/91</span>
+                <span class='fraction'>0/84</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/109</span>
+                <span class='fraction'>0/108</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/242</span>
+                <span class='fraction'>0/235</span>
             </div>
         
             
@@ -2104,15 +2104,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3459,6 +3453,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -4129,96 +4129,96 @@
  * - Integration with existing compliance and audit systems
  */
 &nbsp;
-import { z } from 'zod<span class="cstat-no" title="statement not covered" >';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { FastMCP } from 'fastmcp';</span>
+import { z } from 'zod';
+import { FastMCP } from 'fastmcp';
 import logger from '../lib/logger.js';
-<span class="cstat-no" title="statement not covered" >import MakeApiClient from '../lib/make-api-client.js';</span>
-<span class="cstat-no" title="statement not covered" >import { extractCorrelationId } from '../utils/error-response.js'</span>;
-<span class="cstat-no" title="statement not covered" ></span>
-// =================<span class="cstat-no" title="statement not covered" >=== INTERFACES &amp; TYPES ====================</span>
-<span class="cstat-no" title="statement not covered" ></span>
+import MakeApiClient from '../lib/m<span class="cstat-no" title="statement not covered" >ake-api-client.js';</span>
+import { extractCorrelationId } from '../utils/error-response.js';
+&nbsp;
+// ==================== INTERFACES &amp; TYPES ====================
+&nbsp;
 interface GovernanceMetrics {
-  complianceScore: number;<span class="cstat-no" title="statement not covered" ></span>
+  complianceScore: number;
   riskScore: number;
   policyViolations: number;
   automatedRemediations: number;
-  avgResponseTime: number;
+  avgResponseTime: number;<span class="cstat-no" title="statement not covered" ></span>
   predictionAccuracy: number;
 }
 &nbsp;
 interface ComplianceFramework {
   id: string;
-  name: string;<span class="cstat-no" title="statement not covered" ></span>
+  name: string;
   version: string;
   controls: Control[];
-  riskThreshold: number;
+  riskThreshold: number;<span class="cstat-no" title="statement not covered" ></span>
   automatedRemediation: boolean;
 }
 &nbsp;
 interface Control {
   id: string;
-  name: string;<span class="cstat-no" title="statement not covered" ></span>
+  name: string;
   description: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
-  category: string;
+  category: string;<span class="cstat-no" title="statement not covered" ></span>
   requirements: string[];
   automatedCheck: boolean;
   remediationActions: string[];
 }
 &nbsp;
-interface RiskAssessment {<span class="cstat-no" title="statement not covered" ></span>
+interface RiskAssessment {
   riskId: string;
   category: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
-  probability: number;
+  probability: number;<span class="cstat-no" title="statement not covered" ></span>
   impact: number;
   riskScore: number;
   indicators: string[];
   mitigationStrategies: string[];
   automatedRemediation: boolean;
-  estimatedCost: number;<span class="cstat-no" title="statement not covered" ></span>
+  estimatedCost: number;
 }
 &nbsp;
-interface PolicyConflict {
+interface PolicyConflict {<span class="cstat-no" title="statement not covered" ></span>
   conflictId: string;
   policies: string[];
   conflictType: 'contradictory' | 'overlapping' | 'redundant' | 'gap';
   severity: 'low' | 'medium' | 'high' | 'critical';
   impact: string;
-  resolutionSuggestions: string[];<span class="cstat-no" title="statement not covered" ></span>
+  resolutionSuggestions: string[];
   automatedResolution: boolean;
 }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
 interface GovernanceInsight {
   type: 'trend' | 'anomaly' | 'prediction' | 'recommendation';
   title: string;
   description: string;
   severity: 'info' | 'warning' | 'critical';
-  confidence: number;<span class="cstat-no" title="statement not covered" ></span>
+  confidence: number;
   impact: string;
   actionableSteps: string[];
   timeframe: string;
 }
-&nbsp;
-interface RemediationWorkflow {
-  workflowId: string;
-  triggeredBy: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  steps: RemediationStep[];
-  escalationPath: Esca<span class="cstat-no" title="statement not covered" >latio</span>nStep[];
-  automatedExec<span class="cstat-no" title="statement not covered" >ution: boo</span>lean;
-  estimatedDuration: n<span class="cstat-no" title="statement not covered" >umber;</span>
-  successCriteria: str<span class="cstat-no" title="statement not covered" >ing[];</span>
-}<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+interface Remed<span class="cstat-no" title="statement not covered" >iationWork</span>flow {
+  workflowId: string;<span class="cstat-no" title="statement not covered" ></span>
+  triggeredBy: string;<span class="cstat-no" title="statement not covered" ></span>
+  se<span class="fstat-no" title="function not covered" >ve</span>rity: 'low' | 'medium' | 'high' | 'critical';
+  steps:<span class="cstat-no" title="statement not covered" > RemediationStep[];</span>
+  escalationPath: EscalationStep[];
+  au<span class="fstat-no" title="function not covered" >to</span>matedExecution: boolean;
+  estima<span class="cstat-no" title="statement not covered" >tedDuration: number;</span>
+  successCri<span class="cstat-no" title="statement not covered" >teria: string[];</span>
+}
 <span class="cstat-no" title="statement not covered" ></span>
 interface RemediationStep {
   st<span class="fstat-no" title="function not covered" >ep</span>Id: string;
-  action<span class="cstat-no" title="statement not covered" >: string;</span>
-  descriptio<span class="cstat-no" title="statement not covered" >n: string;</span>
+  action: string;
+  descri<span class="cstat-no" title="statement not covered" >ption: string;</span>
   automated: boolean;
-  durati<span class="cstat-no" title="statement not covered" >on: number;</span>
+  duration: number;
   dependencies: string[];
-  su<span class="fstat-no" title="function not covered" >cc</span>essCriteria: string[];
+  successCriteria: string[];
 }
 <span class="cstat-no" title="statement not covered" ></span>
 interface EscalationStep {
@@ -4232,162 +4232,162 @@ interface EscalationStep {
 // ==================== ML MODEL INTERFACES ====================
 &nbsp;
 interface MLModel {
-  type: <span class="cstat-no" title="statement not covered" >string;</span>
-  accuracy: number;
-  lastTrained: string;
+  type: string;
+  ac<span class="fstat-no" title="function not covered" >cu</span>racy: number;
+  lastTrained: string;<span class="cstat-no" title="statement not covered" ></span>
 }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 interface EnsembleMLModel extends MLModel {
   type: 'ensemble';
-  al<span class="fstat-no" title="function not covered" >go</span>rithms: string[];
-}<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-interface IsolationForestModel extend<span class="cstat-no" title="statement not covered" >s MLModel {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  type: 'isolation_forest';
-  sensitivity: number;
+  algorithms: string[];
 }
 &nbsp;
-interface ReinforcementLearningModel extends MLModel {
-  type: 'reinforcement_learning';
-  algorithm: string;
-  convergence: number;<span class="cstat-no" title="statement not covered" ></span>
+interface IsolationForestModel extends MLModel {
+  type: 'isolation_forest';
+  sensitivity: number;<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-type MLModelType = EnsembleMLMode<span class="cstat-no" title="statement not covered" >l | IsolationForestModel | ReinforcementLearningModel;</span>
+interface ReinforcementLearningMo<span class="cstat-no" title="statement not covered" >del extends MLModel {</span>
+  type: 'reinforcement_learning';
+  algorithm: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  convergence: number;
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
-interface PredictionCacheEntry {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+type MLModelType = EnsembleMLModel | IsolationForestModel | ReinforcementLearningModel;
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+interface PredictionCacheEntry {
   prediction: string;
-  confidence: number;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  confidence: number;
   timestamp: string;
   factors: string[];
-  recommendations?: string[];<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-}
+  recommendations?: string[];
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 // ==================== COMPLIANCE MONITORING INTERFACES ====================
 &nbsp;
 interface ComplianceStatus {
   timestamp: string;
-  frameworks: FrameworkS<span class="cstat-no" title="statement not covered" >tatus[];</span>
+  frameworks: FrameworkStatus[];
   overallScore: number;
-  riskLevel: string;
+  riskLe<span class="cstat-no" title="statement not covered" >vel: string;</span>
   nextAssessment: string;
 }
 &nbsp;
 interface FrameworkStatus {
   name: string;
-  status<span class="cstat-no" title="statement not covered" >: 'compliant' | 'non-compliant';</span>
+  status: 'compliant' | 'non-compliant';
   score: number;
-  controlsCovered: number;
+  co<span class="fstat-no" title="function not covered" >nt</span>rolsCovered: number;
   violationsCount: number;
-  lastAssessment: string;
-}
-&nbsp;
-interface Violation {
-  id<span class="fstat-no" title="function not covered" >: </span>string;
-  framework: string;
-  control: string;<span class="cstat-no" title="statement not covered" ></span>
-  severity: 'low' | 'mediu<span class="cstat-no" title="statement not covered" >m' | 'high' | 'critical';</span>
-  description: string;<span class="cstat-no" title="statement not covered" ></span>
-  detectedAt: string;<span class="cstat-no" title="statement not covered" ></span>
-  status: 'open' | 'in_progress' | 'reso<span class="cstat-no" title="statement not covered" >lved';</span>
-  automa<span class="cstat-no" title="statement not covered" >tedRemediation: boolean;</span>
-}
-&nbsp;
-interface CompliancePrediction {
-  type: string;
-  framework: string;
-  prediction: string;
-  co<span class="fstat-no" title="function not covered" >nf</span>idence: number;
-  timeframe: string;<span class="cstat-no" title="statement not covered" ></span>
-  factors: string[];<span class="cstat-no" title="statement not covered" ></span>
-  recommendations: stri<span class="cstat-no" title="statement not covered" >ng[];</span>
+  lastAssessment: string;<span class="cstat-no" title="statement not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-interfac<span class="cstat-no" title="statement not covered" >e AutomatedAction {</span>
-  violationId: string;
-  action: string;
-  status: 'pending' | 'executing' | 'executed' | 'failed';
-  executedAt: string;
-  result: 'success' | 'failure' | 'partial';
-}
-&nbsp;
-// =<span class="fstat-no" title="function not covered" >==</span>================= POLICY CONFLICT INTERFACES ====================
-<span class="cstat-no" title="statement not covered" ></span>
-interface PolicyResolutio<span class="cstat-no" title="statement not covered" >nPlan {</span>
-  planId: string;<span class="cstat-no" title="statement not covered" ></span>
-  conflicts: string[];<span class="cstat-no" title="statement not covered" ></span>
-  steps:<span class="cstat-no" title="statement not covered" > string[];</span>
-  estimatedDuration: string;
-  automatedSteps: number;
-  manualSteps: number;
-}
-&nbsp;
-interface ConflictImpactAnalysis {
-  to<span class="fstat-no" title="function not covered" >ta</span>lConflicts: number;
-  severityDistribution: {<span class="cstat-no" title="statement not covered" ></span>
-    critical: number;<span class="cstat-no" title="statement not covered" ></span>
-    high: number;<span class="cstat-no" title="statement not covered" ></span>
-    medium: number;<span class="cstat-no" title="statement not covered" ></span>
-    low: number;<span class="cstat-no" title="statement not covered" ></span>
-  };
-  estima<span class="cstat-no" title="statement not covered" >tedRisk: string;</span>
-  businessImpact: string;
-}<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-// ==================== RISK ASSESSMENT INTERFACES ====================
-&nbsp;
-interface OverallRiskAssessment {
-  score: number;
-  level: 'low' | 'medium' | 'high' | 'critical';
-  assessments: number;
-  highRiskItems: number;
+interface Violation {<span class="cstat-no" title="statement not covered" ></span>
+  id: string;<span class="cstat-no" title="statement not covered" ></span>
+  framew<span class="cstat-no" title="statement not covered" >ork: string;</span>
+  control: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  detectedAt: string;
+  status: 'open' | 'in_progress' | 'resolved';
+  automatedRemediation: boolean;
 }<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-interface RiskTrend {<span class="cstat-no" title="statement not covered" ></span>
-  metric: string;<span class="cstat-no" title="statement not covered" ></span>
-  trend: 'increasing' | 'd<span class="cstat-no" title="statement not covered" >ecreasing' | 'stable';</span>
-  change: number;<span class="cstat-no" title="statement not covered" ></span>
+interface CompliancePredicti<span class="cstat-no" title="statement not covered" >on {</span>
+  type: string;<span class="cstat-no" title="statement not covered" ></span>
+  framework: string;<span class="cstat-no" title="statement not covered" ></span>
+  prediction: string;<span class="cstat-no" title="statement not covered" ></span>
+  confid<span class="cstat-no" title="statement not covered" >ence: number;</span>
+  timeframe: string;
+  factors: string[];
+  recommendations: string[];
+}
+&nbsp;
+interface AutomatedAction {
+  violationId: string;
+  ac<span class="fstat-no" title="function not covered" >ti</span>on: string;
+  status: 'pending' | 'exe<span class="cstat-no" title="statement not covered" >cuting' | 'executed' | 'failed';</span>
+  executedAt: string;<span class="cstat-no" title="statement not covered" ></span>
+  result: 'success' | 'failure' <span class="cstat-no" title="statement not covered" >| 'partial';</span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+// ==================== POLICY CONFLICT INTERFACES ====================
+&nbsp;
+interface PolicyResolutionPlan {
+  planId: string;
+  conflicts: string[];
+  steps: string[];
+  es<span class="fstat-no" title="function not covered" >ti</span>matedDuration: string;
+  automatedSteps: number;<span class="cstat-no" title="statement not covered" ></span>
+  manualSteps: number;<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+interface ConflictImpactAnalysis<span class="cstat-no" title="statement not covered" > {</span>
+  totalConflicts: number;
+  severi<span class="cstat-no" title="statement not covered" >tyDistribution: {</span>
+    critical: number;
+    high: number;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    medi<span class="cstat-no" title="statement not covered" >um: number;</span>
+    low: number;
+  };
+  estimatedRisk: string;
+  businessImpact: string;
+}
+&nbsp;
+// ==================== RISK ASSESSMENT INTERFACES ====================
+<span class="fstat-no" title="function not covered" ></span>
+interface OverallRiskAsses<span class="cstat-no" title="statement not covered" >sment {</span>
+  score: number;<span class="cstat-no" title="statement not covered" ></span>
+  level: 'low' | 'medium' | '<span class="cstat-no" title="statement not covered" >high' | 'critical';</span>
+  assessments: number;<span class="cstat-no" title="statement not covered" ></span>
+  highRiskItems: number;<span class="cstat-no" title="statement not covered" ></span>
+}
+&nbsp;
+interface RiskTrend {
+  metric: string;
+  trend:<span class="cstat-no" title="statement not covered" > 'increasing' | 'decreasing' | 'stable';</span>
+  change: number;
   period: string;
   significance: 'low' | 'medium' | 'high';
 }
 &nbsp;
-interfac<span class="cstat-no" title="statement not covered" >e RiskPrediction {</span>
+interface RiskPrediction {
   riskType: string;
-  prediction: 'increase' | 'decrease' | 'stable';
-  confidence: number;
-  timeframe: string;
-  factors: string[];
+  pr<span class="fstat-no" title="function not covered" >ed</span>iction: 'increase' | 'decrease' | 'stable';
+  confidence: number;<span class="cstat-no" title="statement not covered" ></span>
+  timeframe: string;<span class="cstat-no" title="statement not covered" ></span>
+  factors: string[];<span class="cstat-no" title="statement not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+interfac<span class="cstat-no" title="statement not covered" >e MitigationPlan {</span>
+  planId: string;
+  totalRisks: number;
+  prioritizedActions: string[];
+  estimatedCost: number;
+  timeline: string;
 }
 &nbsp;
-inte<span class="fstat-no" title="function not covered" >rf</span>ace MitigationPlan {
-  planId: string;<span class="cstat-no" title="statement not covered" ></span>
-  totalRisks: number;<span class="cstat-no" title="statement not covered" ></span>
-  prioritizedActions: string[];<span class="cstat-no" title="statement not covered" ></span>
-  estimatedCost: number;<span class="cstat-no" title="statement not covered" ></span>
-  timeline: string;<span class="cstat-no" title="statement not covered" ></span>
-}<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
 // ==================== DASHBOARD INTERFACES ====================
-&nbsp;
-interface DashboardConfig {
+<span class="fstat-no" title="function not covered" ></span>
+interface DashboardConfig<span class="cstat-no" title="statement not covered" > {</span>
   id: string;
   type: string;
   title: string;
   createdAt: string;
-  re<span class="fstat-no" title="function not covered" >fr</span>eshInterval: number;
-  layout: string;<span class="cstat-no" title="statement not covered" ></span>
+  refreshInterval: number;
+  layout: string;
   theme: string;
-}
+}<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-interface DashboardWidget {
+inte<span class="fstat-no" title="function not covered" >rf</span>ace DashboardWidget {
   id: string;
-  type: 'metric' | 'indicator' | 'chart';
+  type: <span class="cstat-no" title="statement not covered" >'metric' | 'indicator' | 'chart';</span>
   title: string;
-  value:<span class="cstat-no" title="statement not covered" > number | string;</span>
+  value: number | string;
   trend?: 'up' | 'down' | 'stable';
-  co<span class="fstat-no" title="function not covered" >lo</span>r?: string;
+  color?: string;
   size: 'small' | 'medium' | 'large';
-  chartT<span class="cstat-no" title="statement not covered" >ype?: string;</span>
+  chartType?: string;
   unit?: string;
 }
 &nbsp;
@@ -4404,82 +4404,82 @@ interface Forecast {
   currentValue: number;
   forecast: ForecastPoint[];
   confidence: number;
-}
+}<span class="fstat-no" title="function not covered" ></span>
 &nbsp;
-interface ForecastPoint {
+interfac<span class="cstat-no" title="statement not covered" >e ForecastPoint {</span>
   date: string;
   value: number;
 }
-<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
 interface DashboardConfiguration {
-  type: <span class="cstat-no" title="statement not covered" >string;</span>
+  type: string;
   refreshInterval: number;
   lastUpdated: string;
 }
 &nbsp;
 // ==================== ADDITIONAL INTERFACES ====================
 &nbsp;
-interface Policy {
+inte<span class="fstat-no" title="function not covered" >rf</span>ace Policy {
   id: string;
-  name: string;
+  name: <span class="cstat-no" title="statement not covered" >string;</span>
   scope: string;
   rules: string[];
   priority: 'low' | 'medium' | 'high' | 'critical';
-}<span class="fstat-no" title="function not covered" ></span>
+}
 &nbsp;
-interfac<span class="cstat-no" title="statement not covered" >e TriggerConfiguration {</span>
+interface TriggerConfiguration {
   triggerId: string;
   condition: string;
   workflow: string;
   enabled: boolean;
   lastTriggered: string | null;
-}
-&nbsp;
-interface EscalationConfiguration {
-  workflowId: string;
-  escalationLevels: number;
-  configuration: EscalationStep[];
 }<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-interface Wo<span class="cstat-no" title="statement not covered" >rkflowTestR</span>esult {
-  status<span class="cstat-no" title="statement not covered" >: 'success' | 'failure' | 'skipped';</span>
-  testedWorkflows: n<span class="fstat-no" title="function not covered" >um</span>ber<span class="cstat-no" title="statement not covered" >;</span>
-  results: Workfl<span class="fstat-no" title="function not covered" >ow</span>TestResultDe<span class="cstat-no" title="statement not covered" >tail[];</span>
+interface Es<span class="cstat-no" title="statement not covered" >calationCon</span>figuration {
+  workfl<span class="cstat-no" title="statement not covered" >owId: string;</span>
+  escalationLevels: <span class="fstat-no" title="function not covered" >nu</span>mbe<span class="cstat-no" title="statement not covered" >r;</span>
+  configuration: <span class="fstat-no" title="function not covered" >Es</span>calationStep<span class="cstat-no" title="statement not covered" >[];</span>
 }
 &nbsp;
-interface WorkflowTestResultDetail {
-  workflowId: string;
-  testResult: 'passed' | 'failed';
-  duration: number;
+interface WorkflowTestResult {
+  status: 'success' | 'failure' | 'skipped';
+  testedWorkflows: number;
+  results: WorkflowTestResultDetail[];
+}
+<span class="fstat-no" title="function not covered" ></span>
+interface WorkflowTestResultDetail {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  workflowId: string;<span class="cstat-no" title="statement not covered" ></span>
+  testResult: 'passed' | 'failed'<span class="cstat-no" title="statement not covered" >;</span>
+  durati<span class="cstat-no" title="statement not covered" >on: number;</span>
 }
 <span class="fstat-no" title="function not covered" ></span>
 interface PolicyState {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  totalPolicies: number;<span class="cstat-no" title="statement not covered" ></span>
-  activeFrameworks: string[];<span class="cstat-no" title="statement not covered" ></span>
-  compli<span class="cstat-no" title="statement not covered" >anceScore: number;</span>
-  automationLevel: number;
-  la<span class="fstat-no" title="function not covered" >st</span>Optimization: string;
-  identifiedIssues: str<span class="cstat-no" title="statement not covered" >ing[];<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-}<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-&nbsp;
-inte<span class="fstat-no" title="function not covered" >rf</span>ace OptimizationPlan {
-  planId: string;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  type: string;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  goals:<span class="cstat-no" title="statement not covered" > string[];</span>
-  phases: Op<span class="cstat-no" title="statement not covered" >timizationPhase[];</span>
-  estima<span class="cstat-no" title="statement not covered" >tedBenefits: string[];</span>
+  totalP<span class="cstat-no" title="statement not covered" >olicies: number;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  activeFrameworks: string[];
+  co<span class="fstat-no" title="function not covered" >mp</span>lianceScore: number;
+  automationLevel: number;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  lastOptimization: string<span class="cstat-no" title="statement not covered" >;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  identi<span class="cstat-no" title="statement not covered" >fiedIssues: string[];</span>
 }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-interface Op<span class="cstat-no" title="statement not covered" >timizationPhase {</span>
-  phase:<span class="cstat-no" title="statement not covered" > number;</span>
+interface Op<span class="cstat-no" title="statement not covered" >timizationPlan </span>{
+  planId<span class="cstat-no" title="statement not covered" >: string;</span>
+  type: stri<span class="cstat-no" title="statement not covered" >ng;</span>
+  goals:<span class="cstat-no" title="statement not covered" > string[];</span>
+  phases: OptimizationPhase[];
+  es<span class="fstat-no" title="function not covered" >ti</span>matedBenefits: string[];
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+interface OptimizationPhase {
+  ph<span class="fstat-no" title="function not covered" >as</span>e: number;
   name: string;
-  du<span class="fstat-no" title="function not covered" >ra</span>tion: string;
-  activities: string[];<span class="cstat-no" title="statement not covered" ></span>
-}<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  durati<span class="cstat-no" title="statement not covered" >on: string;</span>
+  activities: string[];
+}
 &nbsp;
-inte<span class="fstat-no" title="function not covered" >rf</span>ace PolicyChange {
+interface PolicyChange {
   changeId: string;
-  type: <span class="cstat-no" title="statement not covered" >'consolidation' | 'automation' | 'restructure' | 'enhancement';</span>
+  type: 'consolidation' | 'automation' | 'restructure' | 'enhancement';
   description: string;
   impact: 'low' | 'medium' | 'high';
   effort: 'low' | 'medium' | 'high';
@@ -4490,66 +4490,66 @@ interface OptimizationImpactAnalysis {
   totalChanges: number;
   impactLevels: {
     high: number;
-    medium: number;
+<span class="fstat-no" title="function not covered" >    me</span>dium: number;
     low: number;
-  };
+  };<span class="cstat-no" title="statement not covered" ></span>
   estimatedROI: string;
   riskAssessment: 'low' | 'medium' | 'high';
   implementationComplexity: 'low' | 'medium' | 'high';
-}<span class="fstat-no" title="function not covered" ></span>
+}
 &nbsp;
-interfac<span class="cstat-no" title="statement not covered" >e SimulationResults {</span>
+interface SimulationResults {
   simulationId: string;
   scenariosTested: number;
   results: {
     complianceImprovement: number;
     automationIncrease: number;
-    conflictReduction: number;
-    performanceImpact: string;
+<span class="fstat-no" title="function not covered" >    co</span>nflictReduction: number;
+    perf<span class="cstat-no" title="statement not covered" >ormanceImpact: string;</span>
   };
-  confidence: number;
+  confidence: number;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   recommendations: string[];
 }
-<span class="fstat-no" title="function not covered" ></span>
-// =====<span class="cstat-no" title="statement not covered" >=============== ADDITIONAL OPTION INTERFACES ====================</span>
 &nbsp;
-interface ComplianceMonitoringOptions<span class="fstat-no" title="function not covered" > {<span class="cstat-no" title="statement not covered" ></span></span>
+// ==================== ADDITIONAL OPTION INTERFACES ====================
+&nbsp;
+interface ComplianceMonitoringOptions {
   monitoringInterval: number;
   realTimeAlerts: boolean;
   automatedRemediation: boolean;
   riskThreshold: number;
   organizationId?: string;
   teamId?: string;
-}
-&nbsp;
+}<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 interface PolicyConflictOptions {
   conflictTypes: string[];
-  analysisDepth: string;
-  includeResolutions: boolean;
-  au<span class="fstat-no" title="function not covered" >to</span>matedResolution: boolean;
-  organi<span class="cstat-no" title="statement not covered" >zationId?: string;</span>
+  analysisDepth: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  includeResolutions: boolean;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  automatedResolution: boolean;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  organizationId?: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   teamId?: string;
 }
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-interface RiskAssessmentOptions {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  timeframe: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  mlPrediction: boolean;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  includeQuantification: boolean;
+&nbsp;
+interface RiskAssessmentOptions {
+  timeframe: string;
+  ml<span class="fstat-no" title="function not covered" >Pr</span>ediction: boolean;
+  includ<span class="cstat-no" title="statement not covered" >eQuantification: boolean;</span>
   riskCategories: string[];
   organizationId?: string;
   teamId?: string;
 }
-<span class="fstat-no" title="function not covered" ></span>
-interfac<span class="cstat-no" title="statement not covered" >e RemediationOptions {</span>
+&nbsp;
+interface RemediationOptions {
   severity: string;
-  automationLevel: string;
-  approvalRequired: boolean;
+  au<span class="fstat-no" title="function not covered" >to</span>mationLevel: string;
+  approv<span class="cstat-no" title="statement not covered" >alRequired: boolean;</span>
   escalationEnabled: boolean;
   dryRun: boolean;
   organizationId?: string;
   teamId?: string;
-}<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+}
+&nbsp;
 interface DashboardOptions {
   refreshInterval: number;
   includeRealTime: boolean;
@@ -4558,58 +4558,58 @@ interface DashboardOptions {
   organizationId?: string;
   teamId?: string;
 }
-&nbsp;
-interface PolicyOptimizationOptions {
-  mlOptimization: boolean;
+<span class="fstat-no" title="function not covered" ></span>
+interface PolicyOptimizati<span class="cstat-no" title="statement not covered" >onOptions {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  mlOpti<span class="cstat-no" title="statement not covered" >mization: boolean;</span>
   simulationMode: boolean;
   includeImpactAnalysis: boolean;
   optimizationGoals: string[];
-  or<span class="fstat-no" title="function not covered" >ga</span>nizationId?: string;
-  teamId?: string;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-}<span class="cstat-no" title="statement not covered" ></span>
+  organizationId?: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  teamId?: string;
+}
+<span class="fstat-no" title="function not covered" ></span>
+// =====<span class="cstat-no" title="statement not covered" >=============== ZOD SCHEMAS ====================</span>
 &nbsp;
-// ==================== ZOD SCHEMAS ====================
-&nbsp;
-const ComplianceMonitoringSchema = z.object({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+const ComplianceMonitoringSchema = z.object({
   frameworks: z.array(z.string()).default(['SOC2', 'GDPR', 'HIPAA']),
   monitoringInterval: z.number().min(1).max(3600).default(300),
-  re<span class="fstat-no" title="function not covered" >al</span>TimeAlerts: z.boolean().default(true),
-  automa<span class="cstat-no" title="statement not covered" >tedRemediation: z.boolean().default(true),</span>
+  realTimeAlerts: z.boolean().default(true),
+  automatedRemediation: z.boolean().default(true),
   riskThreshold: z.number().min(0).max(100).default(70),
   includePredictiive: z.boolean().default(true),
   organizationId: z.string().optional(),
-  teamId: z.string().optional(),
-});
+  te<span class="fstat-no" title="function not covered" >am</span>Id: z.string().optional(),
+});<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
 const PolicyConflictAnalysisSchema = z.object({
   policyScope: z.enum(['organization', 'team', 'user', 'global']).default('organization'),
   conflictTypes: z.array(z.enum(['contradictory', 'overlapping', 'redundant', 'gap'])).default(['contradictory', 'overlapping']),
-  an<span class="fstat-no" title="function not covered" >al</span>ysisDepth: z.enum(['basic', 'comprehensive', 'deep']).default('comprehensive'),
-  includ<span class="cstat-no" title="statement not covered" >eResolutions: z.boolean().default(true),</span>
+  analysisDepth: z.enum(['basic', 'comprehensive', 'deep']).default('comprehensive'),
+  includeResolutions: z.boolean().default(true),
   automatedResolution: z.boolean().default(false),
   organizationId: z.string().optional(),
   teamId: z.string().optional(),
-});
-&nbsp;
+});<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 const RiskAssessmentSchema = z.object({
   assessmentType: z.enum(['security', 'compliance', 'operational', 'financial', 'comprehensive']).default('comprehensive'),
   timeframe: z.enum(['24h', '7d', '30d', '90d', '1y']).default('30d'),
   mlPrediction: z.boolean().default(true),
-  in<span class="fstat-no" title="function not covered" >cl</span>udeQuantification: z.boolean().default(true),
-  riskCa<span class="cstat-no" title="statement not covered" >tegories: z.array(z.string()).default(['security', 'compliance', 'operational']),</span>
+  includeQuantification: z.boolean().default(true),
+  riskCategories: z.array(z.string()).default(['security', 'compliance', 'operational']),
   organizationId: z.string().optional(),
-  teamId: z.string().optional(),
+  teamId: z.string().optional(),<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 });
 &nbsp;
 const AutomatedRemediationSchema = z.object({
-  triggerConditions: z.array(z.string()),
-  severity: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
-  automationLevel: z.enum(['manual', 'semi-aut<span class="fstat-no" title="function not covered" >om</span>ated', 'fu<span class="cstat-no" title="statement not covered" >lly-automated']).defau</span>lt('semi-automated'),
+  tr<span class="fstat-no" title="function not covered" >ig</span>gerConditions: z.array(z.string()),
+  severi<span class="cstat-no" title="statement not covered" >ty: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),</span>
+  automationLevel: z.enum(['manual', 'semi-automated', 'fully-automated']).default('semi-automated'),
   approvalRequired: z.boolean().default(true),
   escalationEnabled: z.boolean().default(true),
   dryRun: z.boolean().default(true),
-  or<span class="fstat-no" title="function not covered" >ga</span>nizationId: z.string().optional(),
-  teamId<span class="cstat-no" title="statement not covered" >: z.string().optional(),</span>
+  organizationId: z.string().optional(),
+  teamId: z.string().optional(),
 });
 &nbsp;
 const GovernanceInsightsSchema = z.object({
@@ -4643,108 +4643,108 @@ const PolicyOptimizationSchema = z.object({
 });
 &nbsp;
 // ==================== AI GOVERNANCE ENGINE ====================
-&nbsp;
-class AIGovernanceEngine {
+<span class="fstat-no" title="function not covered" ></span>
+class AI<span class="cstat-no" title="statement not covered" >GovernanceEngine {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
   private static instance: AIGovernanceEngine | null = null;
   private mlModels: Map&lt;string, MLModelType&gt; = new Map();
   private predictionCache: Map&lt;string, PredictionCacheEntry&gt; = new Map();
   private componentLogger = logger.child({ component: 'AIGovernanceEngine' });
-<span class="fstat-no" title="function not covered" ></span>
-  privat<span class="cstat-no" title="statement not covered" >e constructor() {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-    this.initializeMLModels();
-  }
 &nbsp;
+  private constructor() {
+    this.initializeMLModels();
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
   public static getInstance(): AIGovernanceEngine {
     if (!AIGovernanceEngine.instance) {
       AIGovernanceEngine.instance = new AIGovernanceEngine();
     }
-<span class="fstat-no" title="function not covered" >    re</span>turn AIGovernanceEngine.instance;
-  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-&nbsp;
+    return AIGovernanceEngine.instance;
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   private initializeMLModels(): void {
     // Initialize machine learning models for governance intelligence
-    this.mlModels.set('risk_prediction', {
+    this.mlModels.set('risk_predict<span class="fstat-no" title="function not covered" >io</span>n', <span class="cstat-no" title="statement not covered" >{</span>
       type: 'ensemble',
-<span class="fstat-no" title="function not covered" ></span>      algorithms: ['random_forest', 'gradient_boosting', 'neural_network'],
-      ac<span class="cstat-no" title="statement not covered" >curacy: 0.94,</span>
+      algorithms: ['random_forest', 'gradient_boosting', 'neural_network'],
+      accuracy: 0.94,
       lastTrained: new Date().toISOString(),
     } as EnsembleMLModel);
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    this.mlModels.set('anomaly_detection', {
-      type: 'isolation_forest',
+&nbsp;
+<span class="fstat-no" title="function not covered" >    th</span>is.mlModels.set('anomaly_detection', {
+      ty<span class="cstat-no" title="statement not covered" >pe: 'isolation_forest',</span>
       sensitivity: 0.1,
       accuracy: 0.92,
       lastTrained: new Date().toISOString(),
     } as IsolationForestModel);
-<span class="fstat-no" title="function not covered" ></span>
-    this<span class="cstat-no" title="statement not covered" >.mlModels.set('policy_optimization', {</span>
+&nbsp;
+    this.mlModels.set('policy_optimization', {
       type: 'reinforcement_learning',
       algorithm: 'deep_q_network',
       convergence: 0.98,
       lastTrained: new Date().toISOString(),
     } as ReinforcementLearningModel);
   }
-&nbsp;
-  async monitorCompliance(
+<span class="fstat-no" title="function not covered" ></span>
+  async <span class="cstat-no" title="statement not covered" >monitorCompliance(</span>
     frameworks: string[],
     options: {
       monitoringInterval: number;
       realTimeAlerts: boolean;
-<span class="fstat-no" title="function not covered" ></span>      automatedRemediation: boolean;
-      ri<span class="cstat-no" title="statement not covered" >skThreshold: number;</span>
+      automatedRemediation: boolean;
+      riskThreshold: number;
       organizationId?: string;
       teamId?: string;
     }
   ): Promise&lt;{
     complianceStatus: ComplianceStatus;
     violations: Violation[];
-    predictions: CompliancePrediction[];
-    automatedActions: AutomatedAction[];
+<span class="fstat-no" title="function not covered" >    pr</span>edictions: CompliancePrediction[];
+    auto<span class="cstat-no" title="statement not covered" >matedActions: AutomatedAction[];</span>
     metrics: GovernanceMetrics;
   }&gt; {
     const startTime = Date.now();
     
-<span class="fstat-no" title="function not covered" >    //</span> Simulate real-time compliance monitoring
-    cons<span class="cstat-no" title="statement not covered" >t complianceFrameworks: ComplianceFramework[] = frameworks.map(framework =&gt; ({</span>
+    // Simulate real-time compliance monitoring
+    const complianceFrameworks: ComplianceFramework[] = frameworks.map(framework =&gt; ({
       id: framework.toLowerCase().replace(/\s+/g, '_'),
       name: framework,
       version: this.getFrameworkVersion(framework),
       controls: this.getFrameworkControls(framework),
       riskThreshold: options.riskThreshold,
       automatedRemediation: options.automatedRemediation,
-    }));
-&nbsp;
+<span class="fstat-no" title="function not covered" >    })</span>);
+<span class="cstat-no" title="statement not covered" ></span>
     const violations = await this.detectViolations(complianceFrameworks, options);
     const predictions = await this.generatePredictions(complianceFrameworks);
     const automatedActions = await this.executeAutomatedRemediation(violations, options);
 &nbsp;
-<span class="fstat-no" title="function not covered" >    co</span>nst complianceStatus = {
-      ti<span class="cstat-no" title="statement not covered" >mestamp: new Date().toISOString(),</span>
+    const complianceStatus = {
+      timestamp: new Date().toISOString(),
       frameworks: complianceFrameworks.map(framework =&gt; ({
         name: framework.name,
         status: violations.filter(v =&gt; v.framework === framework.id).length === 0 ? 'compliant' as const : 'non-compliant' as const,
         score: this.calculateComplianceScore(framework, violations),
         controlsCovered: framework.controls.length,
         violationsCount: violations.filter(v =&gt; v.framework === framework.id).length,
-        lastAssessment: new Date().toISOString(),
-      })),
+<span class="fstat-no" title="function not covered" ></span>        lastAssessment: new Date().toISOString(),
+      })<span class="cstat-no" title="statement not covered" >),</span>
       overallScore: this.calculateOverallComplianceScore(complianceFrameworks, violations),
       riskLevel: this.assessRiskLevel(violations),
       nextAssessment: new Date(Date.now() + options.monitoringInterval * 1000).toISOString(),
     };
-<span class="fstat-no" title="function not covered" ></span>
-    cons<span class="cstat-no" title="statement not covered" >t metrics: GovernanceMetrics = {</span>
+&nbsp;
+    const metrics: GovernanceMetrics = {
       complianceScore: complianceStatus.overallScore,
       riskScore: this.calculateRiskScore(violations),
       policyViolations: violations.length,
-      automatedRemediations: automatedActions.length,
-      avgResponseTime: Date.now() - startTime,
+<span class="fstat-no" title="function not covered" ></span>      automatedRemediations: automatedActions.length,
+      avgResponseTime: Date.<span class="cstat-no" title="statement not covered" >now() - startTime,</span>
       predictionAccuracy: this.mlModels.get('risk_prediction')?.accuracy || 0.9,
     };
 &nbsp;
     return {
-<span class="fstat-no" title="function not covered" ></span>      complianceStatus,
-      violations,<span class="cstat-no" title="statement not covered" ></span>
+      complianceStatus,
+      violations,
       predictions,
       automatedActions,
       metrics,
@@ -4764,14 +4764,14 @@ class AIGovernanceEngine {
   ): Promise&lt;{
     conflicts: PolicyConflict[];
     resolutionPlan: PolicyResolutionPlan | null;
-    impactAnalysis: ConflictImpactAnalysis;
-    optimizationSuggestions: string[];
+    impa<span class="cstat-no" title="statement not covered" >ctAnalysis: ConflictImpactAnalysis;</span>
+    optimiza<span class="cstat-no" title="statement not covered" >tionSuggestions: string[];</span>
   }&gt; {
     // Simulate policy conflict analysis using AI
     const policies = await this.getPolicies(scope, options);
     const conflicts = await this.detectPolicyConflicts(policies, options.conflictTypes);
-    cons<span class="cstat-no" title="statement not covered" >t resolutionPlan = options.includeResolutions ? await this.generateResolutionPlan(conflicts) : null;</span>
-    const im<span class="cstat-no" title="statement not covered" >pactAnalysis = await this.analyzeConflictImpact(conflicts);</span>
+    const resolutionPlan = options.includeResolutions ? await this.generateResolutionPlan(conflicts) : null;
+    const impactAnalysis = await this.analyzeConflictImpact(conflicts);
     const optimizationSuggestions = await this.generateOptimizationSuggestions(policies, conflicts);
 &nbsp;
     return {
@@ -4781,53 +4781,53 @@ class AIGovernanceEngine {
       optimizationSuggestions,
     };
   }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
   async assessRisk(
-    assessmentType: string,
-    options: {
+<span class="fstat-no" title="function not covered" >    as</span>sessmentType: string,
+    opti<span class="cstat-no" title="statement not covered" >ons: {</span>
       timeframe: string;
       mlPrediction: boolean;
-      in<span class="cstat-no" title="statement not covered" >cludeQuantification:</span> boolean;
+      includeQuantification: boolean;
       riskCategories: string[];
-<span class="fstat-no" title="function not covered" ></span>      organizationId?: string;
-      te<span class="cstat-no" title="statement not covered" >amId?: string;</span>
+      organizationId?: string;
+      teamId?: string;
     }
-  ): Promise&lt;{
-    riskAssessments: RiskAssessment[];
+  ):<span class="fstat-no" title="function not covered" > P</span>romise&lt;{
+    risk<span class="cstat-no" title="statement not covered" >Assessments: RiskAssessment[];</span>
     overallRisk: OverallRiskAssessment;
     trends: RiskTrend[];
     predictions: RiskPrediction[];
     mitigationPlan: MitigationPlan;
-  }&gt;<span class="fstat-no" title="function not covered" > {</span>
-    cons<span class="cstat-no" title="statement not covered" >t riskAssessments = await this.performRiskAssessment(assessmentType, options);</span>
+  }&gt; {
+    const riskAssessments = await this.performRiskAssessment(assessmentType, options);
     const overallRisk = this.calculateOverallRisk(riskAssessments);
     const trends = await this.analyzeTrends(riskAssessments, options.timeframe);
     const predictions = options.mlPrediction ? await this.generateRiskPredictions(riskAssessments) : [];
     const mitigationPlan = await this.generateMitigationPlan(riskAssessments);
 &nbsp;
     return {
-      riskAssessments,
-      overallRisk,
+<span class="fstat-no" title="function not covered" ></span>      riskAssessments,
+      ov<span class="cstat-no" title="statement not covered" >erallRisk,</span>
       trends,
       predictions,
       mitigationPlan,
     };
-  }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+  }
+&nbsp;
   async configureAutomatedRemediation(
     triggerConditions: string[],
     options: {
       severity: string;
       automationLevel: string;
       approvalRequired: boolean;
-      escalationEnabled: boolean;
-      dryRun: boolean;
+<span class="fstat-no" title="function not covered" ></span>      escalationEnabled: boolean;
+      dr<span class="cstat-no" title="statement not covered" >yRun: boolean;</span>
       organizationId?: string;
       teamId?: string;
     }
   ): Promise&lt;{
-<span class="fstat-no" title="function not covered" >    wo</span>rkflows: RemediationWorkflow[];
-    trig<span class="cstat-no" title="statement not covered" >gers: TriggerConfiguration[];</span>
+    workflows: RemediationWorkflow[];
+    triggers: TriggerConfiguration[];
     escalationPaths: EscalationConfiguration[];
     testResults: WorkflowTestResult;
   }&gt; {
@@ -4852,14 +4852,14 @@ class AIGovernanceEngine {
       confidenceThreshold: number;
       includeActionable: boolean;
       organizationId?: string;
-      teamId?: string;
-    }
+<span class="fstat-no" title="function not covered" ></span>      teamId?: string;
+    }<span class="cstat-no" title="statement not covered" ></span>
   ): Promise&lt;{
     insights: GovernanceInsight[];
     trends: GovernanceInsight[];
     anomalies: GovernanceInsight[];
-<span class="fstat-no" title="function not covered" >    pr</span>edictions: GovernanceInsight[];
-    reco<span class="cstat-no" title="statement not covered" >mmendations: GovernanceInsight[];</span>
+    predictions: GovernanceInsight[];
+    recommendations: GovernanceInsight[];
   }&gt; {
     const insights: GovernanceInsight[] = [];
     const trends = options.insightTypes.includes('trend') ? await this.analyzeTrendInsights(timeframe) : [];
@@ -4872,27 +4872,27 @@ class AIGovernanceEngine {
 &nbsp;
     // Filter by confidence threshold
     const filteredInsights = insights.filter(insight =&gt; insight.confidence &gt;= options.confidenceThreshold);
-&nbsp;
-    return {
+<span class="fstat-no" title="function not covered" ></span>
+    retu<span class="cstat-no" title="statement not covered" >rn {</span>
       insights: filteredInsights,
       trends,
-      anomalies,
-      predictions,
-<span class="fstat-no" title="function not covered" ></span>      recommendations,
-    };<span class="cstat-no" title="statement not covered" ></span>
+      anomalies,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      predictions,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      recommendations,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    };
   }
 &nbsp;
-  async generateDashboard(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    dashboardType: string,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-    options: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      refreshInterval: number;
-      includeRealTime: boolean;
+  async generateDashboard(
+    dashboardType: string,
+    options: {
+<span class="fstat-no" title="function not covered" ></span>      refreshInterval: number;
+      in<span class="cstat-no" title="statement not covered" >cludeRealTime: boolean;</span>
       metricsLevel: string;
       includeForecasting: boolean;
       organizationId?: string;
       teamId?: string;
-<span class="fstat-no" title="function not covered" >    }</span>
-  ): Pro<span class="cstat-no" title="statement not covered" >mise&lt;{</span>
+    }
+  ): Promise&lt;{
     dashboard: DashboardConfig;
     widgets: DashboardWidget[];
     realTimeData: RealTimeData | null;
@@ -4905,64 +4905,64 @@ class AIGovernanceEngine {
     const forecasts = options.includeForecasting ? await this.generateForecasts() : [];
     const configuration = {
       type: dashboardType,
-      refreshInterval: options.refreshInterval,
-      lastUpdated: new Date().toISOString(),
-    };
+      refreshInt<span class="fstat-no" title="function not covered" >erval: options.refreshInter</span>val,
+      lastUpdated: new Date(<span class="cstat-no" title="statement not covered" >).toISOString(),</span>
+    };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
     return {
       dashboard,
-      wid<span class="fstat-no" title="function not covered" >gets,</span>
-      realTimeData,<span class="cstat-no" title="statement not covered" ></span>
-      forecasts,<span class="cstat-no" title="statement not covered" ></span>
+      widgets,
+<span class="cstat-no" title="statement not covered" >      realTimeData,</span>
+      forecasts,
       configuration,
     };
   }
 &nbsp;
-  as<span class="cstat-no" title="statement not covered" >ync optimizePolicies(</span>
-    optimizationType: string,
-    options: {
-      mlOptimization: boolean;
+  async optimizePolicies(
+    optimizationT<span class="fstat-no" title="function not covered" >yp</span>e: string,
+    options: {<span class="cstat-no" title="statement not covered" ></span>
+      mlOpti<span class="cstat-no" title="statement not covered" >mization: boolean;</span>
       simulationMode: boolean;
       includeImpactAnalysis: boolean;
       optimizationGoals: string[];
-      organizatio<span class="fstat-no" title="function not covered" >nI</span>d?: string;
-      teamId?: string;<span class="cstat-no" title="statement not covered" ></span>
+      organi<span class="cstat-no" title="statement not covered" >zationId?: string;</span>
+      teamId<span class="cstat-no" title="statement not covered" >?: string;</span>
     }<span class="cstat-no" title="statement not covered" ></span>
   ): Promise&lt;{
     optimizationPlan: OptimizationPlan;
     currentState: PolicyState;
-    proposed<span class="cstat-no" title="statement not covered" >Changes: PolicyChange[];</span>
-    impactAn<span class="cstat-no" title="statement not covered" >alysis: OptimizationImpactAnalysis | null;</span>
-    simurationResults: Simulati<span class="cstat-no" title="statement not covered" >onResults | null;</span>
+    proposedChanges: PolicyChange[];
+    impactAnalysis: OptimizationImpactAnalysis | null;
+    simurationResults: SimulationResults | null;
   }&gt; {
-    const currentState = await this.analyzeCurrentPolicyState(options);
-    const optimizationPlan = await this.generateOptimizationPlan(optimizationType, options.optimizationGoals);
+    const curren<span class="cstat-no" title="statement not covered" >tState = await this.analyzeCurrentPolicyState(o</span>ptions);
+    const optimi<span class="cstat-no" title="statement not covered" >zationPlan = await this.generateOptimizationPlan(optimizationType, options.optimizationGoals);</span>
     const proposedChanges = await this.generatePolicyChanges(optimizationPlan);
     const impactAnalysis = options.includeImpactAnalysis ? await this.analyzeOptimizationImpact(proposedChanges) : null;
     const simurationResults = options.simulationMode ? await this.simulateOptimizations(proposedChanges) : null;
 &nbsp;
-    return {<span class="cstat-no" title="statement not covered" ></span>
-      optimizati<span class="cstat-no" title="statement not covered" >onPlan,</span>
+    return {
+      optimizationPlan,
       currentState,
       proposedChanges,
       impactAnalysis,
       simurationResults,
     };
   }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   // ==================== HELPER METHODS ====================
 &nbsp;
-  private getFrameworkVersion(framework: string): string {
+  private getFrameworkVer<span class="fstat-no" title="function not covered" >si</span>on(<span class="cstat-no" title="statement not covered" >framework: string): string {</span>
     const versions: Record&lt;string, string&gt; = {
       'SOC2': '2017',
-      'GDPR': '2018',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      'HIPAA': '2013',
+      'GDPR': '2018',
+      'HIPAA': '2013',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       'PCI DSS': '4.0.1',
-      'ISO27001': '2022',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      'ISO27001': '2022',
       'NIST': 'CSF 2.0',
     };
     return versions[framework] || '1.0';
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  }
 &nbsp;
   private getFrameworkControls(framework: string): Control[] {
     // Simplified control definitions
@@ -4972,55 +4972,55 @@ class AIGovernanceEngine {
         name: 'Access Control',
         description: 'Implement appropriate access controls',
         severity: 'high',
-        category: 'security',
-        requirements: ['authentication', 'authorization', 'audit'],
+        category<span class="cstat-no" title="statement not covered" >: 'security',</span>
+        requirem<span class="cstat-no" title="statement not covered" >ents: ['authe</span>ntication', 'authorization', 'audit'],
         automatedCheck: true,
         remediationActions: ['review_permissions', 'update_policies'],
       },
       {
-        id: `${f<span class="cstat-no" title="statement not covered" >ramework.toLowerCase()}_002`,</span>
-        name: 'D<span class="cstat-no" title="statement not covered" >ata Protectio</span>n',
+        id: `${framework.toLowerCase()}_002`,
+        name: 'Data Protection',
         description: 'Protect sensitive data',
-        severity: 'critical',
+<span class="cstat-no" title="statement not covered" >        severity: 'critical',</span>
         category: 'privacy',
         requirements: ['encryption', 'backup', 'retention'],
         automatedCheck: true,
         remediationActions: ['encrypt_data', 'update_retention_policy'],
       },
-<span class="cstat-no" title="statement not covered" >    ];</span>
-  }
-&nbsp;
-  private async detectViolations(_frameworks: ComplianceFramework[], _options: ComplianceMonitoringOptions): Promise&lt;Violation[]&gt; {
+    ];
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  private as<span class="cstat-no" title="statement not covered" >ync detectViolations(_frameworks: ComplianceFramework[], _options: ComplianceMonitoringOptions): Promise&lt;Violation[]&gt; {</span>
     // Simulate violation detection
     return [
       {
-        id: 'viol<span class="fstat-no" title="function not covered" >at</span>ion_001',
-        framework: 'soc2',<span class="cstat-no" title="statement not covered" ></span>
-        cont<span class="cstat-no" title="statement not covered" >rol: 'soc2_001',</span>
+        id: <span class="cstat-no" title="statement not covered" >'violation_001',</span>
+        fram<span class="cstat-no" title="statement not covered" >ework: 'soc2',</span>
+        control: 'soc2_001',<span class="cstat-no" title="statement not covered" ></span>
         severity: 'medium',
         description: 'Insufficient access logging detected',
         detectedAt: new Date().toISOString(),
-        stat<span class="cstat-no" title="statement not covered" >us: 'open',</span>
-        auto<span class="cstat-no" title="statement not covered" >matedRemediation: true,</span>
-      },<span class="cstat-no" title="statement not covered" ></span>
+        status: 'open',
+        automatedRemediation: true,
+      },
     ];
-  }
-&nbsp;
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   private async generatePredictions(_frameworks: ComplianceFramework[]): Promise&lt;CompliancePrediction[]&gt; {
     // Use ML model for predictions
     return [
       {
-        type: 'c<span class="cstat-no" title="statement not covered" >ompliance_risk',</span>
-        framewor<span class="cstat-no" title="statement not covered" >k: 'gdpr',</span>
+        type: 'compliance_risk',
+        framework: 'gdpr',
         prediction: 'medium_risk_increase',
         confidence: 0.85,
-        timeframe: '7d',
+        timeframe: '7d'<span class="fstat-no" title="function not covered" >,<span class="cstat-no" title="statement not covered" ></span></span>
         factors: ['increased_data_processing', 'policy_changes'],
         recommendations: ['review_data_processing', 'update_privacy_policy'],
       },
     ];
   }
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
   private async executeAutomatedRemediation(violations: Violation[], _options: ComplianceMonitoringOptions): Promise&lt;AutomatedAction[]&gt; {
     if (!_options.automatedRemediation) return [];
 &nbsp;
@@ -5040,227 +5040,227 @@ class AIGovernanceEngine {
     const totalControls = framework.controls.length;
     const violatedControls = frameworkViolations.length;
     return Math.max(0, ((totalControls - violatedControls) / totalControls) * 100);
-  }
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
   private calculateOverallComplianceScore(frameworks: ComplianceFramework[], violations: Violation[]): number {
     const scores = frameworks.map(f =&gt; this.calculateComplianceScore(f, violations));
     return scores.reduce((sum, score) =&gt; sum + score, 0) / scores.length;
   }
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
   private assessRiskLevel(violations: Violation[]): string {
-    const criticalCount = violations.filter(v =&gt; v.severity === 'critical').length;
-    const highCount = violations.filter(v =&gt; v.severity === 'high').length;
+    const critic<span class="cstat-no" title="statement not covered" >alCount = violations.filter(v =&gt; v.severity === 'critical').length;</span>
+    const highCo<span class="cstat-no" title="statement not covered" >unt = violati</span>ons.filter(v =&gt; v.severity === 'high').length;
 &nbsp;
     if (criticalCount &gt; 0) return 'critical';
     if (highCount &gt; 2) return 'high';
     if (violations.length &gt; 5) return 'medium';
-    return 'low'<span class="cstat-no" title="statement not covered" >;</span>
-  }<span class="cstat-no" title="statement not covered" ></span>
+    return 'low';
+  }
 &nbsp;
-  private calculateRiskScore(violations: Violation[]): number {
+  pr<span class="cstat-no" title="statement not covered" >ivate calculateRiskScore(violations: Violation[]): number {</span>
     const weights = { critical: 10, high: 5, medium: 2, low: 1 };
     return violations.reduce((score, v) =&gt; score + (weights[v.severity as keyof typeof weights] || 1), 0);
   }
 &nbsp;
   private async getPolicies(scope: string, _options: PolicyConflictOptions): Promise&lt;Policy[]&gt; {
-<span class="cstat-no" title="statement not covered" >    // Simulate policy retrieval</span>
-    return [
-      {
-        id: 'policy_001',
+    // Simulate policy retrieval
+    return [<span class="fstat-no" title="function not covered" ></span>
+      {<span class="cstat-no" title="statement not covered" ></span>
+        id: <span class="cstat-no" title="statement not covered" >'policy_001',</span>
         name: 'Data Access Policy',
         scope,
         rules: ['require_mfa', 'log_access'],
-        priority:<span class="fstat-no" title="function not covered" > '</span>high',
+        prio<span class="cstat-no" title="statement not covered" >rity: 'high',</span>
       },<span class="cstat-no" title="statement not covered" ></span>
       {<span class="cstat-no" title="statement not covered" ></span>
         id: 'policy_002',
         name: 'Data Retention Policy',
         scope,
-        rule<span class="cstat-no" title="statement not covered" >s: ['retain_30days', 'auto_delete'],</span>
-        prio<span class="cstat-no" title="statement not covered" >rity: 'medium',</span>
-      },<span class="cstat-no" title="statement not covered" ></span>
+        rules: ['retain_30days', 'auto_delete'],
+        priority: 'medium',
+      },
     ];
-  }
-&nbsp;
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
   private async detectPolicyConflicts(_policies: Policy[], _conflictTypes: string[]): Promise&lt;PolicyConflict[]&gt; {
     // Simulate conflict detection using AI
     return [
       {
-        conflict<span class="cstat-no" title="statement not covered" >Id: 'conflict_001',</span>
-        policies<span class="cstat-no" title="statement not covered" >: ['policy_001', 'policy_002'],</span>
+        conflictId: 'conflict_001',
+        policies: ['policy_001', 'policy_002'],
         conflictType: 'contradictory',
         severity: 'medium',
         impact: 'Data retention requirements conflict with access policies',
         resolutionSuggestions: ['Align retention periods', 'Update access controls'],
         automatedResolution: true,
       },
-    ];
+    ];<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   }
 &nbsp;
   private async generateResolutionPlan(conflicts: PolicyConflict[]): Promise&lt;PolicyResolutionPlan&gt; {
     return {
       planId: 'resolution_plan_001',
-      conflicts: conflicts.ma<span class="fstat-no" title="function not covered" >p(</span>c =&gt; c<span class="cstat-no" title="statement not covered" >.conflictId),</span>
+      conflicts: conflicts.map(c =&gt; c.conflictId),
       steps: [
         'Analyze policy dependencies',
         'Identify resolution options',
-        'Test proposed changes',
+        'Test propos<span class="fstat-no" title="function not covered" >ed</span> change<span class="cstat-no" title="statement not covered" >s',</span>
         'Implement resolution',
         'Validate outcomes',
       ],
       estimatedDuration: '2-4 hours',
-      automatedSteps: 3,
-      manualSteps: 2<span class="fstat-no" title="function not covered" >,<span class="cstat-no" title="statement not covered" ></span></span>
+      automatedSteps: 3,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      manualSteps: 2,
     };
   }
 &nbsp;
   private async analyzeConflictImpact(conflicts: PolicyConflict[]): Promise&lt;ConflictImpactAnalysis&gt; {
-    return {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    return {
       totalConflicts: conflicts.length,
       severityDistribution: {
         critical: conflicts.filter(c =&gt; c.severity === 'critical').length,
         high: conflicts.filter(c =&gt; c.severity === 'high').length,
-        medium: conflicts.filter(c =&gt; c.severity === 'medium').length,
+        medium: conflicts.filter(c =&gt; c.severit<span class="fstat-no" title="function not covered" >y </span>=== 'mediu<span class="cstat-no" title="statement not covered" >m').length,</span>
         low: conflicts.filter(c =&gt; c.severity === 'low').length,
       },
       estimatedRisk: 'medium',
       businessImpact: 'Potential compliance violations and operational inefficiencies',
     };
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  }
 &nbsp;
-  private async generateOptimizationSuggestions(_policies: Policy[], _conflicts: PolicyConflict[]): Promise&lt;string[]&gt; {
-    return [
+  private async <span class="cstat-no" title="statement not covered" >generateOptimizationSuggestions(_policies: Policy[], _conflicts: PolicyConf</span>lict[]): Promise&lt;string[]&gt; {
+    return [<span class="cstat-no" title="statement not covered" ></span>
       'Consolidate overlapping policies to reduce redundancy',
       'Implement hierarchical policy inheritance',
       'Add automated conflict detection checks',
       'Create policy testing framework',
-      'Establish<span class="cstat-no" title="statement not covered" > policy review cycles',</span>
-    ];<span class="cstat-no" title="statement not covered" ></span>
+      'Establish policy review cycles',
+    ];
   }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ></span>
   private async performRiskAssessment(_assessmentType: string, _options: RiskAssessmentOptions): Promise&lt;RiskAssessment[]&gt; {
     return [
       {
         riskId: 'risk_001',
         category: 'security',
-<span class="cstat-no" title="statement not covered" >        severity: 'high',</span>
-        probability: 0.7,
-        impact: 0.8,
-        riskScore: 0.75,
+        severity: 'high',
+        probabili<span class="fstat-no" title="function not covered" >ty</span>: 0.7,
+        impact: 0.8,<span class="cstat-no" title="statement not covered" ></span>
+        risk<span class="cstat-no" title="statement not covered" >Score: 0.75,</span>
         indicators: ['failed_login_attempts', 'unusual_access_patterns'],
         mitigationStrategies: ['implement_mfa', 'enhance_monitoring'],
         automatedRemediation: true,
-        estimated<span class="fstat-no" title="function not covered" >Co</span>st: 15000,
+        esti<span class="cstat-no" title="statement not covered" >matedCost: 15000,</span>
       },<span class="cstat-no" title="statement not covered" ></span>
     ];<span class="cstat-no" title="statement not covered" ></span>
   }
 &nbsp;
   private calculateOverallRisk(assessments: RiskAssessment[]): OverallRiskAssessment {
-    const to<span class="cstat-no" title="statement not covered" >talRisk = assessments.reduce((sum, a) =&gt; sum +</span> a.riskScore, 0) / assessments.length;
-    return {<span class="cstat-no" title="statement not covered" ></span>
-      score: totalRisk,<span class="cstat-no" title="statement not covered" ></span>
+    const totalRisk = assessments.reduce((sum, a) =&gt; sum + a.riskScore, 0) / assessments.length;
+    return {
+      score: totalRisk,
       level: totalRisk &gt; 0.7 ? 'high' : totalRisk &gt; 0.4 ? 'medium' : 'low',
       assessments: assessments.length,
-      highRiskItems: assessments.filter(a =&gt; a.severity === 'high' || a.severity === 'critical').length,
-    };
+      highRiskIt<span class="cstat-no" title="statement not covered" >ems: assessments.filter(a =&gt; a.severity === 'hi</span>gh' || a.severity === 'critical').length,
+    };<span class="cstat-no" title="statement not covered" ></span>
   }
 &nbsp;
   private async analyzeTrends(_assessments: RiskAssessment[], timeframe: string): Promise&lt;RiskTrend[]&gt; {
     return [
-      {<span class="cstat-no" title="statement not covered" ></span>
-        metric: <span class="cstat-no" title="statement not covered" >'risk_score',</span>
+      {
+        metric: 'risk_score',
         trend: 'decreasing',
         change: -0.15,
-        period: timeframe,
+        period: timefra<span class="fstat-no" title="function not covered" >me</span>,<span class="cstat-no" title="statement not covered" ></span>
         significance: 'high',
       },
     ];
   }
 &nbsp;
-  private async generat<span class="fstat-no" title="function not covered" >eR</span>iskPredict<span class="cstat-no" title="statement not covered" >ions(_assessments: RiskAssessment[]): Promise&lt;RiskPrediction[]&gt; {</span>
+  private async generateRiskPredictions(_assessments: RiskAssessment[]): Promise&lt;RiskPrediction[]&gt; {
     return [
       {
         riskType: 'security',
         prediction: 'increase',
-        confidence: 0.82,
+        confidence: 0.<span class="fstat-no" title="function not covered" >82</span>,<span class="cstat-no" title="statement not covered" ></span>
         timeframe: '30d',
         factors: ['increased_activity', 'new_vulnerabilities'],
       },
     ];
-  }
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
   private async generateMitigationPlan(assessments: RiskAssessment[]): Promise&lt;MitigationPlan&gt; {
     return {
       planId: 'mitigation_plan_001',
       totalRisks: assessments.length,
-      prioritizedActions: [<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      prioritizedActions: [
         'Implement additional security controls',
-        'Enhance monitoring capabilities',
+        'Enhance monitoring capabilities',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         'Update incident response procedures',
       ],
       estimatedCost: assessments.reduce((sum, a) =&gt; sum + a.estimatedCost, 0),
       timeline: '4-6 weeks',
     };
-  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  }
 &nbsp;
   private async createRemediationWorkflows(triggers: string[], options: RemediationOptions): Promise&lt;RemediationWorkflow[]&gt; {
     return [
-      {
-        workflowId: 'workflow_001',
+      {<span class="cstat-no" title="statement not covered" ></span>
+        workflow<span class="cstat-no" title="statement not covered" >Id: 'workflow</span>_001',
         triggeredBy: triggers[0] || 'policy_violation',
         severity: options.severity as 'low' | 'medium' | 'high' | 'critical',
         steps: [
           {
-            step<span class="cstat-no" title="statement not covered" >Id: 'step_001',</span>
-            acti<span class="cstat-no" title="statement not covered" >on: 'investig</span>ate',
+            stepId: 'step_001',
+            action: 'investigate',
             description: 'Investigate the trigger condition',
-            automated: true,
+<span class="cstat-no" title="statement not covered" >            automated: true,</span>
             duration: 300,
             dependencies: [],
             successCriteria: ['evidence_collected'],
           },
           {
-<span class="cstat-no" title="statement not covered" >            stepId: 'step_002',</span>
-            action: 'remediate',
-            description: 'Apply automated remediation',
-            automated: options.automationLevel === 'fully-automated',
+            stepId: 'step_002',
+            actio<span class="fstat-no" title="function not covered" >n:</span> 'remediate',
+            description: 'Apply au<span class="cstat-no" title="statement not covered" >tomated remediation',</span>
+<span class="cstat-no" title="statement not covered" >            automated: options.automationLevel === 'fully-automated',</span>
             duration: 600,
             dependencies: ['step_001'],
             successCriteria: ['issue_resolved'],
-          },<span class="fstat-no" title="function not covered" ></span>
+          },
         ],<span class="cstat-no" title="statement not covered" ></span>
         esca<span class="cstat-no" title="statement not covered" >lationPath: [</span>
-          {
+          {<span class="cstat-no" title="statement not covered" ></span>
             level: 1,
             condition: 'automation_failed',
             action: 'notify_admin',
-<span class="cstat-no" title="statement not covered" >            stakeholders: ['security_team'],</span>
-<span class="cstat-no" title="statement not covered" >            timeframe: 1800,</span>
-          },<span class="cstat-no" title="statement not covered" ></span>
+            stakeholders: ['security_team'],
+            timeframe: 1800,
+          },
         ],
-        automatedExecution: options.automationLevel === 'fully-automated',
-        estimatedDuration: 900,
+        automate<span class="cstat-no" title="statement not covered" >dExecution: options.automationLevel === 'fully-</span>automated',
+        estimate<span class="cstat-no" title="statement not covered" >dDuration: 900,</span>
         successCriteria: ['issue_resolved', 'compliance_restored'],
       },
     ];
   }
-<span class="cstat-no" title="statement not covered" ></span>
-  private async <span class="cstat-no" title="statement not covered" >configureTriggers(conditions: string[], workflows: RemediationWorkflow[]): Promise&lt;TriggerConfiguration[]&gt; {</span>
-    return conditions.map(condition =&gt; ({
+&nbsp;
+  private async configureTriggers(conditions: string[], workflows: RemediationWorkflow[]): Promise&lt;TriggerConfiguration[]&gt; {
+    return conditions.<span class="fstat-no" title="function not covered" >ma</span>p(conditi<span class="cstat-no" title="statement not covered" >on =&gt; ({</span>
       triggerId: `trigger_${condition}`,
       condition,
       workflow: workflows[0]?.workflowId,
       enabled: true,
       lastTriggered: null,
-    }));<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    }));
   }
-&nbsp;
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
   private async configureEscalation(workflows: RemediationWorkflow[]): Promise&lt;EscalationConfiguration[]&gt; {
     return workflows.map(w =&gt; ({
       workflowId: w.workflowId,
-      escalationLevels: w.escalationPath.length,
+      escalationLeve<span class="fstat-no" title="function not covered" >ls</span>: w.esc<span class="cstat-no" title="statement not covered" >alationPath.length,</span>
       configuration: w.escalationPath,
-    }));<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    }));
   }
 &nbsp;
   private async testWorkflows(workflows: RemediationWorkflow[]): Promise&lt;WorkflowTestResult&gt; {
@@ -5270,7 +5270,7 @@ class AIGovernanceEngine {
       results: workflows.map(w =&gt; ({
         workflowId: w.workflowId,
         testResult: 'passed',
-        duration: w.est<span class="fstat-no" title="function not covered" >im</span>atedDurat<span class="cstat-no" title="statement not covered" >ion * 0.1, // Simulated test duration</span>
+        duration: w.estim<span class="fstat-no" title="function not covered" >at</span>edDura<span class="cstat-no" title="statement not covered" >tion * 0.1, // Simulated test duration</span>
       })),
     };
   }
@@ -5282,64 +5282,64 @@ class AIGovernanceEngine {
         title: 'Compliance Score Improvement',
         description: 'Overall compliance scores have improved by 15% over the selected timeframe',
         severity: 'info',
-        confidence: 0.92,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        confidence: 0.92,
         impact: 'Reduced compliance risk and improved security posture',
         actionableSteps: ['Maintain current practices', 'Consider expanding successful controls'],
         timeframe,
       },
-    ];
-  }
+    ];<span class="cstat-no" title="statement not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   private async detectAnomalies(timeframe: string): Promise&lt;GovernanceInsight[]&gt; {
     return [
       {
-        type: 'a<span class="cstat-no" title="statement not covered" >nomaly',</span>
-        title: '<span class="cstat-no" title="statement not covered" >Unusual Polic</span>y Violation Pattern',
+        type: 'anomaly',
+        title: 'Unusual Policy Violation Pattern',
         description: 'Detected 300% increase in access control violations in the last 24 hours',
-        severity: 'warning',
+<span class="cstat-no" title="statement not covered" >        severity: 'warning',</span>
         confidence: 0.89,
         impact: 'Potential security incident or misconfiguration',
         actionableSteps: ['Investigate access patterns', 'Review recent policy changes', 'Check for system issues'],
         timeframe,
       },
-<span class="cstat-no" title="statement not covered" >    ];</span>
-  }
-&nbsp;
-  private async generatePredictiveInsights(timeframe: string): Promise&lt;GovernanceInsight[]&gt; {
+    ];
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  private as<span class="cstat-no" title="statement not covered" >ync generatePredictiveInsights(timeframe: string): Promise&lt;GovernanceInsight[]&gt; {</span>
     return [
       {
         type: 'prediction',
-        title: 'P<span class="fstat-no" title="function not covered" >re</span>dicted Compliance Risk Increase',
-        description: 'ML models pr<span class="cstat-no" title="statement not covered" >edict a 25% increase in compliance violations with</span>in the next 7 days',
-        seve<span class="cstat-no" title="statement not covered" >rity: 'warning',</span>
+        titl<span class="cstat-no" title="statement not covered" >e: 'Predicted Compliance Risk Increase',</span>
+        desc<span class="cstat-no" title="statement not covered" >ription: 'ML models predict a 25% increase in compliance violations within the next 7 days',</span>
+        severity: 'warning',<span class="cstat-no" title="statement not covered" ></span>
         confidence: 0.78,
         impact: 'Potential compliance failures and increased audit risk',
         actionableSteps: ['Proactive policy review', 'Enhanced monitoring', 'Staff training'],
-        time<span class="cstat-no" title="statement not covered" >frame,</span>
-      },<span class="cstat-no" title="statement not covered" ></span>
-    ];<span class="cstat-no" title="statement not covered" ></span>
+        timeframe,
+      },
+    ];
   }
-&nbsp;
-  private async generateRecommendations(timeframe: string): Promise&lt;GovernanceInsight[]&gt; {
+<span class="cstat-no" title="statement not covered" ></span>
+  private async <span class="cstat-no" title="statement not covered" >generateRecommendations(timeframe: string): Promise&lt;GovernanceInsight[]&gt; {</span>
     return [
       {
         type: 'recommendation',
         title: 'Optimize Policy Automation',
-        descript<span class="cstat-no" title="statement not covered" >ion: 'Implementing automated policy enforcement</span> could reduce violations by 40%',
-        severity<span class="cstat-no" title="statement not covered" >: 'info',</span>
+        description: 'Implementing automated policy enforcement could reduce violations by 40%',
+        severity: 'info',
         confidence: 0.85,
         impact: 'Improved compliance efficiency and reduced manual overhead',
         actionableSteps: ['Evaluate automation tools', 'Pilot automated controls', 'Measure effectiveness'],
         timeframe,
       },
     ];
-  }
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 &nbsp;
   private async buildDashboard(dashboardType: string, options: DashboardOptions): Promise&lt;DashboardConfig&gt; {
     return {
       id: `dashboard_${dashboardType}`,
       type: dashboardType,
-      title: `${dashb<span class="fstat-no" title="function not covered" >oa</span>rdType.c<span class="cstat-no" title="statement not covered" >harAt(0).toUpperCase() + dashboardType.slice(1)} Governance Dashboard`,</span>
+      title: `${dashboardType.charAt(0).toUpperCase() + dashboardType.slice(1)} Governance Dashboard`,
       createdAt: new Date().toISOString(),
       refreshInterval: options.refreshInterval,
       layout: 'grid',
@@ -5350,60 +5350,60 @@ class AIGovernanceEngine {
   private async generateWidgets(dashboardType: string, metricsLevel: string): Promise&lt;DashboardWidget[]&gt; {
     const baseWidgets: DashboardWidget[] = [
       {
-        id: 'compliance_score',
+        id: 'compliance<span class="fstat-no" title="function not covered" >_s</span>core',<span class="cstat-no" title="statement not covered" ></span>
         type: 'metric' as const,
         title: 'Overall Compliance Score',
         value: 92,
         trend: 'up' as const,
-        size: 'small' as const,
-      },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        size: 'small' as<span class="fstat-no" title="function not covered" > c</span>onst,<span class="cstat-no" title="statement not covered" ></span>
+      },
       {
         id: 'risk_level',
         type: 'indicator' as const,
         title: 'Current Risk Level',
-        value: 'Medium',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        value: 'Medium',
         color: 'orange',
         size: 'small' as const,
-      },
-      {
+      },<span class="cstat-no" title="statement not covered" ></span>
+      {<span class="cstat-no" title="statement not covered" ></span>
         id: 'violations_chart',
         type: 'chart' as const,
         title: 'Policy Violations Trend',
         value: 'Chart Data',
-        chartTyp<span class="cstat-no" title="statement not covered" >e: 'line',</span>
-        size: 'l<span class="cstat-no" title="statement not covered" >arge' as cons</span>t,
+        chartType: 'line',
+        size: 'large' as const,
       },
-    ];
+<span class="cstat-no" title="statement not covered" >    ];</span>
 &nbsp;
     if (metricsLevel === 'detailed' || metricsLevel === 'granular') {
       baseWidgets.push(
         {
           id: 'automation_efficiency',
-<span class="cstat-no" title="statement not covered" >          type: 'metric' as const,</span>
-          title: 'Automation Efficiency',
-          value: 87,
-          trend: 'stable' as const,
+          type: 'metric' as const,
+          title: <span class="fstat-no" title="function not covered" >'A</span>utomation Efficiency',
+          value: 87,<span class="cstat-no" title="statement not covered" ></span>
+          tr<span class="cstat-no" title="statement not covered" >end: 'stable' as const,</span>
           size: 'medium' as const,
         },
         {
-          id: 're<span class="fstat-no" title="function not covered" >me</span>diation_time',
-          type: 'metric' as const,<span class="cstat-no" title="statement not covered" ></span>
-          ti<span class="cstat-no" title="statement not covered" >tle: 'Avg Remediation Time (minutes)',</span>
+          id<span class="cstat-no" title="statement not covered" >: 'remediation_time',</span>
+          ty<span class="cstat-no" title="statement not covered" >pe: 'metric' as const,</span>
+          title: 'Avg Remediati<span class="cstat-no" title="statement not covered" >on Time (minutes)',</span>
           value: 142,
           trend: 'stable' as const,
           size: 'medium' as const,
-        }<span class="cstat-no" title="statement not covered" ></span>
-      );<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+        }
+      );
+    }
 &nbsp;
-    return baseWidgets;
-  }
+    return baseW<span class="cstat-no" title="statement not covered" >idgets;</span>
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   private async getRealTimeData(): Promise&lt;RealTimeData&gt; {
     return {
       timestamp: new Date().toISOString(),
-      activeMoni<span class="cstat-no" title="statement not covered" >toring: true,</span>
-      ongoingRem<span class="cstat-no" title="statement not covered" >ediations: 3,</span>
+      activeMonitoring: true,
+      ongoingRemediations: 3,
       lastAlert: new Date(Date.now() - 300000).toISOString(),
       systemHealth: 'healthy',
     };
@@ -5411,31 +5411,31 @@ class AIGovernanceEngine {
 &nbsp;
   private async generateForecasts(): Promise&lt;Forecast[]&gt; {
     return [
-      {
+      {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         metric: 'compliance_score',
         currentValue: 92,
         forecast: [
           { date: new Date(Date.now() + 86400000).toISOString(), value: 93 },
           { date: new Date(Date.now() + 172800000).toISOString(), value: 94 },
-          { date: new Date(Date.now() + 259<span class="fstat-no" title="function not covered" >20</span>0000).toI<span class="cstat-no" title="statement not covered" >SOString(), v</span>alue: 95 },
+          { date: new Date(Date.now() + 259200000).toISOString(), value: 95 },
         ],
-        confidence: 0.82,
+        confidence: 0.82,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       },
     ];
   }
 &nbsp;
   private async analyzeCurrentPolicyState(_options: PolicyOptimizationOptions): Promise&lt;PolicyState&gt; {
-    return {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-      totalPolicies: 47,
+    return {
+      totalPolicies: 47,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       activeFrameworks: ['SOC2', 'GDPR', 'HIPAA'],
       complianceScore: 92,
-      automationLevel: 73,
+      automationLevel: 73,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       lastOptimization: new Date(Date.now() - 2592000000).toISOString(),
       identifiedIssues: [
-        'Policy overlap in access controls',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        'Policy overlap in access controls',
         'Inconsistent enforcement mechanisms',
         'Manual processes with automation potential',
-      ],<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+      ],
     };
   }
 &nbsp;
@@ -5463,27 +5463,27 @@ class AIGovernanceEngine {
           duration: '1 week',
           activities: ['Results validation', 'Monitoring setup', 'Documentation'],
         },
-      ],
+      ],<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       estimatedBenefits: [
         '25% reduction in policy conflicts',
         '40% improvement in automation coverage',
         '30% decrease in manual overhead',
       ],
-    };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    };
   }
 &nbsp;
-  private async generatePolicyChanges(_optimizationPlan: OptimizationPlan): Promise&lt;PolicyChange[]&gt; {
-    return [
+  private async <span class="cstat-no" title="statement not covered" >generatePolicyChanges(_optimizationPlan: OptimizationPlan): Promise&lt;PolicyChang</span>e[]&gt; {
+    return [<span class="cstat-no" title="statement not covered" ></span>
       {
         changeId: 'change_001',
         type: 'consolidation',
-        description: 'Merge overlapping access control policies',
-        impact: <span class="cstat-no" title="statement not covered" >'medium',</span>
-        effort: <span class="cstat-no" title="statement not covered" >'low',</span>
+<span class="cstat-no" title="statement not covered" >        description: 'Merge overlapping access control policies',</span>
+        impact: 'medium',
+        effort: 'low',
         affectedPolicies: ['policy_001', 'policy_005'],
       },
       {
-<span class="cstat-no" title="statement not covered" >        changeId: 'change_002',</span>
+        changeId: 'change_002',
         type: 'automation',
         description: 'Implement automated compliance checking',
         impact: 'high',
@@ -6145,7 +6145,7 @@ AI-powered policy optimization analysis completed with actionable implementation
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.110Z
+                at 2025-08-22T05:07:11.447Z
             </div>
         <script src="../prettify.js"></script>
         <script>

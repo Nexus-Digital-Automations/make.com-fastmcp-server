@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/382</span>
+                <span class='fraction'>0/373</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/287</span>
+                <span class='fraction'>0/280</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/85</span>
+                <span class='fraction'>0/84</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/368</span>
+                <span class='fraction'>0/359</span>
             </div>
         
             
@@ -1212,16 +1212,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2041,7 +2035,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2353,17 +2353,17 @@
  * Based on research from Zapier, Microsoft AppSource, and Salesforce AppExchange
  */
 &nbsp;
-import { FastMCP, User<span class="cstat-no" title="statement not covered" >Error } from 'fastmcp';<span class="fstat-no" title="function not covered" ></span></span>
-impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
+import { FastMCP, UserError } from 'fastmcp';
+import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../utils/res</span>ponse-formatter.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// Marketplace<span class="cstat-no" title="statement not covered" > app data types</span> based on industry best practices
-export interface Mak<span class="cstat-no" title="statement not covered" >ePublicApp {</span>
-  id: string;<span class="cstat-no" title="statement not covered" ></span>
+import logger from '../lib/logger.js';
+import { formatSuccessResponse <span class="cstat-no" title="statement not covered" >} from '../utils/response-formatter.js';</span>
+&nbsp;
+// Marketplace app data types based on industry best practices
+export interface MakePublicApp {
+  id: string;
   name: string;
-  slug: string;<span class="cstat-no" title="statement not covered" ></span>
+  slug: string;
   description: string;
   shortDescription: string;
   category: string;
@@ -2391,23 +2391,23 @@ export interface Mak<span class="cstat-no" title="statement not covered" >ePubli
     documentationUrl?: string;
     homepageUrl?: string;
   };
-  capabilities: {
+  capabilities: {<span class="cstat-no" title="statement not covered" ></span>
     triggers: Array&lt;{
       name: string;
       description: string;
       type: 'polling' | 'webhook' | 'instant';
     }&gt;;
-    actions: Array&lt;{<span class="cstat-no" title="statement not covered" ></span>
+    actions: Array&lt;{
       name: string;
       description: string;
       type: 'create' | 'read' | 'update' | 'delete' | 'search' | 'custom';
-    }&gt;;
+    }&gt;;<span class="cstat-no" title="statement not covered" ></span>
     searches: Array&lt;{
       name: string;
       description: string;
       parameters: Record&lt;string, unknown&gt;;
     }&gt;;
-  };<span class="cstat-no" title="statement not covered" ></span>
+  };
   authentication: {
     type: 'api_key' | 'oauth2' | 'basic_auth' | 'custom' | 'none';
     fields: Array&lt;{
@@ -2419,94 +2419,94 @@ export interface Mak<span class="cstat-no" title="statement not covered" >ePubli
     }&gt;;
     testRequest?: {
       endpoint: string;
-      method: string;
-    };
-  };
+      method: st<span class="fstat-no" title="function not covered" >ring;</span>
+    };<span class="cstat-no" title="statement not covered" ></span>
+  };<span class="cstat-no" title="statement not covered" ></span>
   pricing: {
-    model: 'free' | 'freemium' | 'subscription' | 'usage_based' | 'one_time';
+<span class="cstat-no" title="statement not covered" >    model: 'free' | 'freemium' | 'subscription' | 'usage_based' | 'one_time';</span>
     plans: Array&lt;{
-      nam<span class="fstat-no" title="function not covered" >e: string;</span>
-      price: number;<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >      currency: string;</span>
+      name: string;
+      price: number;
+      currency: string;
       billingCycle: 'monthly' | 'annually' | 'per_use';
-<span class="cstat-no" title="statement not covered" >      features: string[];</span>
+      features: string[];
       limitations?: Record&lt;string, number&gt;;
     }&gt;;
   };
   usage: {
-    totalInstalls: number;
-    activeInstalls: number;
-    averageRating: number;
+    totalInstalls<span class="fstat-no" title="function not covered" >: </span>number;
+    activeInstalls: number;<span class="cstat-no" title="statement not covered" ></span>
+    averageR<span class="cstat-no" title="statement not covered" >ating: number;</span>
     reviewCount: number;
     trendingScore: number;
     compatibilityScore: number;
-  };<span class="fstat-no" title="function not covered" ></span>
-  requirements: {<span class="cstat-no" title="statement not covered" ></span>
+  };
+  requirements: {
     minimumP<span class="cstat-no" title="statement not covered" >lan?: 'free' | 'core' | 'pro' | 'teams' | 'enterprise';</span>
-    requiredFeatures: string[];
+    requiredFeat<span class="cstat-no" title="statement not covered" >ures: string[];</span>
     conflictingApps?: string[];
-    dependencies: Array&lt;{
+    dependencies: Array&lt;{<span class="cstat-no" title="statement not covered" ></span>
       appId: string;
       appName: string;
-      requir<span class="cstat-no" title="statement not covered" >ed: boolean;</span>
-    }&gt;;<span class="cstat-no" title="statement not covered" ></span>
+      required: boolean;
+    }&gt;;
   };
-  support: {<span class="cstat-no" title="statement not covered" ></span>
-    channels: Array&lt;'email' | 'chat' | 'forum' | 'documentation' | 'phone'&gt;;
-    languages: string[];
+  support: {
+    channels: Ar<span class="cstat-no" title="statement not covered" >ray&lt;'email' | 'chat' | 'forum' | 'documentation' | 'phone'&gt;;</span>
+    languages: strin<span class="cstat-no" title="statement not covered" >g[];</span>
     timezone?: string;
     responseTime?: string;
-  };
-  compliance: {
-    gdprComplian<span class="cstat-no" title="statement not covered" >t: boolean;</span>
-    hipaaCompliant: <span class="cstat-no" title="statement not covered" >boolean;</span>
-    socCompliant: boolean;
-    certifications: string[];
   };<span class="cstat-no" title="statement not covered" ></span>
-  createdAt: string;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  updatedAt: string;<span class="cstat-no" title="statement not covered" ></span>
-  lastReviewed: string;<span class="cstat-no" title="statement not covered" ></span>
+  compliance: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    gdprCompliant: boole<span class="cstat-no" title="statement not covered" >an;</span>
+    hipaaCompliant: boolean;<span class="cstat-no" title="statement not covered" ></span>
+    socCompliant: boolean;
+    certifications: string[];<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+  };<span class="cstat-no" title="statement not covered" ></span>
+  createdAt: string;<span class="cstat-no" title="statement not covered" ></span>
+  updatedAt: string;
+  lastReviewed: string;
 }
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-export interface MakeAppSearchFilter<span class="cstat-no" title="statement not covered" >s {</span>
-  category?: string;<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+export interface MakeAppSearchFi<span class="cstat-no" title="statement not covered" >lters {</span>
+  category?: string;
   subcategory?: string;
   tags?: string[];
   publisherType?: 'make' | 'verified_partner' | 'community';
-  pricingModel?: 'free' | 'freemium' | 'subscription' | 'usage_based' | 'one_time';
+  pricingModel?:<span class="cstat-no" title="statement not covered" > 'free' | 'freemium' | 'subscription' | 'usage</span>_based' | 'one_time';
   minimumRating?: number;<span class="cstat-no" title="statement not covered" ></span>
-  authType?: 'api_key' | 'oauth2' | 'basic_auth' | 'custom' | 'none';
-  capabilities?: {
+  authType?: 'ap<span class="cstat-no" title="statement not covered" >i_key' | 'oauth2' | 'basic_auth' | 'custom' | 'none';</span>
+  capabilities?: {<span class="cstat-no" title="statement not covered" ></span>
     hasTriggers?: boolean;
-    hasActions?: boolean;
+    hasActions?: boolean;<span class="cstat-no" title="statement not covered" ></span>
     hasSearches?<span class="cstat-no" title="statement not covered" >: boolean;</span>
-    triggerTypes?: Array&lt;'polling<span class="cstat-no" title="statement not covered" >' | 'webhook' | 'instant'&gt;;</span>
+    triggerTypes?: Array&lt;'polling' | 'webhook' | 'instant'&gt;;
   };<span class="cstat-no" title="statement not covered" ></span>
-  requirements?: {<span class="cstat-no" title="statement not covered" ></span>
+  requirements?: {
     minimumPlan?: 'free' | 'core' | 'pro' | 'teams' | 'enterprise';
-    gdprRequired?: boolean;<span class="cstat-no" title="statement not covered" ></span>
-    hipaaRequire<span class="cstat-no" title="statement not covered" >d?: boolean;</span>
+    gdprRequired?: boolean;
+    hipaaRequired?: boolean;
   };
-}<span class="cstat-no" title="statement not covered" ></span>
+}
 &nbsp;
 export interface MakeAppRecommendation {
   app: MakePublicApp;
   score: number;
   reasoning: {
     factors: Array&lt;{
-      factor: string;
-      weight: number;
+      factor: st<span class="cstat-no" title="statement not covered" >ring;</span>
+      weight: nu<span class="cstat-no" title="statement not covered" >mber;</span>
       contribution: number;
       description: string;
     }&gt;;
     primaryReasons: string[];
     compatibilit<span class="cstat-no" title="statement not covered" >yNotes?: string[];</span>
-  };<span class="cstat-no" title="statement not covered" ></span>
+  };
   usageContext: {
     commonUseCases: string[];
     integrationComplexity: 'low' | 'medium' | 'high';
     setupTime: string;
-    maintenanceL<span class="cstat-no" title="statement not covered" >evel: 'minimal' | 'moderate' | 'intensive';</span>
+    maintenanceLevel: 'minimal' | 'moderate' | 'intensive';
   };
 }
 &nbsp;
@@ -2523,66 +2523,66 @@ const SearchPublicAppsSchema = z.object({
     authType: z.enum(['api_key', 'oauth2', 'basic_auth', 'custom', 'none']).optional().describe('Authentication type filter'),
     capabilities: z.object({
       hasTriggers: z.boolean().optional().describe('Filter apps with triggers'),
-      hasActions: z.boolean().optional().describe('Filter apps with actions'),
-      hasSearches: z.boolean().optional().describe('Filter apps with search functionality'),
-      triggerTypes: z.array(z.enum(['polling', 'webhook', 'instant'])).optional().describe('Filter by trigger types'),
-    }).optional().describe('App capabilities filters'),
-    requirements: z.object({
+      hasActions: z.boolean().optiona<span class="cstat-no" title="statement not covered" >l().describe('Filter apps with actions'),</span>
+      hasSearche<span class="cstat-no" title="statement not covered" >s: z.boolean().optional().describe('Filter apps with search functionality'</span>),
+      triggerTyp<span class="cstat-no" title="statement not covered" >es: z.array(z.enum(['polling', 'webhook', 'instant'])).optional().describe('Filter by trigger types'),</span>
+    }).optional().de<span class="cstat-no" title="statement not covered" >scribe('App c</span>apabilities filters'),
+    requirements<span class="cstat-no" title="statement not covered" >: z.object({</span>
       minimumPlan: z.enum(['free', 'core', 'pro', 'teams', 'enterprise']).optional().describe('Minimum plan requirement'),
-      gdprRequired: z.boolean().optio<span class="cstat-no" title="statement not covered" >nal().describe('GDPR compliance required'),</span>
-      hipaaRequi<span class="cstat-no" title="statement not covered" >red: z.boolean().optional().describe('HIPAA compliance required'),</span>
-    }).optional(<span class="cstat-no" title="statement not covered" >).describe('App requirements filters'),</span>
-  }).optional().desc<span class="cstat-no" title="statement not covered" >ribe('Advance</span>d filtering options'),
-  sorting: z.obj<span class="cstat-no" title="statement not covered" >ect({</span>
+      gdprRequired: z.boolean().optional().describe('GDPR compliance required'),
+      hipaaRequired: z.boolean().optional().describe('HIPAA compliance required'),
+    }).optional().describe('App requirements filters'),
+  })<span class="cstat-no" title="statement not covered" >.optional().describe('Advanced filtering options'),</span>
+  sorting: z.object({
     field: z.enum(['relevance', 'popularity', 'rating', 'name', 'created_date', 'updated_date', 'install_count']).default('relevance').describe('Sort field'),
     order: z.enum(['asc', 'desc']).default('desc').describe('Sort order'),
   }).optional().describe('Sorting configuration'),
   pagination: z.object({
-<span class="cstat-no" title="statement not covered" >    limit: z.number().min(1).max(100).default(20).describe('Maximum apps to return'),</span>
+    limit: z.number().min(1).max(100).default(20).describe('Maximum apps to return'),
     offset: z.number().min(0).default(0).describe('Apps to skip for pagination'),
   }).optional().describe('Pagination settings'),
   includeMetadata: z.boolean().default(true).describe('Include detailed app metadata'),
   includePricing: z.boolean().default(true).describe('Include pricing information'),
-  includeUsageStats: z.boolean().default(false).describe('Include usage statistics'),
-}).strict();
-&nbsp;
+  includeUsageSta<span class="fstat-no" title="function not covered" >ts</span>: z.boolean().default(false).describe('Include usage statistics'),
+}).strict();<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 const GetPublicAppDetailsSchema = z.object({
   appId: z.string().min(1).describe('Unique app identifier'),
   version: z.string().optional().describe('Specific version to retrieve (defaults to latest)'),
-  includeFullDeta<span class="fstat-no" title="function not covered" >il</span>s: z.boolean().default(true).describe('Include comprehensive app details'),
-  includeReviews: z.boolean().default(false).describe('Include user reviews and ratings'),<span class="cstat-no" title="statement not covered" ></span>
-  includeUsa<span class="cstat-no" title="statement not covered" >geExamples: z.boolean().default(true).describe('Include integration examples'),</span>
-  includeCompatibilityInfo: z.boolean().default(true).describe('Include compatibility information'),
-  includePricingDetails: z.boolean().default(true).describe('Include detailed pricing information'),
-  includeComplianceInfo: z.boolean().default(false).describe('Include compliance and certification details'),
+  includeFullDetails: z.boolean().default(true).describe('Include comprehensive app details'),
+  includeReviews: z.boolean().default(false).describe('Include user reviews and ratings'),
+  includeUsageExamples: z.boolean().default(true).describe('Include integration examples'),
+  includeCom<span class="cstat-no" title="statement not covered" >patibilityInfo: z.boolean().default(true).describe('Include compatibility information'),</span>
+  includePricing<span class="cstat-no" title="statement not covered" >Details: z.boolean().default(true).describe('</span>Include detailed pricing information'),
+  includeComplianceInfo: z.bool<span class="cstat-no" title="statement not covered" >ean().default(false).describe('Include compliance and certification details'),</span>
 }).strict();
 &nbsp;
 const ListPopularAppsSchema = z.object({
-  timeframe:<span class="cstat-no" title="statement not covered" > z.enum(['day', 'week', 'month', 'quarter', 'year', 'all']).default('month').describe('Popularity timeframe'),</span>
-  category: z.st<span class="cstat-no" title="statement not covered" >ring().optional().describe('Limit to specific</span> category'),
-  publisherType: z.enum(['make'<span class="cstat-no" title="statement not covered" >, 'verified_partner', 'community', 'all']).default('all').describe('Publisher type filter'),</span>
+  timeframe: z.enum(['day', 'week', 'month', 'quarter', 'year', 'all']).default('month').describe('Popularity timeframe'),
+  category: z.string().optional().describe('Limit to specific category'),
+  publisherType: z.enum(['make', 'verified_partner', 'community', 'all']).default('all').describe('Publisher type filter'),
   metric: z.enum(['installs', 'usage', 'rating', 'growth', 'trending']).default('installs').describe('Popularity metric'),
-  limit: z.number().min(1).max(50).default(10).describe('Number of popular apps to return'),
-  includeGrowthMetrics: z.boolean().default(true).describe('Include growth and trend analysis'),
+  limit: z.numbe<span class="cstat-no" title="statement not covered" >r().min(1).max(50).default(10).describe('Number of popular apps to return'),</span>
+  includeGrowthMetri<span class="cstat-no" title="statement not covered" >cs: z.boolean().default(tr</span>ue).describe('Include growth and trend analysis'),
   includeRecommendations: z.boolean().default(false).describe('Include AI-powered recommendations'),
-  userContext: z.object({
-    currentApps: z.array(z.string()).optional().describe('Currently installed app IDs'),
-    industry: z.string().optional().describe('User industry for personalized recommendations'),
-    useCase: z.s<span class="cstat-no" title="statement not covered" >tring().optional().describe('Primary use case for app discovery'),</span>
-    teamSize: z.enum<span class="cstat-no" title="statement not covered" >(['individual', 'small', '</span>medium', 'large', 'enterprise']).optional().describe('Team size category'),
-  }).optional().describe('User context for personalized results'),
+  userContext: z<span class="cstat-no" title="statement not covered" >.object({</span>
+    currentApps: z.array(z.string<span class="cstat-no" title="statement not covered" >()).optional().describe('Currently installed app IDs'),</span>
+    industry: z.<span class="cstat-no" title="statement not covered" >string().optional().describe('User industry for personalized recommendations'),</span>
+    useCase: z.strin<span class="cstat-no" title="statement not covered" >g().optional().describe('Primary use case for app discovery'),</span>
+    teamSize: z.enum(['individual', 'small', 'medium', 'large', 'enterprise']).optional().describe('Team size category'),
+  }).optional().describe('User cont<span class="cstat-no" title="statement not covered" >ext for person</span>alized results'),
 }).strict();<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Add public app ma<span class="cstat-no" title="statement not covered" >rketplace integration tools to FastMCP server</span>
+/**
+ * Add public ap<span class="cstat-no" title="statement not covered" >p marketplace integration tools to FastMCP ser</span>ver
  */
-export function addMarketplaceTools<span class="cstat-no" title="statement not covered" >(server: FastM</span>CP, apiClient: MakeApiClient): void {
-  const componen<span class="cstat-no" title="statement not covered" >tLogger = logger.child({ component: 'MarketplaceTools' });</span>
-  <span class="cstat-no" title="statement not covered" ></span>
+export function addMarketplaceToo<span class="cstat-no" title="statement not covered" >ls(server: FastMCP, apiClient: MakeApiClient): void {</span>
+  const componentLogger = logger.child({ component: 'MarketplaceTools' });
+  
   componentLogger.info('Adding public app marketplace integration tools');
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   // Search public apps
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+  server.addTool({
     name: 'search-public-apps',
     description: 'Search and discover Make.com public apps with advanced filtering and GraphQL-style discovery capabilities',
     parameters: SearchPublicAppsSchema,
@@ -2600,20 +2600,20 @@ export function addMarketplaceTools<span class="cstat-no" title="statement not c
         query,
         filters,
         sorting: sorting || { field: 'relevance', order: 'desc' },
-        pagination: pagination || { limit: 20, offset: 0 },
-      });
+        paginati<span class="cstat-no" title="statement not covered" >on: pagination || { limit: 20, offset: 0 },</span>
+      });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
       try {
         reportProgress({ progress: 0, total: 100 });
 &nbsp;
-        // Build<span class="cstat-no" title="statement not covered" > search parameters based on GraphQL-style filte</span>ring
+        // Build search parameters based on GraphQL-style filtering
         const se<span class="cstat-no" title="statement not covered" >archParams: Record&lt;string, unknown&gt; = {</span>
           includeMetadata,
           includePricing,
           includeUsageStats,
           ...pagination,
           ...sorting,
-        };<span class="cstat-no" title="statement not covered" ></span>
+        };
 &nbsp;
         if (query) {
           searchParams.q = query;
@@ -2626,72 +2626,72 @@ export function addMarketplaceTools<span class="cstat-no" title="statement not c
               if (typeof value === 'object' &amp;&amp; !Array.isArray(value)) {
                 // Nested filter object
                 Object.entries(value).forEach(([nestedKey, nestedValue]) =&gt; {
-                  if (nestedValue !== undefined &amp;&amp; nestedValue !== null) {
-                    searchParams[`${key}.${nestedKey}`] = nestedValue;
-                  }
-                });
-              } else {
+                  if (nestedValue !==<span class="cstat-no" title="statement not covered" > undefined &amp;&amp; nestedValue !== null) {</span>
+<span class="cstat-no" title="statement not covered" >                    searchParams[`${key}.${nestedKey}`] = nestedValue;</span>
+<span class="cstat-no" title="statement not covered" >                  }</span>
+                });<span class="cstat-no" title="statement not covered" ></span>
+              } <span class="cstat-no" title="statement not covered" >else {</span>
                 searchParams[key] = Array.isArray(value) ? value.join(',') : value;
-              }<span class="cstat-no" title="statement not covered" ></span>
-            }<span class="cstat-no" title="statement not covered" ></span>
-          });<span class="cstat-no" title="statement not covered" ></span>
-        }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+              }
+            }
+          });
+<span class="cstat-no" title="statement not covered" >        }</span>
+&nbsp;
         reportProgress({ progress: 25, total: 100 });
 &nbsp;
         const response = await apiClient.get('/marketplace/apps/search', { params: searchParams });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        if (!response.success) {</span>
+        if (!response.success) {
           throw new UserError(`Failed to search public apps: ${response.error?.message || 'Unknown error'}`);
         }
 &nbsp;
         const searchResults = response.data as {
-          apps: MakePublicApp[];
-          total: number;
-          facets: Record&lt;string, Array&lt;{ value: string; count: number }&gt;&gt;;
+          apps: M<span class="fstat-no" title="function not covered" >ak</span>ePublicApp[];
+          total: number;<span class="cstat-no" title="statement not covered" ></span>
+          fa<span class="cstat-no" title="statement not covered" >cets: Record&lt;string, Array&lt;{ value: string; count: number }&gt;&gt;;</span>
           suggestions: string[];
         } || { apps: [], total: 0, facets: {}, suggestions: [] };
 &nbsp;
-        reportPro<span class="fstat-no" title="function not covered" >gr</span>ess({ progress: 75, total: 100 });
-<span class="cstat-no" title="statement not covered" ></span>
-        // E<span class="cstat-no" title="statement not covered" >nhance results with intelligent analysis</span>
+        reportProgress({ progress: 75, total: 100 });
+&nbsp;
+        // Enhance results with intelligent analysis
         const analysis = {
-          searchQuality: {
-            totalResults: searchResults.total,
-            resultsReturned: searchResults.apps.length,
+          se<span class="cstat-no" title="statement not covered" >archQuality: {</span>
+            tota<span class="cstat-no" title="statement not covered" >lResults: searchResults.total,</span>
+            resultsReturned: se<span class="cstat-no" title="statement not covered" >archResults.apps.length,</span>
             hasMore: (searchResults.total || 0) &gt; ((pagination?.offset || 0) + searchResults.apps.length),
             relevanceScore: query ? calculateRelevanceScore(query, searchResults.apps) : null,
           },
-          ca<span class="cstat-no" title="statement not covered" >tegoryBreakdown: generateCategoryBreakdown(searchResults.apps),</span>
-          publis<span class="cstat-no" title="statement not covered" >herAnalysis: generatePublisherAnalysis(search</span>Results.apps),
-          pricingAnalysis: gene<span class="cstat-no" title="statement not covered" >ratePricingAnalysis(searchResults.apps),</span>
-          capabilityAnalysis: generateCapabilityAnalysis(searchResults.apps),
-          recommendationInsights: generateRecommendationInsights(searchResults.apps, filters),
+          categoryBreakdown: generateCategoryBreakdown(searchResults.apps),
+          publisherAnalysis: generatePublisherAnalysis(searchResults.apps),
+          pricingAnalysis: generatePricingAnalysis(searchResults.apps),
+          capabi<span class="cstat-no" title="statement not covered" >lityAnalysis: generateCapabilityAnalysis(searchResults.apps),</span>
+          recommenda<span class="cstat-no" title="statement not covered" >tionInsights: generateRecomm</span>endationInsights(searchResults.apps, filters),
         };
-&nbsp;
-        reportProgress({ progress: 100, total: 100 });
+<span class="cstat-no" title="statement not covered" ></span>
+        reportProgre<span class="cstat-no" title="statement not covered" >ss({ progress: 100, total: 100 });</span>
 &nbsp;
         log.info<span class="cstat-no" title="statement not covered" >('Successfully searched public apps', {</span>
-          totalResul<span class="cstat-no" title="statement not covered" >ts: searchResults.total,</span>
-          returned: searchResults.apps.length,
-          catego<span class="cstat-no" title="statement not covered" >ries: Object.keys(analysis.categoryBreakdown).length,</span>
-        });<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
+          totalResults: searchRes<span class="cstat-no" title="statement not covered" >ults.total,</span>
+          return<span class="cstat-no" title="statement not covered" >ed: searchResults.apps.length,</span>
+          categories<span class="cstat-no" title="statement not covered" >: Object.keys(analysis.categoryBreakdown).length,</span>
+        });
+<span class="cstat-no" title="statement not covered" ></span>
         return f<span class="cstat-no" title="statement not covered" >ormatSuccessResponse({</span>
-          apps: searchResults.app<span class="cstat-no" title="statement not covered" >s,</span>
-          search<span class="cstat-no" title="statement not covered" >: {</span>
-            query,<span class="cstat-no" title="statement not covered" ></span>
-            filters,
-            sorting: sorting || { fi<span class="cstat-no" title="statement not covered" >eld: 'relevance', order: 'desc' },</span>
+          apps: searchResults.apps,
+          search: {
+            quer<span class="cstat-no" title="statement not covered" >y,</span>
+            filters,<span class="cstat-no" title="statement not covered" ></span>
+            sorting: sorting || { field: 'relevance', order: 'desc' },
             pagi<span class="cstat-no" title="statement not covered" >nation: {</span>
               ...pagination,
-              total: searchResults.total,
-              ha<span class="cstat-no" title="statement not covered" >sMore: analysis.searchQuality.hasMore,</span>
-            },<span class="cstat-no" title="statement not covered" ></span>
+              total: searchResult<span class="cstat-no" title="statement not covered" >s.total,</span>
+              hasMore: analysis.searchQuality.hasMore,
+            },
           },
-          analys<span class="cstat-no" title="statement not covered" >is,</span>
+          analysis,
           facets: searchResults.facets,
-          suggestions: searchResu<span class="cstat-no" title="statement not covered" >lts.suggestions,</span>
+          suggestions: searchResults.suggestions,
           metadata: {
             searchExecutedAt: new Date().toISOString(),
             responseCached: false,
@@ -2703,20 +2703,20 @@ export function addMarketplaceTools<span class="cstat-no" title="statement not c
         log.error('Error searching public apps', { query, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to search public apps: ${errorMessage}`);
-      }
-    },
+      }<span class="cstat-no" title="statement not covered" ></span>
+    },<span class="cstat-no" title="statement not covered" ></span>
   });
 &nbsp;
   // Get public app details
   server.addTool({
-    name: 'get-p<span class="cstat-no" title="statement not covered" >ublic-app-details',</span>
+    name: 'get-public-app-details',
     description:<span class="cstat-no" title="statement not covered" > 'Retrieve comprehensive details for a specific public app including specifications, requirements, and integration examples',</span>
     parameters: GetPublicAppDetailsSchema,
     annotations: {
       title: 'Get Public App Details',
       readOnlyHint: true,
       destructiveHint: false,
-      idempotent<span class="cstat-no" title="statement not covered" >Hint: true,</span>
+      idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) =&gt; {
@@ -2735,303 +2735,303 @@ export function addMarketplaceTools<span class="cstat-no" title="statement not c
 &nbsp;
         const params: Record&lt;string, unknown&gt; = {
           includeFullDetails,
-          includeReviews,
-          includeUsageExamples,
-          includeCompatibilityInfo,
-          includePricingDetails,
-          includeComplianceInfo,
+          includeReviews,<span class="cstat-no" title="statement not covered" ></span>
+          includ<span class="cstat-no" title="statement not covered" >eUsageExamples,</span>
+          includ<span class="cstat-no" title="statement not covered" >eCompatibilityInfo,</span>
+          includePri<span class="cstat-no" title="statement not covered" >cingDetails,</span>
+          includ<span class="cstat-no" title="statement not covered" >eComplianceInfo,</span>
         };
+&nbsp;
+        if (version) {
+<span class="cstat-no" title="statement not covered" >          params.version = version;</span>
+        }
+&nbsp;
+        r<span class="fstat-no" title="function not covered" >eportProgress({ progress</span>: 25, total: 100 });
 <span class="cstat-no" title="statement not covered" ></span>
-        if (vers<span class="cstat-no" title="statement not covered" >ion) {</span>
-          params<span class="cstat-no" title="statement not covered" >.version = version;</span>
+<span class="cstat-no" title="statement not covered" >        const resp</span>onse = await apiClient.get(`/marketplace/apps/${appId}`, { params });
+<span class="cstat-no" title="statement not covered" ></span>
+        if (!response<span class="cstat-no" title="statement not covered" >.s</span>uccess) {
+<span class="cstat-no" title="statement not covered" >          throw n<span class="fstat-no" title="function not covered" >ew</span> UserError(`Failed to get app details: ${response.error?.message || 'Unknown error'}`);</span>
         }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        reportProgress({ progress: 25, total: 100 });
-&nbsp;
-        const response = await apiClient.get(`/marketplace/apps/${appId}`, { params });
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!response.success) {
-          throw new UserError(`Failed to get app details: ${response.error?.message || 'Unknown error'}`);
-        }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const appD</span>etails = response.data as {
-          app: MakePubl<span class="cstat-no" title="statement not covered" >icApp;</span>
-          reviews?: A<span class="cstat-no" title="statement not covered" >rr</span>ay&lt;{
-<span class="cstat-no" title="statement not covered" >            id: s<span class="fstat-no" title="function not covered" >tr</span>ing;</span>
-            rating: num<span class="cstat-no" title="statement not covered" >be</span>r;
-            title: strin<span class="cstat-no" title="statement not covered" >g;</span>
-<span class="cstat-no" title="statement not covered" >            comment: string<span class="fstat-no" title="function not covered" >;</span></span>
+<span class="cstat-no" title="statement not covered" >        const appDetails = <span class="fstat-no" title="function not covered" >re</span>sponse.data as {</span>
+          ap<span class="cstat-no" title="statement not covered" >p: MakePublicApp;</span>
+          review<span class="cstat-no" title="statement not covered" >s?: Array&lt;{</span>
+            id: string;
+            rating: number;
+<span class="cstat-no" title="statement not covered" >            title: string;</span>
+            comment: string;
 <span class="cstat-no" title="statement not covered" >            author: string;</span>
-            crea<span class="cstat-no" title="statement not covered" >tedAt: string;</span>
-            helpful: number;
-          }&gt;;
+            createdAt: string;
+<span class="fstat-no" title="function not covered" >            helpful: number;</span>
+<span class="cstat-no" title="statement not covered" >          }&gt;;<span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" >          usageExamples?: Array&lt;{</span>
-            title: string;
-<span class="cstat-no" title="statement not covered" >            description: string;</span>
+<span class="cstat-no" title="statement not covered" >            title: string;</span>
+            description: string;
             blueprint: Record&lt;string, unknown&gt;;
 <span class="fstat-no" title="function not covered" >            complexity: 'beginner' </span>| 'intermediate' | 'advanced';
-<span class="cstat-no" title="statement not covered" >            estimatedSe<span class="fstat-no" title="function not covered" >tu</span>pTime: string;</span>
-<span class="cstat-no" title="statement not covered" >          }&gt;;</span>
-<span class="cstat-no" title="statement not covered" >          compatibilityMat</span>rix?: Array&lt;{
-            appId: string;
-            appName: string;
-<span class="fstat-no" title="function not covered" >            compatibility: 'excelle</span>nt' | 'good' | 'fair' | 'incompatible';
-            notes?: s<span class="cstat-no" title="statement not covered" >tri</span>ng;
+            estimated<span class="cstat-no" title="statement not covered" >Set</span>upTime: string;
 <span class="cstat-no" title="statement not covered" >          }&gt;;<span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >        };</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        if (!appDetails?.app) {
-<span class="cstat-no" title="statement not covered" >          throw new UserError(`App not found: </span>${appId}`);
+<span class="cstat-no" title="statement not covered" >          compatibilityMatrix?: Array&lt;{</span>
+<span class="cstat-no" title="statement not covered" >            appId: string;</span>
+            appName: string;
+<span class="cstat-no" title="statement not covered" >            compatibility: 'excellent' | 'good</span>' | 'fair' | 'incompatible';
+<span class="cstat-no" title="statement not covered" >            notes?: string;</span>
+          }&gt;;
+        };
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >        if (!appDetails?.app) {</span>
+          throw new UserError(`App not found: ${appId}`);
 <span class="cstat-no" title="statement not covered" >        }</span>
 &nbsp;
-        reportProgress({ progress: 75, total: 100 });
+        r<span class="fstat-no" title="function not covered" >eportProgress({ progress</span>: 75, total: 100 });
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" >        // Generate intelligent analysis</span>
-        const analysis = {
-<span class="cstat-no" title="statement not covered" >          appAssessme</span>nt: {
+<span class="cstat-no" title="statement not covered" >        const analysis = </span>{
+          appAssessment: {
             overallScore: calculateOverallAppScore(appDetails.app),
-<span class="fstat-no" title="function not covered" >            strengths: identifyAp</span>pStrengths(appDetails.app),
+<span class="fstat-no" title="function not covered" >            strengths: identifyAppSt</span>rengths(appDetails.app),
 <span class="cstat-no" title="statement not covered" >            considerati<span class="fstat-no" title="function not covered" >on</span>s: identifyAppConsiderations(appDetails.app),</span>
 <span class="cstat-no" title="statement not covered" >            bestFor: generateUseCaseRecommendations(appDetails.app),</span>
-<span class="cstat-no" title="statement not covered" >          },</span>
-          integrationComplexity: {
-            setup: assessSetupComplexity(appDetails.app),
-<span class="fstat-no" title="function not covered" >            maintenance: assessMaint</span>enanceComplexity(appDetails.app),
-<span class="cstat-no" title="statement not covered" >            customizati<span class="fstat-no" title="function not covered" >on</span>: assessCustomizationOptions(appDetails.app),</span>
-<span class="cstat-no" title="statement not covered" >            learningCurve: assessLearningCurve(appDetails.app),</span>
           },<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >          costAnalysis: includePricingDetails ? {</span>
-<span class="cstat-no" title="statement not covered" >            totalCostOfOwnership: calculateTCO(appDetails.app),</span>
-<span class="cstat-no" title="statement not covered" >            scalingCosts: analyzeScalingCosts(appDetails.app),</span>
-<span class="cstat-no" title="statement not covered" >            comparativeAnalysis: generatePricingComparison(appDetail</span>s.app),
+<span class="cstat-no" title="statement not covered" >          integrationComplexity: {</span>
+<span class="cstat-no" title="statement not covered" >            setup: assessSetupComplexity(appDetails.app),</span>
+<span class="cstat-no" title="statement not covered" >            maintenance: assessMaintenanceComplexity(appDetails.app),</span>
+<span class="cstat-no" title="statement not covered" >            customization: assessCustomizationOptions(appDetails.app</span>),
+<span class="cstat-no" title="statement not covered" >            learningCurve</span>: assessLearningCurve(appDetails.app),
+          },
+          costAnalysis: includePricingDetails ? {
+<span class="fstat-no" title="function not covered" >            totalCostOfOwnership: calcul</span>ateTCO(appDetails.app),
+            scalingCo<span class="cstat-no" title="statement not covered" >sts</span>: analyzeScalingCosts(appDetails.app),
+<span class="cstat-no" title="statement not covered" >            comparativeAnalysis: generatePricingComparison(appDetails.app),</span>
 <span class="cstat-no" title="statement not covered" >          } : undefined,</span>
-          securityAssessment: includeComplianceInfo ? {
+<span class="cstat-no" title="statement not covered" >          securityAssessm</span>ent: includeComplianceInfo ? {
             complianceLevel: assessComplianceLevel(appDetails.app),
-<span class="fstat-no" title="function not covered" >            securityFeatures: identifySe</span>curityFeatures(appDetails.app),
-            riskFacto<span class="cstat-no" title="statement not covered" >rs:</span> identifyRiskFactors(appDetails.app),
+            securityFe<span class="cstat-no" title="statement not covered" >atures: iden<span class="fstat-no" title="function not covered" >ti</span>fySecurityFe<span class="cstat-no" title="statement not covered" >atures(appDetails.app),</span></span>
+<span class="cstat-no" title="statement not covered" >            riskFactors: identifyRiskFactors(appDetails.app),</span>
 <span class="cstat-no" title="statement not covered" >          } : undefined,</span>
-<span class="cstat-no" title="statement not covered" >        };</span>
-<span class="cstat-no" title="statement not covered" ></span>
-        reportProgress({ progress: 100, total: 100 });
+        };
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >        log.info('Successfully retrieved app details', {</span>
-<span class="cstat-no" title="statement not covered" >          appId,</span>
-          appName: appDetails.app.name,
-          version: ve<span class="cstat-no" title="statement not covered" >rsion || 'la<span class="fstat-no" title="function not covered" >te</span>st',<span class="cstat-no" title="statement not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >          overallScore: analysis.appAssessment.overallScore,</span>
+<span class="cstat-no" title="statement not covered" >        reportProgress({ progress: 100, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        log.info('Successfully retrieved app details', {
+          appId,<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >          appName: appDetails.app.name,</span>
+<span class="cstat-no" title="statement not covered" >          version: version || 'latest',</span>
+          overallScore: analysis.appAssessment.overallScore,
 <span class="cstat-no" title="statement not covered" >        });</span>
 &nbsp;
-        return formatSuccessRes<span class="cstat-no" title="statement not covered" >ponse({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >          app: appDetails.app,</span>
-<span class="cstat-no" title="statement not covered" >          analysis,</span>
-          reviews: includeReviews ? appDetails.reviews : undefined,
-<span class="cstat-no" title="statement not covered" >          usageExampl</span>es: includeUsageExamples ? appDetails.usageExamples : undefined,
+        r<span class="fstat-no" title="function not covered" >eturn formatSuccessRespon</span>se({
+          app: appDetail<span class="cstat-no" title="statement not covered" >s.app,</span>
+          analysis,<span class="cstat-no" title="statement not covered" ></span>
+          reviews: includeRevi<span class="cstat-no" title="statement not covered" >ews ? appDetails.reviews : undefi</span>ned,
+<span class="cstat-no" title="statement not covered" >          usageExamples: includeUsageExamples ? appDetails.usageExamples : undefined,</span>
           compatibility: includeCompatibilityInfo ? appDetails.compatibilityMatrix : undefined,
 <span class="fstat-no" title="function not covered" >          metadata: {</span>
-            retrievedAt:<span class="cstat-no" title="statement not covered" > new Date().toISOString(),</span>
-            version: version<span class="cstat-no" title="statement not covered" > || 'latest',</span>
-            dataFreshness: 're<span class="cstat-no" title="statement not covered" >al-time',</span>
+            retrievedA<span class="cstat-no" title="statement not covered" >t: </span>new Date().toISOString(),
+<span class="cstat-no" title="statement not covered" >            version: version || 'latest',</span>
+<span class="cstat-no" title="statement not covered" >            dataFreshness: 'real-time',</span>
 <span class="cstat-no" title="statement not covered" >          },</span>
-          recommendations: {
-<span class="fstat-no" title="function not covered" >            similarApps: await</span> findSimilarApps(apiClient, appDetails.app),
-            integratio<span class="cstat-no" title="statement not covered" >nTi</span>ps: generateIntegrationTips(appDetails.app),
+<span class="cstat-no" title="statement not covered" >          recommendations: {</span>
+<span class="cstat-no" title="statement not covered" >            similarApps: await findSimilarApps(apiClient, appDetails.app),</span>
+<span class="cstat-no" title="statement not covered" >            integrationTips: generateIn</span>tegrationTips(appDetails.app),
 <span class="cstat-no" title="statement not covered" >            nextSteps: generateNextSteps(appDetails.app, analysis),</span>
 <span class="cstat-no" title="statement not covered" >          },</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
       } <span class="cstat-no" title="statement not covered" >catch (error: unknown) {</span>
-<span class="cstat-no" title="statement not covered" >        const errorMessage = error instanceof Error ? error.message : String(error);</span>
-<span class="cstat-no" title="statement not covered" >        log.error('Error getting app de</span>tails', { appId, error: errorMessage });
-<span class="cstat-no" title="statement not covered" >        if (error instanceof UserError) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        throw new UserError(`Failed to get a</span>pp details: ${errorMessage}`);
+<span class="cstat-no" title="statement not covered" >        const errorMes</span>sage = error instanceof Error ? error.message : String(error);
+        log.error('Error getting app details', { appId, error: errorMessage });
+        i<span class="fstat-no" title="function not covered" >f (error instanceof UserEr</span>ror) throw error;
+        throw new UserError<span class="cstat-no" title="statement not covered" >(`F</span>ailed to get app details: ${errorMessage}`);
 <span class="cstat-no" title="statement not covered" >      }</span>
     },<span class="cstat-no" title="statement not covered" ></span>
   })<span class="cstat-no" title="statement not covered" >;</span>
-&nbsp;
-  // List<span class="fstat-no" title="function not covered" > popular apps</span>
-  server.addTool({<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  //<span class="cstat-no" title="statement not covered" > List popular apps</span>
+  server<span class="cstat-no" title="statement not covered" >.addTool({</span>
 <span class="cstat-no" title="statement not covered" >    name: 'list-popular-apps',</span>
-    desc<span class="cstat-no" title="statement not covered" >ription: 'Discover trending and popular apps with A</span>I-powered recommendations and growth analytics',
-<span class="cstat-no" title="statement not covered" >    parameters: ListPopularAppsSchema,</span>
-    anno<span class="cstat-no" title="statement not covered" >tations: {</span>
-<span class="cstat-no" title="statement not covered" >      title: 'List Popular Apps',</span>
-      re<span class="cstat-no" title="statement not covered" >adOnlyHint: true,</span>
+    desc<span class="cstat-no" title="statement not covered" >ription: 'Discover trending and popular apps wit</span>h AI-powered recommendations and growth analytics',
+<span class="cstat-no" title="statement not covered" >    parameters: ListPopular</span>AppsSchema,
+    annotations: {
+      tit<span class="fstat-no" title="function not covered" >le: 'List Popular Apps',</span>
+      readOnlyHint: t<span class="cstat-no" title="statement not covered" >rue</span>,
 <span class="cstat-no" title="statement not covered" >      destructiveHint: false,</span>
       id<span class="cstat-no" title="statement not covered" >empotentHint: true,</span>
 <span class="cstat-no" title="statement not covered" >      openWorldHint: true,</span>
-    },
-    execu<span class="fstat-no" title="function not covered" >te: async (input, { log, report</span>Progress }) =&gt; {
-      const { timefra<span class="cstat-no" title="statement not covered" >me,</span> category, publisherType, metric, limit, includeGrowthMetrics, includeRecommendations, userContext } = input;
+    },<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    execute: async (input, { log, repo<span class="fstat-no" title="function not covered" >rt</span>Pro<span class="cstat-no" title="statement not covered" >gress }) =&gt; {</span></span>
+      co<span class="cstat-no" title="statement not covered" >nst { timeframe, category, publisherType, metric, </span>limit, includeGrowthMetrics, includeRecommendations, userContext } = input;
 <span class="cstat-no" title="statement not covered" ></span>
       lo<span class="cstat-no" title="statement not covered" >g.info('Listing popular apps', {</span>
 <span class="cstat-no" title="statement not covered" >        timeframe,</span>
-<span class="cstat-no" title="statement not covered" >        category,</span>
-<span class="cstat-no" title="statement not covered" >        publisherType,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >        metric,</span>
+        category,
+        p<span class="fstat-no" title="function not covered" >ublisherType,</span>
+        metric,<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        limit,</span>
-<span class="cstat-no" title="statement not covered" >        includeRecommendations,</span>
+<span class="cstat-no" title="statement not covered" >        includeRecommenda</span>tions,
 <span class="cstat-no" title="statement not covered" >      });</span>
-&nbsp;
-      try<span class="fstat-no" title="function not covered" > {</span>
-        reportProgres<span class="cstat-no" title="statement not covered" >s(</span>{ progress: 0, total: 100 });
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const params: Rec</span>ord&lt;string, unknown&gt; = {
+<span class="cstat-no" title="statement not covered" >      try {</span>
+<span class="cstat-no" title="statement not covered" >        reportProgress({ </span>progress: 0, total: 100 });
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const params: R</span>ecord&lt;string, unknown&gt; = {
 <span class="cstat-no" title="statement not covered" >          timeframe,</span>
 <span class="cstat-no" title="statement not covered" >          publisherType,</span>
 <span class="cstat-no" title="statement not covered" >          metric,</span>
-<span class="cstat-no" title="statement not covered" >          limit,</span>
-<span class="cstat-no" title="statement not covered" >          includeGrowthMetrics,</span>
-<span class="cstat-no" title="statement not covered" >        };</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (category) {</span>
-<span class="cstat-no" title="statement not covered" >          params.c</span>ategory = category;
-        }
-<span class="fstat-no" title="function not covered" ></span>
-        if (userConte<span class="cstat-no" title="statement not covered" >xt</span>) {
-<span class="cstat-no" title="statement not covered" >          params.userContext<span class="fstat-no" title="function not covered" > =</span> JS<span class="cstat-no" title="statement not covered" >ON.stringify(u</span>serContext);</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        reportProgress({ </span>progress: 25, total: 100 });
+          limit,
+<span class="fstat-no" title="function not covered" >          includeGrowthMetrics,</span>
+        };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >        const response = </span>await apiClient.get('/marketplace/apps/popular', { params });
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        if (!response.succes</span>s) {
-<span class="cstat-no" title="statement not covered" >          throw new UserError(`Failed to list popular apps: ${response.error?.message || 'Unknown error'}`);</span>
+<span class="cstat-no" title="statement not covered" >        if (category) {</span>
+<span class="cstat-no" title="statement not covered" >          params.category = category;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        if (userContext) </span>{
+<span class="cstat-no" title="statement not covered" >          params.userContext = JSON.stringify(userContext);</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const popularApps = response.data as {
-<span class="fstat-no" title="function not covered" >          apps: Array&lt;MakePublicApp </span>&amp; {
-            popularityMetrics: {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        reportProgress({ pr</span>ogress: 25, total: 100 });
+<span class="cstat-no" title="statement not covered" ></span>
+        const response = await apiClient.get('/marketplace/apps/popular', { params });
+<span class="fstat-no" title="function not covered" ></span>
+        if (!response.success) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+          throw new UserError(`Failed to list popular apps: ${response.error?.message || 'Unknown error'}`);
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const popularApps = response.data as {</span>
+<span class="cstat-no" title="statement not covered" >          apps: Array&lt;MakeP</span>ublicApp &amp; {
+<span class="cstat-no" title="statement not covered" >            popularity</span>Metrics: {
               rank: number;
-<span class="cstat-no" title="statement not covered" >              score: number;</span>
-<span class="cstat-no" title="statement not covered" >              growth: number</span>;
+<span class="fstat-no" title="function not covered" >              score: number;</span>
+              growth:<span class="cstat-no" title="statement not covered" > n</span>umber;
 <span class="cstat-no" title="statement not covered" >              trend: 'rising' | 'stable' | 'declining';</span>
-<span class="cstat-no" title="statement not covered" >              velocity: num</span>ber;
+<span class="cstat-no" title="statement not covered" >              velocity: n</span>umber;
 <span class="cstat-no" title="statement not covered" >            };</span>
-          }&gt;;
-<span class="fstat-no" title="function not covered" >          analytics: {</span>
-            totalApps<span class="cstat-no" title="statement not covered" >: </span>number;
+<span class="cstat-no" title="statement not covered" >          }&gt;;</span>
+<span class="cstat-no" title="statement not covered" >          analytics: {</span>
+<span class="cstat-no" title="statement not covered" >            totalApps: nu</span>mber;
 <span class="cstat-no" title="statement not covered" >            averageRating: number;</span>
-<span class="cstat-no" title="statement not covered" >            categoryDistr</span>ibution: Record&lt;string, number&gt;;
+<span class="cstat-no" title="statement not covered" >            categoryDist</span>ribution: Record&lt;string, number&gt;;
 <span class="cstat-no" title="statement not covered" >            growthTrends: Array&lt;{</span>
-<span class="cstat-no" title="statement not covered" >              period: str</span>ing;
-<span class="cstat-no" title="statement not covered" >              value: number;</span>
-<span class="cstat-no" title="statement not covered" >              change: num</span>ber;
-<span class="cstat-no" title="statement not covered" >            }&gt;;</span>
-<span class="cstat-no" title="statement not covered" >          };</span>
+<span class="cstat-no" title="statement not covered" >              period: strin</span>g;
+<span class="cstat-no" title="statement not covered" >              value: </span>number;
+              change: number;
+<span class="fstat-no" title="function not covered" >            }&gt;;</span>
+          };<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        } || { apps: [], analytics: { totalApps: 0, averageRating: 0, categoryDistribution: {}, growthTrends: [] } };</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        reportProgres</span>s({ progress: 50, total: 100 });
 &nbsp;
-        /<span class="fstat-no" title="function not covered" >/ Generate AI</span>-powered recommendations if requested
-        let recommend<span class="cstat-no" title="statement not covered" >ations: MakeAppRecommendation[] | undefined;</span>
-<span class="cstat-no" title="statement not covered" >        if (includeRecommendations &amp;&amp; userContext) {</span>
-          recommendations = await generatePersonalizedRecommendations(
-            apiClient,
-            popularApps.apps,
+        reportProgress({ progress: 50, total: 100 });
+&nbsp;
+        // Generate AI-powered recommendations if requested
+        let recommendations: MakeAppRecommendation[] | undefined;
+        i<span class="fstat-no" title="function not covered" >f (includeRecommenda</span>tions &amp;&amp; userContext) {
+          recommendat<span class="cstat-no" title="statement not covered" >ion</span>s = await generatePersonalizedRecommendations(
+<span class="cstat-no" title="statement not covered" >            apiClient,</span>
+<span class="cstat-no" title="statement not covered" >            popularApps.apps,</span>
             userContext
-          );
-        }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        reportProgress({ progress: 75, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" >          );</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+&nbsp;
+        r<span class="cstat-no" title="statement not covered" >eportProgress({ progress: 75, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
         // Create comprehensive analysis
-        c<span class="cstat-no" title="statement not covered" >onst analysis = {</span>
-<span class="cstat-no" title="statement not covered" >          marketTrends: {</span>
-            topCategories: identifyTopCategories(popularApps.apps),
-<span class="cstat-no" title="statement not covered" >            emergingTrends: identifyEmergingTrends(popularApps.apps, includeGrowthMetrics),</span>
+<span class="cstat-no" title="statement not covered" >        const analysi</span>s = {
+          marketTrends: {
+<span class="fstat-no" title="function not covered" >            topCategories: identify</span>TopCategories(popularApps.apps),
+            emergingTre<span class="cstat-no" title="statement not covered" >nds</span>: identifyEmergingTrends(popularApps.apps, includeGrowthMetrics),
 <span class="cstat-no" title="statement not covered" >            publisherInsights: analyzePublisherTrends(popularApps.apps),</span>
-            seasonalPatterns: identifySeasonalPatterns(popularApps.analytics.growthTrends),
-<span class="cstat-no" title="statement not covered" >          },</span>
-          competitiveAnalysis: {
-<span class="fstat-no" title="function not covered" >            marketLeaders: identify</span>MarketLeaders(popularApps.apps),
-            risingStar:<span class="cstat-no" title="statement not covered" > id</span>entifyRisingStars(popularApps.apps),
-<span class="cstat-no" title="statement not covered" >            categoryCompetition: analyzeCategoryCompetition(popularApps.apps),</span>
-<span class="cstat-no" title="statement not covered" >          },</span>
-          userInsights: userContext ? {
-<span class="cstat-no" title="statement not covered" >            personalizedRanking: generatePersonalizedRanking(popularApps.apps, userContext),</span>
+<span class="cstat-no" title="statement not covered" >            seasonalPatterns: identifySeasonalPatterns(popularApps.anal</span>ytics.growthTrends),
+          },
+<span class="cstat-no" title="statement not covered" >          competitiveAnalysis: {</span>
+<span class="cstat-no" title="statement not covered" >            marketLeaders: identifyMarketLeaders(popularApps.apps),</span>
+            risingStar: identifyRisingStars(popularApps.apps),
+<span class="cstat-no" title="statement not covered" >            categoryCom</span>petition: analyzeCategoryCompetition(popularApps.apps),
+          },
+<span class="fstat-no" title="function not covered" >          userInsights: userCon</span>text ? {
+            pers<span class="cstat-no" title="statement not covered" >on</span>alizedRanking: generatePersonalizedRanking(popularApps.apps, userContext),
 <span class="cstat-no" title="statement not covered" >            compatibilityScores: calculateCompatibilityScores(popularApps.apps, userContext),</span>
-            recommendationExplanations: explainRecommendations(recommendations || []),
-<span class="cstat-no" title="statement not covered" >          } : undefined</span>,
-        };
-<span class="fstat-no" title="function not covered" ></span>
-        reportPr<span class="cstat-no" title="statement not covered" >og</span>ress({ progress: 100, total: 100 });
+<span class="cstat-no" title="statement not covered" >            recom</span>mendationExplanations: explainRecommendations(recommendations || []),
+<span class="cstat-no" title="statement not covered" >          } : undefined,</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        reportPro</span>gress({ progress: 100, total: 100 });
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        log.info(</span>'Successfully listed popular apps', {
 <span class="cstat-no" title="statement not covered" >          appsReturned: popularApps.apps.length,</span>
-<span class="cstat-no" title="statement not covered" >          timefra</span>me,
+<span class="cstat-no" title="statement not covered" >          timeframe,</span>
 <span class="cstat-no" title="statement not covered" >          metric,</span>
-<span class="cstat-no" title="statement not covered" >          recomme</span>ndationsGenerated: recommendations?.length || 0,
+<span class="cstat-no" title="statement not covered" >          recommendationsGe</span>nerated: recommendations?.length || 0,
 <span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        return formatSuccessResponse({</span>
-<span class="cstat-no" title="statement not covered" >          apps: popularApps.a</span>pps,
+&nbsp;
+        r<span class="fstat-no" title="function not covered" >eturn formatSuccessRespon</span>se({
+          apps: popul<span class="cstat-no" title="statement not covered" >arA</span>pps.apps,
 <span class="cstat-no" title="statement not covered" >          analytics: popularApps.analytics,</span>
 <span class="cstat-no" title="statement not covered" >          analysis,</span>
-<span class="cstat-no" title="statement not covered" >          recommenda</span>tions,
-          filters: {
-<span class="fstat-no" title="function not covered" >            timeframe,</span>
-            category,<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          recommendations,</span>
+<span class="cstat-no" title="statement not covered" >          filters: {</span>
+<span class="cstat-no" title="statement not covered" >            timeframe,</span>
+<span class="cstat-no" title="statement not covered" >            category,</span>
 <span class="cstat-no" title="statement not covered" >            publisherType,</span>
 <span class="cstat-no" title="statement not covered" >            metric,</span>
 <span class="cstat-no" title="statement not covered" >          },</span>
-<span class="cstat-no" title="statement not covered" >          metadata: {</span>
-<span class="cstat-no" title="statement not covered" >            generatedAt: new Date().toISOString(),</span>
-<span class="cstat-no" title="statement not covered" >            timeframe,</span>
+          metadata: {
+<span class="fstat-no" title="function not covered" >            generatedAt: new </span>Date().toISOString(),
+            timefr<span class="cstat-no" title="statement not covered" >ame</span>,
 <span class="cstat-no" title="statement not covered" >            dataSource: 'real-time marketplace analytics',</span>
 <span class="cstat-no" title="statement not covered" >            personalized: !!userContext,</span>
 <span class="cstat-no" title="statement not covered" >          },</span>
-          insights: {
-<span class="fstat-no" title="function not covered" >            keyFindings: gene</span>rateKeyFindings(popularApps, analysis),
-            action<span class="cstat-no" title="statement not covered" >abl</span>eRecommendations: generateActionableRecommendations(popularApps, analysis, userContext),
+<span class="cstat-no" title="statement not covered" >          insights: {</span>
+<span class="cstat-no" title="statement not covered" >            keyFindings: generateKeyFindings(popularApps, analysis),</span>
+<span class="cstat-no" title="statement not covered" >            actionableRecommendations: gen</span>erateActionableRecommendations(popularApps, analysis, userContext),
 <span class="cstat-no" title="statement not covered" >            marketOpportunities: identifyMarketOpportunities(analysis),</span>
 <span class="cstat-no" title="statement not covered" >          },</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
-      } <span class="cstat-no" title="statement not covered" >catch (error: unknown) {</span>
-<span class="cstat-no" title="statement not covered" >        const errorMessage = error instanceof Error ? error.message : String(error);</span>
-<span class="cstat-no" title="statement not covered" >        log.error('Error listing popular a</span>pps', { timeframe, category, error: errorMessage });
-<span class="cstat-no" title="statement not covered" >        if (error instanceof UserError) throw error;</span>
-<span class="cstat-no" title="statement not covered" >        throw new UserError(`Failed to list </span>popular apps: ${errorMessage}`);
-<span class="cstat-no" title="statement not covered" >      }</span>
+      } catch (error: unknown) {
+        const e<span class="fstat-no" title="function not covered" >rrorMessage = er</span>ror instanceof Error ? error.message : String(error);
+<span class="cstat-no" title="statement not covered" >        log.error('Error listing popular apps', { timeframe, category, error: errorMessage });</span>
+        if (error instanc<span class="cstat-no" title="statement not covered" >eof UserError) throw error;</span>
+<span class="cstat-no" title="statement not covered" >        throw new UserError(`Failed to list popular apps: ${errorMessage}`</span>);
+      }
     },
-  });<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  componentLogger.info('P<span class="cstat-no" title="statement not covered" >ublic app marketplace integration tools added successfully'</span>);
-}<span class="cstat-no" title="statement not covered" ></span>
+  });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-// Helper functions for intelligent analysis and recommendations
+  componentLogger.info('Public app marketplace integration tools added successfully');
+}<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+// H<span class="cstat-no" title="statement not covered" >elper functions for intelligent analysis and recommendations</span>
 <span class="cstat-no" title="statement not covered" ></span>
 function calculateRelevanceScore(query: string, apps: MakePublicApp[]): number {
-  if (!apps.length) return 0;
-  const q<span class="fstat-no" title="function not covered" >ueryWords = query.toLowe</span>rCase().split(' ');
-  let totalScore <span class="cstat-no" title="statement not covered" >= 0</span>;
+  if<span class="cstat-no" title="statement not covered" > (!apps.length) return 0;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  const <span class="cstat-no" title="statement not covered" >queryWords = query.toLowerCase().split(' ');</span>
+  let totalScore = 0;
 <span class="cstat-no" title="statement not covered" ></span>
-  apps.f<span class="cstat-no" title="statement not covered" >orEach(app =&gt; {</span>
+  apps.f<span class="cstat-no" title="statement not covered" >orEach(app =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
     let appScore = 0;
-<span class="cstat-no" title="statement not covered" >    const appText = `${app.name} ${app.<span class="fstat-no" title="function not covered" >de</span>scr<span class="cstat-no" title="statement not covered" >iption} ${app.tags.jo</span>in(' ')}`.toLowerCase();</span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    queryWords.forEach(word =&gt; {
-<span class="cstat-no" title="statement not covered" >      if (appText.includes(word)) {</span>
-<span class="cstat-no" title="statement not covered" >        appScore += 1;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-      }
-<span class="cstat-no" title="statement not covered" >    });</span>
+<span class="cstat-no" title="statement not covered" >    const appText</span> = `${app.name} ${app.description} ${app.tags.join(' ')}`.toLowerCase();
     
-    total<span class="fstat-no" title="function not covered" >Score += appScore </span>/ queryWords.length;
+    query<span class="fstat-no" title="function not covered" >Words.forEach(word</span> =&gt; {
+      if (appText.<span class="cstat-no" title="statement not covered" >inc</span>ludes(word)) {
+<span class="cstat-no" title="statement not covered" >        appScore += 1;</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+    });<span class="cstat-no" title="statement not covered" ></span>
+    
+<span class="cstat-no" title="statement not covered" >    totalScore += appScore / queryWords.length;</span>
   });<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
   re<span class="cstat-no" title="statement not covered" >turn totalScore / apps.length;</span>
 }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-func<span class="cstat-no" title="statement not covered" >tion generateCategoryBreakdown(apps: MakePublicApp[]): Record&lt;string, number&gt; {</span>
-  return<span class="cstat-no" title="statement not covered" > apps.reduce((breakdown: Record&lt;string, number&gt;, app) =</span>&gt; {
+<span class="cstat-no" title="statement not covered" ></span>
+function generateCategoryBreakdown(apps: MakePublicApp[]): Record&lt;string, number&gt; {
+  return apps.r<span class="fstat-no" title="function not covered" >educe((breakdown: Record&lt;string, num</span>ber&gt;, app) =&gt; {
     breakdown[app.category] = (breakdown[app.category] || 0) + 1;
-<span class="cstat-no" title="statement not covered" >    return breakdown;</span>
-  },<span class="cstat-no" title="statement not covered" > {});</span>
-}<span class="cstat-no" title="statement not covered" ></span>
+    return breakdown;
+  },<span class="cstat-no" title="statement not covered" > {});<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+}
 &nbsp;
-function genera<span class="fstat-no" title="function not covered" >tePublisherAnalysis(apps: MakePublic</span>App[]): Record&lt;string, { count: number; averageRating: number }&gt; {
+function generatePublisherAnalysis(apps: MakePublicApp[]): Record&lt;string, { count: number; averageRating: number }&gt; {
   const analysis: Record&lt;string, { count: number; averageRating: number; totalRating: number }&gt; = {};
   
-  ap<span class="cstat-no" title="statement not covered" >ps.forEach(app =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  apps.forEach(app =&gt; {
     if (!analysis[app.publisher.type]) {
       analysis[app.publisher.type] = { count: 0, averageRating: 0, totalRating: 0 };
     }
@@ -3044,145 +3044,145 @@ function genera<span class="fstat-no" title="function not covered" >tePublisherA
     analysis[type].averageRating = analysis[type].totalRating / analysis[type].count;
   });
 &nbsp;
-  return analysis as Record&lt;string, { count: number; averageRating: number }&gt;;
-}
-&nbsp;
-function generatePricingAnalysis(apps: MakePublicApp[]): Record&lt;string, number&gt; {
-  return apps.reduce((analysis: Record&lt;string, number&gt;, app) =&gt; {
-    analysis[app.pricing.model] = (analysis[app.pricing.model] || 0) + 1;
-    retur<span class="fstat-no" title="function not covered" >n analysis;</span>
-  }, {});<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-}<span class="cstat-no" title="statement not covered" ></span>
+  return <span class="fstat-no" title="function not covered" >analysis as Record&lt;str</span>ing, { count: number; averageRating: number }&gt;;
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
-function<span class="cstat-no" title="statement not covered" > generateCapabilityAnalysis(apps: MakePublicApp[]): </span>Record&lt;string, number&gt; {
-  return<span class="cstat-no" title="statement not covered" > apps.reduce</span>((analysis: Record&lt;string, number&gt;, app) =&gt; {
-    if (app.capabilities.triggers.length &gt; 0) analysis.hasTriggers = (analysis.hasTriggers || 0) + 1;
-<span class="cstat-no" title="statement not covered" >    if (app.capabilities.actions.length &gt; 0) analysis.hasActions = (analysis.hasActions || 0) + 1;</span>
-    if (app.c<span class="fstat-no" title="function not covered" >ap</span>abilities.searches.len<span class="cstat-no" title="statement not covered" >gth &gt; 0) analysis.hasSearches = (analysis.hasSearches || 0) + 1;</span>
+function gen<span class="cstat-no" title="statement not covered" >eratePricingAnalysis(app</span>s: MakePublicApp[]): Record&lt;string, number&gt; {
+  return<span class="cstat-no" title="statement not covered" > apps.reduce((analysis: Record&lt;string, number&gt;, app)</span> =&gt; {
+    anal<span class="cstat-no" title="statement not covered" >ysis[app.pri</span>cing.model] = (analysis[app.pricing.model] || 0) + 1;
     return analysis;
-  }, {});<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-}
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-function generateRecommendationInsights(apps: MakePublicApp[], _filters?: MakeAppSearchFilters): string[] {
-  const insig<span class="fstat-no" title="function not covered" >ht</span>s: str<span class="cstat-no" title="statement not covered" >ing[] = [];</span>
-  
-  if (app<span class="fstat-no" title="function not covered" >s.length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >    insights.push('No apps match your search criteria. Try broadening your filters or search terms.');</span>
-    retu<span class="cstat-no" title="statement not covered" >rn insights</span>;
-  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  const <span class="cstat-no" title="statement not covered" >avgRating = apps.reduce((sum, app) =&gt; sum + app.us</span>age.averageRating, 0) / apps.length;
-  if (av<span class="cstat-no" title="statement not covered" >gRating &gt; 4.</span>0) {
-    insights.push(`High-quality results: Average rating of ${avgRating.toFixed(1)} indicates excellent app quality.`);
-  }<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  const freeApps = apps.filter(app =&gt; app.pricing.model === 'free').length;
-  if (freeApp<span class="fstat-no" title="function not covered" >s </span>&gt; 0) {<span class="cstat-no" title="statement not covered" ></span>
-    insights.push(`${freeApps} free apps available for immediate use without cost.`);
-  }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  const <span class="cstat-no" title="statement not covered" >verifiedPublishers = apps.filter(app =&gt; app.publisher.verified).length;</span>
-  if (verifi<span class="cstat-no" title="statement not covered" >edPublishers &gt; apps.length * 0.5) {</span>
-    insights.push('Majority of results from verified publishers, ensuring reliability and support.');
+  },<span class="cstat-no" title="statement not covered" > {});</span>
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
+function generateCapabilityAnalysi<span class="fstat-no" title="function not covered" >s(</span>apps: MakePub<span class="cstat-no" title="statement not covered" >licApp[]): </span>Record&lt;string, number&gt; {
+  return apps.reduce((analysis: Record&lt;string, number&gt;, app) =&gt; {
+    if (app.ca<span class="fstat-no" title="function not covered" >pa</span>bilities<span class="cstat-no" title="statement not covered" >.triggers.length &gt; 0) analysis</span>.hasTriggers = (analysis.hasTriggers || 0) + 1;
+    if (app.capabilities.actions.length &gt; 0) analysis.hasActions = (analysis.hasActions || 0) + 1;
+    if (app.c<span class="fstat-no" title="function not covered" >ap</span>abilit<span class="cstat-no" title="statement not covered" >ies.searches.l</span>ength &gt; 0) analysis.hasSearches = (analysis.hasSearches || 0) + 1;
+    return analysis;
+  }, {});<span class="fstat-no" title="function not covered" ></span>
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+function generateRecomm<span class="cstat-no" title="statement not covered" >endationInsi<span class="fstat-no" title="function not covered" >gh</span>ts(ap<span class="cstat-no" title="statement not covered" >ps: MakePublicApp[], _filters?: MakeAppSe</span>a</span>rchFilters): string[] {
+  const insights: strin<span class="cstat-no" title="statement not covered" >g[] = [];<span class="fstat-no" title="function not covered" ></span></span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  if (ap<span class="cstat-no" title="statement not covered" >ps.length ==</span>= 0) {
+    insights.push('No apps match your search criteria. Try broadening your filters or search terms.');
+<span class="cstat-no" title="statement not covered" >    return insights;</span>
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
+  const avgRa<span class="fstat-no" title="function not covered" >ti</span>ng = apps.redu<span class="cstat-no" title="statement not covered" >ce((sum, app) =&gt; sum + app.usage.averageR</span>ating, 0) / apps.length;
+  if (avgRating &gt; 4.0) {
+    insig<span class="fstat-no" title="function not covered" >hts.push(`High-quality </span>results: Average rating of ${avgRating.toFixed(1)} indicates excellent app quality.`);
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  const free<span class="cstat-no" title="statement not covered" >Apps = apps.filter(app =&gt; app.pricing.model === 'free').length;</span>
+  if (freeApps &gt; 0) {
+    insi<span class="cstat-no" title="statement not covered" >ghts.push(`${freeApps} free apps</span> available for immediate use without cost.`);
   }<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-  return<span class="cstat-no" title="statement not covered" > insights;</span>
-}<span class="cstat-no" title="statement not covered" ></span>
+  const <span class="cstat-no" title="statement not covered" >verifiedPubl</span>ishers = apps.filter(app =&gt; app.publisher.verified).length;
+  if (verifiedPublishers &gt; apps.length * 0.5) {
+    insights.push('Majority of results from verified publishers, ensuring reliability and support.');
+  }<span class="fstat-no" title="function not covered" ></span>
 &nbsp;
+  re<span class="cstat-no" title="statement not covered" >turn insights;</span>
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 function calculateOverallAppScore(app: MakePublicApp): number {
-  const r<span class="fstat-no" title="function not covered" >atingScore = app.usage.av</span>erageRating / 5.0; // Normalize to 0-1
-  const popularityScore = Math.min(app.usage.totalInstalls / 10000, 1); // Cap at 10k installs
+  const ratingScore = app.usage.averageRating / 5.0; // Normalize to 0-1
+  const p<span class="fstat-no" title="function not covered" >opularityScore = Math.</span>min(app.usage.totalInstalls / 10000, 1); // Cap at 10k installs
   co<span class="cstat-no" title="statement not covered" >nst verificationBonus = app.publisher.verified ? 0.1 : 0;</span>
   <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  return Math<span class="fstat-no" title="function not covered" >.r</span>ound((r<span class="cstat-no" title="statement not covered" >atingScore * 0.4 + popularityScore * 0.4 + verificationBonus + 0.1) * 100);</span>
+  return Math.<span class="fstat-no" title="function not covered" >ro</span>und((rat<span class="cstat-no" title="statement not covered" >ingScore * 0.4 + popularityScore * 0.4 + verificatio</span>nBonus + 0.1) * 100);
 }
 &nbsp;
-function <span class="fstat-no" title="function not covered" >identifyAppStrengths(a</span>pp: MakePublicApp): string[] {
+function <span class="fstat-no" title="function not covered" >identifyAppStrengths</span>(app: MakePublicApp): string[] {
   co<span class="cstat-no" title="statement not covered" >nst strengths: string[] = [];</span>
   <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  if (app.usag<span class="fstat-no" title="function not covered" >e.</span>averageR<span class="cstat-no" title="statement not covered" >ating &gt;= 4.5) strengths.push('Excellent user ratings</span>');
+  if (app.usag<span class="fstat-no" title="function not covered" >e.</span>averageR<span class="cstat-no" title="statement not covered" >ating &gt;= 4.5) strengths.push('Excellent user ratings');</span>
   if (app.publisher.verified) strengths.push('Verified publisher');
   if (app.pricing.model === 'free') strengths.push('Free to use');
-  if (app<span class="fstat-no" title="function not covered" >.capabilities.trigge</span>rs.length + app.capabilities.actions.length &gt;= 10) strengths.push('Rich feature set');
-  if<span class="cstat-no" title="statement not covered" > (app.compliance.gdprCompliant) strengths.push('GDPR compliant');</span>
-  <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-  return stren<span class="fstat-no" title="function not covered" >gt</span>hs;<span class="cstat-no" title="statement not covered" ></span>
+  if (app<span class="fstat-no" title="function not covered" >.capabilities.triggers.leng</span>th + app.capabilities.actions.length &gt;= 10) strengths.push('Rich feature set');
+  if (app.compliance.gdprC<span class="cstat-no" title="statement not covered" >ompliant) st<span class="fstat-no" title="function not covered" >re</span>ngths.push('GDPR compliant');</span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  return<span class="cstat-no" title="statement not covered" > strengths;</span>
 }
-&nbsp;
-function <span class="fstat-no" title="function not covered" >identifyAppConsiderations(a</span>pp: MakePublicApp): string[] {
-  const considerations: st<span class="cstat-no" title="statement not covered" >ring[] = [];<span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+function identifyApp<span class="cstat-no" title="statement not covered" >Consid</span>erations(app: MakePublicApp): string[] {
+  const <span class="cstat-no" title="statement not covered" >considerations: string[] = [];</span>
   <span class="cstat-no" title="statement not covered" ></span>
-  if (ap<span class="cstat-no" title="statement not covered" >p.usage.aver</span>ageRating &lt; 3.5) considerations.push('Below average user ratings');
-  if (app.authentication.type === 'custom') considerations.push('Custom authentication setup required');
-  if<span class="cstat-no" title="statement not covered" > (app.requirements.minimumPlan === 'enterpri<span class="fstat-no" title="function not covered" >se</span>') considerations.push('Requires enterprise plan');</span>
-  if (app.capabiliti<span class="cstat-no" title="statement not covered" >es.tri</span>ggers.length === 0) considerations.push('No trigger capabilities');
-  <span class="cstat-no" title="statement not covered" ></span>
-  return con<span class="cstat-no" title="statement not covered" >siderations;</span>
-}<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-function<span class="cstat-no" title="statement not covered" > generateUseCaseRecommendations(app: MakePublicApp): strin</span>g[] {
-  const <span class="cstat-no" title="statement not covered" >useCases: st</span>ring[] = [];
+  if (app.usa<span class="cstat-no" title="statement not covered" >ge.averageRating &lt; 3.5) considerations.push('Below average user ratings');</span>
+  if (app.au<span class="cstat-no" title="statement not covered" >thentication.type </span>=== 'custom') considerations.push('Custom authentication setup required');
+  if (ap<span class="cstat-no" title="statement not covered" >p.requirements.minimumPlan === 'enterprise') consideration</span>s.push('Requires enterprise plan');
+  if (ap<span class="cstat-no" title="statement not covered" >p.capabiliti</span>es.triggers.length === 0) considerations.push('No trigger capabilities');
   
+  return considerations;
+}<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+func<span class="cstat-no" title="statement not covered" >tion generateUseCaseRe<span class="fstat-no" title="function not covered" >co</span>mmendations(app: MakePublicApp): string[] {</span>
+  const useCases: str<span class="cstat-no" title="statement not covered" >ing[] = [];</span>
+  <span class="cstat-no" title="statement not covered" ></span>
   if (app.capabilities.triggers.length &gt; 0) useCases.push('Automating workflows with real-time triggers');
-  if (app<span class="fstat-no" title="function not covered" >.capabilities.searches.lengt</span>h &gt; 0) useCases.push('Data discovery and search operations');
-  if (app.capabilities.actions.some(a =&gt; a.type === 'create')) useCases.push('Content creation and data entry');
-  if<span class="cstat-no" title="statement not covered" > (app.authentication.t<span class="fstat-no" title="function not covered" >yp</span>e === 'oauth2') useCases.push('Secure enterprise integrations');</span>
-  <span class="cstat-no" title="statement not covered" ></span>
-  return useCases;<span class="cstat-no" title="statement not covered" ></span>
-}
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-function ass<span class="cstat-no" title="statement not covered" >essSetupCompl</span>exity(app: MakePublicApp): 'low' | 'medium' | 'high' {
-  let complexity = 0;
+  if (ap<span class="cstat-no" title="statement not covered" >p.capabilities.searches.length &gt; 0) useC<span class="fstat-no" title="function not covered" >as</span>es.pu<span class="cstat-no" title="statement not covered" >sh('Data discovery and search operations');</span></span>
+  if (app.ca<span class="cstat-no" title="statement not covered" >pabilities.ac</span>tions.some(a =&gt; a.type === 'create')) useCases.push('Content creation and data entry');
+  if (app.authentication.type === 'oauth2') useCases.push('Secure enterprise integrations');
   <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  if (app.au<span class="cstat-no" title="statement not covered" >thentication.</span>type === 'custom') complexity += 2;
-  if (app.requirements.dependencies.length &gt; 2) complexity += 1;
-  if (ap<span class="cstat-no" title="statement not covered" >p.authentication.fields.</span>length &gt; 5) complexity += 1;
-  
-  if (complexity &gt;= 3) return 'high';
-  if (com<span class="fstat-no" title="function not covered" >plexity &gt;= 1) return 'medium'</span>;
-  re<span class="cstat-no" title="statement not covered" >turn 'low';<span class="fstat-no" title="function not covered" ></span></span>
-}<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-function<span class="cstat-no" title="statement not covered" > assessMaintenanceComplexity(app: MakePublicApp): 'minimal' | 'moderate' | 'intensive' {</span>
-  let comple<span class="cstat-no" title="statement not covered" >xity = 0;</span>
-  
-  if (ap<span class="cstat-no" title="statement not covered" >p.versions.filter(v =&gt; !v.deprecated).length &gt; 3) complexity += 1;</span>
-  if (app.requirements.conflictingApps?.length || 0 <span class="fstat-no" title="function not covered" >&gt; </span>0) complexit<span class="cstat-no" title="statement not covered" >y += 1;</span>
-  if (app.ca<span class="cstat-no" title="statement not covered" >pabilities.tr</span>iggers.some(t =&gt; t.type === 'webhook')) complexity += 1;
-  
-  if (co<span class="cstat-no" title="statement not covered" >mplexity &gt;= 2) return 'intensive';</span>
-  if (co<span class="cstat-no" title="statement not covered" >mplexity &gt;= </span>1) return 'moderate';
-  return 'minimal';
+  return use<span class="cstat-no" title="statement not covered" >Cases;</span>
 }
-<span class="fstat-no" title="function not covered" ></span>
-func<span class="cstat-no" title="statement not covered" >tion assessCustomizationOpt<span class="fstat-no" title="function not covered" >io</span>ns(ap<span class="cstat-no" title="statement not covered" >p: MakePublicApp): 'limited' | 'moderate' | 'extensive' {</span></span>
-  const customizationFeatures = app.capabilities.actions.filter(a =&gt; a.type === 'custom').length +
-<span class="fstat-no" title="function not covered" ></span>                               app.capabilities.searches.length;
+<span class="cstat-no" title="statement not covered" ></span>
+function assessSetupComplexity(app: MakePublicApp): 'low' | 'medium' | 'high' {
+  let complexity = 0;
+  <span class="fstat-no" title="function not covered" ></span>
+  if<span class="cstat-no" title="statement not covered" > (app.authenticatio<span class="fstat-no" title="function not covered" >n.</span>type === 'custom') complexity += 2;</span>
+  if (app.requiremen<span class="cstat-no" title="statement not covered" >ts.</span>dependencies.length &gt; 2) complexity += 1;
+  if (app.authentication.fields.length &gt; 5) complexity += 1;
   <span class="cstat-no" title="statement not covered" ></span>
-  if (customizationFeatures &gt;= 5) return 'extensive';
+  if (comple<span class="cstat-no" title="statement not covered" >xity &gt;= 3) re</span>turn 'high';
+  if (complexity &gt;= 1) return 'medium';
+  return<span class="cstat-no" title="statement not covered" > 'low';</span>
+}<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+function assessMaintenanceComplexity(app: MakePublicApp): 'minimal' | 'moderate' | 'intensive' {
+  let co<span class="cstat-no" title="statement not covered" >mplexity = 0;</span>
+  <span class="cstat-no" title="statement not covered" ></span>
+  if (app.versions.filter(v =&gt; !v.deprecated).length &gt; 3) complexity += 1;
+  if (app.requirements.conflictingApps?.length || 0 &gt; 0) complexity += 1;
+  if (app<span class="fstat-no" title="function not covered" >.capabilities.triggers.</span>some(t =&gt; t.type === 'webhook')) complexity += 1;
+  <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  if (complexity &gt;= 2) return 'intensive';
+  if (com<span class="fstat-no" title="function not covered" >plexity &gt;= 1) return</span> 'moderate';
+  re<span class="cstat-no" title="statement not covered" >turn 'minimal';</span>
+}
+&nbsp;
+function assessCustomizationOptions(app: MakePublicApp): 'limited' | 'moderate' | 'extensive' {
+  const customizationFeatures = app.capabilities.actions.filter(a =&gt; a.type === 'custom').length +
+                               app.capabilities.searches.length;
+  <span class="fstat-no" title="function not covered" ></span>
+  if (customizationFeatures <span class="cstat-no" title="statement not covered" >&gt;= 5) return 'extensive';</span>
   if (customizationFeatures &gt;= 2) return 'moderate';
   return 'limited';
 }
 &nbsp;
-function <span class="fstat-no" title="function not covered" >assessLearningCurve(app: MakePubli</span>cApp): 'gentle' | 'moderate' | 'steep' {
-  let complexity = 0;<span class="cstat-no" title="statement not covered" ></span>
+func<span class="cstat-no" title="statement not covered" >tion assessLearningCurve(app: MakePublicApp): 'gentle' | 'moderate' | 'steep' {</span>
+  let co<span class="cstat-no" title="statement not covered" >mplexity = 0;</span>
   
-  if (app.capabilities.triggers.length + app.capabilities.actions.length &gt; 20) complexity += 2;
+  if<span class="cstat-no" title="statement not covered" > (app.capabilities.trigg</span>ers.length + app.capabilities.actions.length &gt; 20) complexity += 2;
   if (app.authentication.type === 'custom') complexity += 1;
-  if (!app.metadata.documentationUrl) complexity += 1;
+  if (!ap<span class="fstat-no" title="function not covered" >p.metadata.documentationUrl)</span> complexity += 1;
   <span class="cstat-no" title="statement not covered" ></span>
-  if (co<span class="cstat-no" title="statement not covered" >mplexity &gt;= 3) return 'steep';</span>
+  if (complexity &gt;= 3) return 'steep';
   if (complexity &gt;= 1) return 'moderate';
-  re<span class="cstat-no" title="statement not covered" >turn 'gentle';</span>
+  return 'gentle';
 }
-<span class="fstat-no" title="function not covered" ></span>
-func<span class="cstat-no" title="statement not covered" >tion calculateTCO(app: MakePublicApp): Record&lt;string, number&gt; {</span>
+&nbsp;
+function calculateTCO(app: MakePublicApp): Record&lt;string, number&gt; {
   const basePlan = app.pricing.plans[0] || { price: 0, billingCycle: 'monthly' as const };
   
   return {
     monthly: basePlan.billingCycle === 'monthly' ? basePlan.price : basePlan.price / 12,
     yearly: basePlan.billingCycle === 'annually' ? basePlan.price : basePlan.price * 12,
-<span class="cstat-no" title="statement not covered" >    setupCost: 0, // Most apps don't ha</span>ve setup costs
+    setupCost: 0, // Most apps don't have setup costs
   };
 }
 &nbsp;
@@ -3493,7 +3493,7 @@ export default addMarketplaceTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T03:16:57.110Z
+                at 2025-08-22T05:07:11.447Z
             </div>
         <script src="../prettify.js"></script>
         <script>
