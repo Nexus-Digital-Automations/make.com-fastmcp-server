@@ -18197,9 +18197,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755886497310_gfo1s72w8",
+      "title": "Continue ESLint refactoring - tackle remaining large functions Round 2",
+      "description": "Continue the outstanding ESLint refactoring progress by tackling more large function violations: addBasicTools (361 lines), addAIGovernanceEngineTools (220 lines), createQueryLogsByTimeRangeTool (217 lines), and others. Previous work reduced problems from 101→95 (6% improvement). Goal is to reduce below 90 problems total and continue the excellent modularization work.",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T18:14:57.311Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755886464723_1_general_5af1ca81",
+      "started_at": "2025-08-22T18:15:04.961Z",
+      "claimed_by": "development_session_1755886464723_1_general_5af1ca81",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755886464723_1_general_5af1ca81",
+          "role": "primary",
+          "assignedAt": "2025-08-22T18:15:04.961Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T18:17:57.653Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T18:17:57.653Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 417,
-  "last_completion": "2025-08-22T18:13:43.889Z",
+  "total_completed": 418,
+  "last_completion": "2025-08-22T18:17:57.653Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

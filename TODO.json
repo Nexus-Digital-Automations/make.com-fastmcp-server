@@ -69,13 +69,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755885536630_1_general_d753207c": {
+    "development_session_1755886464723_1_general_5af1ca81": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T17:58:56.630Z",
+      "lastHeartbeat": "2025-08-22T18:14:24.723Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -86,8 +86,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T17:58:56.630Z",
-      "sessionId": "session_1755885536630",
+      "createdAt": "2025-08-22T18:14:24.723Z",
+      "sessionId": "session_1755886464723",
       "metadata": {}
     }
   },

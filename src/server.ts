@@ -252,7 +252,7 @@ ${configManager.isAuthEnabled() ?
     });
   }
 
-  private addBasicTools(): void {
+  private addHealthCheckTool(): void {
     // Enhanced health check tool with security status
     this.server.addTool({
       name: 'health-check',
@@ -324,7 +324,9 @@ ${configManager.isAuthEnabled() ?
         return JSON.stringify(healthStatus, null, 2);
       },
     });
-    
+  }
+
+  private addSecurityStatusTool(): void {
     // Security status tool
     this.server.addTool({
       name: 'security-status',
@@ -375,7 +377,9 @@ ${configManager.isAuthEnabled() ?
         return JSON.stringify(result, null, 2);
       },
     });
+  }
 
+  private addServerInfoTool(): void {
     // Server info tool
     this.server.addTool({
       name: 'server-info',
@@ -555,7 +559,9 @@ ${configManager.isAuthEnabled() ?
         };
       },
     });
+  }
 
+  private addTestConfigurationTool(): void {
     // Configuration test tool
     this.server.addTool({
       name: 'test-configuration',
@@ -662,6 +668,14 @@ ${configManager.isAuthEnabled() ?
         }
       },
     });
+  }
+
+  private addBasicTools(): void {
+    // Add all basic tools
+    this.addHealthCheckTool();
+    this.addSecurityStatusTool();
+    this.addServerInfoTool();
+    this.addTestConfigurationTool();
   }
 
   private addAdvancedTools(): void {
