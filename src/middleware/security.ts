@@ -27,87 +27,346 @@ interface SecurityConfig {
       webhooks: boolean;
     };
   };
-  headers: {
-    enabled: boolean;
-    csrf: boolean;
-    contentValidation: boolean;
-    requestSizing: boolean;
-  };
   ddosProtection: {
     enabled: boolean;
     behaviorAnalysis: boolean;
+    ipReputation: boolean;
   };
-  monitoring: {
+  headers: {
     enabled: boolean;
-    alerts: boolean;
-    metrics: boolean;
-  };
-  circuitBreaker: {
-    enabled: boolean;
-    makeApi: boolean;
+    contentValidation: boolean;
+    requestSizing: boolean;
+    csrf: boolean;
+    securityAudit: boolean;
   };
   errorSanitization: {
     enabled: boolean;
     developmentMode: boolean;
+    logSanitization: boolean;
+  };
+  circuitBreaker: {
+    enabled: boolean;
+    makeApi: boolean;
+    externalServices: boolean;
+  };
+  monitoring: {
+    enabled: boolean;
+    realTimeAlerts: boolean;
+    metricsCollection: boolean;
   };
 }
 
-// Default security configuration
-const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
-  rateLimiting: {
-    enabled: true,
-    redis: {
-      enabled: !!process.env.REDIS_URL,
-      url: process.env.REDIS_URL
-    },
-    tiers: {
-      auth: true,
-      standard: true,
-      sensitive: true,
-      webhooks: true
-    }
-  },
-  headers: {
-    enabled: true,
-    csrf: true,
-    contentValidation: true,
-    requestSizing: true
-  },
-  ddosProtection: {
-    enabled: true,
-    behaviorAnalysis: true
-  },
-  monitoring: {
-    enabled: true,
-    alerts: true,
-    metrics: true
-  },
-  circuitBreaker: {
-    enabled: true,
-    makeApi: true
-  },
-  errorSanitization: {
-    enabled: true,
-    developmentMode: process.env.NODE_ENV === 'development'
-  }
-};
-
-// Integrated security middleware manager
+// Integrated security management class
 export class IntegratedSecurityManager {
   private config: SecurityConfig;
-  private initialized: boolean = false;
   
   constructor(config?: Partial<SecurityConfig>) {
-    this.config = { ...DEFAULT_SECURITY_CONFIG, ...config };
-    logger.info('Security manager initialized', {
+    this.config = {
+      rateLimiting: {
+        enabled: true,
+        redis: {
+          enabled: !!process.env.REDIS_URL,
+          url: process.env.REDIS_URL
+        },
+        tiers: {
+          auth: true,
+          standard: true,
+          sensitive: true,
+          webhooks: true
+        }
+      },
+      ddosProtection: {
+        enabled: true,
+        behaviorAnalysis: true,
+        ipReputation: true
+      },
+      headers: {
+        enabled: true,
+        contentValidation: true,
+        requestSizing: true,
+        csrf: process.env.NODE_ENV !== 'test',
+        securityAudit: true
+      },
+      errorSanitization: {
+        enabled: true,
+        developmentMode: process.env.NODE_ENV === 'development',
+        logSanitization: true
+      },
+      circuitBreaker: {
+        enabled: true,
+        makeApi: true,
+        externalServices: true
+      },
+      monitoring: {
+        enabled: true,
+        realTimeAlerts: true,
+        metricsCollection: true
+      },
+      ...config
+    };
+    
+    this.initialize();
+  }
+  
+  private initialize(): void {
+    logger.info('Initializing integrated security manager', {
       rateLimiting: this.config.rateLimiting.enabled,
-      headers: this.config.headers.enabled,
       ddosProtection: this.config.ddosProtection.enabled,
-      monitoring: this.config.monitoring.enabled,
+      headers: this.config.headers.enabled,
+      errorSanitization: this.config.errorSanitization.enabled,
       circuitBreaker: this.config.circuitBreaker.enabled,
-      errorSanitization: this.config.errorSanitization.enabled
+      monitoring: this.config.monitoring.enabled
     });
   }
   
   public getSecurityMiddlewareStack(): any[] {
-    const middlewares: any[] = [];\n    \n    // 1. Security monitoring (first to track all requests)\n    if (this.config.monitoring.enabled) {\n      middlewares.push(createSecurityMonitoringMiddleware());\n    }\n    \n    // 2. DDoS protection (early filtering)\n    if (this.config.ddosProtection.enabled) {\n      middlewares.push(createDDoSProtectionMiddleware());\n    }\n    \n    // 3. Security headers (comprehensive header protection)\n    if (this.config.headers.enabled) {\n      middlewares.push(createSecurityMiddleware());\n      \n      if (this.config.headers.contentValidation) {\n        middlewares.push(securityHeadersManager.getContentTypeValidation());\n      }\n      \n      if (this.config.headers.requestSizing) {\n        middlewares.push(securityHeadersManager.getRequestSizeLimiter());\n      }\n      \n      if (this.config.headers.csrf) {\n        middlewares.push(createCSRFMiddleware());\n      }\n    }\n    \n    // 4. Rate limiting (after headers but before business logic)\n    if (this.config.rateLimiting.enabled) {\n      if (this.config.rateLimiting.tiers.standard) {\n        middlewares.push(createRateLimitMiddleware('standard'));\n      }\n    }\n    \n    return middlewares;\n  }\n  \n  public getAuthSecurityMiddleware(): any[] {\n    const middlewares: any[] = [];\n    \n    if (this.config.rateLimiting.enabled && this.config.rateLimiting.tiers.auth) {\n      middlewares.push(createRateLimitMiddleware('auth'));\n    }\n    \n    return middlewares;\n  }\n  \n  public getSensitiveEndpointMiddleware(): any[] {\n    const middlewares: any[] = [];\n    \n    if (this.config.rateLimiting.enabled && this.config.rateLimiting.tiers.sensitive) {\n      middlewares.push(createRateLimitMiddleware('sensitive'));\n    }\n    \n    return middlewares;\n  }\n  \n  public getWebhookMiddleware(): any[] {\n    const middlewares: any[] = [];\n    \n    if (this.config.rateLimiting.enabled && this.config.rateLimiting.tiers.webhooks) {\n      middlewares.push(createRateLimitMiddleware('webhooks'));\n    }\n    \n    return middlewares;\n  }\n  \n  public getErrorHandlingMiddleware(): any[] {\n    const middlewares: any[] = [];\n    \n    if (this.config.errorSanitization.enabled) {\n      if (this.config.errorSanitization.developmentMode) {\n        middlewares.push(developmentErrorHandler());\n      } else {\n        middlewares.push(errorSanitizationMiddleware());\n      }\n    }\n    \n    return middlewares;\n  }\n  \n  public async initializeCircuitBreakers(apiClient: any): Promise<void> {\n    if (!this.config.circuitBreaker.enabled) {\n      return;\n    }\n    \n    if (this.config.circuitBreaker.makeApi && apiClient) {\n      // Create circuit breaker for Make.com API calls\n      const makeApiBreaker = circuitBreakerManager.createCircuitBreaker(\n        'make-api',\n        async (operation: string, ...args: any[]) => {\n          return await apiClient[operation](...args);\n        },\n        {\n          timeout: 10000, // 10 second timeout for API calls\n          errorThresholdPercentage: 60, // Trip at 60% error rate for external API\n          resetTimeout: 60000, // Try again after 1 minute\n          volumeThreshold: 5 // Minimum 5 requests before circuit can trip\n        }\n      );\n      \n      logger.info('Circuit breaker initialized for Make.com API');\n    }\n  }\n  \n  public getSecurityStatus(): {\n    rateLimiting: any;\n    ddosProtection: any;\n    circuitBreakers: any;\n    monitoring: any;\n    overall: string;\n  } {\n    const status = {\n      rateLimiting: this.config.rateLimiting.enabled ? rateLimitManager.getSystemStatus() : { enabled: false },\n      ddosProtection: this.config.ddosProtection.enabled ? ddosProtection.getStats() : { enabled: false },\n      circuitBreakers: this.config.circuitBreaker.enabled ? circuitBreakerManager.getAllStats() : { enabled: false },\n      monitoring: this.config.monitoring.enabled ? securityMonitoring.getSecuritySummary() : { enabled: false },\n      overall: 'healthy'\n    };\n    \n    // Determine overall health\n    let issues = 0;\n    \n    if (this.config.rateLimiting.enabled && !status.rateLimiting.redisConnected && this.config.rateLimiting.redis.enabled) {\n      issues++;\n    }\n    \n    if (this.config.monitoring.enabled && status.monitoring.currentRiskScore > 70) {\n      issues++;\n    }\n    \n    if (issues === 0) {\n      status.overall = 'healthy';\n    } else if (issues <= 2) {\n      status.overall = 'degraded';\n    } else {\n      status.overall = 'unhealthy';\n    }\n    \n    return status;\n  }\n  \n  public async shutdown(): Promise<void> {\n    logger.info('Shutting down security systems');\n    \n    const shutdownPromises: Promise<void>[] = [];\n    \n    if (this.config.rateLimiting.enabled) {\n      shutdownPromises.push(rateLimitManager.shutdown());\n    }\n    \n    if (this.config.circuitBreaker.enabled) {\n      shutdownPromises.push(circuitBreakerManager.shutdown());\n    }\n    \n    if (this.config.monitoring.enabled) {\n      securityMonitoring.shutdown();\n    }\n    \n    await Promise.all(shutdownPromises);\n    \n    logger.info('Security systems shutdown completed');\n  }\n  \n  public updateConfig(newConfig: Partial<SecurityConfig>): void {\n    this.config = { ...this.config, ...newConfig };\n    logger.info('Security configuration updated', newConfig);\n  }\n  \n  public getConfig(): SecurityConfig {\n    return { ...this.config };\n  }\n}\n\n// Singleton security manager\nexport const securityManager = new IntegratedSecurityManager();\n\n// Export all security components for individual use\nexport {\n  rateLimitManager,\n  createRateLimitMiddleware,\n  ddosProtectionMiddleware,\n  securityHeadersManager,\n  createSecurityMiddleware,\n  createCSRFMiddleware,\n  errorSanitizationMiddleware,\n  developmentErrorHandler,\n  ddosProtection,\n  circuitBreakerManager,\n  createDDoSProtectionMiddleware,\n  securityMonitoring,\n  createSecurityMonitoringMiddleware\n};\n\n// Utility functions\nexport function createSecurityHealthCheck() {\n  return async (): Promise<{\n    healthy: boolean;\n    status: any;\n    timestamp: string;\n  }> => {\n    const status = securityManager.getSecurityStatus();\n    \n    return {\n      healthy: status.overall === 'healthy',\n      status,\n      timestamp: new Date().toISOString()\n    };\n  };\n}\n\nexport function validateSecurityConfiguration(): {\n  valid: boolean;\n  issues: string[];\n  warnings: string[];\n} {\n  const issues: string[] = [];\n  const warnings: string[] = [];\n  const config = securityManager.getConfig();\n  \n  // Check for critical configuration issues\n  if (config.rateLimiting.enabled && config.rateLimiting.redis.enabled && !process.env.REDIS_URL) {\n    issues.push('Redis rate limiting enabled but REDIS_URL not configured');\n  }\n  \n  if (config.headers.csrf && !process.env.SESSION_SECRET) {\n    warnings.push('CSRF protection enabled but SESSION_SECRET not configured');\n  }\n  \n  if (process.env.NODE_ENV === 'production' && config.errorSanitization.developmentMode) {\n    warnings.push('Development error handling enabled in production');\n  }\n  \n  // Check for security best practices\n  if (!config.headers.enabled) {\n    warnings.push('Security headers disabled - not recommended for production');\n  }\n  \n  if (!config.monitoring.enabled) {\n    warnings.push('Security monitoring disabled - reduced visibility into threats');\n  }\n  \n  return {\n    valid: issues.length === 0,\n    issues,\n    warnings\n  };\n}"
+    const middlewares: any[] = [];
+    
+    // 1. Security monitoring (first to track all requests)
+    if (this.config.monitoring.enabled) {
+      middlewares.push(createSecurityMonitoringMiddleware());
+    }
+    
+    // 2. DDoS protection (early filtering)
+    if (this.config.ddosProtection.enabled) {
+      middlewares.push(createDDoSProtectionMiddleware());
+    }
+    
+    // 3. Security headers (comprehensive header protection)
+    if (this.config.headers.enabled) {
+      middlewares.push(createSecurityMiddleware());
+      
+      if (this.config.headers.contentValidation) {
+        middlewares.push(securityHeadersManager.getContentTypeValidation());
+      }
+      
+      if (this.config.headers.requestSizing) {
+        middlewares.push(securityHeadersManager.getRequestSizeLimiter());
+      }
+      
+      if (this.config.headers.csrf) {
+        middlewares.push(createCSRFMiddleware());
+      }
+    }
+    
+    // 4. Rate limiting (after headers but before business logic)
+    if (this.config.rateLimiting.enabled) {
+      if (this.config.rateLimiting.tiers.standard) {
+        middlewares.push(createRateLimitMiddleware('standard'));
+      }
+    }
+    
+    return middlewares;
+  }
+  
+  public getAuthSecurityMiddleware(): any[] {
+    const middlewares: any[] = [];
+    
+    if (this.config.rateLimiting.enabled && this.config.rateLimiting.tiers.auth) {
+      middlewares.push(createRateLimitMiddleware('auth'));
+    }
+    
+    return middlewares;
+  }
+  
+  public getSensitiveEndpointMiddleware(): any[] {
+    const middlewares: any[] = [];
+    
+    if (this.config.rateLimiting.enabled && this.config.rateLimiting.tiers.sensitive) {
+      middlewares.push(createRateLimitMiddleware('sensitive'));
+    }
+    
+    return middlewares;
+  }
+  
+  public getWebhookMiddleware(): any[] {
+    const middlewares: any[] = [];
+    
+    if (this.config.rateLimiting.enabled && this.config.rateLimiting.tiers.webhooks) {
+      middlewares.push(createRateLimitMiddleware('webhooks'));
+    }
+    
+    return middlewares;
+  }
+  
+  public getErrorHandlingMiddleware(): any[] {
+    const middlewares: any[] = [];
+    
+    if (this.config.errorSanitization.enabled) {
+      if (this.config.errorSanitization.developmentMode) {
+        middlewares.push(developmentErrorHandler());
+      } else {
+        middlewares.push(errorSanitizationMiddleware());
+      }
+    }
+    
+    return middlewares;
+  }
+  
+  public async initializeCircuitBreakers(apiClient: any): Promise<void> {
+    if (!this.config.circuitBreaker.enabled) {
+      return;
+    }
+    
+    if (this.config.circuitBreaker.makeApi && apiClient) {
+      // Create circuit breaker for Make.com API calls
+      const makeApiBreaker = circuitBreakerManager.createCircuitBreaker(
+        'make-api',
+        async (operation: string, ...args: any[]) => {
+          return await apiClient[operation](...args);
+        },
+        {
+          timeout: 10000, // 10 second timeout for API calls
+          errorThresholdPercentage: 60, // Trip at 60% error rate for external API
+          resetTimeout: 60000, // Try again after 1 minute
+          volumeThreshold: 5 // Minimum 5 requests before circuit can trip
+        }
+      );
+      
+      logger.info('Circuit breaker initialized for Make.com API');
+    }
+  }
+  
+  public getSecurityStatus(): {
+    rateLimiting: any;
+    ddosProtection: any;
+    circuitBreakers: any;
+    monitoring: any;
+    overall: string;
+  } {
+    const status = {
+      rateLimiting: this.config.rateLimiting.enabled ? rateLimitManager.getSystemStatus() : { enabled: false },
+      ddosProtection: this.config.ddosProtection.enabled ? ddosProtection.getStats() : { enabled: false },
+      circuitBreakers: this.config.circuitBreaker.enabled ? circuitBreakerManager.getAllStats() : { enabled: false },
+      monitoring: this.config.monitoring.enabled ? securityMonitoring.getSecuritySummary() : { enabled: false },
+      overall: 'healthy'
+    };
+    
+    // Determine overall health
+    let issues = 0;
+    
+    if (this.config.rateLimiting.enabled && !status.rateLimiting.redisConnected && this.config.rateLimiting.redis.enabled) {
+      issues++;
+    }
+    
+    if (this.config.monitoring.enabled && status.monitoring.currentRiskScore > 70) {
+      issues++;
+    }
+    
+    if (issues === 0) {
+      status.overall = 'healthy';
+    } else if (issues <= 2) {
+      status.overall = 'degraded';
+    } else {
+      status.overall = 'unhealthy';
+    }
+    
+    return status;
+  }
+  
+  public async shutdown(): Promise<void> {
+    logger.info('Shutting down security systems');
+    
+    const shutdownPromises: Promise<void>[] = [];
+    
+    if (this.config.rateLimiting.enabled) {
+      shutdownPromises.push(rateLimitManager.shutdown());
+    }
+    
+    if (this.config.circuitBreaker.enabled) {
+      shutdownPromises.push(circuitBreakerManager.shutdown());
+    }
+    
+    if (this.config.monitoring.enabled) {
+      securityMonitoring.shutdown();
+    }
+    
+    await Promise.all(shutdownPromises);
+    
+    logger.info('Security systems shutdown completed');
+  }
+  
+  public updateConfig(newConfig: Partial<SecurityConfig>): void {
+    this.config = { ...this.config, ...newConfig };
+    logger.info('Security configuration updated', newConfig);
+  }
+  
+  public getConfig(): SecurityConfig {
+    return { ...this.config };
+  }
+}
+
+// Singleton security manager
+export const securityManager = new IntegratedSecurityManager();
+
+// Export all security components for individual use
+export {
+  rateLimitManager,
+  createRateLimitMiddleware,
+  ddosProtectionMiddleware,
+  securityHeadersManager,
+  createSecurityMiddleware,
+  createCSRFMiddleware,
+  errorSanitizationMiddleware,
+  developmentErrorHandler,
+  ddosProtection,
+  circuitBreakerManager,
+  createDDoSProtectionMiddleware,
+  securityMonitoring,
+  createSecurityMonitoringMiddleware
+};
+
+// Utility functions
+export function createSecurityHealthCheck() {
+  return async (): Promise<{
+    healthy: boolean;
+    status: any;
+    timestamp: string;
+  }> => {
+    const status = securityManager.getSecurityStatus();
+    
+    return {
+      healthy: status.overall === 'healthy',
+      status,
+      timestamp: new Date().toISOString()
+    };
+  };
+}
+
+export function validateSecurityConfiguration(): {
+  valid: boolean;
+  issues: string[];
+  warnings: string[];
+} {
+  const issues: string[] = [];
+  const warnings: string[] = [];
+  const config = securityManager.getConfig();
+  
+  // Check for critical configuration issues
+  if (config.rateLimiting.enabled && config.rateLimiting.redis.enabled && !process.env.REDIS_URL) {
+    issues.push('Redis rate limiting enabled but REDIS_URL not configured');
+  }
+  
+  if (config.headers.csrf && !process.env.SESSION_SECRET) {
+    warnings.push('CSRF protection enabled but SESSION_SECRET not configured');
+  }
+  
+  if (process.env.NODE_ENV === 'production' && config.errorSanitization.developmentMode) {
+    warnings.push('Development error handling enabled in production');
+  }
+  
+  // Check for security best practices
+  if (!config.headers.enabled) {
+    warnings.push('Security headers disabled - not recommended for production');
+  }
+  
+  if (!config.monitoring.enabled) {
+    warnings.push('Security monitoring disabled - reduced visibility into threats');
+  }
+  
+  return {
+    valid: issues.length === 0,
+    issues,
+    warnings
+  };
+}

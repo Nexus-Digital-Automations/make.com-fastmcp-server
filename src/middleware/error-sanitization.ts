@@ -31,181 +31,217 @@ interface RequestContext {
   sessionId?: string;
 }
 
-// Custom error types for categorization
-export class ValidationError extends Error {
+// Custom error types for sanitization
+class ValidationError extends Error {
   constructor(message: string, public details?: any) {
     super(message);
     this.name = 'ValidationError';
   }
 }
 
-export class AuthenticationError extends Error {
+class AuthenticationError extends Error {
   constructor(message: string, public details?: any) {
     super(message);
     this.name = 'AuthenticationError';
   }
 }
 
-export class AuthorizationError extends Error {
+class AuthorizationError extends Error {
   constructor(message: string, public details?: any) {
     super(message);
     this.name = 'AuthorizationError';
   }
 }
 
-export class RateLimitError extends Error {
+class RateLimitError extends Error {
   constructor(message: string, public details?: any) {
     super(message);
     this.name = 'RateLimitError';
   }
 }
 
-export class ExternalApiError extends Error {
+class ExternalApiError extends Error {
   constructor(message: string, public details?: any) {
     super(message);
     this.name = 'ExternalApiError';
   }
 }
 
-// Enhanced error sanitizer with information disclosure prevention
+// Main error sanitization class
 export class ErrorSanitizer {
-  private static readonly SAFE_ERROR_MESSAGES = {
-    VALIDATION_ERROR: 'Invalid input provided',
-    AUTHENTICATION_ERROR: 'Authentication failed',
-    AUTHORIZATION_ERROR: 'Access denied',
-    RATE_LIMIT_ERROR: 'Too many requests',
-    INTERNAL_ERROR: 'An internal error occurred',
-    EXTERNAL_API_ERROR: 'External service unavailable',
-    NETWORK_ERROR: 'Network connectivity issue',
-    TIMEOUT_ERROR: 'Request timeout',
-    NOT_FOUND_ERROR: 'Resource not found',
-    CONFLICT_ERROR: 'Resource conflict',
-    QUOTA_EXCEEDED: 'Resource quota exceeded'
-  } as const;
-  
-  private static readonly DANGEROUS_PATTERNS = [
-    /password\s*[:=]\s*[^\s,}]+/gi,
-    /api[_-]?key\s*[:=]\s*[^\s,}]+/gi,
-    /secret\s*[:=]\s*[^\s,}]+/gi,
-    /token\s*[:=]\s*[^\s,}]+/gi,
-    /authorization\s*:\s*[^\s,}]+/gi,
-    /mysql|postgresql|database|connection/gi,
-    /file:\/\/|\/etc\/|\/var\/|\/home\//gi,
-    /stack trace|call stack/gi
+  private static readonly SENSITIVE_PATTERNS = [
+    // Database connection strings
+    /mongodb:\/\/[^\/\s]+/gi,
+    /postgresql:\/\/[^\/\s]+/gi,
+    /mysql:\/\/[^\/\s]+/gi,
+    
+    // API keys and tokens
+    /[A-Za-z0-9]{20,}/g, // Generic tokens
+    /sk_[A-Za-z0-9]+/g, // Stripe keys
+    /pk_[A-Za-z0-9]+/g, // Stripe public keys
+    
+    // File paths that might contain usernames
+    /\/Users\/[^\/\s]+/g,
+    /\/home\/[^\/\s]+/g,
+    /C:\\Users\\[^\\\/\s]+/g,
+    
+    // IP addresses (partial obfuscation)
+    /\b(\d{1,3}\.)\d{1,3}\.\d{1,3}\.\d{1,3}\b/g,
+    
+    // Email addresses (partial obfuscation)
+    /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+    
+    // Password-like strings
+    /password['":][\s]*['"][^'"]+['"]/gi,
+    /pass['":][\s]*['"][^'"]+['"]/gi,
+    /secret['":][\s]*['"][^'"]+['"]/gi,
+    
+    // JSON Web Tokens
+    /eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+\/=]*/g
   ];
-  
+
+  private static readonly SAFE_ERROR_MESSAGES = {
+    ValidationError: 'Invalid input provided. Please check your request and try again.',
+    AuthenticationError: 'Authentication failed. Please verify your credentials.',
+    AuthorizationError: 'Access denied. You do not have permission to perform this action.',
+    RateLimitError: 'Too many requests. Please wait before trying again.',
+    ExternalApiError: 'External service unavailable. Please try again later.',
+    DatabaseError: 'Data operation failed. Please try again.',
+    NetworkError: 'Network connectivity issue. Please check your connection.',
+    default: 'An unexpected error occurred. Please try again or contact support.'
+  };
+
   static sanitizeError(error: Error, context: RequestContext): SecureErrorResponse {
     const correlationId = context.correlationId || this.generateCorrelationId();
     
-    // Log full error details for internal debugging with sanitized sensitive data
-    this.logFullError(error, context, correlationId);
+    // Determine error type and appropriate safe message
+    const errorType = error.constructor.name;
+    const safeMessage = this.getSafeErrorMessage(errorType, error.message);
     
-    // Return sanitized error to client
+    // Generate error code
+    const errorCode = this.generateErrorCode(errorType, error.message);
+    
+    // Log full error details securely for debugging
+    this.logErrorForAudit(error, context, correlationId);
+    
     return {
       error: {
-        code: this.mapErrorCode(error),
-        message: this.getSafeErrorMessage(error),
+        code: errorCode,
+        message: safeMessage,
         timestamp: new Date().toISOString(),
         correlationId
       },
       success: false
     };
   }
-  
-  private static logFullError(error: Error, context: RequestContext, correlationId: string): void {
-    // Sanitize error message and stack for logging
-    const sanitizedMessage = this.sanitizeForLogging(error.message);
-    const sanitizedStack = error.stack ? this.sanitizeForLogging(error.stack) : undefined;
+
+  private static getSafeErrorMessage(errorType: string, originalMessage: string): string {
+    // Check if it's a known safe error type with specific message
+    if (errorType in this.SAFE_ERROR_MESSAGES) {
+      return this.SAFE_ERROR_MESSAGES[errorType as keyof typeof this.SAFE_ERROR_MESSAGES];
+    }
     
-    logger.error('Error occurred', {
-      correlationId,
-      error: {
-        name: error.name,
-        message: sanitizedMessage,
-        stack: sanitizedStack,
-        code: (error as any).code
-      },
-      context: {
-        endpoint: context.endpoint,
-        method: context.method,
-        userId: context.userId,
-        ip: this.hashIP(context.ip),
-        userAgent: context.userAgent ? this.sanitizeUserAgent(context.userAgent) : undefined,
-        sessionId: context.sessionId ? this.hashValue(context.sessionId) : undefined
-      },
-      metadata: {
-        nodeVersion: process.version,
-        platform: process.platform,
-        memory: process.memoryUsage(),
-        uptime: process.uptime()
-      }
-    });
-  }
-  
-  private static mapErrorCode(error: Error): string {
-    if (error instanceof ValidationError) return 'VALIDATION_ERROR';
-    if (error instanceof AuthenticationError) return 'AUTHENTICATION_ERROR';
-    if (error instanceof AuthorizationError) return 'AUTHORIZATION_ERROR';
-    if (error instanceof RateLimitError) return 'RATE_LIMIT_ERROR';
-    if (error instanceof ExternalApiError) return 'EXTERNAL_API_ERROR';
+    // For unknown errors, check if the message looks safe to expose
+    if (this.isSafeMessage(originalMessage)) {
+      return this.sanitizeMessage(originalMessage);
+    }
     
-    // Map common error patterns
-    if (error.message.includes('timeout')) return 'TIMEOUT_ERROR';
-    if (error.message.includes('not found') || error.message.includes('404')) return 'NOT_FOUND_ERROR';
-    if (error.message.includes('conflict') || error.message.includes('409')) return 'CONFLICT_ERROR';
-    if (error.message.includes('quota') || error.message.includes('limit')) return 'QUOTA_EXCEEDED';
-    if (error.message.includes('network') || error.message.includes('ECONNREFUSED')) return 'NETWORK_ERROR';
+    return this.SAFE_ERROR_MESSAGES.default;
+  }
+
+  private static isSafeMessage(message: string): boolean {
+    // Message is safe if it doesn't contain sensitive patterns
+    return !this.SENSITIVE_PATTERNS.some(pattern => pattern.test(message)) &&
+           message.length < 200 &&
+           !message.includes('node_modules') &&
+           !message.includes('stack trace') &&
+           !message.includes('internal error');
+  }
+
+  private static sanitizeMessage(message: string): string {
+    let sanitized = message;
     
-    return 'INTERNAL_ERROR';
-  }
-  
-  private static getSafeErrorMessage(error: Error): string {
-    const errorCode = this.mapErrorCode(error);
-    return this.SAFE_ERROR_MESSAGES[errorCode as keyof typeof this.SAFE_ERROR_MESSAGES];
-  }
-  
-  private static hashIP(ip: string): string {
-    return crypto.createHash('sha256').update(ip + process.env.IP_HASH_SALT || 'default-salt').digest('hex').substring(0, 16);
-  }
-  
-  private static hashValue(value: string): string {
-    return crypto.createHash('sha256').update(value).digest('hex').substring(0, 16);
-  }
-  
-  private static generateCorrelationId(): string {
-    return crypto.randomBytes(16).toString('hex');
-  }
-  
-  private static sanitizeForLogging(input: string): string {
-    let sanitized = input;
-    
-    // Remove dangerous patterns
-    this.DANGEROUS_PATTERNS.forEach(pattern => {
-      sanitized = sanitized.replace(pattern, '[FILTERED]');
+    // Remove sensitive patterns
+    this.SENSITIVE_PATTERNS.forEach(pattern => {
+      sanitized = sanitized.replace(pattern, '[REDACTED]');
     });
     
-    // Remove potential file paths
-    sanitized = sanitized.replace(/[A-Za-z]:\\\\[^\\s]+|\/[^\\s]+/g, '[PATH]');
-    
-    // Remove potential SQL queries
-    sanitized = sanitized.replace(/(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE)\\s+[^;]+;?/gi, '[SQL_QUERY]');
-    
-    // Truncate long inputs
-    if (sanitized.length > 2000) {
-      sanitized = sanitized.substring(0, 2000) + '[TRUNCATED]';
+    // Truncate if too long
+    if (sanitized.length > 150) {
+      sanitized = sanitized.substring(0, 150) + '...';
     }
     
     return sanitized;
   }
-  
-  private static sanitizeUserAgent(userAgent: string): string {
-    // Keep only basic browser/OS info, remove detailed version numbers that could indicate vulnerabilities
-    return userAgent.substring(0, 200).replace(/[\\r\\n\\x00-\\x1f]/g, '');
+
+  private static generateErrorCode(errorType: string, message: string): string {
+    const typeCode = errorType.replace('Error', '').toUpperCase();
+    const hash = crypto.createHash('md5').update(message).digest('hex').substring(0, 8);
+    return `${typeCode}_${hash}`;
   }
-  
+
+  private static generateCorrelationId(): string {
+    return `err_${Date.now()}_${crypto.randomBytes(8).toString('hex')}`;
+  }
+
+  private static logErrorForAudit(error: Error, context: RequestContext, correlationId: string): void {
+    // Sanitize context for logging
+    const sanitizedContext = this.sanitizeContext(context);
+    
+    logger.error('Error occurred', {
+      correlationId,
+      errorType: error.constructor.name,
+      message: this.sanitizeMessage(error.message),
+      stack: error.stack ? this.sanitizeStackTrace(error.stack) : undefined,
+      context: sanitizedContext,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  private static sanitizeStackTrace(stack: string): string {
+    // Remove sensitive file paths and keep only relevant stack information
+    return stack
+      .split('\n')
+      .slice(0, 10) // Limit stack trace length
+      .map(line => {
+        // Remove absolute paths, keep only relative paths and function names
+        return line.replace(/\/[^\/\s]*\/[^\/\s]*\/[^\/\s]*/g, '[PATH]');
+      })
+      .join('\n');
+  }
+
+  private static sanitizeContext(context: RequestContext): Partial<RequestContext> {
+    return {
+      endpoint: context.endpoint?.substring(0, 100),
+      method: context.method,
+      userId: context.userId ? `user_${crypto.createHash('md5').update(context.userId).digest('hex').substring(0, 8)}` : undefined,
+      ip: context.ip ? this.obfuscateIP(context.ip) : 'unknown',
+      userAgent: context.userAgent?.substring(0, 100),
+      sessionId: context.sessionId ? `session_${crypto.createHash('md5').update(context.sessionId).digest('hex').substring(0, 8)}` : undefined
+    };
+  }
+
+  private static obfuscateIP(ip: string): string {
+    // Obfuscate last octet of IPv4 or last groups of IPv6
+    if (ip.includes('.')) {
+      const parts = ip.split('.');
+      if (parts.length === 4) {
+        return `${parts[0]}.${parts[1]}.${parts[2]}.xxx`;
+      }
+    }
+    return ip.substring(0, ip.length - 4) + 'xxxx';
+  }
+
   static sanitizeHeaders(headers: Record<string, any>): Record<string, any> {
     const sanitized: Record<string, any> = {};
-    const sensitiveHeaders = ['authorization', 'x-api-key', 'cookie', 'x-auth-token'];
+    const sensitiveHeaders = [
+      'authorization',
+      'cookie',
+      'x-api-key',
+      'x-auth-token',
+      'x-csrf-token',
+      'x-session-id'
+    ];
     
     for (const [key, value] of Object.entries(headers)) {
       if (sensitiveHeaders.includes(key.toLowerCase())) {
@@ -217,4 +253,157 @@ export class ErrorSanitizer {
     
     return sanitized;
   }
-}\n\n// Log injection prevention utility\nexport class LogSanitizer {\n  private static readonly DANGEROUS_PATTERNS = [\n    /\\r\\n|\\r|\\n/g, // CRLF injection\n    /\\x1b\\[[0-9;]*m/g, // ANSI escape sequences\n    /[\\x00-\\x1f\\x7f]/g, // Control characters\n    /<script[^>]*>.*?<\\/script>/gi, // Script tags\n    /javascript:/gi, // JavaScript protocol\n    /data:.*base64/gi, // Data URIs\n    /%[0-9a-f]{2}/gi, // URL encoded characters that could be malicious\n    /\\\\[\"'`]/g // Escaped quotes that could break log parsing\n  ];\n  \n  static sanitizeForLogging(input: string): string {\n    let sanitized = String(input);\n    \n    // Remove dangerous patterns\n    this.DANGEROUS_PATTERNS.forEach(pattern => {\n      sanitized = sanitized.replace(pattern, '[FILTERED]');\n    });\n    \n    // Truncate long inputs\n    if (sanitized.length > 1000) {\n      sanitized = sanitized.substring(0, 1000) + '[TRUNCATED]';\n    }\n    \n    return sanitized;\n  }\n  \n  static sanitizeObject(obj: any, maxDepth: number = 3): any {\n    if (maxDepth <= 0) {\n      return '[MAX_DEPTH_REACHED]';\n    }\n    \n    if (typeof obj === 'string') {\n      return this.sanitizeForLogging(obj);\n    }\n    \n    if (typeof obj !== 'object' || obj === null) {\n      return obj;\n    }\n    \n    if (Array.isArray(obj)) {\n      return obj.slice(0, 100).map(item => this.sanitizeObject(item, maxDepth - 1));\n    }\n    \n    const sanitized: Record<string, any> = {};\n    const entries = Object.entries(obj).slice(0, 50); // Limit object size\n    \n    for (const [key, value] of entries) {\n      const sanitizedKey = this.sanitizeForLogging(key);\n      sanitized[sanitizedKey] = this.sanitizeObject(value, maxDepth - 1);\n    }\n    \n    return sanitized;\n  }\n}\n\n// Secure error handling middleware\nexport function errorSanitizationMiddleware() {\n  return (error: Error, req: any, res: any, next: any): void => {\n    const context: RequestContext = {\n      correlationId: req.headers['x-correlation-id'] || req.correlationId,\n      endpoint: req.path || req.url,\n      method: req.method,\n      userId: req.user?.id,\n      ip: req.ip || req.connection?.remoteAddress || 'unknown',\n      userAgent: req.headers['user-agent'],\n      sessionId: req.sessionID\n    };\n    \n    const sanitizedError = ErrorSanitizer.sanitizeError(error, context);\n    \n    // Determine appropriate HTTP status code\n    let statusCode = 500;\n    if (error instanceof ValidationError) statusCode = 400;\n    if (error instanceof AuthenticationError) statusCode = 401;\n    if (error instanceof AuthorizationError) statusCode = 403;\n    if (error instanceof RateLimitError) statusCode = 429;\n    if (error.message.includes('not found')) statusCode = 404;\n    if (error.message.includes('conflict')) statusCode = 409;\n    \n    // Add security headers\n    res.setHeader('X-Content-Type-Options', 'nosniff');\n    res.setHeader('X-Frame-Options', 'DENY');\n    res.setHeader('X-XSS-Protection', '1; mode=block');\n    \n    res.status(statusCode).json(sanitizedError);\n  };\n}\n\n// Utility for safe error creation with automatic sanitization\nexport function createSafeError(\n  message: string,\n  type: 'validation' | 'authentication' | 'authorization' | 'rateLimit' | 'external' | 'internal' = 'internal',\n  details?: any\n): Error {\n  const sanitizedMessage = LogSanitizer.sanitizeForLogging(message);\n  const sanitizedDetails = details ? LogSanitizer.sanitizeObject(details) : undefined;\n  \n  switch (type) {\n    case 'validation':\n      return new ValidationError(sanitizedMessage, sanitizedDetails);\n    case 'authentication':\n      return new AuthenticationError(sanitizedMessage, sanitizedDetails);\n    case 'authorization':\n      return new AuthorizationError(sanitizedMessage, sanitizedDetails);\n    case 'rateLimit':\n      return new RateLimitError(sanitizedMessage, sanitizedDetails);\n    case 'external':\n      return new ExternalApiError(sanitizedMessage, sanitizedDetails);\n    default:\n      return new Error(sanitizedMessage);\n  }\n}\n\n// Development mode error handler with enhanced security\nexport function developmentErrorHandler() {\n  return (error: Error, req: any, res: any, next: any): void => {\n    const isDevelopment = process.env.NODE_ENV === 'development';\n    \n    const context: RequestContext = {\n      correlationId: req.headers['x-correlation-id'] || req.correlationId,\n      endpoint: req.path || req.url,\n      method: req.method,\n      userId: req.user?.id,\n      ip: req.ip || req.connection?.remoteAddress || 'unknown',\n      userAgent: req.headers['user-agent'],\n      sessionId: req.sessionID\n    };\n    \n    // Always sanitize for production\n    const sanitizedError = ErrorSanitizer.sanitizeError(error, context);\n    \n    // In development, add additional debug info but still sanitized\n    if (isDevelopment) {\n      const debugInfo = {\n        ...sanitizedError,\n        debug: {\n          errorType: error.constructor.name,\n          sanitizedStack: error.stack ? LogSanitizer.sanitizeForLogging(error.stack) : undefined,\n          context: LogSanitizer.sanitizeObject(context),\n          timestamp: new Date().toISOString()\n        }\n      };\n      \n      res.status(500).json(debugInfo);\n    } else {\n      res.status(500).json(sanitizedError);\n    }\n  };\n}"
+}
+
+// Log injection prevention utility
+export class LogSanitizer {
+  private static readonly DANGEROUS_PATTERNS = [
+    /\r\n|\r|\n/g, // CRLF injection
+    /\x1b\[[0-9;]*m/g, // ANSI escape sequences
+    /[\x00-\x1f\x7f]/g, // Control characters
+    /<script[^>]*>.*?<\/script>/gi, // Script tags
+    /javascript:/gi, // JavaScript protocol
+    /data:.*base64/gi, // Data URIs
+    /%[0-9a-f]{2}/gi, // URL encoded characters that could be malicious
+    /\\["'`]/g // Escaped quotes that could break log parsing
+  ];
+  
+  static sanitizeForLogging(input: string): string {
+    let sanitized = String(input);
+    
+    // Remove dangerous patterns
+    this.DANGEROUS_PATTERNS.forEach(pattern => {
+      sanitized = sanitized.replace(pattern, '[FILTERED]');
+    });
+    
+    // Truncate long inputs
+    if (sanitized.length > 1000) {
+      sanitized = sanitized.substring(0, 1000) + '[TRUNCATED]';
+    }
+    
+    return sanitized;
+  }
+  
+  static sanitizeObject(obj: any, maxDepth: number = 3): any {
+    if (maxDepth <= 0) {
+      return '[MAX_DEPTH_REACHED]';
+    }
+    
+    if (typeof obj === 'string') {
+      return this.sanitizeForLogging(obj);
+    }
+    
+    if (typeof obj !== 'object' || obj === null) {
+      return obj;
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.slice(0, 100).map(item => this.sanitizeObject(item, maxDepth - 1));
+    }
+    
+    const sanitized: Record<string, any> = {};
+    const entries = Object.entries(obj).slice(0, 50); // Limit object size
+    
+    for (const [key, value] of entries) {
+      const sanitizedKey = this.sanitizeForLogging(key);
+      sanitized[sanitizedKey] = this.sanitizeObject(value, maxDepth - 1);
+    }
+    
+    return sanitized;
+  }
+}
+
+// Secure error handling middleware
+export function errorSanitizationMiddleware() {
+  return (error: Error, req: any, res: any, next: any): void => {
+    const context: RequestContext = {
+      correlationId: req.headers['x-correlation-id'] || req.correlationId,
+      endpoint: req.path || req.url,
+      method: req.method,
+      userId: req.user?.id,
+      ip: req.ip || req.connection?.remoteAddress || 'unknown',
+      userAgent: req.headers['user-agent'],
+      sessionId: req.sessionID
+    };
+    
+    const sanitizedError = ErrorSanitizer.sanitizeError(error, context);
+    
+    // Determine appropriate HTTP status code
+    let statusCode = 500;
+    if (error instanceof ValidationError) statusCode = 400;
+    if (error instanceof AuthenticationError) statusCode = 401;
+    if (error instanceof AuthorizationError) statusCode = 403;
+    if (error instanceof RateLimitError) statusCode = 429;
+    if (error.message.includes('not found')) statusCode = 404;
+    if (error.message.includes('conflict')) statusCode = 409;
+    
+    // Add security headers
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    
+    res.status(statusCode).json(sanitizedError);
+  };
+}
+
+// Utility for safe error creation with automatic sanitization
+export function createSafeError(
+  message: string,
+  type: 'validation' | 'authentication' | 'authorization' | 'rateLimit' | 'external' | 'internal' = 'internal',
+  details?: any
+): Error {
+  const sanitizedMessage = LogSanitizer.sanitizeForLogging(message);
+  const sanitizedDetails = details ? LogSanitizer.sanitizeObject(details) : undefined;
+  
+  switch (type) {
+    case 'validation':
+      return new ValidationError(sanitizedMessage, sanitizedDetails);
+    case 'authentication':
+      return new AuthenticationError(sanitizedMessage, sanitizedDetails);
+    case 'authorization':
+      return new AuthorizationError(sanitizedMessage, sanitizedDetails);
+    case 'rateLimit':
+      return new RateLimitError(sanitizedMessage, sanitizedDetails);
+    case 'external':
+      return new ExternalApiError(sanitizedMessage, sanitizedDetails);
+    default:
+      return new Error(sanitizedMessage);
+  }
+}
+
+// Development mode error handler with enhanced security
+export function developmentErrorHandler() {
+  return (error: Error, req: any, res: any, next: any): void => {
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    const context: RequestContext = {
+      correlationId: req.headers['x-correlation-id'] || req.correlationId,
+      endpoint: req.path || req.url,
+      method: req.method,
+      userId: req.user?.id,
+      ip: req.ip || req.connection?.remoteAddress || 'unknown',
+      userAgent: req.headers['user-agent'],
+      sessionId: req.sessionID
+    };
+    
+    // Always sanitize for production
+    const sanitizedError = ErrorSanitizer.sanitizeError(error, context);
+    
+    // In development, add additional debug info but still sanitized
+    if (isDevelopment) {
+      const debugInfo = {
+        ...sanitizedError,
+        debug: {
+          errorType: error.constructor.name,
+          sanitizedStack: error.stack ? LogSanitizer.sanitizeForLogging(error.stack) : undefined,
+          context: LogSanitizer.sanitizeObject(context),
+          timestamp: new Date().toISOString()
+        }
+      };
+      
+      res.status(500).json(debugInfo);
+    } else {
+      res.status(500).json(sanitizedError);
+    }
+  };
+}

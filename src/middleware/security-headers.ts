@@ -4,4 +4,495 @@
  * Phase 2 Security Enhancement Implementation
  */
 
-import helmet from 'helmet';\nimport csrf from 'csurf';\nimport logger from '../lib/logger.js';\n\n// Security configuration interface\ninterface SecurityConfig {\n  environment: 'development' | 'production' | 'test';\n  allowedOrigins: string[];\n  trustedDomains: string[];\n  cspReportUri?: string;\n  enableCSRF: boolean;\n}\n\n// Enterprise security headers manager\nexport class SecurityHeadersManager {\n  private config: SecurityConfig;\n  private helmetInstance: any;\n  private csrfProtection: any;\n  \n  constructor(config?: Partial<SecurityConfig>) {\n    this.config = {\n      environment: (process.env.NODE_ENV as any) || 'development',\n      allowedOrigins: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],\n      trustedDomains: process.env.TRUSTED_DOMAINS?.split(',') || ['make.com', 'eu1.make.com'],\n      cspReportUri: process.env.CSP_REPORT_URI,\n      enableCSRF: process.env.ENABLE_CSRF !== 'false',\n      ...config\n    };\n    \n    this.setupHelmet();\n    this.setupCSRF();\n    \n    logger.info('Security headers manager initialized', {\n      environment: this.config.environment,\n      allowedOrigins: this.config.allowedOrigins.length,\n      trustedDomains: this.config.trustedDomains.length,\n      csrfEnabled: this.config.enableCSRF\n    });\n  }\n  \n  private setupHelmet(): void {\n    this.helmetInstance = helmet({\n      // Content Security Policy - Strict enterprise configuration\n      contentSecurityPolicy: {\n        directives: {\n          defaultSrc: [\"'self'\"],\n          styleSrc: [\n            \"'self'\",\n            \"'unsafe-inline'\", // Required for some admin interfaces\n            \"https:\"\n          ],\n          scriptSrc: [\n            \"'self'\",\n            \"'strict-dynamic'\",\n            ...(this.config.environment === 'development' ? [\"'unsafe-eval'\"] : [])\n          ],\n          imgSrc: [\n            \"'self'\",\n            \"data:\",\n            \"https:\",\n            ...this.config.trustedDomains.map(domain => `https://*.${domain}`)\n          ],\n          connectSrc: [\n            \"'self'\",\n            \"https://api.make.com\",\n            \"https://eu1.make.com\",\n            \"https://us1.make.com\",\n            ...this.config.trustedDomains.map(domain => `https://*.${domain}`),\n            ...(this.config.environment === 'development' ? ['ws:', 'wss:'] : [])\n          ],\n          fontSrc: [\n            \"'self'\",\n            \"https:\",\n            \"data:\"\n          ],\n          objectSrc: [\"'none'\"],\n          mediaSrc: [\"'self'\"],\n          frameSrc: [\"'none'\"],\n          childSrc: [\"'none'\"],\n          workerSrc: [\"'self'\"],\n          frameAncestors: [\"'none'\"],\n          formAction: [\"'self'\"],\n          baseUri: [\"'self'\"],\n          upgradeInsecureRequests: this.config.environment === 'production' ? [] : undefined\n        },\n        reportOnly: this.config.environment === 'development',\n        ...(this.config.cspReportUri && {\n          reportUri: this.config.cspReportUri\n        })\n      },\n      \n      // HTTP Strict Transport Security\n      hsts: {\n        maxAge: 31536000, // 1 year\n        includeSubDomains: true,\n        preload: true\n      },\n      \n      // Prevent clickjacking\n      frameguard: {\n        action: 'deny'\n      },\n      \n      // Prevent MIME type sniffing\n      noSniff: true,\n      \n      // XSS Protection\n      xssFilter: true,\n      \n      // Referrer Policy - Strict privacy protection\n      referrerPolicy: {\n        policy: 'strict-origin-when-cross-origin'\n      },\n      \n      // Cross-Origin Policies\n      crossOriginOpenerPolicy: {\n        policy: 'same-origin'\n      },\n      \n      crossOriginResourcePolicy: {\n        policy: 'same-origin'\n      },\n      \n      crossOriginEmbedderPolicy: this.config.environment === 'production' ? {\n        policy: 'require-corp'\n      } : false,\n      \n      // Hide X-Powered-By header\n      hidePoweredBy: true,\n      \n      // DNS Prefetch Control\n      dnsPrefetchControl: {\n        allow: false\n      },\n      \n      // Download Options (IE8+)\n      ieNoOpen: true,\n      \n      // Origin Agent Cluster\n      originAgentCluster: true,\n      \n      // Permissions Policy (formerly Feature Policy)\n      permissionsPolicy: {\n        camera: [],\n        microphone: [],\n        geolocation: [],\n        payment: [],\n        usb: [],\n        bluetooth: [],\n        magnetometer: [],\n        accelerometer: [],\n        gyroscope: [],\n        ambient_light_sensor: []\n      }\n    });\n  }\n  \n  private setupCSRF(): void {\n    if (this.config.enableCSRF) {\n      this.csrfProtection = csrf({\n        cookie: {\n          httpOnly: true,\n          secure: this.config.environment === 'production',\n          sameSite: 'strict',\n          maxAge: 3600000, // 1 hour\n          signed: true\n        },\n        sessionKey: 'session',\n        value: (req: any) => {\n          // Extract CSRF token from multiple possible locations\n          return req.body._csrf ||\n                 req.query._csrf ||\n                 req.headers['csrf-token'] ||\n                 req.headers['x-csrf-token'] ||\n                 req.headers['x-xsrf-token'];\n        },\n        ignoreMethods: ['GET', 'HEAD', 'OPTIONS'],\n        skip: (req: any) => {\n          // Skip CSRF for API endpoints that use other authentication\n          const isApiEndpoint = req.path.startsWith('/api/');\n          const hasApiAuth = req.headers['x-api-key'] || req.headers['authorization'];\n          return isApiEndpoint && hasApiAuth;\n        }\n      });\n    }\n  }\n  \n  // Main security headers middleware\n  public getSecurityMiddleware() {\n    return (req: any, res: any, next: any) => {\n      // Apply Helmet security headers\n      this.helmetInstance(req, res, (err: any) => {\n        if (err) {\n          logger.error('Helmet middleware error', { error: err.message });\n          return next(err);\n        }\n        \n        // Apply additional custom security headers\n        this.applyCustomSecurityHeaders(req, res);\n        \n        next();\n      });\n    };\n  }\n  \n  // CSRF protection middleware\n  public getCSRFMiddleware() {\n    if (!this.config.enableCSRF) {\n      return (req: any, res: any, next: any) => next();\n    }\n    \n    return (req: any, res: any, next: any) => {\n      this.csrfProtection(req, res, (err: any) => {\n        if (err) {\n          logger.warn('CSRF protection triggered', {\n            ip: req.ip,\n            userAgent: req.headers['user-agent']?.substring(0, 100),\n            endpoint: req.path,\n            method: req.method\n          });\n          \n          return res.status(403).json({\n            error: {\n              code: 'CSRF_TOKEN_INVALID',\n              message: 'Invalid CSRF token. Please refresh the page and try again.'\n            }\n          });\n        }\n        \n        // Add CSRF token to response for client use\n        if (req.csrfToken) {\n          res.locals.csrfToken = req.csrfToken();\n        }\n        \n        next();\n      });\n    };\n  }\n  \n  private applyCustomSecurityHeaders(req: any, res: any): void {\n    // API versioning header\n    res.setHeader('X-API-Version', '1.0');\n    \n    // Security policy enforcement\n    res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');\n    res.setHeader('X-Download-Options', 'noopen');\n    res.setHeader('X-Content-Type-Options', 'nosniff');\n    \n    // Rate limiting information (will be set by rate limiting middleware)\n    if (req.rateLimit) {\n      res.setHeader('X-RateLimit-Limit', req.rateLimit.limit || 'unknown');\n      res.setHeader('X-RateLimit-Remaining', req.rateLimit.remaining || 'unknown');\n      res.setHeader('X-RateLimit-Reset', req.rateLimit.reset || 'unknown');\n    }\n    \n    // CORS security for production\n    if (this.config.environment === 'production') {\n      const origin = req.headers.origin;\n      if (origin && this.config.allowedOrigins.includes(origin)) {\n        res.setHeader('Access-Control-Allow-Origin', origin);\n      } else {\n        res.setHeader('Access-Control-Allow-Origin', 'null');\n      }\n      \n      res.setHeader('Access-Control-Allow-Credentials', 'true');\n      res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');\n      res.setHeader('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization,X-API-Key,X-CSRF-Token');\n    } else {\n      // More permissive CORS for development\n      res.setHeader('Access-Control-Allow-Origin', '*');\n      res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');\n      res.setHeader('Access-Control-Allow-Headers', '*');\n    }\n    \n    // Security audit headers\n    res.setHeader('X-Security-Enhanced', 'true');\n    res.setHeader('X-Security-Version', '2.0');\n    \n    // Cache control for sensitive endpoints\n    if (this.isSensitiveEndpoint(req.path)) {\n      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');\n      res.setHeader('Pragma', 'no-cache');\n      res.setHeader('Expires', '0');\n    }\n  }\n  \n  private isSensitiveEndpoint(path: string): boolean {\n    const sensitivePatterns = [\n      '/api/auth',\n      '/api/users',\n      '/api/billing',\n      '/api/connections',\n      '/api/credentials',\n      '/api/secrets',\n      '/api/permissions'\n    ];\n    \n    return sensitivePatterns.some(pattern => path.startsWith(pattern));\n  }\n  \n  // Content type validation middleware\n  public getContentTypeValidation() {\n    return (req: any, res: any, next: any) => {\n      // Only validate content type for requests with body\n      if (['POST', 'PUT', 'PATCH'].includes(req.method)) {\n        const contentType = req.headers['content-type'];\n        \n        // Allow common content types\n        const allowedTypes = [\n          'application/json',\n          'application/x-www-form-urlencoded',\n          'multipart/form-data',\n          'text/plain'\n        ];\n        \n        if (contentType && !allowedTypes.some(type => contentType.includes(type))) {\n          logger.warn('Invalid content type detected', {\n            contentType,\n            ip: req.ip,\n            endpoint: req.path,\n            method: req.method\n          });\n          \n          return res.status(415).json({\n            error: {\n              code: 'UNSUPPORTED_MEDIA_TYPE',\n              message: 'Content type not supported',\n              allowedTypes\n            }\n          });\n        }\n      }\n      \n      next();\n    };\n  }\n  \n  // Request size limiting middleware\n  public getRequestSizeLimiter() {\n    return (req: any, res: any, next: any) => {\n      const maxSize = 50 * 1024 * 1024; // 50MB max request size\n      const contentLength = parseInt(req.headers['content-length'] || '0', 10);\n      \n      if (contentLength > maxSize) {\n        logger.warn('Request size limit exceeded', {\n          contentLength,\n          maxSize,\n          ip: req.ip,\n          endpoint: req.path\n        });\n        \n        return res.status(413).json({\n          error: {\n            code: 'PAYLOAD_TOO_LARGE',\n            message: 'Request payload too large',\n            maxSize: `${maxSize / (1024 * 1024)}MB`\n          }\n        });\n      }\n      \n      next();\n    };\n  }\n  \n  // Security audit middleware\n  public getSecurityAuditMiddleware() {\n    return (req: any, res: any, next: any) => {\n      const startTime = Date.now();\n      \n      // Log security-relevant requests\n      if (this.isSecurityRelevantRequest(req)) {\n        logger.info('Security audit log', {\n          correlationId: req.headers['x-correlation-id'] || 'unknown',\n          method: req.method,\n          endpoint: req.path,\n          ip: this.hashIP(req.ip || 'unknown'),\n          userAgent: req.headers['user-agent']?.substring(0, 200),\n          userId: req.user?.id,\n          sessionId: req.sessionID,\n          timestamp: new Date().toISOString(),\n          securityHeaders: {\n            hasCSRF: !!req.headers['x-csrf-token'],\n            hasAuth: !!(req.headers['authorization'] || req.headers['x-api-key']),\n            contentType: req.headers['content-type'],\n            origin: req.headers['origin']\n          }\n        });\n      }\n      \n      // Track response time for security monitoring\n      res.on('finish', () => {\n        const responseTime = Date.now() - startTime;\n        \n        // Log slow responses as potential security indicators\n        if (responseTime > 5000) {\n          logger.warn('Slow response detected', {\n            responseTime,\n            endpoint: req.path,\n            method: req.method,\n            statusCode: res.statusCode\n          });\n        }\n      });\n      \n      next();\n    };\n  }\n  \n  private isSecurityRelevantRequest(req: any): boolean {\n    const securityEndpoints = [\n      '/api/auth',\n      '/api/users',\n      '/api/permissions',\n      '/api/billing',\n      '/api/connections',\n      '/api/credentials'\n    ];\n    \n    return securityEndpoints.some(endpoint => req.path.startsWith(endpoint)) ||\n           req.method !== 'GET' ||\n           !!req.headers['authorization'] ||\n           !!req.headers['x-api-key'];\n  }\n  \n  private hashIP(ip: string): string {\n    const crypto = require('crypto');\n    return crypto.createHash('sha256').update(ip + (process.env.IP_HASH_SALT || 'default-salt')).digest('hex').substring(0, 16);\n  }\n  \n  public getConfig(): SecurityConfig {\n    return { ...this.config };\n  }\n  \n  public updateConfig(newConfig: Partial<SecurityConfig>): void {\n    this.config = { ...this.config, ...newConfig };\n    this.setupHelmet();\n    this.setupCSRF();\n    \n    logger.info('Security configuration updated', {\n      environment: this.config.environment,\n      allowedOrigins: this.config.allowedOrigins.length,\n      csrfEnabled: this.config.enableCSRF\n    });\n  }\n}\n\n// Singleton instance\nexport const securityHeadersManager = new SecurityHeadersManager();\n\n// Middleware factory functions\nexport function createSecurityMiddleware(config?: Partial<SecurityConfig>) {\n  const manager = config ? new SecurityHeadersManager(config) : securityHeadersManager;\n  return manager.getSecurityMiddleware();\n}\n\nexport function createCSRFMiddleware(config?: Partial<SecurityConfig>) {\n  const manager = config ? new SecurityHeadersManager(config) : securityHeadersManager;\n  return manager.getCSRFMiddleware();\n}\n\nexport function createContentTypeValidation() {\n  return securityHeadersManager.getContentTypeValidation();\n}\n\nexport function createRequestSizeLimiter() {\n  return securityHeadersManager.getRequestSizeLimiter();\n}\n\nexport function createSecurityAuditMiddleware() {\n  return securityHeadersManager.getSecurityAuditMiddleware();\n}\n\n// Utility for checking if request passes security requirements\nexport function validateSecurityHeaders(req: any): { valid: boolean; issues: string[] } {\n  const issues: string[] = [];\n  \n  // Check for required security headers in sensitive endpoints\n  if (securityHeadersManager['isSensitiveEndpoint'](req.path)) {\n    if (!req.headers['x-csrf-token'] && ['POST', 'PUT', 'DELETE'].includes(req.method)) {\n      issues.push('Missing CSRF token for sensitive endpoint');\n    }\n    \n    if (!req.headers['authorization'] && !req.headers['x-api-key']) {\n      issues.push('Missing authentication for sensitive endpoint');\n    }\n  }\n  \n  return {\n    valid: issues.length === 0,\n    issues\n  };\n}"
+import helmet from 'helmet';
+import csrf from 'csurf';
+import logger from '../lib/logger.js';
+
+// Security configuration interface
+interface SecurityConfig {
+  environment: 'development' | 'production' | 'test';
+  allowedOrigins: string[];
+  trustedDomains: string[];
+  cspReportUri?: string;
+  enableCSRF: boolean;
+}
+
+// Enterprise security headers manager
+export class SecurityHeadersManager {
+  private config: SecurityConfig;
+  private helmetInstance: any;
+  private csrfProtection: any;
+  
+  constructor(config?: Partial<SecurityConfig>) {
+    this.config = {
+      environment: (process.env.NODE_ENV as any) || 'development',
+      allowedOrigins: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+      trustedDomains: process.env.TRUSTED_DOMAINS?.split(',') || ['make.com', 'eu1.make.com'],
+      cspReportUri: process.env.CSP_REPORT_URI,
+      enableCSRF: process.env.ENABLE_CSRF !== 'false',
+      ...config
+    };
+    
+    this.setupHelmet();
+    this.setupCSRF();
+    
+    logger.info('Security headers manager initialized', {
+      environment: this.config.environment,
+      allowedOrigins: this.config.allowedOrigins.length,
+      trustedDomains: this.config.trustedDomains.length,
+      csrfEnabled: this.config.enableCSRF
+    });
+  }
+  
+  private setupHelmet(): void {
+    this.helmetInstance = helmet({
+      // Content Security Policy - Strict enterprise configuration
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'", // Required for some admin interfaces
+            "https:"
+          ],
+          scriptSrc: [
+            "'self'",
+            "'strict-dynamic'",
+            ...(this.config.environment === 'development' ? ["'unsafe-eval'"] : [])
+          ],
+          imgSrc: [
+            "'self'",
+            "data:",
+            "https:",
+            ...this.config.trustedDomains.map(domain => `https://*.${domain}`)
+          ],
+          connectSrc: [
+            "'self'",
+            "https://api.make.com",
+            "https://eu1.make.com",
+            "https://us1.make.com",
+            ...this.config.trustedDomains.map(domain => `https://*.${domain}`),
+            ...(this.config.environment === 'development' ? ['ws:', 'wss:'] : [])
+          ],
+          fontSrc: [
+            "'self'",
+            "https:",
+            "data:"
+          ],
+          objectSrc: ["'none'"],
+          mediaSrc: ["'self'"],
+          frameSrc: ["'none'"],
+          childSrc: ["'none'"],
+          workerSrc: ["'self'"],
+          frameAncestors: ["'none'"],
+          formAction: ["'self'"],
+          baseUri: ["'self'"],
+          upgradeInsecureRequests: this.config.environment === 'production' ? [] : undefined
+        },
+        reportOnly: this.config.environment === 'development',
+        ...(this.config.cspReportUri && {
+          reportUri: this.config.cspReportUri
+        })
+      },
+      
+      // HTTP Strict Transport Security
+      hsts: {
+        maxAge: 31536000, // 1 year
+        includeSubDomains: true,
+        preload: true
+      },
+      
+      // Prevent clickjacking
+      frameguard: {
+        action: 'deny'
+      },
+      
+      // Prevent MIME type sniffing
+      noSniff: true,
+      
+      // XSS Protection
+      xssFilter: true,
+      
+      // Referrer Policy - Strict privacy protection
+      referrerPolicy: {
+        policy: 'strict-origin-when-cross-origin'
+      },
+      
+      // Cross-Origin Policies
+      crossOriginOpenerPolicy: {
+        policy: 'same-origin'
+      },
+      
+      crossOriginResourcePolicy: {
+        policy: 'same-origin'
+      },
+      
+      crossOriginEmbedderPolicy: this.config.environment === 'production' ? {
+        policy: 'require-corp'
+      } : false,
+      
+      // Hide X-Powered-By header
+      hidePoweredBy: true,
+      
+      // DNS Prefetch Control
+      dnsPrefetchControl: {
+        allow: false
+      },
+      
+      // Download Options (IE8+)
+      ieNoOpen: true,
+      
+      // Origin Agent Cluster
+      originAgentCluster: true,
+      
+      // Permissions Policy (formerly Feature Policy)
+      permissionsPolicy: {
+        camera: [],
+        microphone: [],
+        geolocation: [],
+        payment: [],
+        usb: [],
+        bluetooth: [],
+        magnetometer: [],
+        accelerometer: [],
+        gyroscope: [],
+        ambient_light_sensor: []
+      }
+    });
+  }
+  
+  private setupCSRF(): void {
+    if (this.config.enableCSRF) {
+      this.csrfProtection = csrf({
+        cookie: {
+          httpOnly: true,
+          secure: this.config.environment === 'production',
+          sameSite: 'strict',
+          maxAge: 3600000, // 1 hour
+          signed: true
+        },
+        sessionKey: 'session',
+        value: (req: any) => {
+          // Extract CSRF token from multiple possible locations
+          return req.body._csrf ||
+                 req.query._csrf ||
+                 req.headers['csrf-token'] ||
+                 req.headers['x-csrf-token'] ||
+                 req.headers['x-xsrf-token'];
+        },
+        ignoreMethods: ['GET', 'HEAD', 'OPTIONS'],
+        skip: (req: any) => {
+          // Skip CSRF for API endpoints that use other authentication
+          const isApiEndpoint = req.path.startsWith('/api/');
+          const hasApiAuth = req.headers['x-api-key'] || req.headers['authorization'];
+          return isApiEndpoint && hasApiAuth;
+        }
+      });
+    }
+  }
+  
+  // Main security headers middleware
+  public getSecurityMiddleware() {
+    return (req: any, res: any, next: any) => {
+      // Apply Helmet security headers
+      this.helmetInstance(req, res, (err: any) => {
+        if (err) {
+          logger.error('Helmet middleware error', { error: err.message });
+          return next(err);
+        }
+        
+        // Apply additional custom security headers
+        this.applyCustomSecurityHeaders(req, res);
+        
+        next();
+      });
+    };
+  }
+  
+  // CSRF protection middleware
+  public getCSRFMiddleware() {
+    if (!this.config.enableCSRF) {
+      return (req: any, res: any, next: any) => next();
+    }
+    
+    return (req: any, res: any, next: any) => {
+      this.csrfProtection(req, res, (err: any) => {
+        if (err) {
+          logger.warn('CSRF protection triggered', {
+            ip: req.ip,
+            userAgent: req.headers['user-agent']?.substring(0, 100),
+            endpoint: req.path,
+            method: req.method
+          });
+          
+          return res.status(403).json({
+            error: {
+              code: 'CSRF_TOKEN_INVALID',
+              message: 'Invalid CSRF token. Please refresh the page and try again.'
+            }
+          });
+        }
+        
+        // Add CSRF token to response for client use
+        if (req.csrfToken) {
+          res.locals.csrfToken = req.csrfToken();
+        }
+        
+        next();
+      });
+    };
+  }
+  
+  private applyCustomSecurityHeaders(req: any, res: any): void {
+    // API versioning header
+    res.setHeader('X-API-Version', '1.0');
+    
+    // Security policy enforcement
+    res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
+    res.setHeader('X-Download-Options', 'noopen');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    
+    // Rate limiting information (will be set by rate limiting middleware)
+    if (req.rateLimit) {
+      res.setHeader('X-RateLimit-Limit', req.rateLimit.limit || 'unknown');
+      res.setHeader('X-RateLimit-Remaining', req.rateLimit.remaining || 'unknown');
+      res.setHeader('X-RateLimit-Reset', req.rateLimit.reset || 'unknown');
+    }
+    
+    // CORS security for production
+    if (this.config.environment === 'production') {
+      const origin = req.headers.origin;
+      if (origin && this.config.allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      } else {
+        res.setHeader('Access-Control-Allow-Origin', 'null');
+      }
+      
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+      res.setHeader('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization,X-API-Key,X-CSRF-Token');
+    } else {
+      // More permissive CORS for development
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', '*');
+    }
+    
+    // Security audit headers
+    res.setHeader('X-Security-Enhanced', 'true');
+    res.setHeader('X-Security-Version', '2.0');
+    
+    // Cache control for sensitive endpoints
+    if (this.isSensitiveEndpoint(req.path)) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+  
+  private isSensitiveEndpoint(path: string): boolean {
+    const sensitivePatterns = [
+      '/api/auth',
+      '/api/users',
+      '/api/billing',
+      '/api/connections',
+      '/api/credentials',
+      '/api/secrets',
+      '/api/permissions'
+    ];
+    
+    return sensitivePatterns.some(pattern => path.startsWith(pattern));
+  }
+  
+  // Content type validation middleware
+  public getContentTypeValidation() {
+    return (req: any, res: any, next: any) => {
+      // Only validate content type for requests with body
+      if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+        const contentType = req.headers['content-type'];
+        
+        // Allow common content types
+        const allowedTypes = [
+          'application/json',
+          'application/x-www-form-urlencoded',
+          'multipart/form-data',
+          'text/plain'
+        ];
+        
+        if (contentType && !allowedTypes.some(type => contentType.includes(type))) {
+          logger.warn('Invalid content type detected', {
+            contentType,
+            ip: req.ip,
+            endpoint: req.path,
+            method: req.method
+          });
+          
+          return res.status(415).json({
+            error: {
+              code: 'UNSUPPORTED_MEDIA_TYPE',
+              message: 'Content type not supported',
+              allowedTypes
+            }
+          });
+        }
+      }
+      
+      next();
+    };
+  }
+  
+  // Request size limiting middleware
+  public getRequestSizeLimiter() {
+    return (req: any, res: any, next: any) => {
+      const maxSize = 50 * 1024 * 1024; // 50MB max request size
+      const contentLength = parseInt(req.headers['content-length'] || '0', 10);
+      
+      if (contentLength > maxSize) {
+        logger.warn('Request size limit exceeded', {
+          contentLength,
+          maxSize,
+          ip: req.ip,
+          endpoint: req.path
+        });
+        
+        return res.status(413).json({
+          error: {
+            code: 'PAYLOAD_TOO_LARGE',
+            message: 'Request payload too large',
+            maxSize: `${maxSize / (1024 * 1024)}MB`
+          }
+        });
+      }
+      
+      next();
+    };
+  }
+  
+  // Security audit middleware
+  public getSecurityAuditMiddleware() {
+    return (req: any, res: any, next: any) => {
+      const startTime = Date.now();
+      
+      // Log security-relevant requests
+      if (this.isSecurityRelevantRequest(req)) {
+        logger.info('Security audit log', {
+          correlationId: req.headers['x-correlation-id'] || 'unknown',
+          method: req.method,
+          endpoint: req.path,
+          ip: this.hashIP(req.ip || 'unknown'),
+          userAgent: req.headers['user-agent']?.substring(0, 200),
+          userId: req.user?.id,
+          sessionId: req.sessionID,
+          timestamp: new Date().toISOString(),
+          securityHeaders: {
+            hasCSRF: !!req.headers['x-csrf-token'],
+            hasAuth: !!(req.headers['authorization'] || req.headers['x-api-key']),
+            contentType: req.headers['content-type'],
+            origin: req.headers['origin']
+          }
+        });
+      }
+      
+      // Track response time for security monitoring
+      res.on('finish', () => {
+        const responseTime = Date.now() - startTime;
+        
+        // Log slow responses as potential security indicators
+        if (responseTime > 5000) {
+          logger.warn('Slow response detected', {
+            responseTime,
+            endpoint: req.path,
+            method: req.method,
+            statusCode: res.statusCode
+          });
+        }
+      });
+      
+      next();
+    };
+  }
+  
+  private isSecurityRelevantRequest(req: any): boolean {
+    const securityEndpoints = [
+      '/api/auth',
+      '/api/users',
+      '/api/permissions',
+      '/api/billing',
+      '/api/connections',
+      '/api/credentials'
+    ];
+    
+    return securityEndpoints.some(endpoint => req.path.startsWith(endpoint)) ||
+           req.method !== 'GET' ||
+           !!req.headers['authorization'] ||
+           !!req.headers['x-api-key'];
+  }
+  
+  private hashIP(ip: string): string {
+    const crypto = require('crypto');
+    return crypto.createHash('sha256').update(ip + (process.env.IP_HASH_SALT || 'default-salt')).digest('hex').substring(0, 16);
+  }
+  
+  public getConfig(): SecurityConfig {
+    return { ...this.config };
+  }
+  
+  public updateConfig(newConfig: Partial<SecurityConfig>): void {
+    this.config = { ...this.config, ...newConfig };
+    this.setupHelmet();
+    this.setupCSRF();
+    
+    logger.info('Security configuration updated', {
+      environment: this.config.environment,
+      allowedOrigins: this.config.allowedOrigins.length,
+      csrfEnabled: this.config.enableCSRF
+    });
+  }
+}
+
+// Singleton instance
+export const securityHeadersManager = new SecurityHeadersManager();
+
+// Middleware factory functions
+export function createSecurityMiddleware(config?: Partial<SecurityConfig>) {
+  const manager = config ? new SecurityHeadersManager(config) : securityHeadersManager;
+  return manager.getSecurityMiddleware();
+}
+
+export function createCSRFMiddleware(config?: Partial<SecurityConfig>) {
+  const manager = config ? new SecurityHeadersManager(config) : securityHeadersManager;
+  return manager.getCSRFMiddleware();
+}
+
+export function createContentTypeValidation() {
+  return securityHeadersManager.getContentTypeValidation();
+}
+
+export function createRequestSizeLimiter() {
+  return securityHeadersManager.getRequestSizeLimiter();
+}
+
+export function createSecurityAuditMiddleware() {
+  return securityHeadersManager.getSecurityAuditMiddleware();
+}
+
+// Utility for checking if request passes security requirements
+export function validateSecurityHeaders(req: any): { valid: boolean; issues: string[] } {
+  const issues: string[] = [];
+  
+  // Check for required security headers in sensitive endpoints
+  if (securityHeadersManager['isSensitiveEndpoint'](req.path)) {
+    if (!req.headers['x-csrf-token'] && ['POST', 'PUT', 'DELETE'].includes(req.method)) {
+      issues.push('Missing CSRF token for sensitive endpoint');
+    }
+    
+    if (!req.headers['authorization'] && !req.headers['x-api-key']) {
+      issues.push('Missing authentication for sensitive endpoint');
+    }
+  }
+  
+  return {
+    valid: issues.length === 0,
+    issues
+  };
+}

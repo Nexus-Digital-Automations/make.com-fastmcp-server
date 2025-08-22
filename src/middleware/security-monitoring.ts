@@ -4,4 +4,583 @@
  * Phase 2 Security Enhancement Implementation
  */
 
-import { EventEmitter } from 'events';\nimport logger from '../lib/logger.js';\n\n// Security event types\nexport enum SecurityEventType {\n  AUTHENTICATION_FAILURE = 'authentication_failure',\n  AUTHORIZATION_FAILURE = 'authorization_failure',\n  RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',\n  DDOS_PROTECTION_TRIGGERED = 'ddos_protection_triggered',\n  MALICIOUS_INPUT_DETECTED = 'malicious_input_detected',\n  CIRCUIT_BREAKER_OPENED = 'circuit_breaker_opened',\n  SUSPICIOUS_BEHAVIOR = 'suspicious_behavior',\n  SECURITY_SCAN_COMPLETED = 'security_scan_completed',\n  VULNERABILITY_DETECTED = 'vulnerability_detected',\n  CSRF_TOKEN_INVALID = 'csrf_token_invalid',\n  SQL_INJECTION_ATTEMPT = 'sql_injection_attempt',\n  XSS_ATTEMPT = 'xss_attempt',\n  FILE_UPLOAD_VIOLATION = 'file_upload_violation',\n  IP_REPUTATION_CHANGE = 'ip_reputation_change'\n}\n\n// Security severity levels\nexport enum SecuritySeverity {\n  LOW = 'low',\n  MEDIUM = 'medium',\n  HIGH = 'high',\n  CRITICAL = 'critical'\n}\n\n// Security event interface\ninterface SecurityEvent {\n  id: string;\n  type: SecurityEventType;\n  severity: SecuritySeverity;\n  timestamp: Date;\n  source: string;\n  details: Record<string, any>;\n  correlationId?: string;\n  userId?: string;\n  sessionId?: string;\n  ipAddress?: string;\n  userAgent?: string;\n  resolved?: boolean;\n  resolutionTime?: Date;\n}\n\n// Security metrics interface\ninterface SecurityMetrics {\n  timestamp: Date;\n  authenticationFailures: number;\n  authorizationFailures: number;\n  rateLimitViolations: number;\n  ddosAttacks: number;\n  maliciousInputs: number;\n  circuitBreakerTrips: number;\n  suspiciousBehavior: number;\n  vulnerabilities: number;\n  averageResponseTime: number;\n  systemLoad: number;\n  memoryUsage: number;\n  activeConnections: number;\n  blockedIPs: number;\n  riskScore: number;\n}\n\n// Alert configuration interface\ninterface AlertConfig {\n  type: SecurityEventType;\n  severity: SecuritySeverity;\n  threshold: number;\n  timeWindow: number; // in milliseconds\n  enabled: boolean;\n  channels: string[]; // webhook URLs, email addresses, etc.\n}\n\n// Advanced security monitoring system\nexport class SecurityMonitoringSystem extends EventEmitter {\n  private events: SecurityEvent[] = [];\n  private metrics: SecurityMetrics[] = [];\n  private alerts: AlertConfig[] = [];\n  private eventCounts: Map<string, number> = new Map();\n  private maxEventHistory = 10000;\n  private maxMetricsHistory = 1440; // 24 hours at 1-minute intervals\n  private metricsInterval: NodeJS.Timeout;\n  private currentMetrics: Partial<SecurityMetrics> = {};\n  \n  constructor() {\n    super();\n    this.setupDefaultAlerts();\n    this.startMetricsCollection();\n    this.setupEventCleanup();\n  }\n  \n  private setupDefaultAlerts(): void {\n    const defaultAlerts: AlertConfig[] = [\n      {\n        type: SecurityEventType.AUTHENTICATION_FAILURE,\n        severity: SecuritySeverity.HIGH,\n        threshold: 10,\n        timeWindow: 5 * 60 * 1000, // 5 minutes\n        enabled: true,\n        channels: []\n      },\n      {\n        type: SecurityEventType.DDOS_PROTECTION_TRIGGERED,\n        severity: SecuritySeverity.CRITICAL,\n        threshold: 1,\n        timeWindow: 60 * 1000, // 1 minute\n        enabled: true,\n        channels: []\n      },\n      {\n        type: SecurityEventType.MALICIOUS_INPUT_DETECTED,\n        severity: SecuritySeverity.HIGH,\n        threshold: 5,\n        timeWindow: 10 * 60 * 1000, // 10 minutes\n        enabled: true,\n        channels: []\n      },\n      {\n        type: SecurityEventType.CIRCUIT_BREAKER_OPENED,\n        severity: SecuritySeverity.MEDIUM,\n        threshold: 1,\n        timeWindow: 5 * 60 * 1000, // 5 minutes\n        enabled: true,\n        channels: []\n      },\n      {\n        type: SecurityEventType.VULNERABILITY_DETECTED,\n        severity: SecuritySeverity.CRITICAL,\n        threshold: 1,\n        timeWindow: 1000, // Immediate\n        enabled: true,\n        channels: []\n      }\n    ];\n    \n    this.alerts = defaultAlerts;\n  }\n  \n  private startMetricsCollection(): void {\n    // Collect metrics every minute\n    this.metricsInterval = setInterval(() => {\n      this.collectMetrics();\n    }, 60 * 1000);\n    \n    // Initial collection\n    this.collectMetrics();\n  }\n  \n  private collectMetrics(): void {\n    const now = new Date();\n    const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);\n    \n    // Count events in the last minute\n    const recentEvents = this.events.filter(event => event.timestamp >= oneMinuteAgo);\n    \n    const metrics: SecurityMetrics = {\n      timestamp: now,\n      authenticationFailures: recentEvents.filter(e => e.type === SecurityEventType.AUTHENTICATION_FAILURE).length,\n      authorizationFailures: recentEvents.filter(e => e.type === SecurityEventType.AUTHORIZATION_FAILURE).length,\n      rateLimitViolations: recentEvents.filter(e => e.type === SecurityEventType.RATE_LIMIT_EXCEEDED).length,\n      ddosAttacks: recentEvents.filter(e => e.type === SecurityEventType.DDOS_PROTECTION_TRIGGERED).length,\n      maliciousInputs: recentEvents.filter(e => e.type === SecurityEventType.MALICIOUS_INPUT_DETECTED).length,\n      circuitBreakerTrips: recentEvents.filter(e => e.type === SecurityEventType.CIRCUIT_BREAKER_OPENED).length,\n      suspiciousBehavior: recentEvents.filter(e => e.type === SecurityEventType.SUSPICIOUS_BEHAVIOR).length,\n      vulnerabilities: recentEvents.filter(e => e.type === SecurityEventType.VULNERABILITY_DETECTED).length,\n      averageResponseTime: this.currentMetrics.averageResponseTime || 0,\n      systemLoad: this.getSystemLoad(),\n      memoryUsage: this.getMemoryUsage(),\n      activeConnections: this.currentMetrics.activeConnections || 0,\n      blockedIPs: this.currentMetrics.blockedIPs || 0,\n      riskScore: this.calculateRiskScore(recentEvents)\n    };\n    \n    this.metrics.push(metrics);\n    \n    // Keep only recent metrics\n    if (this.metrics.length > this.maxMetricsHistory) {\n      this.metrics = this.metrics.slice(-this.maxMetricsHistory);\n    }\n    \n    // Emit metrics event\n    this.emit('metrics', metrics);\n    \n    // Log metrics for external monitoring systems\n    logger.info('Security metrics collected', {\n      timestamp: metrics.timestamp,\n      authFailures: metrics.authenticationFailures,\n      rateLimitViolations: metrics.rateLimitViolations,\n      ddosAttacks: metrics.ddosAttacks,\n      riskScore: metrics.riskScore,\n      systemLoad: metrics.systemLoad,\n      memoryUsage: metrics.memoryUsage\n    });\n  }\n  \n  private getSystemLoad(): number {\n    const cpuUsage = process.cpuUsage();\n    return (cpuUsage.user + cpuUsage.system) / 1000000; // Convert to seconds\n  }\n  \n  private getMemoryUsage(): number {\n    const memUsage = process.memoryUsage();\n    return (memUsage.heapUsed / memUsage.heapTotal) * 100; // Percentage\n  }\n  \n  private calculateRiskScore(events: SecurityEvent[]): number {\n    if (events.length === 0) return 0;\n    \n    let riskScore = 0;\n    const weights = {\n      [SecuritySeverity.LOW]: 0.1,\n      [SecuritySeverity.MEDIUM]: 0.3,\n      [SecuritySeverity.HIGH]: 0.6,\n      [SecuritySeverity.CRITICAL]: 1.0\n    };\n    \n    events.forEach(event => {\n      riskScore += weights[event.severity];\n    });\n    \n    // Normalize to 0-100 scale\n    return Math.min(riskScore * 10, 100);\n  }\n  \n  private setupEventCleanup(): void {\n    // Clean up old events every hour\n    setInterval(() => {\n      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago\n      this.events = this.events.filter(event => event.timestamp >= cutoff);\n      \n      // Keep only the most recent events if we have too many\n      if (this.events.length > this.maxEventHistory) {\n        this.events = this.events.slice(-this.maxEventHistory);\n      }\n    }, 60 * 60 * 1000);\n  }\n  \n  public recordSecurityEvent(\n    type: SecurityEventType,\n    severity: SecuritySeverity,\n    source: string,\n    details: Record<string, any>,\n    context?: {\n      correlationId?: string;\n      userId?: string;\n      sessionId?: string;\n      ipAddress?: string;\n      userAgent?: string;\n    }\n  ): string {\n    const eventId = this.generateEventId();\n    \n    const event: SecurityEvent = {\n      id: eventId,\n      type,\n      severity,\n      timestamp: new Date(),\n      source,\n      details: this.sanitizeEventDetails(details),\n      ...context\n    };\n    \n    this.events.push(event);\n    \n    // Update event counts for alerting\n    const countKey = `${type}:${Math.floor(Date.now() / 60000)}`; // Per-minute buckets\n    this.eventCounts.set(countKey, (this.eventCounts.get(countKey) || 0) + 1);\n    \n    // Check for alerts\n    this.checkAlerts(type);\n    \n    // Emit event\n    this.emit('securityEvent', event);\n    \n    // Log the event\n    logger.warn('Security event recorded', {\n      eventId,\n      type,\n      severity,\n      source,\n      correlationId: context?.correlationId,\n      ipAddress: context?.ipAddress ? this.hashIP(context.ipAddress) : undefined\n    });\n    \n    return eventId;\n  }\n  \n  private generateEventId(): string {\n    return `sec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;\n  }\n  \n  private sanitizeEventDetails(details: Record<string, any>): Record<string, any> {\n    const sanitized: Record<string, any> = {};\n    \n    for (const [key, value] of Object.entries(details)) {\n      if (typeof value === 'string') {\n        // Remove potential secrets and sensitive data\n        if (/password|secret|token|key|auth/i.test(key)) {\n          sanitized[key] = '[REDACTED]';\n        } else {\n          sanitized[key] = value.substring(0, 1000); // Limit string length\n        }\n      } else if (typeof value === 'object' && value !== null) {\n        sanitized[key] = '[OBJECT]';\n      } else {\n        sanitized[key] = value;\n      }\n    }\n    \n    return sanitized;\n  }\n  \n  private checkAlerts(eventType: SecurityEventType): void {\n    const relevantAlerts = this.alerts.filter(alert => \n      alert.enabled && alert.type === eventType\n    );\n    \n    relevantAlerts.forEach(alert => {\n      const windowStart = Math.floor((Date.now() - alert.timeWindow) / 60000);\n      const windowEnd = Math.floor(Date.now() / 60000);\n      \n      let eventCount = 0;\n      for (let minute = windowStart; minute <= windowEnd; minute++) {\n        const countKey = `${eventType}:${minute}`;\n        eventCount += this.eventCounts.get(countKey) || 0;\n      }\n      \n      if (eventCount >= alert.threshold) {\n        this.triggerAlert(alert, eventCount);\n      }\n    });\n  }\n  \n  private triggerAlert(alert: AlertConfig, eventCount: number): void {\n    const alertEvent = {\n      id: this.generateEventId(),\n      type: 'SECURITY_ALERT',\n      severity: alert.severity,\n      message: `Security alert triggered: ${alert.type}`,\n      eventCount,\n      threshold: alert.threshold,\n      timeWindow: alert.timeWindow,\n      timestamp: new Date()\n    };\n    \n    logger.error('Security alert triggered', alertEvent);\n    \n    // Emit alert event\n    this.emit('securityAlert', alertEvent);\n    \n    // Send to configured channels (implement webhook/email sending here)\n    alert.channels.forEach(channel => {\n      this.sendAlertToChannel(channel, alertEvent);\n    });\n  }\n  \n  private async sendAlertToChannel(channel: string, alert: any): Promise<void> {\n    try {\n      if (channel.startsWith('http')) {\n        // Webhook notification\n        const response = await fetch(channel, {\n          method: 'POST',\n          headers: {\n            'Content-Type': 'application/json',\n            'User-Agent': 'MakeServer-SecurityMonitoring/1.0'\n          },\n          body: JSON.stringify(alert)\n        });\n        \n        if (!response.ok) {\n          throw new Error(`Webhook failed: ${response.status}`);\n        }\n      } else if (channel.includes('@')) {\n        // Email notification (placeholder - implement with your email service)\n        logger.info('Email alert would be sent', { \n          email: channel, \n          alertType: alert.type \n        });\n      }\n    } catch (error) {\n      logger.error('Failed to send alert to channel', {\n        channel: channel.substring(0, 50),\n        error: error instanceof Error ? error.message : String(error)\n      });\n    }\n  }\n  \n  private hashIP(ip: string): string {\n    const crypto = require('crypto');\n    return crypto.createHash('sha256')\n      .update(ip + (process.env.IP_HASH_SALT || 'default-salt'))\n      .digest('hex')\n      .substring(0, 16);\n  }\n  \n  public updateMetric(key: keyof SecurityMetrics, value: number): void {\n    this.currentMetrics[key] = value;\n  }\n  \n  public getRecentEvents(limit: number = 100): SecurityEvent[] {\n    return this.events.slice(-limit);\n  }\n  \n  public getEventsByType(type: SecurityEventType, limit: number = 100): SecurityEvent[] {\n    return this.events\n      .filter(event => event.type === type)\n      .slice(-limit);\n  }\n  \n  public getMetrics(hours: number = 1): SecurityMetrics[] {\n    const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000);\n    return this.metrics.filter(metric => metric.timestamp >= cutoff);\n  }\n  \n  public getSecuritySummary(): {\n    totalEvents: number;\n    eventsByType: Record<string, number>;\n    eventsBySeverity: Record<string, number>;\n    currentRiskScore: number;\n    activeAlerts: number;\n    lastMetrics?: SecurityMetrics;\n  } {\n    const eventsByType: Record<string, number> = {};\n    const eventsBySeverity: Record<string, number> = {};\n    \n    this.events.forEach(event => {\n      eventsByType[event.type] = (eventsByType[event.type] || 0) + 1;\n      eventsBySeverity[event.severity] = (eventsBySeverity[event.severity] || 0) + 1;\n    });\n    \n    const lastMetrics = this.metrics[this.metrics.length - 1];\n    \n    return {\n      totalEvents: this.events.length,\n      eventsByType,\n      eventsBySeverity,\n      currentRiskScore: lastMetrics?.riskScore || 0,\n      activeAlerts: this.alerts.filter(alert => alert.enabled).length,\n      lastMetrics\n    };\n  }\n  \n  public configureAlert(config: AlertConfig): void {\n    const existingIndex = this.alerts.findIndex(alert => \n      alert.type === config.type && alert.severity === config.severity\n    );\n    \n    if (existingIndex >= 0) {\n      this.alerts[existingIndex] = config;\n    } else {\n      this.alerts.push(config);\n    }\n    \n    logger.info('Security alert configured', {\n      type: config.type,\n      severity: config.severity,\n      threshold: config.threshold,\n      enabled: config.enabled\n    });\n  }\n  \n  public shutdown(): void {\n    if (this.metricsInterval) {\n      clearInterval(this.metricsInterval);\n    }\n    \n    this.removeAllListeners();\n    logger.info('Security monitoring system shut down');\n  }\n}\n\n// Singleton instance\nexport const securityMonitoring = new SecurityMonitoringSystem();\n\n// Middleware for automatic security event recording\nexport function createSecurityMonitoringMiddleware() {\n  return (req: any, res: any, next: any): void => {\n    const startTime = Date.now();\n    \n    // Record request start\n    req.securityContext = {\n      correlationId: req.headers['x-correlation-id'] || securityMonitoring['generateEventId'](),\n      startTime,\n      ipAddress: req.ip || req.connection?.remoteAddress,\n      userAgent: req.headers['user-agent']\n    };\n    \n    // Track response completion\n    res.on('finish', () => {\n      const responseTime = Date.now() - startTime;\n      \n      // Update response time metric\n      securityMonitoring.updateMetric('averageResponseTime', responseTime);\n      \n      // Record security events based on response status\n      if (res.statusCode === 401) {\n        securityMonitoring.recordSecurityEvent(\n          SecurityEventType.AUTHENTICATION_FAILURE,\n          SecuritySeverity.MEDIUM,\n          'auth_middleware',\n          {\n            endpoint: req.path,\n            method: req.method,\n            statusCode: res.statusCode\n          },\n          req.securityContext\n        );\n      } else if (res.statusCode === 403) {\n        securityMonitoring.recordSecurityEvent(\n          SecurityEventType.AUTHORIZATION_FAILURE,\n          SecuritySeverity.MEDIUM,\n          'auth_middleware',\n          {\n            endpoint: req.path,\n            method: req.method,\n            statusCode: res.statusCode\n          },\n          req.securityContext\n        );\n      } else if (res.statusCode === 429) {\n        securityMonitoring.recordSecurityEvent(\n          SecurityEventType.RATE_LIMIT_EXCEEDED,\n          SecuritySeverity.HIGH,\n          'rate_limiter',\n          {\n            endpoint: req.path,\n            method: req.method,\n            statusCode: res.statusCode\n          },\n          req.securityContext\n        );\n      }\n    });\n    \n    next();\n  };\n}\n\n// Utility functions for manual event recording\nexport function recordAuthenticationFailure(details: Record<string, any>, context?: any): string {\n  return securityMonitoring.recordSecurityEvent(\n    SecurityEventType.AUTHENTICATION_FAILURE,\n    SecuritySeverity.HIGH,\n    'authentication',\n    details,\n    context\n  );\n}\n\nexport function recordMaliciousInput(details: Record<string, any>, context?: any): string {\n  return securityMonitoring.recordSecurityEvent(\n    SecurityEventType.MALICIOUS_INPUT_DETECTED,\n    SecuritySeverity.HIGH,\n    'input_validation',\n    details,\n    context\n  );\n}\n\nexport function recordSuspiciousBehavior(details: Record<string, any>, context?: any): string {\n  return securityMonitoring.recordSecurityEvent(\n    SecurityEventType.SUSPICIOUS_BEHAVIOR,\n    SecuritySeverity.MEDIUM,\n    'behavior_analysis',\n    details,\n    context\n  );\n}\n\nexport function recordVulnerability(details: Record<string, any>, context?: any): string {\n  return securityMonitoring.recordSecurityEvent(\n    SecurityEventType.VULNERABILITY_DETECTED,\n    SecuritySeverity.CRITICAL,\n    'vulnerability_scanner',\n    details,\n    context\n  );\n}"
+import { EventEmitter } from 'events';
+import logger from '../lib/logger.js';
+
+// Security event types
+export enum SecurityEventType {
+  AUTHENTICATION_FAILURE = 'authentication_failure',
+  AUTHORIZATION_FAILURE = 'authorization_failure',
+  RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',
+  DDOS_PROTECTION_TRIGGERED = 'ddos_protection_triggered',
+  MALICIOUS_INPUT_DETECTED = 'malicious_input_detected',
+  CIRCUIT_BREAKER_OPENED = 'circuit_breaker_opened',
+  SUSPICIOUS_BEHAVIOR = 'suspicious_behavior',
+  SECURITY_SCAN_COMPLETED = 'security_scan_completed',
+  VULNERABILITY_DETECTED = 'vulnerability_detected',
+  CSRF_TOKEN_INVALID = 'csrf_token_invalid',
+  SQL_INJECTION_ATTEMPT = 'sql_injection_attempt',
+  XSS_ATTEMPT = 'xss_attempt',
+  FILE_UPLOAD_VIOLATION = 'file_upload_violation',
+  IP_REPUTATION_CHANGE = 'ip_reputation_change'
+}
+
+// Security severity levels
+export enum SecuritySeverity {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical'
+}
+
+// Security event interface
+interface SecurityEvent {
+  id: string;
+  type: SecurityEventType;
+  severity: SecuritySeverity;
+  timestamp: Date;
+  source: string;
+  details: Record<string, any>;
+  correlationId?: string;
+  userId?: string;
+  sessionId?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  resolved?: boolean;
+  resolutionTime?: Date;
+}
+
+// Security metrics interface
+interface SecurityMetrics {
+  timestamp: Date;
+  authenticationFailures: number;
+  authorizationFailures: number;
+  rateLimitViolations: number;
+  ddosAttacks: number;
+  maliciousInputs: number;
+  circuitBreakerTrips: number;
+  suspiciousBehavior: number;
+  vulnerabilities: number;
+  averageResponseTime: number;
+  systemLoad: number;
+  memoryUsage: number;
+  activeConnections: number;
+  blockedIPs: number;
+  riskScore: number;
+}
+
+// Alert configuration interface
+interface AlertConfig {
+  type: SecurityEventType;
+  severity: SecuritySeverity;
+  threshold: number;
+  timeWindow: number; // in milliseconds
+  enabled: boolean;
+  channels: string[]; // webhook URLs, email addresses, etc.
+}
+
+// Advanced security monitoring system
+export class SecurityMonitoringSystem extends EventEmitter {
+  private events: SecurityEvent[] = [];
+  private metrics: SecurityMetrics[] = [];
+  private alerts: AlertConfig[] = [];
+  private eventCounts: Map<string, number> = new Map();
+  private maxEventHistory = 10000;
+  private maxMetricsHistory = 1440; // 24 hours at 1-minute intervals
+  private metricsInterval: NodeJS.Timeout;
+  private currentMetrics: Partial<SecurityMetrics> = {};
+  
+  constructor() {
+    super();
+    this.setupDefaultAlerts();
+    this.startMetricsCollection();
+    this.setupEventCleanup();
+  }
+  
+  private setupDefaultAlerts(): void {
+    const defaultAlerts: AlertConfig[] = [
+      {
+        type: SecurityEventType.AUTHENTICATION_FAILURE,
+        severity: SecuritySeverity.HIGH,
+        threshold: 10,
+        timeWindow: 5 * 60 * 1000, // 5 minutes
+        enabled: true,
+        channels: []
+      },
+      {
+        type: SecurityEventType.DDOS_PROTECTION_TRIGGERED,
+        severity: SecuritySeverity.CRITICAL,
+        threshold: 1,
+        timeWindow: 60 * 1000, // 1 minute
+        enabled: true,
+        channels: []
+      },
+      {
+        type: SecurityEventType.MALICIOUS_INPUT_DETECTED,
+        severity: SecuritySeverity.HIGH,
+        threshold: 5,
+        timeWindow: 10 * 60 * 1000, // 10 minutes
+        enabled: true,
+        channels: []
+      },
+      {
+        type: SecurityEventType.CIRCUIT_BREAKER_OPENED,
+        severity: SecuritySeverity.MEDIUM,
+        threshold: 1,
+        timeWindow: 5 * 60 * 1000, // 5 minutes
+        enabled: true,
+        channels: []
+      },
+      {
+        type: SecurityEventType.VULNERABILITY_DETECTED,
+        severity: SecuritySeverity.CRITICAL,
+        threshold: 1,
+        timeWindow: 1000, // Immediate
+        enabled: true,
+        channels: []
+      }
+    ];
+    
+    this.alerts = defaultAlerts;
+  }
+  
+  private startMetricsCollection(): void {
+    // Collect metrics every minute
+    this.metricsInterval = setInterval(() => {
+      this.collectMetrics();
+    }, 60 * 1000);
+    
+    // Initial collection
+    this.collectMetrics();
+  }
+  
+  private collectMetrics(): void {
+    const now = new Date();
+    const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
+    
+    // Count events in the last minute
+    const recentEvents = this.events.filter(event => event.timestamp >= oneMinuteAgo);
+    
+    const metrics: SecurityMetrics = {
+      timestamp: now,
+      authenticationFailures: recentEvents.filter(e => e.type === SecurityEventType.AUTHENTICATION_FAILURE).length,
+      authorizationFailures: recentEvents.filter(e => e.type === SecurityEventType.AUTHORIZATION_FAILURE).length,
+      rateLimitViolations: recentEvents.filter(e => e.type === SecurityEventType.RATE_LIMIT_EXCEEDED).length,
+      ddosAttacks: recentEvents.filter(e => e.type === SecurityEventType.DDOS_PROTECTION_TRIGGERED).length,
+      maliciousInputs: recentEvents.filter(e => e.type === SecurityEventType.MALICIOUS_INPUT_DETECTED).length,
+      circuitBreakerTrips: recentEvents.filter(e => e.type === SecurityEventType.CIRCUIT_BREAKER_OPENED).length,
+      suspiciousBehavior: recentEvents.filter(e => e.type === SecurityEventType.SUSPICIOUS_BEHAVIOR).length,
+      vulnerabilities: recentEvents.filter(e => e.type === SecurityEventType.VULNERABILITY_DETECTED).length,
+      averageResponseTime: this.currentMetrics.averageResponseTime || 0,
+      systemLoad: this.getSystemLoad(),
+      memoryUsage: this.getMemoryUsage(),
+      activeConnections: this.currentMetrics.activeConnections || 0,
+      blockedIPs: this.currentMetrics.blockedIPs || 0,
+      riskScore: this.calculateRiskScore(recentEvents)
+    };
+    
+    this.metrics.push(metrics);
+    
+    // Keep only recent metrics
+    if (this.metrics.length > this.maxMetricsHistory) {
+      this.metrics = this.metrics.slice(-this.maxMetricsHistory);
+    }
+    
+    // Emit metrics event
+    this.emit('metrics', metrics);
+    
+    // Log metrics for external monitoring systems
+    logger.info('Security metrics collected', {
+      timestamp: metrics.timestamp,
+      authFailures: metrics.authenticationFailures,
+      rateLimitViolations: metrics.rateLimitViolations,
+      ddosAttacks: metrics.ddosAttacks,
+      riskScore: metrics.riskScore,
+      systemLoad: metrics.systemLoad,
+      memoryUsage: metrics.memoryUsage
+    });
+  }
+  
+  private getSystemLoad(): number {
+    const cpuUsage = process.cpuUsage();
+    return (cpuUsage.user + cpuUsage.system) / 1000000; // Convert to seconds
+  }
+  
+  private getMemoryUsage(): number {
+    const memUsage = process.memoryUsage();
+    return (memUsage.heapUsed / memUsage.heapTotal) * 100; // Percentage
+  }
+  
+  private calculateRiskScore(events: SecurityEvent[]): number {
+    if (events.length === 0) return 0;
+    
+    let riskScore = 0;
+    const weights = {
+      [SecuritySeverity.LOW]: 0.1,
+      [SecuritySeverity.MEDIUM]: 0.3,
+      [SecuritySeverity.HIGH]: 0.6,
+      [SecuritySeverity.CRITICAL]: 1.0
+    };
+    
+    events.forEach(event => {
+      riskScore += weights[event.severity];
+    });
+    
+    // Normalize to 0-100 scale
+    return Math.min(riskScore * 10, 100);
+  }
+  
+  private setupEventCleanup(): void {
+    // Clean up old events every hour
+    setInterval(() => {
+      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+      this.events = this.events.filter(event => event.timestamp >= cutoff);
+      
+      // Keep only the most recent events if we have too many
+      if (this.events.length > this.maxEventHistory) {
+        this.events = this.events.slice(-this.maxEventHistory);
+      }
+    }, 60 * 60 * 1000);
+  }
+  
+  public recordSecurityEvent(
+    type: SecurityEventType,
+    severity: SecuritySeverity,
+    source: string,
+    details: Record<string, any>,
+    context?: {
+      correlationId?: string;
+      userId?: string;
+      sessionId?: string;
+      ipAddress?: string;
+      userAgent?: string;
+    }
+  ): string {
+    const eventId = this.generateEventId();
+    
+    const event: SecurityEvent = {
+      id: eventId,
+      type,
+      severity,
+      timestamp: new Date(),
+      source,
+      details: this.sanitizeEventDetails(details),
+      ...context
+    };
+    
+    this.events.push(event);
+    
+    // Update event counts for alerting
+    const countKey = `${type}:${Math.floor(Date.now() / 60000)}`; // Per-minute buckets
+    this.eventCounts.set(countKey, (this.eventCounts.get(countKey) || 0) + 1);
+    
+    // Check for alerts
+    this.checkAlerts(type);
+    
+    // Emit event
+    this.emit('securityEvent', event);
+    
+    // Log the event
+    logger.warn('Security event recorded', {
+      eventId,
+      type,
+      severity,
+      source,
+      correlationId: context?.correlationId,
+      ipAddress: context?.ipAddress ? this.hashIP(context.ipAddress) : undefined
+    });
+    
+    return eventId;
+  }
+  
+  private generateEventId(): string {
+    return `sec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+  
+  private sanitizeEventDetails(details: Record<string, any>): Record<string, any> {
+    const sanitized: Record<string, any> = {};
+    
+    for (const [key, value] of Object.entries(details)) {
+      if (typeof value === 'string') {
+        // Remove potential secrets and sensitive data
+        if (/password|secret|token|key|auth/i.test(key)) {
+          sanitized[key] = '[REDACTED]';
+        } else {
+          sanitized[key] = value.substring(0, 1000); // Limit string length
+        }
+      } else if (typeof value === 'object' && value !== null) {
+        sanitized[key] = '[OBJECT]';
+      } else {
+        sanitized[key] = value;
+      }
+    }
+    
+    return sanitized;
+  }
+  
+  private checkAlerts(eventType: SecurityEventType): void {
+    const relevantAlerts = this.alerts.filter(alert => 
+      alert.enabled && alert.type === eventType
+    );
+    
+    relevantAlerts.forEach(alert => {
+      const windowStart = Math.floor((Date.now() - alert.timeWindow) / 60000);
+      const windowEnd = Math.floor(Date.now() / 60000);
+      
+      let eventCount = 0;
+      for (let minute = windowStart; minute <= windowEnd; minute++) {
+        const countKey = `${eventType}:${minute}`;
+        eventCount += this.eventCounts.get(countKey) || 0;
+      }
+      
+      if (eventCount >= alert.threshold) {
+        this.triggerAlert(alert, eventCount);
+      }
+    });
+  }
+  
+  private triggerAlert(alert: AlertConfig, eventCount: number): void {
+    const alertEvent = {
+      id: this.generateEventId(),
+      type: 'SECURITY_ALERT',
+      severity: alert.severity,
+      message: `Security alert triggered: ${alert.type}`,
+      eventCount,
+      threshold: alert.threshold,
+      timeWindow: alert.timeWindow,
+      timestamp: new Date()
+    };
+    
+    logger.error('Security alert triggered', alertEvent);
+    
+    // Emit alert event
+    this.emit('securityAlert', alertEvent);
+    
+    // Send to configured channels (implement webhook/email sending here)
+    alert.channels.forEach(channel => {
+      this.sendAlertToChannel(channel, alertEvent);
+    });
+  }
+  
+  private async sendAlertToChannel(channel: string, alert: any): Promise<void> {
+    try {
+      if (channel.startsWith('http')) {
+        // Webhook notification
+        const response = await fetch(channel, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'MakeServer-SecurityMonitoring/1.0'
+          },
+          body: JSON.stringify(alert)
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Webhook failed: ${response.status}`);
+        }
+      } else if (channel.includes('@')) {
+        // Email notification (placeholder - implement with your email service)
+        logger.info('Email alert would be sent', { 
+          email: channel, 
+          alertType: alert.type 
+        });
+      }
+    } catch (error) {
+      logger.error('Failed to send alert to channel', {
+        channel: channel.substring(0, 50),
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+  
+  private hashIP(ip: string): string {
+    const crypto = require('crypto');
+    return crypto.createHash('sha256')
+      .update(ip + (process.env.IP_HASH_SALT || 'default-salt'))
+      .digest('hex')
+      .substring(0, 16);
+  }
+  
+  public updateMetric(key: keyof SecurityMetrics, value: number): void {
+    this.currentMetrics[key] = value;
+  }
+  
+  public getRecentEvents(limit: number = 100): SecurityEvent[] {
+    return this.events.slice(-limit);
+  }
+  
+  public getEventsByType(type: SecurityEventType, limit: number = 100): SecurityEvent[] {
+    return this.events
+      .filter(event => event.type === type)
+      .slice(-limit);
+  }
+  
+  public getMetrics(hours: number = 1): SecurityMetrics[] {
+    const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000);
+    return this.metrics.filter(metric => metric.timestamp >= cutoff);
+  }
+  
+  public getSecuritySummary(): {
+    totalEvents: number;
+    eventsByType: Record<string, number>;
+    eventsBySeverity: Record<string, number>;
+    currentRiskScore: number;
+    activeAlerts: number;
+    lastMetrics?: SecurityMetrics;
+  } {
+    const eventsByType: Record<string, number> = {};
+    const eventsBySeverity: Record<string, number> = {};
+    
+    this.events.forEach(event => {
+      eventsByType[event.type] = (eventsByType[event.type] || 0) + 1;
+      eventsBySeverity[event.severity] = (eventsBySeverity[event.severity] || 0) + 1;
+    });
+    
+    const lastMetrics = this.metrics[this.metrics.length - 1];
+    
+    return {
+      totalEvents: this.events.length,
+      eventsByType,
+      eventsBySeverity,
+      currentRiskScore: lastMetrics?.riskScore || 0,
+      activeAlerts: this.alerts.filter(alert => alert.enabled).length,
+      lastMetrics
+    };
+  }
+  
+  public configureAlert(config: AlertConfig): void {
+    const existingIndex = this.alerts.findIndex(alert => 
+      alert.type === config.type && alert.severity === config.severity
+    );
+    
+    if (existingIndex >= 0) {
+      this.alerts[existingIndex] = config;
+    } else {
+      this.alerts.push(config);
+    }
+    
+    logger.info('Security alert configured', {
+      type: config.type,
+      severity: config.severity,
+      threshold: config.threshold,
+      enabled: config.enabled
+    });
+  }
+  
+  public shutdown(): void {
+    if (this.metricsInterval) {
+      clearInterval(this.metricsInterval);
+    }
+    
+    this.removeAllListeners();
+    logger.info('Security monitoring system shut down');
+  }
+}
+
+// Singleton instance
+export const securityMonitoring = new SecurityMonitoringSystem();
+
+// Middleware for automatic security event recording
+export function createSecurityMonitoringMiddleware() {
+  return (req: any, res: any, next: any): void => {
+    const startTime = Date.now();
+    
+    // Record request start
+    req.securityContext = {
+      correlationId: req.headers['x-correlation-id'] || securityMonitoring['generateEventId'](),
+      startTime,
+      ipAddress: req.ip || req.connection?.remoteAddress,
+      userAgent: req.headers['user-agent']
+    };
+    
+    // Track response completion
+    res.on('finish', () => {
+      const responseTime = Date.now() - startTime;
+      
+      // Update response time metric
+      securityMonitoring.updateMetric('averageResponseTime', responseTime);
+      
+      // Record security events based on response status
+      if (res.statusCode === 401) {
+        securityMonitoring.recordSecurityEvent(
+          SecurityEventType.AUTHENTICATION_FAILURE,
+          SecuritySeverity.MEDIUM,
+          'auth_middleware',
+          {
+            endpoint: req.path,
+            method: req.method,
+            statusCode: res.statusCode
+          },
+          req.securityContext
+        );
+      } else if (res.statusCode === 403) {
+        securityMonitoring.recordSecurityEvent(
+          SecurityEventType.AUTHORIZATION_FAILURE,
+          SecuritySeverity.MEDIUM,
+          'auth_middleware',
+          {
+            endpoint: req.path,
+            method: req.method,
+            statusCode: res.statusCode
+          },
+          req.securityContext
+        );
+      } else if (res.statusCode === 429) {
+        securityMonitoring.recordSecurityEvent(
+          SecurityEventType.RATE_LIMIT_EXCEEDED,
+          SecuritySeverity.HIGH,
+          'rate_limiter',
+          {
+            endpoint: req.path,
+            method: req.method,
+            statusCode: res.statusCode
+          },
+          req.securityContext
+        );
+      }
+    });
+    
+    next();
+  };
+}
+
+// Utility functions for manual event recording
+export function recordAuthenticationFailure(details: Record<string, any>, context?: any): string {
+  return securityMonitoring.recordSecurityEvent(
+    SecurityEventType.AUTHENTICATION_FAILURE,
+    SecuritySeverity.HIGH,
+    'authentication',
+    details,
+    context
+  );
+}
+
+export function recordMaliciousInput(details: Record<string, any>, context?: any): string {
+  return securityMonitoring.recordSecurityEvent(
+    SecurityEventType.MALICIOUS_INPUT_DETECTED,
+    SecuritySeverity.HIGH,
+    'input_validation',
+    details,
+    context
+  );
+}
+
+export function recordSuspiciousBehavior(details: Record<string, any>, context?: any): string {
+  return securityMonitoring.recordSecurityEvent(
+    SecurityEventType.SUSPICIOUS_BEHAVIOR,
+    SecuritySeverity.MEDIUM,
+    'behavior_analysis',
+    details,
+    context
+  );
+}
+
+export function recordVulnerability(details: Record<string, any>, context?: any): string {
+  return securityMonitoring.recordSecurityEvent(
+    SecurityEventType.VULNERABILITY_DETECTED,
+    SecuritySeverity.CRITICAL,
+    'vulnerability_scanner',
+    details,
+    context
+  );
+}
