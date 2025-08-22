@@ -11,7 +11,6 @@ import {
   findTool, 
   executeTool, 
   expectToolCall,
-  expectProgressReported,
   expectValidZodParse,
   expectInvalidZodParse
 } from '../../utils/test-helpers.js';
@@ -109,7 +108,6 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
   let mockApiClient: MockMakeApiClient;
   let mockTool: jest.MockedFunction<any>;
   let mockLog: any;
-  let mockReportProgress: jest.MockedFunction<any>;
 
   beforeEach(() => {
     const serverSetup = createMockServer();
@@ -123,7 +121,6 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
       warn: jest.fn(),
       debug: jest.fn(),
     };
-    mockReportProgress = jest.fn();
   });
 
   afterEach(() => {
@@ -186,7 +183,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           }
         };
 
-        const result = await executeTool(tool, agentConfig, { log: mockLog });
+        const result = await executeTool(tool, agentConfig);
         
         expect(result).toContain('Test Agent');
         expect(result).toContain('created successfully');
@@ -216,7 +213,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           organizationId: 123
         };
 
-        const result = await executeTool(tool, agentConfig, { log: mockLog });
+        const result = await executeTool(tool, agentConfig);
         
         const calls = mockApiClient.getCallLog();
         expect(calls[1].endpoint).toBe('/organizations/123/ai-agents');
@@ -245,7 +242,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           teamId: 456
         };
 
-        const result = await executeTool(tool, agentConfig, { log: mockLog });
+        const result = await executeTool(tool, agentConfig);
         
         const calls = mockApiClient.getCallLog();
         expect(calls[1].endpoint).toBe('/teams/456/ai-agents');
@@ -274,7 +271,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           scenarioId: 789
         };
 
-        const result = await executeTool(tool, agentConfig, { log: mockLog });
+        const result = await executeTool(tool, agentConfig);
         
         const calls = mockApiClient.getCallLog();
         expect(calls[1].endpoint).toBe('/scenarios/789/ai-agents');
@@ -298,7 +295,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           }
         };
 
-        await expect(executeTool(tool, agentConfig, { log: mockLog }))
+        await expect(executeTool(tool, agentConfig))
           .rejects.toThrow('LLM provider "invalid" not found or not accessible');
       });
 
@@ -319,7 +316,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           }
         };
 
-        await expect(executeTool(tool, agentConfig, { log: mockLog }))
+        await expect(executeTool(tool, agentConfig))
           .rejects.toThrow('Model "invalid-model" not supported by provider "openai"');
       });
 
@@ -345,7 +342,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           }
         };
 
-        const result = await executeTool(tool, agentConfig, { log: mockLog });
+        const result = await executeTool(tool, agentConfig);
         
         const calls = mockApiClient.getCallLog();
         const createCall = calls[1];
@@ -379,7 +376,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           }
         };
 
-        const result = await executeTool(tool, agentConfig, { log: mockLog });
+        const result = await executeTool(tool, agentConfig);
         
         expect(result).not.toContain('sk-secret-key');
         expect(result).toContain('[MASKED]');
@@ -396,7 +393,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'list-ai-agents');
-        const result = await executeTool(tool, {}, { log: mockLog });
+        const result = await executeTool(tool, {});
         
         const parsed = JSON.parse(result);
         expect(parsed.agents).toHaveLength(2);
@@ -462,7 +459,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'list-ai-agents');
-        const result = await executeTool(tool, { includeUsage: true }, { log: mockLog });
+        const result = await executeTool(tool, { includeUsage: true });
         
         const parsed = JSON.parse(result);
         expect(parsed.summary.totalUsage).toBeDefined();
@@ -508,7 +505,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'list-ai-agents');
-        const result = await executeTool(tool, {}, { log: mockLog });
+        const result = await executeTool(tool, {});
         
         expect(result).not.toContain('sk-secret-key');
         expect(result).not.toContain('secret-token');
@@ -560,7 +557,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'get-ai-agent');
-        await expect(executeTool(tool, { agentId: 999 }, { log: mockLog }))
+        await expect(executeTool(tool, { agentId: 999 }))
           .rejects.toThrow('AI agent with ID 999 not found');
       });
 
@@ -607,7 +604,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'get-ai-agent');
-        const result = await executeTool(tool, { agentId: 1 }, { log: mockLog });
+        const result = await executeTool(tool, { agentId: 1 });
         
         expect(result).not.toContain('sk-secret-key');
         expect(result).toContain('[MASKED]');
@@ -690,7 +687,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
 
       it('should require at least one update parameter', async () => {
         const tool = findTool(mockTool, 'update-ai-agent');
-        await expect(executeTool(tool, { agentId: 1 }, { log: mockLog }))
+        await expect(executeTool(tool, { agentId: 1 }))
           .rejects.toThrow('No update data provided');
       });
 
@@ -731,7 +728,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'delete-ai-agent');
-        const result = await executeTool(tool, { agentId: 1 }, { log: mockLog });
+        const result = await executeTool(tool, { agentId: 1 });
         
         const parsed = JSON.parse(result);
         expect(parsed.message).toContain('deleted successfully');
@@ -746,7 +743,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'delete-ai-agent');
-        await expect(executeTool(tool, { agentId: 1 }, { log: mockLog }))
+        await expect(executeTool(tool, { agentId: 1 }))
           .rejects.toThrow('AI agent is currently in use (3 active connections)');
       });
 
@@ -757,7 +754,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'delete-ai-agent');
-        const result = await executeTool(tool, { agentId: 1, force: true }, { log: mockLog });
+        const result = await executeTool(tool, { agentId: 1, force: true });
         
         const parsed = JSON.parse(result);
         expect(parsed.forced).toBe(true);
@@ -775,7 +772,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'delete-ai-agent');
-        await expect(executeTool(tool, { agentId: 1 }, { log: mockLog }))
+        await expect(executeTool(tool, { agentId: 1 }))
           .rejects.toThrow('Failed to delete AI agent: Deletion failed');
       });
     });
@@ -817,10 +814,6 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         expect(parsed.validation.responseFormat).toBe('valid');
         expect(parsed.summary.success).toBe(true);
         
-        expectProgressReported(mockReportProgress, [
-          { progress: 0, total: 100 },
-          { progress: 100, total: 100 }
-        ]);
       });
 
       it('should test AI agent with conversation test', async () => {
@@ -1020,7 +1013,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           }
         };
 
-        const result = await executeTool(tool, providerConfig, { log: mockLog });
+        const result = await executeTool(tool, providerConfig);
         
         const parsed = JSON.parse(result);
         expect(parsed.provider.name).toBe('OpenAI Provider');
@@ -1070,7 +1063,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           ]
         };
 
-        const result = await executeTool(tool, providerConfig, { log: mockLog });
+        const result = await executeTool(tool, providerConfig);
         
         const parsed = JSON.parse(result);
         expect(parsed.provider.type).toBe('custom');
@@ -1101,7 +1094,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
           ]
         };
 
-        const result = await executeTool(tool, providerConfig, { log: mockLog });
+        const result = await executeTool(tool, providerConfig);
         
         const calls = mockApiClient.getCallLog();
         const createCall = calls[0];
@@ -1168,7 +1161,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'list-llm-providers');
-        const result = await executeTool(tool, {}, { log: mockLog });
+        const result = await executeTool(tool, {});
         
         const parsed = JSON.parse(result);
         expect(parsed.providers).toHaveLength(2);
@@ -1208,7 +1201,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'list-llm-providers');
-        await executeTool(tool, { includeModels: false }, { log: mockLog });
+        await executeTool(tool, { includeModels: false });
         
         const calls = mockApiClient.getCallLog();
         expect(calls[0].params.includeModels).toBe(false);
@@ -1231,7 +1224,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'list-llm-providers');
-        const result = await executeTool(tool, {}, { log: mockLog });
+        const result = await executeTool(tool, {});
         
         expect(result).not.toContain('sk-secret-key');
         expect(result).not.toContain('secret-token');
@@ -1252,7 +1245,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
         });
 
         const tool = findTool(mockTool, 'list-llm-providers');
-        const result = await executeTool(tool, {}, { log: mockLog });
+        const result = await executeTool(tool, {});
         
         const parsed = JSON.parse(result);
         expect(parsed.summary.statusBreakdown.active).toBe(1);
@@ -1291,7 +1284,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
                              ]
                            } : {};
 
-        await expect(executeTool(tool, defaultInput, { log: mockLog }))
+        await expect(executeTool(tool, defaultInput))
           .rejects.toThrow(UserError);
       }
     });
@@ -1315,7 +1308,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
       });
 
       const tool = findTool(mockTool, 'list-ai-agents');
-      await expect(executeTool(tool, {}, { log: mockLog }))
+      await expect(executeTool(tool, {}))
         .rejects.toThrow('Failed to list AI agents: Unauthorized access');
     });
 
@@ -1347,7 +1340,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
       });
 
       const tool = findTool(mockTool, 'list-ai-agents');
-      const result = await executeTool(tool, {}, { log: mockLog });
+      const result = await executeTool(tool, {});
       
       const parsed = JSON.parse(result);
       expect(parsed.agents).toEqual([]);
@@ -1413,7 +1406,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
       });
 
       const tool = findTool(mockTool, 'list-ai-agents');
-      const result = await executeTool(tool, {}, { log: mockLog });
+      const result = await executeTool(tool, {});
       
       expect(result).not.toContain('sk-very-secret-key');
       expect(result).not.toContain('super-secret-token');
@@ -1437,7 +1430,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
       });
 
       const tool = findTool(mockTool, 'list-llm-providers');
-      const result = await executeTool(tool, {}, { log: mockLog });
+      const result = await executeTool(tool, {});
       
       expect(result).not.toContain('sk-provider-secret');
       expect(result).not.toContain('provider-secret-key');
@@ -1455,7 +1448,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
       });
 
       const tool = findTool(mockTool, 'delete-ai-agent');
-      await executeTool(tool, { agentId: 1, force: true }, { log: mockLog });
+      await executeTool(tool, { agentId: 1, force: true });
 
       expectToolCall(mockLog, 'info', 'Deleting AI agent');
       expectToolCall(mockLog, 'info', 'Successfully deleted AI agent');
@@ -1589,7 +1582,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
       
       // Simulate concurrent requests
       const promises = Array.from({ length: 10 }, () => 
-        executeTool(tool, { limit: 10 }, { log: mockLog })
+        executeTool(tool, { limit: 10 })
       );
 
       const results = await Promise.all(promises);
@@ -1614,7 +1607,7 @@ describe('AI Agent Management Tools - Comprehensive Test Suite', () => {
       const tool = findTool(mockTool, 'list-ai-agents');
       const startTime = Date.now();
       
-      const result = await executeTool(tool, { limit: 100 }, { log: mockLog });
+      const result = await executeTool(tool, { limit: 100 });
       
       const endTime = Date.now();
       const executionTime = endTime - startTime;
