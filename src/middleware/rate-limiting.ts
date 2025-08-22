@@ -8,28 +8,58 @@ import { RateLimiterRedis, RateLimiterMemory } from 'rate-limiter-flexible';
 import Redis from 'ioredis';
 import logger from '../lib/logger.js';
 
+// Request interface for rate limiting middleware
+interface HttpRequest {
+  ip?: string;
+  method?: string;
+  url?: string;
+  path?: string;
+  headers: Record<string, string | string[] | undefined>;
+  connection?: {
+    remoteAddress?: string;
+  };
+  socket?: {
+    remoteAddress?: string;
+  };
+  body?: unknown;
+  user?: {
+    id: string;
+  };
+}
+
+// Response interface for middleware
+interface HttpResponse {
+  setHeader(name: string, value: string | number): void;
+  status(code: number): HttpResponse;
+  json(body: unknown): void;
+  on(event: string, callback: () => void): void;
+}
+
+// Next function type
+type NextFunction = () => void;
+
 // Rate limiting configuration interface
 interface RateLimitConfig {
   tiers: {
     authentication: {
       window: string;
       max: number;
-      keyGenerator: (req: any) => string;
+      keyGenerator: (req: HttpRequest) => string;
     };
     standard: {
       window: string;
       max: number;
-      keyGenerator: (req: any) => string;
+      keyGenerator: (req: HttpRequest) => string;
     };
     sensitive: {
       window: string;
       max: number;
-      keyGenerator: (req: any) => string;
+      keyGenerator: (req: HttpRequest) => string;
     };
     webhooks: {
       window: string;
       max: number;
-      keyGenerator: (req: any) => string;
+      keyGenerator: (req: HttpRequest) => string;
     };
   };
 }
@@ -239,18 +269,23 @@ export class EnterpriseRateLimitManager {
     };
   }
   
-  private getClientIP(req: any): string {
+  private getClientIP(req: HttpRequest): string {
+    const forwardedFor = req.headers['x-forwarded-for'];
+    const forwardedIp = Array.isArray(forwardedFor) 
+      ? forwardedFor[0] 
+      : forwardedFor;
+      
     return req.ip || 
            req.connection?.remoteAddress || 
            req.socket?.remoteAddress ||
-           req.headers['x-forwarded-for']?.split(',')[0] ||
+           (forwardedIp ? forwardedIp.split(',')[0] : undefined) ||
            'unknown';
   }
   
   public async checkRateLimit(
     tier: 'auth' | 'standard' | 'sensitive' | 'webhooks' | 'ddos',
     identifier: string,
-    _req?: any
+    _req?: HttpRequest
   ): Promise<{ allowed: boolean; resetTime?: Date; remaining?: number }> {
     try {
       const limiter = tier === 'ddos' ? this.ddosProtection : this.rateLimiters[tier];
@@ -282,25 +317,28 @@ export class EnterpriseRateLimitManager {
         remaining: result.remainingPoints
       };
       
-    } catch (error: any) {
-      if (error.remainingPoints !== undefined) {
+    } catch (error: unknown) {
+      // Type guard for rate limiter errors
+      if (error && typeof error === 'object' && 'remainingPoints' in error) {
+        const rateLimitError = error as { remainingPoints: number; msBeforeNext: number };
         // Rate limit exceeded
         logger.warn(`Rate limit exceeded for ${tier}`, {
           identifier: identifier.substring(0, 20) + '...',
           tier,
-          resetTime: new Date(Date.now() + error.msBeforeNext),
-          remaining: error.remainingPoints
+          resetTime: new Date(Date.now() + rateLimitError.msBeforeNext),
+          remaining: rateLimitError.remainingPoints
         });
         
         return {
           allowed: false,
-          resetTime: new Date(Date.now() + error.msBeforeNext),
-          remaining: error.remainingPoints
+          resetTime: new Date(Date.now() + rateLimitError.msBeforeNext),
+          remaining: rateLimitError.remainingPoints
         };
       }
       
+      const errorMessage = error instanceof Error ? error.message : String(error);
       logger.error('Rate limiting error, allowing request', { 
-        error: error.message,
+        error: errorMessage,
         tier,
         identifier: identifier.substring(0, 20) + '...'
       });
@@ -338,7 +376,7 @@ export const rateLimitManager = new EnterpriseRateLimitManager();
 
 // Middleware factory for different rate limiting tiers
 export function createRateLimitMiddleware(tier: 'auth' | 'standard' | 'sensitive' | 'webhooks') {
-  return async (req: any, res: any, next: any): Promise<void> => {
+  return async (req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> => {
     const startTime = Date.now();
     const identifier = tier === 'auth' 
       ? `auth:${rateLimitManager['getClientIP'](req)}`
@@ -396,16 +434,19 @@ export function createRateLimitMiddleware(tier: 'auth' | 'standard' | 'sensitive
 
 // DDoS protection middleware
 export function ddosProtectionMiddleware() {
-  return async (req: any, res: any, next: any): Promise<void> => {
+  return async (req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> => {
     const identifier = `ddos:${rateLimitManager['getClientIP'](req)}`;
     
     try {
       const result = await rateLimitManager.checkRateLimit('ddos', identifier, req);
       
       if (!result.allowed) {
+        const userAgent = req.headers['user-agent'];
         logger.warn('DDoS protection triggered', {
           ip: rateLimitManager['getClientIP'](req),
-          userAgent: req.headers['user-agent']?.substring(0, 100)
+          userAgent: Array.isArray(userAgent) 
+            ? userAgent[0]?.substring(0, 100)
+            : userAgent?.substring(0, 100)
         });
         
         return res.status(429).json({
