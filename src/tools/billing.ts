@@ -639,6 +639,114 @@ const _PauseHighCostScenariosSchema = z.object({
   dryRun: z.boolean().default(true).describe('Simulate action without executing'),
 }).strict();
 
+// ==================== BILLING HELPER FUNCTIONS ====================
+
+/**
+ * Build endpoint URL based on organization ID
+ */
+function buildBillingEndpoint(organizationId?: number): string {
+  return organizationId 
+    ? `/organizations/${organizationId}/billing/account`
+    : '/billing/account';
+}
+
+/**
+ * Generate billing account summary data
+ */
+function generateAccountSummary(account: MakeBillingAccount): Record<string, unknown> {
+  return {
+    accountId: account.id,
+    organizationId: account.organizationId,
+    currentPlan: account.billingPlan.name,
+    billingCycle: account.billingPlan.billingCycle,
+    status: account.accountStatus,
+    nextBillingDate: account.billing.nextBillingDate,
+    currency: account.billingPlan.currency,
+    autoRenewal: account.billing.autoRenewal,
+  };
+}
+
+/**
+ * Generate plan details data
+ */
+function generatePlanDetails(account: MakeBillingAccount): Record<string, unknown> {
+  return {
+    name: account.billingPlan.name,
+    tier: account.billingPlan.type,
+    price: account.billingPlan.price,
+    currency: account.billingPlan.currency,
+    includedOperations: account.billingPlan.limits.operations,
+    includedDataTransfer: account.billingPlan.limits.dataTransfer,
+    includedScenarios: account.billingPlan.limits.scenarios,
+  };
+}
+
+/**
+ * Generate current usage data if requested
+ */
+function generateCurrentUsage(account: MakeBillingAccount, includeUsage: boolean): Record<string, unknown> | undefined {
+  if (!includeUsage) {
+    return undefined;
+  }
+  return {
+    operations: account.usage?.currentPeriod.operations,
+    dataTransfer: account.usage?.currentPeriod.dataTransfer,
+    scenarios: account.usage?.currentPeriod.scenarios,
+    billingPeriodStart: account.usage?.currentPeriod.startDate,
+    billingPeriodEnd: account.usage?.currentPeriod.endDate,
+  };
+}
+
+/**
+ * Generate payment information if requested
+ */
+function generatePaymentInfo(account: MakeBillingAccount, includePaymentMethods: boolean): Record<string, unknown> | undefined {
+  if (!includePaymentMethods) {
+    return undefined;
+  }
+  return {
+    primaryMethod: account.paymentMethods?.find(pm => pm.isDefault),
+    methodCount: account.paymentMethods?.length || 0,
+    lastChargeDate: account.billing.lastBillingDate,
+    nextChargeAmount: account.billing.currentBalance,
+  };
+}
+
+/**
+ * Log billing account retrieval information
+ */
+function logBillingAccountInfo(
+  log: { info?: (message: string, meta?: unknown) => void },
+  account: MakeBillingAccount
+): void {
+  if (log?.info) {
+    log.info('Successfully retrieved billing account', {
+      accountId: account.id,
+      currentPlan: account.billingPlan.name,
+      billingCycle: account.billingPlan.billingCycle,
+      status: account.accountStatus,
+    });
+  }
+}
+
+/**
+ * Handle billing account errors with proper logging
+ */
+function handleBillingError(
+  error: unknown,
+  organizationId: number | undefined,
+  log: { error?: (message: string, meta?: unknown) => void }
+): never {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  if (log?.error) {
+    log.error('Error getting billing account', { organizationId, error: errorMessage });
+  }
+  if (error instanceof UserError) {
+    throw error;
+  }
+  throw new UserError(`Failed to get billing account: ${errorMessage}`);
+}
+
 /**
  * Add get billing account tool
  */
@@ -676,10 +784,7 @@ function addGetBillingAccountTool(server: FastMCP, apiClient: MakeApiClient): vo
           includePaymentMethods,
         };
 
-        let endpoint = '/billing/account';
-        if (organizationId) {
-          endpoint = `/organizations/${organizationId}/billing/account`;
-        }
+        const endpoint = buildBillingEndpoint(organizationId);
 
         if (reportProgress) {
           reportProgress({ progress: 50, total: 100 });
@@ -700,57 +805,17 @@ function addGetBillingAccountTool(server: FastMCP, apiClient: MakeApiClient): vo
           reportProgress({ progress: 100, total: 100 });
         }
 
-        if (log?.info) {
-          log.info('Successfully retrieved billing account', {
-            accountId: account.id,
-            currentPlan: account.billingPlan.name,
-            billingCycle: account.billingPlan.billingCycle,
-            status: account.accountStatus,
-          });
-        }
+        logBillingAccountInfo(log, account);
 
         return formatSuccessResponse({
           account,
-          summary: {
-            accountId: account.id,
-            organizationId: account.organizationId,
-            currentPlan: account.billingPlan.name,
-            billingCycle: account.billingPlan.billingCycle,
-            status: account.accountStatus,
-            nextBillingDate: account.billing.nextBillingDate,
-            currency: account.billingPlan.currency,
-            autoRenewal: account.billing.autoRenewal,
-          },
-          planDetails: {
-            name: account.billingPlan.name,
-            tier: account.billingPlan.type,
-            price: account.billingPlan.price,
-            currency: account.billingPlan.currency,
-            includedOperations: account.billingPlan.limits.operations,
-            includedDataTransfer: account.billingPlan.limits.dataTransfer,
-            includedScenarios: account.billingPlan.limits.scenarios,
-          },
-          currentUsage: includeUsage ? {
-            operations: account.usage?.currentPeriod.operations,
-            dataTransfer: account.usage?.currentPeriod.dataTransfer,
-            scenarios: account.usage?.currentPeriod.scenarios,
-            billingPeriodStart: account.usage?.currentPeriod.startDate,
-            billingPeriodEnd: account.usage?.currentPeriod.endDate,
-          } : undefined,
-          paymentInfo: includePaymentMethods ? {
-            primaryMethod: account.paymentMethods?.find(pm => pm.isDefault),
-            methodCount: account.paymentMethods?.length || 0,
-            lastChargeDate: account.billing.lastBillingDate,
-            nextChargeAmount: account.billing.currentBalance,
-          } : undefined,
+          summary: generateAccountSummary(account),
+          planDetails: generatePlanDetails(account),
+          currentUsage: generateCurrentUsage(account, includeUsage),
+          paymentInfo: generatePaymentInfo(account, includePaymentMethods),
         }).content[0].text;
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) {
-          log.error('Error getting billing account', { organizationId, error: errorMessage });
-        }
-        if (error instanceof UserError) {throw error;}
-        throw new UserError(`Failed to get billing account: ${errorMessage}`);
+        handleBillingError(error, organizationId, log);
       }
     },
   });

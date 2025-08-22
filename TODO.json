@@ -1,6 +1,36 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1755902267208_fdmwhy6q2",
+      "title": "Fix billing.ts complexity violation (31) and blueprint-collaboration-fixed.ts TypeScript no-explicit-any violations",
+      "description": "Fix complexity violation in billing.ts execute method (31 > 25) and resolve 10 no-explicit-any violations in blueprint-collaboration-fixed.ts",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T22:37:47.208Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755902230635_1_general_15aaeea7",
+      "started_at": "2025-08-22T22:37:52.693Z",
+      "claimed_by": "development_session_1755902230635_1_general_15aaeea7",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755902230635_1_general_15aaeea7",
+          "role": "primary",
+          "assignedAt": "2025-08-22T22:37:52.693Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
@@ -27,6 +57,27 @@
       "maxConcurrentTasks": 5,
       "createdAt": "2025-08-22T22:22:33.753Z",
       "sessionId": "session_1755901353753",
+      "metadata": {}
+    },
+    "development_session_1755902230635_1_general_15aaeea7": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-22T22:37:10.636Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-22T22:37:10.636Z",
+      "sessionId": "session_1755902230635",
       "metadata": {}
     }
   },

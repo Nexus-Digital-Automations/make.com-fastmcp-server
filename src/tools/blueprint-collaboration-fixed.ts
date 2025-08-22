@@ -277,7 +277,12 @@ class BlueprintCollaborationEngine {
  * Generate dependency analysis report
  */
 function generateDependencyAnalysisReport(result: {
-  dependencyGraph: any;
+  dependencyGraph: {
+    nodes: Array<{ moduleName: string; moduleType: string; version?: string; complexity: number; usageFrequency: number; performanceImpact: number; isExternal: boolean; isCritical: boolean }>;
+    edges: Array<{ sourceNode: string; targetNode: string; dependencyType: string; strength: number; bidirectional: boolean; conditional: boolean; conditions?: string[] }>;
+    clusters: Array<{ name: string; clusterType: string; nodes: string[]; cohesion: number; coupling: number; isolationPotential: number }>;
+    criticalPaths: Array<{ pathId: string; nodes: string[]; totalComplexity: number; performanceImpact: number; bottleneckNodes: string[]; optimizationPotential: number }>;
+  };
   analysis: DependencyAnalysisResult;
   circularDependencies: CircularDependency[];
   optimizationOpportunities: OptimizationOpportunity[];
@@ -359,18 +364,17 @@ ${result.optimizationOpportunities.map(opt => `
 **Expected Gains**:
 - Performance Improvement: ${opt.expectedGain.performanceImprovement}%
 - Complexity Reduction: ${opt.expectedGain.complexityReduction}%
-- Resource Optimization: ${(opt.expectedGain as any).resourceOptimization || 'N/A'}%
+- Resource Savings: ${opt.expectedGain.resourceSavings}%
 
-**Implementation Steps**:
-${((opt as any).implementationSteps || []).map((step: any, index: number) => `${index + 1}. ${step}`).join('\n')}
+**Implementation Complexity**: ${opt.implementationComplexity}
+**Risk Assessment**: ${opt.riskAssessment}
 `).join('\n')}
 
 ${result.impactAssessment ? `
 ## 📊 Impact Assessment
-**Overall Risk Level**: ${(result.impactAssessment as any)?.overallRisk || 'Unknown'}
-**System Stability Impact**: ${(result.impactAssessment as any)?.systemStabilityImpact || 'N/A'}/10
-**Performance Impact**: ${(result.impactAssessment as any)?.performanceImpact || 'N/A'}/10
-**Maintenance Complexity**: ${(result.impactAssessment as any)?.maintenanceComplexity || 'N/A'}/10
+**Overall Risk Level**: ${result.impactAssessment.riskAssessment?.overallRisk || 'Unknown'}
+**Critical Dependencies**: ${result.impactAssessment.riskAssessment?.criticalDependencies || 0}
+**Single Points of Failure**: ${result.impactAssessment.riskAssessment?.singlePointsOfFailure?.length || 0}
 
 ### Change Impact Analysis
 **High Impact Nodes**: ${result.impactAssessment.changeImpact?.highImpactNodes?.length || 0}
@@ -607,22 +611,18 @@ function addResolveBlueprintConflictsTool(server: FastMCP, componentLogger: type
       reportProgress({ progress: 40, total: 100 });
       
       try {
-        const conflictResolution = {
+        const _conflictResolution: ConflictResolution = {
           hasConflicts: true,
-          conflicts: args.conflicts || [],
+          conflicts: [], // Empty conflicts array as we're passing resolution data separately
           resolutionStrategy: 'manual' as const,
           resolutionStatus: 'pending' as const,
           aiSuggestions: []
-        } as unknown as ConflictResolution;
+        };
         
-        const result = await engine.resolveConflicts(args.blueprintId, conflictResolution, {
-          resolutionStrategy: 'manual',
-          conflictResolutions: args.conflicts?.map((c: any) => ({
-            conflictId: c.conflictId,
-            resolution: c.resolution,
-            reasoning: c.reasoning
-          })) || [],
-          preserveUserIntent: true,
+        const result = await engine.resolveConflicts(args.blueprintId, {
+          versionId: args.versionId,
+          conflicts: args.conflicts,
+          resolutionOptions: args.resolutionOptions,
           validateResult: true,
           createBackup: true
         });
@@ -645,10 +645,9 @@ function addResolveBlueprintConflictsTool(server: FastMCP, componentLogger: type
 ${result.resolutionResults.map(resolution => `
 ### Conflict: ${resolution.conflictId}
 **Status**: ${resolution.status === 'resolved' ? '✅ Resolved' : resolution.status === 'failed' ? '❌ Failed' : '⏭️ Skipped'}
-**Strategy**: ${(resolution as any).strategy || 'Unknown'}
-**AI Assisted**: ${(resolution as any).aiAssisted ? '🤖 Yes' : '👤 Manual'}
-${(resolution as any).reason ? `**Reason**: ${(resolution as any).reason}` : ''}
-${(resolution as any).validation?.isValid === false ? `**Validation Issues**: ${(resolution as any).validation.errors?.join(', ')}` : ''}
+**Applied Resolution**: ${resolution.appliedResolution || 'Unknown'}
+**Result**: ${resolution.result ? '✅ Applied' : '❌ Not Applied'}
+${resolution.error ? `**Error**: ${resolution.error}` : ''}
 `).join('\n')}
 
 ## 📄 Resolved Blueprint
@@ -713,7 +712,15 @@ function addAnalyzeBlueprintDependenciesTool(server: FastMCP, componentLogger: t
           content: [
             {
               type: 'text',
-              text: generateDependencyAnalysisReport(result),
+              text: generateDependencyAnalysisReport({
+                ...result,
+                dependencyGraph: result.dependencyGraph as {
+                  nodes: Array<{ moduleName: string; moduleType: string; version?: string; complexity: number; usageFrequency: number; performanceImpact: number; isExternal: boolean; isCritical: boolean }>;
+                  edges: Array<{ sourceNode: string; targetNode: string; dependencyType: string; strength: number; bidirectional: boolean; conditional: boolean; conditions?: string[] }>;
+                  clusters: Array<{ name: string; clusterType: string; nodes: string[]; cohesion: number; coupling: number; isolationPotential: number }>;
+                  criticalPaths: Array<{ pathId: string; nodes: string[]; totalComplexity: number; performanceImpact: number; bottleneckNodes: string[]; optimizationPotential: number }>;
+                }
+              }),
             },
           ],
         };
