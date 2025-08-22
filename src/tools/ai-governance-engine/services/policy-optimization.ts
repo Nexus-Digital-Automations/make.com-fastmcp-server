@@ -11,7 +11,9 @@ import type {
   PolicyConflict,
   PolicyResolutionPlan,
   ConflictImpactAnalysis,
-  MLModelType
+  MLModelType,
+  EnsembleMLModel,
+  ReinforcementLearningModel
 } from '../types/index.js';
 import type { PolicyOptimizationRequest } from '../schemas/index.js';
 
@@ -19,6 +21,7 @@ interface Policy {
   id: string;
   name: string;
   categoryName: string;
+  description: string;
   rules: string[];
   priority: number;
   scope: string;
@@ -307,21 +310,21 @@ export class PolicyOptimizationService {
       convergence: 0.98,
       accuracy: 0.91,
       lastTrained: new Date().toISOString()
-    } as any);
+    } as ReinforcementLearningModel);
 
     this.mlModels.set('conflict_detection', {
       type: 'ensemble',
       algorithms: ['random_forest', 'svm', 'neural_network'],
       accuracy: 0.89,
       lastTrained: new Date().toISOString()
-    } as any);
+    } as EnsembleMLModel);
 
     this.mlModels.set('effectiveness_prediction', {
       type: 'ensemble',
       algorithms: ['gradient_boosting', 'random_forest'],
       accuracy: 0.87,
       lastTrained: new Date().toISOString()
-    } as any);
+    } as EnsembleMLModel);
 
     this.componentLogger.info('Initialized ML models for policy optimization');
   }
@@ -332,6 +335,7 @@ export class PolicyOptimizationService {
         id: 'pol_data_access_001',
         name: 'Data Access Control Policy',
         categoryName: 'data_security',
+        description: 'Controls access to sensitive data resources',
         rules: [
           'All data access must be authenticated',
           'Role-based access controls must be enforced',
@@ -348,6 +352,7 @@ export class PolicyOptimizationService {
         id: 'pol_password_001',
         name: 'Password Security Policy',
         categoryName: 'authentication',
+        description: 'Password complexity and rotation requirements',
         rules: [
           'Minimum 12 characters required',
           'Must include uppercase, lowercase, numbers, and symbols',
@@ -364,6 +369,7 @@ export class PolicyOptimizationService {
         id: 'pol_incident_response_001',
         name: 'Incident Response Policy',
         categoryName: 'security_operations',
+        description: 'Procedures for managing and responding to security incidents',
         rules: [
           'Incidents must be reported within 1 hour',
           'Response team must be activated for critical incidents',
@@ -632,7 +638,7 @@ export class PolicyOptimizationService {
       recommendedChanges,
       expectedImpact: `Estimated ${Math.floor(Math.random() * 20 + 10)}% improvement in effectiveness`,
       confidenceScore,
-      implementationEffort: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as any,
+      implementationEffort: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as 'low' | 'medium' | 'high',
       riskLevel: confidenceScore > 80 ? 'low' : 'medium'
     };
   }
@@ -801,8 +807,15 @@ export class PolicyOptimizationService {
     };
   }
 
-  private async generateDomainSpecificPolicies(domain: string, _requirements: string[]): Promise<any[]> {
-    const policyTemplates: Record<string, any> = {
+  private async generateDomainSpecificPolicies(domain: string, _requirements: string[]): Promise<Array<{
+    name: string;
+    categoryName: string;
+    description: string;
+    rules: string[];
+    priority: number;
+    rationale: string;
+  }>> {
+    const policyTemplates: Record<string, { name: string; categoryName: string; description: string; rules: string[]; priority: number; rationale: string }> = {
       'data_security': {
         name: 'Data Security Framework',
         categoryName: 'data_protection',
@@ -831,10 +844,28 @@ export class PolicyOptimizationService {
       }
     };
 
-    return policyTemplates[domain] ? [policyTemplates[domain]] : [];
+    if (policyTemplates[domain]) {
+      const template = policyTemplates[domain];
+      return [{
+        name: template.name,
+        categoryName: template.categoryName,
+        description: template.description,
+        rules: template.rules,
+        priority: template.priority,
+        rationale: template.rationale
+      }];
+    }
+    return [];
   }
 
-  private createImplementationPlan(_policies: any[]): string[] {
+  private createImplementationPlan(_policies: Array<{
+    name: string;
+    categoryName: string;
+    description: string;
+    rules: string[];
+    priority: number;
+    rationale: string;
+  }>): string[] {
     return [
       'Assess current policy landscape',
       'Identify stakeholders and approval processes',
@@ -863,7 +894,13 @@ export class PolicyOptimizationService {
     optimizations: OptimizationResult[], 
     _goals: OptimizationGoal[]
   ): Promise<SimulationResult> {
-    const scenarioMultipliers: Record<string, any> = {
+    const scenarioMultipliers: Record<string, {
+      complianceImprovement: number;
+      riskReduction: number;
+      costSavings: number;
+      implementationTime: number;
+      confidence: number;
+    }> = {
       'aggressive_implementation': {
         complianceImprovement: 1.5,
         riskReduction: 1.3,

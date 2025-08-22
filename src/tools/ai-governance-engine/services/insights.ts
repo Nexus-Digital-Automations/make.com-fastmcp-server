@@ -11,7 +11,9 @@ import type {
   GovernanceInsight,
   TrendAnalysis,
   GovernanceMetrics,
-  MLModelType
+  MLModelType,
+  EnsembleMLModel,
+  IsolationForestModel
 } from '../types/index.js';
 import type { GovernanceInsightsRequest } from '../schemas/index.js';
 
@@ -35,6 +37,47 @@ interface InsightContext {
   dataPoints: number;
   analysisDepth: 'basic' | 'comprehensive' | 'deep';
   includeML: boolean;
+}
+
+interface MetricAnomaly {
+  metric: string;
+  value: number;
+  expected: number;
+  deviation: number;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  description?: string;
+  confidence?: number;
+  impact?: string;
+  recommendedActions?: string[];
+}
+
+interface MLPrediction {
+  metric: string;
+  trend: 'improve' | 'decline' | 'stable';
+  change: number;
+  severity: 'info' | 'warning' | 'critical';
+  confidence: number;
+  impact: string;
+  preventiveActions: string[];
+}
+
+interface SmartRecommendation {
+  title: string;
+  description: string;
+  confidence: number;
+  expectedImpact: string;
+  implementationSteps: string[];
+  implementationTimeframe: string;
+}
+
+interface MetricPrediction {
+  metric: string;
+  predictions: number[];
+  confidence: number;
+  currentValue?: number;
+  predictedValue?: number;
+  timeframe?: string;
+  factors?: string[];
 }
 
 export class InsightsService {
@@ -193,7 +236,7 @@ export class InsightsService {
       const metrics = ['complianceScore', 'riskScore', 'policyViolations', 'automatedRemediations', 'avgResponseTime'];
       
       for (const metric of metrics) {
-        const values = data.map(d => (d as any)[metric]).filter(v => typeof v === 'number');
+        const values = data.map(d => (d as unknown as Record<string, unknown>)[metric]).filter(v => typeof v === 'number') as number[];
         const anomaly = this.detectMetricAnomalies(metric, values, threshold);
         
         if (anomaly) {
@@ -313,14 +356,14 @@ export class InsightsService {
       algorithms: ['random_forest', 'gradient_boosting', 'lstm'],
       accuracy: 0.87,
       lastTrained: new Date().toISOString()
-    } as any);
+    } as EnsembleMLModel);
 
     this.mlModels.set('anomaly_detection', {
       type: 'isolation_forest',
       sensitivity: 0.15,
       accuracy: 0.92,
       lastTrained: new Date().toISOString()
-    } as any);
+    } as IsolationForestModel);
 
     this.componentLogger.info('Initialized ML models for insights');
   }
@@ -632,7 +675,7 @@ export class InsightsService {
     };
   }
 
-  private detectMetricAnomalies(metric: string, values: number[], threshold: number): any {
+  private detectMetricAnomalies(metric: string, values: number[], threshold: number): MetricAnomaly | null {
     if (values.length < 3) return null;
 
     const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
@@ -655,7 +698,7 @@ export class InsightsService {
     return null;
   }
 
-  private detectAnomalyPatterns(anomalies: any[]): string[] {
+  private detectAnomalyPatterns(anomalies: MetricAnomaly[]): string[] {
     const patterns = [];
 
     if (anomalies.length > 2) {
@@ -686,7 +729,7 @@ export class InsightsService {
     return result;
   }
 
-  private async generateMetricPrediction(metric: string, historical: number[], timeframe: string): Promise<any> {
+  private async generateMetricPrediction(metric: string, historical: number[], timeframe: string): Promise<MetricPrediction> {
     const currentValue = historical[historical.length - 1] || Math.random() * 100;
     const trend = historical.length > 1 ? 
       (historical[historical.length - 1] - historical[0]) / historical.length : 0;
@@ -696,6 +739,7 @@ export class InsightsService {
 
     return {
       metric,
+      predictions: [predictedValue], // Array of predicted values
       currentValue,
       predictedValue,
       confidence: confidence * 100,
@@ -704,25 +748,24 @@ export class InsightsService {
     };
   }
 
-  private async detectCurrentAnomalies(metrics: GovernanceMetrics): Promise<any[]> {
+  private async detectCurrentAnomalies(metrics: GovernanceMetrics): Promise<MetricAnomaly[]> {
     // Simulate anomaly detection
     const anomalies = [];
 
     if (metrics.riskScore > 80) {
       anomalies.push({
         metric: 'riskScore',
-        description: 'Risk score unusually high',
-        severity: 'high',
-        confidence: 90,
-        impact: 'High risk exposure requires immediate attention',
-        recommendedActions: ['Review risk assessment', 'Implement additional controls']
+        value: metrics.riskScore,
+        expected: 60, // Expected normal range
+        deviation: (metrics.riskScore - 60) / 20, // Normalized deviation
+        severity: 'high'
       });
     }
 
     return anomalies;
   }
 
-  private async generateMLPredictions(_data: AnalyticsData, _context: InsightContext): Promise<any[]> {
+  private async generateMLPredictions(_data: AnalyticsData, _context: InsightContext): Promise<MLPrediction[]> {
     // Simulate ML predictions
     return [
       {
@@ -737,7 +780,7 @@ export class InsightsService {
     ];
   }
 
-  private async generateSmartRecommendations(_data: AnalyticsData, _context: InsightContext): Promise<any[]> {
+  private async generateSmartRecommendations(_data: AnalyticsData, _context: InsightContext): Promise<SmartRecommendation[]> {
     return [
       {
         title: 'Optimize Automated Remediation',

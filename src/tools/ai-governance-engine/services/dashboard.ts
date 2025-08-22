@@ -44,6 +44,24 @@ interface RealTimeMetrics {
   responseTime: number;
 }
 
+interface DashboardCustomization {
+  layout?: string;
+  widgets?: string[];
+  theme?: string;
+  colors?: {
+    primary?: string;
+    secondary?: string;
+    success?: string;
+    warning?: string;
+    error?: string;
+  };
+  displayOptions?: {
+    showLegend?: boolean;
+    showTooltips?: boolean;
+    animateTransitions?: boolean;
+  };
+}
+
 export class DashboardService {
   private componentLogger = logger.child({ component: 'DashboardService' });
   private dashboardTemplates: Map<string, DashboardTemplate> = new Map();
@@ -228,7 +246,7 @@ export class DashboardService {
       layout?: string;
       widgets?: string[];
       theme?: string;
-      filters?: Record<string, any>;
+      filters?: Record<string, string | number | boolean | string[]>;
     }
   ): Promise<{
     success: boolean;
@@ -756,7 +774,7 @@ export class DashboardService {
 
   private async applyCustomizations(
     config: DashboardConfig,
-    customization: any
+    customization: DashboardCustomization
   ): Promise<DashboardConfig> {
     const updatedConfig = { ...config };
 

@@ -205,7 +205,7 @@ export class ServiceCacheManager {
   /**
    * Get cache statistics from all services
    */
-  getCacheStatistics(): Record<string, any> {
+  getCacheStatistics(): Record<string, unknown> {
     return {
       riskAssessment: this.services.riskAssessment.getCacheStats(),
       insights: this.services.insights.getCacheStats(),

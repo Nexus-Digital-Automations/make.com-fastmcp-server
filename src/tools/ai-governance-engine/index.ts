@@ -10,6 +10,24 @@ import logger from '../../lib/logger.js';
 // Import the modular tools from the refactored governance engine
 import { governanceTools } from './tools/index.js';
 
+interface GovernanceToolContext {
+  server: FastMCP;
+  apiClient: MakeApiClient;
+  logger: typeof logger;
+  log: {
+    debug: (message: string, data?: unknown) => void;
+    info: (message: string, data?: unknown) => void;
+    warn: (message: string, data?: unknown) => void;
+    error: (message: string, data?: unknown) => void;
+  };
+  reportProgress: (progress: { progress: number; total: number }) => void;
+  config: {
+    enabled: boolean;
+    maxRetries: number;
+    timeout: number;
+  };
+}
+
 /**
  * Add AI governance engine tools to FastMCP server
  * Uses the new modular architecture with AIGovernanceManager core business logic
@@ -20,7 +38,7 @@ export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiCl
   componentLogger.info('Adding modular AI governance engine tools');
 
   // Create context for tools
-  const createToolContext = (executionContext: { log: any; reportProgress: any }): any => ({
+  const createToolContext = (executionContext: { log: { debug: (message: string, data?: unknown) => void; info: (message: string, data?: unknown) => void; warn: (message: string, data?: unknown) => void; error: (message: string, data?: unknown) => void; }; reportProgress: (progress: { progress: number; total: number }) => void }): GovernanceToolContext => ({
     server,
     apiClient,
     logger: componentLogger,

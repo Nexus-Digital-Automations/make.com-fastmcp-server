@@ -14,7 +14,8 @@ import type {
   RiskPrediction,
   MitigationPlan,
   MLModelType,
-  PredictionCacheEntry
+  PredictionCacheEntry,
+  EnsembleMLModel
 } from '../types/index.js';
 import type { RiskAssessmentRequest } from '../schemas/index.js';
 
@@ -268,7 +269,7 @@ export class RiskAssessmentService {
       algorithms: ['random_forest', 'gradient_boosting', 'neural_network'],
       accuracy: 0.94,
       lastTrained: new Date().toISOString()
-    } as any);
+    } as EnsembleMLModel);
   }
 
   private getRiskCategories(_requestedCategories: string[]): RiskCategory[] {
