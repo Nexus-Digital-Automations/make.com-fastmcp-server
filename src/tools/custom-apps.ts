@@ -849,7 +849,7 @@ function formatTestResponse(
   testType: string,
   environment: string,
   includePerformance: boolean
-): any {
+): import('../utils/response-formatter.js').ToolResponse {
   const processedSummary = processTestResultSummary(testResult);
   const processedResults = processTestResults(testResult, includePerformance);
 
