@@ -350,6 +350,101 @@ function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
 }
 
 /**
+ * Validate SDK app compatibility
+ */
+async function validateSdkAppCompatibility(apiClient: MakeApiClient, appId: string, log: any): Promise<void> {
+  log.info('Validating app compatibility');
+  const compatResponse = await apiClient.get(`/sdk-apps/${appId}/compatibility`);
+  
+  if (!compatResponse.success) {
+    throw new UserError(`Compatibility check failed: ${compatResponse.error?.message}`);
+  }
+
+  const compatibility = compatResponse.data as Record<string, unknown>;
+  if (!compatibility.compatible) {
+    throw new UserError(`App is not compatible: ${(compatibility.reasons as string[]).join(', ')}`);
+  }
+}
+
+/**
+ * Build SDK app install data payload
+ */
+function buildSdkAppInstallData(input: any): any {
+  const { appId, version, organizationId, teamId, configuration, permissions, autoUpdate, skipValidation } = input;
+  
+  return {
+    appId,
+    version: version || 'latest',
+    organizationId,
+    teamId,
+    configuration,
+    permissions: {
+      ...permissions,
+      autoGrant: permissions?.autoGrant ?? false,
+      restrictions: permissions?.restrictions ?? {},
+    },
+    autoUpdate,
+    installOptions: {
+      skipValidation,
+      createBackup: true,
+      notifyUsers: true,
+    },
+  };
+}
+
+/**
+ * Determine SDK app install endpoint
+ */
+function determineSdkAppEndpoint(organizationId?: string, teamId?: string): string {
+  if (organizationId) {
+    return `/organizations/${organizationId}/sdk-apps/install`;
+  } else if (teamId) {
+    return `/teams/${teamId}/sdk-apps/install`;
+  }
+  return '/sdk-apps/install';
+}
+
+/**
+ * Format SDK app install response
+ */
+function formatSdkAppInstallResponse(installation: any, input: any): any {
+  const { appId, autoUpdate, configuration } = input;
+  
+  // Type guards for installation data
+  const installationId = typeof installation.id === 'string' || typeof installation.id === 'number' ? installation.id : 'unknown';
+  const appName = typeof installation.appName === 'string' ? installation.appName : 'unknown';
+  const installedAt = typeof installation.installedAt === 'string' ? installation.installedAt : new Date().toISOString();
+  const installedVersion = typeof installation.version === 'string' ? installation.version : 'unknown';
+  const installationPermissions = installation.permissions && typeof installation.permissions === 'object' ? installation.permissions as Record<string, unknown> : {};
+  const granted = Array.isArray(installationPermissions.granted) ? installationPermissions.granted : [];
+
+  return formatSuccessResponse({
+    installation,
+    message: `SDK app ${appId} installed successfully`,
+    summary: {
+      appId,
+      appName: appName,
+      version: installedVersion,
+      installedAt: installedAt,
+      autoUpdate,
+      permissionsGranted: granted.length,
+      configurationApplied: Object.keys(configuration).length > 0,
+    },
+    postInstall: {
+      configurationUrl: `/sdk-apps/${appId}/configure`,
+      documentationUrl: ((installation?.app as Record<string, unknown>)?.metadata as Record<string, unknown>)?.documentation,
+      supportUrl: ((installation?.app as Record<string, unknown>)?.metadata as Record<string, unknown>)?.support,
+    },
+    nextSteps: [
+      'Review and configure app settings',
+      'Test app functionality',
+      'Set up integrations if needed',
+      'Train team members on app usage',
+    ],
+  });
+}
+
+/**
  * Helper function to add install SDK app tool
  */
 function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -380,48 +475,16 @@ function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
 
         // Validate compatibility unless skipped
         if (!skipValidation) {
-          log.info('Validating app compatibility');
-          const compatResponse = await apiClient.get(`/sdk-apps/${appId}/compatibility`);
-          
-          if (!compatResponse.success) {
-            throw new UserError(`Compatibility check failed: ${compatResponse.error?.message}`);
-          }
-
-          const compatibility = compatResponse.data as Record<string, unknown>;
-          if (!compatibility.compatible) {
-            throw new UserError(`App is not compatible: ${(compatibility.reasons as string[]).join(', ')}`);
-          }
+          await validateSdkAppCompatibility(apiClient, appId, log);
         }
 
         reportProgress({ progress: 25, total: 100 });
 
-        const installData = {
-          appId,
-          version: version || 'latest',
-          organizationId,
-          teamId,
-          configuration,
-          permissions: {
-            ...permissions,
-            autoGrant: permissions?.autoGrant ?? false,
-            restrictions: permissions?.restrictions ?? {},
-          },
-          autoUpdate,
-          installOptions: {
-            skipValidation,
-            createBackup: true,
-            notifyUsers: true,
-          },
-        };
+        const installData = buildSdkAppInstallData(input);
 
         reportProgress({ progress: 50, total: 100 });
 
-        let endpoint = '/sdk-apps/install';
-        if (organizationId) {
-          endpoint = `/organizations/${organizationId}/sdk-apps/install`;
-        } else if (teamId) {
-          endpoint = `/teams/${teamId}/sdk-apps/install`;
-        }
+        const endpoint = determineSdkAppEndpoint(organizationId, teamId);
 
         const response = await apiClient.post(endpoint, installData);
 
@@ -431,48 +494,17 @@ function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
 
         const installation = response.data as Record<string, unknown>;
         
-        // Type guards for installation data
-        const installationId = typeof installation.id === 'string' || typeof installation.id === 'number' ? installation.id : 'unknown';
-        
         reportProgress({ progress: 100, total: 100 });
 
+        // Log successful installation
+        const installationId = typeof installation.id === 'string' || typeof installation.id === 'number' ? installation.id : 'unknown';
         log.info('Successfully installed SDK app', {
           appId,
           installationId: installationId,
           version: typeof installation.version === 'string' ? installation.version : 'unknown',
         });
 
-        // Additional type guards for summary
-        const appName = typeof installation.appName === 'string' ? installation.appName : 'unknown';
-        const installedAt = typeof installation.installedAt === 'string' ? installation.installedAt : new Date().toISOString();
-        const installedVersion = typeof installation.version === 'string' ? installation.version : 'unknown';
-        const installationPermissions = installation.permissions && typeof installation.permissions === 'object' ? installation.permissions as Record<string, unknown> : {};
-        const granted = Array.isArray(installationPermissions.granted) ? installationPermissions.granted : [];
-
-        return formatSuccessResponse({
-          installation,
-          message: `SDK app ${appId} installed successfully`,
-          summary: {
-            appId,
-            appName: appName,
-            version: installedVersion,
-            installedAt: installedAt,
-            autoUpdate,
-            permissionsGranted: granted.length,
-            configurationApplied: Object.keys(configuration).length > 0,
-          },
-          postInstall: {
-            configurationUrl: `/sdk-apps/${appId}/configure`,
-            documentationUrl: ((installation?.app as Record<string, unknown>)?.metadata as Record<string, unknown>)?.documentation,
-            supportUrl: ((installation?.app as Record<string, unknown>)?.metadata as Record<string, unknown>)?.support,
-          },
-          nextSteps: [
-            'Review and configure app settings',
-            'Test app functionality',
-            'Set up integrations if needed',
-            'Train team members on app usage',
-          ],
-        });
+        return formatSdkAppInstallResponse(installation, input);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error installing SDK app', { appId, error: errorMessage });
@@ -832,6 +864,107 @@ function addConfigureSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void
 }
 
 /**
+ * Validate and prepare workflow template data
+ */
+function prepareWorkflowTemplate(workflowTemplate: unknown): {
+  defaultConfiguration: Record<string, unknown>;
+  requirements: unknown[];
+} {
+  const templateObj = workflowTemplate as {
+    defaultConfiguration?: unknown;
+    requirements?: { apps?: unknown[] };
+  } | null | undefined;
+
+  return {
+    defaultConfiguration: templateObj?.defaultConfiguration && typeof templateObj.defaultConfiguration === 'object' 
+      ? templateObj.defaultConfiguration as Record<string, unknown> 
+      : {},
+    requirements: Array.isArray(templateObj?.requirements?.apps) ? templateObj.requirements.apps : [],
+  };
+}
+
+/**
+ * Build install workflow data payload
+ */
+function buildInstallWorkflowData(input: any, workflowTemplate: unknown): any {
+  const { workflowId, name, teamId, folderId, configuration, autoStart, installDependencies } = input;
+  const { defaultConfiguration, requirements } = prepareWorkflowTemplate(workflowTemplate);
+
+  return {
+    workflowId,
+    name,
+    teamId,
+    folderId,
+    configuration: {
+      ...defaultConfiguration,
+      ...configuration,
+    },
+    options: {
+      autoStart,
+      installDependencies,
+      validateTemplate: true,
+      createBackup: true,
+    },
+    dependencies: requirements,
+  };
+}
+
+/**
+ * Format install workflow response
+ */
+function formatInstallWorkflowResponse(installation: unknown, workflowTemplate: unknown, input: any): any {
+  const { workflowId, name, autoStart } = input;
+  
+  // Type guard for installation object
+  const installationObj = installation as {
+    scenarioId?: unknown;
+    dependenciesInstalled?: unknown;
+    started?: unknown;
+    installedDependencies?: unknown[];
+    missingDependencies?: unknown[];
+  } | null | undefined;
+
+  // Type guard for template object with additional fields
+  const templateObjFull = workflowTemplate as {
+    name?: unknown;
+    category?: unknown;
+    difficulty?: unknown;
+    requirements?: { apps?: unknown[] };
+  } | null | undefined;
+
+  return formatSuccessResponse({
+    workflow: installation,
+    message: `Workflow "${name}" installed successfully`,
+    summary: {
+      workflowId,
+      scenarioId: installationObj?.scenarioId,
+      name,
+      templateName: templateObjFull?.name,
+      category: templateObjFull?.category,
+      difficulty: templateObjFull?.difficulty,
+      dependenciesInstalled: installationObj?.dependenciesInstalled || 0,
+      autoStarted: autoStart && installationObj?.started,
+    },
+    dependencies: {
+      required: Array.isArray(templateObjFull?.requirements?.apps) ? templateObjFull.requirements.apps : [],
+      installed: Array.isArray(installationObj?.installedDependencies) ? installationObj.installedDependencies : [],
+      missing: Array.isArray(installationObj?.missingDependencies) ? installationObj.missingDependencies : [],
+    },
+    access: {
+      scenarioUrl: `/scenarios/${installationObj?.scenarioId}`,
+      editUrl: `/scenarios/${installationObj?.scenarioId}/edit`,
+      runUrl: `/scenarios/${installationObj?.scenarioId}/run`,
+    },
+    nextSteps: [
+      'Review workflow configuration',
+      'Test workflow execution',
+      'Customize workflow if needed',
+      autoStart ? 'Monitor workflow execution' : 'Activate workflow when ready',
+    ],
+  });
+}
+
+/**
  * Helper function to add install workflow tool
  */
 function addInstallWorkflowTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -870,31 +1003,7 @@ function addInstallWorkflowTool(server: FastMCP, apiClient: MakeApiClient): void
         const workflowTemplate = workflowResponse.data;
         reportProgress({ progress: 25, total: 100 });
 
-        // Type guard for workflow template object
-        const templateObj = workflowTemplate as {
-          defaultConfiguration?: unknown;
-          requirements?: { apps?: unknown[] };
-        } | null | undefined;
-
-        const installData = {
-          workflowId,
-          name,
-          teamId,
-          folderId,
-          configuration: {
-            ...(templateObj?.defaultConfiguration && typeof templateObj.defaultConfiguration === 'object' 
-              ? templateObj.defaultConfiguration as Record<string, unknown> 
-              : {}),
-            ...configuration,
-          },
-          options: {
-            autoStart,
-            installDependencies,
-            validateTemplate: true,
-            createBackup: true,
-          },
-          dependencies: Array.isArray(templateObj?.requirements?.apps) ? templateObj.requirements.apps : [],
-        };
+        const installData = buildInstallWorkflowData(input, workflowTemplate);
 
         reportProgress({ progress: 50, total: 100 });
 
@@ -907,23 +1016,8 @@ function addInstallWorkflowTool(server: FastMCP, apiClient: MakeApiClient): void
         const installation = response.data;
         reportProgress({ progress: 100, total: 100 });
 
-        // Type guard for installation object
-        const installationObj = installation as {
-          scenarioId?: unknown;
-          dependenciesInstalled?: unknown;
-          started?: unknown;
-          installedDependencies?: unknown[];
-          missingDependencies?: unknown[];
-        } | null | undefined;
-
-        // Type guard for template object with additional fields
-        const templateObjFull = workflowTemplate as {
-          name?: unknown;
-          category?: unknown;
-          difficulty?: unknown;
-          requirements?: { apps?: unknown[] };
-        } | null | undefined;
-
+        // Log success for the installation
+        const installationObj = installation as { scenarioId?: unknown } | null | undefined;
         log.info('Successfully installed workflow', {
           workflowId,
           scenarioId: String(installationObj?.scenarioId ?? 'unknown'),
@@ -931,36 +1025,7 @@ function addInstallWorkflowTool(server: FastMCP, apiClient: MakeApiClient): void
           autoStart,
         });
 
-        return formatSuccessResponse({
-          workflow: installation,
-          message: `Workflow "${name}" installed successfully`,
-          summary: {
-            workflowId,
-            scenarioId: installationObj?.scenarioId,
-            name,
-            templateName: templateObjFull?.name,
-            category: templateObjFull?.category,
-            difficulty: templateObjFull?.difficulty,
-            dependenciesInstalled: installationObj?.dependenciesInstalled || 0,
-            autoStarted: autoStart && installationObj?.started,
-          },
-          dependencies: {
-            required: Array.isArray(templateObjFull?.requirements?.apps) ? templateObjFull.requirements.apps : [],
-            installed: Array.isArray(installationObj?.installedDependencies) ? installationObj.installedDependencies : [],
-            missing: Array.isArray(installationObj?.missingDependencies) ? installationObj.missingDependencies : [],
-          },
-          access: {
-            scenarioUrl: `/scenarios/${installationObj?.scenarioId}`,
-            editUrl: `/scenarios/${installationObj?.scenarioId}/edit`,
-            runUrl: `/scenarios/${installationObj?.scenarioId}/run`,
-          },
-          nextSteps: [
-            'Review workflow configuration',
-            'Test workflow execution',
-            'Customize workflow if needed',
-            autoStart ? 'Monitor workflow execution' : 'Activate workflow when ready',
-          ],
-        });
+        return formatInstallWorkflowResponse(installation, workflowTemplate, input);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error installing workflow', { workflowId, name, error: errorMessage });
