@@ -804,7 +804,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
         // Generate recovery analysis for each execution
         const executionsWithRecovery = await Promise.all(
           incompleteExecutions.map(async (execution) => {
-            let recoveryPlan = null;
+            let recoveryPlan: unknown = null;
             
             if (includeRecoveryPlan) {
               try {
