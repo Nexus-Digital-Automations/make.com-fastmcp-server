@@ -491,7 +491,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWorldHint: true,
     },
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
       const { type, category, status, organizationId, teamId, includeStats, includeMonitoring, limit, offset, sortBy, sortOrder } = input;
 
       if (log && log.info) {
@@ -867,7 +867,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       openWorldHint: true,
     },
     execute: async (input, context) => {
-      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
       const { type, category, status, organizationId, teamId, includeHealth, includeAlerts, limit, offset, sortBy, sortOrder } = input;
 
       if (log && log.info) {

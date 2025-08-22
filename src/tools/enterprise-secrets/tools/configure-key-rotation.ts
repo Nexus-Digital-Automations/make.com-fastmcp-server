@@ -80,7 +80,7 @@ class KeyRotationManager {
   }
 
   private scheduleRotationMonitoring(policy: Parameters<typeof KeyRotationPolicySchema.parse>[0]): void {
-    const validatedPolicy = KeyRotationPolicySchema.parse(policy);
+    const _validatedPolicy = KeyRotationPolicySchema.parse(policy);
     // Schedule monitoring for the rotation policy
     // Debug: Scheduling rotation monitoring (policy: validatedPolicy.policyName, type: validatedPolicy.rotationType)
   }

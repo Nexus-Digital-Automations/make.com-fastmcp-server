@@ -120,37 +120,37 @@ class SecretEngineManager {
   }
 
   private async configureDatabaseEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
-    const validatedConfig = SecretEngineConfigSchema.parse(config);
+    const _validatedConfig = SecretEngineConfigSchema.parse(config);
     // Database engine specific configuration
     // Debug: Configuring database secret engine (path: validatedConfig.path, type: validatedConfig.config.databaseType)
   }
 
   private async configurePKIEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
-    const validatedConfig = SecretEngineConfigSchema.parse(config);
+    const _validatedConfig = SecretEngineConfigSchema.parse(config);
     // PKI engine specific configuration
     // Debug: Configuring PKI secret engine (path: validatedConfig.path, commonName: validatedConfig.config.commonName, keyType: validatedConfig.config.keyType)
   }
 
   private async configureTransitEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
-    const validatedConfig = SecretEngineConfigSchema.parse(config);
+    const _validatedConfig = SecretEngineConfigSchema.parse(config);
     // Transit engine specific configuration
     // Debug: Configuring transit secret engine (path: validatedConfig.path, convergentEncryption: validatedConfig.config.convergentEncryption)
   }
 
   private async configureAWSEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
-    const validatedConfig = SecretEngineConfigSchema.parse(config);
+    const _validatedConfig = SecretEngineConfigSchema.parse(config);
     // AWS engine specific configuration
     // Debug: Configuring AWS secret engine (path: validatedConfig.path, region: validatedConfig.config.region)
   }
 
   private async configureAzureEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
-    const validatedConfig = SecretEngineConfigSchema.parse(config);
+    const _validatedConfig = SecretEngineConfigSchema.parse(config);
     // Azure engine specific configuration
     // Debug: Configuring Azure secret engine (path: validatedConfig.path)
   }
 
   private async configureGCPEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
-    const validatedConfig = SecretEngineConfigSchema.parse(config);
+    const _validatedConfig = SecretEngineConfigSchema.parse(config);
     // GCP engine specific configuration
     // Debug: Configuring GCP secret engine (path: validatedConfig.path, project: validatedConfig.config.project)
   }

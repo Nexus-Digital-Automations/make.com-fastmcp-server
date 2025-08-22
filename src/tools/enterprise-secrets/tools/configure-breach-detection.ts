@@ -60,19 +60,19 @@ class BreachDetectionManager {
   }
 
   private async initializeAnomalyDetection(config: Parameters<typeof BreachDetectionConfigSchema.parse>[0]): Promise<void> {
-    const validatedConfig = BreachDetectionConfigSchema.parse(config);
+    const _validatedConfig = BreachDetectionConfigSchema.parse(config);
     // Initialize anomaly detection systems
     // Debug: Initializing anomaly detection (enabled: validatedConfig.detectionMethods.anomalyDetection)
   }
 
   private async initializeThreatIntelligence(config: Parameters<typeof BreachDetectionConfigSchema.parse>[0]): Promise<void> {
-    const validatedConfig = BreachDetectionConfigSchema.parse(config);
+    const _validatedConfig = BreachDetectionConfigSchema.parse(config);
     // Initialize threat intelligence feeds
     // Debug: Initializing threat intelligence (enabled: validatedConfig.detectionMethods.threatIntelligence)
   }
 
   private async initializeBehavioralAnalysis(config: Parameters<typeof BreachDetectionConfigSchema.parse>[0]): Promise<void> {
-    const validatedConfig = BreachDetectionConfigSchema.parse(config);
+    const _validatedConfig = BreachDetectionConfigSchema.parse(config);
     // Initialize behavioral analysis
     // Debug: Initializing behavioral analysis (enabled: validatedConfig.detectionMethods.behavioralAnalysis)
   }

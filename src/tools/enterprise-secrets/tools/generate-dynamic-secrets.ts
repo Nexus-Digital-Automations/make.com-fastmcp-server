@@ -229,7 +229,7 @@ PrivateKeyDataHere
 -----END OPENSSH PRIVATE KEY-----`;
   }
 
-  private async storeLease(leaseId: string, _leaseData: Record<string, unknown>): Promise<void> {
+  private async storeLease(_leaseId: string, _leaseData: Record<string, unknown>): Promise<void> {
     // Store lease information for management
     // Debug: Storing lease information (leaseId)
   }

@@ -1,24 +1,6 @@
 {
   "project": "root_files",
-  "tasks": [
-    {
-      "id": "task_1755834695053_yajbh2l06",
-      "title": "Fix remaining 16 linter errors - unused variables",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T03:51:35.053Z",
-      "auto_research_created": false,
-      "description": "No description provided"
-    }
-  ],
+  "tasks": [],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
