@@ -17,9 +17,9 @@
       "subtasks": [],
       "created_at": "2025-08-22T19:37:18.474Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T20:27:14.226Z",
-      "claimed_by": "agent_1755894434226",
-      "assigned_agent": "agent_1755894434226",
+      "started_at": "2025-08-22T20:46:39.582Z",
+      "claimed_by": "development_session_1755895113774_1_general_ca2a7b30",
+      "assigned_agent": "development_session_1755895113774_1_general_ca2a7b30",
       "agent_assignment_history": [
         {
           "agent": "agent_1755892995291",
@@ -36,6 +36,19 @@
           "agent": "agent_1755894434226",
           "action": "claimed",
           "timestamp": "2025-08-22T20:27:14.226Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T20:46:21.176Z",
+          "reason": "Task stale for 19 minutes"
+        },
+        {
+          "agentId": "development_session_1755895113774_1_general_ca2a7b30",
+          "role": "primary",
+          "assignedAt": "2025-08-22T20:46:39.582Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
     }

@@ -868,14 +868,12 @@ interface PolicyConfiguration {
   createdAt: Date;
 }
 
-// ===== TOOL IMPLEMENTATIONS =====
-// All tool implementations are now inline in addMultiTenantSecurityTools function
+// ===== HELPER FUNCTIONS =====
 
 /**
- * Add all Multi-Tenant Security tools to FastMCP server
+ * Add provision tenant tool
  */
-export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApiClient): void {
-  // Tenant Provisioning Tool
+function addProvisionTenantTool(server: FastMCP): void {
   server.addTool({
     name: 'provision_tenant',
     description: 'Provision a new tenant with comprehensive security isolation, cryptographic keys, network segmentation, and compliance boundaries',
@@ -937,8 +935,12 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
       }
     },
   });
+}
 
-  // Cryptographic Isolation Tool
+/**
+ * Add cryptographic isolation tool
+ */
+function addCryptographicIsolationTool(server: FastMCP): void {
   server.addTool({
     name: 'manage_cryptographic_isolation',
     description: 'Manage tenant-specific cryptographic isolation including key generation, rotation, encryption, and verification',
@@ -995,8 +997,12 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
       }
     },
   });
+}
 
-  // Network Segmentation Tool  
+/**
+ * Add network segmentation tool
+ */
+function addNetworkSegmentationTool(server: FastMCP): void {
   server.addTool({
     name: 'configure_network_segmentation',
     description: 'Configure tenant network segmentation with virtual isolation, microsegmentation, and traffic monitoring',
@@ -1063,8 +1069,12 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
       }
     },
   });
+}
 
-  // Resource Quota Management Tool
+/**
+ * Add resource quota management tool
+ */
+function addResourceQuotaManagementTool(server: FastMCP): void {
   server.addTool({
     name: 'manage_resource_quotas',
     description: 'Manage tenant resource quotas, scaling policies, and resource optimization with real-time monitoring',
@@ -1171,8 +1181,12 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
       }
     },
   });
+}
 
-  // Governance Policy Tool
+/**
+ * Add governance policies tool
+ */
+function addGovernancePoliciesManagementTool(server: FastMCP): void {
   server.addTool({
     name: 'manage_governance_policies',
     description: 'Manage tenant-specific governance policies, compliance frameworks, and automated policy enforcement',
@@ -1258,8 +1272,12 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
       }
     },
   });
+}
 
-  // Data Leakage Prevention Tool
+/**
+ * Add data leakage prevention tool
+ */
+function addDataLeakagePreventionTool(server: FastMCP): void {
   server.addTool({
     name: 'prevent_data_leakage',
     description: 'Implement comprehensive data leakage prevention with classification, monitoring, and threat detection',
@@ -1339,8 +1357,12 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
       }
     },
   });
+}
 
-  // Compliance Boundary Tool
+/**
+ * Add compliance boundaries management tool
+ */
+function addComplianceBoundariesManagementTool(server: FastMCP): void {
   server.addTool({
     name: 'manage_compliance_boundaries',
     description: 'Establish and manage tenant-specific compliance boundaries for multiple regulatory frameworks',
@@ -1423,6 +1445,35 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
       }
     },
   });
+}
+
+// ===== TOOL IMPLEMENTATIONS =====
+// All tool implementations are now inline in addMultiTenantSecurityTools function
+
+/**
+ * Add all Multi-Tenant Security tools to FastMCP server
+ */
+export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApiClient): void {
+  // Add provision tenant tool
+  addProvisionTenantTool(server);
+  
+  // Add cryptographic isolation tool
+  addCryptographicIsolationTool(server);
+  
+  // Add network segmentation tool
+  addNetworkSegmentationTool(server);
+  
+  // Add resource quota management tool
+  addResourceQuotaManagementTool(server);
+  
+  // Add governance policies management tool
+  addGovernancePoliciesManagementTool(server);
+  
+  // Add data leakage prevention tool
+  addDataLeakagePreventionTool(server);
+  
+  // Add compliance boundaries management tool
+  addComplianceBoundariesManagementTool(server);
 
   componentLogger.info('Multi-Tenant Security tools registered', {
     toolCount: 7,
