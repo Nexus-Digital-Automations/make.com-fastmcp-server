@@ -23,7 +23,6 @@ import type {
   GetDataStoreRequest,
   UpdateDataStoreRequest,
   DeleteDataStoreRequest,
-  MakeFolder,
   MakeDataStore,
   MakeDataStructure
 } from '../types/index.js';
@@ -34,6 +33,7 @@ import {
 
 import logger from '../../../lib/logger.js';
 import { MakeApiClient } from '../../../lib/make-api-client.js';
+import { FolderManager } from './folder-manager.js';
 
 /**
  * Core folders module class
@@ -43,10 +43,12 @@ export class FoldersManager {
   private readonly state: FoldersState;
   private readonly context: FoldersContext;
   private readonly apiClient: MakeApiClient;
+  private readonly folderManager: FolderManager;
 
   constructor(context: FoldersContext, apiClient: MakeApiClient) {
     this.context = context;
     this.apiClient = apiClient;
+    this.folderManager = new FolderManager(apiClient);
     this.state = {
       initialized: false,
       config: context.config,
@@ -134,8 +136,8 @@ export class FoldersManager {
         operation: 'createFolder'
       });
 
-      // Implement createFolder business logic here
-      const result = await this.executeCreatefolder(request);
+      // Use FolderManager for folder creation
+      const result = await this.folderManager.createFolder(request as CreateFolderRequest);
 
       this.incrementStatistics('successful');
 
@@ -180,86 +182,6 @@ export class FoldersManager {
     }
   }
 
-  /**
-   * Execute createFolder business logic
-   */
-  private async executeCreatefolder(request: unknown): Promise<MakeFolder> {
-    // Validate request as CreateFolderRequest
-    const folderRequest = request as CreateFolderRequest;
-    const { 
-      name, 
-      description, 
-      parentId, 
-      type, 
-      organizationId, 
-      teamId, 
-      permissions 
-    } = folderRequest;
-
-    if (!name || !type) {
-      throw new Error('Name and type are required for folder creation');
-    }
-
-    try {
-      // Validate parent folder exists if specified
-      if (parentId) {
-        const parentResponse = await this.apiClient.get(`/folders/${parentId}`);
-        if (!parentResponse.success) {
-          throw new Error(`Parent folder with ID ${parentId} not found`);
-        }
-      }
-
-      const folderData = {
-        name,
-        description,
-        parentId,
-        type,
-        organizationId,
-        teamId,
-        permissions: {
-          read: permissions?.read ?? [],
-          write: permissions?.write ?? [],
-          admin: permissions?.admin ?? [],
-        },
-      };
-
-      // Determine appropriate endpoint based on context
-      let endpoint = '/folders';
-      if (organizationId) {
-        endpoint = `/organizations/${organizationId}/folders`;
-      } else if (teamId) {
-        endpoint = `/teams/${teamId}/folders`;
-      }
-
-      const response = await this.apiClient.post(endpoint, folderData);
-
-      if (!response.success) {
-        throw new Error(`Failed to create folder: ${response.error?.message || 'Unknown error'}`);
-      }
-
-      const folder = response.data as MakeFolder;
-      if (!folder) {
-        throw new Error('Folder creation failed - no data returned');
-      }
-
-      logger.info('Successfully created folder', {
-        folderId: folder.id,
-        name: folder.name,
-        type: folder.type,
-        path: folder.path,
-        module: 'folders'
-      });
-
-      return folder;
-    } catch (error) {
-      logger.error('Failed to create folder', {
-        error: error instanceof Error ? error.message : String(error),
-        request: folderRequest,
-        module: 'folders'
-      });
-      throw error;
-    }
-  }
 
   /**
    * listFolders operation handler
@@ -280,8 +202,8 @@ export class FoldersManager {
         operation: 'listFolders'
       });
 
-      // Implement listFolders business logic here
-      const result = await this.executeListfolders(request);
+      // Use FolderManager for folder listing
+      const result = await this.folderManager.listFolders(request as ListFoldersRequest);
 
       this.incrementStatistics('successful');
 
@@ -326,76 +248,6 @@ export class FoldersManager {
     }
   }
 
-  /**
-   * Execute listFolders business logic
-   */
-  private async executeListfolders(request: unknown): Promise<{ folders: MakeFolder[]; pagination: { total: number; limit: number; offset: number; hasMore: boolean } }> {
-    // Validate request as ListFoldersRequest
-    const listRequest = request as ListFoldersRequest;
-    const {
-      parentId,
-      type = 'all',
-      organizationId,
-      teamId,
-      searchQuery,
-      includeEmpty = false,
-      includeContents = false,
-      limit = 50,
-      offset = 0,
-      sortBy = 'name',
-      sortOrder = 'asc'
-    } = listRequest;
-
-    try {
-      // Build query parameters
-      const params: Record<string, unknown> = {
-        limit,
-        offset,
-        sortBy,
-        sortOrder,
-        includeEmpty,
-        includeContents,
-      };
-
-      if (parentId) {params.parentId = parentId;}
-      if (type !== 'all') {params.type = type;}
-      if (organizationId) {params.organizationId = organizationId;}
-      if (teamId) {params.teamId = teamId;}
-      if (searchQuery) {params.search = searchQuery;}
-
-      const response = await this.apiClient.get('/folders', { params });
-
-      if (!response.success) {
-        throw new Error(`Failed to list folders: ${response.error?.message || 'Unknown error'}`);
-      }
-
-      const folders = response.data as MakeFolder[] || [];
-      const metadata = response.metadata;
-
-      logger.info('Successfully retrieved folders', {
-        count: folders.length,
-        total: metadata?.total,
-        module: 'folders'
-      });
-
-      return {
-        folders,
-        pagination: {
-          total: metadata?.total || folders.length,
-          limit,
-          offset,
-          hasMore: (offset + folders.length) < (metadata?.total || folders.length)
-        }
-      };
-    } catch (error) {
-      logger.error('Failed to list folders', {
-        error: error instanceof Error ? error.message : String(error),
-        request: listRequest,
-        module: 'folders'
-      });
-      throw error;
-    }
-  }
 
   /**
    * getFolderContents operation handler
@@ -416,8 +268,8 @@ export class FoldersManager {
         operation: 'getFolderContents'
       });
 
-      // Implement getFolderContents business logic here
-      const result = await this.executeGetfoldercontents(request);
+      // Use FolderManager for folder contents retrieval
+      const result = await this.folderManager.getFolderContents(request as GetFolderContentsRequest);
 
       this.incrementStatistics('successful');
 
@@ -462,71 +314,6 @@ export class FoldersManager {
     }
   }
 
-  /**
-   * Execute getFolderContents business logic
-   */
-  private async executeGetfoldercontents(request: unknown): Promise<{ folder: MakeFolder; contents: unknown; pagination: { total: number; limit: number; offset: number; hasMore: boolean } }> {
-    // Validate request as GetFolderContentsRequest
-    const contentsRequest = request as GetFolderContentsRequest;
-    const {
-      folderId,
-      includeSubfolders = true,
-      includeTemplates = true,
-      includeScenarios = true,
-      includeConnections = true,
-      limit = 50,
-      offset = 0
-    } = contentsRequest;
-
-    if (!folderId) {
-      throw new Error('Folder ID is required to get folder contents');
-    }
-
-    try {
-      // Build query parameters
-      const params: Record<string, unknown> = {
-        includeSubfolders,
-        includeTemplates,
-        includeScenarios,
-        includeConnections,
-        limit,
-        offset,
-      };
-
-      const response = await this.apiClient.get(`/folders/${folderId}/contents`, { params });
-
-      if (!response.success) {
-        throw new Error(`Failed to get folder contents: ${response.error?.message || 'Unknown error'}`);
-      }
-
-      const data = (response.data as { folder: MakeFolder; contents: unknown }) || { folder: {} as MakeFolder, contents: {} };
-      const metadata = response.metadata;
-
-      logger.info('Successfully retrieved folder contents', {
-        folderId,
-        folder: data.folder?.name,
-        module: 'folders'
-      });
-
-      return {
-        folder: data.folder,
-        contents: data.contents || {},
-        pagination: {
-          total: metadata?.total || 0,
-          limit,
-          offset,
-          hasMore: (offset + limit) < (metadata?.total || 0)
-        }
-      };
-    } catch (error) {
-      logger.error('Failed to get folder contents', {
-        error: error instanceof Error ? error.message : String(error),
-        request: contentsRequest,
-        module: 'folders'
-      });
-      throw error;
-    }
-  }
 
   /**
    * moveItems operation handler
@@ -547,8 +334,8 @@ export class FoldersManager {
         operation: 'moveItems'
       });
 
-      // Implement moveItems business logic here
-      const result = await this.executeMoveitems(request);
+      // Use FolderManager for item movement
+      const result = await this.folderManager.moveItems(request as MoveItemsRequest);
 
       this.incrementStatistics('successful');
 
@@ -593,111 +380,6 @@ export class FoldersManager {
     }
   }
 
-  /**
-   * Execute moveItems business logic
-   */
-  private async executeMoveitems(request: unknown): Promise<{ movedItems: Array<{ type: string; id: number; oldPath: string; newPath: string }> }> {
-    // Validate request as MoveItemsRequest
-    const moveRequest = request as MoveItemsRequest;
-    const { 
-      items, 
-      targetFolderId, 
-      copyInsteadOfMove = false 
-    } = moveRequest;
-
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      throw new Error('At least one item is required to move');
-    }
-
-    // Validate all items have required properties
-    for (const item of items) {
-      if (!item.type || !item.id) {
-        throw new Error('Each item must have a type and id');
-      }
-      if (!['template', 'scenario', 'connection', 'folder'].includes(item.type)) {
-        throw new Error(`Invalid item type: ${item.type}. Must be one of: template, scenario, connection, folder`);
-      }
-    }
-
-    try {
-      // Validate target folder exists if specified
-      if (targetFolderId) {
-        const targetResponse = await this.apiClient.get(`/folders/${targetFolderId}`);
-        if (!targetResponse.success) {
-          throw new Error(`Target folder with ID ${targetFolderId} not found`);
-        }
-      }
-
-      const movedItems: Array<{ type: string; id: number; oldPath: string; newPath: string }> = [];
-
-      // Process each item for move/copy operation
-      for (const item of items) {
-        const { type, id } = item;
-
-        // Get current item details to capture old path
-        const currentItemResponse = await this.apiClient.get(`/${type}s/${id}`);
-        if (!currentItemResponse.success) {
-          throw new Error(`Item ${type} with ID ${id} not found`);
-        }
-
-        const currentItem = currentItemResponse.data as { path?: string; folderId?: number };
-        const oldPath = currentItem.path || `/${type}s/${id}`;
-
-        // Prepare move/copy payload
-        const movePayload = {
-          targetFolderId: targetFolderId || null,
-          copyInsteadOfMove
-        };
-
-        // Determine the appropriate endpoint for move/copy operation
-        let endpoint = `/${type}s/${id}/move`;
-        if (copyInsteadOfMove) {
-          endpoint = `/${type}s/${id}/copy`;
-        }
-
-        const response = await this.apiClient.post(endpoint, movePayload);
-
-        if (!response.success) {
-          throw new Error(`Failed to ${copyInsteadOfMove ? 'copy' : 'move'} ${type} ${id}: ${response.error?.message || 'Unknown error'}`);
-        }
-
-        const updatedItem = response.data as { path?: string; folderId?: number };
-        const newPath = updatedItem.path || `/${type}s/${id}`;
-
-        movedItems.push({
-          type,
-          id,
-          oldPath,
-          newPath
-        });
-
-        logger.info(`Successfully ${copyInsteadOfMove ? 'copied' : 'moved'} item`, {
-          type,
-          id,
-          oldPath,
-          newPath,
-          targetFolderId,
-          module: 'folders'
-        });
-      }
-
-      logger.info(`Successfully ${copyInsteadOfMove ? 'copied' : 'moved'} items`, {
-        itemCount: movedItems.length,
-        targetFolderId,
-        copyInsteadOfMove,
-        module: 'folders'
-      });
-
-      return { movedItems };
-    } catch (error) {
-      logger.error(`Failed to ${copyInsteadOfMove ? 'copy' : 'move'} items`, {
-        error: error instanceof Error ? error.message : String(error),
-        request: moveRequest,
-        module: 'folders'
-      });
-      throw error;
-    }
-  }
 
   /**
    * createDataStore operation handler

@@ -62,12 +62,12 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755871057174_8ztv1nuhj",
-      "title": "Complete optional-chain ESLint style improvements",
-      "description": "Fix remaining 107 @typescript-eslint/prefer-optional-chain violations. Convert patterns like obj && obj.prop to obj?.prop for improved code style and readability. Non-blocking quality improvements.",
+      "id": "task_1755875672485_nesf0capb",
+      "title": "Extract folder management functionality into separate module",
+      "description": "Extract createfolder, listfolders, getfoldercontents, and moveitems methods from core/index.ts into a new FolderManager class in folder-manager.ts",
       "mode": "DEVELOPMENT",
-      "category": "enhancement",
-      "priority": "low",
+      "category": "refactor",
+      "priority": "high",
       "status": "pending",
       "dependencies": [],
       "important_files": [],
@@ -75,24 +75,8 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-22T13:57:37.174Z",
-      "auto_research_created": false,
-      "started_at": null,
-      "claimed_by": null,
-      "assigned_agent": null,
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755871077883",
-          "action": "claimed",
-          "timestamp": "2025-08-22T13:57:57.883Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-22T14:42:05.036Z",
-          "reason": "Task stale for 44 minutes"
-        }
-      ]
+      "created_at": "2025-08-22T15:14:32.485Z",
+      "auto_research_created": false
     },
     {
       "id": "task_1755868885034_moy8dtie9",
@@ -220,13 +204,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755873732979_1_general_d4e7dfef": {
+    "development_session_1755875593804_1_general_7313af48": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T14:42:12.980Z",
+      "lastHeartbeat": "2025-08-22T15:13:13.804Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -237,8 +221,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T14:42:12.980Z",
-      "sessionId": "session_1755873732979",
+      "createdAt": "2025-08-22T15:13:13.804Z",
+      "sessionId": "session_1755875593804",
       "metadata": {}
     }
   },
