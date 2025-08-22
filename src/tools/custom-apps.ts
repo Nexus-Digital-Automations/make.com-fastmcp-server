@@ -803,6 +803,72 @@ function addCreateCustomFunctionTool(server: FastMCP, apiClient: MakeApiClient):
 }
 
 /**
+ * Prepare test data for custom app testing
+ */
+function prepareTestData(testType: string, environment: string, includePerformance: boolean, timeout: number): Record<string, unknown> {
+  return {
+    testType,
+    environment,
+    includePerformance,
+    timeout,
+  };
+}
+
+/**
+ * Extract and process test result summary data
+ */
+function processTestResultSummary(testResult: Record<string, unknown>): Record<string, unknown> {
+  const summary = testResult?.summary as Record<string, unknown>;
+  return {
+    totalTests: Number(summary?.total || 0),
+    passed: Number(summary?.passed || 0),
+    failed: Number(summary?.failed || 0),
+    duration: summary?.duration,
+  };
+}
+
+/**
+ * Extract and process test result details
+ */
+function processTestResults(testResult: Record<string, unknown>, includePerformance: boolean): Record<string, unknown> {
+  const results = testResult?.results as Record<string, unknown>;
+  return {
+    endpoints: results?.endpoints || [],
+    functions: results?.functions || [],
+    hooks: results?.hooks || [],
+    performance: includePerformance ? results?.performance || {} : undefined,
+  };
+}
+
+/**
+ * Format the complete test response
+ */
+function formatTestResponse(
+  testResult: Record<string, unknown>,
+  appId: number,
+  testType: string,
+  environment: string,
+  includePerformance: boolean
+): any {
+  const processedSummary = processTestResultSummary(testResult);
+  const processedResults = processTestResults(testResult, includePerformance);
+
+  return formatSuccessResponse({
+    test: testResult,
+    message: `Custom app ${appId} testing completed`,
+    summary: {
+      appId,
+      testType,
+      environment,
+      ...processedSummary,
+      coverage: testResult?.coverage,
+    },
+    results: processedResults,
+    recommendations: testResult?.recommendations || [],
+  });
+}
+
+/**
  * Add test custom app tool
  */
 function addTestCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -831,15 +897,12 @@ function addTestCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void {
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        const testData = {
-          testType,
-          environment,
-          includePerformance,
-          timeout,
-        };
+        // Step 1: Prepare test data
+        const testData = prepareTestData(testType, environment, includePerformance, timeout);
 
         reportProgress({ progress: 25, total: 100 });
 
+        // Step 2: Execute API call
         const response = await apiClient.post(`/custom-apps/${appId}/test`, testData);
 
         if (!response.success) {
@@ -849,34 +912,17 @@ function addTestCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void {
         const testResult = response.data as Record<string, unknown>;
         reportProgress({ progress: 100, total: 100 });
 
+        // Step 3: Log results summary
+        const summary = processTestResultSummary(testResult);
         log.info('Successfully tested custom app', {
           appId,
           testType,
-          passed: Number((testResult?.summary as Record<string, unknown>)?.passed || 0),
-          failed: Number((testResult?.summary as Record<string, unknown>)?.failed || 0),
+          passed: summary.passed,
+          failed: summary.failed,
         });
 
-        return formatSuccessResponse({
-          test: testResult,
-          message: `Custom app ${appId} testing completed`,
-          summary: {
-            appId,
-            testType,
-            environment,
-            totalTests: Number((testResult?.summary as Record<string, unknown>)?.total || 0),
-            passed: Number((testResult?.summary as Record<string, unknown>)?.passed || 0),
-            failed: Number((testResult?.summary as Record<string, unknown>)?.failed || 0),
-            duration: (testResult?.summary as Record<string, unknown>)?.duration,
-            coverage: testResult?.coverage,
-          },
-          results: {
-            endpoints: (testResult?.results as Record<string, unknown>)?.endpoints || [],
-            functions: (testResult?.results as Record<string, unknown>)?.functions || [],
-            hooks: (testResult?.results as Record<string, unknown>)?.hooks || [],
-            performance: includePerformance ? (testResult?.results as Record<string, unknown>)?.performance || {} : undefined,
-          },
-          recommendations: testResult?.recommendations || [],
-        });
+        // Step 4: Format and return response
+        return formatTestResponse(testResult, appId, testType, environment, includePerformance).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error testing custom app', { appId, error: errorMessage });
