@@ -14670,9 +14670,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755848176610_kwyuh3r6b",
+      "title": "Fix make-api-client test mocking failures",
+      "description": "All 24 tests in tests/unit/lib/make-api-client.test.ts failing with TypeError: Cannot read properties of undefined (reading mockReturnValue). Complex Jest mocking setup issues need to be resolved.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T07:36:16.610Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755847510133_1_general_7c3ee381",
+      "started_at": "2025-08-22T07:36:23.399Z",
+      "claimed_by": "development_session_1755847510133_1_general_7c3ee381",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755847510133_1_general_7c3ee381",
+          "role": "primary",
+          "assignedAt": "2025-08-22T07:36:23.399Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T07:37:13.682Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T07:37:13.683Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 329,
-  "last_completion": "2025-08-22T07:34:40.656Z",
+  "total_completed": 330,
+  "last_completion": "2025-08-22T07:37:13.683Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
