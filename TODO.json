@@ -17,14 +17,25 @@
       "subtasks": [],
       "created_at": "2025-08-22T22:44:01.686Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T22:44:21.534Z",
-      "claimed_by": "agent_1755902661534",
-      "assigned_agent": "agent_1755902661534",
+      "started_at": "2025-08-22T23:04:49.685Z",
+      "claimed_by": "agent_1755903889685",
+      "assigned_agent": "agent_1755903889685",
       "agent_assignment_history": [
         {
           "agent": "agent_1755902661534",
           "action": "claimed",
           "timestamp": "2025-08-22T22:44:21.534Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T23:04:38.563Z",
+          "reason": "Task stale for 20 minutes"
+        },
+        {
+          "agent": "agent_1755903889685",
+          "action": "claimed",
+          "timestamp": "2025-08-22T23:04:49.685Z"
         }
       ]
     }

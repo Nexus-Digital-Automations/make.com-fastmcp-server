@@ -571,7 +571,7 @@ class NamingConventionValidator {
   /**
    * Safely evaluate custom validation function using predefined operations
    */
-  private static evaluateCustomValidationFunction(functionCode: string, name: string, _rule: any): boolean | string {
+  private static evaluateCustomValidationFunction(functionCode: string, name: string, _rule: z.infer<typeof NamingRuleSchema>): boolean | string {
     // Instead of dynamic evaluation, provide safe predefined operations
     // Support basic naming validation patterns
     

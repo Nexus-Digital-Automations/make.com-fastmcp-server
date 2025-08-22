@@ -1460,10 +1460,10 @@ class PolicyComplianceValidator {
  */
 async function executePolicyComplianceValidation(
   validator: PolicyComplianceValidator,
-  input: any,
-  log: any,
-  reportProgress: any
-): Promise<any> {
+  input: z.infer<typeof ValidatePolicyComplianceSchema>,
+  log: { info: (message: string, meta?: unknown) => void; error: (message: string, meta?: unknown) => void },
+  reportProgress: (progress: { progress: number; total: number }) => void
+): Promise<Record<string, unknown>> {
   log.info('Starting comprehensive policy compliance validation', {
     targetsCount: input.targets.length,
     policyTypes: input.policySelection.policyTypes,
@@ -1503,9 +1503,9 @@ async function executePolicyComplianceValidation(
  */
 function generateComplianceSummary(
   validationId: string,
-  results: any[],
+  results: Array<Record<string, unknown>>,
   startTime: string
-): any {
+): Record<string, unknown> {
   return {
     validationId,
     totalTargets: results.length,
@@ -1529,7 +1529,7 @@ function generateComplianceSummary(
 /**
  * Calculate comprehensive compliance breakdown across all targets
  */
-function calculateComplianceBreakdown(results: any[]): any {
+function calculateComplianceBreakdown(results: Array<Record<string, unknown>>): Record<string, unknown> {
   const overallComplianceBreakdown = {
     byFramework: {} as Record<string, { score: number; violations: number; targets: number }>,
     byPolicyType: {} as Record<string, { score: number; violations: number; targets: number }>,
@@ -1588,8 +1588,8 @@ function calculateComplianceBreakdown(results: any[]): any {
  */
 async function logComplianceAuditEvent(
   validationId: string,
-  summary: any,
-  input: any,
+  summary: Record<string, unknown>,
+  input: z.infer<typeof ValidatePolicyComplianceSchema>,
   success: boolean,
   errorMessage?: string
 ): Promise<void> {
@@ -1630,13 +1630,13 @@ async function logComplianceAuditEvent(
 function generateFinalValidationResult(
   validationId: string,
   startTime: string,
-  results: any[],
-  summary: any,
-  allRecommendations: any[],
-  allCrossValidationResults: any[],
-  overallComplianceBreakdown: any,
-  input: any
-): any {
+  results: Array<Record<string, unknown>>,
+  summary: Record<string, unknown>,
+  allRecommendations: Array<Record<string, unknown>>,
+  allCrossValidationResults: Array<Record<string, unknown>>,
+  overallComplianceBreakdown: Record<string, unknown>,
+  input: z.infer<typeof ValidatePolicyComplianceSchema>
+): Record<string, unknown> {
   return {
     success: true,
     validationId,

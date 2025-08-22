@@ -758,7 +758,7 @@ class ScenarioArchivalPolicyEngine {
   /**
    * Safely evaluate custom function using predefined operations
    */
-  private evaluateCustomFunction(functionCode: string, scenario: any, _condition: any): any {
+  private evaluateCustomFunction(functionCode: string, scenario: ScenarioUsageMetrics, _condition: z.infer<typeof ArchivalConditionSchema>): boolean | Record<string, unknown> {
     // Instead of dynamic evaluation, provide safe predefined operations
     // This is a simplified example - in production, use a proper expression evaluator
     
@@ -793,7 +793,7 @@ class ScenarioArchivalPolicyEngine {
  * Validate policy conditions
  */
 function validatePolicyConditions(
-  conditions: any[],
+  conditions: z.infer<typeof ArchivalConditionSchema>[],
   policyEngine: ScenarioArchivalPolicyEngine
 ): { conditionValidation: Record<string, unknown>; invalidConditions: string[] } {
   const conditionValidation: Record<string, unknown> = {};
@@ -855,11 +855,11 @@ function validatePolicyConditions(
  * Estimate policy impact
  */
 async function estimatePolicyImpact(
-  input: any,
+  input: z.infer<typeof CreateScenarioArchivalPolicySchema>,
   policyEngine: ScenarioArchivalPolicyEngine,
   timestamp: string,
   componentLogger: ReturnType<typeof logger.child>
-): Promise<any> {
+): Promise<Record<string, unknown>> {
   let estimatedImpact = {
     totalScenariosInScope: 0,
     potentiallyAffected: 0,
@@ -880,8 +880,8 @@ async function estimatePolicyImpact(
         input.conditionLogic
       );
 
-      const affected = evaluationResults.filter((r: any) => r.shouldArchive);
-      const highRisk = evaluationResults.filter((r: any) => r.score > 0.8);
+      const affected = evaluationResults.filter((r: Record<string, unknown>) => r.shouldArchive);
+      const highRisk = evaluationResults.filter((r: Record<string, unknown>) => (r.score as number) > 0.8);
 
       estimatedImpact = {
         totalScenariosInScope: sampleSize,
@@ -902,17 +902,17 @@ async function estimatePolicyImpact(
  * Create policy object
  */
 function createPolicyObject(
-  input: any,
+  input: z.infer<typeof CreateScenarioArchivalPolicySchema>,
   policyId: string,
   timestamp: string,
-  estimatedImpact: any
-): any {
+  estimatedImpact: Record<string, unknown>
+): Record<string, unknown> {
   return {
     id: policyId,
     name: input.name,
     description: input.description || '',
     scope: input.scope,
-    conditions: input.conditions.sort((a: any, b: any) => (a.priority || 50) - (b.priority || 50)),
+    conditions: input.conditions.sort((a, b) => (a.priority || 50) - (b.priority || 50)),
     conditionLogic: input.conditionLogic,
     customLogicExpression: input.customLogicExpression,
     enforcement: {
@@ -970,7 +970,7 @@ function createPolicyObject(
     metadata: {
       ...input.metadata,
       conditionsCount: input.conditions.length,
-      triggersUsed: [...new Set(input.conditions.map((c: any) => c.trigger))],
+      triggersUsed: [...new Set(input.conditions.map(c => c.trigger))],
       enforcementLevel: input.enforcement.level,
       estimatedImpact: estimatedImpact.potentiallyAffected,
     },
@@ -991,11 +991,11 @@ function createPolicyObject(
  * Store policy and create audit logs
  */
 async function storePolicyAndAudit(
-  policy: any,
-  input: any,
-  estimatedImpact: any,
+  policy: Record<string, unknown>,
+  input: z.infer<typeof CreateScenarioArchivalPolicySchema>,
+  estimatedImpact: Record<string, unknown>,
   apiClient: MakeApiClient
-): Promise<any> {
+): Promise<Record<string, unknown>> {
   // Store policy (in production, this would be stored in database)
   const response = await apiClient.post('/policies/scenario-archival', policy);
   
