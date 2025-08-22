@@ -128,23 +128,23 @@ function addAnalyzePolicyConflictsTool(server: FastMCP, apiClient: MakeApiClient
 /**
  * Add remaining governance tool helper functions
  */
-function addAssessRiskTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addAssessRiskTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
-function addConfigureAutomatedRemediationTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addConfigureAutomatedRemediationTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
-function addGenerateGovernanceInsightsTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addGenerateGovernanceInsightsTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
-function addGenerateGovernanceDashboardTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addGenerateGovernanceDashboardTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
-function addOptimizePoliciesTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addOptimizePoliciesTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 

@@ -154,84 +154,84 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 /**
  * Add get folder contents tool
  */
-function addGetFolderContentsTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addGetFolderContentsTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add move items tool
  */
-function addMoveItemsTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addMoveItemsTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add create data store tool
  */
-function addCreateDataStoreTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addCreateDataStoreTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add list data stores tool
  */
-function addListDataStoresTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addListDataStoresTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add list data structures tool
  */
-function addListDataStructuresTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addListDataStructuresTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add get data structure tool
  */
-function addGetDataStructureTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addGetDataStructureTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add create data structure tool
  */
-function addCreateDataStructureTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addCreateDataStructureTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add update data structure tool
  */
-function addUpdateDataStructureTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addUpdateDataStructureTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add delete data structure tool
  */
-function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addDeleteDataStructureTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add get data store tool
  */
-function addGetDataStoreTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addGetDataStoreTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add update data store tool
  */
-function addUpdateDataStoreTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addUpdateDataStoreTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
 /**
  * Add delete data store tool
  */
-function addDeleteDataStoreTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+function addDeleteDataStoreTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
   // TODO: Implement this helper function
 }
 
