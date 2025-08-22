@@ -515,10 +515,10 @@ const AnalyzeDependenciesSchema = z.object({
 
 class BlueprintCollaborationEngine {
   private static instance: BlueprintCollaborationEngine | null = null;
-  private activeSessions: Map<string, CollaborationSession> = new Map();
-  private versionCache: Map<string, BlueprintVersion> = new Map();
-  private dependencyGraphs: Map<string, DependencyGraph> = new Map();
-  private componentLogger = logger.child({ component: 'BlueprintCollaborationEngine' });
+  private readonly activeSessions: Map<string, CollaborationSession> = new Map();
+  private readonly versionCache: Map<string, BlueprintVersion> = new Map();
+  private readonly dependencyGraphs: Map<string, DependencyGraph> = new Map();
+  private readonly componentLogger = logger.child({ component: 'BlueprintCollaborationEngine' });
 
   private constructor() {
     this.initializeEngine();
@@ -868,7 +868,7 @@ class BlueprintCollaborationEngine {
 
     // Check cache first
     if (this.dependencyGraphs.has(cacheKey)) {
-      const cachedGraph = this.dependencyGraphs.get(cacheKey)!;
+      const cachedGraph = this.dependencyGraphs.get(cacheKey);
       return {
         dependencyGraph: cachedGraph,
         analysis: await this.generateDependencyAnalysis(cachedGraph),

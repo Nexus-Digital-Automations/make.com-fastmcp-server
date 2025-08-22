@@ -387,7 +387,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating budget configuration', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create budget configuration: ${errorMessage}`);
       }
     },
@@ -456,10 +456,10 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
         // Determine risk level
         let riskLevel: 'minimal' | 'low' | 'medium' | 'high' | 'critical' = apiData?.riskLevel || 'minimal';
         if (!apiData?.riskLevel) {
-          if (percentProjected > 120) riskLevel = 'critical';
-          else if (percentProjected > 100) riskLevel = 'high';
-          else if (percentProjected > 80) riskLevel = 'medium';
-          else if (percentProjected > 60) riskLevel = 'low';
+          if (percentProjected > 120) {riskLevel = 'critical';}
+          else if (percentProjected > 100) {riskLevel = 'high';}
+          else if (percentProjected > 80) {riskLevel = 'medium';}
+          else if (percentProjected > 60) {riskLevel = 'low';}
         }
 
         // Use existing triggered thresholds or simulate
@@ -570,7 +570,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting budget status', { budgetId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get budget status: ${errorMessage}`);
       }
     },
@@ -715,7 +715,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
         });
 
         // Final validation of projection object before returning
-        if (!projection || !projection.projectedSpend) {
+        if (!projection?.projectedSpend) {
           throw new UserError('Failed to construct valid projection object');
         }
 
@@ -746,7 +746,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error generating cost projection', { budgetId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to generate cost projection: ${errorMessage}`);
       }
     },
@@ -965,7 +965,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error executing scenario control', { budgetId, action, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to execute scenario control: ${errorMessage}`);
       }
     },

@@ -272,7 +272,7 @@ const PolicyFiltersSchema = z.object({
  * Scenario archival policy engine
  */
 class ScenarioArchivalPolicyEngine {
-  constructor(private apiClient: MakeApiClient) {}
+  constructor(private readonly apiClient: MakeApiClient) {}
 
   /**
    * Evaluate scenarios against archival conditions
@@ -988,7 +988,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           riskLevel: 'low',
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create scenario archival policy: ${errorMessage}`);
       }
     },
@@ -1156,7 +1156,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error evaluating scenario archival policy', { error: errorMessage, policyId: input.policyId });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to evaluate scenario archival policy: ${errorMessage}`);
       }
     },
@@ -1297,7 +1297,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing scenario archival policies', { error: errorMessage });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list scenario archival policies: ${errorMessage}`);
       }
     },
@@ -1348,8 +1348,8 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
         };
 
         // Apply updates
-        if (input.name !== undefined) updateData.name = input.name;
-        if (input.description !== undefined) updateData.description = input.description;
+        if (input.name !== undefined) {updateData.name = input.name;}
+        if (input.description !== undefined) {updateData.description = input.description;}
         
         if (input.conditions !== undefined) {
           // Validate new conditions
@@ -1386,9 +1386,9 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           };
         }
 
-        if (input.active !== undefined) updateData.active = input.active;
-        if (input.effectiveFrom !== undefined) updateData.effectiveFrom = input.effectiveFrom;
-        if (input.effectiveUntil !== undefined) updateData.effectiveUntil = input.effectiveUntil;
+        if (input.active !== undefined) {updateData.active = input.active;}
+        if (input.effectiveFrom !== undefined) {updateData.effectiveFrom = input.effectiveFrom;}
+        if (input.effectiveUntil !== undefined) {updateData.effectiveUntil = input.effectiveUntil;}
 
         if (input.metadata !== undefined) {
           updateData.metadata = {
@@ -1463,7 +1463,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           riskLevel: 'low',
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update scenario archival policy: ${errorMessage}`);
       }
     },
@@ -1579,7 +1579,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           riskLevel: 'low',
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete scenario archival policy: ${errorMessage}`);
       }
     },

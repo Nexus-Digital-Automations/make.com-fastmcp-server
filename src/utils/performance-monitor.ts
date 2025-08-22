@@ -32,12 +32,12 @@ export interface PerformanceBaseline {
 
 class PerformanceMonitor {
   private static instance: PerformanceMonitor;
-  private activeMetrics: Map<string, PerformanceMetric> = new Map();
-  private completedMetrics: PerformanceMetric[] = [];
-  private baselines: Map<string, PerformanceBaseline> = new Map();
+  private readonly activeMetrics: Map<string, PerformanceMetric> = new Map();
+  private readonly completedMetrics: PerformanceMetric[] = [];
+  private readonly baselines: Map<string, PerformanceBaseline> = new Map();
   
   // Performance targets from research analysis
-  private targets: Record<PerformanceMetric['category'], number> = {
+  private readonly targets: Record<PerformanceMetric['category'], number> = {
     startup: 2000, // 2 seconds
     api: 100,      // 100ms
     tool: 500,     // 500ms
@@ -129,14 +129,14 @@ class PerformanceMonitor {
    * Update performance baseline for a metric
    */
   private updateBaseline(metric: PerformanceMetric): void {
-    if (!metric.duration) return;
+    if (!metric.duration) {return;}
 
     const baselineKey = `${metric.category}_${metric.name}`;
     
     // Get all metrics for this name and category
     const relevantMetrics = this.completedMetrics
       .filter(m => m.name === metric.name && m.category === metric.category && m.duration)
-      .map(m => m.duration!);
+      .map(m => m.duration);
 
     if (relevantMetrics.length >= 5) { // Need at least 5 samples for meaningful baseline
       const sorted = relevantMetrics.sort((a, b) => a - b);
@@ -171,12 +171,12 @@ class PerformanceMonitor {
    * Check if a metric indicates performance regression
    */
   isPerformanceRegression(metric: PerformanceMetric): boolean {
-    if (!metric.duration) return false;
+    if (!metric.duration) {return false;}
 
     const baselineKey = `${metric.category}_${metric.name}`;
     const baseline = this.baselines.get(baselineKey);
     
-    if (!baseline) return false;
+    if (!baseline) {return false;}
 
     // Consider it a regression if it's > 2 standard deviations above average
     // or exceeds the P95 by more than 50%
@@ -192,7 +192,7 @@ class PerformanceMonitor {
    * Check if metric meets performance targets
    */
   meetsPerformanceTarget(metric: PerformanceMetric): boolean {
-    if (!metric.duration) return false;
+    if (!metric.duration) {return false;}
 
     const target = this.targets[metric.category];
     return metric.duration <= target;

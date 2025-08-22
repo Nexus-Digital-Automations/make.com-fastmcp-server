@@ -123,8 +123,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           includeBilling,
         };
 
-        if (startDate) params.startDate = startDate;
-        if (endDate) params.endDate = endDate;
+        if (startDate) {params.startDate = startDate;}
+        if (endDate) {params.endDate = endDate;}
 
         const response = await apiClient.get(`/analytics/${organizationId}`, { params });
 
@@ -161,7 +161,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error getting analytics', { organizationId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get organization analytics: ${errorMessage}`);
       }
     },
@@ -201,13 +201,13 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           offset,
         };
 
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
-        if (userId) params.userId = userId;
-        if (action) params.action = action;
-        if (resource) params.resource = resource;
-        if (startDate) params.startDate = startDate;
-        if (endDate) params.endDate = endDate;
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
+        if (userId) {params.userId = userId;}
+        if (action) {params.action = action;}
+        if (resource) {params.resource = resource;}
+        if (startDate) {params.startDate = startDate;}
+        if (endDate) {params.endDate = endDate;}
 
         const response = await apiClient.get('/audit-logs', { params });
 
@@ -252,7 +252,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error listing audit logs', { error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list audit logs: ${errorMessage}`);
       }
     },
@@ -307,7 +307,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error getting audit log', { logId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get audit log details: ${errorMessage}`);
       }
     },
@@ -345,10 +345,10 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           offset,
         };
 
-        if (executionId) params.executionId = executionId;
-        if (level) params.level = level;
-        if (startDate) params.startDate = startDate;
-        if (endDate) params.endDate = endDate;
+        if (executionId) {params.executionId = executionId;}
+        if (level) {params.level = level;}
+        if (startDate) {params.startDate = startDate;}
+        if (endDate) {params.endDate = endDate;}
 
         const response = await apiClient.get(`/scenarios/${scenarioId}/logs`, { params });
 
@@ -395,7 +395,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error getting scenario logs', { scenarioId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get scenario logs: ${errorMessage}`);
       }
     },
@@ -434,12 +434,12 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           offset,
         };
 
-        if (scenarioId) params.scenarioId = scenarioId;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
-        if (status) params.status = status;
-        if (startDate) params.startDate = startDate;
-        if (endDate) params.endDate = endDate;
+        if (scenarioId) {params.scenarioId = scenarioId;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
+        if (status) {params.status = status;}
+        if (startDate) {params.startDate = startDate;}
+        if (endDate) {params.endDate = endDate;}
 
         let endpoint = '/executions';
         if (scenarioId) {
@@ -477,7 +477,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
             .filter(exec => exec.finishedAt)
             .reduce((sum, exec) => {
               const startTime = new Date(exec.startedAt).getTime();
-              const endTime = new Date(exec.finishedAt!).getTime();
+              const endTime = new Date(exec.finishedAt).getTime();
               return sum + (endTime - startTime);
             }, 0) / executions.filter(exec => exec.finishedAt).length : 0,
         };
@@ -497,7 +497,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error getting execution history', { error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get execution history: ${errorMessage}`);
       }
     },
@@ -536,10 +536,10 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           offset,
         };
 
-        if (scenarioId) params.scenarioId = scenarioId;
-        if (organizationId) params.organizationId = organizationId;
-        if (status) params.status = status;
-        if (canResume !== undefined) params.canResume = canResume;
+        if (scenarioId) {params.scenarioId = scenarioId;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (status) {params.status = status;}
+        if (canResume !== undefined) {params.canResume = canResume;}
 
         const response = await apiClient.get('/incomplete-executions', { params });
 
@@ -584,7 +584,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error listing incomplete executions', { error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list incomplete executions: ${errorMessage}`);
       }
     },
@@ -644,7 +644,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error resolving incomplete execution', { executionId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to resolve incomplete execution: ${errorMessage}`);
       }
     },
@@ -682,10 +682,10 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           offset,
         };
 
-        if (success !== undefined) params.success = success;
-        if (method) params.method = method;
-        if (startDate) params.startDate = startDate;
-        if (endDate) params.endDate = endDate;
+        if (success !== undefined) {params.success = success;}
+        if (method) {params.method = method;}
+        if (startDate) {params.startDate = startDate;}
+        if (endDate) {params.endDate = endDate;}
 
         const response = await apiClient.get(`/hooks/${hookId}/logs`, { params });
 
@@ -732,7 +732,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error getting hook logs', { hookId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get hook logs: ${errorMessage}`);
       }
     },
@@ -800,7 +800,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error exporting data', { organizationId, dataType, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to export analytics data: ${errorMessage}`);
       }
     },
@@ -842,8 +842,8 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           period,
         };
 
-        if (startDate) params.startDate = startDate;
-        if (endDate) params.endDate = endDate;
+        if (startDate) {params.startDate = startDate;}
+        if (endDate) {params.endDate = endDate;}
 
         const response = await apiClient.get(`/organizations/${organizationId}/metrics`, { params });
 
@@ -875,7 +875,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error getting performance metrics', { organizationId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get performance metrics: ${errorMessage}`);
       }
     },

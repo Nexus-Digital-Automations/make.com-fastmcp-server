@@ -354,7 +354,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error searching public apps', { query, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to search public apps: ${errorMessage}`);
       }
     },
@@ -494,7 +494,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting app details', { appId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get app details: ${errorMessage}`);
       }
     },
@@ -642,7 +642,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing popular apps', { timeframe, category, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list popular apps: ${errorMessage}`);
       }
     },
@@ -654,7 +654,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
 // Helper functions for intelligent analysis and recommendations
 
 function calculateRelevanceScore(query: string, apps: MakePublicApp[]): number {
-  if (!apps.length) return 0;
+  if (!apps.length) {return 0;}
   const queryWords = query.toLowerCase().split(' ');
   let totalScore = 0;
 
@@ -709,9 +709,9 @@ function generatePricingAnalysis(apps: MakePublicApp[]): Record<string, number> 
 
 function generateCapabilityAnalysis(apps: MakePublicApp[]): Record<string, number> {
   return apps.reduce((analysis: Record<string, number>, app) => {
-    if (app.capabilities.triggers.length > 0) analysis.hasTriggers = (analysis.hasTriggers || 0) + 1;
-    if (app.capabilities.actions.length > 0) analysis.hasActions = (analysis.hasActions || 0) + 1;
-    if (app.capabilities.searches.length > 0) analysis.hasSearches = (analysis.hasSearches || 0) + 1;
+    if (app.capabilities.triggers.length > 0) {analysis.hasTriggers = (analysis.hasTriggers || 0) + 1;}
+    if (app.capabilities.actions.length > 0) {analysis.hasActions = (analysis.hasActions || 0) + 1;}
+    if (app.capabilities.searches.length > 0) {analysis.hasSearches = (analysis.hasSearches || 0) + 1;}
     return analysis;
   }, {});
 }
@@ -753,11 +753,11 @@ function calculateOverallAppScore(app: MakePublicApp): number {
 function identifyAppStrengths(app: MakePublicApp): string[] {
   const strengths: string[] = [];
   
-  if (app.usage.averageRating >= 4.5) strengths.push('Excellent user ratings');
-  if (app.publisher.verified) strengths.push('Verified publisher');
-  if (app.pricing.model === 'free') strengths.push('Free to use');
-  if (app.capabilities.triggers.length + app.capabilities.actions.length >= 10) strengths.push('Rich feature set');
-  if (app.compliance.gdprCompliant) strengths.push('GDPR compliant');
+  if (app.usage.averageRating >= 4.5) {strengths.push('Excellent user ratings');}
+  if (app.publisher.verified) {strengths.push('Verified publisher');}
+  if (app.pricing.model === 'free') {strengths.push('Free to use');}
+  if (app.capabilities.triggers.length + app.capabilities.actions.length >= 10) {strengths.push('Rich feature set');}
+  if (app.compliance.gdprCompliant) {strengths.push('GDPR compliant');}
   
   return strengths;
 }
@@ -765,10 +765,10 @@ function identifyAppStrengths(app: MakePublicApp): string[] {
 function identifyAppConsiderations(app: MakePublicApp): string[] {
   const considerations: string[] = [];
   
-  if (app.usage.averageRating < 3.5) considerations.push('Below average user ratings');
-  if (app.authentication.type === 'custom') considerations.push('Custom authentication setup required');
-  if (app.requirements.minimumPlan === 'enterprise') considerations.push('Requires enterprise plan');
-  if (app.capabilities.triggers.length === 0) considerations.push('No trigger capabilities');
+  if (app.usage.averageRating < 3.5) {considerations.push('Below average user ratings');}
+  if (app.authentication.type === 'custom') {considerations.push('Custom authentication setup required');}
+  if (app.requirements.minimumPlan === 'enterprise') {considerations.push('Requires enterprise plan');}
+  if (app.capabilities.triggers.length === 0) {considerations.push('No trigger capabilities');}
   
   return considerations;
 }
@@ -776,10 +776,10 @@ function identifyAppConsiderations(app: MakePublicApp): string[] {
 function generateUseCaseRecommendations(app: MakePublicApp): string[] {
   const useCases: string[] = [];
   
-  if (app.capabilities.triggers.length > 0) useCases.push('Automating workflows with real-time triggers');
-  if (app.capabilities.searches.length > 0) useCases.push('Data discovery and search operations');
-  if (app.capabilities.actions.some(a => a.type === 'create')) useCases.push('Content creation and data entry');
-  if (app.authentication.type === 'oauth2') useCases.push('Secure enterprise integrations');
+  if (app.capabilities.triggers.length > 0) {useCases.push('Automating workflows with real-time triggers');}
+  if (app.capabilities.searches.length > 0) {useCases.push('Data discovery and search operations');}
+  if (app.capabilities.actions.some(a => a.type === 'create')) {useCases.push('Content creation and data entry');}
+  if (app.authentication.type === 'oauth2') {useCases.push('Secure enterprise integrations');}
   
   return useCases;
 }
@@ -787,24 +787,24 @@ function generateUseCaseRecommendations(app: MakePublicApp): string[] {
 function assessSetupComplexity(app: MakePublicApp): 'low' | 'medium' | 'high' {
   let complexity = 0;
   
-  if (app.authentication.type === 'custom') complexity += 2;
-  if (app.requirements.dependencies.length > 2) complexity += 1;
-  if (app.authentication.fields.length > 5) complexity += 1;
+  if (app.authentication.type === 'custom') {complexity += 2;}
+  if (app.requirements.dependencies.length > 2) {complexity += 1;}
+  if (app.authentication.fields.length > 5) {complexity += 1;}
   
-  if (complexity >= 3) return 'high';
-  if (complexity >= 1) return 'medium';
+  if (complexity >= 3) {return 'high';}
+  if (complexity >= 1) {return 'medium';}
   return 'low';
 }
 
 function assessMaintenanceComplexity(app: MakePublicApp): 'minimal' | 'moderate' | 'intensive' {
   let complexity = 0;
   
-  if (app.versions.filter(v => !v.deprecated).length > 3) complexity += 1;
-  if (app.requirements.conflictingApps?.length || 0 > 0) complexity += 1;
-  if (app.capabilities.triggers.some(t => t.type === 'webhook')) complexity += 1;
+  if (app.versions.filter(v => !v.deprecated).length > 3) {complexity += 1;}
+  if (app.requirements.conflictingApps?.length || 0 > 0) {complexity += 1;}
+  if (app.capabilities.triggers.some(t => t.type === 'webhook')) {complexity += 1;}
   
-  if (complexity >= 2) return 'intensive';
-  if (complexity >= 1) return 'moderate';
+  if (complexity >= 2) {return 'intensive';}
+  if (complexity >= 1) {return 'moderate';}
   return 'minimal';
 }
 
@@ -812,20 +812,20 @@ function assessCustomizationOptions(app: MakePublicApp): 'limited' | 'moderate' 
   const customizationFeatures = app.capabilities.actions.filter(a => a.type === 'custom').length +
                                app.capabilities.searches.length;
   
-  if (customizationFeatures >= 5) return 'extensive';
-  if (customizationFeatures >= 2) return 'moderate';
+  if (customizationFeatures >= 5) {return 'extensive';}
+  if (customizationFeatures >= 2) {return 'moderate';}
   return 'limited';
 }
 
 function assessLearningCurve(app: MakePublicApp): 'gentle' | 'moderate' | 'steep' {
   let complexity = 0;
   
-  if (app.capabilities.triggers.length + app.capabilities.actions.length > 20) complexity += 2;
-  if (app.authentication.type === 'custom') complexity += 1;
-  if (!app.metadata.documentationUrl) complexity += 1;
+  if (app.capabilities.triggers.length + app.capabilities.actions.length > 20) {complexity += 2;}
+  if (app.authentication.type === 'custom') {complexity += 1;}
+  if (!app.metadata.documentationUrl) {complexity += 1;}
   
-  if (complexity >= 3) return 'steep';
-  if (complexity >= 1) return 'moderate';
+  if (complexity >= 3) {return 'steep';}
+  if (complexity >= 1) {return 'moderate';}
   return 'gentle';
 }
 
@@ -868,23 +868,23 @@ function generatePricingComparison(app: MakePublicApp): Record<string, string> {
 function assessComplianceLevel(app: MakePublicApp): 'basic' | 'standard' | 'enterprise' {
   let score = 0;
   
-  if (app.compliance.gdprCompliant) score++;
-  if (app.compliance.hipaaCompliant) score++;
-  if (app.compliance.socCompliant) score++;
-  if (app.compliance.certifications.length > 0) score++;
+  if (app.compliance.gdprCompliant) {score++;}
+  if (app.compliance.hipaaCompliant) {score++;}
+  if (app.compliance.socCompliant) {score++;}
+  if (app.compliance.certifications.length > 0) {score++;}
   
-  if (score >= 3) return 'enterprise';
-  if (score >= 1) return 'standard';
+  if (score >= 3) {return 'enterprise';}
+  if (score >= 1) {return 'standard';}
   return 'basic';
 }
 
 function identifySecurityFeatures(app: MakePublicApp): string[] {
   const features: string[] = [];
   
-  if (app.authentication.type === 'oauth2') features.push('OAuth 2.0 authentication');
-  if (app.compliance.gdprCompliant) features.push('GDPR compliance');
-  if (app.compliance.hipaaCompliant) features.push('HIPAA compliance');
-  if (app.publisher.verified) features.push('Verified publisher');
+  if (app.authentication.type === 'oauth2') {features.push('OAuth 2.0 authentication');}
+  if (app.compliance.gdprCompliant) {features.push('GDPR compliance');}
+  if (app.compliance.hipaaCompliant) {features.push('HIPAA compliance');}
+  if (app.publisher.verified) {features.push('Verified publisher');}
   
   return features;
 }
@@ -892,10 +892,10 @@ function identifySecurityFeatures(app: MakePublicApp): string[] {
 function identifyRiskFactors(app: MakePublicApp): string[] {
   const risks: string[] = [];
   
-  if (!app.publisher.verified) risks.push('Unverified publisher');
-  if (app.authentication.type === 'none') risks.push('No authentication required');
-  if (!app.compliance.gdprCompliant) risks.push('Not GDPR compliant');
-  if (app.usage.reviewCount < 10) risks.push('Limited user reviews');
+  if (!app.publisher.verified) {risks.push('Unverified publisher');}
+  if (app.authentication.type === 'none') {risks.push('No authentication required');}
+  if (!app.compliance.gdprCompliant) {risks.push('Not GDPR compliant');}
+  if (app.usage.reviewCount < 10) {risks.push('Limited user reviews');}
   
   return risks;
 }
@@ -975,7 +975,7 @@ async function generatePersonalizedRecommendations(
 
 function identifyTopCategories(apps: Array<MakePublicApp & { popularityMetrics: { rank: number } }>): string[] {
   const categoryRanks = apps.reduce((acc: Record<string, number[]>, app) => {
-    if (!acc[app.category]) acc[app.category] = [];
+    if (!acc[app.category]) {acc[app.category] = [];}
     acc[app.category].push(app.popularityMetrics.rank);
     return acc;
   }, {});
@@ -991,7 +991,7 @@ function identifyTopCategories(apps: Array<MakePublicApp & { popularityMetrics: 
 }
 
 function identifyEmergingTrends(apps: Array<MakePublicApp & { popularityMetrics: { trend: string } }>, includeGrowth: boolean): string[] {
-  if (!includeGrowth) return [];
+  if (!includeGrowth) {return [];}
   
   const risingApps = apps.filter(app => app.popularityMetrics.trend === 'rising');
   const categories = risingApps.reduce((acc: Record<string, number>, app) => {
@@ -1047,8 +1047,8 @@ function analyzeCategoryCompetition(apps: MakePublicApp[]): Record<string, { app
 
   return Object.entries(categoryCount).reduce((acc: Record<string, { apps: number; competitionLevel: string }>, [category, count]) => {
     let level = 'low';
-    if (count > 10) level = 'high';
-    else if (count > 5) level = 'medium';
+    if (count > 10) {level = 'high';}
+    else if (count > 5) {level = 'medium';}
     
     acc[category] = { apps: count, competitionLevel: level };
     return acc;

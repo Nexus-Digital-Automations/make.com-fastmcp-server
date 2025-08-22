@@ -123,7 +123,7 @@ export class ValidationError extends ConfigurationError {
 class ConfigManager {
   private static instance: ConfigManager;
   private config: ServerConfig;
-  private validationErrors: string[] = [];
+  private readonly validationErrors: string[] = [];
 
   private constructor() {
     try {

@@ -15,7 +15,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  */
 class KeyRotationManager {
   private static instance: KeyRotationManager | null = null;
-  private rotationPolicies: Map<string, KeyRotationStatus> = new Map();
+  private readonly rotationPolicies: Map<string, KeyRotationStatus> = new Map();
 
   public static getInstance(): KeyRotationManager {
     if (!KeyRotationManager.instance) {

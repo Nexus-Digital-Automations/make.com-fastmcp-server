@@ -74,9 +74,9 @@ interface IPReputationData {
 // Advanced DDoS protection with behavioral analysis
 export class AdvancedDDoSProtection {
   private redisClient: Redis | null = null;
-  private rateLimiters: Map<string, RateLimiterRedis | RateLimiterMemory> = new Map();
-  private behaviorAnalyzer: BehaviorAnalyzer;
-  private ipReputation: Map<string, IPReputationData> = new Map();
+  private readonly rateLimiters: Map<string, RateLimiterRedis | RateLimiterMemory> = new Map();
+  private readonly behaviorAnalyzer: BehaviorAnalyzer;
+  private readonly ipReputation: Map<string, IPReputationData> = new Map();
   
   constructor() {
     this.initializeRedis();
@@ -182,7 +182,7 @@ export class AdvancedDDoSProtection {
       this.updateIPReputation(clientIP, behaviorAnalysis);
       
       // Check global rate limit first
-      const globalLimiter = this.rateLimiters.get('global')!;
+      const globalLimiter = this.rateLimiters.get('global');
       await globalLimiter.consume('global');
       
       // Determine which limiter to use based on IP reputation
@@ -190,7 +190,7 @@ export class AdvancedDDoSProtection {
       const isSuspicious = ipReputation && ipReputation.riskScore > 0.7;
       
       const limiterKey = isSuspicious ? 'suspicious' : 'ip';
-      const limiter = this.rateLimiters.get(limiterKey)!;
+      const limiter = this.rateLimiters.get(limiterKey);
       
       await limiter.consume(clientIP);
       
@@ -319,7 +319,7 @@ export class AdvancedDDoSProtection {
 
 // Behavioral analysis for detecting bot patterns
 class BehaviorAnalyzer {
-  private requestPatterns: Map<string, RequestPattern[]> = new Map();
+  private readonly requestPatterns: Map<string, RequestPattern[]> = new Map();
   
   async analyzeRequest(req: HttpRequest, clientIP: string): Promise<{
     riskScore: number;
@@ -431,8 +431,8 @@ class BehaviorAnalyzer {
 
 // Enterprise circuit breaker manager
 export class EnterpriseCircuitBreakerManager {
-  private circuitBreakers: Map<string, CircuitBreaker> = new Map();
-  private defaultConfig: CircuitBreakerConfig;
+  private readonly circuitBreakers: Map<string, CircuitBreaker> = new Map();
+  private readonly defaultConfig: CircuitBreakerConfig;
   
   constructor(config?: Partial<CircuitBreakerConfig>) {
     this.defaultConfig = {

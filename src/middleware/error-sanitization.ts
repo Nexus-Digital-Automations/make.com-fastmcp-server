@@ -356,12 +356,12 @@ export function errorSanitizationMiddleware() {
     
     // Determine appropriate HTTP status code
     let statusCode = 500;
-    if (error instanceof ValidationError) statusCode = 400;
-    if (error instanceof AuthenticationError) statusCode = 401;
-    if (error instanceof AuthorizationError) statusCode = 403;
-    if (error instanceof RateLimitError) statusCode = 429;
-    if (error.message.includes('not found')) statusCode = 404;
-    if (error.message.includes('conflict')) statusCode = 409;
+    if (error instanceof ValidationError) {statusCode = 400;}
+    if (error instanceof AuthenticationError) {statusCode = 401;}
+    if (error instanceof AuthorizationError) {statusCode = 403;}
+    if (error instanceof RateLimitError) {statusCode = 429;}
+    if (error.message.includes('not found')) {statusCode = 404;}
+    if (error.message.includes('conflict')) {statusCode = 409;}
     
     // Add security headers
     res.setHeader('X-Content-Type-Options', 'nosniff');

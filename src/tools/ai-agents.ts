@@ -291,7 +291,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating AI agent', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create AI agent: ${errorMessage}`);
       }
     },
@@ -327,13 +327,13 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           includeUsage,
         };
 
-        if (type !== 'all') params.type = type;
-        if (status !== 'all') params.status = status;
-        if (provider) params.provider = provider;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
-        if (scenarioId) params.scenarioId = scenarioId;
-        if (isPublic !== undefined) params.isPublic = isPublic;
+        if (type !== 'all') {params.type = type;}
+        if (status !== 'all') {params.status = status;}
+        if (provider) {params.provider = provider;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
+        if (scenarioId) {params.scenarioId = scenarioId;}
+        if (isPublic !== undefined) {params.isPublic = isPublic;}
 
         const response = await apiClient.get('/ai-agents', { params });
 
@@ -402,7 +402,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing AI agents', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list AI agents: ${errorMessage}`);
       }
     },
@@ -497,7 +497,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting AI agent', { agentId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get AI agent details: ${errorMessage}`);
       }
     },
@@ -523,12 +523,12 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       try {
         const updateData: Record<string, unknown> = {};
 
-        if (name !== undefined) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
-        if (configuration !== undefined) updateData.configuration = configuration;
-        if (context !== undefined) updateData.context = context;
-        if (capabilities !== undefined) updateData.capabilities = capabilities;
-        if (isPublic !== undefined) updateData.isPublic = isPublic;
+        if (name !== undefined) {updateData.name = name;}
+        if (description !== undefined) {updateData.description = description;}
+        if (configuration !== undefined) {updateData.configuration = configuration;}
+        if (context !== undefined) {updateData.context = context;}
+        if (capabilities !== undefined) {updateData.capabilities = capabilities;}
+        if (isPublic !== undefined) {updateData.isPublic = isPublic;}
 
         if (Object.keys(updateData).length === 0) {
           throw new UserError('No update data provided');
@@ -579,7 +579,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating AI agent', { agentId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update AI agent: ${errorMessage}`);
       }
     },
@@ -630,7 +630,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting AI agent', { agentId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete AI agent: ${errorMessage}`);
       }
     },
@@ -677,7 +677,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
         log.info('Successfully tested AI agent', {
           agentId,
           testType,
-          success: (testResult as Record<string, unknown>)?.success as boolean,
+          success: (testResult)?.success as boolean,
           responseTime: totalTime,
         });
 
@@ -685,14 +685,14 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           testResult,
           performance: {
             totalTime: `${totalTime}ms`,
-            agentResponseTime: ((testResult as Record<string, unknown>)?.metrics as Record<string, unknown>)?.responseTime,
-            tokenUsage: ((testResult as Record<string, unknown>)?.metrics as Record<string, unknown>)?.tokens,
-            cost: ((testResult as Record<string, unknown>)?.metrics as Record<string, unknown>)?.cost,
+            agentResponseTime: ((testResult)?.metrics as Record<string, unknown>)?.responseTime,
+            tokenUsage: ((testResult)?.metrics as Record<string, unknown>)?.tokens,
+            cost: ((testResult)?.metrics as Record<string, unknown>)?.cost,
           },
           validation: {
-            responseFormat: ((testResult as Record<string, unknown>)?.validation as Record<string, unknown>)?.format || 'valid',
-            contentQuality: ((testResult as Record<string, unknown>)?.validation as Record<string, unknown>)?.quality || 'good',
-            errorCount: (((testResult as Record<string, unknown>)?.validation as Record<string, unknown>)?.errors as unknown[])?.length || 0,
+            responseFormat: ((testResult)?.validation as Record<string, unknown>)?.format || 'valid',
+            contentQuality: ((testResult)?.validation as Record<string, unknown>)?.quality || 'good',
+            errorCount: (((testResult)?.validation as Record<string, unknown>)?.errors as unknown[])?.length || 0,
           },
           summary: {
             testType,
@@ -704,7 +704,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error testing AI agent', { agentId, testType, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to test AI agent: ${errorMessage}`);
       }
     },
@@ -768,7 +768,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating LLM provider', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create LLM provider: ${errorMessage}`);
       }
     },
@@ -798,8 +798,8 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           includeModels,
         };
 
-        if (type !== 'all') params.type = type;
-        if (status !== 'all') params.status = status;
+        if (type !== 'all') {params.type = type;}
+        if (status !== 'all') {params.status = status;}
 
         const response = await apiClient.get('/llm-providers', { params });
 
@@ -838,7 +838,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing LLM providers', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list LLM providers: ${errorMessage}`);
       }
     },

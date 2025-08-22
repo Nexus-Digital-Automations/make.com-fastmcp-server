@@ -63,16 +63,16 @@ interface DashboardCustomization {
 }
 
 export class DashboardService {
-  private componentLogger = logger.child({ component: 'DashboardService' });
-  private dashboardTemplates: Map<string, DashboardTemplate> = new Map();
-  private activeDashboards: Map<string, DashboardConfig> = new Map();
-  private widgetDataCache: Map<string, WidgetData> = new Map();
+  private readonly componentLogger = logger.child({ component: 'DashboardService' });
+  private readonly dashboardTemplates: Map<string, DashboardTemplate> = new Map();
+  private readonly activeDashboards: Map<string, DashboardConfig> = new Map();
+  private readonly widgetDataCache: Map<string, WidgetData> = new Map();
   private realTimeDataStream: RealTimeMetrics[] = [];
-  private forecastCache: Map<string, Forecast> = new Map();
+  private readonly forecastCache: Map<string, Forecast> = new Map();
 
   constructor(
-    private context: GovernanceContext,
-    private apiClient: MakeApiClient
+    private readonly context: GovernanceContext,
+    private readonly apiClient: MakeApiClient
   ) {
     this.initializeDashboardTemplates();
     this.startRealTimeDataCollection();
@@ -210,7 +210,7 @@ export class DashboardService {
         
         // Check cache first
         if (this.forecastCache.has(cacheKey)) {
-          forecasts.push(this.forecastCache.get(cacheKey)!);
+          forecasts.push(this.forecastCache.get(cacheKey));
           continue;
         }
 
@@ -636,7 +636,7 @@ export class DashboardService {
     return {
       alerts,
       totalCount: alertCount,
-      unacknowledged: Math.floor((alertCount as number) * 0.6)
+      unacknowledged: Math.floor((alertCount) * 0.6)
     };
   }
 

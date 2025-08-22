@@ -140,7 +140,35 @@ module.exports = [
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       'prefer-const': 'error',
-      'no-var': 'error'
+      'no-var': 'error',
+      
+      // Code complexity management
+      'complexity': ['error', { max: 15 }],
+      'max-lines-per-function': ['error', { max: 100, skipBlankLines: true, skipComments: true }],
+      'max-depth': ['error', 4],
+      'max-nested-callbacks': ['error', 4],
+      
+      // TypeScript best practices
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+      '@typescript-eslint/prefer-readonly': 'warn',
+      
+      // Performance optimizations
+      '@typescript-eslint/prefer-for-of': 'error',
+      '@typescript-eslint/prefer-includes': 'error',
+      '@typescript-eslint/prefer-string-starts-ends-with': 'error',
+      
+      // Security and reliability
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      'no-new-func': 'error',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      
+      // Code style consistency
+      'eqeqeq': ['error', 'always'],
+      'curly': ['error', 'all'],
+      'dot-notation': 'error'
     }
   }
 ];

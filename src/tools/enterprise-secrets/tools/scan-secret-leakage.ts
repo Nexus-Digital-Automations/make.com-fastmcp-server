@@ -16,7 +16,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  */
 class SecretScanningManager {
   private static instance: SecretScanningManager | null = null;
-  private scanningAlerts: Map<string, SecretLeakageAlert> = new Map();
+  private readonly scanningAlerts: Map<string, SecretLeakageAlert> = new Map();
 
   public static getInstance(): SecretScanningManager {
     if (!SecretScanningManager.instance) {

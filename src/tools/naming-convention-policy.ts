@@ -784,7 +784,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           riskLevel: 'low',
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create naming convention policy: ${errorMessage}`);
       }
     },
@@ -912,9 +912,9 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           };
 
           // Update summary stats
-          if (overallStatus === 'valid') summaryStats.validNames++;
-          else if (overallStatus === 'invalid') summaryStats.invalidNames++;
-          else summaryStats.warningNames++;
+          if (overallStatus === 'valid') {summaryStats.validNames++;}
+          else if (overallStatus === 'invalid') {summaryStats.invalidNames++;}
+          else {summaryStats.warningNames++;}
         }
 
         // Log validation audit event
@@ -966,7 +966,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error validating names against policy', { error: errorMessage, policyId: input.policyId });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to validate names against policy: ${errorMessage}`);
       }
     },
@@ -1079,7 +1079,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing naming convention policies', { error: errorMessage });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list naming convention policies: ${errorMessage}`);
       }
     },
@@ -1130,8 +1130,8 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
         };
 
         // Apply updates
-        if (input.name !== undefined) updateData.name = input.name;
-        if (input.description !== undefined) updateData.description = input.description;
+        if (input.name !== undefined) {updateData.name = input.name;}
+        if (input.description !== undefined) {updateData.description = input.description;}
         if (input.rules !== undefined) {
           // Validate new rules
           for (const rule of input.rules) {
@@ -1153,10 +1153,10 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             lastRulesUpdate: timestamp,
           };
         }
-        if (input.enforcementLevel !== undefined) updateData.enforcementLevel = input.enforcementLevel;
-        if (input.active !== undefined) updateData.active = input.active;
-        if (input.effectiveFrom !== undefined) updateData.effectiveFrom = input.effectiveFrom;
-        if (input.effectiveUntil !== undefined) updateData.effectiveUntil = input.effectiveUntil;
+        if (input.enforcementLevel !== undefined) {updateData.enforcementLevel = input.enforcementLevel;}
+        if (input.active !== undefined) {updateData.active = input.active;}
+        if (input.effectiveFrom !== undefined) {updateData.effectiveFrom = input.effectiveFrom;}
+        if (input.effectiveUntil !== undefined) {updateData.effectiveUntil = input.effectiveUntil;}
         if (input.notificationSettings !== undefined) {
           const existingNotifications = (existingPolicy.notificationSettings as Record<string, unknown>) || {};
           updateData.notificationSettings = {
@@ -1239,7 +1239,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           riskLevel: 'low',
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update naming convention policy: ${errorMessage}`);
       }
     },
@@ -1354,7 +1354,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error retrieving naming policy templates', { error: errorMessage });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to retrieve naming policy templates: ${errorMessage}`);
       }
     },
@@ -1470,7 +1470,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           riskLevel: 'low',
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete naming convention policy: ${errorMessage}`);
       }
     },
@@ -1482,7 +1482,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
     
     for (const resourceType of Object.values(ResourceType)) {
       const applicableRules = rules.filter(rule => rule.resourceTypes.includes(resourceType));
-      if (applicableRules.length === 0) continue;
+      if (applicableRules.length === 0) {continue;}
 
       examples[resourceType] = [];
       

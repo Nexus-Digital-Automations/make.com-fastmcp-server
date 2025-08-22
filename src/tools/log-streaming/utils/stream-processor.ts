@@ -49,11 +49,11 @@ export interface StreamingMetrics {
  * Real-time log streaming manager
  */
 export class LogStreamingManager extends EventEmitter {
-  private activeStreams = new Map<string, NodeJS.Timeout>();
-  private streamMetrics = new Map<string, StreamingMetrics>();
-  private logBuffer = new Map<string, MakeLogEntry[]>();
+  private readonly activeStreams = new Map<string, NodeJS.Timeout>();
+  private readonly streamMetrics = new Map<string, StreamingMetrics>();
+  private readonly logBuffer = new Map<string, MakeLogEntry[]>();
 
-  constructor(private apiClient: MakeApiClient) {
+  constructor(private readonly apiClient: MakeApiClient) {
     super();
     this.setMaxListeners(100); // Support many concurrent streams
   }
@@ -141,7 +141,7 @@ export class LogStreamingManager extends EventEmitter {
               // Trim buffer if too large
               if (buffer.length > config.bufferingStrategy.maxBufferSize) {
                 buffer.splice(0, buffer.length - config.bufferingStrategy.maxBufferSize);
-                const metrics = this.streamMetrics.get(streamId)!;
+                const metrics = this.streamMetrics.get(streamId);
                 metrics.droppedLogs += buffer.length - config.bufferingStrategy.maxBufferSize;
                 this.streamMetrics.set(streamId, metrics);
               }
@@ -150,7 +150,7 @@ export class LogStreamingManager extends EventEmitter {
             }
 
             // Update metrics
-            const metrics = this.streamMetrics.get(streamId)!;
+            const metrics = this.streamMetrics.get(streamId);
             metrics.totalLogsStreamed += filteredLogs.length;
             this.streamMetrics.set(streamId, metrics);
 

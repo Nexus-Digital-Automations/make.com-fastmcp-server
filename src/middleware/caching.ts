@@ -45,10 +45,10 @@ export interface CachedResponse<T = unknown> {
 }
 
 export class CachingMiddleware {
-  private cache: RedisCache;
-  private config: CachingMiddlewareConfig;
-  private componentLogger: ReturnType<typeof logger.child>;
-  private operationMetrics = new Map<string, { hits: number; misses: number; errors: number }>();
+  private readonly cache: RedisCache;
+  private readonly config: CachingMiddlewareConfig;
+  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private readonly operationMetrics = new Map<string, { hits: number; misses: number; errors: number }>();
   private server?: FastMCP;
 
   constructor(config?: Partial<CachingMiddlewareConfig>) {
@@ -758,7 +758,7 @@ export class CachingMiddleware {
    */
   public async invalidateOperationCache(operation: string, context?: Record<string, string>): Promise<number> {
     const strategy = this.config.strategies[operation];
-    if (!strategy || !strategy.invalidateOn) {
+    if (!strategy?.invalidateOn) {
       return 0;
     }
 

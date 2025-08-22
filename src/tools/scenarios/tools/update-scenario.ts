@@ -39,10 +39,10 @@ export function createUpdateScenarioTool(context: ToolContext): ToolDefinition {
       try {
         const updateData: Record<string, unknown> = {};
         
-        if (typedArgs.name !== undefined) updateData.name = typedArgs.name;
-        if (typedArgs.active !== undefined) updateData.active = typedArgs.active;
-        if (typedArgs.blueprint !== undefined) updateData.blueprint = typedArgs.blueprint;
-        if (typedArgs.scheduling !== undefined) updateData.scheduling = typedArgs.scheduling;
+        if (typedArgs.name !== undefined) {updateData.name = typedArgs.name;}
+        if (typedArgs.active !== undefined) {updateData.active = typedArgs.active;}
+        if (typedArgs.blueprint !== undefined) {updateData.blueprint = typedArgs.blueprint;}
+        if (typedArgs.scheduling !== undefined) {updateData.scheduling = typedArgs.scheduling;}
 
         if (Object.keys(updateData).length === 0) {
           throw new UserError('No update parameters provided');

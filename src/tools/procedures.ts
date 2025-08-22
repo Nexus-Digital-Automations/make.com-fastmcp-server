@@ -494,7 +494,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
             log.error('Error creating remote procedure', { name, error: errorMessage });
           }
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create remote procedure: ${errorMessage}`);
       }
     },
@@ -546,11 +546,11 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
           includeMonitoring,
         };
 
-        if (type !== 'all') params.type = type;
-        if (category !== 'all') params.category = category;
-        if (status !== 'all') params.status = status;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
+        if (type !== 'all') {params.type = type;}
+        if (category !== 'all') {params.category = category;}
+        if (status !== 'all') {params.status = status;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
 
         const response = await apiClient.get('/remote-procedures', { params });
 
@@ -641,7 +641,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error listing remote procedures', { error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list remote procedures: ${errorMessage}`);
       }
     },
@@ -735,7 +735,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error executing remote procedure', { procedureId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to execute remote procedure: ${errorMessage}`);
       }
     },
@@ -868,7 +868,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error creating device', { name, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create device: ${errorMessage}`);
       }
     },
@@ -922,11 +922,11 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
           includeAlerts,
         };
 
-        if (type !== 'all') params.type = type;
-        if (category !== 'all') params.category = category;
-        if (status !== 'all') params.status = status;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
+        if (type !== 'all') {params.type = type;}
+        if (category !== 'all') {params.category = category;}
+        if (status !== 'all') {params.status = status;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
 
         const response = await apiClient.get('/devices', { params });
 
@@ -1010,7 +1010,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error listing devices', { error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list devices: ${errorMessage}`);
       }
     },
@@ -1113,7 +1113,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         if (log && log.error) {
           log.error('Error testing device connectivity', { deviceId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to test device connectivity: ${errorMessage}`);
       }
     },

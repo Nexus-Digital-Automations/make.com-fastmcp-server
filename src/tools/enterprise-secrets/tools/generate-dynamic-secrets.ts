@@ -112,7 +112,7 @@ class DynamicSecretGenerator {
   private parseDuration(duration: string): number {
     // Parse duration string (e.g., "1h", "30m", "24h") to seconds
     const match = duration.match(/^(\d+)([hms])$/);
-    if (!match) throw new Error(`Invalid duration format: ${duration}`);
+    if (!match) {throw new Error(`Invalid duration format: ${duration}`);}
     
     const value = parseInt(match[1]);
     const unit = match[2];

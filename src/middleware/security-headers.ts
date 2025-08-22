@@ -411,7 +411,7 @@ export class SecurityHeadersManager {
         const correlationId = req.headers['x-correlation-id'];
         const userAgent = req.headers['user-agent'];
         const contentType = req.headers['content-type'];
-        const origin = req.headers['origin'];
+        const origin = req.headers.origin;
         const reqWithSession = req as unknown as { sessionID?: string };
         
         logger.info('Security audit log', {
@@ -425,7 +425,7 @@ export class SecurityHeadersManager {
           timestamp: new Date().toISOString(),
           securityHeaders: {
             hasCSRF: !!req.headers['x-csrf-token'],
-            hasAuth: !!(req.headers['authorization'] || req.headers['x-api-key']),
+            hasAuth: !!(req.headers.authorization || req.headers['x-api-key']),
             contentType: Array.isArray(contentType) ? contentType[0] : contentType,
             origin: Array.isArray(origin) ? origin[0] : origin
           }
@@ -463,7 +463,7 @@ export class SecurityHeadersManager {
     
     return securityEndpoints.some(endpoint => req.path?.startsWith(endpoint)) ||
            req.method !== 'GET' ||
-           !!req.headers['authorization'] ||
+           !!req.headers.authorization ||
            !!req.headers['x-api-key'];
   }
   
@@ -520,12 +520,12 @@ export function validateSecurityHeaders(req: HttpRequest): { valid: boolean; iss
   const issues: string[] = [];
   
   // Check for required security headers in sensitive endpoints
-  if (req.path && securityHeadersManager['isSensitiveEndpoint'](req.path)) {
+  if (req.path && securityHeadersManager.isSensitiveEndpoint(req.path)) {
     if (!req.headers['x-csrf-token'] && req.method && ['POST', 'PUT', 'DELETE'].includes(req.method)) {
       issues.push('Missing CSRF token for sensitive endpoint');
     }
     
-    if (!req.headers['authorization'] && !req.headers['x-api-key']) {
+    if (!req.headers.authorization && !req.headers['x-api-key']) {
       issues.push('Missing authentication for sensitive endpoint');
     }
   }

@@ -270,7 +270,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating template', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create template: ${errorMessage}`);
       }
     },
@@ -309,17 +309,17 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
           includeVersions,
         };
 
-        if (category) params.category = category;
-        if (tags && tags.length > 0) params.tags = tags.join(',');
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
-        if (folderId) params.folderId = folderId;
-        if (creatorId) params.creatorId = creatorId;
-        if (isPublic !== undefined) params.isPublic = isPublic;
-        if (complexity) params.complexity = complexity;
-        if (hasConnections && hasConnections.length > 0) params.hasConnections = hasConnections.join(',');
-        if (searchQuery) params.search = searchQuery;
-        if (minUsage !== undefined) params.minUsage = minUsage;
+        if (category) {params.category = category;}
+        if (tags && tags.length > 0) {params.tags = tags.join(',');}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
+        if (folderId) {params.folderId = folderId;}
+        if (creatorId) {params.creatorId = creatorId;}
+        if (isPublic !== undefined) {params.isPublic = isPublic;}
+        if (complexity) {params.complexity = complexity;}
+        if (hasConnections && hasConnections.length > 0) {params.hasConnections = hasConnections.join(',');}
+        if (searchQuery) {params.search = searchQuery;}
+        if (minUsage !== undefined) {params.minUsage = minUsage;}
 
         const response = await apiClient.get('/templates', { params });
 
@@ -380,7 +380,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing templates', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list templates: ${errorMessage}`);
       }
     },
@@ -470,7 +470,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting template', { templateId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get template details: ${errorMessage}`);
       }
     },
@@ -496,9 +496,9 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       try {
         const updateData: Record<string, unknown> = {};
 
-        if (name !== undefined) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
-        if (category !== undefined) updateData.category = category;
+        if (name !== undefined) {updateData.name = name;}
+        if (description !== undefined) {updateData.description = description;}
+        if (category !== undefined) {updateData.category = category;}
         if (blueprint !== undefined) {
           updateData.blueprint = blueprint;
           // Recalculate metadata if blueprint is updated
@@ -509,11 +509,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
             requiredConnections: metadata?.requiredConnections || extractRequiredConnections(blueprint),
           };
         }
-        if (tags !== undefined) updateData.tags = tags;
-        if (folderId !== undefined) updateData.folderId = folderId;
-        if (isPublic !== undefined) updateData.isPublic = isPublic;
-        if (sharing !== undefined) updateData.sharing = sharing;
-        if (metadata !== undefined && !blueprint) updateData.metadata = metadata;
+        if (tags !== undefined) {updateData.tags = tags;}
+        if (folderId !== undefined) {updateData.folderId = folderId;}
+        if (isPublic !== undefined) {updateData.isPublic = isPublic;}
+        if (sharing !== undefined) {updateData.sharing = sharing;}
+        if (metadata !== undefined && !blueprint) {updateData.metadata = metadata;}
 
         if (Object.keys(updateData).length === 0) {
           throw new UserError('No update data provided');
@@ -546,7 +546,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating template', { templateId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update template: ${errorMessage}`);
       }
     },
@@ -615,7 +615,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error using template', { templateId, scenarioName, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to use template: ${errorMessage}`);
       }
     },
@@ -666,7 +666,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting template', { templateId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete template: ${errorMessage}`);
       }
     },

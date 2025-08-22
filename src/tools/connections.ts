@@ -217,9 +217,9 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           offset,
         };
 
-        if (service) params.service = service;
-        if (search) params.search = search;
-        if (status !== 'all') params.valid = status === 'valid';
+        if (service) {params.service = service;}
+        if (search) {params.search = search;}
+        if (status !== 'all') {params.valid = status === 'valid';}
 
         const response = await apiClient.get('/connections', { params });
 
@@ -247,7 +247,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing connections', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list connections: ${errorMessage}`);
       }
     },
@@ -318,7 +318,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting connection', { connectionId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get connection details: ${errorMessage}`);
       }
     },
@@ -418,7 +418,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating connection', { name, service, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create connection: ${errorMessage}`);
       }
     },
@@ -483,10 +483,10 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
 
       try {
         const updateData: Record<string, unknown> = {};
-        if (name !== undefined) updateData.name = name;
-        if (accountName !== undefined) updateData.accountName = accountName;
-        if (credentials !== undefined) updateData.credentials = credentials;
-        if (metadata !== undefined) updateData.metadata = metadata;
+        if (name !== undefined) {updateData.name = name;}
+        if (accountName !== undefined) {updateData.accountName = accountName;}
+        if (credentials !== undefined) {updateData.credentials = credentials;}
+        if (metadata !== undefined) {updateData.metadata = metadata;}
 
         if (Object.keys(updateData).length === 0) {
           throw new UserError('No update data provided');
@@ -515,7 +515,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating connection', { connectionId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update connection: ${errorMessage}`);
       }
     },
@@ -554,7 +554,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting connection', { connectionId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete connection: ${errorMessage}`);
       }
     },
@@ -580,7 +580,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
 
       try {
         const testData: Record<string, unknown> = {};
-        if (testEndpoint) testData.endpoint = testEndpoint;
+        if (testEndpoint) {testData.endpoint = testEndpoint;}
 
         const response = await apiClient.post(`/connections/${connectionId}/test`, testData);
 
@@ -611,7 +611,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error testing connection', { connectionId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to test connection: ${errorMessage}`);
       }
     },
@@ -644,9 +644,9 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           offset,
         };
 
-        if (connectionId) params.connectionId = connectionId;
-        if (scenarioId) params.scenarioId = scenarioId;
-        if (status !== 'all') params.active = status === 'active';
+        if (connectionId) {params.connectionId = connectionId;}
+        if (scenarioId) {params.scenarioId = scenarioId;}
+        if (status !== 'all') {params.active = status === 'active';}
 
         const response = await apiClient.get('/webhooks', { params });
 
@@ -674,7 +674,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing webhooks', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list webhooks: ${errorMessage}`);
       }
     },
@@ -735,7 +735,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating webhook', { name, url, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create webhook: ${errorMessage}`);
       }
     },
@@ -758,11 +758,11 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
 
       try {
         const updateData: Record<string, unknown> = {};
-        if (name !== undefined) updateData.name = name;
-        if (url !== undefined) updateData.url = url;
-        if (method !== undefined) updateData.method = method;
-        if (headers !== undefined) updateData.headers = headers;
-        if (isActive !== undefined) updateData.isActive = isActive;
+        if (name !== undefined) {updateData.name = name;}
+        if (url !== undefined) {updateData.url = url;}
+        if (method !== undefined) {updateData.method = method;}
+        if (headers !== undefined) {updateData.headers = headers;}
+        if (isActive !== undefined) {updateData.isActive = isActive;}
 
         if (Object.keys(updateData).length === 0) {
           throw new UserError('No update data provided');
@@ -791,7 +791,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating webhook', { webhookId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update webhook: ${errorMessage}`);
       }
     },
@@ -830,7 +830,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting webhook', { webhookId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete webhook: ${errorMessage}`);
       }
     },
@@ -1037,7 +1037,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Connection diagnostics failed', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Connection diagnostics failed: ${errorMessage}`);
       }
     },
@@ -1066,7 +1066,7 @@ async function getConnectionsForDiagnostics(
 
   // Get connections with optional service filter
   const params: Record<string, unknown> = { limit: 100 };
-  if (service) params.service = service;
+  if (service) {params.service = service;}
 
   const response = await apiClient.get('/connections', { params });
   if (!response.success) {
@@ -1088,7 +1088,7 @@ async function diagnoseIndividualConnection(
   options: DiagnosticOptions,
   log?: Logger
 ): Promise<ConnectionResult> {
-  const connectionId = connection.id as number;
+  const connectionId = connection.id;
   const diagnostics: ConnectionDiagnosticResult[] = [];
   const startTime = Date.now();
 
@@ -1141,9 +1141,9 @@ async function diagnoseIndividualConnection(
 
     return {
       connectionId,
-      name: connection.name as string,
-      service: connection.service as string,
-      accountName: connection.accountName as string,
+      name: connection.name,
+      service: connection.service,
+      accountName: connection.accountName,
       overallHealth,
       healthScore,
       diagnostics: diagnostics.filter(d => d !== null),
@@ -1166,9 +1166,9 @@ async function diagnoseIndividualConnection(
 
     return {
       connectionId,
-      name: connection.name as string,
-      service: connection.service as string,
-      accountName: connection.accountName as string,
+      name: connection.name,
+      service: connection.service,
+      accountName: connection.accountName,
       overallHealth: 'unknown' as const,
       healthScore: 0,
       diagnostics: [{
@@ -1275,7 +1275,7 @@ async function testConnectionConnectivity(
   apiClient: MakeApiClient,
   log?: Logger
 ): Promise<ConnectionDiagnosticResult> {
-  const connectionId = connection.id as number;
+  const connectionId = connection.id;
   
   try {
     log?.info('Testing connection connectivity', { connectionId });
@@ -1385,8 +1385,8 @@ async function verifyConnectionAuthentication(
   apiClient: MakeApiClient,
   log?: Logger
 ): Promise<ConnectionDiagnosticResult> {
-  const connectionId = connection.id as number;
-  const service = connection.service as string;
+  const connectionId = connection.id;
+  const service = connection.service;
   
   try {
     // Check for OAuth token expiration
@@ -1519,7 +1519,7 @@ async function analyzeConnectionPerformance(
   timeRangeHours: number,
   log?: Logger
 ): Promise<ConnectionDiagnosticResult | null> {
-  const connectionId = connection.id as number;
+  const connectionId = connection.id;
   
   try {
     // This would typically fetch execution logs and analyze performance
@@ -1588,8 +1588,8 @@ async function analyzeConnectionPerformance(
  * Assess connection security
  */
 async function assessConnectionSecurity(connection: ConnectionData): Promise<ConnectionDiagnosticResult> {
-  const connectionId = connection.id as number;
-  const service = connection.service as string;
+  const connectionId = connection.id;
+  const service = connection.service;
   const securityIssues = [];
   const recommendations = [];
   
@@ -1621,7 +1621,7 @@ async function assessConnectionSecurity(connection: ConnectionData): Promise<Con
   
   // Check connection age
   if (connection.createdAt) {
-    const ageInDays = (Date.now() - new Date(connection.createdAt as string).getTime()) / (1000 * 60 * 60 * 24);
+    const ageInDays = (Date.now() - new Date(connection.createdAt).getTime()) / (1000 * 60 * 60 * 24);
     if (ageInDays > 365) {
       securityIssues.push('Connection is over 1 year old');
       recommendations.push('Consider rotating connection credentials annually');
@@ -1631,9 +1631,9 @@ async function assessConnectionSecurity(connection: ConnectionData): Promise<Con
   const securityScore = Math.max(0, 100 - (securityIssues.length * 20));
   
   let severity: 'info' | 'warning' | 'error' | 'critical' = 'info';
-  if (securityScore < 40) severity = 'critical';
-  else if (securityScore < 60) severity = 'error';
-  else if (securityScore < 80) severity = 'warning';
+  if (securityScore < 40) {severity = 'critical';}
+  else if (securityScore < 60) {severity = 'error';}
+  else if (securityScore < 80) {severity = 'warning';}
   
   if (recommendations.length === 0) {
     recommendations.push('Maintain current security practices');
@@ -1662,7 +1662,7 @@ async function assessConnectionSecurity(connection: ConnectionData): Promise<Con
  * Check if diagnostic result should be included based on severity filter
  */
 function shouldIncludeResult(result: ConnectionDiagnosticResult, severityFilter?: string): boolean {
-  if (!severityFilter) return true;
+  if (!severityFilter) {return true;}
   
   const severityLevels = ['info', 'warning', 'error', 'critical'];
   const resultLevel = severityLevels.indexOf(result.severity);
@@ -1700,15 +1700,15 @@ function calculateConnectionHealthScore(diagnostics: ConnectionDiagnosticResult[
  * Determine overall connection health
  */
 function determineConnectionHealth(diagnostics: ConnectionDiagnosticResult[]): 'healthy' | 'warning' | 'critical' | 'unknown' {
-  if (diagnostics.length === 0) return 'unknown';
+  if (diagnostics.length === 0) {return 'unknown';}
   
   const hasCritical = diagnostics.some(d => d.severity === 'critical');
   const hasError = diagnostics.some(d => d.severity === 'error');
   const hasWarning = diagnostics.some(d => d.severity === 'warning');
   
-  if (hasCritical) return 'critical';
-  if (hasError) return 'critical';
-  if (hasWarning) return 'warning';
+  if (hasCritical) {return 'critical';}
+  if (hasError) {return 'critical';}
+  if (hasWarning) {return 'warning';}
   
   return 'healthy';
 }
@@ -1742,8 +1742,8 @@ function generateConnectionDiagnosticSummary(connectionResults: ConnectionResult
   const averageHealthScore = connectionResults.reduce((sum, c) => sum + c.healthScore, 0) / totalConnections;
   
   let overallHealth: 'healthy' | 'warning' | 'critical' | 'unknown' = 'healthy';
-  if (criticalConnections > 0) overallHealth = 'critical';
-  else if (warningConnections > totalConnections * 0.3) overallHealth = 'warning';
+  if (criticalConnections > 0) {overallHealth = 'critical';}
+  else if (warningConnections > totalConnections * 0.3) {overallHealth = 'warning';}
   
   return {
     overallHealth,

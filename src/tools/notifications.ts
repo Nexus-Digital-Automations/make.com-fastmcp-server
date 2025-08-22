@@ -657,7 +657,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error creating notification', { title, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create notification: ${errorMessage}`);
       }
     },
@@ -742,7 +742,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error getting email preferences', { userId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get email preferences: ${errorMessage}`);
       }
     },
@@ -856,7 +856,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error updating email preferences', { userId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update email preferences: ${errorMessage}`);
       }
     },
@@ -970,7 +970,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error creating notification template', { name, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create notification template: ${errorMessage}`);
       }
     },
@@ -1105,7 +1105,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error creating data structure', { name, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create data structure: ${errorMessage}`);
       }
     },
@@ -1161,12 +1161,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           includeTransformation,
         };
 
-        if (type !== 'all') params.type = type;
-        if (scope !== 'all') params.scope = scope;
-        if (format !== 'all') params.format = format;
-        if (search) params.search = search;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
+        if (type !== 'all') {params.type = type;}
+        if (scope !== 'all') {params.scope = scope;}
+        if (format !== 'all') {params.format = format;}
+        if (search) {params.search = search;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
 
         let endpoint = '/data-structures';
         if (organizationId) {
@@ -1183,7 +1183,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
 
         const data = response.data as DataStructureListResponse;
 
-        if (!data || !data.dataStructures) {
+        if (!data?.dataStructures) {
           throw new UserError('Invalid response format from data structures API');
         }
 
@@ -1225,7 +1225,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error listing data structures', { error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list data structures: ${errorMessage}`);
       }
     },
@@ -1348,7 +1348,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error getting data structure', { dataStructureId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get data structure: ${errorMessage}`);
       }
     },
@@ -1437,33 +1437,33 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
 
         const updateData: DataStructureUpdateData = {};
         
-        if (name) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
+        if (name) {updateData.name = name;}
+        if (description !== undefined) {updateData.description = description;}
         
         if (structure) {
           updateData.structure = {};
-          if (structure.schema) updateData.structure.schema = structure.schema;
-          if (structure.version) updateData.structure.version = structure.version;
-          if (structure.format) updateData.structure.format = structure.format;
+          if (structure.schema) {updateData.structure.schema = structure.schema;}
+          if (structure.version) {updateData.structure.version = structure.version;}
+          if (structure.format) {updateData.structure.format = structure.format;}
         }
         
         if (validation) {
           updateData.validation = {};
-          if (validation.enabled !== undefined) updateData.validation.enabled = validation.enabled;
-          if (validation.strict !== undefined) updateData.validation.strict = validation.strict;
-          if (validation.rules) updateData.validation.rules = validation.rules;
+          if (validation.enabled !== undefined) {updateData.validation.enabled = validation.enabled;}
+          if (validation.strict !== undefined) {updateData.validation.strict = validation.strict;}
+          if (validation.rules) {updateData.validation.rules = validation.rules;}
         }
         
         if (transformation) {
           updateData.transformation = {};
-          if (transformation.enabled !== undefined) updateData.transformation.enabled = transformation.enabled;
-          if (transformation.mappings) updateData.transformation.mappings = transformation.mappings;
-          if (transformation.filters) updateData.transformation.filters = transformation.filters.map(filter => ({
+          if (transformation.enabled !== undefined) {updateData.transformation.enabled = transformation.enabled;}
+          if (transformation.mappings) {updateData.transformation.mappings = transformation.mappings;}
+          if (transformation.filters) {updateData.transformation.filters = transformation.filters.map(filter => ({
             field: filter.field,
             operator: filter.operator,
             value: filter.value,
             caseSensitive: filter.caseSensitive
-          }));
+          }));}
         }
 
         if (reportProgress) {
@@ -1537,7 +1537,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error updating data structure', { dataStructureId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update data structure: ${errorMessage}`);
       }
     },
@@ -1708,7 +1708,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error deleting data structure', { dataStructureId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete data structure: ${errorMessage}`);
       }
     },
@@ -1763,11 +1763,11 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           includeTracking,
         };
 
-        if (type !== 'all') params.type = type;
-        if (status !== 'all') params.status = status;
-        if (priority !== 'all') params.priority = priority;
-        if (dateRange?.startDate) params.startDate = dateRange.startDate;
-        if (dateRange?.endDate) params.endDate = dateRange.endDate;
+        if (type !== 'all') {params.type = type;}
+        if (status !== 'all') {params.status = status;}
+        if (priority !== 'all') {params.priority = priority;}
+        if (dateRange?.startDate) {params.startDate = dateRange.startDate;}
+        if (dateRange?.endDate) {params.endDate = dateRange.endDate;}
 
         const response = await apiClient.get('/notifications', { params });
 
@@ -1838,7 +1838,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         if (log && log.error) {
           log.error('Error listing notifications', { error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list notifications: ${errorMessage}`);
       }
     },

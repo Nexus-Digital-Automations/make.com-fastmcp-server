@@ -239,8 +239,8 @@ export class EnterpriseAuditLogger {
    * Determine log level based on success and risk
    */
   private determineLogLevel(success: boolean, riskLevel: AuditRiskLevel): 'info' | 'warn' | 'error' {
-    if (!success || riskLevel === 'critical') return 'error';
-    if (riskLevel === 'high' || riskLevel === 'medium') return 'warn';
+    if (!success || riskLevel === 'critical') {return 'error';}
+    if (riskLevel === 'high' || riskLevel === 'medium') {return 'warn';}
     return 'info';
   }
 
@@ -303,7 +303,7 @@ export const AuditUtils = {
     riskLevel: AuditRiskLevel,
     success: boolean
   ): boolean {
-    if (riskLevel === 'critical' || !success) return true;
+    if (riskLevel === 'critical' || !success) {return true;}
     
     const criticalActions = [
       'breach_detection_triggered',

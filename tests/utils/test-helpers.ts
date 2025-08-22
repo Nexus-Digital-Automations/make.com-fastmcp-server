@@ -290,8 +290,7 @@ export const expectValidZodParse = (schema: any, data: any) => {
 export const expectInvalidZodParse = (schema: any, data: any, expectedErrors?: string[]) => {
   // Handle non-Zod schemas gracefully
   if (!schema || typeof schema.safeParse !== 'function') {
-    // Silent handling - just return without warning
-    console.warn('Non-Zod schema passed to expectInvalidZodParse - skipping validation');
+    // Silent handling - just return without warning for non-Zod schemas
     return;
   }
 

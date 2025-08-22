@@ -49,7 +49,7 @@ export interface LogContext {
 export class Logger {
   private static instance: Logger;
   private logLevel: LogLevel;
-  private logLevels: Record<LogLevel, number> = {
+  private readonly logLevels: Record<LogLevel, number> = {
     debug: 0,
     info: 1,
     warn: 2,
@@ -79,15 +79,15 @@ export class Logger {
     
     let logLine = `[${timestamp}] ${level.toUpperCase()}`;
     
-    if (correlationId) logLine += ` [corr:${correlationId}]`;
-    if (traceId) logLine += ` [trace:${traceId}]`;
-    if (spanId) logLine += ` [span:${spanId}]`;
-    if (requestId) logLine += ` [req:${requestId}]`;
-    if (component) logLine += ` [${component}]`;
-    if (operation) logLine += ` [${operation}]`;
-    if (sessionId) logLine += ` [session:${sessionId}]`;
-    if (userId) logLine += ` [user:${userId}]`;
-    if (duration !== undefined) logLine += ` [${duration.toFixed(3)}s]`;
+    if (correlationId) {logLine += ` [corr:${correlationId}]`;}
+    if (traceId) {logLine += ` [trace:${traceId}]`;}
+    if (spanId) {logLine += ` [span:${spanId}]`;}
+    if (requestId) {logLine += ` [req:${requestId}]`;}
+    if (component) {logLine += ` [${component}]`;}
+    if (operation) {logLine += ` [${operation}]`;}
+    if (sessionId) {logLine += ` [session:${sessionId}]`;}
+    if (userId) {logLine += ` [user:${userId}]`;}
+    if (duration !== undefined) {logLine += ` [${duration.toFixed(3)}s]`;}
     
     logLine += `: ${message}`;
     
@@ -103,7 +103,7 @@ export class Logger {
   }
 
   private log(level: LogLevel, message: string, data?: Record<string, unknown>, context?: LogContext): void {
-    if (!this.shouldLog(level)) return;
+    if (!this.shouldLog(level)) {return;}
 
     const mergedContext = { ...this.defaultContext, ...context };
 
@@ -167,7 +167,7 @@ export class Logger {
   }
 
   // Helper property to store default context
-  private defaultContext: LogContext = {};
+  private readonly defaultContext: LogContext = {};
 
   // Correlation ID utilities
   public generateCorrelationId(): string {

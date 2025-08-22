@@ -322,8 +322,8 @@ interface LivePerformanceUpdate {
  * Performance Analysis Engine
  */
 class PerformanceAnalysisEngine {
-  private componentLogger: ReturnType<typeof logger.child>;
-  private performanceMonitor: PerformanceMonitor;
+  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private readonly performanceMonitor: PerformanceMonitor;
   private readonly industryBenchmarks = {
     responseTime: {
       excellent: 100,
@@ -791,7 +791,7 @@ class PerformanceAnalysisEngine {
 
     // Memory usage bottleneck detection
     const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : 0);
+                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory).utilization : 0);
     
     if (memoryUtilization && memoryUtilization > 0.85) {
       bottlenecks.push({
@@ -932,7 +932,7 @@ class PerformanceAnalysisEngine {
 
     // Deduct points for high resource usage
     const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : 0);
+                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory).utilization : 0);
     
     if (memoryUtilization && memoryUtilization > 0.8) {
       score -= (memoryUtilization - 0.8) * 50;
@@ -945,10 +945,10 @@ class PerformanceAnalysisEngine {
    * Calculate performance grade
    */
   private calculatePerformanceGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
-    if (score >= 90) return 'A';
-    if (score >= 80) return 'B';
-    if (score >= 70) return 'C';
-    if (score >= 60) return 'D';
+    if (score >= 90) {return 'A';}
+    if (score >= 80) {return 'B';}
+    if (score >= 70) {return 'C';}
+    if (score >= 60) {return 'D';}
     return 'F';
   }
 
@@ -980,7 +980,7 @@ class PerformanceAnalysisEngine {
     }
 
     const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : 0);
+                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory).utilization : 0);
     
     if (memoryUtilization && memoryUtilization > 0.7) {
       longTerm.push('Consider memory optimization and monitoring');
@@ -1041,7 +1041,7 @@ class PerformanceAnalysisEngine {
       },
       resources: {
         cpuUsage: (typeof metrics.cpu === 'object' && metrics.cpu ? (metrics.cpu as CpuMetrics).utilization : 0) || 0.3,
-        memoryUsage: (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory as SystemMemoryMetrics).utilization : (typeof metrics.memory === 'number' ? metrics.memory : 0)) || 0.6,
+        memoryUsage: (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory).utilization : (typeof metrics.memory === 'number' ? metrics.memory : 0)) || 0.6,
         networkUtilization: 0.4,
         trend: 'stable' as const
       }
@@ -1122,7 +1122,7 @@ class PerformanceAnalysisEngine {
         threshold: alertThresholds.memoryUsage,
         currentValue: metrics.memoryUsage
       });
-      if (status === 'healthy') status = 'warning';
+      if (status === 'healthy') {status = 'warning';}
     }
 
     return {
@@ -1137,7 +1137,7 @@ class PerformanceAnalysisEngine {
    * Check if bottleneck matches severity filter
    */
   private matchesSeverityFilter(severity: string, filter: string): boolean {
-    if (filter === 'all') return true;
+    if (filter === 'all') {return true;}
     
     const severityLevels = ['low', 'medium', 'high', 'critical'];
     const severityIndex = severityLevels.indexOf(severity);

@@ -119,7 +119,7 @@ export async function retryOperation<T>(
     }
   }
 
-  throw lastError!;
+  throw lastError;
 }
 
 /**
@@ -145,7 +145,7 @@ export function sanitizeForLogging(data: unknown): unknown {
   const sanitized = deepClone(data);
 
   function sanitizeObject(obj: Record<string, unknown> | null): void {
-    if (typeof obj !== 'object' || obj === null) return;
+    if (typeof obj !== 'object' || obj === null) {return;}
 
     Object.keys(obj).forEach(key => {
       const lowerKey = key.toLowerCase();

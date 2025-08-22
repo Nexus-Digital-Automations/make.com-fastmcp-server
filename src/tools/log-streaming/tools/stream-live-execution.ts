@@ -276,7 +276,7 @@ export function createStreamLiveExecutionTool(context: ToolContext): ToolDefinit
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Error in live execution monitoring', { scenarioId, executionId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to stream live execution: ${errorMessage}`);
       }
     },
@@ -295,10 +295,10 @@ function generateExecutionVisualization(logs: MakeLogEntry[]): string {
       modules.set(moduleName, { count: 0, errors: 0, duration: 0 });
     }
     
-    const module = modules.get(moduleName)!;
+    const module = modules.get(moduleName);
     module.count++;
-    if (log.error) module.errors++;
-    if (log.metrics?.processingTime) module.duration += log.metrics.processingTime;
+    if (log.error) {module.errors++;}
+    if (log.metrics?.processingTime) {module.duration += log.metrics.processingTime;}
   });
 
   let visualization = 'Execution Flow Visualization:\n\n';

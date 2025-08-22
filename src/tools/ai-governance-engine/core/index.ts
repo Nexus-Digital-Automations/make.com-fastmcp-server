@@ -97,20 +97,20 @@ interface Policy {
 
 export class AIGovernanceManager {
   private static instance: AIGovernanceManager | null = null;
-  private mlModels: Map<string, MLModelType> = new Map();
-  private predictionCache: Map<string, PredictionCacheEntry> = new Map();
-  private componentLogger = logger.child({ component: 'AIGovernanceManager' });
+  private readonly mlModels: Map<string, MLModelType> = new Map();
+  private readonly predictionCache: Map<string, PredictionCacheEntry> = new Map();
+  private readonly componentLogger = logger.child({ component: 'AIGovernanceManager' });
   
   // Service instances
-  private riskAssessmentService: RiskAssessmentService;
-  private remediationService: RemediationService;
-  private insightsService: InsightsService;
-  private dashboardService: DashboardService;
-  private policyOptimizationService: PolicyOptimizationService;
+  private readonly riskAssessmentService: RiskAssessmentService;
+  private readonly remediationService: RemediationService;
+  private readonly insightsService: InsightsService;
+  private readonly dashboardService: DashboardService;
+  private readonly policyOptimizationService: PolicyOptimizationService;
   
   constructor(
-    private context: GovernanceContext,
-    private apiClient: MakeApiClient
+    private readonly context: GovernanceContext,
+    private readonly apiClient: MakeApiClient
   ) {
     this.initializeMLModels();
     
@@ -432,9 +432,9 @@ export class AIGovernanceManager {
     const criticalCount = violations.filter(v => v.severity === 'critical').length;
     const highCount = violations.filter(v => v.severity === 'high').length;
     
-    if (criticalCount > 0) return 'critical';
-    if (highCount > 2) return 'high';
-    if (violations.length > 5) return 'medium';
+    if (criticalCount > 0) {return 'critical';}
+    if (highCount > 2) {return 'high';}
+    if (violations.length > 5) {return 'medium';}
     return 'low';
   }
 

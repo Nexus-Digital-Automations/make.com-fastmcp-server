@@ -115,25 +115,25 @@ export function createQueryLogsByTimeRangeTool(context: ToolContext): ToolDefini
         }
 
         // Apply filtering parameters
-        if (scenarioId) params.scenarioId = scenarioId;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
-        if (executionId) params.executionId = executionId;
-        if (filtering.logLevels.length > 0) params.level = filtering.logLevels.join(',');
-        if (filtering.executionStatus) params.status = filtering.executionStatus;
-        if (filtering.moduleTypes?.length) params.moduleTypes = filtering.moduleTypes.join(',');
-        if (filtering.moduleNames?.length) params.moduleNames = filtering.moduleNames.join(',');
+        if (scenarioId) {params.scenarioId = scenarioId;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
+        if (executionId) {params.executionId = executionId;}
+        if (filtering.logLevels.length > 0) {params.level = filtering.logLevels.join(',');}
+        if (filtering.executionStatus) {params.status = filtering.executionStatus;}
+        if (filtering.moduleTypes?.length) {params.moduleTypes = filtering.moduleTypes.join(',');}
+        if (filtering.moduleNames?.length) {params.moduleNames = filtering.moduleNames.join(',');}
         if (filtering.searchText) {
           params.search = filtering.searchText;
           params.searchType = 'regex'; // Enable regex search
         }
-        if (filtering.errorCodesOnly) params.errorsOnly = true;
-        if (filtering.performanceThreshold) params.minProcessingTime = filtering.performanceThreshold;
-        if (filtering.dataSizeThreshold) params.minDataSize = filtering.dataSizeThreshold;
-        if (filtering.operationsThreshold) params.minOperations = filtering.operationsThreshold;
-        if (filtering.excludeSuccess) params.excludeSuccess = true;
-        if (!filtering.includeMetrics) params.excludeMetrics = true;
-        if (filtering.correlationIds?.length) params.correlationIds = filtering.correlationIds.join(',');
+        if (filtering.errorCodesOnly) {params.errorsOnly = true;}
+        if (filtering.performanceThreshold) {params.minProcessingTime = filtering.performanceThreshold;}
+        if (filtering.dataSizeThreshold) {params.minDataSize = filtering.dataSizeThreshold;}
+        if (filtering.operationsThreshold) {params.minOperations = filtering.operationsThreshold;}
+        if (filtering.excludeSuccess) {params.excludeSuccess = true;}
+        if (!filtering.includeMetrics) {params.excludeMetrics = true;}
+        if (filtering.correlationIds?.length) {params.correlationIds = filtering.correlationIds.join(',');}
 
         // Determine optimal endpoint based on scope and query parameters
         let endpoint = '/logs';
@@ -422,7 +422,7 @@ function analyzePerformanceTrends(logs: MakeLogEntry[]): Record<string, unknown>
     .filter(log => log.performance?.processingTime)
     .map(log => ({
       timestamp: log.timestamp,
-      processingTime: log.performance!.processingTime,
+      processingTime: log.performance.processingTime,
       module: log.module.name,
     }));
 
@@ -503,7 +503,7 @@ function analyzeExecutionFlow(logs: MakeLogEntry[]): Record<string, unknown> {
 function detectAnomalies(logs: MakeLogEntry[]): Record<string, unknown> {
   const processingTimes = logs
     .filter(log => log.performance?.processingTime)
-    .map(log => log.performance!.processingTime);
+    .map(log => log.performance.processingTime);
 
   if (processingTimes.length === 0) {
     return { anomalies: [], message: 'No performance data available for anomaly detection' };

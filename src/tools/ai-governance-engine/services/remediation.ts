@@ -42,14 +42,14 @@ interface RemediationContext {
 }
 
 export class RemediationService {
-  private componentLogger = logger.child({ component: 'RemediationService' });
-  private workflowTemplates: Map<string, WorkflowTemplate> = new Map();
-  private activeWorkflows: Map<string, WorkflowExecution> = new Map();
+  private readonly componentLogger = logger.child({ component: 'RemediationService' });
+  private readonly workflowTemplates: Map<string, WorkflowTemplate> = new Map();
+  private readonly activeWorkflows: Map<string, WorkflowExecution> = new Map();
   private executionHistory: WorkflowExecution[] = [];
 
   constructor(
-    private context: GovernanceContext,
-    private apiClient: MakeApiClient
+    private readonly context: GovernanceContext,
+    private readonly apiClient: MakeApiClient
   ) {
     this.initializeWorkflowTemplates();
   }
@@ -545,7 +545,7 @@ export class RemediationService {
     const [, templateId] = workflowId.split('_');
     const template = this.workflowTemplates.get(templateId);
     
-    if (!template) return undefined;
+    if (!template) {return undefined;}
 
     return {
       workflowId,
@@ -580,7 +580,7 @@ export class RemediationService {
     for (const step of workflow.steps) {
       try {
         // Check if step requires approval
-        if (!step.automated && (!approvals || !approvals.includes(step.stepId))) {
+        if (!step.automated && (!approvals?.includes(step.stepId))) {
           nextActions.push(`Manual approval required for step: ${step.action}`);
           execution.status = 'pending';
           break;
@@ -677,7 +677,7 @@ export class RemediationService {
 
   private calculateProgress(execution: WorkflowExecution): number {
     const workflow = this.workflowTemplates.get(execution.workflowId.split('_')[1]);
-    if (!workflow) return 0;
+    if (!workflow) {return 0;}
 
     const totalSteps = workflow.steps.length;
     const completedSteps = execution.completedSteps.length;

@@ -142,8 +142,8 @@ export function isBuiltinModule(moduleType: string): boolean {
 }
 
 export function getHealthCategory(score: number): 'healthy' | 'warning' | 'critical' {
-  if (score >= HEALTH_THRESHOLDS.HEALTHY) return 'healthy';
-  if (score >= HEALTH_THRESHOLDS.WARNING) return 'warning';
+  if (score >= HEALTH_THRESHOLDS.HEALTHY) {return 'healthy';}
+  if (score >= HEALTH_THRESHOLDS.WARNING) {return 'warning';}
   return 'critical';
 }
 

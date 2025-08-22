@@ -55,8 +55,8 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
           active: typedArgs.active,
         };
 
-        if (typedArgs.teamId) cloneData.teamId = typedArgs.teamId;
-        if (typedArgs.folderId) cloneData.folderId = typedArgs.folderId;
+        if (typedArgs.teamId) {cloneData.teamId = typedArgs.teamId;}
+        if (typedArgs.folderId) {cloneData.folderId = typedArgs.folderId;}
 
         reportProgress?.({ progress: 50, total: 100 });
 

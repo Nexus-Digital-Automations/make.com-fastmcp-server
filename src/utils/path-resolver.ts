@@ -49,7 +49,7 @@ export function getProjectRoot(): string {
         return searchDir;
       }
       const parentDir = path.dirname(searchDir);
-      if (parentDir === searchDir) break; // Reached root
+      if (parentDir === searchDir) {break;} // Reached root
       searchDir = parentDir;
     }
     

@@ -31,7 +31,7 @@ const logMessage = (
   message: string,
   data?: unknown
 ): void => {
-  if (!log) return;
+  if (!log) {return;}
   
   if (typeof log === 'function') {
     // Function-based logger (common in tests): log('info', 'message', data)
@@ -202,7 +202,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error getting current user', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get current user: ${errorMessage}`);
       }
     },
@@ -237,11 +237,11 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           offset,
         };
 
-        if (teamId) params.teamId = teamId;
-        if (organizationId) params.organizationId = organizationId;
-        if (role) params.role = role;
-        if (isActive !== undefined) params.active = isActive;
-        if (search) params.search = search;
+        if (teamId) {params.teamId = teamId;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (role) {params.role = role;}
+        if (isActive !== undefined) {params.active = isActive;}
+        if (search) {params.search = search;}
 
         // Get users from team or organization context
         let endpoint = '/users';
@@ -280,7 +280,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error listing users', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list users: ${errorMessage}`);
       }
     },
@@ -328,7 +328,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error getting user', { userId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get user details: ${errorMessage}`);
       }
     },
@@ -353,8 +353,8 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
 
       try {
         const updateData: Record<string, unknown> = { role };
-        if (teamId) updateData.teamId = teamId;
-        if (permissions) updateData.permissions = permissions;
+        if (teamId) {updateData.teamId = teamId;}
+        if (permissions) {updateData.permissions = permissions;}
 
         let endpoint = `/users/${userId}/roles`;
         if (teamId) {
@@ -386,7 +386,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error updating user role', { userId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update user role: ${errorMessage}`);
       }
     },
@@ -418,8 +418,8 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           offset,
         };
 
-        if (organizationId) params.organizationId = organizationId;
-        if (search) params.search = search;
+        if (organizationId) {params.organizationId = organizationId;}
+        if (search) {params.search = search;}
 
         let endpoint = '/teams';
         if (organizationId) {
@@ -455,7 +455,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error listing teams', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list teams: ${errorMessage}`);
       }
     },
@@ -502,7 +502,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error getting team', { teamId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get team details: ${errorMessage}`);
       }
     },
@@ -557,7 +557,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error creating team', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create team: ${errorMessage}`);
       }
     },
@@ -581,8 +581,8 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
 
       try {
         const updateData: Record<string, unknown> = {};
-        if (name !== undefined) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
+        if (name !== undefined) {updateData.name = name;}
+        if (description !== undefined) {updateData.description = description;}
 
         if (Object.keys(updateData).length === 0) {
           throw new UserError('No update data provided');
@@ -615,7 +615,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error updating team', { teamId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update team: ${errorMessage}`);
       }
     },
@@ -655,7 +655,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error deleting team', { teamId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete team: ${errorMessage}`);
       }
     },
@@ -686,7 +686,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           offset,
         };
 
-        if (search) params.search = search;
+        if (search) {params.search = search;}
 
         const response = await apiClient.get('/organizations', { params });
 
@@ -717,7 +717,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error listing organizations', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list organizations: ${errorMessage}`);
       }
     },
@@ -764,7 +764,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error getting organization', { organizationId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get organization details: ${errorMessage}`);
       }
     },
@@ -818,7 +818,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error creating organization', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create organization: ${errorMessage}`);
       }
     },
@@ -842,8 +842,8 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
 
       try {
         const updateData: Record<string, unknown> = {};
-        if (name !== undefined) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
+        if (name !== undefined) {updateData.name = name;}
+        if (description !== undefined) {updateData.description = description;}
 
         if (Object.keys(updateData).length === 0) {
           throw new UserError('No update data provided');
@@ -876,7 +876,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error updating organization', { organizationId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update organization: ${errorMessage}`);
       }
     },
@@ -916,7 +916,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error deleting organization', { organizationId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete organization: ${errorMessage}`);
       }
     },
@@ -979,7 +979,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logMessage(log, 'error', 'Error inviting user', { email, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to invite user: ${errorMessage}`);
       }
     },

@@ -12,7 +12,7 @@ import { auditLogger } from '../../../lib/audit-logger.js';
  */
 export class VaultServerManager {
   private static instance: VaultServerManager | null = null;
-  private clusters: Map<string, VaultClusterInfo> = new Map();
+  private readonly clusters: Map<string, VaultClusterInfo> = new Map();
 
   private constructor() {}
 

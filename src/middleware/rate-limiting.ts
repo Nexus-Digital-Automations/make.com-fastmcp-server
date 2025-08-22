@@ -122,8 +122,8 @@ export class AdaptiveRateLimiter {
 // Enterprise rate limiting manager
 export class EnterpriseRateLimitManager {
   private redisClient: Redis | null = null;
-  private rateLimiters: Record<string, RateLimiterRedis | RateLimiterMemory> = {};
-  private adaptiveLimiter: AdaptiveRateLimiter;
+  private readonly rateLimiters: Record<string, RateLimiterRedis | RateLimiterMemory> = {};
+  private readonly adaptiveLimiter: AdaptiveRateLimiter;
   private ddosProtection!: RateLimiterRedis | RateLimiterMemory;
   
   constructor() {
@@ -379,10 +379,10 @@ export function createRateLimitMiddleware(tier: 'auth' | 'standard' | 'sensitive
   return async (req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> => {
     const startTime = Date.now();
     const identifier = tier === 'auth' 
-      ? `auth:${rateLimitManager['getClientIP'](req)}`
+      ? `auth:${rateLimitManager.getClientIP(req)}`
       : tier === 'webhooks'
-      ? `webhook:${req.headers['x-webhook-id'] || rateLimitManager['getClientIP'](req)}`
-      : `${tier}:${req.user?.id || rateLimitManager['getClientIP'](req)}`;
+      ? `webhook:${req.headers['x-webhook-id'] || rateLimitManager.getClientIP(req)}`
+      : `${tier}:${req.user?.id || rateLimitManager.getClientIP(req)}`;
     
     try {
       const result = await rateLimitManager.checkRateLimit(tier, identifier, req);
@@ -399,7 +399,7 @@ export function createRateLimitMiddleware(tier: 'auth' | 'standard' | 'sensitive
       if (!result.allowed) {
         logger.warn(`Rate limit exceeded for ${tier}`, {
           identifier: identifier.substring(0, 20) + '...',
-          ip: rateLimitManager['getClientIP'](req)
+          ip: rateLimitManager.getClientIP(req)
         });
         
         return res.status(429).json({
@@ -435,7 +435,7 @@ export function createRateLimitMiddleware(tier: 'auth' | 'standard' | 'sensitive
 // DDoS protection middleware
 export function ddosProtectionMiddleware() {
   return async (req: HttpRequest, res: HttpResponse, next: NextFunction): Promise<void> => {
-    const identifier = `ddos:${rateLimitManager['getClientIP'](req)}`;
+    const identifier = `ddos:${rateLimitManager.getClientIP(req)}`;
     
     try {
       const result = await rateLimitManager.checkRateLimit('ddos', identifier, req);
@@ -443,7 +443,7 @@ export function ddosProtectionMiddleware() {
       if (!result.allowed) {
         const userAgent = req.headers['user-agent'];
         logger.warn('DDoS protection triggered', {
-          ip: rateLimitManager['getClientIP'](req),
+          ip: rateLimitManager.getClientIP(req),
           userAgent: Array.isArray(userAgent) 
             ? userAgent[0]?.substring(0, 100)
             : userAgent?.substring(0, 100)

@@ -294,9 +294,9 @@ interface SessionInfo {
 
 class ZeroTrustAuthEngine {
   private static instance: ZeroTrustAuthEngine;
-  private sessions: Map<string, SessionInfo> = new Map();
-  private userBaselines: Map<string, UserBehaviorBaseline> = new Map();
-  private deviceFingerprints: Map<string, Record<string, unknown>> = new Map();
+  private readonly sessions: Map<string, SessionInfo> = new Map();
+  private readonly userBaselines: Map<string, UserBehaviorBaseline> = new Map();
+  private readonly deviceFingerprints: Map<string, Record<string, unknown>> = new Map();
 
   public static getInstance(): ZeroTrustAuthEngine {
     if (!ZeroTrustAuthEngine.instance) {
@@ -473,16 +473,16 @@ class ZeroTrustAuthEngine {
 
     // Determine risk level
     let riskLevel: 'low' | 'medium' | 'high' | 'critical';
-    if (trustScore >= 80) riskLevel = 'low';
-    else if (trustScore >= 60) riskLevel = 'medium';
-    else if (trustScore >= 40) riskLevel = 'high';
-    else riskLevel = 'critical';
+    if (trustScore >= 80) {riskLevel = 'low';}
+    else if (trustScore >= 60) {riskLevel = 'medium';}
+    else if (trustScore >= 40) {riskLevel = 'high';}
+    else {riskLevel = 'critical';}
 
     // Determine compliance status
     let complianceStatus: 'compliant' | 'non_compliant' | 'partially_compliant';
-    if (issues.length === 0) complianceStatus = 'compliant';
-    else if (issues.length <= 2) complianceStatus = 'partially_compliant';
-    else complianceStatus = 'non_compliant';
+    if (issues.length === 0) {complianceStatus = 'compliant';}
+    else if (issues.length <= 2) {complianceStatus = 'partially_compliant';}
+    else {complianceStatus = 'non_compliant';}
 
     // Store device fingerprint if trusted
     if (trustScore >= 60) {
@@ -512,17 +512,17 @@ class ZeroTrustAuthEngine {
     
     // Determine session expiration based on risk
     let expirationMinutes = 480; // 8 hours default
-    if (riskScore > 70) expirationMinutes = 60; // 1 hour for high risk
-    else if (riskScore > 40) expirationMinutes = 240; // 4 hours for medium risk
+    if (riskScore > 70) {expirationMinutes = 60;} // 1 hour for high risk
+    else if (riskScore > 40) {expirationMinutes = 240;} // 4 hours for medium risk
 
     const expiresAt = new Date(now.getTime() + expirationMinutes * 60000);
     
     // Determine security level
     let securityLevel: string;
-    if (riskScore > 70) securityLevel = 'critical';
-    else if (riskScore > 40) securityLevel = 'high';
-    else if (riskScore > 20) securityLevel = 'medium';
-    else securityLevel = 'low';
+    if (riskScore > 70) {securityLevel = 'critical';}
+    else if (riskScore > 40) {securityLevel = 'high';}
+    else if (riskScore > 20) {securityLevel = 'medium';}
+    else {securityLevel = 'low';}
 
     const sessionInfo: SessionInfo = {
       sessionId,
@@ -564,7 +564,7 @@ class ZeroTrustAuthEngine {
    */
   public validateSession(sessionId: string): SessionInfo | null {
     const session = this.sessions.get(sessionId);
-    if (!session) return null;
+    if (!session) {return null;}
 
     const now = new Date();
     if (new Date(session.expiresAt) < now) {
@@ -704,7 +704,7 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
       const networkRisk = parsedInput.riskContext.networkType === 'tor' ? 80 : 
                          parsedInput.riskContext.networkType === 'public' ? 40 : 10;
       
-      const overallRiskScore = authEngine['calculateRiskScore']({
+      const overallRiskScore = authEngine.calculateRiskScore({
         userBehaviorScore: behaviorAnalysis.riskScore,
         deviceTrustScore: 100 - deviceTrust.trustScore,
         networkScore: networkRisk,
@@ -1106,7 +1106,7 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
           }
 
           // Terminate session
-          const terminated = authEngine['sessions'].delete(parsedInput.sessionId);
+          const terminated = authEngine.sessions.delete(parsedInput.sessionId);
           result = { success: terminated, terminated: terminated };
           
           if (terminated) {
@@ -1131,7 +1131,7 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
             }).content[0].text;
           }
 
-          const userSessions = Array.from(authEngine['sessions'].values())
+          const userSessions = Array.from(authEngine.sessions.values())
             .filter(session => session.userId === parsedInput.userId);
           result = { success: true, sessions: userSessions };
           break;
@@ -1374,10 +1374,10 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool => (
 
       // Determine risk level
       let riskLevel: 'low' | 'medium' | 'high' | 'critical';
-      if (overallRiskScore >= 80) riskLevel = 'critical';
-      else if (overallRiskScore >= 60) riskLevel = 'high';
-      else if (overallRiskScore >= 40) riskLevel = 'medium';
-      else riskLevel = 'low';
+      if (overallRiskScore >= 80) {riskLevel = 'critical';}
+      else if (overallRiskScore >= 60) {riskLevel = 'high';}
+      else if (overallRiskScore >= 40) {riskLevel = 'medium';}
+      else {riskLevel = 'low';}
 
       // Generate recommendations
       const recommendations: string[] = [];

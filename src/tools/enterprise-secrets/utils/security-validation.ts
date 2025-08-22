@@ -115,24 +115,24 @@ export class SecurityValidator {
     let score = 0;
 
     // Length scoring
-    if (password.length >= 8) score += 1;
-    if (password.length >= 12) score += 1;
-    if (password.length >= 16) score += 1;
+    if (password.length >= 8) {score += 1;}
+    if (password.length >= 12) {score += 1;}
+    if (password.length >= 16) {score += 1;}
 
     // Character variety scoring
-    if (/[a-z]/.test(password)) score += 1;
-    if (/[A-Z]/.test(password)) score += 1;
-    if (/\d/.test(password)) score += 1;
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 1;
+    if (/[a-z]/.test(password)) {score += 1;}
+    if (/[A-Z]/.test(password)) {score += 1;}
+    if (/\d/.test(password)) {score += 1;}
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {score += 1;}
 
     // Complexity scoring
-    if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(password)) score += 1;
+    if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(password)) {score += 1;}
 
     // Return strength based on score
-    if (score <= 2) return 'weak';
-    if (score <= 4) return 'fair';
-    if (score <= 6) return 'good';
-    if (score <= 7) return 'strong';
+    if (score <= 2) {return 'weak';}
+    if (score <= 4) {return 'fair';}
+    if (score <= 6) {return 'good';}
+    if (score <= 7) {return 'strong';}
     return 'very-strong';
   }
 
@@ -307,11 +307,11 @@ export class SecurityValidator {
 
     // Assign grade
     let grade: 'A' | 'B' | 'C' | 'D' | 'F';
-    if (score >= 90) grade = 'A';
-    else if (score >= 80) grade = 'B';
-    else if (score >= 70) grade = 'C';
-    else if (score >= 60) grade = 'D';
-    else grade = 'F';
+    if (score >= 90) {grade = 'A';}
+    else if (score >= 80) {grade = 'B';}
+    else if (score >= 70) {grade = 'C';}
+    else if (score >= 60) {grade = 'D';}
+    else {grade = 'F';}
 
     return {
       score,

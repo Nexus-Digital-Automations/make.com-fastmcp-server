@@ -16,7 +16,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  */
 class ComplianceReportGenerator {
   private static instance: ComplianceReportGenerator | null = null;
-  private reports: Map<string, ComplianceReport> = new Map();
+  private readonly reports: Map<string, ComplianceReport> = new Map();
 
   public static getInstance(): ComplianceReportGenerator {
     if (!ComplianceReportGenerator.instance) {

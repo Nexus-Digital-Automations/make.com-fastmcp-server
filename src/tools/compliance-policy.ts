@@ -574,7 +574,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           riskLevel: 'medium',
         });
 
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create compliance policy: ${errorMessage}`);
       }
     },
@@ -669,7 +669,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           targetId: input.targetId,
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to validate compliance: ${errorMessage}`);
       }
     },
@@ -965,7 +965,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           policyId: input.policyId,
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update compliance policy: ${errorMessage}`);
       }
     },
@@ -1050,7 +1050,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           framework: input.framework,
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to retrieve compliance templates: ${errorMessage}`);
       }
     },
@@ -1241,7 +1241,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           policyName: input.policyName,
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create policy from template: ${errorMessage}`);
       }
     },

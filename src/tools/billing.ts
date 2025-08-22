@@ -766,7 +766,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
         if (log && log.error) {
           log.error('Error getting billing account', { organizationId, error: errorMessage });
         }
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get billing account: ${errorMessage}`);
       }
     },
@@ -803,9 +803,9 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           includePayments,
         };
 
-        if (status !== 'all') params.status = status;
-        if (dateRange?.startDate) params.startDate = dateRange.startDate;
-        if (dateRange?.endDate) params.endDate = dateRange.endDate;
+        if (status !== 'all') {params.status = status;}
+        if (dateRange?.startDate) {params.startDate = dateRange.startDate;}
+        if (dateRange?.endDate) {params.endDate = dateRange.endDate;}
 
         let endpoint = '/billing/invoices';
         if (organizationId) {
@@ -871,7 +871,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing invoices', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list invoices: ${errorMessage}`);
       }
     },
@@ -975,7 +975,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting usage metrics', { organizationId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get usage metrics: ${errorMessage}`);
       }
     },
@@ -1087,7 +1087,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error adding payment method', { type, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to add payment method: ${errorMessage}`);
       }
     },
@@ -1183,7 +1183,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating billing information', { organizationId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update billing information: ${errorMessage}`);
       }
     },
@@ -1303,7 +1303,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error setting budget', { name, type, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to set budget: ${errorMessage}`);
       }
     },
@@ -1432,7 +1432,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating cost alert', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create cost alert: ${errorMessage}`);
       }
     },
@@ -1604,7 +1604,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error generating cost projection', { period, algorithm, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to generate cost projection: ${errorMessage}`);
       }
     },
@@ -1791,7 +1791,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error evaluating high cost scenarios', { action, dryRun, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to evaluate high cost scenarios: ${errorMessage}`);
       }
     },

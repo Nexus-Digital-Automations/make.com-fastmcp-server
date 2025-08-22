@@ -256,7 +256,7 @@ function generateImplementationOrder(recommendations: Array<{ category: string; 
   return recommendations
     .sort((a, b) => {
       const priorityDiff = priorityOrder.indexOf(a.priority) - priorityOrder.indexOf(b.priority);
-      if (priorityDiff !== 0) return priorityDiff;
+      if (priorityDiff !== 0) {return priorityDiff;}
       
       return categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category);
     })
@@ -280,8 +280,8 @@ function calculateTotalTime(recommendations: Array<{ priority: string }>): strin
     sum + (timeWeights[rec.priority as keyof typeof timeWeights] || 1), 0
   );
   
-  if (totalWeight < 5) return '1-2 days';
-  if (totalWeight < 10) return '3-5 days';
+  if (totalWeight < 5) {return '1-2 days';}
+  if (totalWeight < 10) {return '3-5 days';}
   return '1-2 weeks';
 }
 

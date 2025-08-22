@@ -111,15 +111,15 @@ function formatVariableValue(value: unknown, type: string): unknown {
       return num;
     }
     case 'boolean':
-      if (typeof value === 'boolean') return value;
+      if (typeof value === 'boolean') {return value;}
       if (typeof value === 'string') {
         const lower = value.toLowerCase();
-        if (lower === 'true' || lower === '1') return true;
-        if (lower === 'false' || lower === '0') return false;
+        if (lower === 'true' || lower === '1') {return true;}
+        if (lower === 'false' || lower === '0') {return false;}
       }
       throw new UserError(`Invalid boolean value: ${value}`);
     case 'json':
-      if (typeof value === 'object') return value;
+      if (typeof value === 'object') {return value;}
       if (typeof value === 'string') {
         try {
           return JSON.parse(value);
@@ -221,7 +221,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating custom variable', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create custom variable: ${errorMessage}`);
       }
     },
@@ -257,14 +257,14 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           sortOrder,
         };
 
-        if (scope !== 'all') params.scope = scope;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
-        if (scenarioId) params.scenarioId = scenarioId;
-        if (namePattern) params.namePattern = namePattern;
-        if (tags && tags.length > 0) params.tags = tags.join(',');
-        if (type) params.type = type;
-        if (isEncrypted !== undefined) params.isEncrypted = isEncrypted;
+        if (scope !== 'all') {params.scope = scope;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
+        if (scenarioId) {params.scenarioId = scenarioId;}
+        if (namePattern) {params.namePattern = namePattern;}
+        if (tags && tags.length > 0) {params.tags = tags.join(',');}
+        if (type) {params.type = type;}
+        if (isEncrypted !== undefined) {params.isEncrypted = isEncrypted;}
 
         let endpoint = '/variables';
         if (scope === 'organization' && organizationId) {
@@ -304,7 +304,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             json: variables.filter(v => v.type === 'json').length,
           },
           encryptedCount: variables.filter(v => v.isEncrypted).length,
-          uniqueTags: Array.from(new Set(variables.flatMap(v => (v as MakeCustomVariable).tags || []))),
+          uniqueTags: Array.from(new Set(variables.flatMap(v => (v).tags || []))),
         };
 
         return formatSuccessResponse({
@@ -323,7 +323,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing custom variables', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list custom variables: ${errorMessage}`);
       }
     },
@@ -394,7 +394,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting custom variable', { variableId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get custom variable details: ${errorMessage}`);
       }
     },
@@ -420,7 +420,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       try {
         const updateData: Record<string, unknown> = {};
 
-        if (name !== undefined) updateData.name = name;
+        if (name !== undefined) {updateData.name = name;}
         if (value !== undefined && type !== undefined) {
           updateData.value = formatVariableValue(value, type);
           updateData.type = type;
@@ -436,9 +436,9 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           updateData.type = type;
         }
 
-        if (description !== undefined) updateData.description = description;
-        if (tags !== undefined) updateData.tags = tags;
-        if (isEncrypted !== undefined) updateData.isEncrypted = isEncrypted;
+        if (description !== undefined) {updateData.description = description;}
+        if (tags !== undefined) {updateData.tags = tags;}
+        if (isEncrypted !== undefined) {updateData.isEncrypted = isEncrypted;}
 
         if (Object.keys(updateData).length === 0) {
           throw new UserError('No update data provided');
@@ -469,7 +469,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating custom variable', { variableId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update custom variable: ${errorMessage}`);
       }
     },
@@ -520,7 +520,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting custom variable', { variableId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to delete custom variable: ${errorMessage}`);
       }
     },
@@ -586,7 +586,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error performing bulk variable operation', { operation, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to perform bulk variable operation: ${errorMessage}`);
       }
     },
@@ -664,7 +664,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error exporting custom variables', { scope, format, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to export custom variables: ${errorMessage}`);
       }
     },
@@ -730,14 +730,14 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             context,
             resolved: !!resolvedVariable,
             resolvedScope: resolvedVariable ? resolvedVariable.scope : undefined,
-            value: resolvedVariable && resolvedVariable.isEncrypted ? '[ENCRYPTED]' : (resolvedVariable ? resolvedVariable.value : undefined),
+            value: resolvedVariable?.isEncrypted ? '[ENCRYPTED]' : (resolvedVariable ? resolvedVariable.value : undefined),
             inheritanceChain,
           },
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error testing variable resolution', { variableName, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to test variable resolution: ${errorMessage}`);
       }
     },
@@ -785,12 +785,12 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           includeRecoveryPlan,
         };
 
-        if (scenarioId) params.scenarioId = scenarioId;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
-        if (status !== 'all') params.status = status;
-        if (ageHours !== undefined) params.ageHours = ageHours;
-        if (canResume !== undefined) params.canResume = canResume;
+        if (scenarioId) {params.scenarioId = scenarioId;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
+        if (status !== 'all') {params.status = status;}
+        if (ageHours !== undefined) {params.ageHours = ageHours;}
+        if (canResume !== undefined) {params.canResume = canResume;}
 
         const response = await apiClient.get('/incomplete-executions', { params });
 
@@ -866,7 +866,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing incomplete executions', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list incomplete executions with recovery: ${errorMessage}`);
       }
     },
@@ -983,7 +983,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error in bulk resolve operation', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to bulk resolve incomplete executions: ${errorMessage}`);
       }
     },
@@ -1095,7 +1095,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error analyzing failure patterns', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to analyze execution failure patterns: ${errorMessage}`);
       }
     },
@@ -1187,7 +1187,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating recovery automation rule', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create recovery automation rule: ${errorMessage}`);
       }
     },

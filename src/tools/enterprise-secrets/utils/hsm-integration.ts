@@ -12,7 +12,7 @@ import { auditLogger } from '../../../lib/audit-logger.js';
  */
 export class HSMIntegrationManager {
   private static instance: HSMIntegrationManager | null = null;
-  private hsmProviders: Map<string, HSMStatus> = new Map();
+  private readonly hsmProviders: Map<string, HSMStatus> = new Map();
 
   private constructor() {}
 

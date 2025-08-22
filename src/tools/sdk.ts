@@ -253,15 +253,15 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
           sortOrder,
         };
 
-        if (query) params.q = query;
-        if (category !== 'all') params.category = category;
-        if (publisher) params.publisher = publisher;
-        if (verified !== undefined) params.verified = verified;
-        if (rating) params.minRating = rating;
-        if (features.length > 0) params.features = features.join(',');
-        if (compatibility?.platform) params.platform = compatibility.platform;
-        if (compatibility?.region) params.region = compatibility.region;
-        if (compatibility?.language) params.language = compatibility.language;
+        if (query) {params.q = query;}
+        if (category !== 'all') {params.category = category;}
+        if (publisher) {params.publisher = publisher;}
+        if (verified !== undefined) {params.verified = verified;}
+        if (rating) {params.minRating = rating;}
+        if (features.length > 0) {params.features = features.join(',');}
+        if (compatibility?.platform) {params.platform = compatibility.platform;}
+        if (compatibility?.region) {params.region = compatibility.region;}
+        if (compatibility?.language) {params.language = compatibility.language;}
 
         const response = await apiClient.get('/sdk-apps/marketplace', { params });
 
@@ -347,7 +347,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error searching SDK apps', { query, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to search SDK apps: ${errorMessage}`);
       }
     },
@@ -477,7 +477,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error installing SDK app', { appId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to install SDK app: ${errorMessage}`);
       }
     },
@@ -526,10 +526,10 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
           includeConfiguration,
         };
 
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
-        if (status !== 'all') params.status = status;
-        if (category !== 'all') params.category = category;
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
+        if (status !== 'all') {params.status = status;}
+        if (category !== 'all') {params.category = category;}
 
         const response = await apiClient.get('/sdk-apps/installed', { params });
 
@@ -596,7 +596,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing installed apps', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list installed apps: ${errorMessage}`);
       }
     },
@@ -715,7 +715,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating SDK app', { appId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update SDK app: ${errorMessage}`);
       }
     },
@@ -813,7 +813,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error configuring SDK app', { appId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to configure SDK app: ${errorMessage}`);
       }
     },
@@ -949,7 +949,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error installing workflow', { workflowId, name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to install workflow: ${errorMessage}`);
       }
     },

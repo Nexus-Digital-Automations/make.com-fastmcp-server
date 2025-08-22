@@ -33,13 +33,13 @@ interface RiskCalculationResult {
 }
 
 export class RiskAssessmentService {
-  private componentLogger = logger.child({ component: 'RiskAssessmentService' });
-  private predictionCache: Map<string, PredictionCacheEntry> = new Map();
-  private mlModels: Map<string, MLModelType> = new Map();
+  private readonly componentLogger = logger.child({ component: 'RiskAssessmentService' });
+  private readonly predictionCache: Map<string, PredictionCacheEntry> = new Map();
+  private readonly mlModels: Map<string, MLModelType> = new Map();
 
   constructor(
-    private context: GovernanceContext,
-    private apiClient: MakeApiClient
+    private readonly context: GovernanceContext,
+    private readonly apiClient: MakeApiClient
   ) {
     this.initializeMLModels();
   }
@@ -145,7 +145,7 @@ export class RiskAssessmentService {
     assessments: RiskAssessment[], 
     _request: RiskAssessmentRequest
   ): Promise<number> {
-    if (assessments.length === 0) return 0;
+    if (assessments.length === 0) {return 0;}
 
     // Calculate weighted base score
     const totalWeight = assessments.reduce((sum, assessment) => {
@@ -205,7 +205,7 @@ export class RiskAssessmentService {
       
       // Check prediction cache first
       if (this.predictionCache.has(cacheKey)) {
-        const cached = this.predictionCache.get(cacheKey)!;
+        const cached = this.predictionCache.get(cacheKey);
         predictions.push({
           category,
           predictedScore: parseFloat(cached.prediction),
@@ -323,9 +323,9 @@ export class RiskAssessmentService {
   }
 
   private determineSeverity(score: number): 'low' | 'medium' | 'high' | 'critical' {
-    if (score >= 90) return 'critical';
-    if (score >= 70) return 'high';
-    if (score >= 40) return 'medium';
+    if (score >= 90) {return 'critical';}
+    if (score >= 70) {return 'high';}
+    if (score >= 40) {return 'medium';}
     return 'low';
   }
 
@@ -440,7 +440,7 @@ export class RiskAssessmentService {
   }
 
   private calculateTrendDirection(data: number[]): { direction: 'increasing' | 'decreasing' | 'stable'; velocity: number } {
-    if (data.length < 2) return { direction: 'stable', velocity: 0 };
+    if (data.length < 2) {return { direction: 'stable', velocity: 0 };}
     
     const firstHalf = data.slice(0, Math.floor(data.length / 2));
     const secondHalf = data.slice(Math.floor(data.length / 2));
@@ -451,7 +451,7 @@ export class RiskAssessmentService {
     const difference = secondAvg - firstAvg;
     const velocity = Math.abs(difference);
     
-    if (Math.abs(difference) < 5) return { direction: 'stable', velocity };
+    if (Math.abs(difference) < 5) {return { direction: 'stable', velocity };}
     return { 
       direction: difference > 0 ? 'increasing' : 'decreasing', 
       velocity 
@@ -479,9 +479,9 @@ export class RiskAssessmentService {
   }
 
   private determineMitigationPriority(severity: string, riskScore: number): 'low' | 'medium' | 'high' | 'critical' {
-    if (severity === 'critical' || riskScore >= 90) return 'critical';
-    if (severity === 'high' || riskScore >= 70) return 'high';
-    if (severity === 'medium' || riskScore >= 40) return 'medium';
+    if (severity === 'critical' || riskScore >= 90) {return 'critical';}
+    if (severity === 'high' || riskScore >= 70) {return 'high';}
+    if (severity === 'medium' || riskScore >= 40) {return 'medium';}
     return 'low';
   }
 
@@ -514,9 +514,9 @@ export class RiskAssessmentService {
   }
 
   private estimateMitigationTimeline(severity: string, riskScore: number): string {
-    if (severity === 'critical' || riskScore >= 90) return '1-3 days';
-    if (severity === 'high' || riskScore >= 70) return '1-2 weeks';
-    if (severity === 'medium' || riskScore >= 40) return '2-4 weeks';
+    if (severity === 'critical' || riskScore >= 90) {return '1-3 days';}
+    if (severity === 'high' || riskScore >= 70) {return '1-2 weeks';}
+    if (severity === 'medium' || riskScore >= 40) {return '2-4 weeks';}
     return '1-3 months';
   }
 

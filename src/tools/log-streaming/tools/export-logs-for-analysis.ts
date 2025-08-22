@@ -119,7 +119,7 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
         
         // Normalize destination to match DestinationConfig interface
         const normalizedDestination: DestinationConfig = {
-          type: destination.type as 'file' | 's3' | 'gcs' | 'azure' | 'ftp' | 'sftp' | 'http' | 'webhook' | 'external-system' | 'stream' | 'download',
+          type: destination.type,
           path: destination.webhookUrl || '/tmp/log-export',
           externalSystemConfig: destination.externalSystemConfig ? {
             type: destination.externalSystemConfig.type,
@@ -164,7 +164,7 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
           exportConfig: JSON.stringify(exportConfig), 
           error: errorMessage 
         });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to export logs for analysis: ${errorMessage}`);
       }
     },
@@ -175,9 +175,9 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
  * Enhanced Log Export Processor for advanced analytics integration
  */
 class EnhancedLogExportProcessor {
-  private apiClient: MakeApiClient;
-  private exportMetadata: Record<string, unknown>;
-  private logger: ToolContext['logger'];
+  private readonly apiClient: MakeApiClient;
+  private readonly exportMetadata: Record<string, unknown>;
+  private readonly logger: ToolContext['logger'];
 
   constructor(apiClient: MakeApiClient, exportMetadata: Record<string, unknown>, logger: ToolContext['logger']) {
     this.apiClient = apiClient;
@@ -412,7 +412,7 @@ class EnhancedLogExportProcessor {
    * Apply advanced filtering to logs
    */
   private applyAdvancedFiltering(logs: MakeLogEntry[], filtering?: ExportConfig['filtering']): MakeLogEntry[] {
-    if (!filtering) return logs;
+    if (!filtering) {return logs;}
 
     return logs.filter(log => {
       // Log level filtering
@@ -452,7 +452,7 @@ class EnhancedLogExportProcessor {
    * Apply data transformations
    */
   private applyDataTransformations(logs: MakeLogEntry[], transformations?: DataTransformation[]): MakeLogEntry[] {
-    if (!transformations?.length) return logs;
+    if (!transformations?.length) {return logs;}
 
     let transformedLogs = [...logs];
 
@@ -531,7 +531,7 @@ class EnhancedLogExportProcessor {
   private analyzePerformance(logs: MakeLogEntry[]): Record<string, unknown> {
     const processingTimes = logs
       .filter(log => log.metrics?.processingTime)
-      .map(log => log.metrics!.processingTime);
+      .map(log => log.metrics.processingTime);
 
     if (processingTimes.length === 0) {
       return { message: 'No performance data available' };
@@ -706,8 +706,8 @@ class EnhancedLogExportProcessor {
  * External System Connector for delivering exported logs
  */
 class ExternalSystemConnector {
-  private config: ExternalSystemConfig;
-  private logger: ToolContext['logger'];
+  private readonly config: ExternalSystemConfig;
+  private readonly logger: ToolContext['logger'];
   private connection: unknown;
 
   constructor(config: ExternalSystemConfig, logger: ToolContext['logger']) {

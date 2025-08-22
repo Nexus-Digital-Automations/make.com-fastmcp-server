@@ -259,7 +259,7 @@ class PolicyComplianceManager {
   }
 
   private calculateOverallScore(results: ComplianceValidationResult[]): number {
-    if (results.length === 0) return 0;
+    if (results.length === 0) {return 0;}
     return results.reduce((sum, result) => sum + result.overallComplianceScore, 0) / results.length;
   }
 
@@ -287,7 +287,7 @@ class PolicyComplianceValidator {
   private readonly componentLogger: ReturnType<typeof logger.child>;
   private readonly complianceManager: PolicyComplianceManager;
 
-  constructor(private apiClient: MakeApiClient) {
+  constructor(private readonly apiClient: MakeApiClient) {
     this.componentLogger = logger.child({ component: 'PolicyComplianceValidator' });
     this.complianceManager = new PolicyComplianceManager();
   }
@@ -404,7 +404,7 @@ class PolicyComplianceValidator {
         }
 
         const policiesOfType = applicablePolicies.filter(p => p.type === policyType);
-        if (policiesOfType.length === 0) continue;
+        if (policiesOfType.length === 0) {continue;}
 
         const policyTypeResults = await this.validateAgainstPolicyType(
           target,
@@ -513,9 +513,9 @@ class PolicyComplianceValidator {
       }
 
       const params: Record<string, unknown> = {};
-      if (policySelection.activeOnly) params.active = true;
-      if (policySelection.organizationId) params.organizationId = policySelection.organizationId;
-      if (policySelection.teamId) params.teamId = policySelection.teamId;
+      if (policySelection.activeOnly) {params.active = true;}
+      if (policySelection.organizationId) {params.organizationId = policySelection.organizationId;}
+      if (policySelection.teamId) {params.teamId = policySelection.teamId;}
 
       const response = await this.apiClient.get(endpoint, { params });
 
@@ -1225,7 +1225,7 @@ class PolicyComplianceValidator {
           if (!frameworkViolations.has(v.framework)) {
             frameworkViolations.set(v.framework, []);
           }
-          frameworkViolations.get(v.framework)!.push(v);
+          frameworkViolations.get(v.framework).push(v);
         }
       });
 
@@ -1247,7 +1247,7 @@ class PolicyComplianceValidator {
         if (!policyTypeViolations.has(v.policyType)) {
           policyTypeViolations.set(v.policyType, []);
         }
-        policyTypeViolations.get(v.policyType)!.push(v);
+        policyTypeViolations.get(v.policyType).push(v);
       });
 
       policyTypeViolations.forEach((violations, policyType) => {
@@ -1338,7 +1338,7 @@ class PolicyComplianceValidator {
       compensating?: unknown[];
     };
     
-    if (!controls) return 1;
+    if (!controls) {return 1;}
     
     return (controls.preventive?.length || 0) + 
            (controls.detective?.length || 0) + 
@@ -1540,7 +1540,7 @@ export function addPolicyComplianceValidationTools(server: FastMCP, apiClient: M
       reportProgress({ progress: 0, total: 100 });
 
       try {
-        const validationId = validator['complianceManager'].generateValidationId();
+        const validationId = validator.complianceManager.generateValidationId();
         const startTime = new Date().toISOString();
 
         log.info('Generated validation ID and starting validation process', {
@@ -1560,7 +1560,7 @@ export function addPolicyComplianceValidationTools(server: FastMCP, apiClient: M
         reportProgress({ progress: 80, total: 100 });
 
         // Store validation results for historical tracking
-        await validator['complianceManager'].storeValidationResults(validationId, results);
+        await validator.complianceManager.storeValidationResults(validationId, results);
 
         // Generate summary statistics
         const summary = {
@@ -1750,7 +1750,7 @@ export function addPolicyComplianceValidationTools(server: FastMCP, apiClient: M
           riskLevel: 'medium',
         });
         
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to validate policy compliance: ${errorMessage}`);
       }
     },

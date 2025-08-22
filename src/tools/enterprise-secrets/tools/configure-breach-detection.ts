@@ -15,8 +15,8 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  */
 class BreachDetectionManager {
   private static instance: BreachDetectionManager | null = null;
-  private breachIndicators: Map<string, BreachIndicator> = new Map();
-  private detectionConfigs: Map<string, unknown> = new Map();
+  private readonly breachIndicators: Map<string, BreachIndicator> = new Map();
+  private readonly detectionConfigs: Map<string, unknown> = new Map();
 
   public static getInstance(): BreachDetectionManager {
     if (!BreachDetectionManager.instance) {

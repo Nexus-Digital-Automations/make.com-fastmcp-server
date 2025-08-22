@@ -16,7 +16,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  */
 class SecretEngineManager {
   private static instance: SecretEngineManager | null = null;
-  private secretEngines: Map<string, SecretEngineStatus> = new Map();
+  private readonly secretEngines: Map<string, SecretEngineStatus> = new Map();
 
   public static getInstance(): SecretEngineManager {
     if (!SecretEngineManager.instance) {

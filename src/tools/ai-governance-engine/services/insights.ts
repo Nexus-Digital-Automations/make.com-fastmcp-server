@@ -81,15 +81,15 @@ interface MetricPrediction {
 }
 
 export class InsightsService {
-  private componentLogger = logger.child({ component: 'InsightsService' });
-  private analyticsCache: Map<string, AnalyticsData> = new Map();
-  private insightPatterns: Map<string, InsightPattern> = new Map();
-  private mlModels: Map<string, MLModelType> = new Map();
-  private historicalData: AnalyticsData[] = [];
+  private readonly componentLogger = logger.child({ component: 'InsightsService' });
+  private readonly analyticsCache: Map<string, AnalyticsData> = new Map();
+  private readonly insightPatterns: Map<string, InsightPattern> = new Map();
+  private readonly mlModels: Map<string, MLModelType> = new Map();
+  private readonly historicalData: AnalyticsData[] = [];
 
   constructor(
-    private context: GovernanceContext,
-    private apiClient: MakeApiClient
+    private readonly context: GovernanceContext,
+    private readonly apiClient: MakeApiClient
   ) {
     this.initializeInsightPatterns();
     this.initializeMLModels();
@@ -236,7 +236,7 @@ export class InsightsService {
       const metrics = ['complianceScore', 'riskScore', 'policyViolations', 'automatedRemediations', 'avgResponseTime'];
       
       for (const metric of metrics) {
-        const values = data.map(d => (d as unknown as Record<string, unknown>)[metric]).filter(v => typeof v === 'number') as number[];
+        const values = data.map(d => (d as unknown as Record<string, unknown>)[metric]).filter(v => typeof v === 'number');
         const anomaly = this.detectMetricAnomalies(metric, values, threshold);
         
         if (anomaly) {
@@ -611,7 +611,7 @@ export class InsightsService {
   }
 
   private calculateConfidenceScore(insights: GovernanceInsight[], context: InsightContext): number {
-    if (insights.length === 0) return 0;
+    if (insights.length === 0) {return 0;}
 
     const totalConfidence = insights.reduce((sum, insight) => sum + insight.confidence, 0);
     const avgConfidence = totalConfidence / insights.length;
@@ -676,7 +676,7 @@ export class InsightsService {
   }
 
   private detectMetricAnomalies(metric: string, values: number[], threshold: number): MetricAnomaly | null {
-    if (values.length < 3) return null;
+    if (values.length < 3) {return null;}
 
     const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
     const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;

@@ -102,7 +102,7 @@ export function validateInputOrThrow<T>(
     throw new UserError(`${context}${errorMessages}`);
   }
   
-  return result.data!;
+  return result.data;
 }
 
 /**
@@ -337,8 +337,8 @@ export const CommonSchemas = {
   booleanString: z.union([
     z.boolean(),
     z.string().transform((val) => {
-      if (val.toLowerCase() === 'true') return true;
-      if (val.toLowerCase() === 'false') return false;
+      if (val.toLowerCase() === 'true') {return true;}
+      if (val.toLowerCase() === 'false') {return false;}
       throw new Error('Invalid boolean value');
     }),
   ]),

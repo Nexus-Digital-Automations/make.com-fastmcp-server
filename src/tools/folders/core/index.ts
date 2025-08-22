@@ -40,9 +40,9 @@ import { MakeApiClient } from '../../../lib/make-api-client.js';
  * Handles all business logic and state management
  */
 export class FoldersManager {
-  private state: FoldersState;
-  private context: FoldersContext;
-  private apiClient: MakeApiClient;
+  private readonly state: FoldersState;
+  private readonly context: FoldersContext;
+  private readonly apiClient: MakeApiClient;
 
   constructor(context: FoldersContext, apiClient: MakeApiClient) {
     this.context = context;
@@ -357,11 +357,11 @@ export class FoldersManager {
         includeContents,
       };
 
-      if (parentId) params.parentId = parentId;
-      if (type !== 'all') params.type = type;
-      if (organizationId) params.organizationId = organizationId;
-      if (teamId) params.teamId = teamId;
-      if (searchQuery) params.search = searchQuery;
+      if (parentId) {params.parentId = parentId;}
+      if (type !== 'all') {params.type = type;}
+      if (organizationId) {params.organizationId = organizationId;}
+      if (teamId) {params.teamId = teamId;}
+      if (searchQuery) {params.search = searchQuery;}
 
       const response = await this.apiClient.get('/folders', { params });
 
@@ -944,10 +944,10 @@ export class FoldersManager {
         sortOrder,
       };
 
-      if (type !== 'all') params.type = type;
-      if (organizationId) params.organizationId = organizationId;
-      if (teamId) params.teamId = teamId;
-      if (searchQuery) params.search = searchQuery;
+      if (type !== 'all') {params.type = type;}
+      if (organizationId) {params.organizationId = organizationId;}
+      if (teamId) {params.teamId = teamId;}
+      if (searchQuery) {params.search = searchQuery;}
 
       const response = await this.apiClient.get('/data-stores', { params });
 
@@ -1074,9 +1074,9 @@ export class FoldersManager {
         sortOrder,
       };
 
-      if (organizationId) params.organizationId = organizationId;
-      if (teamId) params.teamId = teamId;
-      if (searchQuery) params.search = searchQuery;
+      if (organizationId) {params.organizationId = organizationId;}
+      if (teamId) {params.teamId = teamId;}
+      if (searchQuery) {params.search = searchQuery;}
 
       const response = await this.apiClient.get('/data-structures', { params });
 
@@ -1451,11 +1451,11 @@ export class FoldersManager {
       // Build update payload - only include provided fields
       const updateData: Record<string, unknown> = {};
       
-      if (name !== undefined) updateData.name = name;
-      if (description !== undefined) updateData.description = description;
-      if (specification !== undefined) updateData.specification = specification;
-      if (strict !== undefined) updateData.strict = strict;
-      if (validation !== undefined) updateData.validation = validation;
+      if (name !== undefined) {updateData.name = name;}
+      if (description !== undefined) {updateData.description = description;}
+      if (specification !== undefined) {updateData.specification = specification;}
+      if (strict !== undefined) {updateData.strict = strict;}
+      if (validation !== undefined) {updateData.validation = validation;}
 
       if (Object.keys(updateData).length === 0) {
         throw new Error('At least one field must be provided for update');
@@ -1809,10 +1809,10 @@ export class FoldersManager {
       // Build update payload - only include provided fields
       const updateData: Record<string, unknown> = {};
       
-      if (name !== undefined) updateData.name = name;
-      if (description !== undefined) updateData.description = description;
-      if (settings !== undefined) updateData.settings = settings;
-      if (permissions !== undefined) updateData.permissions = permissions;
+      if (name !== undefined) {updateData.name = name;}
+      if (description !== undefined) {updateData.description = description;}
+      if (settings !== undefined) {updateData.settings = settings;}
+      if (permissions !== undefined) {updateData.permissions = permissions;}
 
       if (Object.keys(updateData).length === 0) {
         throw new Error('At least one field must be provided for update');

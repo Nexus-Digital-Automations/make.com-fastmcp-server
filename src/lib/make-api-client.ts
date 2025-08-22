@@ -10,11 +10,11 @@ import logger from './logger.js';
 import { secureConfigManager } from './secure-config.js';
 
 export class MakeApiClient {
-  private axiosInstance: AxiosInstance;
-  private limiter: Bottleneck;
+  private readonly axiosInstance: AxiosInstance;
+  private readonly limiter: Bottleneck;
   private config: MakeApiConfig;
-  private componentLogger: ReturnType<typeof logger.child>;
-  private userId?: string;
+  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private readonly userId?: string;
 
   constructor(config: MakeApiConfig, userId?: string) {
     this.config = config;
@@ -68,7 +68,7 @@ export class MakeApiClient {
       const secureConfig = await secureConfigManager.getSecureMakeConfig(this.userId);
       
       // Update the authorization header
-      this.axiosInstance.defaults.headers['Authorization'] = `Token ${secureConfig.apiKey}`;
+      this.axiosInstance.defaults.headers.Authorization = `Token ${secureConfig.apiKey}`;
       this.config = secureConfig;
       
       this.componentLogger.info('API credentials refreshed successfully', {
@@ -205,9 +205,9 @@ export class MakeApiClient {
     return {
       success: false,
       error: {
-        message: lastError!.message,
-        code: lastError!.code,
-        details: lastError!.details,
+        message: lastError.message,
+        code: lastError.code,
+        details: lastError.details,
       },
     };
   }

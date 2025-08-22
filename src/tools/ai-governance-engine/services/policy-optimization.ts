@@ -60,15 +60,15 @@ interface SimulationResult {
 }
 
 export class PolicyOptimizationService {
-  private componentLogger = logger.child({ component: 'PolicyOptimizationService' });
-  private mlModels: Map<string, MLModelType> = new Map();
-  private optimizationCache: Map<string, OptimizationResult[]> = new Map();
-  private policyRegistry: Map<string, Policy> = new Map();
-  private simulationCache: Map<string, SimulationResult> = new Map();
+  private readonly componentLogger = logger.child({ component: 'PolicyOptimizationService' });
+  private readonly mlModels: Map<string, MLModelType> = new Map();
+  private readonly optimizationCache: Map<string, OptimizationResult[]> = new Map();
+  private readonly policyRegistry: Map<string, Policy> = new Map();
+  private readonly simulationCache: Map<string, SimulationResult> = new Map();
 
   constructor(
-    private context: GovernanceContext,
-    private apiClient: MakeApiClient
+    private readonly context: GovernanceContext,
+    private readonly apiClient: MakeApiClient
   ) {
     this.initializeMLModels();
     this.initializePolicyRegistry();
@@ -587,7 +587,7 @@ export class PolicyOptimizationService {
     optimizations: OptimizationResult[], 
     _request: PolicyOptimizationRequest
   ): number {
-    if (optimizations.length === 0) return 0;
+    if (optimizations.length === 0) {return 0;}
 
     const avgConfidence = optimizations.reduce((sum, opt) => sum + opt.confidenceScore, 0) / optimizations.length;
     
@@ -700,7 +700,7 @@ export class PolicyOptimizationService {
       if (!categoryNameGroups.has(policy.categoryName)) {
         categoryNameGroups.set(policy.categoryName, []);
       }
-      categoryNameGroups.get(policy.categoryName)!.push(policy);
+      categoryNameGroups.get(policy.categoryName).push(policy);
     }
 
     const mergeCandidates: Policy[][] = [];

@@ -252,8 +252,8 @@ async function runLintCheck(): Promise<{ passed: boolean; score: number; issues:
   const errorRegex = /(\d+) error/;
   const warningRegex = /(\d+) warning/;
   
-  const errors = errorRegex.exec(stderr)?.[1] ? parseInt(errorRegex.exec(stderr)![1]) : 0;
-  const warnings = warningRegex.exec(stderr)?.[1] ? parseInt(warningRegex.exec(stderr)![1]) : 0;
+  const errors = errorRegex.exec(stderr)?.[1] ? parseInt(errorRegex.exec(stderr)[1]) : 0;
+  const warnings = warningRegex.exec(stderr)?.[1] ? parseInt(warningRegex.exec(stderr)[1]) : 0;
   
   const totalIssues = errors + warnings;
   const score = Math.max(0, 100 - (errors * 10 + warnings * 2));
@@ -292,8 +292,8 @@ async function runSecurityScan(): Promise<{ vulnerabilities: { critical: number;
     if (auditResult.vulnerabilities) {
       for (const [, vuln] of Object.entries(auditResult.vulnerabilities)) {
         const severity = (vuln as AuditVulnerability).severity;
-        if (vulnerabilities[severity as keyof typeof vulnerabilities] !== undefined) {
-          vulnerabilities[severity as keyof typeof vulnerabilities]++;
+        if (vulnerabilities[severity] !== undefined) {
+          vulnerabilities[severity]++;
         }
       }
     }
@@ -373,10 +373,10 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
         
         // Add additional flags
         const testArgs = [...testCommand];
-        if (includeWatch) testArgs.push('--watch');
-        if (includeVerbose) testArgs.push('--verbose');
-        if (!parallel) testArgs.push('--runInBand');
-        if (maxWorkers !== 4) testArgs.push(`--maxWorkers=${maxWorkers}`);
+        if (includeWatch) {testArgs.push('--watch');}
+        if (includeVerbose) {testArgs.push('--verbose');}
+        if (!parallel) {testArgs.push('--runInBand');}
+        if (maxWorkers !== 4) {testArgs.push(`--maxWorkers=${maxWorkers}`);}
         
         reportProgress({ progress: 20, total: 100 });
         
@@ -1126,9 +1126,9 @@ function calculateOverallGrade(report: BuildReport): string {
   const securityScore = report.security.securityScore;
   const overallScore = (qualityAvg + securityScore) / 2;
   
-  if (overallScore >= 90) return 'A';
-  if (overallScore >= 80) return 'B';
-  if (overallScore >= 70) return 'C';
-  if (overallScore >= 60) return 'D';
+  if (overallScore >= 90) {return 'A';}
+  if (overallScore >= 80) {return 'B';}
+  if (overallScore >= 70) {return 'C';}
+  if (overallScore >= 60) {return 'D';}
   return 'F';
 }

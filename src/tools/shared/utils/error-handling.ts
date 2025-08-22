@@ -448,7 +448,7 @@ export async function retryOperation<T>(
     }
   }
 
-  throw handleError(lastError!, {
+  throw handleError(lastError, {
     maxRetries,
     attempts: maxRetries + 1,
   });

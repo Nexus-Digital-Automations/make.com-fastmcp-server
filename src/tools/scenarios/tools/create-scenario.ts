@@ -41,10 +41,10 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
           name: typedArgs.name,
         };
 
-        if (typedArgs.teamId) scenarioData.teamId = typedArgs.teamId;
-        if (typedArgs.folderId) scenarioData.folderId = typedArgs.folderId;
-        if (typedArgs.blueprint) scenarioData.blueprint = typedArgs.blueprint;
-        if (typedArgs.scheduling) scenarioData.scheduling = typedArgs.scheduling;
+        if (typedArgs.teamId) {scenarioData.teamId = typedArgs.teamId;}
+        if (typedArgs.folderId) {scenarioData.folderId = typedArgs.folderId;}
+        if (typedArgs.blueprint) {scenarioData.blueprint = typedArgs.blueprint;}
+        if (typedArgs.scheduling) {scenarioData.scheduling = typedArgs.scheduling;}
 
         reportProgress?.({ progress: 25, total: 100 });
 

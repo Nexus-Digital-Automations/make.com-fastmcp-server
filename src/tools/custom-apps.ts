@@ -430,7 +430,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating custom app', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create custom app: ${errorMessage}`);
       }
     },
@@ -481,11 +481,11 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           includeConfig,
         };
 
-        if (type !== 'all') params.type = type;
-        if (status !== 'all') params.status = status;
-        if (runtime !== 'all') params.runtime = runtime;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
+        if (type !== 'all') {params.type = type;}
+        if (status !== 'all') {params.status = status;}
+        if (runtime !== 'all') {params.runtime = runtime;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
 
         const response = await apiClient.get('/custom-apps', { params });
 
@@ -566,7 +566,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing custom apps', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list custom apps: ${errorMessage}`);
       }
     },
@@ -678,7 +678,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating hook', { name, appId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create hook: ${errorMessage}`);
       }
     },
@@ -788,7 +788,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating custom function', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create custom function: ${errorMessage}`);
       }
     },
@@ -869,7 +869,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error testing custom app', { appId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to test custom app: ${errorMessage}`);
       }
     },

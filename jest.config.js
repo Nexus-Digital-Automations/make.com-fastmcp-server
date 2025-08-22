@@ -1,5 +1,5 @@
 export default {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
   transform: {
@@ -47,12 +47,13 @@ export default {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
+  coverageProvider: 'v8',
   coverageThreshold: {
     global: {
-      branches: 20, // Lower initial threshold to allow gradual improvement
-      functions: 20,
-      lines: 20,
-      statements: 20,
+      branches: 35, // Improved threshold for better quality
+      functions: 35,
+      lines: 35,
+      statements: 35,
     },
     './src/lib/config.ts': { // Only enforce high coverage on tested files
       branches: 80,
@@ -73,7 +74,7 @@ export default {
   testTimeout: 15000, // Reduced from 30s to 15s
   maxWorkers: '50%', // Use 50% of available cores instead of 1
   verbose: false,
-  collectCoverage: false, // Disable coverage collection for faster test runs
+  collectCoverage: true, // Enable coverage collection for quality tracking
   forceExit: true,
   // Performance optimizations
   testEnvironmentOptions: {

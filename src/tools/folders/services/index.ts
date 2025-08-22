@@ -9,8 +9,8 @@ import logger from '../../../lib/logger.js';
  * Service client for external integrations
  */
 export class FoldersServiceClient {
-  private baseUrl: string;
-  private headers: Record<string, string>;
+  private readonly baseUrl: string;
+  private readonly headers: Record<string, string>;
 
   constructor(baseUrl: string, apiKey?: string) {
     this.baseUrl = baseUrl;
@@ -20,7 +20,7 @@ export class FoldersServiceClient {
     };
 
     if (apiKey) {
-      this.headers['Authorization'] = `Bearer ${apiKey}`;
+      this.headers.Authorization = `Bearer ${apiKey}`;
     }
   }
 

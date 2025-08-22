@@ -53,7 +53,7 @@ export class EncryptionService {
   private static readonly TAG_LENGTH = 16;
   private static readonly SALT_LENGTH = 32;
   
-  private componentLogger: ReturnType<typeof logger.child>;
+  private readonly componentLogger: ReturnType<typeof logger.child>;
 
   constructor() {
     this.componentLogger = logger.child({ component: 'EncryptionService' });
@@ -244,9 +244,9 @@ export class EncryptionService {
  * Credential management service with rotation and audit capabilities
  */
 export class CredentialManager {
-  private encryptionService: EncryptionService;
-  private credentials: Map<string, CredentialMetadata> = new Map();
-  private componentLogger: ReturnType<typeof logger.child>;
+  private readonly encryptionService: EncryptionService;
+  private readonly credentials: Map<string, CredentialMetadata> = new Map();
+  private readonly componentLogger: ReturnType<typeof logger.child>;
   private auditLog: Array<{
     timestamp: Date;
     operation: string;
@@ -513,9 +513,9 @@ export class CredentialManager {
     }
 
     return credentials.filter(cred => {
-      if (filter.service && cred.service !== filter.service) return false;
-      if (filter.type && cred.type !== filter.type) return false;
-      if (filter.status && cred.rotationInfo.status !== filter.status) return false;
+      if (filter.service && cred.service !== filter.service) {return false;}
+      if (filter.type && cred.type !== filter.type) {return false;}
+      if (filter.status && cred.rotationInfo.status !== filter.status) {return false;}
       return true;
     });
   }
@@ -541,11 +541,11 @@ export class CredentialManager {
 
     if (filter) {
       log = log.filter(entry => {
-        if (filter.credentialId && entry.credentialId !== filter.credentialId) return false;
-        if (filter.userId && entry.userId !== filter.userId) return false;
-        if (filter.operation && entry.operation !== filter.operation) return false;
-        if (filter.startDate && entry.timestamp < filter.startDate) return false;
-        if (filter.endDate && entry.timestamp > filter.endDate) return false;
+        if (filter.credentialId && entry.credentialId !== filter.credentialId) {return false;}
+        if (filter.userId && entry.userId !== filter.userId) {return false;}
+        if (filter.operation && entry.operation !== filter.operation) {return false;}
+        if (filter.startDate && entry.timestamp < filter.startDate) {return false;}
+        if (filter.endDate && entry.timestamp > filter.endDate) {return false;}
         return true;
       });
     }

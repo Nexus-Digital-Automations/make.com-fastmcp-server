@@ -264,12 +264,12 @@ const GetMonitoringStatusSchema = z.object({
  * Real-time execution monitoring manager
  */
 class RealTimeExecutionMonitor extends EventEmitter {
-  private activeSessions = new Map<string, MonitoringSession>();
+  private readonly activeSessions = new Map<string, MonitoringSession>();
   private sseTransport: SSETransportEnhancer | null = null;
-  private performanceMonitor: PerformanceMonitor;
-  private componentLogger: ReturnType<typeof logger.child>;
+  private readonly performanceMonitor: PerformanceMonitor;
+  private readonly componentLogger: ReturnType<typeof logger.child>;
 
-  constructor(private apiClient: MakeApiClient) {
+  constructor(private readonly apiClient: MakeApiClient) {
     super();
     this.componentLogger = logger.child({ component: 'RealTimeExecutionMonitor' });
     this.performanceMonitor = new PerformanceMonitor();
@@ -500,7 +500,7 @@ class RealTimeExecutionMonitor extends EventEmitter {
    * Update execution state for a monitoring session
    */
   private async updateExecutionState(session: MonitoringSession): Promise<void> {
-    if (!session.executionId) return;
+    if (!session.executionId) {return;}
 
     // Get execution details
     const executionResponse = await this.apiClient.get(`/executions/${session.executionId}`);
@@ -582,7 +582,7 @@ class RealTimeExecutionMonitor extends EventEmitter {
     );
 
     return {
-      executionId: session.executionId!,
+      executionId: session.executionId,
       scenarioId: session.scenarioId,
       status,
       startTime,
@@ -636,7 +636,7 @@ class RealTimeExecutionMonitor extends EventEmitter {
         });
       }
 
-      const moduleProgress = moduleMap.get(moduleId)!;
+      const moduleProgress = moduleMap.get(moduleId);
       
       // Update based on log information
       const metrics = log.metrics as Record<string, unknown> || {};
@@ -857,7 +857,7 @@ class RealTimeExecutionMonitor extends EventEmitter {
     completionPercentage: number,
     _averageModuleDuration: number
   ): Date | null {
-    if (completionPercentage === 0) return null;
+    if (completionPercentage === 0) {return null;}
 
     const elapsed = Date.now() - new Date(startTime).getTime();
     const totalEstimated = (elapsed / completionPercentage) * 100;
@@ -1147,7 +1147,7 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error starting real-time monitoring', { scenarioId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to start real-time monitoring: ${errorMessage}`);
       }
     },
@@ -1188,7 +1188,7 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error stopping monitoring', { monitorId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to stop monitoring: ${errorMessage}`);
       }
     },

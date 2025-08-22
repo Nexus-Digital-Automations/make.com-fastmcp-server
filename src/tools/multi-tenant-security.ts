@@ -403,11 +403,11 @@ interface ComplianceBoundaryResult {
 
 class MultiTenantSecurityEngine {
   private static instance: MultiTenantSecurityEngine;
-  private tenants: Map<string, TenantConfiguration> = new Map();
-  private cryptographicVaults: Map<string, TenantCryptographicVault> = new Map();
-  private networkSegments: Map<string, NetworkSegment> = new Map();
-  private resourceQuotas: Map<string, ResourceQuota> = new Map();
-  private policies: Map<string, PolicyConfiguration> = new Map();
+  private readonly tenants: Map<string, TenantConfiguration> = new Map();
+  private readonly cryptographicVaults: Map<string, TenantCryptographicVault> = new Map();
+  private readonly networkSegments: Map<string, NetworkSegment> = new Map();
+  private readonly resourceQuotas: Map<string, ResourceQuota> = new Map();
+  private readonly policies: Map<string, PolicyConfiguration> = new Map();
 
   public static getInstance(): MultiTenantSecurityEngine {
     if (!MultiTenantSecurityEngine.instance) {
@@ -534,7 +534,7 @@ class MultiTenantSecurityEngine {
         }
 
         case 'encrypt_data': {
-          if (!config.data) throw new Error('Data required for encryption');
+          if (!config.data) {throw new Error('Data required for encryption');}
           const encryptedData = await this.encryptTenantData(tenantId, config.data);
           result.encryptionResult = {
             encryptedData,
@@ -544,7 +544,7 @@ class MultiTenantSecurityEngine {
         }
 
         case 'decrypt_data': {
-          if (!config.encryptedData) throw new Error('Encrypted data required for decryption');
+          if (!config.encryptedData) {throw new Error('Encrypted data required for decryption');}
           const decryptedData = await this.decryptTenantData(tenantId, config.encryptedData);
           result.encryptionResult = {
             decryptedData,
@@ -664,7 +664,7 @@ class MultiTenantSecurityEngine {
   }
 
   private async setupNetworkSegmentation(tenantId: string, enabled: boolean): Promise<Record<string, unknown>> {
-    if (!enabled) return { networkIsolation: 'disabled' };
+    if (!enabled) {return { networkIsolation: 'disabled' };}
     
     const segment = new NetworkSegment(tenantId);
     await segment.configure();
@@ -736,14 +736,14 @@ class MultiTenantSecurityEngine {
 
   private async encryptTenantData(tenantId: string, data: string): Promise<string> {
     const vault = this.cryptographicVaults.get(tenantId);
-    if (!vault) throw new Error('Tenant vault not found');
+    if (!vault) {throw new Error('Tenant vault not found');}
     
     return vault.encrypt(data);
   }
 
   private async decryptTenantData(tenantId: string, encryptedData: string): Promise<string> {
     const vault = this.cryptographicVaults.get(tenantId);
-    if (!vault) throw new Error('Tenant vault not found');
+    if (!vault) {throw new Error('Tenant vault not found');}
     
     return vault.decrypt(encryptedData);
   }
@@ -825,7 +825,7 @@ interface TenantConfiguration {
 }
 
 class TenantCryptographicVault {
-  constructor(private tenantId: string) {}
+  constructor(private readonly tenantId: string) {}
 
   async storeKeys(_keys: Record<string, string>): Promise<void> {
     // Store keys securely for tenant
@@ -845,7 +845,7 @@ class TenantCryptographicVault {
 }
 
 class NetworkSegment {
-  constructor(private tenantId: string) {}
+  constructor(private readonly tenantId: string) {}
 
   async configure(): Promise<void> {
     // Configure network segment for tenant
@@ -853,7 +853,7 @@ class NetworkSegment {
 }
 
 class ResourceQuota {
-  constructor(private tenantId: string, private quotas: Record<string, unknown>) {}
+  constructor(private readonly tenantId: string, private readonly quotas: Record<string, unknown>) {}
 
   async enforce(): Promise<void> {
     // Enforce resource quotas for tenant

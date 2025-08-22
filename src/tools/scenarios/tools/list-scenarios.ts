@@ -44,10 +44,10 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
           offset: argsTyped.offset ?? 0,
         };
 
-        if (argsTyped.teamId) params.teamId = argsTyped.teamId;
-        if (argsTyped.folderId) params.folderId = argsTyped.folderId;
-        if (argsTyped.search) params.q = argsTyped.search;
-        if (argsTyped.active !== undefined) params.active = argsTyped.active;
+        if (argsTyped.teamId) {params.teamId = argsTyped.teamId;}
+        if (argsTyped.folderId) {params.folderId = argsTyped.folderId;}
+        if (argsTyped.search) {params.q = argsTyped.search;}
+        if (argsTyped.active !== undefined) {params.active = argsTyped.active;}
 
         reportProgress?.({ progress: 25, total: 100 });
 

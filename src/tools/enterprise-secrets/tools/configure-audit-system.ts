@@ -14,8 +14,8 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  */
 class AuditSystemManager {
   private static instance: AuditSystemManager | null = null;
-  private auditConfigurations: Map<string, unknown> = new Map();
-  private auditDevices: Map<string, unknown> = new Map();
+  private readonly auditConfigurations: Map<string, unknown> = new Map();
+  private readonly auditDevices: Map<string, unknown> = new Map();
 
   public static getInstance(): AuditSystemManager {
     if (!AuditSystemManager.instance) {

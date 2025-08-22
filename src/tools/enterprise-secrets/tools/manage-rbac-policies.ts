@@ -14,7 +14,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
  */
 class RBACPolicyManager {
   private static instance: RBACPolicyManager | null = null;
-  private policies: Map<string, unknown> = new Map();
+  private readonly policies: Map<string, unknown> = new Map();
 
   public static getInstance(): RBACPolicyManager {
     if (!RBACPolicyManager.instance) {

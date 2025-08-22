@@ -96,7 +96,7 @@ export async function monitorCompliance(context: FastMCPToolContext, args: Recor
       };
     }
 
-    const data = result.data!;
+    const data = result.data;
     return {
       success: true,
       message: result.message,
@@ -194,7 +194,7 @@ export async function analyzePolicyConflicts(context: FastMCPToolContext, args: 
       };
     }
 
-    const data = result.data!;
+    const data = result.data;
     return {
       success: true,
       message: result.message,
@@ -289,7 +289,7 @@ export async function assessRisk(context: FastMCPToolContext, args: Record<strin
       };
     }
 
-    const data = result.data!;
+    const data = result.data;
     return {
       success: true,
       message: result.message,
@@ -377,7 +377,7 @@ export async function configureAutomatedRemediation(context: FastMCPToolContext,
       };
     }
 
-    const data = result.data!;
+    const data = result.data;
     return {
       success: true,
       message: result.message,
@@ -470,7 +470,7 @@ export async function generateGovernanceInsights(context: FastMCPToolContext, ar
       };
     }
 
-    const data = result.data!;
+    const data = result.data;
     const insights = data.insights;
     return {
       success: true,
@@ -563,7 +563,7 @@ export async function generateGovernanceDashboard(context: FastMCPToolContext, a
       };
     }
 
-    const dashboard = result.data!;
+    const dashboard = result.data;
     return {
       success: true,
       message: result.message,
@@ -662,7 +662,7 @@ export async function optimizePolicies(context: FastMCPToolContext, args: Record
       };
     }
 
-    const data = result.data!;
+    const data = result.data;
     return {
       success: true,
       message: result.message,

@@ -52,9 +52,9 @@ import { addEnterpriseSecretsTools } from './tools/enterprise-secrets.js';
 import { addBlueprintCollaborationTools } from './tools/blueprint-collaboration.js';
 
 export class MakeServerInstance {
-  private server: FastMCP<MakeSessionAuth>;
-  private apiClient: MakeApiClient;
-  private componentLogger: ReturnType<typeof logger.child>;
+  private readonly server: FastMCP<MakeSessionAuth>;
+  private readonly apiClient: MakeApiClient;
+  private readonly componentLogger: ReturnType<typeof logger.child>;
 
   constructor() {
     this.componentLogger = logger.child({ component: 'MakeServer' });

@@ -57,7 +57,7 @@ export function optimizeBlueprint(blueprint: unknown, optimizationType: 'perform
     const moduleTypes = new Set<string>();
 
     bp.flow.forEach((module: BlueprintModule) => {
-      if (!module || typeof module.id !== 'number') return;
+      if (!module || typeof module.id !== 'number') {return;}
 
       moduleTypes.add(module.module || 'unknown');
 

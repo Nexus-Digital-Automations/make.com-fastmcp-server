@@ -189,7 +189,7 @@ export function validateServiceConfiguration(context: GovernanceContext): {
  * Provides centralized cache management for all services
  */
 export class ServiceCacheManager {
-  constructor(private services: GovernanceServices) {}
+  constructor(private readonly services: GovernanceServices) {}
 
   /**
    * Clear all service caches

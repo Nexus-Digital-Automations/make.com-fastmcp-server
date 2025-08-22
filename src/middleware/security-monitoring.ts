@@ -102,9 +102,9 @@ export class SecurityMonitoringSystem extends EventEmitter {
   private events: SecurityEvent[] = [];
   private metrics: SecurityMetrics[] = [];
   private alerts: AlertConfig[] = [];
-  private eventCounts: Map<string, number> = new Map();
-  private maxEventHistory = 10000;
-  private maxMetricsHistory = 1440; // 24 hours at 1-minute intervals
+  private readonly eventCounts: Map<string, number> = new Map();
+  private readonly maxEventHistory = 10000;
+  private readonly maxMetricsHistory = 1440; // 24 hours at 1-minute intervals
   private metricsInterval!: NodeJS.Timeout;
   private currentMetrics: Partial<SecurityMetrics> = {};
   
@@ -230,7 +230,7 @@ export class SecurityMonitoringSystem extends EventEmitter {
   }
   
   private calculateRiskScore(events: SecurityEvent[]): number {
-    if (events.length === 0) return 0;
+    if (events.length === 0) {return 0;}
     
     let riskScore = 0;
     const weights = {
@@ -508,7 +508,7 @@ export function createSecurityMonitoringMiddleware(): (req: HttpRequest, res: Ht
     const userAgentHeader = req.headers['user-agent'];
     
     req.securityContext = {
-      correlationId: (Array.isArray(correlationIdHeader) ? correlationIdHeader[0] : correlationIdHeader) || securityMonitoring['generateEventId'](),
+      correlationId: (Array.isArray(correlationIdHeader) ? correlationIdHeader[0] : correlationIdHeader) || securityMonitoring.generateEventId(),
       startTime,
       ipAddress: req.ip || req.connection?.remoteAddress,
       userAgent: Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader

@@ -116,12 +116,12 @@ export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFin
   const securityIssues = new Set<string>();
 
   analyses.forEach(analysis => {
-    if (!analysis.diagnosticReport) return;
+    if (!analysis.diagnosticReport) {return;}
 
     const health = analysis.diagnosticReport.overallHealth;
-    if (health === 'healthy') healthyScenarios++;
-    else if (health === 'warning') warningScenarios++;
-    else if (health === 'critical') criticalScenarios++;
+    if (health === 'healthy') {healthyScenarios++;}
+    else if (health === 'warning') {warningScenarios++;}
+    else if (health === 'critical') {criticalScenarios++;}
 
     const diagnostics = (analysis.diagnosticReport as { diagnostics?: Array<{ 
       severity?: string; 
@@ -137,14 +137,14 @@ export function aggregateFindings(analyses: ScenarioAnalysis[]): ConsolidatedFin
       // Track security issues
       if (diagnostic.category === 'security') {
         totalSecurityIssues++;
-        if (diagnostic.severity === 'critical') criticalSecurityIssues++;
-        if (diagnostic.title) securityIssues.add(diagnostic.title);
+        if (diagnostic.severity === 'critical') {criticalSecurityIssues++;}
+        if (diagnostic.title) {securityIssues.add(diagnostic.title);}
       }
 
       // Aggregate common issues
       const issueKey = `${diagnostic.category || 'unknown'}:${diagnostic.title || 'unknown'}`;
       if (commonIssuesMap.has(issueKey)) {
-        const issue = commonIssuesMap.get(issueKey)!;
+        const issue = commonIssuesMap.get(issueKey);
         issue.count++;
         issue.affectedScenarios.push(analysis.scenarioId);
       } else {

@@ -454,7 +454,7 @@ export class Bulkhead {
 
   private processQueue(): void {
     if (this.queue.length > 0 && this.activeRequests < this.maxConcurrency) {
-      const next = this.queue.shift()!;
+      const next = this.queue.shift();
       this.executeImmediate(
         next.operation as () => Promise<unknown>,
         next.resolve,
@@ -483,7 +483,7 @@ export class Bulkhead {
  * Factory for creating circuit breakers for different services
  */
 export class CircuitBreakerFactory {
-  private static breakers = new Map<string, CircuitBreaker>();
+  private static readonly breakers = new Map<string, CircuitBreaker>();
 
   static getOrCreate(
     name: string,
@@ -492,7 +492,7 @@ export class CircuitBreakerFactory {
     if (!this.breakers.has(name)) {
       this.breakers.set(name, new CircuitBreaker(name, options));
     }
-    return this.breakers.get(name)!;
+    return this.breakers.get(name);
   }
 
   static getAllStats(): Record<string, ReturnType<CircuitBreaker['getStats']>> {
@@ -508,7 +508,7 @@ export class CircuitBreakerFactory {
  * Factory for creating bulkheads for different resource pools
  */
 export class BulkheadFactory {
-  private static bulkheads = new Map<string, Bulkhead>();
+  private static readonly bulkheads = new Map<string, Bulkhead>();
 
   static getOrCreate(
     name: string,
@@ -522,7 +522,7 @@ export class BulkheadFactory {
         new Bulkhead(name, maxConcurrency, maxQueue, timeout)
       );
     }
-    return this.bulkheads.get(name)!;
+    return this.bulkheads.get(name);
   }
 
   static getAllStats(): Record<string, ReturnType<Bulkhead['getStats']>> {

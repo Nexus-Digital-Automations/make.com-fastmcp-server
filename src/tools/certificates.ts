@@ -337,7 +337,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating certificate', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create certificate: ${errorMessage}`);
       }
     },
@@ -375,12 +375,12 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           includeChain,
         };
 
-        if (type !== 'all') params.type = type;
-        if (status !== 'all') params.status = status;
-        if (organizationId) params.organizationId = organizationId;
-        if (teamId) params.teamId = teamId;
-        if (expiringDays !== undefined) params.expiringDays = expiringDays;
-        if (searchQuery) params.search = searchQuery;
+        if (type !== 'all') {params.type = type;}
+        if (status !== 'all') {params.status = status;}
+        if (organizationId) {params.organizationId = organizationId;}
+        if (teamId) {params.teamId = teamId;}
+        if (expiringDays !== undefined) {params.expiringDays = expiringDays;}
+        if (searchQuery) {params.search = searchQuery;}
 
         const response = await apiClient.get('/certificates', { params });
 
@@ -461,7 +461,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing certificates', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list certificates: ${errorMessage}`);
       }
     },
@@ -554,7 +554,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting certificate', { certificateId, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get certificate details: ${errorMessage}`);
       }
     },
@@ -629,7 +629,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error validating certificate', { error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to validate certificate: ${errorMessage}`);
       }
     },
@@ -745,7 +745,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating key', { name, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create cryptographic key: ${errorMessage}`);
       }
     },
@@ -842,7 +842,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error rotating certificate/key', { resourceId, resourceType, error: errorMessage });
-        if (error instanceof UserError) throw error;
+        if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to rotate ${resourceType}: ${errorMessage}`);
       }
     },
