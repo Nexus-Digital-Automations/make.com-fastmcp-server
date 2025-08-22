@@ -664,6 +664,107 @@ function addListInstalledAppsTool(server: FastMCP, apiClient: MakeApiClient): vo
 }
 
 /**
+ * Extract current installation version with type safety
+ */
+function extractCurrentVersion(currentInstallation: unknown): string {
+  const installationData = currentInstallation && typeof currentInstallation === 'object' ? currentInstallation as Record<string, unknown> : {};
+  return typeof installationData.version === 'string' ? installationData.version : 'unknown';
+}
+
+/**
+ * Build SDK app update data payload
+ */
+function buildSdkAppUpdateData(input: any, currentVersion: string): any {
+  const { appId, version, force, backup, rollbackOnFailure } = input;
+  
+  return {
+    appId,
+    targetVersion: version || 'latest',
+    options: {
+      force,
+      backup,
+      rollbackOnFailure,
+      preserveConfiguration: true,
+      notifyUsers: true,
+    },
+    currentVersion: currentVersion,
+  };
+}
+
+/**
+ * Extract update result data with type safety
+ */
+function extractUpdateResultData(updateResult: unknown): {
+  toVersion: string;
+  success: boolean;
+  appName: string;
+  updatedAt: string;
+  breaking: boolean;
+  backupId: string | undefined;
+} {
+  const updateResultData = updateResult && typeof updateResult === 'object' ? updateResult as Record<string, unknown> : {};
+  
+  return {
+    toVersion: typeof updateResultData.version === 'string' ? updateResultData.version : 'unknown',
+    success: typeof updateResultData.success === 'boolean' ? updateResultData.success : true,
+    appName: typeof updateResultData.appName === 'string' ? updateResultData.appName : 'unknown',
+    updatedAt: typeof updateResultData.updatedAt === 'string' ? updateResultData.updatedAt : new Date().toISOString(),
+    breaking: typeof updateResultData.breaking === 'boolean' ? updateResultData.breaking : false,
+    backupId: typeof updateResultData.backupId === 'string' ? updateResultData.backupId : undefined,
+  };
+}
+
+/**
+ * Extract changelog data with type safety
+ */
+function extractChangelogData(updateResultData: Record<string, unknown>): {
+  features: unknown[];
+  bugfixes: unknown[];
+  breaking: unknown[];
+  deprecated: unknown[];
+} {
+  const changelog = updateResultData.changelog && typeof updateResultData.changelog === 'object' ? updateResultData.changelog as Record<string, unknown> : {};
+  
+  return {
+    features: Array.isArray(changelog.features) ? changelog.features : [],
+    bugfixes: Array.isArray(changelog.bugfixes) ? changelog.bugfixes : [],
+    breaking: Array.isArray(changelog.breaking) ? changelog.breaking : [],
+    deprecated: Array.isArray(changelog.deprecated) ? changelog.deprecated : [],
+  };
+}
+
+/**
+ * Format SDK app update response
+ */
+function formatSdkAppUpdateResponse(updateResult: unknown, input: any, currentVersion: string): any {
+  const { appId, backup } = input;
+  const { toVersion, success, appName, updatedAt, breaking, backupId } = extractUpdateResultData(updateResult);
+  const updateResultData = updateResult && typeof updateResult === 'object' ? updateResult as Record<string, unknown> : {};
+  const changelog = extractChangelogData(updateResultData);
+
+  return formatSuccessResponse({
+    update: updateResult,
+    message: `SDK app ${appId} updated successfully`,
+    summary: {
+      appId,
+      appName: appName,
+      fromVersion: currentVersion,
+      toVersion: toVersion,
+      updatedAt: updatedAt,
+      breaking: breaking,
+      backupCreated: backup && backupId,
+    },
+    changes: changelog,
+    postUpdate: {
+      configurationMigrated: typeof updateResultData.configurationMigrated === 'boolean' ? updateResultData.configurationMigrated : false,
+      permissionsChanged: typeof updateResultData.permissionsChanged === 'boolean' ? updateResultData.permissionsChanged : false,
+      testingRequired: typeof updateResultData.requiresTesting === 'boolean' ? updateResultData.requiresTesting : false,
+      rollbackAvailable: typeof updateResultData.rollbackAvailable === 'boolean' ? updateResultData.rollbackAvailable : false,
+    },
+  });
+}
+
+/**
  * Helper function to add update SDK app tool
  */
 function addUpdateSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -699,24 +800,12 @@ function addUpdateSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
 
         const currentInstallation = currentResponse.data;
         
-        // Type guard for current installation
-        const installationData = currentInstallation && typeof currentInstallation === 'object' ? currentInstallation as Record<string, unknown> : {};
-        const currentVersion = typeof installationData.version === 'string' ? installationData.version : 'unknown';
+        // Extract current version with type safety
+        const currentVersion = extractCurrentVersion(currentInstallation);
         
         reportProgress({ progress: 20, total: 100 });
 
-        const updateData = {
-          appId,
-          targetVersion: version || 'latest',
-          options: {
-            force,
-            backup,
-            rollbackOnFailure,
-            preserveConfiguration: true,
-            notifyUsers: true,
-          },
-          currentVersion: currentVersion,
-        };
+        const updateData = buildSdkAppUpdateData(input, currentVersion);
 
         reportProgress({ progress: 40, total: 100 });
 
@@ -728,13 +817,10 @@ function addUpdateSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
 
         const updateResult = response.data;
         
-        // Type guard for update result
-        const updateResultData = updateResult && typeof updateResult === 'object' ? updateResult as Record<string, unknown> : {};
-        const toVersion = typeof updateResultData.version === 'string' ? updateResultData.version : 'unknown';
-        const success = typeof updateResultData.success === 'boolean' ? updateResultData.success : true;
-        
         reportProgress({ progress: 100, total: 100 });
 
+        // Log successful update
+        const { toVersion, success } = extractUpdateResultData(updateResult);
         log.info('Successfully updated SDK app', {
           appId,
           fromVersion: currentVersion,
@@ -742,46 +828,95 @@ function addUpdateSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
           success: success,
         });
 
-        // Additional type guards for summary data
-        const appName = typeof updateResultData.appName === 'string' ? updateResultData.appName : 'unknown';
-        const updatedAt = typeof updateResultData.updatedAt === 'string' ? updateResultData.updatedAt : new Date().toISOString();
-        const breaking = typeof updateResultData.breaking === 'boolean' ? updateResultData.breaking : false;
-        const backupId = typeof updateResultData.backupId === 'string' ? updateResultData.backupId : undefined;
-
-        return formatSuccessResponse({
-          update: updateResult,
-          message: `SDK app ${appId} updated successfully`,
-          summary: {
-            appId,
-            appName: appName,
-            fromVersion: currentVersion,
-            toVersion: toVersion,
-            updatedAt: updatedAt,
-            breaking: breaking,
-            backupCreated: backup && backupId,
-          },
-          changes: ((): { features: unknown[]; bugfixes: unknown[]; breaking: unknown[]; deprecated: unknown[] } => {
-            const changelog = updateResultData.changelog && typeof updateResultData.changelog === 'object' ? updateResultData.changelog as Record<string, unknown> : {};
-            return {
-              features: Array.isArray(changelog.features) ? changelog.features : [],
-              bugfixes: Array.isArray(changelog.bugfixes) ? changelog.bugfixes : [],
-              breaking: Array.isArray(changelog.breaking) ? changelog.breaking : [],
-              deprecated: Array.isArray(changelog.deprecated) ? changelog.deprecated : [],
-            };
-          })(),
-          postUpdate: {
-            configurationMigrated: typeof updateResultData.configurationMigrated === 'boolean' ? updateResultData.configurationMigrated : false,
-            permissionsChanged: typeof updateResultData.permissionsChanged === 'boolean' ? updateResultData.permissionsChanged : false,
-            testingRequired: typeof updateResultData.requiresTesting === 'boolean' ? updateResultData.requiresTesting : false,
-            rollbackAvailable: typeof updateResultData.rollbackAvailable === 'boolean' ? updateResultData.rollbackAvailable : false,
-          },
-        });
+        return formatSdkAppUpdateResponse(updateResult, input, currentVersion);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating SDK app', { appId, error: errorMessage });
         if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update SDK app: ${errorMessage}`);
       }
+    },
+  });
+}
+
+/**
+ * Build SDK app configuration data payload
+ */
+function buildSdkAppConfigData(input: any): any {
+  const { appId, configuration, permissions, integrations } = input;
+  
+  return {
+    appId,
+    configuration,
+    permissions,
+    integrations,
+    validateConfiguration: true,
+    applyImmediately: true,
+  };
+}
+
+/**
+ * Extract configuration result data with type safety
+ */
+function extractConfigResultData(configResult: unknown): {
+  configurationApplied: boolean;
+  permissionsChanged: boolean;
+  integrationsUpdated: boolean;
+  appName: string;
+  validationErrors: unknown[];
+  validationWarnings: unknown[];
+  validationValid: boolean;
+} {
+  const configResultData = configResult && typeof configResult === 'object' ? configResult as Record<string, unknown> : {};
+  const validation = configResultData.validation && typeof configResultData.validation === 'object' ? configResultData.validation as Record<string, unknown> : {};
+  
+  return {
+    configurationApplied: typeof configResultData.configurationApplied === 'boolean' ? configResultData.configurationApplied : false,
+    permissionsChanged: typeof configResultData.permissionsChanged === 'boolean' ? configResultData.permissionsChanged : false,
+    integrationsUpdated: typeof configResultData.integrationsUpdated === 'boolean' ? configResultData.integrationsUpdated : false,
+    appName: typeof configResultData.appName === 'string' ? configResultData.appName : 'unknown',
+    validationErrors: Array.isArray(validation.errors) ? validation.errors : [],
+    validationWarnings: Array.isArray(validation.warnings) ? validation.warnings : [],
+    validationValid: typeof validation.valid === 'boolean' ? validation.valid : false,
+  };
+}
+
+/**
+ * Format SDK app configuration response
+ */
+function formatSdkAppConfigResponse(configResult: unknown, input: any): any {
+  const { appId, configuration, permissions, integrations } = input;
+  const {
+    configurationApplied,
+    permissionsChanged,
+    integrationsUpdated,
+    appName,
+    validationErrors,
+    validationWarnings,
+    validationValid,
+  } = extractConfigResultData(configResult);
+
+  return formatSuccessResponse({
+    configuration: configResult,
+    message: `SDK app ${appId} configured successfully`,
+    summary: {
+      appId,
+      appName: appName,
+      configurationKeys: Object.keys(configuration).length,
+      permissionsGranted: Array.isArray(permissions?.grant) ? permissions.grant.length : 0,
+      permissionsRevoked: Array.isArray(permissions?.revoke) ? permissions.revoke.length : 0,
+      integrationsEnabled: Array.isArray(integrations?.enable) ? integrations.enable.length : 0,
+      integrationsDisabled: Array.isArray(integrations?.disable) ? integrations.disable.length : 0,
+    },
+    applied: {
+      configuration: configurationApplied,
+      permissions: permissionsChanged,
+      integrations: integrationsUpdated,
+    },
+    validation: {
+      errors: validationErrors,
+      warnings: validationWarnings,
+      valid: validationValid,
     },
   });
 }
@@ -814,14 +949,7 @@ function addConfigureSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        const configData = {
-          appId,
-          configuration,
-          permissions,
-          integrations,
-          validateConfiguration: true,
-          applyImmediately: true,
-        };
+        const configData = buildSdkAppConfigData(input);
 
         reportProgress({ progress: 50, total: 100 });
 
@@ -833,14 +961,10 @@ function addConfigureSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void
 
         const configResult = response.data;
         
-        // Type guard for config result
-        const configResultData = configResult && typeof configResult === 'object' ? configResult as Record<string, unknown> : {};
-        const configurationApplied = typeof configResultData.configurationApplied === 'boolean' ? configResultData.configurationApplied : false;
-        const permissionsChanged = typeof configResultData.permissionsChanged === 'boolean' ? configResultData.permissionsChanged : false;
-        const integrationsUpdated = typeof configResultData.integrationsUpdated === 'boolean' ? configResultData.integrationsUpdated : false;
-        
         reportProgress({ progress: 100, total: 100 });
 
+        // Log successful configuration
+        const { configurationApplied, permissionsChanged, integrationsUpdated } = extractConfigResultData(configResult);
         log.info('Successfully configured SDK app', {
           appId,
           configurationApplied: configurationApplied,
@@ -848,36 +972,7 @@ function addConfigureSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void
           integrationsUpdated: integrationsUpdated,
         });
 
-        // Additional type guards for summary
-        const appName = typeof configResultData.appName === 'string' ? configResultData.appName : 'unknown';
-        const validation = configResultData.validation && typeof configResultData.validation === 'object' ? configResultData.validation as Record<string, unknown> : {};
-        const validationErrors = Array.isArray(validation.errors) ? validation.errors : [];
-        const validationWarnings = Array.isArray(validation.warnings) ? validation.warnings : [];
-        const validationValid = typeof validation.valid === 'boolean' ? validation.valid : false;
-
-        return formatSuccessResponse({
-          configuration: configResult,
-          message: `SDK app ${appId} configured successfully`,
-          summary: {
-            appId,
-            appName: appName,
-            configurationKeys: Object.keys(configuration).length,
-            permissionsGranted: Array.isArray(permissions?.grant) ? permissions.grant.length : 0,
-            permissionsRevoked: Array.isArray(permissions?.revoke) ? permissions.revoke.length : 0,
-            integrationsEnabled: Array.isArray(integrations?.enable) ? integrations.enable.length : 0,
-            integrationsDisabled: Array.isArray(integrations?.disable) ? integrations.disable.length : 0,
-          },
-          applied: {
-            configuration: configurationApplied,
-            permissions: permissionsChanged,
-            integrations: integrationsUpdated,
-          },
-          validation: {
-            errors: validationErrors,
-            warnings: validationWarnings,
-            valid: validationValid,
-          },
-        });
+        return formatSdkAppConfigResponse(configResult, input);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error configuring SDK app', { appId, error: errorMessage });
