@@ -366,7 +366,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             if (usageResponse.success) {
               usage = usageResponse.data as Record<string, unknown>;
             }
-          } catch (error) {
+          } catch {
             log.warn('Failed to retrieve variable usage statistics', { variableId });
           }
         }
@@ -812,7 +812,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
                 if (recoveryResponse.success) {
                   recoveryPlan = recoveryResponse.data;
                 }
-              } catch (error) {
+              } catch {
                 log.warn('Failed to get recovery plan', { executionId: execution.id });
               }
             }
@@ -947,7 +947,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
                 newStatus: statusResponse.success && statusResponse.data && typeof statusResponse.data === 'object' && 'status' in statusResponse.data 
                   ? (statusResponse.data as Record<string, unknown>).status : 'unknown',
               };
-            } catch (error) {
+            } catch {
               return { executionId: id, newStatus: 'error' };
             }
           })

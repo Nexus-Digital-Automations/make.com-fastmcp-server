@@ -155,7 +155,7 @@ export function validateId(id: unknown, type: string = 'ID'): number {
       context: type,
       errorMessage: `${type} must be a positive integer`,
     });
-  } catch (error) {
+  } catch {
     // Try to parse string numbers
     if (typeof id === 'string' && /^\d+$/.test(id)) {
       const parsed = parseInt(id, 10);
@@ -354,7 +354,7 @@ export const CommonSchemas = {
   jsonString: z.string().transform((str, ctx) => {
     try {
       return JSON.parse(str);
-    } catch (error) {
+    } catch {
       ctx.addIssue({ code: 'custom', message: 'Invalid JSON string' });
       return z.NEVER;
     }
