@@ -210,8 +210,11 @@ export class DashboardService {
         
         // Check cache first
         if (this.forecastCache.has(cacheKey)) {
-          forecasts.push(this.forecastCache.get(cacheKey));
-          continue;
+          const cachedForecast = this.forecastCache.get(cacheKey);
+          if (cachedForecast) {
+            forecasts.push(cachedForecast);
+            continue;
+          }
         }
 
         // Generate new forecast
@@ -572,7 +575,7 @@ export class DashboardService {
 
   private generateChartData(widget: DashboardWidget, __request: GovernanceDashboardRequest): Record<string, unknown> {
     const dataPoints = 20;
-    const data = [];
+    const data: Array<{ timestamp: string; value: number; category: string }> = [];
 
     for (let i = 0; i < dataPoints; i++) {
       data.push({
@@ -598,7 +601,7 @@ export class DashboardService {
 
   private generateTableData(widget: DashboardWidget): Record<string, unknown> {
     const rowCount = (widget.config.limit as number) || 10;
-    const rows = [];
+    const rows: Array<{ id: string; severity: string; status: string; assignee: string; timestamp: string }> = [];
 
     for (let i = 0; i < rowCount; i++) {
       rows.push({
@@ -620,7 +623,7 @@ export class DashboardService {
 
   private generateAlertData(widget: DashboardWidget): Record<string, unknown> {
     const alertCount = (widget.config.limit as number) || 5;
-    const alerts = [];
+    const alerts: Array<{ id: string; title: string; message: string; severity: string; timestamp: string; status: string }> = [];
 
     for (let i = 0; i < alertCount; i++) {
       alerts.push({
@@ -785,7 +788,7 @@ export class DashboardService {
     if (customization.widgets) {
       // Filter widgets based on customization
       updatedConfig.widgets = config.widgets.filter(w => 
-        customization.widgets.includes(w.id)
+        customization.widgets?.includes(w.id) ?? false
       );
     }
 

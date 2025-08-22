@@ -75,9 +75,9 @@
       "subtasks": [],
       "created_at": "2025-08-22T13:21:25.035Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T13:48:13.599Z",
-      "claimed_by": "agent_1755870493599",
-      "assigned_agent": "agent_1755870493599",
+      "started_at": "2025-08-22T14:06:00.255Z",
+      "claimed_by": "agent_1755871560255",
+      "assigned_agent": "agent_1755871560255",
       "agent_assignment_history": [
         {
           "agent": "agent_1755869109000",
@@ -94,6 +94,17 @@
           "agent": "agent_1755870493599",
           "action": "claimed",
           "timestamp": "2025-08-22T13:48:13.599Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T14:05:13.830Z",
+          "reason": "Task stale for 17 minutes"
+        },
+        {
+          "agent": "agent_1755871560255",
+          "action": "claimed",
+          "timestamp": "2025-08-22T14:06:00.255Z"
         }
       ]
     },
@@ -132,13 +143,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755870479853_1_general_a2aee26e": {
+    "development_session_1755871519068_1_general_f3872890": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T13:47:59.854Z",
+      "lastHeartbeat": "2025-08-22T14:05:19.068Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -149,8 +160,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T13:47:59.854Z",
-      "sessionId": "session_1755870479853",
+      "createdAt": "2025-08-22T14:05:19.068Z",
+      "sessionId": "session_1755871519068",
       "metadata": {}
     }
   },

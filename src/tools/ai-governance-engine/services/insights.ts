@@ -498,7 +498,7 @@ export class InsightsService {
         title: `Anomaly Detected: ${anomaly.metric}`,
         description: `Unusual pattern detected in ${anomaly.metric}: ${anomaly.description}`,
         severity: anomaly.severity === 'high' ? 'critical' : 'warning',
-        confidence: anomaly.confidence,
+        confidence: anomaly.confidence ?? 0,
         impact: anomaly.impact,
         actionableSteps: anomaly.recommendedActions,
         timeframe: 'immediate'
