@@ -229,11 +229,15 @@ export class InsightsService {
         threshold 
       });
 
-      const anomalies = [];
-      const patterns = [];
-
       // Analyze each metric for anomalies
       const metrics = ['complianceScore', 'riskScore', 'policyViolations', 'automatedRemediations', 'avgResponseTime'];
+      const anomalies: Array<{
+        metric: string;
+        value: number;
+        expected: number;
+        deviation: number;
+        severity: 'low' | 'medium' | 'high' | 'critical';
+      }> = [];
       
       for (const metric of metrics) {
         const values = data.map(d => (d as unknown as Record<string, unknown>)[metric]).filter(v => typeof v === 'number');
@@ -245,6 +249,7 @@ export class InsightsService {
       }
 
       // Detect patterns in anomalies
+      const patterns: string[] = [];
       if (anomalies.length > 0) {
         patterns.push(...this.detectAnomalyPatterns(anomalies));
       }
@@ -272,26 +277,20 @@ export class InsightsService {
    */
   async generatePredictions(timeframe: string, metrics: string[]): Promise<{
     success: boolean;
-    data?: Array<{
-      metric: string;
-      currentValue: number;
-      predictedValue: number;
-      confidence: number;
-      timeframe: string;
-      factors: string[];
-    }>;
+    data?: MetricPrediction[];
     errors?: string[];
   }> {
     try {
       this.componentLogger.info('Generating predictive insights', { timeframe, metrics });
 
-      const predictions = [];
       const model = this.mlModels.get('prediction_model');
 
       if (!model) {
         throw new Error('Prediction model not available');
       }
 
+      const predictions: MetricPrediction[] = [];
+      
       for (const metric of metrics) {
         const historicalData = await this.getHistoricalMetrics(timeframe, [metric]);
         const prediction = await this.generateMetricPrediction(metric, historicalData[metric] || [], timeframe);
@@ -499,8 +498,9 @@ export class InsightsService {
         description: `Unusual pattern detected in ${anomaly.metric}: ${anomaly.description}`,
         severity: anomaly.severity === 'high' ? 'critical' : 'warning',
         confidence: anomaly.confidence ?? 0,
-        impact: anomaly.impact,
-        actionableSteps: anomaly.recommendedActions,
+        impact: anomaly.impact ?? 'Impact assessment required',
+        actionableSteps: anomaly.recommendedActions ?? ['Review and investigate'],
+
         timeframe: 'immediate'
       });
     }
@@ -699,7 +699,7 @@ export class InsightsService {
   }
 
   private detectAnomalyPatterns(anomalies: MetricAnomaly[]): string[] {
-    const patterns = [];
+    const patterns: string[] = [];
 
     if (anomalies.length > 2) {
       patterns.push('Multiple simultaneous anomalies detected - possible systemic issue');
@@ -719,7 +719,7 @@ export class InsightsService {
     const dataPoints = this.getDataPointsForTimeframe(timeframe);
 
     for (const metric of metrics) {
-      const values = [];
+      const values: number[] = [];
       for (let i = 0; i < Math.min(dataPoints, 100); i++) {
         values.push(Math.random() * 100);
       }
@@ -750,7 +750,7 @@ export class InsightsService {
 
   private async detectCurrentAnomalies(metrics: GovernanceMetrics): Promise<MetricAnomaly[]> {
     // Simulate anomaly detection
-    const anomalies = [];
+    const anomalies: MetricAnomaly[] = [];
 
     if (metrics.riskScore > 80) {
       anomalies.push({
@@ -758,7 +758,7 @@ export class InsightsService {
         value: metrics.riskScore,
         expected: 60, // Expected normal range
         deviation: (metrics.riskScore - 60) / 20, // Normalized deviation
-        severity: 'high'
+        severity: 'high' as const
       });
     }
 
@@ -828,7 +828,7 @@ export class InsightsService {
   private async getHistoricalValues(metric: keyof GovernanceMetrics, timeframe: string): Promise<number[]> {
     // Simulate historical data
     const count = Math.min(this.getDataPointsForTimeframe(timeframe), 50);
-    const values = [];
+    const values: number[] = [];
     
     for (let i = 0; i < count; i++) {
       values.push(Math.random() * 100);

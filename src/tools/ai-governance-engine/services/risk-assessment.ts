@@ -206,14 +206,16 @@ export class RiskAssessmentService {
       // Check prediction cache first
       if (this.predictionCache.has(cacheKey)) {
         const cached = this.predictionCache.get(cacheKey);
-        predictions.push({
-          category,
-          predictedScore: parseFloat(cached.prediction),
-          confidence: cached.confidence,
-          timeframe,
-          influencingFactors: cached.factors
-        });
-        continue;
+        if (cached != null) {
+          predictions.push({
+            category,
+            predictedScore: parseFloat(cached.prediction),
+            confidence: cached.confidence,
+            timeframe,
+            influencingFactors: cached.factors
+          });
+          continue;
+        }
       }
 
       // Generate new prediction

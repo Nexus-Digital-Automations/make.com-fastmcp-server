@@ -220,7 +220,13 @@ export class PolicyOptimizationService {
     try {
       this.componentLogger.info('Evaluating policy effectiveness', { policyCount: policyIds.length });
 
-      const evaluations = [];
+      const evaluations: Array<{
+      policyId: string;
+      effectivenessScore: number;
+      coverageScore: number;
+      complianceImpact: number;
+      recommendations: string[];
+    }> = [];
 
       for (const policyId of policyIds) {
         const policy = this.policyRegistry.get(policyId);
@@ -612,26 +618,29 @@ export class PolicyOptimizationService {
   ): Promise<OptimizationResult> {
     // Simulate ML analysis
     const confidenceScore = 70 + (Math.random() * 25); // 70-95%
-    const recommendedChanges = [];
+    const recommendedChanges: string[] = [];
 
     // Analyze against each goal
+    const recommendations: string[] = [];
     for (const goal of goals) {
       if (goal.type === 'conflict_reduction' && policy.priority > 2) {
-        recommendedChanges.push(`Reduce policy priority to minimize conflicts`);
+        recommendations.push(`Reduce policy priority to minimize conflicts`);
       }
       
       if (goal.type === 'coverage_improvement' && policy.coverage < 90) {
-        recommendedChanges.push(`Expand policy scope to improve coverage`);
+        recommendations.push(`Expand policy scope to improve coverage`);
       }
       
       if (goal.type === 'automation_enhancement') {
-        recommendedChanges.push(`Add automated compliance checks`);
+        recommendations.push(`Add automated compliance checks`);
       }
     }
 
-    if (recommendedChanges.length === 0) {
-      recommendedChanges.push('No significant optimizations required');
+    if (recommendations.length === 0) {
+      recommendations.push('No significant optimizations required');
     }
+    
+    recommendedChanges.push(...recommendations);
 
     return {
       policyId: policy.id,
@@ -644,7 +653,7 @@ export class PolicyOptimizationService {
   }
 
   private async analyzePolicyWithRules(policy: Policy, _goals: OptimizationGoal[]): Promise<OptimizationResult> {
-    const recommendedChanges = [];
+    const recommendedChanges: string[] = [];
     
     // Rule-based analysis
     if (policy.effectiveness < 80) {
@@ -700,7 +709,7 @@ export class PolicyOptimizationService {
       if (!categoryNameGroups.has(policy.categoryName)) {
         categoryNameGroups.set(policy.categoryName, []);
       }
-      categoryNameGroups.get(policy.categoryName).push(policy);
+      categoryNameGroups.get(policy.categoryName)?.push(policy);
     }
 
     const mergeCandidates: Policy[][] = [];
@@ -786,7 +795,7 @@ export class PolicyOptimizationService {
     complianceImpact: number;
     recommendations: string[];
   }> {
-    const recommendations = [];
+    const recommendations: string[] = [];
     
     if (policy.effectiveness < 80) {
       recommendations.push('Consider updating policy rules for better effectiveness');

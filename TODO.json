@@ -2,6 +2,66 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755871773159_0tpy0buzs",
+      "title": "Research: Continue TypeScript strict mode migration - Phase 3",
+      "description": "Research and analysis required for implementing: \"Continue TypeScript strict mode migration - Phase 3\"\n\n**Implementation Task Details:**\nContinue systematic fixing of remaining 166 TypeScript compilation errors with strictNullChecks enabled. Focus on null safety, undefined property access, and type assignment issues across remaining modules.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755871773159_nxdykhwrk\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755871773159_0tpy0buzs.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755871773159_0tpy0buzs.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T14:09:33.159Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755871773159_nxdykhwrk"
+    },
+    {
+      "id": "task_1755871906956_gre3lehm1",
+      "title": "Fix TypeScript strict mode errors in AI governance engine module",
+      "description": "Fix compilation errors in insights.ts, policy-optimization.ts, risk-assessment.ts, and tools/index.ts - including array push errors, undefined property access, and type assignment issues",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T14:11:46.956Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755872009450_wkdji2fwc",
+      "title": "Fix MCP server timeout and connection issues",
+      "description": "MCP server is timing out after 60 seconds during initialization. Server disconnects unexpectedly with timeout errors. Need to investigate and fix the connection stability issues.",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T14:13:29.450Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755871139350_ov219p2oe",
       "title": "Enable TypeScript strict mode with proper null safety",
       "description": "Implement TypeScript strictNullChecks and strict mode to improve type safety. Address the 291 compilation errors that arise when strict null checking is enabled. This will enable the prefer-nullish-coalescing ESLint rule and significantly improve code quality.",
@@ -124,16 +184,46 @@
       "subtasks": [],
       "created_at": "2025-08-22T13:35:26.475Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T13:52:35.191Z",
-      "claimed_by": "agent_1755870755191",
-      "assigned_agent": "agent_1755870755191",
+      "started_at": "2025-08-22T14:09:23.730Z",
+      "claimed_by": "agent_1755871763730",
+      "assigned_agent": "agent_1755871763730",
       "agent_assignment_history": [
         {
           "agent": "agent_1755870755191",
           "action": "claimed",
           "timestamp": "2025-08-22T13:52:35.191Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T14:09:00.530Z",
+          "reason": "Task stale for 16 minutes"
+        },
+        {
+          "agent": "agent_1755871763730",
+          "action": "claimed",
+          "timestamp": "2025-08-22T14:09:23.730Z"
         }
       ]
+    },
+    {
+      "id": "task_1755871773159_nxdykhwrk",
+      "title": "Continue TypeScript strict mode migration - Phase 3",
+      "description": "Continue systematic fixing of remaining 166 TypeScript compilation errors with strictNullChecks enabled. Focus on null safety, undefined property access, and type assignment issues across remaining modules.",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [
+        "task_1755871773159_0tpy0buzs"
+      ],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-22T14:09:33.163Z",
+      "auto_research_created": true
     }
   ],
   "current_mode": "DEVELOPMENT",
