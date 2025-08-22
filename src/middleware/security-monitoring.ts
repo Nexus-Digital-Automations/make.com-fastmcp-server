@@ -10,41 +10,9 @@ import logger from '../lib/logger.js';
 // For Node.js fetch (18.0+ built-in, earlier versions need node-fetch)
 declare const fetch: typeof global.fetch;
 
-// Request interface for security middleware
-interface HttpRequest {
-  ip?: string;
-  method?: string;
-  url?: string;
-  path?: string;
-  headers: Record<string, string | string[] | undefined>;
-  connection?: {
-    remoteAddress?: string;
-  };
-  socket?: {
-    remoteAddress?: string;
-  };
-  body?: unknown;
-  user?: {
-    id: string;
-  };
-  securityContext?: {
-    correlationId: string;
-    startTime: number;
-    riskScore: number;
-  };
-}
-
-// Response interface for middleware
-interface HttpResponse {
-  statusCode?: number;
-  setHeader(name: string, value: string | number): void;
-  status(code: number): HttpResponse;
-  json(body: unknown): void;
-  on(event: string, callback: () => void): void;
-  locals?: Record<string, unknown>;
-}
-
-// Next function type
+// Compatible request/response types for middleware - using any for Express compatibility
+type HttpRequest = any;
+type HttpResponse = any;
 type NextFunction = (error?: unknown) => void;
 
 // Security event types
@@ -422,7 +390,7 @@ export class SecurityMonitoringSystem extends EventEmitter {
         // Email notification (placeholder - implement with your email service)
         logger.info('Email alert would be sent', { 
           email: channel, 
-          alertType: alert.type 
+          alertType: (alert as any).type 
         });
       }
     } catch (error) {

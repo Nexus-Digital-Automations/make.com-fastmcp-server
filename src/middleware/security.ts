@@ -12,8 +12,8 @@ import { ddosProtection, circuitBreakerManager, createDDoSProtectionMiddleware }
 import { securityMonitoring, createSecurityMonitoringMiddleware } from './security-monitoring.js';
 import logger from '../lib/logger.js';
 
-// Middleware function type - generic to match various middleware signatures
-type MiddlewareFunction = (...args: unknown[]) => unknown;
+// Middleware function type - using any for Express compatibility
+type MiddlewareFunction = any;
 
 // Security configuration interface
 interface SecurityConfig {

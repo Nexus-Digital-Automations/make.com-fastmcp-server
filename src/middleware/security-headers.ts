@@ -8,35 +8,9 @@ import helmet from 'helmet';
 import csrf from 'csurf';
 import logger from '../lib/logger.js';
 
-// Request interface for security middleware
-interface HttpRequest {
-  ip?: string;
-  method?: string;
-  url?: string;
-  path?: string;
-  headers: Record<string, string | string[] | undefined>;
-  connection?: {
-    remoteAddress?: string;
-  };
-  socket?: {
-    remoteAddress?: string;
-  };
-  body?: unknown;
-  user?: {
-    id: string;
-  };
-}
-
-// Response interface for middleware
-interface HttpResponse {
-  setHeader(name: string, value: string | number): void;
-  status(code: number): HttpResponse;
-  json(body: unknown): void;
-  on(event: string, callback: () => void): void;
-  locals?: Record<string, unknown>;
-}
-
-// Next function type
+// Compatible request/response types for middleware - using any for Express compatibility
+type HttpRequest = any;
+type HttpResponse = any;
 type NextFunction = (error?: unknown) => void;
 
 // Security configuration interface
@@ -51,8 +25,8 @@ interface SecurityConfig {
 // Enterprise security headers manager
 export class SecurityHeadersManager {
   private config: SecurityConfig;
-  private helmetInstance: (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
-  private csrfProtection: (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
+  private helmetInstance: (req: HttpRequest, res: HttpResponse, next: NextFunction) => void = () => {};
+  private csrfProtection: (req: HttpRequest, res: HttpResponse, next: NextFunction) => void = () => {};
   
   constructor(config?: Partial<SecurityConfig>) {
     this.config = {
@@ -189,15 +163,14 @@ export class SecurityHeadersManager {
           signed: true
         },
         sessionKey: 'session',
-        value: (req: HttpRequest) => {
+        value: (req: any): string => {
           // Extract CSRF token from multiple possible locations
-          const body = req.body as { _csrf?: string };
-          const query = req as unknown as { query?: { _csrf?: string } };
-          return body._csrf ||
-                 query.query?._csrf ||
-                 req.headers['csrf-token'] ||
-                 req.headers['x-csrf-token'] ||
-                 req.headers['x-xsrf-token'];
+          return req.body?._csrf ||
+                 req.query?._csrf ||
+                 req.headers?.['csrf-token'] ||
+                 req.headers?.['x-csrf-token'] ||
+                 req.headers?.['x-xsrf-token'] ||
+                 '';
         },
         ignoreMethods: ['GET', 'HEAD', 'OPTIONS']
       });
@@ -260,55 +233,63 @@ export class SecurityHeadersManager {
   }
   
   private applyCustomSecurityHeaders(req: HttpRequest, res: HttpResponse): void {
+    const request = req as {
+      headers: Record<string, string | string[] | undefined>;
+      path?: string;
+      rateLimit?: { limit?: string | number; remaining?: string | number; reset?: string | number };
+    };
+    const response = res as {
+      setHeader(name: string, value: string | number): void;
+    };
+    
     // API versioning header
-    res.setHeader('X-API-Version', '1.0');
+    response.setHeader('X-API-Version', '1.0');
     
     // Security policy enforcement
-    res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
-    res.setHeader('X-Download-Options', 'noopen');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
+    response.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
+    response.setHeader('X-Download-Options', 'noopen');
+    response.setHeader('X-Content-Type-Options', 'nosniff');
     
     // Rate limiting information (will be set by rate limiting middleware)
-    const reqWithRateLimit = req as unknown as { rateLimit?: { limit?: string | number; remaining?: string | number; reset?: string | number } };
-    if (reqWithRateLimit.rateLimit) {
-      res.setHeader('X-RateLimit-Limit', reqWithRateLimit.rateLimit.limit || 'unknown');
-      res.setHeader('X-RateLimit-Remaining', reqWithRateLimit.rateLimit.remaining || 'unknown');
-      res.setHeader('X-RateLimit-Reset', reqWithRateLimit.rateLimit.reset || 'unknown');
+    if (request.rateLimit) {
+      response.setHeader('X-RateLimit-Limit', request.rateLimit.limit || 'unknown');
+      response.setHeader('X-RateLimit-Remaining', request.rateLimit.remaining || 'unknown');
+      response.setHeader('X-RateLimit-Reset', request.rateLimit.reset || 'unknown');
     }
     
     // CORS security for production
     if (this.config.environment === 'production') {
-      const origin = req.headers.origin;
+      const origin = request.headers.origin;
       const originString = Array.isArray(origin) ? origin[0] : origin;
       if (originString && this.config.allowedOrigins.includes(originString)) {
-        res.setHeader('Access-Control-Allow-Origin', originString);
+        response.setHeader('Access-Control-Allow-Origin', originString);
       } else {
-        res.setHeader('Access-Control-Allow-Origin', 'null');
+        response.setHeader('Access-Control-Allow-Origin', 'null');
       }
       
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-      res.setHeader('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization,X-API-Key,X-CSRF-Token');
+      response.setHeader('Access-Control-Allow-Credentials', 'true');
+      response.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+      response.setHeader('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization,X-API-Key,X-CSRF-Token');
     } else {
       // More permissive CORS for development
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', '*');
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+      response.setHeader('Access-Control-Allow-Headers', '*');
     }
     
     // Security audit headers
-    res.setHeader('X-Security-Enhanced', 'true');
-    res.setHeader('X-Security-Version', '2.0');
+    response.setHeader('X-Security-Enhanced', 'true');
+    response.setHeader('X-Security-Version', '2.0');
     
     // Cache control for sensitive endpoints
-    if (this.isSensitiveEndpoint(req.path)) {
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
+    if (request.path && this.isSensitiveEndpoint(request.path)) {
+      response.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      response.setHeader('Pragma', 'no-cache');
+      response.setHeader('Expires', '0');
     }
   }
   
-  private isSensitiveEndpoint(path: string): boolean {
+  private isSensitiveEndpoint(path: string | undefined): boolean {
     const sensitivePatterns = [
       '/api/auth',
       '/api/users',
@@ -319,15 +300,25 @@ export class SecurityHeadersManager {
       '/api/permissions'
     ];
     
-    return sensitivePatterns.some(pattern => path.startsWith(pattern));
+    return path ? sensitivePatterns.some(pattern => path.startsWith(pattern)) : false;
   }
   
   // Content type validation middleware
   public getContentTypeValidation(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
     return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
+      const request = req as {
+        method?: string;
+        headers: Record<string, string | string[] | undefined>;
+        ip?: string;
+        path?: string;
+      };
+      const response = res as {
+        status(code: number): { json(body: unknown): void };
+      };
+      
       // Only validate content type for requests with body
-      if (req.method && ['POST', 'PUT', 'PATCH'].includes(req.method)) {
-        const contentType = req.headers['content-type'];
+      if (request.method && ['POST', 'PUT', 'PATCH'].includes(request.method)) {
+        const contentType = request.headers['content-type'];
         const contentTypeString = Array.isArray(contentType) ? contentType[0] : contentType;
         
         // Allow common content types
@@ -341,12 +332,12 @@ export class SecurityHeadersManager {
         if (contentTypeString && !allowedTypes.some(type => contentTypeString.includes(type))) {
           logger.warn('Invalid content type detected', {
             contentType: contentTypeString,
-            ip: req.ip,
-            endpoint: req.path,
-            method: req.method
+            ip: request.ip,
+            endpoint: request.path,
+            method: request.method
           });
           
-          return res.status(415).json({
+          return response.status(415).json({
             error: {
               code: 'UNSUPPORTED_MEDIA_TYPE',
               message: 'Content type not supported',
