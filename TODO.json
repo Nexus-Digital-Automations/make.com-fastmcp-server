@@ -2,33 +2,59 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755851239144_hwwwyqmc3",
-      "title": "Fix TypeScript linting warnings in security middleware",
-      "description": "Fix 7 ESLint warnings related to explicit any types in security middleware files: security-headers.ts (3 warnings), security-monitoring.ts (3 warnings), security.ts (1 warning). Replace any types with proper TypeScript types for better type safety.",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
+      "id": "task_1755851844250_mnyefzdo2",
+      "title": "Research: Refactor large files exceeding maintainability thresholds",
+      "description": "Research and analysis required for implementing: \"Refactor large files exceeding maintainability thresholds\"\n\n**Implementation Task Details:**\nRefactor 9 large TypeScript files that exceed 1600+ lines for better maintainability: ai-governance-engine.ts (2025 lines), blueprint-collaboration.ts (1953 lines), connections.ts (1916 lines), notifications.ts (1849 lines), billing.ts (1803 lines), policy-compliance-validation.ts (1761 lines), compliance-policy.ts (1703 lines), folders.ts (1687 lines), zero-trust-auth.ts (1633 lines). Break into smaller, focused modules with clear responsibilities.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755851844250_1emaw8wdt\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
       "priority": "high",
       "status": "in_progress",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755851844250_mnyefzdo2.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755851844250_mnyefzdo2.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T08:37:24.250Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755851844250_1emaw8wdt",
+      "assigned_agent": "development_session_1755850308607_1_general_57167653",
+      "started_at": "2025-08-22T08:38:36.282Z",
+      "claimed_by": "development_session_1755850308607_1_general_57167653",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755850308607_1_general_57167653",
+          "role": "primary",
+          "assignedAt": "2025-08-22T08:38:36.282Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
+      "id": "task_1755851827444_5dx82de3l",
+      "title": "Update outdated npm dependencies to latest versions",
+      "description": "Update 15 outdated packages including major updates: @eslint/js (9.32.0→9.33.0), @typescript-eslint/* (6.21.0→8.40.0), eslint (8.57.1→9.33.0), fastmcp (3.10.0→3.15.0), jest (29.7.0→30.0.5), redis (4.7.1→5.8.2), typescript (5.8.3→5.9.2), zod (3.25.76→4.0.17), and others. Need to check for breaking changes and update configurations accordingly.",
+      "mode": "DEVELOPMENT",
+      "category": "chore",
+      "priority": "medium",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-22T08:27:19.144Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755850308607_1_general_57167653",
-      "started_at": "2025-08-22T08:27:25.384Z",
-      "claimed_by": "development_session_1755850308607_1_general_57167653",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755850308607_1_general_57167653",
-          "role": "primary",
-          "assignedAt": "2025-08-22T08:27:25.384Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
+      "created_at": "2025-08-22T08:37:07.444Z",
+      "auto_research_created": false
     },
     {
       "id": "task_1755850682800_ed19dlkv7",
@@ -56,6 +82,25 @@
           "timestamp": "2025-08-22T08:18:31.894Z"
         }
       ]
+    },
+    {
+      "id": "task_1755851844250_1emaw8wdt",
+      "title": "Refactor large files exceeding maintainability thresholds",
+      "description": "Refactor 9 large TypeScript files that exceed 1600+ lines for better maintainability: ai-governance-engine.ts (2025 lines), blueprint-collaboration.ts (1953 lines), connections.ts (1916 lines), notifications.ts (1849 lines), billing.ts (1803 lines), policy-compliance-validation.ts (1761 lines), compliance-policy.ts (1703 lines), folders.ts (1687 lines), zero-trust-auth.ts (1633 lines). Break into smaller, focused modules with clear responsibilities.",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "medium",
+      "status": "pending",
+      "dependencies": [
+        "task_1755851844250_mnyefzdo2"
+      ],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-22T08:37:24.255Z",
+      "auto_research_created": true
     }
   ],
   "current_mode": "DEVELOPMENT",
