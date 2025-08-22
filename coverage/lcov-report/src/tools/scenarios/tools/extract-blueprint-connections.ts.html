@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.62% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/27</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.28% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/7</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.62% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/27</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
@@ -156,18 +156,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">51x</span>
-<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -229,6 +226,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -250,9 +250,9 @@ import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js'
 import { extractBlueprintConnections } from '../utils/blueprint-analysis.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
-/**
- * Create extract blueprint connections tool configuration
- */
+/**<span class="fstat-no" title="function not covered" ></span>
+ * Create extract blueprint conn<span class="cstat-no" title="statement not covered" >ections </span>tool configuration
+ */<span class="cstat-no" title="statement not covered" ></span>
 export function createExtractBlueprintConnectionsTool(context: ToolContext): ToolDefinition {
   const { logger: _logger } = context;
   
@@ -261,26 +261,26 @@ export function createExtractBlueprintConnectionsTool(context: ToolContext): Too
     description: 'Extract and analyze connection requirements from Make.com blueprints for migration planning',
     parameters: ExtractBlueprintConnectionsSchema,
     annotations: {
-      title: 'Extract Blueprint Connections',
-      readOnlyHint: true,
-      openWorldHint: false,
-    },<span class="fstat-no" title="function not covered" ></span>
-    execute: async (args: <span class="branch-0 cbranch-no" title="branch not covered" >unknown,<span class="fstat-no" title="function not covered" > c</span>ontext): Promise<span class="fstat-no" title="function not covered" >&lt;s</span>tring&gt; =&gt; {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span>
-      const <span class="cstat-no" title="statement not covered" >{ log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};</span>
-      if (log &amp;&amp;<span class="cstat-no" title="statement not covered" > log.info) { log.info('Extracting blueprint connections', { hasBlueprint: !!(args </span>as { blueprint?: unknown }).blueprint }); }
-      reportProgress?.({ progress: 0, total: 100 });
+      title: 'Ext<span class="fstat-no" title="function not covered" >ra</span>ct Blueprint Connections',
+      readOnlyHint: true,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+      openWo<span class="cstat-no" title="statement not covered" >rldHint: false,</span>
+    },<span class="cstat-no" title="statement not covered" ></span>
+    execute: async (args: unknown, context): Promise&lt;string&gt; =&gt; {
+      const <span class="cstat-no" title="statement not covered" >{ log = { info: (): void =&gt; {}, error: (): void</span> =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
+      if (lo<span class="cstat-no" title="statement not covered" >g &amp;&amp; log.info) { log.info('Extracting blueprint connections', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint }); }</span>
+      reportProgress?.({ progress: 0, total: 100 });<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" ></span>
       try {<span class="cstat-no" title="statement not covered" ></span>
-        const { blueprint, includeOptional = false, g<span class="branch-0 cbranch-no" title="branch not covered" >roupBy</span>Module = true } =<span class="branch-0 cbranch-no" title="branch not covered" > args</span> as <span class="cstat-no" title="statement not covered" >{</span>
+        const { blueprint, includeOptional = false, groupByModule = true } = args as {
           bluepr<span class="cstat-no" title="statement not covered" >int?: unknown;</span>
-          includeOpt<span class="cstat-no" title="statement not covered" >ional?: boolean;</span>
-          groupByModule?: boolean;
+          includeOptional?: boolean;
+          groupByModule?: boolean;<span class="cstat-no" title="statement not covered" ></span>
         };<span class="cstat-no" title="statement not covered" ></span>
         
         if (!blueprint) {<span class="cstat-no" title="statement not covered" ></span>
-          throw <span class="cstat-no" title="statement not covered" >new UserError('Blueprint is required for connecti</span>on extraction');
+          throw new UserError('Blueprint is required for connection extraction');
         }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         reportProgress?.({ progress: 50, total: 100 });
 &nbsp;
         // Extract connection requirements
@@ -300,23 +300,23 @@ export function createExtractBlueprintConnectionsTool(context: ToolContext): Too
             uniqueServices: connectionResult.connectionSummary.uniqueServices,
             connectionCount: connectionResult.connectionSummary.modulesRequiringConnections,
             estimatedSetupTime: connectionResult.connectionSummary.uniqueServices.length * 15, // 15 min per service
-            complexity: connectionResult.connectionSummary.uniqueServices.length &gt; 5 ? 'high' : 
-                       connectionResult.connectionSummary.uniqueServices.length &gt; 2 ? 'medium' : 'low'
+            comp<span class="cstat-no" title="statement not covered" >lexity: connectionResult.connectionSummary.uniqueServices.length &gt; 5 ? 'high' : </span>
+<span class="cstat-no" title="statement not covered" >                       connectionResult.connectionSummary.uniqueServices.length &gt; 2 ? 'medium' : 'low'</span>
           },
-          recomm<span class="cstat-no" title="statement not covered" >endations: [</span>
-            connecti<span class="cstat-no" title="statement not covered" >onResult.connectionSummary.modulesRequiringConnections === 0 ?</span>
+          recommendations: [
+            connectionResult.connectionSummary.modulesRequiringConnections === 0 ?
               'No external connections required - blueprint can be deployed immediately' :
-              `Set up ${connectionResult.connectionSummary.uniqueServices.length} connection(s) before deployment`,
+              `S<span class="cstat-no" title="statement not covered" >et up ${connectionResult.connectionSummary.uniqueServi</span>ces.length} connection(s) before deployment`,
             connectionResult.connectionSummary.uniqueServices.length &gt; 0 ?
               `Required services: ${connectionResult.connectionSummary.uniqueServices.join(', ')}` :
-              'N<span class="cstat-no" title="statement not covered" >o external service integrations needed'</span>
-          ]
-        };
-<span class="cstat-no" title="statement not covered" ></span>
+              'No external service in<span class="cstat-no" title="statement not covered" >tegrations needed'</span>
+          ]<span class="cstat-no" title="statement not covered" ></span>
+        };<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
         if (log <span class="cstat-no" title="statement not covered" >&amp;&amp; log.info) { log.info('Blueprint connection extraction completed', {</span>
-          totalConne<span class="cstat-no" title="statement not covered" >ctions: result.connectionAnalysis.totalConnections,</span>
+          totalConnections: result.connectionAnalysis.totalConnections,
           uniqueServices: result.migrationPlanning.uniqueServices.length
-        }); }<span class="cstat-no" title="statement not covered" ></span>
+        }); }
 &nbsp;
         return formatSuccessResponse(result).content[0].text;
 &nbsp;
@@ -334,7 +334,7 @@ export function createExtractBlueprintConnectionsTool(context: ToolContext): Too
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:26:59.401Z
+                at 2025-08-22T07:30:16.360Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

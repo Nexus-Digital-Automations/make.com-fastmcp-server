@@ -103,8 +103,7 @@ class EnvironmentParser {
 
 // Configuration error classes
 export class ConfigurationError extends Error {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  constructor(message: string, public readonly _key?: string, public readonly _value?: string) {
+  constructor(message: string, public readonly key?: string, public readonly value?: string) {
     super(message);
     this.name = 'ConfigurationError';
   }

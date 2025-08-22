@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">27.27% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/11</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/5</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">27.27% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/11</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
@@ -281,13 +281,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -311,6 +308,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -496,34 +496,34 @@
 &nbsp;
 import { FastMCP, type SerializableValue } from 'fastmcp';
 import { ZodSchema } from 'zod';
-import MakeApiClient from '../../../lib/make-api-client.js';
-import { Logger } from '../../../lib/logger.js';
-&nbsp;
-/**
+import MakeApiCl<span class="fstat-no" title="function not covered" >ient from '../../../lib/</span>make-api-client.js';
+impo<span class="cstat-no" title="statement not covered" >rt { Logger } from '../../../lib/logger.js';</span>
+<span class="fstat-no" title="function not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Core dependency injection context for tools
- */<span class="fstat-no" title="function not covered" ></span>
-export interface ToolContext<span class="cstat-no" title="statement not covered" > {</span>
+ */
+export inter<span class="cstat-no" title="statement not covered" >face ToolContext {</span>
   server: FastMCP;
-  apiClient: MakeApiClient;
+  apiClient: M<span class="fstat-no" title="function not covered" >ak</span>eApiClient;
   logger: {<span class="cstat-no" title="statement not covered" ></span>
     debug?: (message: string, data?: SerializableValue) =&gt; void;
-    info?: (me<span class="fstat-no" title="function not covered" >ss</span>age: string, data?: SerializableValue) =&gt; void;
-    warn?: (message: string,<span class="cstat-no" title="statement not covered" > data?: SerializableValue) =&gt; void;</span>
+    info?: (message: string, data?: SerializableValue) =&gt; void;
+    warn?: (<span class="cstat-no" title="statement not covered" >message: string, data?: Seriali</span>zableValue) =&gt; void;
     error?: (message: string, data?: SerializableValue) =&gt; void;
-  };
+  };<span class="fstat-no" title="function not covered" ></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-/**<span class="fstat-no" title="function not covered" ></span>
- * Enhanced tool context wit<span class="cstat-no" title="statement not covered" >h additional services</span>
+/**
+ * Enhanced <span class="cstat-no" title="statement not covered" >tool context with additional se</span>rvices
  */
-export interface EnhancedToolContext extends ToolContext {
-  cache?: Ca<span class="cstat-no" title="statement not covered" >cheService;</span>
+export interfac<span class="fstat-no" title="function not covered" >e </span>EnhancedToolContext extends ToolContext {
+  cache?: CacheService;<span class="cstat-no" title="statement not covered" ></span>
   metrics?: MetricsService;
-  config?: Conf<span class="fstat-no" title="function not covered" >ig</span>Service;
-  diagnostics?: DiagnosticsS<span class="cstat-no" title="statement not covered" >ervice;</span>
+  config?: ConfigService;
+  diagnostic<span class="cstat-no" title="statement not covered" >s?: DiagnosticsService;</span>
 }
 &nbsp;
-/**<span class="cstat-no" title="statement not covered" ></span>
+/**
  * Runtime execution context passed to tool functions
  */
 export interface ToolExecutionContext {
@@ -709,7 +709,7 @@ export function createToolContextLogger(logger: Logger): ToolContext['logger'] {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:26:59.609Z
+                at 2025-08-22T07:30:17.311Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

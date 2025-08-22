@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">17.77% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/45</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">17.14% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/35</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/4</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.18% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/44</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
@@ -162,18 +162,10 @@
 <a name='L97'></a><a href='#L97'>97</a>
 <a name='L98'></a><a href='#L98'>98</a>
 <a name='L99'></a><a href='#L99'>99</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -256,104 +248,112 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Path resolution utility that works in both runtime and test environments
- */<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+ */
 import path from 'path';
 import fs from 'fs';
 &nbsp;
 /**
  * Get the project root directory - works for both runtime and testing
- */
+ */<span class="fstat-no" title="function not covered" ></span>
 export function getProjectRoot(): string {
-  // In test environment, use process.cwd() which Jest sets correctly
-  if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {
+  //<span class="cstat-no" title="statement not covered" > In test environment, use process.cwd() which Jest sets correctly</span>
+  if (pr<span class="cstat-no" title="statement not covered" >ocess.env.NODE_ENV ===</span> 'test' || process.env.JEST_WORKER_ID) {
     return process.cwd();
   }
   
-  // CRITICAL: For MCP server runtime from Claude Desktop
-  // Firs<span class="fstat-no" title="function not covered" >t check if we c</span>an resolve based on the script location
-  try {
-    <span class="cstat-no" title="statement not covered" ></span>
-    // G<span class="cstat-no" title="statement not covered" >et the directory where</span> this script is located - use process.cwd() for Jest compatibility
-    let scriptDir = process.cwd();
+  //<span class="cstat-no" title="statement not covered" > CRITICAL: For MCP server runtime from Claude Desktop</span>
+  // First check if we can resolve based on the script location
+  try {<span class="cstat-no" title="statement not covered" ></span>
     
-    // If we're in dist/utils, go up two levels to get project root
-<span class="cstat-no" title="statement not covered" >    if (scriptDir.includes('/dist/utils') || scriptDir.includes('\\dist\\utils')) {</span>
-      const projectRoot = path.resolve(scriptDir, '../../');
-      if (fs.existsSync(<span class="cstat-no" title="statement not covered" >path.join(proj</span>ectRoot, 'package.json'))) {
-        return projectRoot;
-      }<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+    // G<span class="cstat-no" title="statement not covered" >et the directory where this script is located - use process.cwd() for Jest compatibility</span>
+    let scriptDir = process.cwd(<span class="cstat-no" title="statement not covered" >);</span>
     <span class="cstat-no" title="statement not covered" ></span>
-    // If we're <span class="cstat-no" title="statement not covered" >in dist/, go up one </span>level
-    if (scriptDir.includes('/dist') || scriptDir.includes('\\dist')) {
-      const projectRoot = path.resolve(scriptDir, '../');
+    // If we're <span class="cstat-no" title="statement not covered" >in dist/utils, go up</span> two levels to get project root
+    if (scriptDir.includes('/dist/utils') || scriptDir.includes('\\dist\\utils')) {
+      const projectRoot = path.resolve(scriptDir, '../../');
       if (fs.existsSync(path.join(projectRoot, 'package.json'))) {
 <span class="cstat-no" title="statement not covered" >        return projectRoot;</span>
       }<span class="cstat-no" title="statement not covered" ></span>
     }<span class="cstat-no" title="statement not covered" ></span>
     <span class="cstat-no" title="statement not covered" ></span>
-    // Try current working directory
-    const currentDir = process.cwd();
-    if (fs.existsSync(path.join(currentDir, 'package.json'))) {
-      return currentDir;<span class="cstat-no" title="statement not covered" ></span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-    <span class="cstat-no" title="statement not covered" ></span>
-    // If not found, try looking for package.json in parent directories
-    let searchDir = currentDir;
-    for (let i = 0; i &lt; <span class="cstat-no" title="statement not covered" >10; i++) { </span>// Limit search to prevent infinite loops
-      if<span class="cstat-no" title="statement not covered" > (fs.existsSy<span class="cstat-no" title="statement not covered" >nc</span>(path.join(searchDir, 'package.json'))) {</span>
-        retu<span class="cstat-no" title="statement not covered" >rn searchDir;</span>
+    // If we're in dist/, go up one level
+    if (scriptDir.includes('/dist') || scriptDir.includes('\\dist')) {
+      const projectRoot = path.resolve(scriptDir, '../');
+      if (fs.existsSync(pat<span class="cstat-no" title="statement not covered" >h.join(project</span>Root, 'package.json'))) {
+<span class="cstat-no" title="statement not covered" >        return projectRoot;</span>
       }<span class="cstat-no" title="statement not covered" ></span>
-      const parentDir = path.dirname(searchDir);
-      if (parentDir === search<span class="cstat-no" title="statement not covered" >Dir) break; // Reached root</span>
-      search<span class="cstat-no" title="statement not covered" >Dir = parentDir;</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
+    }
+    
+    // Try current worki<span class="cstat-no" title="statement not covered" >ng director</span>y
+    cons<span class="cstat-no" title="statement not covered" >t currentDir <span class="cstat-no" title="statement not covered" >= </span>process.cwd();</span>
+    if (fs.e<span class="cstat-no" title="statement not covered" >xistsSync(path.join(currentDir, 'package.json'))) {</span>
+      return cur<span class="cstat-no" title="statement not covered" >rentDir;</span>
+    }
+    <span class="cstat-no" title="statement not covered" ></span>
+    // If no<span class="cstat-no" title="statement not covered" >t found, try looking for package.json in parent directories</span>
+    let searchDi<span class="cstat-no" title="statement not covered" >r = cur</span>rentDir;
+    for (let<span class="cstat-no" title="statement not covered" > i = 0; i &lt; 10; i++) { </span>// Limit search to prevent infinite loops
+      if (fs.existsSync(path.join(searchDir, 'package.json'))) {
+        return searchDir;
+      }<span class="cstat-no" title="statement not covered" ></span>
+      co<span class="cstat-no" title="statement not covered" >nst parentDir = path.dirname(searchDir);</span>
+      if (pa<span class="cstat-no" title="statement not covered" >rentDir === searchDir) br</span>eak; // Reached root
+      searchDir = parentDir;
+    }
     <span class="cstat-no" title="statement not covered" ></span>
     // ABSOLUTE FALLBACK: Use known project location
     const knownProjectPath = '/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server';
-    if (fs.existsSync(path.join(k<span class="cstat-no" title="statement not covered" >nownProjectPath, 'package.json'))) {</span>
-      re<span class="cstat-no" title="statement not covered" >turn knownProjectPath;</span>
-    }<span class="cstat-no" title="statement not covered" ></span>
-    
-    // If all else fails, try relative to script location
-    const fallbackPaths = [<span class="cstat-no" title="statement not covered" ></span>
+    if (fs.existsSync(path.join(knownProjectPath, 'package.json'))) {
+      return knownProjectPath;
+    }
+    <span class="cstat-no" title="statement not covered" ></span>
+    // If al<span class="cstat-no" title="statement not covered" >l else fails, try relative to script location</span>
+    const fallba<span class="cstat-no" title="statement not covered" >ckPaths = [</span>
       path.resolve(scriptDir, '../../'),  // from dist/utils
       path.resolve(scriptDir, '../'),     // from dist
       scriptDir,                          // current script dir
       currentDir,                         // current working dir
     ];
     <span class="cstat-no" title="statement not covered" ></span>
-    for (con<span class="cstat-no" title="statement not covered" >st rootPath of fallbackPaths) {</span>
-      if (fs.exi<span class="cstat-no" title="statement not covered" >stsSync(path.join</span>(rootPath, 'package.json'))) {
+    for <span class="cstat-no" title="statement not covered" >(const rootPath of fallbackPaths) {</span>
+      if (fs<span class="cstat-no" title="statement not covered" >.existsSync(path.join(</span>rootPath, 'package.json'))) {
         return rootPath;
       }
     }
-  } catch (error) {
+  } <span class="cstat-no" title="statement not covered" >catch (error) {</span>
     // Emergency fallback
-    const emergencyPath = '/Us<span class="cstat-no" title="statement not covered" >ers/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server';</span>
-    if (<span class="cstat-no" title="statement not covered" >fs.existsSync(emergencyPath)) {</span>
-      return<span class="cstat-no" title="statement not covered" > emergencyPath;</span>
-    }
-  }
+    const emergencyPath = '/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server';
+    if (fs.existsSync(emergencyPath)) {
+      return emergencyPath;
+    }<span class="fstat-no" title="function not covered" ></span>
+  }<span class="cstat-no" title="statement not covered" ></span>
   
-  //<span class="cstat-no" title="statement not covered" > Absolute final fallback</span>
+  // Absolute final fallback
   return '/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server';
 }
-&nbsp;
-/**
- * Get lo<span class="fstat-no" title="function not covered" >gs directory path</span>
- */<span class="cstat-no" title="statement not covered" ></span>
+<span class="fstat-no" title="function not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Get logs directory path
+ */
 export function getLogsDirectory(): string {
   return path.join(getProjectRoot(), 'logs');
 }
 &nbsp;
-/**<span class="fstat-no" title="function not covered" ></span>
- * G<span class="cstat-no" title="statement not covered" >et audit logs directory path</span>
+/**
+ * Get audit logs directory path
  */
 export function getAuditLogsDirectory(): string {
   return path.join(getProjectRoot(), 'logs', 'audit');
@@ -364,7 +364,7 @@ export function getAuditLogsDirectory(): string {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:26:59.401Z
+                at 2025-08-22T07:30:16.360Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

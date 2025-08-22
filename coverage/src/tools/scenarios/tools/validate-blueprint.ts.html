@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">32% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/25</span>
+                <span class='fraction'>0/19</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.09% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/11</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">32% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/25</span>
+                <span class='fraction'>0/19</span>
             </div>
         
             
@@ -152,18 +152,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">51x</span>
-<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -221,6 +218,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -242,9 +242,9 @@ import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js'
 import { validateBlueprintStructure } from '../utils/blueprint-analysis.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
-interface ValidateBlueprintArgs {
-  blueprint?: unknown;
-  strict?: boolean;
+interface Valida<span class="fstat-no" title="function not covered" >teBlueprintArgs {</span>
+  blueprint?: unknown;<span class="cstat-no" title="statement not covered" ></span>
+  st<span class="cstat-no" title="statement not covered" >rict?: boolean;</span>
   includeSecurityChecks?: boolean;
 }
 &nbsp;
@@ -253,30 +253,30 @@ interface ValidateBlueprintArgs {
  */
 export function createValidateBlueprintTool(context: ToolContext): ToolDefinition {
   const { apiClient: _apiClient, logger: _logger } = context;
-  
-  return {
-    name: 'validate-blueprint',
-    description: <span class="fstat-no" title="function not covered" >'V</span>alidate Make.com blueprint JSON against schema with security and compliance checks',
-    parameters: ValidateBl<span class="branch-0 cbranch-no" title="branch not covered" >ueprintS<span class="fstat-no" title="function not covered" >ch</span>ema,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span>
-    annotations: {<span class="cstat-no" title="statement not covered" ></span>
-      title:<span class="cstat-no" title="statement not covered" > 'Validate Blueprint',</span>
-      readOnlyHi<span class="cstat-no" title="statement not covered" >nt: true,</span>
+  <span class="fstat-no" title="function not covered" ></span>
+  return {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+    name: 'validate-blueprint'<span class="cstat-no" title="statement not covered" >,</span>
+    descript<span class="cstat-no" title="statement not covered" >ion: 'Validate Make.com blueprint JSON against schema with security and compliance checks',</span>
+    parameters: <span class="cstat-no" title="statement not covered" >ValidateBlueprintSchema,</span>
+    annotations: {
+      title: 'Validate Blueprint',
+      readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, context): Promise&lt;string&gt; =&gt; {
-      const { log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
-      const typedArgs = args as ValidateBlueprintArgs;
-      if (lo<span class="cstat-no" title="statement not covered" >g &amp;&amp; log.info) { log.info('Validating blueprint', { </span>
-        hasBlueprint: !!typedArgs.bluepri<span class="cstat-no" title="statement not covered" >nt,</span>
-        strict: <span class="cstat-no" title="statement not covered" >typedArgs.strict,</span>
-        includeSecur<span class="cstat-no" title="statement not covered" >ityChecks: typedArgs.includeSecurityChecks</span>
+    execute:<span class="cstat-no" title="statement not covered" > async (args: unknown, context): Promise&lt;string&gt; =&gt; {</span>
+      const { log = { info: (): void =&gt; {<span class="cstat-no" title="statement not covered" >}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt;</span> {} }, reportProgress: _reportProgress = (): void =&gt; {} } = context || {};
+      const type<span class="cstat-no" title="statement not covered" >dArgs = args as ValidateBlueprintArgs;</span>
+      if (log &amp;&amp; log<span class="cstat-no" title="statement not covered" >.info) { log.info('Validating blueprint', { </span>
+        hasBlueprint: !!typedArgs.blueprint,
+        strict: typedArgs.strict,
+        includeSecurityChecks: typedArgs.includeSecurityChecks
       }); }
 &nbsp;
       try {
-        const validationResult = validateBlueprintStructure(
+        const va<span class="cstat-no" title="statement not covered" >lidationResult = validateBlueprintStructure(</span>
           typedArgs.blueprint, 
           typedArgs.strict
-        );<span class="cstat-no" title="statement not covered" ></span>
+        );
 &nbsp;
         if (log &amp;&amp; log.info) { log.info('Blueprint validation completed', {
           isValid: validationResult.isValid,
@@ -288,23 +288,23 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
         return formatSuccessResponse({
           isValid: validationResult.isValid,
           summary: {
-            totalErrors: validationResult.errors.length,
-            totalWarnings: validationResult.warnings.length,
+            totalErrors: validationResult.errors.length<span class="fstat-no" title="function not covered" >,<span class="cstat-no" title="statement not covered" ></span></span>
+            totalWarnings: validationResult.warnings.leng<span class="fstat-no" title="function not covered" >th</span>,<span class="cstat-no" title="statement not covered" ></span>
             totalSecurityIssues: validationResult.securityIssues.length,
-            validationPassed: validationResult.isValid,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-            securityChecksPassed: typedArgs.includeSecuri<span class="fstat-no" title="function not covered" >ty</span>Checks ? va<span class="cstat-no" title="statement not covered" >lidationResult.security</span>Issues.length === 0 : true
+            validationPassed: valida<span class="fstat-no" title="function not covered" >ti</span>onResult.<span class="cstat-no" title="statement not covered" >isValid,</span>
+            securityChecksPassed:<span class="fstat-no" title="function not covered" > t</span>ypedArgs.<span class="cstat-no" title="statement not covered" >includeSecurityChecks ? validatio</span>nResult.securityIssues.length === 0 : true
           },
-          validation: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-            errors: validationRes<span class="fstat-no" title="function not covered" >ul</span>t.errors,<span class="cstat-no" title="statement not covered" ></span>
+          validation: {
+            errors: validationResult.errors,
             warnings: validationResult.warnings,
-            securityIssues: typedArgs.includeSecurityChecks ? validationResult.securityIssues : []
-          },
-          recommendations: [
-            ...validationResult.error<span class="cstat-no" title="statement not covered" >s.map((error: string) =&gt; `Fix error: ${error}`),</span>
-            ...v<span class="cstat-no" title="statement not covered" >alidationResult.warnings.map((warning: string) =&gt; `Consider: ${warning}`),</span>
-            ...(type<span class="cstat-no" title="statement not covered" >dArgs.includeSecurityChecks ? validationResult.securityIssues</span>
+            securityIssues: typedArgs<span class="cstat-no" title="statement not covered" >.includeSecurityChecks ? validationResult.securityIssue</span>s : []
+          },<span class="cstat-no" title="statement not covered" ></span>
+          recommenda<span class="cstat-no" title="statement not covered" >tions: [</span>
+            ...validationResult.errors.map((error: string) =&gt; `Fix error: ${error}`),
+            ...v<span class="cstat-no" title="statement not covered" >alidationResult.warnings.map((warning: string) =&gt; `Consider: ${warnin</span>g}`),
+            ...(typedArgs.includeSecurityChecks ? validationResult.securityIssues
               .filter((issue: { severity: string }) =&gt; issue.severity === 'critical' || issue.severity === 'high')
-              .m<span class="cstat-no" title="statement not covered" >ap((issue: { description: string }) =&gt; `Security: ${issue.description}`) : [])</span>
+              .map((issue: { description: string }) =&gt; `Security: ${issue.description}`) : [])
           ].slice(0, 10)
         }).content[0].text;
 &nbsp;
@@ -322,7 +322,7 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:26:59.609Z
+                at 2025-08-22T07:30:17.311Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

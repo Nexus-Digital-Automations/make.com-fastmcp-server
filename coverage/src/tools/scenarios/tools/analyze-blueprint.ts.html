@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">10% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/70</span>
+                <span class='fraction'>0/64</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.66% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/15</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">10.6% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/66</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
@@ -262,18 +262,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -420,6 +417,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -462,9 +462,9 @@ import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js'
 import { validateBlueprintStructure } from '../utils/blueprint-analysis.js';
 import { Blueprint } from '../types/blueprint.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
-&nbsp;
+<span class="fstat-no" title="function not covered" ></span>
 /**
- * Create analyze blueprint tool configuration
+ * C<span class="cstat-no" title="statement not covered" >reate analyze blueprint tool configuration</span>
  */
 export function createAnalyzeBlueprintTool(_context: ToolContext): ToolDefinition {
   // No context properties needed for this tool
@@ -473,26 +473,26 @@ export function createAnalyzeBlueprintTool(_context: ToolContext): ToolDefinitio
     name: 'analyze-blueprint',
     description: 'Analyze and validate Make.com blueprint structure with security and performance checks',
     parameters: ValidateBlueprintSchema,
-    annotations: {
-      title: 'Analyze Blueprint',
-      readOnlyHint: true,
-      openWorldHi<span class="fstat-no" title="function not covered" >nt</span>: false,
-    },<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
-    execute:<span class="cstat-no" title="statement not covered" > async (args: unknown, context): Promise&lt;string&gt; =&gt; {</span>
-      const { lo<span class="cstat-no" title="statement not covered" >g = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; </span>{}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};
-      if (log &amp;&amp; log.info) { log.info('Analyzing blueprint', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint }); }
-      report<span class="cstat-no" title="statement not covered" >Progress?.({ progress: 0, total: 100 });</span>
+    annotations: <span class="fstat-no" title="function not covered" >{</span>
+      title: 'Analyze Blue<span class="branch-0 cbranch-no" title="branch not covered" >print',<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span></span></span></span></span></span>
+      readOn<span class="cstat-no" title="statement not covered" >lyHint: true,</span>
+      openWorldH<span class="cstat-no" title="statement not covered" >int: false,</span>
+    },
+    execute:<span class="cstat-no" title="statement not covered" > async (args: unknown, context): Promise&lt;string</span>&gt; =&gt; {
+      const <span class="cstat-no" title="statement not covered" >{ log = { info: (): void =&gt; {}, error: (): void =&gt; {}, warn: (): void =&gt; {}, debug: (): void =&gt; {} }, reportProgress = (): void =&gt; {} } = context || {};</span>
+      if (log &amp;&amp; log.info) { log.info('Analy<span class="branch-0 cbranch-no" title="branch not covered" >zing b</span>lueprint', { hasBlueprint<span class="branch-0 cbranch-no" title="branch not covered" >: !!(</span>args<span class="cstat-no" title="statement not covered" > as {</span> blueprint?: unknown }).blueprint }); }
+      reportProg<span class="cstat-no" title="statement not covered" >ress?.({ progress: 0, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-        const { <span class="cstat-no" title="statement not covered" >blueprint, strict = false, includeSecurityChecks = true } = args as {</span>
-          blueprint?<span class="cstat-no" title="statement not covered" >: Blueprint;</span>
-          strict?: boolean;
+      try {
+        const { <span class="cstat-no" title="statement not covered" >blueprint, strict = false, includeSecurityChecks</span> = true } = args as {
+          blueprint?: Blueprint;
+          strict?: boolean;<span class="cstat-no" title="statement not covered" ></span>
           includ<span class="cstat-no" title="statement not covered" >eSecurityChecks?: boolean;</span>
         };
         <span class="cstat-no" title="statement not covered" ></span>
-        if (!blu<span class="cstat-no" title="statement not covered" >eprint) {</span>
+        if (!blueprint) {
           throw new UserError('Blueprint is required for analysis');
-        }<span class="cstat-no" title="statement not covered" ></span>
+        }
 &nbsp;
         reportProgress?.({ progress: 25, total: 100 });
 &nbsp;
@@ -511,43 +511,43 @@ export function createAnalyzeBlueprintTool(_context: ToolContext): ToolDefinitio
           issues: {
             errors: validationResult.errors,
             warnings: validationResult.warnings,
-            securityIssues: includeSecurityChecks ? validationResult.securityIssues : []
-          },
-          blueprintMetrics: {
-            modu<span class="cstat-no" title="statement not covered" >leCount: blueprint.flow?.length ?? 0,</span>
-            hasM<span class="cstat-no" title="statement not covered" >etadata: !!blueprint.metadata,</span>
-            hasName:<span class="cstat-no" title="statement not covered" > !!blueprint.name,</span>
+            secu<span class="cstat-no" title="statement not covered" >rityIssues: includeSecurityChecks ? validationRes</span>ult.securityIssues : []
+          },<span class="cstat-no" title="statement not covered" ></span>
+          blueprintM<span class="cstat-no" title="statement not covered" >etrics: {</span>
+            moduleCount: blueprint.flow?.length ?? 0,
+            hasMetadata: !!blueprint.metadata,
+            hasName: !!blueprint.name,
             securityLevel: getSecurityLevel(validationResult.securityIssues)
           },
           recommendations: generateBlueprintRecommendations(validationResult, blueprint),
           analysisTimestamp: new Date().toISOString(),
-          strict: strict,
+          strict<span class="cstat-no" title="statement not covered" >: strict,</span>
           securityChecksEnabled: includeSecurityChecks
         };
 <span class="cstat-no" title="statement not covered" ></span>
-        reportProgress?.({ progress: 100, total: 100 });
-&nbsp;
-        if (log &amp;&amp; log.info) { log.in<span class="cstat-no" title="statement not covered" >fo('Blueprint analysis completed', {</span>
+        reportPr<span class="cstat-no" title="statement not covered" >ogress?.({ progress: 100, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (log &amp;&amp; log.info) { log.info('Blueprint analysis completed', {
           isVali<span class="cstat-no" title="statement not covered" >d: analysisResult.validationSummary.isValid,</span>
-          score: ana<span class="cstat-no" title="statement not covered" >lysisResult.validationSummary.score,</span>
+          score: analysisResult.validationSummary.score,
           errorCount: analysisResult.issues.errors.length,
-          warnin<span class="cstat-no" title="statement not covered" >gCount: analysisResult.issues.warnings.length,</span>
+          warningCount: analysisResult.issues.warnings.length,
           securityIssueCount: analysisResult.issues.securityIssues.length
         }); }
 &nbsp;
         return formatSuccessResponse(analysisResult).content[0].text;
-        
-      } catch (error) {
+        <span class="fstat-no" title="function not covered" ></span>
+      } catch (e<span class="cstat-no" title="statement not covered" >rror</span>) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        i<span class="fstat-no" title="function not covered" >f (log &amp;&amp; log.error) { lo</span>g.error('Blueprint analysis failed', { error: errorMessage }); }
-        throw ne<span class="cstat-no" title="statement not covered" >w Us</span>erError(`Blueprint analysis failed: ${errorMessage}`);
-      }
-<span class="cstat-no" title="statement not covered" >    },</span>
-  };
+<span class="cstat-no" title="statement not covered" >        if (log &amp;&amp; log.error) { log.error('Bluepri</span>nt analysis failed', { error: errorMessage }); }
+        throw new UserError(`Blueprint analysis failed: ${errorMessage}`);
+<span class="cstat-no" title="statement not covered" >      }</span>
+    },
+  };<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-/**<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
- * Calcu<span class="cstat-no" title="statement not covered" >late overall validation score (0-100)</span>
+/**<span class="cstat-no" title="statement not covered" ></span>
+ * Calculate ove<span class="cstat-no" title="statement not covered" >rall va</span>lidation score (0-100)
  */
 function calcula<span class="cstat-no" title="statement not covered" >teValidationS</span>core(validationResult: {
   errors: string<span class="cstat-no" title="statement not covered" >[];</span>
@@ -558,62 +558,62 @@ function calcula<span class="cstat-no" title="statement not covered" >teValidati
   <span class="cstat-no" title="statement not covered" ></span>
   // Deduct poin<span class="cstat-no" title="statement not covered" >ts for </span>errors
   score -= validationResult.errors.length * 20;
-  <span class="cstat-no" title="statement not covered" ></span>
-  // Deduct poin<span class="cstat-no" title="statement not covered" >ts for </span>warnings
+  
+  //<span class="cstat-no" title="statement not covered" > Deduct points for warnings</span>
   score -= validationResult.warnings.length * 5;
   
-  //<span class="cstat-no" title="statement not covered" > Deduct points for security</span> issues
+  // Deduct points for security issues
   validationResult.securityIssues.forEach((issue: { severity: string }) =&gt; {
-    switch (issue.severity) {
-      case 'critical':
-        score -= 25;
-        b<span class="fstat-no" title="function not covered" >reak;</span>
+    switc<span class="fstat-no" title="function not covered" >h (issue.severity</span>) {
+<span class="cstat-no" title="statement not covered" >      case 'critical':<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >        score -= 25;</span>
+        break;
 <span class="cstat-no" title="statement not covered" >      case 'high':<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" >        score -= 15;</span>
         break;
 <span class="cstat-no" title="statement not covered" >      case 'medium':<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" >        score -= 10;</span>
         break;
-<span class="cstat-no" title="statement not covered" >      case 'low':<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >      case 'low':</span>
 <span class="cstat-no" title="statement not covered" >        score -= 5;</span>
         break;
 <span class="cstat-no" title="statement not covered" >    }</span>
-  });<span class="cstat-no" title="statement not covered" ></span>
+  });
   
-  re<span class="cstat-no" title="statement not covered" >turn Math.max(0, </span>score);
+  return Math.max(0, score);
 }
-&nbsp;
-/**
+<span class="fstat-no" title="function not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Determine security level based on issues
- */<span class="fstat-no" title="function not covered" ></span>
-function getSecurityLevel(se<span class="cstat-no" title="statement not covered" >cur</span>ityIssues: Array&lt;{ severity: string }&gt;): string {
+ */<span class="cstat-no" title="statement not covered" ></span>
+function<span class="cstat-no" title="statement not covered" > getSecurityLevel(securityIssues: Array&lt;{ severity: string }&gt;): string {</span>
   if (securityIssues.some(issue =&gt; issue.severity === 'critical')) {
-<span class="cstat-no" title="statement not covered" >    return 'critical';</span>
+    return 'critical';
   }<span class="cstat-no" title="statement not covered" ></span>
-  if (securityIssues.some(issue =&gt; issue.severity === 'high')) {
+  if (se<span class="cstat-no" title="statement not covered" >curityIssues.some(issue =&gt; issue.severity === 'high')) {</span>
     return 'high';
-  }<span class="cstat-no" title="statement not covered" ></span>
-  if (se<span class="cstat-no" title="statement not covered" >curityIssues.some(issue =&gt; issue.severity === 'medium')) {</span>
-    return 'medium';
   }
-  if<span class="cstat-no" title="statement not covered" > (securityIssues.length &gt; 0) {</span>
-    retu<span class="cstat-no" title="statement not covered" >rn 'low';</span>
+  if<span class="cstat-no" title="statement not covered" > (securityIssues.some(issue =&gt; issue.severity === 'medium')) {</span>
+    retu<span class="cstat-no" title="statement not covered" >rn 'medium';</span>
   }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
-  return 'se<span class="cstat-no" title="statement not covered" >cure';</span>
-}
-&nbsp;
+  if (securi<span class="cstat-no" title="statement not covered" >tyIssues.length &gt; 0) {</span>
+    return 'low';
+  }
+  return 'secure';
+}<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
 /**
  * G<span class="cstat-no" title="statement not covered" >enerate blueprint-specific recommendations</span>
  */<span class="cstat-no" title="statement not covered" ></span>
 function generateBlueprintRecommendations(validationResult: {
-  er<span class="cstat-no" title="statement not covered" >rors: string[];</span>
-  warnin<span class="cstat-no" title="statement not covered" >gs: string[];</span>
-  securityIssues: Array&lt;{ severity: string }&gt;;
+  errors: string[];
+  wa<span class="cstat-no" title="statement not covered" >rnings: string[];</span>
+  securi<span class="cstat-no" title="statement not covered" >tyIssues: Array&lt;{ severity: string }&gt;;</span>
 }, blueprint: Blueprint): string[] {
-  co<span class="cstat-no" title="statement not covered" >nst recommendations: string[] = [];</span>
-  <span class="cstat-no" title="statement not covered" ></span>
+  co<span class="cstat-no" title="statement not covered" >nst recommendations: str</span>ing[] = [];
+  
   // Error-based recommendations
-  if<span class="cstat-no" title="statement not covered" > (validationResult.error</span>s.length &gt; 0) {
+  if (validationResult.errors.length &gt; 0) {
     recommendations.push('Fix all validation errors before deploying blueprint');
   }
   
@@ -652,7 +652,7 @@ function generateBlueprintRecommendations(validationResult: {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T07:26:59.609Z
+                at 2025-08-22T07:30:17.311Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
