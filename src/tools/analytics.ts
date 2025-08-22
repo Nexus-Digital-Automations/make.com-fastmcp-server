@@ -477,7 +477,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
             .filter(exec => exec.finishedAt)
             .reduce((sum, exec) => {
               const startTime = new Date(exec.startedAt).getTime();
-              const endTime = new Date(exec.finishedAt).getTime();
+              const endTime = new Date(exec.finishedAt!).getTime();
               return sum + (endTime - startTime);
             }, 0) / executions.filter(exec => exec.finishedAt).length : 0,
         };

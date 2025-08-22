@@ -981,7 +981,7 @@ async function simulateHistoricalDataCollection(budgetId: string): Promise<Histo
   const dataPointCount = Math.floor(Math.random() * 100) + 50; // 50-150 data points
   
   // Generate mock historical data points
-  const dataPoints = [];
+  const dataPoints: Array<{date: string; spend: number; usage: number; scenarios: number}> = [];
   const baseSpend = Math.random() * 500 + 200; // $200-$700 base spend
   
   for (let i = 0; i < Math.min(dataPointCount, 30); i++) {
@@ -1103,7 +1103,7 @@ async function identifyHighCostScenarios(_budgetId: string): Promise<number[]> {
   await new Promise(resolve => setTimeout(resolve, 10));
   
   // Return mock scenario IDs that exceed cost thresholds
-  const highCostScenarios = [];
+  const highCostScenarios: number[] = [];
   const scenarioCount = Math.floor(Math.random() * 5) + 1; // 1-5 scenarios
   
   for (let i = 0; i < scenarioCount; i++) {
@@ -1159,7 +1159,7 @@ async function executeScenarioControl(
   const successful = Math.floor(scenarios.length * (Math.random() * 0.2 + 0.8)); // 80-100% success rate
   const failed = scenarios.length - successful;
   
-  const errors = [];
+  const errors: string[] = [];
   if (failed > 0) {
     errors.push(`${failed} scenarios could not be ${action}d due to dependency constraints`);
   }

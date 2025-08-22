@@ -869,6 +869,9 @@ class BlueprintCollaborationEngine {
     // Check cache first
     if (this.dependencyGraphs.has(cacheKey)) {
       const cachedGraph = this.dependencyGraphs.get(cacheKey);
+      if (!cachedGraph) {
+        throw new Error(`Cached dependency graph not found for key: ${cacheKey}`);
+      }
       return {
         dependencyGraph: cachedGraph,
         analysis: await this.generateDependencyAnalysis(cachedGraph),
