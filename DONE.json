@@ -19287,9 +19287,75 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755891438474_cu00hfqul",
+      "title": "Refactor addMultiTenantSecurityTools function - massive 505-line violation",
+      "description": "Break down the 505-line addMultiTenantSecurityTools function. Extract individual tool registrations into helper functions. Target: reduce to under 200 lines.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T19:37:18.474Z",
+      "auto_research_created": false,
+      "started_at": "2025-08-22T20:46:39.582Z",
+      "claimed_by": "development_session_1755895113774_1_general_ca2a7b30",
+      "assigned_agent": "development_session_1755895113774_1_general_ca2a7b30",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755892995291",
+          "action": "claimed",
+          "timestamp": "2025-08-22T20:03:15.291Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T20:23:02.033Z",
+          "reason": "Task stale for 20 minutes"
+        },
+        {
+          "agent": "agent_1755894434226",
+          "action": "claimed",
+          "timestamp": "2025-08-22T20:27:14.226Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-22T20:46:21.176Z",
+          "reason": "Task stale for 19 minutes"
+        },
+        {
+          "agentId": "development_session_1755895113774_1_general_ca2a7b30",
+          "role": "primary",
+          "assignedAt": "2025-08-22T20:46:39.582Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T20:55:22.460Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T20:55:22.460Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 440,
-  "last_completion": "2025-08-22T20:45:49.063Z",
+  "total_completed": 441,
+  "last_completion": "2025-08-22T20:55:22.460Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

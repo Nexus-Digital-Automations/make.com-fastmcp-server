@@ -19,6 +19,97 @@ import MakeApiClient from '../../../lib/make-api-client.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
+ * Build query parameters for log retrieval
+ */
+function buildLogQueryParams(
+  exportConfig: ExportConfig,
+  outputConfig: OutputConfig
+): Record<string, unknown> {
+  const params: Record<string, unknown> = {
+    startDate: exportConfig.timeRange?.startTime,
+    endDate: exportConfig.timeRange?.endTime,
+    limit: outputConfig.chunkSize,
+    offset: 0,
+    sortBy: 'timestamp',
+    sortOrder: 'asc',
+  };
+
+  // Apply comprehensive filtering
+  if (exportConfig.scenarioIds?.length) {
+    params.scenarioIds = exportConfig.scenarioIds.join(',');
+  }
+  if (exportConfig.organizationId) {
+    params.organizationId = exportConfig.organizationId;
+  }
+  if (exportConfig.filtering?.logLevels?.length) {
+    params.level = exportConfig.filtering.logLevels.join(',');
+  }
+  if (exportConfig.filtering?.moduleTypes?.length) {
+    params.moduleTypes = exportConfig.filtering.moduleTypes.join(',');
+  }
+  if (exportConfig.filtering?.correlationIds?.length) {
+    params.correlationIds = exportConfig.filtering.correlationIds.join(',');
+  }
+  if (exportConfig.filtering?.errorCodesOnly) {
+    params.errorsOnly = true;
+  }
+  if (exportConfig.filtering?.performanceThreshold) {
+    params.minProcessingTime = exportConfig.filtering.performanceThreshold;
+  }
+
+  return params;
+}
+
+/**
+ * Determine optimal API endpoint for log retrieval
+ */
+function determineLogEndpoint(exportConfig: ExportConfig): string {
+  if (exportConfig.organizationId) {
+    return `/organizations/${exportConfig.organizationId}/logs`;
+  }
+  return '/logs';
+}
+
+/**
+ * Normalize export configuration with proper defaults
+ */
+function normalizeExportConfig(exportConfig: ExportConfig): ExportConfig {
+  return {
+    ...exportConfig,
+    streaming: {
+      enabled: exportConfig.streaming?.enabled ?? false,
+      batchSize: exportConfig.streaming?.batchSize ?? 50,
+      intervalMs: exportConfig.streaming?.intervalMs ?? 5000,
+      maxDuration: exportConfig.streaming?.maxDuration ?? 3600
+    }
+  };
+}
+
+/**
+ * Normalize destination configuration
+ */
+function normalizeDestinationConfig(destination: DestinationConfig): DestinationConfig {
+  return {
+    type: destination.type,
+    path: destination.webhookUrl || '/tmp/log-export',
+    externalSystemConfig: destination.externalSystemConfig ? {
+      type: destination.externalSystemConfig.type,
+      endpoint: destination.externalSystemConfig.connection?.url,
+      authentication: destination.externalSystemConfig.authentication ? {
+        type: destination.externalSystemConfig.authentication.type || 'api_key',
+        credentials: destination.externalSystemConfig.authentication.credentials || {}
+      } : undefined,
+      options: {
+        timeout: 30000,
+        retries: destination.externalSystemConfig.retryPolicy?.maxRetries || 3,
+        batchSize: 100,
+        compression: true
+      }
+    } : undefined
+  };
+}
+
+/**
  * Create export logs for analysis tool configuration
  */
 export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefinition {
@@ -64,78 +155,18 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
           analytics,
         };
 
-        // Enhanced query parameters for log retrieval
-        const params: Record<string, unknown> = {
-          startDate: exportConfig.timeRange?.startTime,
-          endDate: exportConfig.timeRange?.endTime,
-          limit: outputConfig.chunkSize,
-          offset: 0,
-          sortBy: 'timestamp',
-          sortOrder: 'asc',
-        };
-
-        // Apply comprehensive filtering
-        if (exportConfig.scenarioIds?.length) {
-          params.scenarioIds = exportConfig.scenarioIds.join(',');
-        }
-        if (exportConfig.organizationId) {
-          params.organizationId = exportConfig.organizationId;
-        }
-        if (exportConfig.filtering?.logLevels?.length) {
-          params.level = exportConfig.filtering.logLevels.join(',');
-        }
-        if (exportConfig.filtering?.moduleTypes?.length) {
-          params.moduleTypes = exportConfig.filtering.moduleTypes.join(',');
-        }
-        if (exportConfig.filtering?.correlationIds?.length) {
-          params.correlationIds = exportConfig.filtering.correlationIds.join(',');
-        }
-        if (exportConfig.filtering?.errorCodesOnly) {
-          params.errorsOnly = true;
-        }
-        if (exportConfig.filtering?.performanceThreshold) {
-          params.minProcessingTime = exportConfig.filtering.performanceThreshold;
-        }
-
+        // Build query parameters for log retrieval
+        const params = buildLogQueryParams(exportConfig, outputConfig);
+        
         // Determine optimal endpoint
-        let endpoint = '/logs';
-        if (exportConfig.organizationId) {
-          endpoint = `/organizations/${exportConfig.organizationId}/logs`;
-        }
+        const endpoint = determineLogEndpoint(exportConfig);
 
         // Initialize enhanced export processor
         const exportProcessor = new EnhancedLogExportProcessor(apiClient, exportMetadata, logger);
         
-        // Ensure streaming configuration has proper defaults
-        const normalizedExportConfig: ExportConfig = {
-          ...exportConfig,
-          streaming: {
-            enabled: exportConfig.streaming?.enabled ?? false,
-            batchSize: exportConfig.streaming?.batchSize ?? 50,
-            intervalMs: exportConfig.streaming?.intervalMs ?? 5000,
-            maxDuration: exportConfig.streaming?.maxDuration ?? 3600
-          }
-        };
-        
-        // Normalize destination to match DestinationConfig interface
-        const normalizedDestination: DestinationConfig = {
-          type: destination.type,
-          path: destination.webhookUrl || '/tmp/log-export',
-          externalSystemConfig: destination.externalSystemConfig ? {
-            type: destination.externalSystemConfig.type,
-            endpoint: destination.externalSystemConfig.connection?.url,
-            authentication: destination.externalSystemConfig.authentication ? {
-              type: destination.externalSystemConfig.authentication.type || 'api_key',
-              credentials: destination.externalSystemConfig.authentication.credentials || {}
-            } : undefined,
-            options: {
-              timeout: 30000,
-              retries: destination.externalSystemConfig.retryPolicy?.maxRetries || 3,
-              batchSize: 100,
-              compression: true
-            }
-          } : undefined
-        };
+        // Normalize configurations
+        const normalizedExportConfig = normalizeExportConfig(exportConfig);
+        const normalizedDestination = normalizeDestinationConfig(destination);
 
         // Handle streaming vs batch export
         if (normalizedExportConfig.streaming?.enabled) {
@@ -169,6 +200,76 @@ export function createExportLogsForAnalysisTool(context: ToolContext): ToolDefin
       }
     },
   };
+}
+
+/**
+ * Initialize external system connector if needed
+ */
+async function initializeExternalConnector(
+  destination: DestinationConfig,
+  logger: ToolContext['logger']
+): Promise<ExternalSystemConnector | null> {
+  if (destination.type === 'external-system' && destination.externalSystemConfig) {
+    const connector = new ExternalSystemConnector(
+      destination.externalSystemConfig,
+      logger
+    );
+    await connector.connect();
+    return connector;
+  }
+  return null;
+}
+
+/**
+ * Process a streaming batch of logs
+ */
+async function processStreamingBatch(
+  apiClient: MakeApiClient,
+  endpoint: string,
+  batchParams: Record<string, unknown>,
+  exportConfig: ExportConfig,
+  outputConfig: OutputConfig,
+  exportMetadata: Record<string, unknown>,
+  externalConnector: ExternalSystemConnector | null,
+  processor: EnhancedLogExportProcessor
+): Promise<{
+  logsProcessed: number;
+  lastTimestamp?: string;
+  deliveryResult?: Record<string, unknown>;
+}> {
+  const response = await apiClient.get(endpoint, { params: batchParams });
+
+  if (response.success && response.data) {
+    const logs = response.data as MakeLogEntry[];
+    
+    if (logs.length > 0) {
+      // Process batch through pipeline
+      const filteredLogs = processor.applyAdvancedFiltering(logs, exportConfig.filtering);
+      const transformedLogs = processor.applyDataTransformations(filteredLogs, outputConfig.transformations);
+      
+      if (transformedLogs.length > 0) {
+        const batchData = await processor.formatLogsForExport(
+          transformedLogs,
+          outputConfig,
+          exportMetadata
+        );
+
+        // Deliver batch to external system if available
+        let deliveryResult;
+        if (externalConnector) {
+          deliveryResult = await externalConnector.sendBatch(batchData, outputConfig.format || 'json');
+        }
+
+        return {
+          logsProcessed: transformedLogs.length,
+          lastTimestamp: logs[logs.length - 1].timestamp,
+          deliveryResult
+        };
+      }
+    }
+  }
+
+  return { logsProcessed: 0 };
 }
 
 /**
@@ -322,18 +423,11 @@ class EnhancedLogExportProcessor {
     const streamEndTime = Date.now() + ((exportConfig.streaming?.maxDuration || 300) * 1000);
 
     // Initialize external system connection if needed
-    let externalConnector: ExternalSystemConnector | null = null;
-    if (destination.type === 'external-system' && destination.externalSystemConfig) {
-      externalConnector = new ExternalSystemConnector(
-        destination.externalSystemConfig,
-        this.logger
-      );
-      await externalConnector.connect();
-    }
+    const externalConnector = await initializeExternalConnector(destination, this.logger);
 
     while (Date.now() < streamEndTime) {
       try {
-        // Fetch next batch of logs
+        // Prepare batch parameters
         const batchParams = {
           ...params,
           limit: exportConfig.streaming?.batchSize || 1000,
@@ -341,33 +435,27 @@ class EnhancedLogExportProcessor {
           dateFrom: lastLogTimestamp,
         };
 
-        const response = await this.apiClient.get(endpoint, { params: batchParams });
+        // Process streaming batch
+        const batchResult = await processStreamingBatch(
+          this.apiClient,
+          endpoint,
+          batchParams,
+          exportConfig,
+          outputConfig,
+          this.exportMetadata,
+          externalConnector,
+          this
+        );
 
-        if (response.success && response.data) {
-          const logs = response.data as MakeLogEntry[];
-          
-          if (logs.length > 0) {
-            // Process batch
-            const filteredLogs = this.applyAdvancedFiltering(logs, exportConfig.filtering);
-            const transformedLogs = this.applyDataTransformations(filteredLogs, outputConfig.transformations);
-            
-            if (transformedLogs.length > 0) {
-              const batchData = await this.formatLogsForExport(
-                transformedLogs,
-                outputConfig,
-                this.exportMetadata
-              );
-
-              // Deliver batch to external system
-              if (externalConnector) {
-                const deliveryResult = await externalConnector.sendBatch(batchData, outputConfig.format || 'json');
-                streamingResults.deliveryResults.push(deliveryResult);
-              }
-
-              streamingResults.batchesProcessed++;
-              streamingResults.totalLogsStreamed += transformedLogs.length;
-              lastLogTimestamp = logs[logs.length - 1].timestamp;
-            }
+        // Update streaming results
+        if (batchResult.logsProcessed > 0) {
+          streamingResults.batchesProcessed++;
+          streamingResults.totalLogsStreamed += batchResult.logsProcessed;
+          if (batchResult.lastTimestamp) {
+            lastLogTimestamp = batchResult.lastTimestamp;
+          }
+          if (batchResult.deliveryResult) {
+            streamingResults.deliveryResults.push(batchResult.deliveryResult);
           }
         }
       } catch (error) {

@@ -2,9 +2,9 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755891438474_cu00hfqul",
-      "title": "Refactor addMultiTenantSecurityTools function - massive 505-line violation",
-      "description": "Break down the 505-line addMultiTenantSecurityTools function. Extract individual tool registrations into helper functions. Target: reduce to under 200 lines.",
+      "id": "task_1755896247407_26cdag3w9",
+      "title": "Refactor export-logs-for-analysis execute function - complexity 53 violation",
+      "description": "Break down the 53-complexity execute function in export-logs-for-analysis.ts. Extract helper functions to reduce complexity below 25. Also address processStreamingExport complexity (32) and max-depth violations.",
       "mode": "DEVELOPMENT",
       "category": "linter-error",
       "priority": "critical",
@@ -15,38 +15,16 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-22T19:37:18.474Z",
+      "created_at": "2025-08-22T20:57:27.407Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T20:46:39.582Z",
-      "claimed_by": "development_session_1755895113774_1_general_ca2a7b30",
-      "assigned_agent": "development_session_1755895113774_1_general_ca2a7b30",
+      "assigned_agent": "development_session_1755896144071_1_general_53bdbd23",
+      "started_at": "2025-08-22T20:57:34.212Z",
+      "claimed_by": "development_session_1755896144071_1_general_53bdbd23",
       "agent_assignment_history": [
         {
-          "agent": "agent_1755892995291",
-          "action": "claimed",
-          "timestamp": "2025-08-22T20:03:15.291Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-22T20:23:02.033Z",
-          "reason": "Task stale for 20 minutes"
-        },
-        {
-          "agent": "agent_1755894434226",
-          "action": "claimed",
-          "timestamp": "2025-08-22T20:27:14.226Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-22T20:46:21.176Z",
-          "reason": "Task stale for 19 minutes"
-        },
-        {
-          "agentId": "development_session_1755895113774_1_general_ca2a7b30",
+          "agentId": "development_session_1755896144071_1_general_53bdbd23",
           "role": "primary",
-          "assignedAt": "2025-08-22T20:46:39.582Z",
+          "assignedAt": "2025-08-22T20:57:34.212Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
@@ -60,13 +38,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755895113774_1_general_ca2a7b30": {
+    "development_session_1755896144071_1_general_53bdbd23": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T20:38:33.775Z",
+      "lastHeartbeat": "2025-08-22T20:55:44.071Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -77,8 +55,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T20:38:33.775Z",
-      "sessionId": "session_1755895113774",
+      "createdAt": "2025-08-22T20:55:44.071Z",
+      "sessionId": "session_1755896144071",
       "metadata": {}
     }
   },
