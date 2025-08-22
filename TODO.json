@@ -1,6 +1,24 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1755848473924_x4vnkxgqt",
+      "title": "Fix CachingMiddleware constructor test failures",
+      "description": "Multiple tests failing with TypeError: cache_js_1.default is not a constructor in caching-comprehensive.test.ts and caching-simple.test.ts. Affects all caching middleware tests.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T07:41:13.924Z",
+      "auto_research_created": false
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
