@@ -231,9 +231,34 @@ const ListPopularAppsSchema = z.object({
  */
 function buildSearchParameters(
   query: string,
-  filters: any,
-  sorting: any,
-  pagination: any,
+  filters: {
+    category?: string;
+    subcategory?: string;
+    tags?: string[];
+    publisherType?: 'make' | 'verified_partner' | 'community';
+    pricingModel?: 'free' | 'freemium' | 'subscription' | 'usage_based' | 'one_time';
+    minimumRating?: number;
+    authType?: 'api_key' | 'oauth2' | 'basic_auth' | 'custom' | 'none';
+    capabilities?: {
+      hasTriggers?: boolean;
+      hasActions?: boolean;
+      hasSearches?: boolean;
+      triggerTypes?: ('polling' | 'webhook' | 'instant')[];
+    };
+    requirements?: {
+      minimumPlan?: 'free' | 'core' | 'pro' | 'teams' | 'enterprise';
+      gdprRequired?: boolean;
+      hipaaRequired?: boolean;
+    };
+  } | undefined,
+  sorting: {
+    field: 'relevance' | 'popularity' | 'rating' | 'name' | 'created_date' | 'updated_date' | 'install_count';
+    order: 'asc' | 'desc';
+  } | undefined,
+  pagination: {
+    limit: number;
+    offset: number;
+  } | undefined,
   includeMetadata: boolean,
   includePricing: boolean,
   includeUsageStats: boolean

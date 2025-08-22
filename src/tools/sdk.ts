@@ -10,6 +10,13 @@ import logger from '../lib/logger.js';
 import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // SDK app management types
+interface LogInterface {
+  info: (message: string, meta?: unknown) => void;
+  error: (message: string, meta?: unknown) => void;
+  warn: (message: string, meta?: unknown) => void;
+  debug: (message: string, meta?: unknown) => void;
+}
+
 export interface MakeSDKApp {
   id: number;
   name: string;
@@ -202,7 +209,23 @@ const WorkflowInstallSchema = z.object({
 /**
  * Build search parameters for SDK apps marketplace
  */
-function buildSdkAppSearchParams(input: any): Record<string, unknown> {
+function buildSdkAppSearchParams(input: {
+  query?: string;
+  category: 'productivity' | 'integration' | 'automation' | 'analytics' | 'communication' | 'utility' | 'custom' | 'all';
+  publisher?: string;
+  verified?: boolean;
+  rating?: number;
+  features: string[];
+  compatibility?: {
+    platform?: string;
+    region?: string;
+    language?: string;
+  };
+  sortBy: 'name' | 'rating' | 'installs' | 'updated' | 'created';
+  sortOrder: 'asc' | 'desc';
+  limit: number;
+  offset: number;
+}): Record<string, unknown> {
   const { query, category, publisher, verified, rating, features, compatibility, sortBy, sortOrder, limit, offset } = input;
   
   const params: Record<string, unknown> = {
@@ -228,7 +251,21 @@ function buildSdkAppSearchParams(input: any): Record<string, unknown> {
 /**
  * Generate marketplace analysis from apps
  */
-function generateMarketplaceAnalysis(apps: any[], metadata: any): any {
+function generateMarketplaceAnalysis(
+  apps: MakeSDKApp[], 
+  metadata: { total?: number; [key: string]: unknown }
+): {
+  totalApps: number;
+  categoryBreakdown: Record<string, number>;
+  publisherBreakdown: Record<string, number>;
+  averageRating: number;
+  verifiedApps: number;
+  trends: {
+    popular: Array<{ id: number; name: string; installs: number }>;
+    recent: Array<{ id: number; name: string; publishedAt: string }>;
+    topRated: Array<{ id: number; name: string; rating: number }>;
+  };
+} {
   return {
     totalApps: metadata?.total || apps.length,
     categoryBreakdown: apps.reduce((acc: Record<string, number>, app) => {
@@ -266,7 +303,23 @@ function generateMarketplaceAnalysis(apps: any[], metadata: any): any {
 /**
  * Transform app data for response
  */
-function transformAppForResponse(app: any): any {
+function transformAppForResponse(app: MakeSDKApp): {
+  id: number;
+  name: string;
+  description?: string;
+  version: string;
+  publisher: string;
+  category: string;
+  status: string;
+  verified: boolean;
+  rating: number;
+  installs: number;
+  tags: string[];
+  homepage?: string;
+  documentation?: string;
+  icon?: string;
+  lastUpdated: string;
+} {
   return {
     id: app.id,
     name: app.name,
@@ -377,7 +430,7 @@ function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
 /**
  * Validate SDK app compatibility
  */
-async function validateSdkAppCompatibility(apiClient: MakeApiClient, appId: string, log: any): Promise<void> {
+async function validateSdkAppCompatibility(apiClient: MakeApiClient, appId: string, log: LogInterface): Promise<void> {
   log.info('Validating app compatibility');
   const compatResponse = await apiClient.get(`/sdk-apps/${appId}/compatibility`);
   
@@ -394,7 +447,31 @@ async function validateSdkAppCompatibility(apiClient: MakeApiClient, appId: stri
 /**
  * Build SDK app install data payload
  */
-function buildSdkAppInstallData(input: any): any {
+function buildSdkAppInstallData(input: {
+  appId: number;
+  version?: string;
+  organizationId?: number;
+  teamId?: number;
+  configuration: Record<string, unknown>;
+  permissions: {
+    autoGrant: boolean;
+    restrictions: Record<string, unknown>;
+  };
+  autoUpdate: boolean;
+  skipValidation: boolean;
+}): {
+  appId: number;
+  version: string;
+  organizationId?: number;
+  teamId?: number;
+  configuration: Record<string, unknown>;
+  permissions: {
+    autoGrant: boolean;
+    restrictions: Record<string, unknown>;
+  };
+  autoUpdate: boolean;
+  skipValidation: boolean;
+} {
   const { appId, version, organizationId, teamId, configuration, permissions, autoUpdate, skipValidation } = input;
   
   return {
@@ -432,7 +509,32 @@ function determineSdkAppEndpoint(organizationId?: string, teamId?: string): stri
 /**
  * Format SDK app install response
  */
-function formatSdkAppInstallResponse(installation: any, input: any): any {
+function formatSdkAppInstallResponse(
+  installation: {
+    id: string | number;
+    appName: string;
+    installedAt: string;
+    version: string;
+    status: string;
+    configuration: Record<string, unknown>;
+    permissions: Record<string, unknown>;
+  }, 
+  input: {
+    appId: number;
+    autoUpdate: boolean;
+    configuration: Record<string, unknown>;
+  }
+): {
+  installationId: string | number;
+  appId: number;
+  appName: string;
+  version: string;
+  status: string;
+  installedAt: string;
+  autoUpdate: boolean;
+  configuration: Record<string, unknown>;
+  permissions: Record<string, unknown>;
+} {
   const { appId, autoUpdate, configuration } = input;
   
   // Type guards for installation data

@@ -2,9 +2,9 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755902267208_fdmwhy6q2",
-      "title": "Fix billing.ts complexity violation (31) and blueprint-collaboration-fixed.ts TypeScript no-explicit-any violations",
-      "description": "Fix complexity violation in billing.ts execute method (31 > 25) and resolve 10 no-explicit-any violations in blueprint-collaboration-fixed.ts",
+      "id": "task_1755902695036_jblba7j6y",
+      "title": "Fix no-explicit-any violations across multiple files",
+      "description": "Fix numerous no-explicit-any violations in custom-apps.ts, log-streaming files, marketplace.ts, notifications, policy files, sdk.ts, and scenario files. Replace any types with proper TypeScript types for better type safety.",
       "mode": "DEVELOPMENT",
       "category": "linter-error",
       "priority": "critical",
@@ -15,18 +15,45 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-22T22:37:47.208Z",
+      "created_at": "2025-08-22T22:44:55.036Z",
       "auto_research_created": false,
       "assigned_agent": "development_session_1755902230635_1_general_15aaeea7",
-      "started_at": "2025-08-22T22:37:52.693Z",
+      "started_at": "2025-08-22T22:45:00.697Z",
       "claimed_by": "development_session_1755902230635_1_general_15aaeea7",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755902230635_1_general_15aaeea7",
           "role": "primary",
-          "assignedAt": "2025-08-22T22:37:52.693Z",
+          "assignedAt": "2025-08-22T22:45:00.697Z",
           "reassignReason": null,
           "claimPriority": "normal"
+        }
+      ]
+    },
+    {
+      "id": "task_1755902641686_kdkhtzr96",
+      "title": "Fix multiple high complexity violations (34-37) across codebase",
+      "description": "Fix 5+ complexity violations ranging from 34-37 (well above 25 limit) in multiple files including budget-control.ts, compliance-policy.ts, and others. Extract helper functions to reduce cyclomatic complexity.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T22:44:01.686Z",
+      "auto_research_created": false,
+      "started_at": "2025-08-22T22:44:21.534Z",
+      "claimed_by": "agent_1755902661534",
+      "assigned_agent": "agent_1755902661534",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755902661534",
+          "action": "claimed",
+          "timestamp": "2025-08-22T22:44:21.534Z"
         }
       ]
     }
@@ -38,27 +65,6 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755901353753_1_general_51991bf4": {
-      "name": "development Agent",
-      "role": "development",
-      "specialization": [],
-      "status": "active",
-      "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T22:22:33.753Z",
-      "parentAgentId": null,
-      "capabilities": [
-        "file-operations",
-        "linting",
-        "testing",
-        "build-fixes",
-        "refactoring"
-      ],
-      "workload": 0,
-      "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T22:22:33.753Z",
-      "sessionId": "session_1755901353753",
-      "metadata": {}
-    },
     "development_session_1755902230635_1_general_15aaeea7": {
       "name": "development Agent",
       "role": "development",
