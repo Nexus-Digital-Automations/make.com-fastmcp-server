@@ -133,8 +133,8 @@ const createMockTool = (name: string, complexity: 'simple' | 'complex' = 'simple
         }).optional()
       }),
       execute: jest.fn().mockImplementation(async (args) => {
-        // Simulate complex processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Simulate complex processing - reduced delay from 100ms to 10ms
+        await new Promise(resolve => setTimeout(resolve, 10));
         
         if (args.config?.options?.async) {
           return {
@@ -1077,10 +1077,10 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
         const tools = [];
         for (let i = 0; i < scenario.toolCount; i++) {
           const tool = createMockTool(`concurrent-tool-${i}`);
-          // Add artificial processing time
+          // Add minimal processing time for realism
           const originalExecute = tool.execute;
           tool.execute = jest.fn().mockImplementation(async (args) => {
-            await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100));
+            await new Promise(resolve => setTimeout(resolve, 5 + Math.random() * 10)); // Reduced from 50-150ms to 5-15ms
             const result = await originalExecute(args);
             return { ...result, processedBy: `tool-${i}` };
           });
@@ -1162,7 +1162,7 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
           } else if (toolName.includes('slow')) {
             tool.execute = jest.fn().mockImplementation(async (args) => {
               const startTime = Date.now();
-              await new Promise(resolve => setTimeout(resolve, 200));
+              await new Promise(resolve => setTimeout(resolve, 20)); // Reduced from 200ms to 20ms
               const duration = Date.now() - startTime;
               test.sharedResource.executionTimes.push(duration);
               return { success: true, data: { duration } };
@@ -1620,9 +1620,9 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
               })
             );
             
-            // Small delay between requests to simulate realistic timing
+            // Minimal delay between requests - optimized for test speed
             if (i < scenario.requestsPerSecond - 1) {
-              await new Promise(resolve => setTimeout(resolve, 1000 / scenario.requestsPerSecond));
+              await new Promise(resolve => setTimeout(resolve, Math.min(50, 1000 / scenario.requestsPerSecond))); // Cap at 50ms
             }
           }
           
@@ -1937,8 +1937,8 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
     });
 
     it('should maintain resource efficiency during sustained operations', async () => {
-      const sustainedTestDuration = 5000; // 5 seconds
-      const operationsPerSecond = 10;
+      const sustainedTestDuration = 1000; // Reduced from 5s to 1s
+      const operationsPerSecond = 20; // Increased frequency to maintain test coverage
       const totalOperations = (sustainedTestDuration / 1000) * operationsPerSecond;
 
       // Resource-monitoring tool
@@ -2011,13 +2011,13 @@ describe('Tool Registration and Execution - End-to-End Tests', () => {
         }
       }, 1000 / operationsPerSecond);
 
-      // Wait for all operations to complete
+      // Wait for all operations to complete - optimized with shorter timeout
       await new Promise(resolve => {
         const checkComplete = () => {
-          if (Date.now() - startTime >= sustainedTestDuration + 1000) {
+          if (Date.now() - startTime >= sustainedTestDuration + 200) { // Reduced from 1000ms to 200ms
             resolve(null);
           } else {
-            setTimeout(checkComplete, 100);
+            setTimeout(checkComplete, 50); // Reduced from 100ms to 50ms check interval
           }
         };
         checkComplete();

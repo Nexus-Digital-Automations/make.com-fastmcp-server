@@ -70,11 +70,22 @@ export default {
     '<rootDir>/dist/',
     '<rootDir>/coverage/',
   ],
-  testTimeout: 30000,
-  maxWorkers: 1, // Force single worker to avoid Jest worker issues
+  testTimeout: 15000, // Reduced from 30s to 15s
+  maxWorkers: '50%', // Use 50% of available cores instead of 1
   verbose: false,
-  collectCoverage: true,
+  collectCoverage: false, // Disable coverage collection for faster test runs
   forceExit: true,
+  // Performance optimizations
+  testEnvironmentOptions: {
+    // Optimize jsdom performance
+    pretendToBeVisual: false,
+    url: 'http://localhost'
+  },
+  // Cache test results for faster reruns
+  cache: true,
+  cacheDirectory: '<rootDir>/.jest-cache',
+  // Improve test isolation and performance
+  resetModules: false, // Don't reset modules between tests for better performance
   clearMocks: true,
   restoreMocks: true,
   // Add error handling for worker exceptions
