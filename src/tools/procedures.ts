@@ -673,6 +673,105 @@ function addListRemoteProceduresTool(server: FastMCP, apiClient: MakeApiClient):
 }
 
 /**
+ * Prepare execution data with options and metadata
+ */
+function prepareExecutionData(
+  inputData: unknown,
+  options: any,
+  metadata: any
+): Record<string, unknown> {
+  return {
+    input: inputData,
+    options: {
+      ...options,
+      async: options?.async ?? false,
+      timeout: options?.timeout ?? 30000,
+      retries: options?.retries ?? 3,
+      priority: options?.priority ?? 'normal',
+    },
+    metadata: {
+      correlationId: metadata.correlationId || `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      source: metadata.source || 'fastmcp',
+      tags: metadata.tags || {},
+      executedAt: new Date().toISOString(),
+    },
+  };
+}
+
+/**
+ * Execute remote procedure API call
+ */
+async function executeRemoteProcedureCall(
+  apiClient: any,
+  procedureId: string,
+  executionData: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const response = await apiClient.post(`/remote-procedures/${procedureId}/execute`, executionData);
+
+  if (!response.success) {
+    throw new UserError(`Failed to execute remote procedure: ${response.error?.message || 'Unknown error'}`);
+  }
+
+  return response.data as Record<string, unknown>;
+}
+
+/**
+ * Process execution result and extract monitoring data
+ */
+function processExecutionResult(
+  executionResult: Record<string, unknown>,
+  procedureId: string,
+  log?: any
+): {
+  result: Record<string, unknown>;
+  monitoring: Record<string, unknown>;
+} {
+  if (log?.info) {
+    log.info('Successfully executed remote procedure', {
+      procedureId,
+      executionId: String(executionResult?.executionId || 'unknown'),
+      status: String(executionResult?.status || 'unknown'),
+      executionTime: Number(executionResult?.executionTime || 0),
+    });
+  }
+
+  return {
+    result: executionResult,
+    monitoring: {
+      logs: executionResult?.logs || [],
+      metrics: executionResult?.metrics || {},
+      errors: executionResult?.errors || [],
+    }
+  };
+}
+
+/**
+ * Format execution response with summary and monitoring
+ */
+function formatExecutionResponse(
+  executionResult: Record<string, unknown>,
+  procedureId: string,
+  executionData: Record<string, unknown>,
+  options: any,
+  monitoring: Record<string, unknown>
+): string {
+  return formatSuccessResponse({
+    execution: executionResult,
+    message: `Remote procedure ${procedureId} executed successfully`,
+    summary: {
+      procedureId,
+      executionId: executionResult?.executionId,
+      status: executionResult?.status,
+      executionTime: executionResult?.executionTime,
+      correlationId: (executionData.metadata as any)?.correlationId,
+      async: options.async,
+      outputSize: executionResult?.output ? JSON.stringify(executionResult.output).length : 0,
+    },
+    monitoring,
+  }).content[0].text;
+}
+
+/**
  * Add Execute Remote Procedure tool
  */
 function addExecuteRemoteProcedureTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -703,61 +802,22 @@ function addExecuteRemoteProcedureTool(server: FastMCP, apiClient: MakeApiClient
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        const executionData = {
-          input: inputData,
-          options: {
-            ...options,
-            async: options?.async ?? false,
-            timeout: options?.timeout ?? 30000,
-            retries: options?.retries ?? 3,
-            priority: options?.priority ?? 'normal',
-          },
-          metadata: {
-            correlationId: metadata.correlationId || `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            source: metadata.source || 'fastmcp',
-            tags: metadata.tags || {},
-            executedAt: new Date().toISOString(),
-          },
-        };
-
+        // Step 1: Prepare execution data
+        const executionData = prepareExecutionData(inputData, options, metadata);
         reportProgress({ progress: 25, total: 100 });
 
-        const response = await apiClient.post(`/remote-procedures/${procedureId}/execute`, executionData);
+        // Step 2: Execute remote procedure API call
+        const executionResult = await executeRemoteProcedureCall(apiClient, procedureId, executionData);
+        reportProgress({ progress: 75, total: 100 });
 
-        if (!response.success) {
-          throw new UserError(`Failed to execute remote procedure: ${response.error?.message || 'Unknown error'}`);
-        }
+        // Step 3: Process results and extract monitoring data
+        const { result, monitoring } = processExecutionResult(executionResult, procedureId, log);
 
-        const executionResult = response.data as Record<string, unknown>;
+        // Step 4: Format response with summary and monitoring
+        const response = formatExecutionResponse(result, procedureId, executionData, options, monitoring);
+        
         reportProgress({ progress: 100, total: 100 });
-
-        if (log?.info) {
-          log.info('Successfully executed remote procedure', {
-            procedureId,
-            executionId: String(executionResult?.executionId || 'unknown'),
-            status: String(executionResult?.status || 'unknown'),
-            executionTime: Number(executionResult?.executionTime || 0),
-          });
-        }
-
-        return formatSuccessResponse({
-          execution: executionResult,
-          message: `Remote procedure ${procedureId} executed successfully`,
-          summary: {
-            procedureId,
-            executionId: executionResult?.executionId,
-            status: executionResult?.status,
-            executionTime: executionResult?.executionTime,
-            correlationId: executionData.metadata.correlationId,
-            async: options.async,
-            outputSize: executionResult?.output ? JSON.stringify(executionResult.output).length : 0,
-          },
-          monitoring: {
-            logs: executionResult?.logs || [],
-            metrics: executionResult?.metrics || {},
-            errors: executionResult?.errors || [],
-          },
-        }).content[0].text;
+        return response;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log?.error) {
