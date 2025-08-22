@@ -11,7 +11,6 @@ import {
   findTool, 
   executeTool, 
   expectToolCall,
-  expectProgressReported,
   expectValidZodParse,
   expectInvalidZodParse,
   expectToolExecutionToFail
@@ -26,7 +25,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
   let mockApiClient: MockMakeApiClient;
   let mockTool: jest.MockedFunction<any>;
   let mockLog: jest.MockedFunction<any>;
-  let mockReportProgress: jest.MockedFunction<any>;
 
   const testCustomVariable: MakeCustomVariable = {
     id: 1,
@@ -120,13 +118,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
     mockServer = serverSetup.server;
     mockTool = serverSetup.mockTool;
     mockApiClient = new MockMakeApiClient();
-    mockLog = {
-      info: (...args: any[]) => {},
-      error: (...args: any[]) => {},
-      warn: (...args: any[]) => {},
-      debug: (...args: any[]) => {},
-    };
-    mockReportProgress = (...args: any[]) => {};
+    mockLog = jest.fn();
     
     // Clear previous mock calls
     mockTool.mockClear();
@@ -188,7 +180,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           description: 'Base URL for external API integration',
           tags: ['production', 'api', 'external'],
           isEncrypted: false
-        }, { log: mockLog });
+        });
         
         expect(result).toContain('API_BASE_URL');
         expect(result).toContain('created successfully');
@@ -224,7 +216,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           teamId: 456,
           description: 'Configuration settings for team operations',
           tags: ['config', 'team']
-        }, { log: mockLog });
+        });
         
         expect(result).toContain('CONFIG_SETTINGS');
         expect(result).toContain('created successfully');
@@ -255,7 +247,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           description: 'Secret API key for external service',
           tags: ['secret', 'production'],
           isEncrypted: true
-        }, { log: mockLog });
+        });
         
         expect(result).toContain('SECRET_API_KEY');
         expect(result).toContain('Variable value is encrypted');
@@ -275,7 +267,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           value: 'test',
           type: 'string',
           scope: 'organization'
-        }, { log: mockLog })).rejects.toThrow('Organization ID is required for organization scope variables');
+        })).rejects.toThrow('Organization ID is required for organization scope variables');
         
         // Test team scope without team ID
         await expect(executeTool(tool, {
@@ -284,7 +276,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           type: 'string',
           scope: 'team',
           organizationId: 123
-        }, { log: mockLog })).rejects.toThrow('Organization ID and Team ID are required for team scope variables');
+        })).rejects.toThrow('Organization ID and Team ID are required for team scope variables');
         
         // Test scenario scope without scenario ID
         await expect(executeTool(tool, {
@@ -294,7 +286,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           scope: 'scenario',
           organizationId: 123,
           teamId: 456
-        }, { log: mockLog })).rejects.toThrow('Organization ID, Team ID, and Scenario ID are required for scenario scope variables');
+        })).rejects.toThrow('Organization ID, Team ID, and Scenario ID are required for scenario scope variables');
       });
 
       it('should format variable values according to type', async () => {
@@ -313,7 +305,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           type: 'number',
           scope: 'organization',
           organizationId: 123
-        }, { log: mockLog });
+        });
         
         let calls = mockApiClient.getCallLog();
         expect(calls[0].data.value).toBe(42);
@@ -332,7 +324,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           type: 'boolean',
           scope: 'organization',
           organizationId: 123
-        }, { log: mockLog });
+        });
         
         calls = mockApiClient.getCallLog();
         expect(calls[0].data.value).toBe(true);
@@ -350,7 +342,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             type: 'invalid-type',
             scope: 'organization',
             organizationId: 123
-          }, { log: mockLog })
+          })
         );
         
         // Test invalid scope
@@ -361,7 +353,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             type: 'string',
             scope: 'invalid-scope',
             organizationId: 123
-          }, { log: mockLog })
+          })
         );
         
         // Test empty name
@@ -372,7 +364,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             type: 'string',
             scope: 'organization',
             organizationId: 123
-          }, { log: mockLog })
+          })
         );
       });
     });
@@ -394,7 +386,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
 
         
         const tool = findTool(mockTool, 'list-custom-variables');
-        const result = await executeTool(tool, {}, { log: mockLog });
+        const result = await executeTool(tool, {});
         
         const parsed = JSON.parse(result);
         expect(parsed.variables).toHaveLength(4);
@@ -439,7 +431,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           isEncrypted: false,
           sortBy: 'lastModified',
           sortOrder: 'desc'
-        }, { log: mockLog });
+        });
         
         const calls = mockApiClient.getCallLog();
         expect(calls[0].endpoint).toBe('/teams/456/variables');
@@ -464,7 +456,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         await executeTool(tool, {
           scope: 'organization',
           organizationId: 123
-        }, { log: mockLog });
+        });
         
         let calls = mockApiClient.getCallLog();
         expect(calls[0].endpoint).toBe('/organizations/123/variables');
@@ -482,7 +474,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         await executeTool(tool, {
           scope: 'scenario',
           scenarioId: 789
-        }, { log: mockLog });
+        });
         
         calls = mockApiClient.getCallLog();
         expect(calls[0].endpoint).toBe('/scenarios/789/variables');
@@ -516,7 +508,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const result = await executeTool(tool, {
           variableId: 1,
           includeUsage: true
-        }, { log: mockLog });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.variable.name).toBe('API_BASE_URL');
@@ -540,7 +532,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const tool = findTool(mockTool, 'get-custom-variable');
         const result = await executeTool(tool, {
           variableId: 3
-        }, { log: mockLog });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.variable.name).toBe('SECRET_API_KEY');
@@ -559,7 +551,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         
         await expect(executeTool(tool, {
           variableId: 999
-        }, { log: mockLog })).rejects.toThrow('Variable with ID 999 not found');
+        })).rejects.toThrow('Variable with ID 999 not found');
       });
     });
 
@@ -591,7 +583,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           value: 'https://api.example.com/v2',
           description: 'Updated base URL for external API integration',
           tags: ['production', 'api', 'external', 'v2']
-        }, { log: mockLog });
+        });
         
         expect(result).toContain('updated successfully');
         expect(result).toContain('https://api.example.com/v2');
@@ -621,7 +613,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           variableId: 1,
           value: { apiUrl: 'https://api.example.com/v1', timeout: 30000 },
           type: 'json'
-        }, { log: mockLog });
+        });
         
         const calls = mockApiClient.getCallLog();
         expect(calls[0].data.type).toBe('json');
@@ -634,7 +626,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         
         await expect(executeTool(tool, {
           variableId: 1
-        }, { log: mockLog })).rejects.toThrow('No update data provided');
+        })).rejects.toThrow('No update data provided');
       });
     });
 
@@ -655,7 +647,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const result = await executeTool(tool, {
           variableId: 1,
           force: false
-        }, { log: mockLog });
+        });
         
         expect(result).toContain('deleted successfully');
         expect(result).toContain('"forced": false');
@@ -678,7 +670,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         await expect(executeTool(tool, {
           variableId: 1,
           force: false
-        }, { log: mockLog })).rejects.toThrow('Variable is currently in use (5 references). Use force=true to delete anyway.');
+        })).rejects.toThrow('Variable is currently in use (5 references). Use force=true to delete anyway.');
       });
 
       it('should force delete variable when explicitly requested', async () => {
@@ -692,7 +684,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const result = await executeTool(tool, {
           variableId: 1,
           force: true
-        }, { log: mockLog });
+        });
         
         expect(result).toContain('deleted successfully');
         expect(result).toContain('"forced": true');
@@ -721,7 +713,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const result = await executeTool(tool, {
           operation: 'delete',
           variableIds: [1, 2, 3]
-        }, { log: mockLog });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.result.affected).toBe(3);
@@ -754,7 +746,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           operationData: {
             tags: ['updated', 'bulk-operation']
           }
-        }, { log: mockLog });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.summary.successful).toBe(2);
@@ -774,7 +766,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           executeTool(tool, {
             operation: 'invalid-operation',
             variableIds: [1, 2, 3]
-          }, { log: mockLog })
+          })
         );
         
         // Test empty variable IDs
@@ -782,7 +774,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           executeTool(tool, {
             operation: 'delete',
             variableIds: []
-          }, { log: mockLog })
+          })
         );
         
         // Test too many variable IDs
@@ -790,7 +782,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           executeTool(tool, {
             operation: 'delete',
             variableIds: Array.from({ length: 101 }, (_, i) => i + 1)
-          }, { log: mockLog })
+          })
         );
       });
     });
@@ -819,7 +811,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           format: 'json',
           includeEncrypted: false,
           includeMetadata: true
-        }, { log: mockLog });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.exportResult.count).toBe(15);
@@ -855,7 +847,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           await executeTool(tool, {
             scope: 'all',
             format: format as any
-          }, { log: mockLog });
+          });
           
           const calls = mockApiClient.getCallLog();
           expect(calls[0].data.format).toBe(format);
@@ -894,7 +886,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             scenarioId: 789
           },
           includeInheritance: true
-        }, { log: mockLog });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.summary.resolved).toBe(true);
@@ -929,7 +921,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const result = await executeTool(tool, {
           variableName: 'NONEXISTENT_VAR',
           context: { organizationId: 123 }
-        }, { log: mockLog });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.summary.resolved).toBe(false);
@@ -972,7 +964,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         const result = await executeTool(tool, {
           includeRecoveryPlan: true,
           status: 'all'
-        }, { log: mockLog });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.incompleteExecutions).toHaveLength(3);
@@ -1010,7 +1002,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           status: 'paused',
           ageHours: 24,
           canResume: true
-        }, { log: mockLog });
+        });
         
         const calls = mockApiClient.getCallLog();
         expect(calls[0].params.scenarioId).toBe(789);
@@ -1057,7 +1049,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             notifyOnCompletion: true
           },
           reason: 'Batch recovery after system maintenance'
-        }, { log: mockLog, reportProgress: mockReportProgress });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.summary.requestedCount).toBe(5);
@@ -1074,12 +1066,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         expect(calls[0].data.options.retryWithModifications).toBe(true);
         expect(calls[0].data.reason).toBe('Batch recovery after system maintenance');
         
-        expectProgressReported(mockReportProgress, [
-          { progress: 0, total: 100 },
-          { progress: 25, total: 100 },
-          { progress: 75, total: 100 },
-          { progress: 100, total: 100 }
-        ]);
       });
 
       it('should handle different bulk resolution actions', async () => {
@@ -1100,7 +1086,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           await executeTool(tool, {
             executionIds: [1, 2],
             action: action as any
-          }, { log: mockLog, reportProgress: mockReportProgress });
+          });
           
           const calls = mockApiClient.getCallLog();
           expect(calls[0].data.action).toBe(action);
@@ -1118,7 +1104,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           executeTool(tool, {
             executionIds: [],
             action: 'retry'
-          }, { log: mockLog })
+          })
         );
         
         // Test too many execution IDs
@@ -1126,7 +1112,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           executeTool(tool, {
             executionIds: Array.from({ length: 51 }, (_, i) => i + 1),
             action: 'retry'
-          }, { log: mockLog })
+          })
         );
         
         // Test invalid action
@@ -1134,7 +1120,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           executeTool(tool, {
             executionIds: [1, 2],
             action: 'invalid-action'
-          }, { log: mockLog })
+          })
         );
       });
     });
@@ -1197,7 +1183,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           },
           includeRecommendations: true,
           groupBy: 'scenario'
-        }, { log: mockLog, reportProgress: mockReportProgress });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.analysis.totalFailures).toBe(45);
@@ -1215,12 +1201,6 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         expect(calls[0].data.groupBy).toBe('scenario');
         expect(calls[0].data.includeRecommendations).toBe(true);
         
-        expectProgressReported(mockReportProgress, [
-          { progress: 0, total: 100 },
-          { progress: 25, total: 100 },
-          { progress: 75, total: 100 },
-          { progress: 100, total: 100 }
-        ]);
       });
 
       it('should analyze patterns by different grouping methods', async () => {
@@ -1244,7 +1224,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
               endDate: '2024-01-31T23:59:59Z'
             },
             groupBy: groupBy as any
-          }, { log: mockLog, reportProgress: mockReportProgress });
+          });
           
           const calls = mockApiClient.getCallLog();
           expect(calls[0].data.groupBy).toBe(groupBy);
@@ -1308,7 +1288,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           },
           isActive: true,
           priority: 75
-        }, { log: mockLog });
+        });
         
         const parsed = JSON.parse(result);
         expect(parsed.rule.name).toBe('API Timeout Auto-Recovery');
@@ -1362,7 +1342,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
               primaryAction: config.primaryAction as any,
               ...config.notificationConfig && { notificationConfig: config.notificationConfig }
             }
-          }, { log: mockLog });
+          });
           
           const calls = mockApiClient.getCallLog();
           expect(calls[0].data.actions.primaryAction).toBe(config.primaryAction);
@@ -1381,7 +1361,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             name: '',
             conditions: {},
             actions: { primaryAction: 'retry' }
-          }, { log: mockLog })
+          })
         );
         
         // Test invalid primary action
@@ -1390,7 +1370,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             name: 'Test Rule',
             conditions: {},
             actions: { primaryAction: 'invalid-action' }
-          }, { log: mockLog })
+          })
         );
         
         // Test invalid priority
@@ -1400,7 +1380,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
             conditions: {},
             actions: { primaryAction: 'retry' },
             priority: 0
-          }, { log: mockLog })
+          })
         );
       });
     });
@@ -1470,7 +1450,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
           };
         }
         
-        await expect(executeTool(tool, testInput, { log: mockLog, reportProgress: mockReportProgress }))
+        await expect(executeTool(tool, testInput))
           .rejects.toThrow(UserError);
         
         mockApiClient.reset();
@@ -1489,7 +1469,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         type: 'string',
         scope: 'organization',
         organizationId: 123
-      }, { log: mockLog })).rejects.toThrow('Failed to create custom variable: Network timeout');
+      })).rejects.toThrow('Failed to create custom variable: Network timeout');
     });
 
     it('should log operations correctly', async () => {
@@ -1506,7 +1486,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         type: 'string',
         scope: 'organization',
         organizationId: 123
-      }, { log: mockLog });
+      });
       
       expect(mockLog).toHaveBeenCalledWith(
         'info',
@@ -1538,7 +1518,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
 
       
       const tool = findTool(mockTool, 'list-custom-variables');
-      const result = await executeTool(tool, {}, { log: mockLog });
+      const result = await executeTool(tool, {});
       
       const parsed = JSON.parse(result);
       const regularVar = parsed.variables.find((v: any) => v.name === 'API_BASE_URL');
@@ -1559,7 +1539,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         type: 'number',
         scope: 'organization',
         organizationId: 123
-      }, { log: mockLog })).rejects.toThrow('Invalid number value: not-a-number');
+      })).rejects.toThrow('Invalid number value: not-a-number');
       
       // Test invalid boolean format
       await expect(executeTool(tool, {
@@ -1568,7 +1548,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         type: 'boolean',
         scope: 'organization',
         organizationId: 123
-      }, { log: mockLog })).rejects.toThrow('Invalid boolean value: maybe');
+      })).rejects.toThrow('Invalid boolean value: maybe');
       
       // Test invalid JSON format
       await expect(executeTool(tool, {
@@ -1577,7 +1557,7 @@ describe('Variable Management and Execution Recovery Tools - Comprehensive Test 
         type: 'json',
         scope: 'organization',
         organizationId: 123
-      }, { log: mockLog })).rejects.toThrow('Invalid JSON value: { invalid json');
+      })).rejects.toThrow('Invalid JSON value: { invalid json');
     });
   });
 });

@@ -470,38 +470,36 @@ module.exports = { convert };
     describe('Basic Functionality', () => {
       test('should create a simple connector app', async () => {
         const mockApp = generateMockCustomApp();
-        mockApiClient.setMockResponse('post', '/custom-apps', {
+        mockApiClient.mockResponse('POST', '/organizations/1001/custom-apps', {
           success: true,
           data: mockApp,
         });
 
-        const result = await mockServer.executeToolCall({
-          tool: 'create-custom-app',
-          parameters: {
-            name: 'Simple API Connector',
-            description: 'Basic connector for external API integration',
-            type: 'connector',
-            runtime: 'nodejs',
-            organizationId: 1001,
-            teamId: 2001,
-            configuration: {
-              environment: {
-                variables: { NODE_ENV: 'production' },
-                secrets: ['API_KEY'],
-                dependencies: { 'axios': '^1.0.0' },
+        const tool = findTool(mockTool, 'create-custom-app');
+        const result = await executeTool(tool, {
+          name: 'Simple API Connector',
+          description: 'Basic connector for external API integration',
+          type: 'connector',
+          runtime: 'nodejs',
+          organizationId: 1001,
+          teamId: 2001,
+          configuration: {
+            environment: {
+              variables: { NODE_ENV: 'production' },
+              secrets: ['API_KEY'],
+              dependencies: { 'axios': '^1.0.0' },
+            },
+            endpoints: [
+              {
+                name: 'get_data',
+                method: 'GET',
+                path: '/api/data',
+                description: 'Retrieve data from external API',
               },
-              endpoints: [
-                {
-                  name: 'get_data',
-                  method: 'GET',
-                  path: '/api/data',
-                  description: 'Retrieve data from external API',
-                },
-              ],
-              authentication: {
-                type: 'api_key',
-                configuration: { location: 'header', name: 'X-API-Key' },
-              },
+            ],
+            authentication: {
+              type: 'api_key',
+              configuration: { location: 'header', name: 'X-API-Key' },
             },
           },
         });
@@ -1503,12 +1501,10 @@ def calculate_metrics(data, config):
       });
 
       test('should validate app ID', async () => {
-        await expect(mockServer.executeToolCall({
-          tool: 'test-custom-app',
-          parameters: {
-            appId: -1, // Invalid ID
-            testType: 'all',
-          },
+        const tool = findTool(mockTool, 'test-custom-app');
+        await expect(executeTool(tool, {
+          appId: -1, // Invalid ID
+          testType: 'all',
         })).rejects.toThrow();
       });
     });
