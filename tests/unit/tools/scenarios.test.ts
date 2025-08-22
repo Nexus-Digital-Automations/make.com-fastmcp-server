@@ -31,21 +31,15 @@ import {
 import { testScenarios, testErrors, generateTestData } from '../../fixtures/test-data.js';
 import { addScenarioTools } from '../../../src/tools/scenarios.js';
 
-// Mock dependencies but allow real tool implementation
-jest.mock('../../../src/lib/logger.js', () => ({
-  default: {
-    child: jest.fn(() => ({
-      info: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn()
-    })),
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn()
-  }
+// Mock path module to prevent path resolution issues
+jest.mock('path', () => ({
+  join: jest.fn((...args) => args.join('/')),
+  dirname: jest.fn((p) => p.split('/').slice(0, -1).join('/')),
+  resolve: jest.fn((...args) => args.join('/')),
 }));
+
+// Use global mocks for logger and audit-logger from jest.config.js
+// No need to override them here
 jest.mock('../../../src/lib/make-api-client.js');
 
 describe('Scenario Management Tools - Comprehensive Test Suite', () => {
@@ -55,7 +49,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
   let mockLog: any;
   let mockReportProgress: jest.MockedFunction<any>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const serverSetup = createMockServer();
     mockServer = serverSetup.server;
     mockTool = serverSetup.mockTool;
@@ -70,8 +64,12 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
     };
     mockReportProgress = jest.fn();
     
-    // Skip tool registration due to logger issues - tests will handle registration individually
-    // addScenarioTools(mockServer, mockApiClient as any);
+    // Clear previous mock calls
+    mockTool.mockClear();
+    
+    // Register scenario tools using the budget-control pattern 
+    const { addScenarioTools } = await import('../../../src/tools/scenarios.js');
+    addScenarioTools(mockServer, mockApiClient as any);
   });
 
   afterEach(() => {
@@ -408,12 +406,21 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       setupBlueprintResponse(scenario.id, blueprint);
       setupExecutionsResponse(scenario.id, executions);
       
-      const tool = findTool(mockTool, 'get-scenario');
-      const result = await executeTool(tool, {
+      const { createGetScenarioTool } = await import('../../../src/tools/scenarios/tools/get-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createGetScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         scenarioId: scenario.id.toString(),
         includeBlueprint: true,
         includeExecutions: true
-      }, { log: mockLog, reportProgress: mockReportProgress });
+      }, mockContext);
       
       const parsedResult = JSON.parse(result);
       expect(parsedResult).toHaveProperty('blueprint');
@@ -424,15 +431,24 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
     });
     
     it('should validate input parameters', async () => {
-      const tool = findTool(mockTool, 'get-scenario');
       setupScenarioResponse();
       
+      const { createGetScenarioTool } = await import('../../../src/tools/scenarios/tools/get-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createGetScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
+      
       // Valid parameters
-      await expect(executeTool(tool, { 
+      await expect(tool.execute({ 
         scenarioId: '12345',
         includeBlueprint: false,
         includeExecutions: false
-      }, { log: mockLog })).resolves.toBeDefined();
+      }, mockContext)).resolves.toBeDefined();
       
       // Invalid parameters should trigger validation errors
       const invalidArgs = [
@@ -444,23 +460,31 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       ];
       
       for (const args of invalidArgs) {
-        await expect(executeTool(tool, args, { log: mockLog })).rejects.toThrow();
+        await expect(tool.execute(args, mockContext)).rejects.toThrow();
       }
     });
 
     it('should handle scenario not found and other API errors', async () => {
-      const tool = findTool(mockTool, 'get-scenario');
+      const { createGetScenarioTool } = await import('../../../src/tools/scenarios/tools/get-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createGetScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
       
       // Test scenario not found
       mockApiClient.mockResponse('GET', '/scenarios/99999', testErrors.notFound);
       await expect(
-        executeTool(tool, { scenarioId: '99999' }, { log: mockLog })
+        tool.execute({ scenarioId: '99999' }, mockContext)
       ).rejects.toThrow(UserError);
       
       // Test unauthorized access
       mockApiClient.mockResponse('GET', '/scenarios/12345', testErrors.unauthorized);
       await expect(
-        executeTool(tool, { scenarioId: '12345' }, { log: mockLog })
+        tool.execute({ scenarioId: '12345' }, mockContext)
       ).rejects.toThrow(UserError);
       
       // Verify error logging
@@ -503,10 +527,19 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       });
       setupCreateResponse(newScenario);
       
-      const tool = findTool(mockTool, 'create-scenario');
-      const result = await executeTool(tool, {
+      const { createScenarioTool } = await import('../../../src/tools/scenarios/tools/create-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         name: 'Minimal Test Scenario'
-      }, { log: mockLog, reportProgress: mockReportProgress });
+      }, mockContext);
       
       const parsedResult = JSON.parse(result);
       expect(parsedResult).toHaveProperty('scenario');
@@ -536,7 +569,16 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       });
       setupCreateResponse(complexScenario);
       
-      const tool = findTool(mockTool, 'create-scenario');
+      const { createScenarioTool } = await import('../../../src/tools/scenarios/tools/create-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
+      
       const createArgs = {
         name: 'Complete Test Scenario',
         teamId: '12345',
@@ -554,10 +596,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
         }
       };
       
-      const result = await executeTool(tool, createArgs, { 
-        log: mockLog, 
-        reportProgress: mockReportProgress 
-      });
+      const result = await tool.execute(createArgs, mockContext);
       
       const calls = mockApiClient.getCallLog();
       expect(calls[0].data).toMatchObject({
@@ -576,8 +615,17 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
     });
 
     it('should validate input parameters with Zod schema', async () => {
-      const tool = findTool(mockTool, 'create-scenario');
       setupCreateResponse(generateTestData.scenario());
+      
+      const { createScenarioTool } = await import('../../../src/tools/scenarios/tools/create-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
       
       // Test valid parameters
       const validArgs = [
@@ -599,7 +647,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       ];
       
       for (const args of validArgs) {
-        await expect(executeTool(tool, args, { log: mockLog })).resolves.toBeDefined();
+        await expect(tool.execute(args, mockContext)).resolves.toBeDefined();
       }
       
       // Test invalid parameters
@@ -617,7 +665,7 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       ];
       
       for (const args of invalidArgs) {
-        await expect(executeTool(tool, args, { log: mockLog })).rejects.toThrow();
+        await expect(tool.execute(args, mockContext)).rejects.toThrow();
       }
     });
 
@@ -766,11 +814,20 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       const scenarioId = testScenarios.active.id;
       setupUpdateResponse(scenarioId, { active: false });
       
-      const tool = findTool(mockTool, 'update-scenario');
-      const result = await executeTool(tool, {
+      const { createUpdateScenarioTool } = await import('../../../src/tools/scenarios/tools/update-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createUpdateScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         scenarioId: scenarioId.toString(),
         active: false
-      }, { log: mockLog, reportProgress: mockReportProgress });
+      }, mockContext);
       
       const calls = mockApiClient.getCallLog();
       expect(calls[0]).toMatchObject({
@@ -800,11 +857,20 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       
       setupUpdateResponse(scenarioId, updateData);
       
-      const tool = findTool(mockTool, 'update-scenario');
-      const result = await executeTool(tool, {
+      const { createUpdateScenarioTool } = await import('../../../src/tools/scenarios/tools/update-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createUpdateScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         scenarioId: scenarioId.toString(),
         ...updateData
-      }, { log: mockLog, reportProgress: mockReportProgress });
+      }, mockContext);
       
       const calls = mockApiClient.getCallLog();
       expect(calls[0].data).toMatchObject(updateData);
@@ -934,11 +1000,20 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       setupScenarioCheckResponse(scenarioId, false);
       setupDeleteResponse(scenarioId);
       
-      const tool = findTool(mockTool, 'delete-scenario');
-      const result = await executeTool(tool, {
+      const { createDeleteScenarioTool } = await import('../../../src/tools/scenarios/tools/delete-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createDeleteScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         scenarioId: scenarioId.toString(),
         force: false
-      }, { log: mockLog, reportProgress: mockReportProgress });
+      }, mockContext);
       
       const parsedResult = JSON.parse(result);
       expect(parsedResult).toHaveProperty('scenarioId');
@@ -1084,11 +1159,20 @@ describe('Scenario Management Tools - Comprehensive Test Suite', () => {
       setupBlueprintResponse(sourceId, blueprint);
       setupCloneResponse(clonedScenario);
       
-      const tool = findTool(mockTool, 'clone-scenario');
-      const result = await executeTool(tool, {
+      const { createCloneScenarioTool } = await import('../../../src/tools/scenarios/tools/clone-scenario.js');
+      const toolContext = { apiClient: mockApiClient, logger: { child: () => mockLog } };
+      const tool = createCloneScenarioTool(toolContext as any);
+      
+      const mockContext = {
+        log: mockLog,
+        reportProgress: mockReportProgress,
+        session: { authenticated: true },
+      };
+      
+      const result = await tool.execute({
         scenarioId: sourceId.toString(),
         name: cloneName
-      }, { log: mockLog, reportProgress: mockReportProgress });
+      }, mockContext);
       
       const parsedResult = JSON.parse(result);
       expect(parsedResult).toHaveProperty('originalScenarioId');

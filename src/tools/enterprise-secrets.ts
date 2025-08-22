@@ -14,7 +14,8 @@ export {
   addEnterpriseSecretsTools as default, 
   addEnterpriseSecretsTools,
   MODULE_METADATA,
-  enterpriseSecretsToolMetadata 
+  enterpriseSecretsToolMetadata,
+  enterpriseSecretsTools
 } from './enterprise-secrets/index.js';
 
 // Re-export utility modules for existing consumers  

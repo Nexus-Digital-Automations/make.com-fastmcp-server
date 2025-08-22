@@ -5,7 +5,7 @@
  */
 
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
-import { createMockServer } from '../../utils/test-helpers.js';
+import { createMockServer, findTool, executeTool } from '../../utils/test-helpers.js';
 import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
 
 describe('Zero Trust Authentication Tools - Basic Tests', () => {
@@ -85,110 +85,104 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
   });
 
   describe('Tool Configuration and Structure', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addZeroTrustAuthTools } = await import('../../../src/tools/zero-trust-auth.js');
       addZeroTrustAuthTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should have correct structure for zero trust authentication tool', () => {
-      const authTool = tools.find(tool => tool.name === 'zero_trust_authenticate');
+      const authTool = findTool(mockTool, 'zero_trust_authenticate');
       
       expect(authTool).toBeDefined();
       expect(authTool.name).toBe('zero_trust_authenticate');
       expect(authTool.description).toBeDefined();
       expect(typeof authTool.description).toBe('string');
       expect(authTool.description).toContain('zero trust authentication');
-      expect(authTool.inputSchema).toBeDefined();
-      expect(typeof authTool.handler).toBe('function');
+      expect(authTool.parameters).toBeDefined();
+      expect(typeof authTool.execute).toBe('function');
     });
 
     it('should have correct structure for MFA setup tool', () => {
-      const mfaTool = tools.find(tool => tool.name === 'setup_mfa');
+      const mfaTool = findTool(mockTool, 'setup_mfa');
       
       expect(mfaTool).toBeDefined();
       expect(mfaTool.name).toBe('setup_mfa');
       expect(mfaTool.description).toBeDefined();
       expect(typeof mfaTool.description).toBe('string');
       expect(mfaTool.description).toContain('multi-factor authentication');
-      expect(mfaTool.inputSchema).toBeDefined();
-      expect(typeof mfaTool.handler).toBe('function');
+      expect(mfaTool.parameters).toBeDefined();
+      expect(typeof mfaTool.execute).toBe('function');
     });
 
     it('should have correct structure for device trust assessment tool', () => {
-      const deviceTool = tools.find(tool => tool.name === 'assess_device_trust');
+      const deviceTool = findTool(mockTool, 'assess_device_trust');
       
       expect(deviceTool).toBeDefined();
       expect(deviceTool.name).toBe('assess_device_trust');
       expect(deviceTool.description).toBeDefined();
       expect(typeof deviceTool.description).toBe('string');
       expect(deviceTool.description).toContain('device trust');
-      expect(deviceTool.inputSchema).toBeDefined();
-      expect(typeof deviceTool.handler).toBe('function');
+      expect(deviceTool.parameters).toBeDefined();
+      expect(typeof deviceTool.execute).toBe('function');
     });
 
     it('should have correct structure for behavioral analytics tool', () => {
-      const behaviorTool = tools.find(tool => tool.name === 'analyze_user_behavior');
+      const behaviorTool = findTool(mockTool, 'analyze_user_behavior');
       
       expect(behaviorTool).toBeDefined();
       expect(behaviorTool.name).toBe('analyze_user_behavior');
       expect(behaviorTool.description).toBeDefined();
       expect(typeof behaviorTool.description).toBe('string');
       expect(behaviorTool.description).toContain('behavior');
-      expect(behaviorTool.inputSchema).toBeDefined();
-      expect(typeof behaviorTool.handler).toBe('function');
+      expect(behaviorTool.parameters).toBeDefined();
+      expect(typeof behaviorTool.execute).toBe('function');
     });
 
     it('should have correct structure for session management tool', () => {
-      const sessionTool = tools.find(tool => tool.name === 'manage_session');
+      const sessionTool = findTool(mockTool, 'manage_session');
       
       expect(sessionTool).toBeDefined();
       expect(sessionTool.name).toBe('manage_session');
       expect(sessionTool.description).toBeDefined();
       expect(typeof sessionTool.description).toBe('string');
       expect(sessionTool.description).toContain('session');
-      expect(sessionTool.inputSchema).toBeDefined();
-      expect(typeof sessionTool.handler).toBe('function');
+      expect(sessionTool.parameters).toBeDefined();
+      expect(typeof sessionTool.execute).toBe('function');
     });
 
     it('should have correct structure for identity federation tool', () => {
-      const federationTool = tools.find(tool => tool.name === 'identity_federation');
+      const federationTool = findTool(mockTool, 'identity_federation');
       
       expect(federationTool).toBeDefined();
       expect(federationTool.name).toBe('identity_federation');
       expect(federationTool.description).toBeDefined();
       expect(typeof federationTool.description).toBe('string');
       expect(federationTool.description).toContain('identity federation');
-      expect(federationTool.inputSchema).toBeDefined();
-      expect(typeof federationTool.handler).toBe('function');
+      expect(federationTool.parameters).toBeDefined();
+      expect(typeof federationTool.execute).toBe('function');
     });
 
     it('should have correct structure for risk assessment tool', () => {
-      const riskTool = tools.find(tool => tool.name === 'assess_authentication_risk');
+      const riskTool = findTool(mockTool, 'assess_authentication_risk');
       
       expect(riskTool).toBeDefined();
       expect(riskTool.name).toBe('assess_authentication_risk');
       expect(riskTool.description).toBeDefined();
       expect(typeof riskTool.description).toBe('string');
       expect(riskTool.description).toContain('risk assessment');
-      expect(riskTool.inputSchema).toBeDefined();
-      expect(typeof riskTool.handler).toBe('function');
+      expect(riskTool.parameters).toBeDefined();
+      expect(typeof riskTool.execute).toBe('function');
     });
   });
 
   describe('Tool Execution - Basic Functionality', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addZeroTrustAuthTools } = await import('../../../src/tools/zero-trust-auth.js');
       addZeroTrustAuthTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should execute zero trust authentication successfully with valid input', async () => {
-      const authTool = tools.find(tool => tool.name === 'zero_trust_authenticate');
+      const authTool = findTool(mockTool, 'zero_trust_authenticate');
       
       const input = {
         username: 'testuser',
@@ -216,7 +210,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
         }
       };
       
-      const result = await authTool.handler(input);
+      const result = await executeTool(authTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -234,7 +228,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should execute MFA setup successfully for TOTP method', async () => {
-      const mfaTool = tools.find(tool => tool.name === 'setup_mfa');
+      const mfaTool = findTool(mockTool, 'setup_mfa');
       
       const input = {
         userId: 'user123',
@@ -242,7 +236,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
         backupCodes: true
       };
       
-      const result = await mfaTool.handler(input);
+      const result = await executeTool(mfaTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -259,7 +253,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should execute device trust assessment successfully', async () => {
-      const deviceTool = tools.find(tool => tool.name === 'assess_device_trust');
+      const deviceTool = findTool(mockTool, 'assess_device_trust');
       
       const input = {
         deviceId: 'device123',
@@ -286,7 +280,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
         }
       };
       
-      const result = await deviceTool.handler(input);
+      const result = await executeTool(deviceTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -307,7 +301,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should execute behavioral analytics successfully', async () => {
-      const behaviorTool = tools.find(tool => tool.name === 'analyze_user_behavior');
+      const behaviorTool = findTool(mockTool, 'analyze_user_behavior');
       
       const input = {
         userId: 'user123',
@@ -352,7 +346,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
         }
       };
       
-      const result = await behaviorTool.handler(input);
+      const result = await executeTool(behaviorTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -372,7 +366,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should execute session management successfully for create action', async () => {
-      const sessionTool = tools.find(tool => tool.name === 'manage_session');
+      const sessionTool = findTool(mockTool, 'manage_session');
       
       const input = {
         action: 'create' as const,
@@ -384,7 +378,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
         }
       };
       
-      const result = await sessionTool.handler(input);
+      const result = await executeTool(sessionTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -401,7 +395,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should execute identity federation successfully for SSO initiation', async () => {
-      const federationTool = tools.find(tool => tool.name === 'identity_federation');
+      const federationTool = findTool(mockTool, 'identity_federation');
       
       const input = {
         provider: 'okta' as const,
@@ -412,7 +406,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
         }
       };
       
-      const result = await federationTool.handler(input);
+      const result = await executeTool(federationTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -429,7 +423,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should execute risk assessment successfully', async () => {
-      const riskTool = tools.find(tool => tool.name === 'assess_authentication_risk');
+      const riskTool = findTool(mockTool, 'assess_authentication_risk');
       
       const input = {
         userId: 'user123',
@@ -461,7 +455,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
         }
       };
       
-      const result = await riskTool.handler(input);
+      const result = await executeTool(riskTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -483,16 +477,13 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
   });
 
   describe('Error Handling Scenarios', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addZeroTrustAuthTools } = await import('../../../src/tools/zero-trust-auth.js');
       addZeroTrustAuthTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should handle invalid credentials in authentication gracefully', async () => {
-      const authTool = tools.find(tool => tool.name === 'zero_trust_authenticate');
+      const authTool = findTool(mockTool, 'zero_trust_authenticate');
       
       const input = {
         username: '',  // Invalid empty username
@@ -512,36 +503,24 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
         }
       };
       
-      // Should handle gracefully and not throw
-      const result = await authTool.handler(input);
-      expect(result).toBeDefined();
-      
-      const parsedResult = JSON.parse(result);
-      expect(parsedResult.success).toBe(false);
-      expect(parsedResult.errors).toBeDefined();
-      expect(Array.isArray(parsedResult.errors)).toBe(true);
-      expect(parsedResult.errors.length).toBeGreaterThan(0);
+      // Should reject with parameter validation error
+      await expect(executeTool(authTool, input)).rejects.toThrow('Parameter validation failed');
     });
 
     it('should handle invalid MFA method gracefully', async () => {
-      const mfaTool = tools.find(tool => tool.name === 'setup_mfa');
+      const mfaTool = findTool(mockTool, 'setup_mfa');
       
       const input = {
         userId: 'user123',
         method: 'invalid_method' as any  // Invalid method
       };
       
-      // Should handle gracefully and not throw
-      const result = await mfaTool.handler(input);
-      expect(result).toBeDefined();
-      
-      const parsedResult = JSON.parse(result);
-      expect(parsedResult.success).toBe(false);
-      expect(parsedResult.error).toBeDefined();
+      // Should reject with parameter validation error
+      await expect(executeTool(mfaTool, input)).rejects.toThrow('Parameter validation failed');
     });
 
     it('should handle missing required parameters in session management', async () => {
-      const sessionTool = tools.find(tool => tool.name === 'manage_session');
+      const sessionTool = findTool(mockTool, 'manage_session');
       
       const input = {
         action: 'create' as const
@@ -549,7 +528,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
       };
       
       // Should handle gracefully and not throw
-      const result = await sessionTool.handler(input);
+      const result = await executeTool(sessionTool, input);
       expect(result).toBeDefined();
       
       const parsedResult = JSON.parse(result);
@@ -559,7 +538,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should handle invalid session ID in session validation', async () => {
-      const sessionTool = tools.find(tool => tool.name === 'manage_session');
+      const sessionTool = findTool(mockTool, 'manage_session');
       
       const input = {
         action: 'validate' as const,
@@ -567,7 +546,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
       };
       
       // Should handle gracefully and not throw
-      const result = await sessionTool.handler(input);
+      const result = await executeTool(sessionTool, input);
       expect(result).toBeDefined();
       
       const parsedResult = JSON.parse(result);
@@ -577,7 +556,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should handle missing token in identity federation token validation', async () => {
-      const federationTool = tools.find(tool => tool.name === 'identity_federation');
+      const federationTool = findTool(mockTool, 'identity_federation');
       
       const input = {
         provider: 'okta' as const,
@@ -588,7 +567,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
       };
       
       // Should handle gracefully and not throw
-      const result = await federationTool.handler(input);
+      const result = await executeTool(federationTool, input);
       expect(result).toBeDefined();
       
       const parsedResult = JSON.parse(result);
@@ -598,7 +577,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should handle missing user attributes in identity federation user provisioning', async () => {
-      const federationTool = tools.find(tool => tool.name === 'identity_federation');
+      const federationTool = findTool(mockTool, 'identity_federation');
       
       const input = {
         provider: 'azure_ad' as const,
@@ -609,7 +588,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
       };
       
       // Should handle gracefully and not throw
-      const result = await federationTool.handler(input);
+      const result = await executeTool(federationTool, input);
       expect(result).toBeDefined();
       
       const parsedResult = JSON.parse(result);
@@ -619,7 +598,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
     });
 
     it('should handle high risk scenarios in risk assessment', async () => {
-      const riskTool = tools.find(tool => tool.name === 'assess_authentication_risk');
+      const riskTool = findTool(mockTool, 'assess_authentication_risk');
       
       const input = {
         userId: 'user123',
@@ -650,7 +629,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
         }
       };
       
-      const result = await riskTool.handler(input);
+      const result = await executeTool(riskTool, input);
       expect(result).toBeDefined();
       
       const parsedResult = JSON.parse(result);
@@ -667,25 +646,34 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
   });
 
   describe('Input Validation and Schema Compliance', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addZeroTrustAuthTools } = await import('../../../src/tools/zero-trust-auth.js');
       addZeroTrustAuthTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should have valid input schemas for all tools', () => {
-      tools.forEach(tool => {
-        expect(tool.inputSchema).toBeDefined();
+      const expectedTools = [
+        'zero_trust_authenticate',
+        'setup_mfa',
+        'assess_device_trust',
+        'analyze_user_behavior',
+        'manage_session',
+        'identity_federation',
+        'assess_authentication_risk'
+      ];
+      
+      expectedTools.forEach(toolName => {
+        const tool = findTool(mockTool, toolName);
+        expect(tool).toBeDefined();
+        expect(tool.parameters).toBeDefined();
         // Verify schema is a Zod schema by checking for parse method
-        expect(typeof tool.inputSchema.parse).toBe('function');
-        expect(typeof tool.inputSchema.safeParse).toBe('function');
+        expect(typeof tool.parameters.parse).toBe('function');
+        expect(typeof tool.parameters.safeParse).toBe('function');
       });
     });
 
     it('should validate authentication input schema correctly', () => {
-      const authTool = tools.find(tool => tool.name === 'zero_trust_authenticate');
+      const authTool = findTool(mockTool, 'zero_trust_authenticate');
       
       const validInput = {
         username: 'testuser',
@@ -706,11 +694,11 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
       };
       
       // Should parse without error
-      expect(() => authTool.inputSchema.parse(validInput)).not.toThrow();
+      expect(() => authTool.parameters.parse(validInput)).not.toThrow();
     });
 
     it('should validate MFA setup input schema correctly', () => {
-      const mfaTool = tools.find(tool => tool.name === 'setup_mfa');
+      const mfaTool = findTool(mockTool, 'setup_mfa');
       
       const validInput = {
         userId: 'user123',
@@ -719,11 +707,11 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
       };
       
       // Should parse without error
-      expect(() => mfaTool.inputSchema.parse(validInput)).not.toThrow();
+      expect(() => mfaTool.parameters.parse(validInput)).not.toThrow();
     });
 
     it('should validate session management input schema correctly', () => {
-      const sessionTool = tools.find(tool => tool.name === 'manage_session');
+      const sessionTool = findTool(mockTool, 'manage_session');
       
       const validInput = {
         action: 'create' as const,
@@ -736,7 +724,7 @@ describe('Zero Trust Authentication Tools - Basic Tests', () => {
       };
       
       // Should parse without error
-      expect(() => sessionTool.inputSchema.parse(validInput)).not.toThrow();
+      expect(() => sessionTool.parameters.parse(validInput)).not.toThrow();
     });
   });
 

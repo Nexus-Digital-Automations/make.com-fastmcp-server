@@ -4,19 +4,32 @@
  */
 
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
-import { createMockServer, executeTool, expectValidZodParse, expectInvalidZodParse } from '../../utils/test-helpers.js';
+import { createMockServer, expectValidZodParse, expectInvalidZodParse } from '../../utils/test-helpers.js';
 import { MockMakeApiClient } from '../../mocks/make-api-client.mock.js';
 
 describe('Enterprise Secrets Management Tools - Basic Tests', () => {
   let mockServer: any;
   let mockTool: jest.MockedFunction<any>;
   let mockApiClient: MockMakeApiClient;
+  let mockContext: any;
 
   beforeEach(async () => {
     const serverSetup = createMockServer();
     mockServer = serverSetup.server;
     mockTool = serverSetup.mockTool;
     mockApiClient = new MockMakeApiClient();
+    
+    // Create mock context for tool execution
+    mockContext = {
+      log: {
+        info: jest.fn(),
+        error: jest.fn(),
+        warn: jest.fn(),
+        debug: jest.fn(),
+      },
+      reportProgress: jest.fn(),
+      session: { authenticated: true },
+    };
     
     // Clear previous mock calls
     mockTool.mockClear();
@@ -325,11 +338,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
 
   describe('Tool Execution', () => {
     it('should execute vault server configuration successfully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createConfigureVaultServerTool } = await import('../../../src/tools/enterprise-secrets/tools/configure-vault-server.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure-vault-server')?.[0];
+      const tool = createConfigureVaultServerTool(toolContext);
       const input = {
         clusterId: 'test-cluster-001',
         nodeId: 'vault-node-1',
@@ -362,7 +384,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(vaultTool, input);
+      const result = await tool.execute(input, mockContext);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -375,11 +397,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should execute HSM integration successfully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createConfigureHSMIntegrationTool } = await import('../../../src/tools/enterprise-secrets/tools/configure-hsm-integration.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure-hsm-integration')?.[0];
+      const tool = createConfigureHSMIntegrationTool(toolContext);
       const input = {
         provider: 'pkcs11',
         config: {
@@ -394,7 +425,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(hsmTool, input);
+      const result = await tool.execute(input, mockContext);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -407,11 +438,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should execute dynamic secret generation successfully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createGenerateDynamicSecretsTool } = await import('../../../src/tools/enterprise-secrets/tools/generate-dynamic-secrets.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate-dynamic-secrets')?.[0];
+      const tool = createGenerateDynamicSecretsTool(toolContext);
       const input = {
         secretType: 'aws',
         name: 'aws-temp-access',
@@ -427,7 +467,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(dynamicSecretTool, input);
+      const result = await tool.execute(input, mockContext);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -442,11 +482,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should execute secret scanning successfully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createScanSecretLeakageTool } = await import('../../../src/tools/enterprise-secrets/tools/scan-secret-leakage.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'scan-secret-leakage')?.[0];
+      const tool = createScanSecretLeakageTool(toolContext);
       const input = {
         scanType: 'configuration',
         targets: ['/app/config', '/app/.env'],
@@ -468,7 +517,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(scanningTool, input);
+      const result = await tool.execute(input, mockContext);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -481,16 +530,25 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should execute compliance report generation successfully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createGenerateComplianceReportTool } = await import('../../../src/tools/enterprise-secrets/tools/generate-compliance-report.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const complianceTool = mockTool.mock.calls.find(call => call[0].name === 'generate-compliance-report')?.[0];
+      const tool = createGenerateComplianceReportTool(toolContext);
       const input = {
         framework: 'soc2'
       };
 
-      const result = await executeTool(complianceTool, input);
+      const result = await tool.execute(input, mockContext);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -505,11 +563,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should execute RBAC policy management successfully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createManageRBACPoliciesTool } = await import('../../../src/tools/enterprise-secrets/tools/manage-rbac-policies.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const rbacTool = mockTool.mock.calls.find(call => call[0].name === 'manage-rbac-policies')?.[0];
+      const tool = createManageRBACPoliciesTool(toolContext);
       const input = {
         policyName: 'dev-team-policy',
         description: 'Policy for development team access',
@@ -536,7 +603,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(rbacTool, input);
+      const result = await tool.execute(input, mockContext);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -549,11 +616,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should execute key rotation configuration successfully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createConfigureKeyRotationTool } = await import('../../../src/tools/enterprise-secrets/tools/configure-key-rotation.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const rotationTool = mockTool.mock.calls.find(call => call[0].name === 'configure-key-rotation')?.[0];
+      const tool = createConfigureKeyRotationTool(toolContext);
       const input = {
         policyName: 'monthly-key-rotation',
         targetPaths: ['secret/database/*', 'secret/api-keys/*'],
@@ -577,7 +653,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(rotationTool, input);
+      const result = await tool.execute(input, mockContext);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -592,11 +668,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
 
   describe('Error Handling and Security', () => {
     it('should handle invalid vault configuration gracefully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createConfigureVaultServerTool } = await import('../../../src/tools/enterprise-secrets/tools/configure-vault-server.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure-vault-server')?.[0];
+      const tool = createConfigureVaultServerTool(toolContext);
       const invalidInput = {
         clusterId: '',
         nodeId: '',
@@ -604,15 +689,24 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       };
 
       // Should throw validation error
-      await expect(executeTool(vaultTool, invalidInput)).rejects.toThrow();
+      await expect(tool.execute(invalidInput, mockContext)).rejects.toThrow();
     });
 
     it('should handle invalid HSM provider gracefully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createConfigureHSMIntegrationTool } = await import('../../../src/tools/enterprise-secrets/tools/configure-hsm-integration.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const hsmTool = mockTool.mock.calls.find(call => call[0].name === 'configure-hsm-integration')?.[0];
+      const tool = createConfigureHSMIntegrationTool(toolContext);
       const invalidInput = {
         provider: 'invalid_provider',
         config: {},
@@ -620,15 +714,24 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       };
 
       // Should throw validation error
-      await expect(executeTool(hsmTool, invalidInput)).rejects.toThrow();
+      await expect(tool.execute(invalidInput, mockContext)).rejects.toThrow();
     });
 
     it('should handle invalid secret type for dynamic secrets', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createGenerateDynamicSecretsTool } = await import('../../../src/tools/enterprise-secrets/tools/generate-dynamic-secrets.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate-dynamic-secrets')?.[0];
+      const tool = createGenerateDynamicSecretsTool(toolContext);
       const invalidInput = {
         secretType: 'invalid_type',
         name: 'test',
@@ -641,15 +744,24 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       };
 
       // Should throw validation error
-      await expect(executeTool(dynamicSecretTool, invalidInput)).rejects.toThrow();
+      await expect(tool.execute(invalidInput, mockContext)).rejects.toThrow();
     });
 
     it('should handle empty scan targets gracefully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createScanSecretLeakageTool } = await import('../../../src/tools/enterprise-secrets/tools/scan-secret-leakage.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'scan-secret-leakage')?.[0];
+      const tool = createScanSecretLeakageTool(toolContext);
       const invalidInput = {
         scanType: 'repository',
         targets: [], // Empty targets array
@@ -658,21 +770,30 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
       };
 
       // Should throw validation error
-      await expect(executeTool(scanningTool, invalidInput)).rejects.toThrow();
+      await expect(tool.execute(invalidInput, mockContext)).rejects.toThrow();
     });
 
     it('should handle invalid compliance framework gracefully', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createGenerateComplianceReportTool } = await import('../../../src/tools/enterprise-secrets/tools/generate-compliance-report.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const complianceTool = mockTool.mock.calls.find(call => call[0].name === 'generate-compliance-report')?.[0];
+      const tool = createGenerateComplianceReportTool(toolContext);
       const invalidInput = {
         framework: 'invalid_framework'
       };
 
       // Should throw validation error
-      await expect(executeTool(complianceTool, invalidInput)).rejects.toThrow();
+      await expect(tool.execute(invalidInput, mockContext)).rejects.toThrow();
     });
 
     it('should validate encryption algorithms in HSM configuration', async () => {
@@ -730,11 +851,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
 
   describe('Security-Focused Testing', () => {
     it('should ensure sensitive data is not logged in vault configuration', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createConfigureVaultServerTool } = await import('../../../src/tools/enterprise-secrets/tools/configure-vault-server.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const vaultTool = mockTool.mock.calls.find(call => call[0].name === 'configure-vault-server')?.[0];
+      const tool = createConfigureVaultServerTool(toolContext);
       const input = {
         clusterId: 'test-cluster',
         nodeId: 'vault-node-1',
@@ -758,7 +888,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(vaultTool, input);
+      const result = await tool.execute(input, mockContext);
       const parsedResult = JSON.parse(result);
       
       // Ensure sensitive paths are not exposed in logs
@@ -767,11 +897,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should validate secure password generation in dynamic secrets', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createGenerateDynamicSecretsTool } = await import('../../../src/tools/enterprise-secrets/tools/generate-dynamic-secrets.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const dynamicSecretTool = mockTool.mock.calls.find(call => call[0].name === 'generate-dynamic-secrets')?.[0];
+      const tool = createGenerateDynamicSecretsTool(toolContext);
       const input = {
         secretType: 'database',
         name: 'postgres-creds',
@@ -786,7 +925,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(dynamicSecretTool, input);
+      const result = await tool.execute(input, mockContext);
       const parsedResult = JSON.parse(result);
       
       expect(parsedResult.success).toBe(true);
@@ -796,11 +935,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should validate audit trail integrity requirements', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createConfigureAuditSystemTool } = await import('../../../src/tools/enterprise-secrets/tools/configure-audit-system.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const auditTool = mockTool.mock.calls.find(call => call[0].name === 'configure-audit-system')?.[0];
+      const tool = createConfigureAuditSystemTool(toolContext);
       const secureConfig = {
         auditDevices: [
           {
@@ -827,7 +975,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(auditTool, secureConfig);
+      const result = await tool.execute(secureConfig, mockContext);
       const parsedResult = JSON.parse(result);
       
       expect(parsedResult.success).toBe(true);
@@ -837,11 +985,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should ensure high-entropy detection in secret scanning', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createScanSecretLeakageTool } = await import('../../../src/tools/enterprise-secrets/tools/scan-secret-leakage.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const scanningTool = mockTool.mock.calls.find(call => call[0].name === 'scan-secret-leakage')?.[0];
+      const tool = createScanSecretLeakageTool(toolContext);
       const highSecurityConfig = {
         scanType: 'memory',
         targets: ['/proc/self/mem'],
@@ -864,7 +1021,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(scanningTool, highSecurityConfig);
+      const result = await tool.execute(highSecurityConfig, mockContext);
       const parsedResult = JSON.parse(result);
       
       expect(parsedResult.success).toBe(true);
@@ -877,11 +1034,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
 
   describe('Performance and Scalability', () => {
     it('should handle multiple secret engines configuration', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createManageSecretEnginesTool } = await import('../../../src/tools/enterprise-secrets/tools/manage-secret-engines.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const secretEngineTool = mockTool.mock.calls.find(call => call[0].name === 'manage-secret-engines')?.[0];
+      const tool = createManageSecretEnginesTool(toolContext);
       
       // Test different engine types
       const engineTypes = ['kv', 'database', 'pki', 'transit', 'aws'];
@@ -894,7 +1060,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
           config: {}
         };
 
-        const result = await executeTool(secretEngineTool, input);
+        const result = await tool.execute(input, mockContext);
         const parsedResult = JSON.parse(result);
         
         expect(parsedResult.success).toBe(true);
@@ -904,11 +1070,20 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
     });
 
     it('should validate breach detection thresholds', async () => {
-      const { addEnterpriseSecretsTools } = await import('../../../src/tools/enterprise-secrets.js');
+      const { createConfigureBreachDetectionTool } = await import('../../../src/tools/enterprise-secrets/tools/configure-breach-detection.js');
       
-      addEnterpriseSecretsTools(mockServer, mockApiClient as any);
+      const toolContext = {
+        server: mockServer,
+        apiClient: mockApiClient,
+        logger: {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+        }
+      };
       
-      const breachDetectionTool = mockTool.mock.calls.find(call => call[0].name === 'configure-breach-detection')?.[0];
+      const tool = createConfigureBreachDetectionTool(toolContext);
       const performanceConfig = {
         detectionMethods: {
           anomalyDetection: true,
@@ -936,7 +1111,7 @@ describe('Enterprise Secrets Management Tools - Basic Tests', () => {
         }
       };
 
-      const result = await executeTool(breachDetectionTool, performanceConfig);
+      const result = await tool.execute(performanceConfig, mockContext);
       const parsedResult = JSON.parse(result);
       
       expect(parsedResult.success).toBe(true);

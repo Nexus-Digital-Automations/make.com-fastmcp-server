@@ -221,7 +221,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
             complexity,
             estimatedSetupTime,
             requiredConnections,
-            supportedRegions: metadata.supportedRegions,
+            supportedRegions: metadata?.supportedRegions,
           },
           version: 1,
         };

@@ -1722,14 +1722,25 @@ describe('Template Management Tools', () => {
         data: generateMockTemplate(),
       });
 
+      const createTool = findTool(mockTool, 'create-template');
+      const mockContext = {
+        log: {
+          info: () => {},
+          error: () => {},
+          warn: () => {},
+          debug: () => {},
+        },
+        reportProgress: () => {},
+        session: { authenticated: true },
+      };
+      
       for (let i = 0; i < concurrentRequests; i++) {
-        promises.push(executeTool(mockServer, 'create_template', {
-            name: `Concurrent Template ${i}`,
-            description: `Testing concurrent template creation ${i}`,
-            category: 'test',
-            blueprint: { modules: [], routes: [] },
-          },
-        }));
+        promises.push(createTool.execute({
+          name: `Concurrent Template ${i}`,
+          description: `Testing concurrent template creation ${i}`,
+          category: 'test',
+          blueprint: { modules: [], routes: [] },
+        }, mockContext));
       }
 
       const results = await Promise.allSettled(promises);

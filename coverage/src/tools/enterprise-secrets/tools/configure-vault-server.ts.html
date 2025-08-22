@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.95% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>20/23</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.95% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>20/23</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -131,48 +131,48 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">32x</span>
-<span class="cline-any cline-yes">32x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -194,17 +194,17 @@
  * Configure and provision HashiCorp Vault server cluster with high availability and enterprise features
  */
 &nbsp;
-import { UserError } from 'fastmcp';
-import { VaultServerConfigSchema } from '../schemas/index.js';
-import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
-import { VaultServerManager } from '../utils/index.js';
-&nbsp;
+<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
+<span class="cstat-no" title="statement not covered" >import { VaultServerConfigSchema } from '../schemas/index.js';</span>
+import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition,</span> ToolExecutionContext } from '../../shared/types/tool-context.js';
+import { VaultServe<span class="cstat-no" title="statement not covered" >rManager } from '../utils/index</span>.js';
+<span class="cstat-no" title="statement not covered" ></span>
 /**
  * Configure Vault server tool configuration
  */
-export function createConfigureVaultServerTool(context: ToolContext): ToolDefinition {
-  const { logger } = context;
-  
+export fu<span class="fstat-no" title="function not covered" >nction createConfigureVaultServ</span>erTool(context: ToolContext): ToolDefinition {
+  const { logger } = co<span class="cstat-no" title="statement not covered" >ntext;</span>
+  <span class="cstat-no" title="statement not covered" ></span>
   return {
     name: 'configure-vault-server',
     description: 'Configure and provision HashiCorp Vault server cluster with high availability and enterprise features',
@@ -214,28 +214,28 @@ export function createConfigureVaultServerTool(context: ToolContext): ToolDefini
       readOnlyHint: false,
       idempotentHint: true,
       openWorldHint: true,
-    },
-    execute: async (args: unknown, execContext: ToolExecutionContext): Promise&lt;string&gt; =&gt; {
-      const { log, reportProgress } = execContext;
-      
-      log?.info?.('Configuring Vault server cluster', JSON.stringify(args));
-      reportProgress?.({ progress: 0, total: 100 });
-&nbsp;
-      try {
-        const validatedInput = VaultServerConfigSchema.parse(args);
-        const vaultManager = VaultServerManager.getInstance();
-        
+    },<span class="fstat-no" title="function not covered" ></span>
+    execute: async (args: unknown, execConte<span class="cstat-no" title="statement not covered" >xt: ToolExec</span>utionContext): Promise&lt;string&gt; =&gt; {
+      const <span class="cstat-no" title="statement not covered" >{ log, reportProgress } = execContext;</span>
+      <span class="cstat-no" title="statement not covered" ></span>
+      log?.i<span class="cstat-no" title="statement not covered" >nfo?.('Configuring Vault server cluster', JSON.stringify(args));</span>
+      reportProgress?.({ progress: 0, t<span class="cstat-no" title="statement not covered" >otal: 100 });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+      try {<span class="cstat-no" title="statement not covered" ></span>
+        const validatedInput = Vault<span class="cstat-no" title="statement not covered" >ServerConfigSchema.parse(args);</span>
+        const va<span class="cstat-no" title="statement not covered" >ultManager = VaultServerManager.getInstance();</span>
+        <span class="cstat-no" title="statement not covered" ></span>
         reportProgress?.({ progress: 25, total: 100 });
         
         const clusterInfo = await vaultManager.configureVaultCluster(validatedInput);
         
-        reportProgress?.({ progress: 75, total: 100 });
+        reportPr<span class="cstat-no" title="statement not covered" >ogress?.({ progress: 75, total: 100 });</span>
 &nbsp;
         const result = {
           success: true,
           clusterInfo,
-          message: `Vault cluster ${validatedInput.clusterId} configured successfully`,
-        };
+          messag<span class="cstat-no" title="statement not covered" >e: `Vault cluster ${validatedInput.clusterId} con</span>figured successfully`,
+        };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
         logger.info?.('Vault cluster configured successfully', {
           clusterId: validatedInput.c<span class="cstat-no" title="statement not covered" >lusterId,</span>
@@ -259,7 +259,7 @@ export function createConfigureVaultServerTool(context: ToolContext): ToolDefini
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T23:41:09.110Z
+                at 2025-08-22T00:06:42.092Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

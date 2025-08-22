@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -243,13 +243,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -287,7 +287,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -323,7 +323,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -351,7 +351,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -385,7 +385,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -418,13 +418,13 @@
  * Contains Zod schemas for HashiCorp Vault server configuration
  */
 &nbsp;
-import { z } from 'zod';
-&nbsp;
-/**
+<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+/**<span class="cstat-no" title="statement not covered" ></span>
  * Vault Server Configuration Schema
  */
 export const VaultServerConfigSchema = z.object({
-  clusterId: z.string().min(1, 'Cluster ID is required'),
+<span class="cstat-no" title="statement not covered" >  clusterId: z.string().min(1, 'Cluster ID is required'),</span>
   nodeId: z.string().min(1, 'Node ID is required'),
   config: z.object({
     storage: z.object({
@@ -462,7 +462,7 @@ export const VaultServerConfigSchema = z.object({
 /**
  * Secret Engine Configuration Schema
  */
-export const SecretEngineConfigSchema = z.object({
+<span class="cstat-no" title="statement not covered" >export const SecretEngineConfigSchema = z.object({</span>
   engineType: z.enum(['kv', 'database', 'pki', 'transit', 'aws', 'azure', 'gcp', 'ssh', 'totp']),
   path: z.string().min(1, 'Engine path is required'),
   description: z.string().optional(),
@@ -498,7 +498,7 @@ export const SecretEngineConfigSchema = z.object({
     project: z.string().optional(),
     region: z.string().optional(),
   }),
-});
+<span class="cstat-no" title="statement not covered" >});</span>
 &nbsp;
 /**
  * Key Rotation Policy Schema
@@ -526,7 +526,7 @@ export const KeyRotationPolicySchema = z.object({
     gracePeriodHours: z.number().optional(),
     rollbackEnabled: z.boolean().optional().default(true),
     notificationEnabled: z.boolean().optional().default(true),
-  }),
+<span class="cstat-no" title="statement not covered" >  }),</span>
 });
 &nbsp;
 /**
@@ -560,7 +560,7 @@ export const DynamicSecretConfigSchema = z.object({
     defaultUser: z.string().optional(),
     cidrList: z.array(z.string()).optional(),
   }),
-  leaseConfig: z.object({
+<span class="cstat-no" title="statement not covered" >  leaseConfig: z.object({</span>
     defaultTtl: z.string().default('1h'),
     maxTtl: z.string().default('24h'),
     renewable: z.boolean().default(true),
@@ -595,7 +595,7 @@ export const RBACPolicySchema = z.object({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-21T23:41:08.374Z
+                at 2025-08-22T00:06:41.788Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

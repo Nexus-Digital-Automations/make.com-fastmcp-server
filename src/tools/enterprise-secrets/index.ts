@@ -207,6 +207,22 @@ export default addEnterpriseSecretsTools;
 export { MODULE_METADATA, enterpriseSecretsToolMetadata };
 
 /**
+ * Export array of tool names for backward compatibility with tests
+ */
+export const enterpriseSecretsTools = [
+  'configure-vault-server',
+  'configure-hsm-integration', 
+  'manage-secret-engines',
+  'configure-key-rotation',
+  'generate-dynamic-secrets',
+  'manage-rbac-policies',
+  'scan-secret-leakage',
+  'configure-breach-detection',
+  'configure-audit-system',
+  'generate-compliance-report'
+];
+
+/**
  * Export utility modules for advanced usage
  */
 export {

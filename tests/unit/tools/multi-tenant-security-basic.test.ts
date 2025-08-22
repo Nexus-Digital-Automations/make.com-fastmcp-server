@@ -81,16 +81,13 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
   });
 
   describe('Tool Configuration and Structure', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addMultiTenantSecurityTools } = await import('../../../src/tools/multi-tenant-security.js');
       addMultiTenantSecurityTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should have correct structure for tenant provisioning tool', () => {
-      const provisionTool = tools.find(tool => tool.name === 'provision_tenant');
+      const provisionTool = findTool(mockTool, 'provision_tenant');
       
       expect(provisionTool).toBeDefined();
       expect(provisionTool.name).toBe('provision_tenant');
@@ -98,94 +95,91 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
       expect(typeof provisionTool.description).toBe('string');
       expect(provisionTool.description).toContain('tenant');
       expect(provisionTool.description).toContain('security isolation');
-      expect(provisionTool.inputSchema).toBeDefined();
-      expect(typeof provisionTool.handler).toBe('function');
+      expect(provisionTool.parameters).toBeDefined();
+      expect(typeof provisionTool.execute).toBe('function');
     });
 
     it('should have correct structure for cryptographic isolation tool', () => {
-      const cryptoTool = tools.find(tool => tool.name === 'manage_cryptographic_isolation');
+      const cryptoTool = findTool(mockTool, 'manage_cryptographic_isolation');
       
       expect(cryptoTool).toBeDefined();
       expect(cryptoTool.name).toBe('manage_cryptographic_isolation');
       expect(cryptoTool.description).toBeDefined();
       expect(typeof cryptoTool.description).toBe('string');
       expect(cryptoTool.description).toContain('cryptographic isolation');
-      expect(cryptoTool.inputSchema).toBeDefined();
-      expect(typeof cryptoTool.handler).toBe('function');
+      expect(cryptoTool.parameters).toBeDefined();
+      expect(typeof cryptoTool.execute).toBe('function');
     });
 
     it('should have correct structure for network segmentation tool', () => {
-      const networkTool = tools.find(tool => tool.name === 'configure_network_segmentation');
+      const networkTool = findTool(mockTool, 'configure_network_segmentation');
       
       expect(networkTool).toBeDefined();
       expect(networkTool.name).toBe('configure_network_segmentation');
       expect(networkTool.description).toBeDefined();
       expect(typeof networkTool.description).toBe('string');
       expect(networkTool.description).toContain('network segmentation');
-      expect(networkTool.inputSchema).toBeDefined();
-      expect(typeof networkTool.handler).toBe('function');
+      expect(networkTool.parameters).toBeDefined();
+      expect(typeof networkTool.execute).toBe('function');
     });
 
     it('should have correct structure for resource quota management tool', () => {
-      const quotaTool = tools.find(tool => tool.name === 'manage_resource_quotas');
+      const quotaTool = findTool(mockTool, 'manage_resource_quotas');
       
       expect(quotaTool).toBeDefined();
       expect(quotaTool.name).toBe('manage_resource_quotas');
       expect(quotaTool.description).toBeDefined();
       expect(typeof quotaTool.description).toBe('string');
       expect(quotaTool.description).toContain('resource quota');
-      expect(quotaTool.inputSchema).toBeDefined();
-      expect(typeof quotaTool.handler).toBe('function');
+      expect(quotaTool.parameters).toBeDefined();
+      expect(typeof quotaTool.execute).toBe('function');
     });
 
     it('should have correct structure for governance policy tool', () => {
-      const policyTool = tools.find(tool => tool.name === 'manage_governance_policies');
+      const policyTool = findTool(mockTool, 'manage_governance_policies');
       
       expect(policyTool).toBeDefined();
       expect(policyTool.name).toBe('manage_governance_policies');
       expect(policyTool.description).toBeDefined();
       expect(typeof policyTool.description).toBe('string');
       expect(policyTool.description).toContain('governance polic');
-      expect(policyTool.inputSchema).toBeDefined();
-      expect(typeof policyTool.handler).toBe('function');
+      expect(policyTool.parameters).toBeDefined();
+      expect(typeof policyTool.execute).toBe('function');
     });
 
     it('should have correct structure for data leakage prevention tool', () => {
-      const dlpTool = tools.find(tool => tool.name === 'prevent_data_leakage');
+      const dlpTool = findTool(mockTool, 'prevent_data_leakage');
       
       expect(dlpTool).toBeDefined();
       expect(dlpTool.name).toBe('prevent_data_leakage');
       expect(dlpTool.description).toBeDefined();
       expect(typeof dlpTool.description).toBe('string');
       expect(dlpTool.description).toContain('data leakage prevention');
-      expect(dlpTool.inputSchema).toBeDefined();
-      expect(typeof dlpTool.handler).toBe('function');
+      expect(dlpTool.parameters).toBeDefined();
+      expect(typeof dlpTool.execute).toBe('function');
     });
 
     it('should have correct structure for compliance boundary tool', () => {
-      const complianceTool = tools.find(tool => tool.name === 'manage_compliance_boundaries');
+      const complianceTool = findTool(mockTool, 'manage_compliance_boundaries');
       
       expect(complianceTool).toBeDefined();
       expect(complianceTool.name).toBe('manage_compliance_boundaries');
       expect(complianceTool.description).toBeDefined();
       expect(typeof complianceTool.description).toBe('string');
       expect(complianceTool.description).toContain('compliance boundaries');
-      expect(complianceTool.inputSchema).toBeDefined();
-      expect(typeof complianceTool.handler).toBe('function');
+      expect(complianceTool.parameters).toBeDefined();
+      expect(typeof complianceTool.execute).toBe('function');
     });
   });
 
   describe('Tool Execution - Basic Functionality', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addMultiTenantSecurityTools } = await import('../../../src/tools/multi-tenant-security.js');
       addMultiTenantSecurityTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should execute tenant provisioning successfully with valid input', async () => {
-      const provisionTool = tools.find(tool => tool.name === 'provision_tenant');
+      const provisionTool = findTool(mockTool, 'provision_tenant');
       
       const input = {
         tenantId: 'tenant_001',
@@ -222,7 +216,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await provisionTool.handler(input);
+      const result = await executeTool(provisionTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -241,7 +235,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should execute cryptographic isolation with key generation', async () => {
-      const cryptoTool = tools.find(tool => tool.name === 'manage_cryptographic_isolation');
+      const cryptoTool = findTool(mockTool, 'manage_cryptographic_isolation');
       
       const input = {
         tenantId: 'tenant_001',
@@ -258,7 +252,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await cryptoTool.handler(input);
+      const result = await executeTool(cryptoTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -277,7 +271,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should execute network segmentation with VPC creation', async () => {
-      const networkTool = tools.find(tool => tool.name === 'configure_network_segmentation');
+      const networkTool = findTool(mockTool, 'configure_network_segmentation');
       
       const input = {
         tenantId: 'tenant_001',
@@ -328,7 +322,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await networkTool.handler(input);
+      const result = await executeTool(networkTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -346,7 +340,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should execute resource quota management with quota setting', async () => {
-      const quotaTool = tools.find(tool => tool.name === 'manage_resource_quotas');
+      const quotaTool = findTool(mockTool, 'manage_resource_quotas');
       
       const input = {
         tenantId: 'tenant_001',
@@ -381,7 +375,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await quotaTool.handler(input);
+      const result = await executeTool(quotaTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -402,7 +396,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should execute governance policy creation successfully', async () => {
-      const policyTool = tools.find(tool => tool.name === 'manage_governance_policies');
+      const policyTool = findTool(mockTool, 'manage_governance_policies');
       
       const input = {
         tenantId: 'tenant_001',
@@ -441,7 +435,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await policyTool.handler(input);
+      const result = await executeTool(policyTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -460,7 +454,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should execute data leakage prevention with data classification', async () => {
-      const dlpTool = tools.find(tool => tool.name === 'prevent_data_leakage');
+      const dlpTool = findTool(mockTool, 'prevent_data_leakage');
       
       const input = {
         tenantId: 'tenant_001',
@@ -492,7 +486,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await dlpTool.handler(input);
+      const result = await executeTool(dlpTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -512,7 +506,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should execute compliance boundary establishment successfully', async () => {
-      const complianceTool = tools.find(tool => tool.name === 'manage_compliance_boundaries');
+      const complianceTool = findTool(mockTool, 'manage_compliance_boundaries');
       
       const input = {
         tenantId: 'tenant_001',
@@ -545,7 +539,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await complianceTool.handler(input);
+      const result = await executeTool(complianceTool, input);
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -567,23 +561,20 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
   });
 
   describe('Tenant Isolation Validation Scenarios', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addMultiTenantSecurityTools } = await import('../../../src/tools/multi-tenant-security.js');
       addMultiTenantSecurityTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should verify cryptographic isolation between tenants', async () => {
-      const cryptoTool = tools.find(tool => tool.name === 'manage_cryptographic_isolation');
+      const cryptoTool = findTool(mockTool, 'manage_cryptographic_isolation');
       
       const isolationVerificationInput = {
         tenantId: 'tenant_001',
         operation: 'verify_isolation' as const
       };
       
-      const result = await cryptoTool.handler(isolationVerificationInput);
+      const result = await executeTool(cryptoTool, isolationVerificationInput);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -596,7 +587,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should validate network segmentation prevents cross-tenant access', async () => {
-      const networkTool = tools.find(tool => tool.name === 'configure_network_segmentation');
+      const networkTool = findTool(mockTool, 'configure_network_segmentation');
       
       const monitoringInput = {
         tenantId: 'tenant_001',
@@ -607,7 +598,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await networkTool.handler(monitoringInput);
+      const result = await executeTool(networkTool, monitoringInput);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -620,7 +611,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should encrypt data with tenant-specific keys', async () => {
-      const cryptoTool = tools.find(tool => tool.name === 'manage_cryptographic_isolation');
+      const cryptoTool = findTool(mockTool, 'manage_cryptographic_isolation');
       
       const encryptionInput = {
         tenantId: 'tenant_001',
@@ -628,7 +619,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         data: 'sensitive_tenant_data_123'
       };
       
-      const result = await cryptoTool.handler(encryptionInput);
+      const result = await executeTool(cryptoTool, encryptionInput);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -642,7 +633,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should decrypt data only with correct tenant context', async () => {
-      const cryptoTool = tools.find(tool => tool.name === 'manage_cryptographic_isolation');
+      const cryptoTool = findTool(mockTool, 'manage_cryptographic_isolation');
       
       const decryptionInput = {
         tenantId: 'tenant_001',
@@ -650,7 +641,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         encryptedData: 'encrypted_data_sample_encrypted'
       };
       
-      const result = await cryptoTool.handler(decryptionInput);
+      const result = await executeTool(cryptoTool, decryptionInput);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -662,7 +653,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should enforce resource quotas per tenant', async () => {
-      const quotaTool = tools.find(tool => tool.name === 'manage_resource_quotas');
+      const quotaTool = findTool(mockTool, 'manage_resource_quotas');
       
       const quotaMonitoringInput = {
         tenantId: 'tenant_001',
@@ -690,7 +681,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await quotaTool.handler(quotaMonitoringInput);
+      const result = await executeTool(quotaTool, quotaMonitoringInput);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -709,16 +700,13 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
   });
 
   describe('Cross-Tenant Security Boundary Testing', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addMultiTenantSecurityTools } = await import('../../../src/tools/multi-tenant-security.js');
       addMultiTenantSecurityTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should prevent data leakage between different tenants', async () => {
-      const dlpTool = tools.find(tool => tool.name === 'prevent_data_leakage');
+      const dlpTool = findTool(mockTool, 'prevent_data_leakage');
       
       const leakagePreventionInput = {
         tenantId: 'tenant_001',
@@ -750,7 +738,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await dlpTool.handler(leakagePreventionInput);
+      const result = await executeTool(dlpTool, leakagePreventionInput);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -764,7 +752,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should enforce tenant-specific governance policies', async () => {
-      const policyTool = tools.find(tool => tool.name === 'manage_governance_policies');
+      const policyTool = findTool(mockTool, 'manage_governance_policies');
       
       const policyEnforcementInput = {
         tenantId: 'tenant_001',
@@ -791,7 +779,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await policyTool.handler(policyEnforcementInput);
+      const result = await executeTool(policyTool, policyEnforcementInput);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -804,7 +792,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should validate compliance boundaries are tenant-specific', async () => {
-      const complianceTool = tools.find(tool => tool.name === 'manage_compliance_boundaries');
+      const complianceTool = findTool(mockTool, 'manage_compliance_boundaries');
       
       const boundaryValidationInput = {
         tenantId: 'tenant_001',
@@ -837,7 +825,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      const result = await complianceTool.handler(boundaryValidationInput);
+      const result = await executeTool(complianceTool, boundaryValidationInput);
       
       expect(result).toBeDefined();
       const parsedResult = JSON.parse(result);
@@ -852,16 +840,13 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
   });
 
   describe('Error Handling Scenarios', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addMultiTenantSecurityTools } = await import('../../../src/tools/multi-tenant-security.js');
       addMultiTenantSecurityTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should handle invalid tenant ID in provisioning gracefully', async () => {
-      const provisionTool = tools.find(tool => tool.name === 'provision_tenant');
+      const provisionTool = findTool(mockTool, 'provision_tenant');
       
       const input = {
         tenantId: '',  // Invalid empty tenant ID
@@ -894,45 +879,24 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      // Should handle gracefully and not throw
-      const result = await provisionTool.handler(input);
-      expect(result).toBeDefined();
-      
-      const parsedResult = JSON.parse(result);
-      // The tool is resilient and may succeed despite invalid inputs or may fail gracefully
-      expect(parsedResult.success).toBeDefined();
-      expect(typeof parsedResult.success).toBe('boolean');
-      
-      if (!parsedResult.success) {
-        expect(parsedResult.errors).toBeDefined();
-        expect(Array.isArray(parsedResult.errors)).toBe(true);
-      }
+      // Should reject with parameter validation error
+      await expect(executeTool(provisionTool, input)).rejects.toThrow('Parameter validation failed');
     });
 
     it('should handle invalid operation in cryptographic isolation', async () => {
-      const cryptoTool = tools.find(tool => tool.name === 'manage_cryptographic_isolation');
+      const cryptoTool = findTool(mockTool, 'manage_cryptographic_isolation');
       
       const input = {
         tenantId: 'tenant_001',
         operation: 'invalid_operation' as any  // Invalid operation
       };
       
-      // Should handle gracefully and not throw
-      const result = await cryptoTool.handler(input);
-      expect(result).toBeDefined();
-      
-      const parsedResult = JSON.parse(result);
-      // The tool may succeed with fallback behavior or fail gracefully
-      expect(parsedResult.success).toBeDefined();
-      expect(typeof parsedResult.success).toBe('boolean');
-      
-      if (!parsedResult.success) {
-        expect(parsedResult.error).toBeDefined();
-      }
+      // Should reject with parameter validation error
+      await expect(executeTool(cryptoTool, input)).rejects.toThrow('Parameter validation failed');
     });
 
     it('should handle missing required data in encryption operations', async () => {
-      const cryptoTool = tools.find(tool => tool.name === 'manage_cryptographic_isolation');
+      const cryptoTool = findTool(mockTool, 'manage_cryptographic_isolation');
       
       const input = {
         tenantId: 'tenant_001',
@@ -941,7 +905,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
       };
       
       // Should handle gracefully and not throw
-      const result = await cryptoTool.handler(input);
+      const result = await executeTool(cryptoTool, input);
       expect(result).toBeDefined();
       
       const parsedResult = JSON.parse(result);
@@ -951,7 +915,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should handle invalid network configuration', async () => {
-      const networkTool = tools.find(tool => tool.name === 'configure_network_segmentation');
+      const networkTool = findTool(mockTool, 'configure_network_segmentation');
       
       const input = {
         tenantId: 'tenant_001',
@@ -966,7 +930,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
       };
       
       // Should handle gracefully and not throw
-      const result = await networkTool.handler(input);
+      const result = await executeTool(networkTool, input);
       expect(result).toBeDefined();
       
       const parsedResult = JSON.parse(result);
@@ -975,7 +939,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
     });
 
     it('should handle invalid resource quota values', async () => {
-      const quotaTool = tools.find(tool => tool.name === 'manage_resource_quotas');
+      const quotaTool = findTool(mockTool, 'manage_resource_quotas');
       
       const input = {
         tenantId: 'tenant_001',
@@ -1003,22 +967,12 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      // Should handle gracefully and not throw
-      const result = await quotaTool.handler(input);
-      expect(result).toBeDefined();
-      
-      const parsedResult = JSON.parse(result);
-      // The tool may validate and reject invalid values or apply defaults
-      expect(parsedResult.success).toBeDefined();
-      expect(typeof parsedResult.success).toBe('boolean');
-      
-      if (!parsedResult.success) {
-        expect(parsedResult.error).toBeDefined();
-      }
+      // Should reject with parameter validation error
+      await expect(executeTool(quotaTool, input)).rejects.toThrow('Parameter validation failed');
     });
 
     it('should handle invalid compliance framework', async () => {
-      const complianceTool = tools.find(tool => tool.name === 'manage_compliance_boundaries');
+      const complianceTool = findTool(mockTool, 'manage_compliance_boundaries');
       
       const input = {
         tenantId: 'tenant_001',
@@ -1051,41 +1005,40 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
         }
       };
       
-      // Should handle gracefully and not throw
-      const result = await complianceTool.handler(input);
-      expect(result).toBeDefined();
-      
-      const parsedResult = JSON.parse(result);
-      // The tool may validate input schema and reject invalid frameworks
-      expect(parsedResult.success).toBeDefined();
-      expect(typeof parsedResult.success).toBe('boolean');
-      
-      if (!parsedResult.success) {
-        expect(parsedResult.error).toBeDefined();
-      }
+      // Should reject with parameter validation error
+      await expect(executeTool(complianceTool, input)).rejects.toThrow('Parameter validation failed');
     });
   });
 
   describe('Input Validation and Schema Compliance', () => {
-    let tools: any[];
-
     beforeEach(async () => {
       const { addMultiTenantSecurityTools } = await import('../../../src/tools/multi-tenant-security.js');
       addMultiTenantSecurityTools(mockServer, mockApiClient as any);
-      tools = mockTool.mock.calls.map(call => call[0]);
     });
 
     it('should have valid input schemas for all tools', () => {
-      tools.forEach(tool => {
-        expect(tool.inputSchema).toBeDefined();
+      const expectedTools = [
+        'provision_tenant',
+        'manage_cryptographic_isolation',
+        'configure_network_segmentation',
+        'manage_resource_quotas',
+        'manage_governance_policies',
+        'prevent_data_leakage',
+        'manage_compliance_boundaries'
+      ];
+      
+      expectedTools.forEach(toolName => {
+        const tool = findTool(mockTool, toolName);
+        expect(tool).toBeDefined();
+        expect(tool.parameters).toBeDefined();
         // Verify schema is a Zod schema by checking for parse method
-        expect(typeof tool.inputSchema.parse).toBe('function');
-        expect(typeof tool.inputSchema.safeParse).toBe('function');
+        expect(typeof tool.parameters.parse).toBe('function');
+        expect(typeof tool.parameters.safeParse).toBe('function');
       });
     });
 
     it('should validate tenant provisioning input schema correctly', () => {
-      const provisionTool = tools.find(tool => tool.name === 'provision_tenant');
+      const provisionTool = findTool(mockTool, 'provision_tenant');
       
       const validInput = {
         tenantId: 'tenant_001',
@@ -1112,11 +1065,11 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
       };
       
       // Should parse without error
-      expect(() => provisionTool.inputSchema.parse(validInput)).not.toThrow();
+      expect(() => provisionTool.parameters.parse(validInput)).not.toThrow();
     });
 
     it('should validate cryptographic isolation input schema correctly', () => {
-      const cryptoTool = tools.find(tool => tool.name === 'manage_cryptographic_isolation');
+      const cryptoTool = findTool(mockTool, 'manage_cryptographic_isolation');
       
       const validInput = {
         tenantId: 'tenant_001',
@@ -1125,11 +1078,11 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
       };
       
       // Should parse without error
-      expect(() => cryptoTool.inputSchema.parse(validInput)).not.toThrow();
+      expect(() => cryptoTool.parameters.parse(validInput)).not.toThrow();
     });
 
     it('should validate network segmentation input schema correctly', () => {
-      const networkTool = tools.find(tool => tool.name === 'configure_network_segmentation');
+      const networkTool = findTool(mockTool, 'configure_network_segmentation');
       
       const validInput = {
         tenantId: 'tenant_001',
@@ -1139,7 +1092,7 @@ describe('Multi-Tenant Security Tools - Basic Tests', () => {
       };
       
       // Should parse without error
-      expect(() => networkTool.inputSchema.parse(validInput)).not.toThrow();
+      expect(() => networkTool.parameters.parse(validInput)).not.toThrow();
     });
   });
 

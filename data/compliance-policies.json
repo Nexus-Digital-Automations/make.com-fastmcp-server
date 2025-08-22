@@ -1,0 +1,549 @@
+{
+  "policies": {
+    "policy_1755823577975_290671ec": {
+      "policyId": "policy_1755823577975_290671ec",
+      "policyName": "Test Custom Policy",
+      "description": "Test custom compliance policy",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:46:17.972Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [
+          {
+            "controlId": "SOX-001",
+            "name": "segregation_of_duties",
+            "description": "Implement segregation of duties",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-002",
+            "name": "audit_trail_integrity",
+            "description": "Ensure audit trail integrity",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-003",
+            "name": "change_management",
+            "description": "Implement change management controls",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          }
+        ],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "high",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [
+            "test@example.com"
+          ],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:46:17.975Z",
+      "updatedAt": "2025-08-22T00:46:17.975Z",
+      "status": "active",
+      "checksum": "3e2dfe2c3d5975a6513db84e9760e07887c879d00d90114c4696dc6377d2b75a"
+    },
+    "policy_1755823578006_c6c78eb6": {
+      "policyId": "policy_1755823578006_c6c78eb6",
+      "policyName": "CUSTOM Policy",
+      "description": "Test policy for custom",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:46:18.005Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "medium",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:46:18.006Z",
+      "updatedAt": "2025-08-22T00:46:18.006Z",
+      "status": "active",
+      "checksum": "6a5c5dc967c362e079d73c2045ded35a63b4056a053d14ea54bab10352b2632b"
+    },
+    "policy_1755823632952_f6e63916": {
+      "policyId": "policy_1755823632952_f6e63916",
+      "policyName": "Test Custom Policy 1755823632950",
+      "description": "Test custom compliance policy",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:47:12.950Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [
+          {
+            "controlId": "SOX-001",
+            "name": "segregation_of_duties",
+            "description": "Implement segregation of duties",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-002",
+            "name": "audit_trail_integrity",
+            "description": "Ensure audit trail integrity",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-003",
+            "name": "change_management",
+            "description": "Implement change management controls",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          }
+        ],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "high",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [
+            "test@example.com"
+          ],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:47:12.952Z",
+      "updatedAt": "2025-08-22T00:47:12.952Z",
+      "status": "active",
+      "checksum": "6e9fb0cf9a257bd80b8933cad1f9cba72129ae64cf5844bf1472990a539d3a17"
+    },
+    "policy_1755823632972_8a3e39fe": {
+      "policyId": "policy_1755823632972_8a3e39fe",
+      "policyName": "CUSTOM Policy 1755823632971_0.7544746083181759",
+      "description": "Test policy for custom",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:47:12.971Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "medium",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:47:12.972Z",
+      "updatedAt": "2025-08-22T00:47:12.972Z",
+      "status": "active",
+      "checksum": "5b894470d6f9c5ff79a3b92eae0d512f4b2e5865d74439af24c1dbde6e2a692f"
+    },
+    "policy_1755823670426_7d240afe": {
+      "policyId": "policy_1755823670426_7d240afe",
+      "policyName": "Test Custom Policy 1755823670405",
+      "description": "Test custom compliance policy",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:47:50.405Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [
+          {
+            "controlId": "SOX-001",
+            "name": "segregation_of_duties",
+            "description": "Implement segregation of duties",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-002",
+            "name": "audit_trail_integrity",
+            "description": "Ensure audit trail integrity",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-003",
+            "name": "change_management",
+            "description": "Implement change management controls",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          }
+        ],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "high",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [
+            "test@example.com"
+          ],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:47:50.426Z",
+      "updatedAt": "2025-08-22T00:47:50.426Z",
+      "status": "active",
+      "checksum": "31a1569e79e8bbdfc16a268eb6ebbd9728f904fa5aa0a529419e45ca3d672059"
+    },
+    "policy_1755823670544_7ccb6766": {
+      "policyId": "policy_1755823670544_7ccb6766",
+      "policyName": "CUSTOM Policy 1755823670542_0.6575027759125227",
+      "description": "Test policy for custom",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:47:50.542Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "medium",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:47:50.544Z",
+      "updatedAt": "2025-08-22T00:47:50.544Z",
+      "status": "active",
+      "checksum": "b3f53bbf6ba25c9df9ab4dd0c452ea9f5de3239420044a8c970bdb2d13459dac"
+    },
+    "policy_1755823673175_bf62f989": {
+      "policyId": "policy_1755823673175_bf62f989",
+      "policyName": "Test Custom Policy 1755823673169",
+      "description": "Test custom compliance policy",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:47:53.170Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [
+          {
+            "controlId": "SOX-001",
+            "name": "segregation_of_duties",
+            "description": "Implement segregation of duties",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-002",
+            "name": "audit_trail_integrity",
+            "description": "Ensure audit trail integrity",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-003",
+            "name": "change_management",
+            "description": "Implement change management controls",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          }
+        ],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "high",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [
+            "test@example.com"
+          ],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:47:53.175Z",
+      "updatedAt": "2025-08-22T00:47:53.175Z",
+      "status": "active",
+      "checksum": "99f674ad4400fc94a299a79c134bf00dfeef2788b79b70d7c8743b41089eb367"
+    },
+    "policy_1755823673383_9b44b7db": {
+      "policyId": "policy_1755823673383_9b44b7db",
+      "policyName": "CUSTOM Policy 1755823673380_0.3015240180012395",
+      "description": "Test policy for custom",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:47:53.380Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "medium",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:47:53.383Z",
+      "updatedAt": "2025-08-22T00:47:53.383Z",
+      "status": "active",
+      "checksum": "f7a68b56c825c1458008e4ca08c89adb011805c22697df710ac8f933afb19289"
+    },
+    "policy_1755823689209_d1b53fc8": {
+      "policyId": "policy_1755823689209_d1b53fc8",
+      "policyName": "Test Custom Policy 1755823689207",
+      "description": "Test custom compliance policy",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:48:09.207Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [
+          {
+            "controlId": "SOX-001",
+            "name": "segregation_of_duties",
+            "description": "Implement segregation of duties",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-002",
+            "name": "audit_trail_integrity",
+            "description": "Ensure audit trail integrity",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          },
+          {
+            "controlId": "SOX-003",
+            "name": "change_management",
+            "description": "Implement change management controls",
+            "framework": [
+              "sox"
+            ],
+            "category": "preventive",
+            "automationLevel": "manual",
+            "frequency": "monthly"
+          }
+        ],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "high",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [
+            "test@example.com"
+          ],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:48:09.209Z",
+      "updatedAt": "2025-08-22T00:48:09.209Z",
+      "status": "active",
+      "checksum": "1e4eca0e46008056c5cd50fdf804b8cc67643abc160b337e1ab63cba0758cd02"
+    },
+    "policy_1755823689234_b8527257": {
+      "policyId": "policy_1755823689234_b8527257",
+      "policyName": "CUSTOM Policy 1755823689233_0.33014387508264953",
+      "description": "Test policy for custom",
+      "framework": [
+        "custom"
+      ],
+      "version": "1.0.0",
+      "effectiveDate": "2025-08-22T00:48:09.233Z",
+      "scope": {
+        "organizationScope": "global"
+      },
+      "controls": {
+        "preventive": [],
+        "detective": [],
+        "corrective": []
+      },
+      "enforcement": {
+        "automatedChecks": [],
+        "violations": {
+          "severity": "medium",
+          "actions": []
+        },
+        "reporting": {
+          "frequency": "monthly",
+          "recipients": [],
+          "format": [
+            "json"
+          ]
+        }
+      },
+      "createdAt": "2025-08-22T00:48:09.234Z",
+      "updatedAt": "2025-08-22T00:48:09.234Z",
+      "status": "active",
+      "checksum": "7492ce870d13c2c8765724cd58db99e30f08f8d2987529adb7c5118b50b91337"
+    }
+  },
+  "metadata": {
+    "created": "2025-08-22T00:46:17.975Z",
+    "version": "1.0.0",
+    "lastModified": "2025-08-22T00:48:09.234Z"
+  }
+}

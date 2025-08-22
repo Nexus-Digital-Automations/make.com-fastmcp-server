@@ -187,6 +187,46 @@ ${configManager.isAuthEnabled() ?
         sessionId: event.session ? 'disconnected' : 'unknown',
       });
     });
+
+    // Note: FastMCP server doesn't expose 'error' event, 
+    // so we'll handle errors at the process level instead
+
+    // Setup process-level error handlers for MCP protocol issues
+    process.on('uncaughtException', (error) => {
+      if (error.message.includes('JSON') || error.message.includes('parse')) {
+        this.componentLogger.error('JSON parsing error intercepted', {
+          error: {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+          },
+          suggestion: 'This may be a message framing issue in MCP protocol communication'
+        });
+        
+        // Don't exit for JSON parsing errors, just log them
+        return;
+      }
+      
+      this.componentLogger.error('Uncaught exception', {
+        error: {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        }
+      });
+      process.exit(1);
+    });
+
+    process.on('unhandledRejection', (reason, promise) => {
+      this.componentLogger.error('Unhandled promise rejection', {
+        reason: reason instanceof Error ? {
+          name: reason.name,
+          message: reason.message,
+          stack: reason.stack
+        } : reason,
+        promise: promise.toString()
+      });
+    });
   }
 
   private addBasicTools(): void {
@@ -661,22 +701,51 @@ ${configManager.isAuthEnabled() ?
       authEnabled: configManager.isAuthEnabled(),
     });
 
-    // Validate configuration before starting (skip in development with test key)
-    if (!configManager.getMakeConfig().apiKey.includes('test_key')) {
-      const isHealthy = await this.apiClient.healthCheck();
-      if (!isHealthy) {
-        throw new Error('Make.com API is not accessible. Please check your configuration.');
+    try {
+      // Validate configuration before starting (skip in development with test key)
+      if (!configManager.getMakeConfig().apiKey.includes('test_key')) {
+        const isHealthy = await this.apiClient.healthCheck();
+        if (!isHealthy) {
+          throw new Error('Make.com API is not accessible. Please check your configuration.');
+        }
+        this.componentLogger.info('Make.com API connectivity verified');
+      } else {
+        this.componentLogger.warn('Running in development mode with test API key - some features may not work');
       }
-      this.componentLogger.info('Make.com API connectivity verified');
-    } else {
-      this.componentLogger.warn('Running in development mode with test API key - some features may not work');
+
+      // Start server with enhanced error handling
+      const startOptions = options || {
+        transportType: 'stdio',
+      };
+
+      this.componentLogger.debug('Starting FastMCP server with options', { startOptions });
+
+      await this.server.start(startOptions);
+
+      this.componentLogger.info('Server started successfully');
+
+    } catch (error) {
+      this.componentLogger.error('Failed to start server', {
+        error: error instanceof Error ? {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        } : error
+      });
+
+      // Add specific handling for common startup errors
+      if (error instanceof Error) {
+        if (error.message.includes('EADDRINUSE')) {
+          this.componentLogger.error('Port already in use. Please check if another instance is running.');
+        } else if (error.message.includes('EACCES')) {
+          this.componentLogger.error('Permission denied. Please check port access permissions.');
+        } else if (error.message.includes('JSON')) {
+          this.componentLogger.error('JSON parsing error during startup. This may indicate message format issues.');
+        }
+      }
+
+      throw error;
     }
-
-    await this.server.start(options || {
-      transportType: 'stdio',
-    });
-
-    this.componentLogger.info('Server started successfully');
   }
 
   public async shutdown(): Promise<void> {

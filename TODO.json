@@ -2,12 +2,12 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755818241696_u6ldqgwbl",
-      "title": "Fix secure-config module test failures",
-      "description": "Apply budget-control successful patterns to fix test failures in security-related modules",
+      "id": "task_1755823787978_a0v30ifr6",
+      "title": "Fix remaining test failures in tool modules",
+      "description": "Apply the successful logger mock pattern to fix remaining test failures across multiple tool modules including zero-trust-auth-basic, scenarios, variables, ai-agents, audit-compliance, multi-tenant-security-basic, and others. Use the proven pattern: remove local logger mocks, rely on global mocks from jest.config.js, add missing path.resolve, use findTool/executeTool patterns.",
       "mode": "DEVELOPMENT",
       "category": "test-error",
-      "priority": "critical",
+      "priority": "high",
       "status": "in_progress",
       "dependencies": [],
       "important_files": [],
@@ -15,91 +15,18 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-21T23:17:21.696Z",
+      "created_at": "2025-08-22T00:49:47.979Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755819551725_1_general_2o9lqk9a",
-      "started_at": "2025-08-21T23:39:11.737Z",
-      "claimed_by": "development_session_1755819551725_1_general_2o9lqk9a",
+      "assigned_agent": "development_session_1755823643488_1_general_e46225f7",
+      "started_at": "2025-08-22T00:49:57.261Z",
+      "claimed_by": "development_session_1755823643488_1_general_e46225f7",
       "agent_assignment_history": [
         {
-          "agentId": "development_session_1755819551725_1_general_2o9lqk9a",
+          "agentId": "development_session_1755823643488_1_general_e46225f7",
           "role": "primary",
-          "assignedAt": "2025-08-21T23:39:11.737Z",
+          "assignedAt": "2025-08-22T00:49:57.261Z",
           "reassignReason": null,
           "claimPriority": "normal"
-        }
-      ]
-    },
-    {
-      "id": "task_1755819506235_sey15qyxi",
-      "title": "Apply successful test pattern to remaining scenarios module tests",
-      "description": "Systematically apply the successful budget-control pattern to fix remaining failing tests in scenarios.test.ts:\n\n1. Replace executeTool calls with direct tool.execute(params, mockContext) pattern\n2. Import individual tool creators (createGetScenarioTool, createScenarioTool, etc.)\n3. Use proper mockContext with log/reportProgress/session structure\n4. Fix any implementation bugs discovered (similar to limit/offset defaults)\n5. Target key test categories: get-scenario, create-scenario, update-scenario, delete-scenario\n\nSuccessful pattern demonstrated:\n- Import: const { createListScenariosTools } = await import(...)\n- Create: const tool = createListScenariosTools(toolContext)\n- Execute: const result = await tool.execute(params, mockContext)\n\nGoal: Convert at least 5-10 more failing tests to passing using this pattern.",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "./tests/unit/tools/scenarios.test.ts",
-        "./src/tools/scenarios/tools/",
-        "./tests/unit/tools/budget-control-basic.test.ts"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T23:38:26.235Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755802466555_ja43b913k",
-      "title": "Fix remaining budget-control test failures - mock promises and schema validation",
-      "description": "Address remaining test failures identified in budget-control-basic.test.ts:\n\n1. Fix mock promise rejection expectations - tests expect rejections but promises resolve (unauthorized access errors, security measures)\n2. Fix schema validation issues with test parameters (confidenceLevel validation, unrecognized keys)\n3. Fix missing property expectations in enterprise budget isolation tests\n4. Fix parameter validation errors in automated cost control actions\n5. Resolve UserError vs Error type mismatches in test expectations\n\nThese issues are preventing full test suite success and need resolution for proper CI/CD pipeline functionality.",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "./tests/unit/tools/budget-control-basic.test.ts",
-        "./src/tools/budget-control.ts",
-        "./development/reports/comprehensive-testing-validation-strategies-fastmcp-make-integration.md"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-21T18:54:26.555Z",
-      "auto_research_created": false,
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755802391386_1_general_23141bf4",
-          "role": "primary",
-          "assignedAt": "2025-08-21T18:54:33.737Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T19:09:39.462Z",
-          "reason": "Task stale for 15 minutes"
-        },
-        {
-          "agentId": "development_session_1755817107983_1_general_fada195a",
-          "role": "primary",
-          "assignedAt": "2025-08-21T23:13:17.033Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-21T23:37:44.391Z",
-          "reason": "Task stale for 24 minutes"
         }
       ]
     }
@@ -111,13 +38,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755819470620_1_general_2024984b": {
+    "development_session_1755823643488_1_general_e46225f7": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-21T23:37:50.621Z",
+      "lastHeartbeat": "2025-08-22T00:47:23.489Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -128,8 +55,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-21T23:37:50.621Z",
-      "sessionId": "session_1755819470620",
+      "createdAt": "2025-08-22T00:47:23.489Z",
+      "sessionId": "session_1755823643488",
       "metadata": {}
     }
   },
