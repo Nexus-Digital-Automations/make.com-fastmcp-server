@@ -227,6 +227,101 @@ const ListPopularAppsSchema = z.object({
 }).strict();
 
 /**
+ * Build search parameters from input filters
+ */
+function buildSearchParameters(
+  query: string,
+  filters: any,
+  sorting: any,
+  pagination: any,
+  includeMetadata: boolean,
+  includePricing: boolean,
+  includeUsageStats: boolean
+): Record<string, unknown> {
+  return {
+    q: query,
+    ...(filters?.category && { category: filters.category }),
+    ...(filters?.publisher && { publisher: filters.publisher }),
+    ...(filters?.verified && { verified: filters.verified }),
+    ...(filters?.pricing?.model && { pricing_model: filters.pricing.model }),
+    ...(filters?.pricing?.priceRange && { 
+      min_price: filters.pricing.priceRange.min,
+      max_price: filters.pricing.priceRange.max,
+    }),
+    ...(filters?.features && { features: filters.features.join(',') }),
+    ...(filters?.integrationComplexity && { complexity: filters.integrationComplexity }),
+    ...(filters?.lastUpdated && { updated_since: filters.lastUpdated }),
+    ...(sorting && { 
+      sort_by: sorting.field,
+      sort_order: sorting.order,
+    }),
+    ...(pagination && {
+      limit: pagination.limit,
+      offset: pagination.offset,
+    }),
+    include_metadata: includeMetadata,
+    include_pricing: includePricing,
+    include_usage_stats: includeUsageStats,
+  };
+}
+
+/**
+ * Process search response and extract results
+ */
+function processSearchResponse(searchResponse: any): {
+  apps: any[];
+  totalCount: number;
+  facets: any;
+} {
+  const searchResults = searchResponse.data?.apps || [];
+  const totalCount = searchResponse.data?.total || searchResults.length;
+  const facets = searchResponse.data?.facets || {};
+  
+  return {
+    apps: searchResults,
+    totalCount,
+    facets
+  };
+}
+
+/**
+ * Format search results into final response structure
+ */
+function formatSearchResults(
+  apps: any[],
+  totalCount: number,
+  facets: any,
+  pagination: any,
+  query: string,
+  filters: any,
+  sorting: any
+): any {
+  return {
+    apps,
+    pagination: {
+      total: totalCount,
+      limit: pagination?.limit || 20,
+      offset: pagination?.offset || 0,
+      hasMore: (pagination?.offset || 0) + apps.length < totalCount,
+    },
+    facets: {
+      categories: facets.categories || [],
+      publishers: facets.publishers || [],
+      pricingModels: facets.pricingModels || [],
+      features: facets.features || [],
+    },
+    searchMetadata: {
+      query,
+      filtersApplied: Object.keys(filters || {}).length,
+      sortedBy: sorting?.field || 'relevance',
+      searchExecutedAt: new Date().toISOString(),
+      responseCached: false,
+      regionServiced: 'global',
+    },
+  };
+}
+
+/**
  * Add search public apps tool
  */
 function addSearchPublicAppsTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
@@ -255,31 +350,15 @@ function addSearchPublicAppsTool(server: FastMCP, apiClient: MakeApiClient, _com
         reportProgress({ progress: 0, total: 100 });
 
         // Build search parameters with comprehensive filtering
-        const searchParams: Record<string, unknown> = {
-          q: query,
-          ...(filters?.category && { category: filters.category }),
-          ...(filters?.publisher && { publisher: filters.publisher }),
-          ...(filters?.verified && { verified: filters.verified }),
-          ...(filters?.pricing?.model && { pricing_model: filters.pricing.model }),
-          ...(filters?.pricing?.priceRange && { 
-            min_price: filters.pricing.priceRange.min,
-            max_price: filters.pricing.priceRange.max,
-          }),
-          ...(filters?.features && { features: filters.features.join(',') }),
-          ...(filters?.integrationComplexity && { complexity: filters.integrationComplexity }),
-          ...(filters?.lastUpdated && { updated_since: filters.lastUpdated }),
-          ...(sorting && { 
-            sort_by: sorting.field,
-            sort_order: sorting.order,
-          }),
-          ...(pagination && {
-            limit: pagination.limit,
-            offset: pagination.offset,
-          }),
-          include_metadata: includeMetadata,
-          include_pricing: includePricing,
-          include_usage_stats: includeUsageStats,
-        };
+        const searchParams = buildSearchParameters(
+          query,
+          filters,
+          sorting,
+          pagination,
+          includeMetadata,
+          includePricing,
+          includeUsageStats
+        );
 
         reportProgress({ progress: 30, total: 100 });
 
@@ -293,12 +372,10 @@ function addSearchPublicAppsTool(server: FastMCP, apiClient: MakeApiClient, _com
         reportProgress({ progress: 70, total: 100 });
 
         // Process and enhance results with additional metadata
-        const searchResults = searchResponse.data?.apps || [];
-        const totalCount = searchResponse.data?.total || searchResults.length;
-        const facets = searchResponse.data?.facets || {};
+        const { apps, totalCount, facets } = processSearchResponse(searchResponse);
 
         log?.info('Public app search completed', {
-          resultsFound: searchResults.length,
+          resultsFound: apps.length,
           totalMatched: totalCount,
           query,
           executionTime: searchResponse.data?.executionTime,
@@ -306,29 +383,18 @@ function addSearchPublicAppsTool(server: FastMCP, apiClient: MakeApiClient, _com
 
         reportProgress({ progress: 100, total: 100 });
 
-        return formatSuccessResponse({
-          apps: searchResults,
-          pagination: {
-            total: totalCount,
-            limit: pagination?.limit || 20,
-            offset: pagination?.offset || 0,
-            hasMore: (pagination?.offset || 0) + searchResults.length < totalCount,
-          },
-          facets: {
-            categories: facets.categories || [],
-            publishers: facets.publishers || [],
-            pricingModels: facets.pricingModels || [],
-            features: facets.features || [],
-          },
-          searchMetadata: {
-            query,
-            filtersApplied: Object.keys(filters || {}).length,
-            sortedBy: sorting?.field || 'relevance',
-            searchExecutedAt: new Date().toISOString(),
-            responseCached: false,
-            regionServiced: 'global',
-          },
-        });
+        // Format final search results
+        const searchResults = formatSearchResults(
+          apps,
+          totalCount,
+          facets,
+          pagination,
+          query,
+          filters,
+          sorting
+        );
+
+        return formatSuccessResponse(searchResults);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log?.error('Error searching public apps', { query, error: errorMessage });
