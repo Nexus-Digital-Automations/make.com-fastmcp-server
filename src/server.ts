@@ -594,7 +594,7 @@ ${configManager.isAuthEnabled() ?
           log.info('API connectivity test passed', { correlationId });
 
           // Test team access if configured
-          let teamAccess = null;
+          let teamAccess: boolean | null = null;
           if (configManager.getMakeConfig().teamId) {
             const teamResponse = await this.apiClient.get(`/teams/${configManager.getMakeConfig().teamId}`);
             teamAccess = teamResponse.success;

@@ -183,7 +183,9 @@ export class AdvancedDDoSProtection {
       
       // Check global rate limit first
       const globalLimiter = this.rateLimiters.get('global');
-      await globalLimiter.consume('global');
+      if (globalLimiter) {
+        await globalLimiter.consume('global');
+      }
       
       // Determine which limiter to use based on IP reputation
       const ipReputation = this.ipReputation.get(clientIP);
@@ -192,7 +194,9 @@ export class AdvancedDDoSProtection {
       const limiterKey = isSuspicious ? 'suspicious' : 'ip';
       const limiter = this.rateLimiters.get(limiterKey);
       
-      await limiter.consume(clientIP);
+      if (limiter) {
+        await limiter.consume(clientIP);
+      }
       
       // Log successful request for behavior analysis
       this.behaviorAnalyzer.recordSuccessfulRequest(clientIP, req);

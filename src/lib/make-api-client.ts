@@ -207,7 +207,7 @@ export class MakeApiClient {
       error: {
         message: lastError?.message ?? 'Unknown error',
         code: lastError?.code ?? 'UNKNOWN',
-        details: lastError?.details ?? 'No error details available',
+        details: typeof lastError?.details === 'object' ? lastError.details : { message: lastError?.details ?? 'No error details available' },
       },
     };
   }
