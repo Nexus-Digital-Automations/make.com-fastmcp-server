@@ -81,7 +81,13 @@ class ComplianceReportGenerator {
     gaps: string[];
   }>> {
     // Assess compliance controls for the specific framework
-    const controls = [];
+    const controls: Array<{
+      controlId: string;
+      name: string;
+      status: 'compliant' | 'non_compliant' | 'not_applicable';
+      evidence: string[];
+      gaps: string[];
+    }> = [];
     
     // This would implement framework-specific control assessment
     switch (framework) {

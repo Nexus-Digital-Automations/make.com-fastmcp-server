@@ -45,6 +45,23 @@
       "auto_research_created": false
     },
     {
+      "id": "task_1755873246967_z2iuzi171",
+      "title": "Fix TypeScript strict mode compilation errors",
+      "description": "Fix array push type errors in generate-compliance-report.ts and uninitialized variable in folders/utils/index.ts",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T14:34:06.967Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755872009450_wkdji2fwc",
       "title": "Fix MCP server timeout and connection issues",
       "description": "MCP server is timing out after 60 seconds during initialization. Server disconnects unexpectedly with timeout errors. Need to investigate and fix the connection stability issues.",

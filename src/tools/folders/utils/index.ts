@@ -102,7 +102,7 @@ export async function retryOperation<T>(
     backoffMultiplier = 2
   } = options;
 
-  let lastError: Error;
+  let lastError: Error = new Error('Operation failed after all retry attempts');
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
