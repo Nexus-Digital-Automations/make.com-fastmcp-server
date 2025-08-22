@@ -7,6 +7,7 @@ import { UserError } from 'fastmcp';
 import { HSMConfigSchema } from '../schemas/index.js';
 import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
 import { HSMIntegrationManager } from '../utils/index.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Configure HSM integration tool configuration
@@ -52,7 +53,7 @@ export function createConfigureHSMIntegrationTool(context: ToolContext): ToolDef
         });
 
         reportProgress?.({ progress: 100, total: 100 });
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('HSM integration failed', { error: errorMessage });

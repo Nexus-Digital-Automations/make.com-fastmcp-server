@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/407</span>
+                <span class='fraction'>0/408</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/389</span>
+                <span class='fraction'>0/390</span>
             </div>
         
             
@@ -1765,7 +1765,8 @@
 <a name='L1700'></a><a href='#L1700'>1700</a>
 <a name='L1701'></a><a href='#L1701'>1701</a>
 <a name='L1702'></a><a href='#L1702'>1702</a>
-<a name='L1703'></a><a href='#L1703'>1703</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1703'></a><a href='#L1703'>1703</a>
+<a name='L1704'></a><a href='#L1704'>1704</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1825,6 +1826,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3500,43 +3502,44 @@ import { promises as fs } from 'fs';
 impo<span class="cstat-no" title="statement not covered" >rt * as path from 'path';</span>
 import<span class="fstat-no" title="function not covered" > *</span> as crypto from 'crypto';
 impo<span class="cstat-no" title="statement not covered" >rt { getComplianceTemp<span class="cstat-no" title="statement not covered" >late, li</span></span>stComplianceTemplates, getTemplateMetadata } from './compliance-templates.js';
-<span class="cstat-no" title="statement not covered" ></span>
-// Core compliance policy type definitions
-export type RegulatoryFra<span class="cstat-no" title="statement not covered" >mework = 'sox' | 'gdpr' | 'hipaa' | 'pci_dss' | 'iso270<span class="fstat-no" title="function not covered" >01</span>' | 'custom';</span>
-expo<span class="cstat-no" title="statement not covered" >rt type PolicyScope = 'global' | 'team' | 'project' | 'custom';</span>
-expor<span class="fstat-no" title="function not covered" >t </span>type ViolationSeverity = 'low' | 'medium' | 'high' | 'critical';
-expo<span class="cstat-no" title="statement not covered" >rt type ReportingF</span>requency = 'real-time' | 'daily' | 'weekly' | 'monthly' | 'quarterly';
-export type ReportFormat = 'json' | 'pdf' | 'excel' | 'dashboard';
-export type AlertCh<span class="cstat-no" title="statement not covered" >annel = 'email' | 'webhook' | 's<span class="fstat-no" title="function not covered" >la</span>ck' | 'teams';</span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-// Compl<span class="cstat-no" title="statement not covered" >iance control schema definitions<span class="fstat-no" title="function not covered" ></span></span>
-const ComplianceContr<span class="cstat-no" title="statement not covered" >olS</span>chema = z.object({
-  controlId:<span class="cstat-no" title="statement not covered" > z.string().min(1<span class="cstat-no" title="statement not covered" >).describe('Unique control identifier'),<span class="cstat-no" title="statement not covered" ></span></span></span>
-  name: z.st<span class="cstat-no" title="statement not covered" >ring().min(</span>1).max(200).describe('Human-readable control name'),
-  description: z.string().min(1).max(1000).describe('Detailed control description'),
-  framew<span class="cstat-no" title="statement not covered" >ork: z.array(z.enum</span>(['sox', 'gdpr', 'hipaa', 'pci_dss', 'iso27001', 'custom'])).describe('Applicable regulatory frameworks'),
-  category: z.enum(['preventive', 'detective', 'corrective', 'compensating']).describe('Control category'),
-  au<span class="cstat-no" title="statement not covered" >tomatio<span class="fstat-no" title="function not covered" >nL</span>evel: z.enum(['manual', 'semi-automated', 'fully-automated']).describe('Level of automation'),</span>
-  freque<span class="cstat-no" title="statement not covered" >ncy: z.enum(['continuous', <span class="cstat-no" title="statement not covered" >'daily', 'we</span></span>ekly', 'monthly', 'quarterly', 'annually']).describe('Control execution frequency'),
-  owner: z.string().o<span class="cstat-no" title="statement not covered" >pti</span>onal().describe('Control owner or responsible party'),
-  eviden<span class="cstat-no" title="statement not covered" >ce: z.array(z.str<span class="cstat-no" title="statement not covered" >ing()).option<span class="cstat-no" title="statement not covered" >al().describe</span>('Evi<span class="cstat-no" title="statement not covered" >de</span>nce collection requi<span class="cstat-no" title="statement not covered" >rements'),<span class="cstat-no" title="statement not covered" ></span></span></span></span>
-  depend<span class="cstat-no" title="statement not covered" >encies: z.array(z.string()).optio</span>nal().describe('Dependent control identifiers'),
-}).stric<span class="cstat-no" title="statement not covered" >t();</span>
+impo<span class="cstat-no" title="statement not covered" >rt { formatSuc</span>cessResponse } from '../utils/response-formatter.js';
 &nbsp;
-const AutomatedCheckSchema = z.object({
-  checkId: z.string().<span class="cstat-no" title="statement not covered" >min(1).describe('Unique automated <span class="fstat-no" title="function not covered" >ch</span>eck identifier'),</span>
-  na<span class="cstat-no" title="statement not covered" >me: z.string().min(1).max(200).describe('Human-readable che</span>ck name'),
-  description: z.string().min(1).max(1000).describe('Detailed check description'),
-<span class="cstat-no" title="statement not covered" >  checkType: z.enum(['scenario_validation', 'connection_complia</span>nce', 'data_flow_monitoring', 'access_control', 'encryption_validation']).describe('Type of automated check'),
-<span class="cstat-no" title="statement not covered" >  schedule: z.enum(['real-time', 'hourly', 'daily', 'weekly']</span>).describe('Check execution schedule'),
-  criteria: z.reco<span class="cstat-no" title="statement not covered" >rd(z.unknown()).des</span>cribe('Check criteria and parameters'),
-  actions: z.a<span class="cstat-no" title="statement not covered" >rray(z.string()</span>).describe('Actions to take when check fails'),
-  enabled: z.boolean<span class="cstat-no" title="statement not covered" >().default(true).describe('Whether the check </span>is active'),
+// Core compliance policy<span class="cstat-no" title="statement not covered" > type definitions<span class="fstat-no" title="function not covered" ></span></span>
+expo<span class="cstat-no" title="statement not covered" >rt type RegulatoryFramework = 'sox' | 'gdpr' | 'hipaa' | 'pci_dss' | </span>'iso27001' | 'custom';
+expor<span class="fstat-no" title="function not covered" >t </span>type PolicyScope = 'global' | 'team' | 'project' | 'custom';
+expo<span class="cstat-no" title="statement not covered" >rt type ViolationS</span>everity = 'low' | 'medium' | 'high' | 'critical';
+export type ReportingFrequency = 'real-time' | 'daily' | 'weekly' | 'monthly' | 'quarterly';
+export type ReportF<span class="cstat-no" title="statement not covered" >ormat = 'json' | 'pdf' | 'excel'<span class="fstat-no" title="function not covered" > |</span> 'dashboard';</span>
+export type AlertC<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ha</span>nnel = 'email' | 'webhook' | 'slack' | 'teams';</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+// Compliance control<span class="cstat-no" title="statement not covered" > sc</span>hema definitions
+const Compli<span class="cstat-no" title="statement not covered" >anceControlSchema<span class="cstat-no" title="statement not covered" > = z.object({<span class="cstat-no" title="statement not covered" ></span></span></span>
+  controlId:<span class="cstat-no" title="statement not covered" > z.string()</span>.min(1).describe('Unique control identifier'),
+  name: z.string().min(1).max(200).describe('Human-readable control name'),
+  descri<span class="cstat-no" title="statement not covered" >ption: z.string().m</span>in(1).max(1000).describe('Detailed control description'),
+  framework: z.array(z.enum(['sox', 'gdpr', 'hipaa', 'pci_dss', 'iso27001', 'custom'])).describe('Applicable regulatory frameworks'),
+  ca<span class="cstat-no" title="statement not covered" >tegory:<span class="fstat-no" title="function not covered" > z</span>.enum(['preventive', 'detective', 'corrective', 'compensating']).describe('Control category'),</span>
+  automa<span class="cstat-no" title="statement not covered" >tionLevel: z.enum(['manual'<span class="cstat-no" title="statement not covered" >, 'semi-auto</span></span>mated', 'fully-automated']).describe('Level of automation'),
+  frequency: z.enum([<span class="cstat-no" title="statement not covered" >'co</span>ntinuous', 'daily', 'weekly', 'monthly', 'quarterly', 'annually']).describe('Control execution frequency'),
+  owner:<span class="cstat-no" title="statement not covered" > z.string().optio<span class="cstat-no" title="statement not covered" >nal().describ<span class="cstat-no" title="statement not covered" >e('Control ow</span>ner o<span class="cstat-no" title="statement not covered" >r </span>responsible party'),<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span>
+  eviden<span class="cstat-no" title="statement not covered" >ce: z.array(z.string()).optional(</span>).describe('Evidence collection requirements'),
+  depend<span class="cstat-no" title="statement not covered" >encies: z.array</span>(z.string()).optional().describe('Dependent control identifiers'),
+}).strict();
+&nbsp;
+const AutomatedCheckSc<span class="cstat-no" title="statement not covered" >hema = z.object({<span class="fstat-no" title="function not covered" ></span></span>
+  ch<span class="cstat-no" title="statement not covered" >eckId: z.string().min(1).describe('Unique automated check i</span>dentifier'),
+  name: z.string().min(1).max(200).describe('Human-readable check name'),
+<span class="cstat-no" title="statement not covered" >  description: z.string().min(1).max(1000).describe('Detailed c</span>heck description'),
+<span class="cstat-no" title="statement not covered" >  checkType: z.enum(['scenario_validation', 'connection_compl</span>iance', 'data_flow_monitoring', 'access_control', 'encryption_validation']).describe('Type of automated check'),
+  schedule: z.enum<span class="cstat-no" title="statement not covered" >(['real-time', 'hou</span>rly', 'daily', 'weekly']).describe('Check execution schedule'),
+  criteria: z.<span class="cstat-no" title="statement not covered" >record(z.unknow</span>n()).describe('Check criteria and parameters'),
+  actions: z.array(z<span class="cstat-no" title="statement not covered" >.string()).describe('Actions to take when che</span>ck fails'),
+  enabled: z.boolean().def<span class="cstat-no" title="statement not covered" >ault(true).describe('Whether the c</span>heck is active'),
 }).strict();<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-const Enforce<span class="cstat-no" title="statement not covered" >mentActionSchema = z.object({</span>
-  actionId: z.s<span class="cstat-no" title="statement not covered" >tring().min(1).describe('Unique </span>enforcement action identifier'),
-  name: z.string().min(1).max(200)<span class="cstat-no" title="statement not covered" >.describe('Human-readable action name</span>'),
+const Enforceme<span class="cstat-no" title="statement not covered" >ntActionSchema = z.object({</span>
+  actionId: z.string().min(1).desc<span class="cstat-no" title="statement not covered" >ribe('Unique enforcement action ident</span>ifier'),
+  name: z.string().min(1).max(20<span class="cstat-no" title="statement not covered" >0).describe('Human-readable action name'),</span>
   type: z.enum(['block', 'alert', 'quarantine', 'escalate', 'remediate']).describe('Type of enforcement action'),
   description: z.string().min(1)<span class="cstat-no" title="statement not covered" >.max(1000).describe('Detailed action description'),</span>
   automated: z.boolean().describe('Whether action is executed automatically'),
@@ -3993,7 +3996,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
             reportFormats: input.enforcement.reporting.format,
           },
           monitoring: {
-            cont<span class="cstat-no" title="statement not covered" >inuousMonitoring: input.monitoring?.cont</span>inuousMonitoring || false,
+            cont<span class="cstat-no" title="statement not covered" >inuousMonitoring: input.monitoring?.continuousMonitoring || false,</span>
             alertChannels: input.monitoring?.alerting.channels || [],
             complianceScoring: input.monitoring?.metrics?.complianceScore || false,
             riskScoring: input.monito<span class="cstat-no" title="statement not covered" >ring?.metrics?.riskScore || false,</span>
@@ -4019,7 +4022,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           automatedC<span class="cstat-no" title="statement not covered" >hecks: result</span>.enforcement.automatedChecks,
         });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error creating compliance policy', {
@@ -4089,7 +4092,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           level: validationResult.compliant ? 'info' : 'warn',
           category: 'authorization',
           action: 'compliance_validation',
-          resour<span class="cstat-no" title="statement not covered" >ce: `${input.targetType}/${input.targetI</span>d}`,
+          resour<span class="cstat-no" title="statement not covered" >ce: `${input.targetType}/${input.targetId}`,</span>
           success: validationResult.compliant,
           details: {
             policyId: input.policyId,<span class="cstat-no" title="statement not covered" ></span>
@@ -4127,7 +4130,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           violationsCount: validationResult.violations.length,
         });
 <span class="cstat-no" title="statement not covered" ></span>
-        retu<span class="cstat-no" title="statement not covered" >rn JSON.stringify(result, null, 2);</span>
+        retu<span class="cstat-no" title="statement not covered" >rn formatSuccessResponse(result).content[0].text;</span>
       } catch (error: unknown) {
         const errorMessage = erro<span class="cstat-no" title="statement not covered" >r instanceof Error ? error.message : String(error);</span>
         componentLogger.error('Error validating compliance',<span class="fstat-no" title="function not covered" > {<span class="cstat-no" title="statement not covered" ></span></span>
@@ -4261,7 +4264,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           overallScore: metrics.overallScor<span class="cstat-no" title="statement not covered" >e,</span>
         });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stringify(report, null, 2);
+        return formatSuccessResponse(report).content[0].text;
       } catch (error: un<span class="cstat-no" title="statement not covered" >known) {</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error generating compliance report', {
@@ -4279,7 +4282,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
   /**
    * List all compliance policies with filtering
    * 
-   * Retrieves c<span class="cstat-no" title="statement not covered" >omprehensive list of compliance policies</span> with optional filtering
+   * Retrieves c<span class="cstat-no" title="statement not covered" >omprehensive list of compliance policies with optional filtering</span>
    * by regulatory framework, status, and other criteria.
    * 
    * @tool list-compliance-policies<span class="cstat-no" title="statement not covered" ></span>
@@ -4342,7 +4345,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           status: input.status,
         });
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error listing compliance policies', {
@@ -4425,7 +4428,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           updateReason: input.updateReason,
         });
 &nbsp;
-        return JSON.<span class="cstat-no" title="statement not covered" >stringify(result, null, 2);</span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse(result).content[0].text;</span>
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error updating compliance policy', {
@@ -4489,7 +4492,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
             template<span class="cstat-no" title="statement not covered" >Id: template.templateId,</span>
           });
 <span class="cstat-no" title="statement not covered" ></span>
-          return JSON.stringify(result, null, 2);
+          return formatSuccessResponse(result).content[0].text;
         } else {<span class="cstat-no" title="statement not covered" ></span>
           // Get all templates metadata
           const templates = input.includeFullTemplate 
@@ -4509,7 +4512,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
             includeF<span class="cstat-no" title="statement not covered" >ullTemplate: input.includeFullTemplate,</span>
           });
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-          return JSON.stringify(result, null, 2)<span class="cstat-no" title="statement not covered" >;</span>
+          return formatSuccessResponse(result).c<span class="cstat-no" title="statement not covered" >ontent[0].text;</span>
         }
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -4700,7 +4703,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           totalC<span class="cstat-no" title="statement not covered" >ontrols: result.controls.total,</span>
         });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
 <span class="cstat-no" title="statement not covered" >        componentLogger.error('Error creating policy from template', {</span>
@@ -5176,7 +5179,7 @@ export default addCompliancePolicyTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:41.788Z
+                at 2025-08-22T03:12:16.801Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

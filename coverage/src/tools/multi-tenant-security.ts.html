@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/232</span>
+                <span class='fraction'>0/233</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/221</span>
+                <span class='fraction'>0/222</span>
             </div>
         
             
@@ -1502,7 +1502,8 @@
 <a name='L1437'></a><a href='#L1437'>1437</a>
 <a name='L1438'></a><a href='#L1438'>1438</a>
 <a name='L1439'></a><a href='#L1439'>1439</a>
-<a name='L1440'></a><a href='#L1440'>1440</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1440'></a><a href='#L1440'>1440</a>
+<a name='L1441'></a><a href='#L1441'>1441</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1544,6 +1545,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2955,42 +2957,43 @@ import<span class="cstat-no" title="statement not covered" > MakeApiClient from 
 import { encryptionService } from '../utils/encryption.js';
 impo<span class="cstat-no" title="statement not covered" >rt { auditLogger } from '../lib/audi</span>t-logger.js';
 import<span class="fstat-no" title="function not covered" > l</span>ogger from '../lib/logger.js';
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
-cons<span class="cstat-no" title="statement not covered" >t componentLog</span>ger = logger.child({ component: 'MultiTenantSecurityTools' });
-const randomBytes = promisify(crypto.randomBytes);
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-// =<span class="cstat-no" title="statement not covered" >==== CORE SCHEMAS =====</span>
-<span class="fstat-no" title="function not covered" ></span>
-// T<span class="cstat-no" title="statement not covered" >enant Provisioning</span> Schema
-const TenantProvisioningSchema = z.object({
-  tenantId: z.strin<span class="cstat-no" title="statement not covered" >g().min(1, 'Tenant ID is require<span class="fstat-no" title="function not covered" >d'</span>),</span>
-  tenantName: z.st<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ri</span>ng().min(1, 'Tenant name is required'),</span>
-  subscr<span class="cstat-no" title="statement not covered" >iptionTier: z.enum(['basic', 'standard',<span class="fstat-no" title="function not covered" > '</span>premium', 'enterprise']),</span>
-  complianceFramework<span class="cstat-no" title="statement not covered" >s: </span>z.array(z.enum(['SOC2', 'GDPR', 'HIPAA', 'PCI_DSS', 'ISO27001'])),
-  organizati<span class="cstat-no" title="statement not covered" >onInfo: z.object(<span class="cstat-no" title="statement not covered" >{<span class="cstat-no" title="statement not covered" ></span></span></span>
-    name: z.<span class="cstat-no" title="statement not covered" >string(),</span>
-    domain: z.string().optional(),
-    coun<span class="cstat-no" title="statement not covered" >try: z.string(),</span>
-    industry: z.string().optional(),
-<span class="cstat-no" title="statement not covered" >    contact<span class="fstat-no" title="function not covered" >Em</span>ail: z.string().email(),</span>
-    data<span class="cstat-no" title="statement not covered" >Residency: z.string().optio<span class="cstat-no" title="statement not covered" >nal(),</span></span>
-  }),<span class="cstat-no" title="statement not covered" ></span>
-  resour<span class="cstat-no" title="statement not covered" >ceQuotas: z.objec<span class="cstat-no" title="statement not covered" >t({<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span></span>
-    maxU<span class="cstat-no" title="statement not covered" >sers: z.number().min(1),</span>
-    maxC<span class="cstat-no" title="statement not covered" >onnections: z.n</span>umber().min(1),
+impo<span class="cstat-no" title="statement not covered" >rt { formatSuccessResp<span class="cstat-no" title="statement not covered" >onse } f</span></span>rom '../utils/response-formatter.js';
+<span class="cstat-no" title="statement not covered" ></span>
+const componentLogger = logger.child({ component: 'MultiTenantSecurityTools' });
+const randomBytes = promi<span class="cstat-no" title="statement not covered" >sify(crypto.randomBytes);<span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" ></span>
+// ==<span class="fstat-no" title="function not covered" >==</span>= CORE SCHEMAS =====
+<span class="cstat-no" title="statement not covered" ></span>
+// Tenant Provisioning Schema
+const TenantProvisi<span class="cstat-no" title="statement not covered" >oningSchema = z.object({<span class="fstat-no" title="function not covered" ></span></span>
+  tenantId: z.stri<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ng</span>().min(1, 'Tenant ID is required'),</span>
+  tenant<span class="cstat-no" title="statement not covered" >Name: z.string().min(1, 'Tenant name is <span class="fstat-no" title="function not covered" >re</span>quired'),</span>
+  subscriptionTier: z<span class="cstat-no" title="statement not covered" >.en</span>um(['basic', 'standard', 'premium', 'enterprise']),
+  compliance<span class="cstat-no" title="statement not covered" >Frameworks: z.arr<span class="cstat-no" title="statement not covered" >ay(z.enum(['SOC2', 'GDPR', 'HIPAA', 'PCI_DSS', '<span class="cstat-no" title="statement not covered" >ISO27001'])),</span></span></span>
+  organizati<span class="cstat-no" title="statement not covered" >onInfo: z.o</span>bject({
+    name: z.string(),
+    doma<span class="cstat-no" title="statement not covered" >in: z.string().opti</span>onal(),
+    country: z.string(),
+<span class="cstat-no" title="statement not covered" >    industr<span class="fstat-no" title="function not covered" >y:</span> z.string().optional(),</span>
+    cont<span class="cstat-no" title="statement not covered" >actEmail: z.string().email(<span class="cstat-no" title="statement not covered" >),</span></span>
+    dataResidency: z.<span class="cstat-no" title="statement not covered" >str</span>ing().optional(),
+  }),<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span></span>
+  resour<span class="cstat-no" title="statement not covered" >ceQuotas: z.object({</span>
+    maxU<span class="cstat-no" title="statement not covered" >sers: z.number(</span>).min(1),
+    maxConnections: z.number().min(1),
     maxScenarios: z.number().min(1),
-    storageQuotaGB: z.number().min(1),
-    computeUnits: z.nu<span class="cstat-no" title="statement not covered" >mber().min(1),<span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" >    apiCallsPerMonth: z.number().min(1000),</span>
-  }),
+    storageQuotaGB: z.<span class="cstat-no" title="statement not covered" >number().min(1),<span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >    computeUnits: z.number().min(1),</span>
+    apiCallsPerMonth: z.number().min(1000),
+<span class="cstat-no" title="statement not covered" >  }),</span>
 <span class="cstat-no" title="statement not covered" >  securitySettings: z.object({</span>
-<span class="cstat-no" title="statement not covered" >    requireMFA: z.boolean().default(false),</span>
-    sessionTim<span class="cstat-no" title="statement not covered" >eoutMinutes: z.</span>number().min(5).max(1440).default(480),
+    requireMFA<span class="cstat-no" title="statement not covered" >: z.boolean().d</span>efault(false),
+    sessionTime<span class="cstat-no" title="statement not covered" >outMinutes: z.number().min(5).ma</span>x(1440).default(480),
     passwordPol<span class="cstat-no" title="statement not covered" >icy: z.object({</span>
-      minLength<span class="cstat-no" title="statement not covered" >: z.number().min</span>(8).default(12),
-      requireSpecialChar<span class="cstat-no" title="statement not covered" >s: z.boolean().default(true),</span>
-      requireNumbers: z.bo<span class="cstat-no" title="statement not covered" >olean().default(true),</span>
-      requireUpperca<span class="cstat-no" title="statement not covered" >se: z.boolean().default(true),</span>
+      minLength: z.numbe<span class="cstat-no" title="statement not covered" >r().min(8).default(12),</span>
+      requireSpecialChars:<span class="cstat-no" title="statement not covered" > z.boolean().default(true),</span>
+      requireNumbers<span class="cstat-no" title="statement not covered" >: z.boolean().default(true),</span>
+      requireUppercase: z.boolea<span class="cstat-no" title="statement not covered" >n().default(true),</span>
     }),<span class="cstat-no" title="statement not covered" ></span>
     ipWhitelist: z.a<span class="cstat-no" title="statement not covered" >rray(z.string()).optional(),</span>
     networkIsolation: z.boolean().default(true),
@@ -3678,7 +3681,7 @@ class MultiTenantSecurityEngine {
 &nbsp;
   private async encryptTenantData(tenantId: string, data: string): Promise&lt;string&gt; {
     const vault = this.cryptographicVaults.get(tenantId);
-    if (!vault) <span class="cstat-no" title="statement not covered" >throw new Error('Tenant vault not found'</span>);
+    if (!vault) <span class="cstat-no" title="statement not covered" >throw new Error('Tenant vault not found');</span>
     
     return vault.encrypt(data);
   }<span class="cstat-no" title="statement not covered" ></span>
@@ -3857,14 +3860,14 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           frameworks: input.complianceFrameworks,
         });
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Tenant provisioning failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
           tenantId: input.tenantId,
         });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        return JSON.stringify({</span>
+<span class="cstat-no" title="statement not covered" >        return formatSuccessResponse({</span>
           success: false,
           tenantId: input.tenantId,
           error: 'Tenant provisioning service error',
@@ -3875,7 +3878,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
             policies: [],
             complianceStatus: {},
           },
-        }, null, <span class="fstat-no" title="function not covered" >2)</span>;
+        }).conten<span class="fstat-no" title="function not covered" >t[</span>0].text;
       }<span class="cstat-no" title="statement not covered" ></span>
     },
   });<span class="cstat-no" title="statement not covered" ></span>
@@ -3919,7 +3922,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           success: result.success,
         });
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (e<span class="cstat-no" title="statement not covered" >rror) {</span>
         componentLogger.error('Cryptographic isolation operation failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -3927,13 +3930,13 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           operat<span class="cstat-no" title="statement not covered" >ion: input.operation,</span>
           tenantId: input.tenantId,
           keyManagement: {},
           error: 'Cryptographic isolation service error',
-        }, null, 2);
+        }).content[0].text;
       }<span class="cstat-no" title="statement not covered" ></span>
     },
   });
@@ -3978,7 +3981,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           isolationScore: result.isolationMetrics.trafficIsolation,
         });
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Network segmentation operation failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -3986,7 +3989,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operat<span class="cstat-no" title="statement not covered" >ion: input.operation,</span>
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           networkConfiguration: {},
@@ -4001,7 +4004,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
             anomalyDetection: false,
           },
           error: 'Network segmentation service error',
-        }, null, 2);
+        }).content[0].text;
       }
     },<span class="cstat-no" title="statement not covered" ></span>
   });
@@ -4093,7 +4096,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           utiliz<span class="cstat-no" title="statement not covered" >ationMetrics: result.utilizationMetrics,</span>
         });
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Resource quota management failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -4101,7 +4104,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
 <span class="cstat-no" title="statement not covered" >          success: false,</span>
           tenantId: input.tenantId,
           error: 'Resource quota management service error',
@@ -4109,7 +4112,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           currentUsage: {},
           utilizationMetrics: {},
           scalingStatus: {},
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -4181,7 +4184,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           complianceScore: result.policyManagement.complianceScore,
         });
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Governance policy management failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -4189,14 +4192,14 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           error: 'Governance policy management service error',
           policyManagement: {},
           complianceStatus: {},
           auditTrail: {},
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -4262,7 +4265,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           riskScore: result.threatDetection.riskScore,
         });
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Data leakage prevention failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -4270,14 +4273,14 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           error: 'Data leakage prevention service error',
           dataProtection: {},
           threatDetection: {},
           complianceStatus: {},
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -4345,7 +4348,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           overallScore: result.complianceMetrics.overallScore,
         });
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Compliance boundary management failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -4353,7 +4356,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           complianceFramework: input.complianceFramework,
@@ -4361,7 +4364,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           boundaryStatus: {},
           complianceMetrics: {},
           certificateStatus: {},
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -4387,7 +4390,7 @@ export default addMultiTenantSecurityTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:42.092Z
+                at 2025-08-22T03:12:16.956Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

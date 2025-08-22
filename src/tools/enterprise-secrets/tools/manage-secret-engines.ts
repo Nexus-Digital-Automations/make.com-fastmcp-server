@@ -9,6 +9,7 @@ import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/
 import { SecretEngineStatus } from '../types/index.js';
 import { auditLogger } from '../../../lib/audit-logger.js';
 import * as crypto from 'crypto';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Secret Engine Management class
@@ -121,55 +122,37 @@ class SecretEngineManager {
   private async configureDatabaseEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = SecretEngineConfigSchema.parse(config);
     // Database engine specific configuration
-    console.debug('Configuring database secret engine', {
-      path: validatedConfig.path,
-      databaseType: validatedConfig.config.databaseType,
-    });
+    // Debug: Configuring database secret engine (path: validatedConfig.path, type: validatedConfig.config.databaseType)
   }
 
   private async configurePKIEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = SecretEngineConfigSchema.parse(config);
     // PKI engine specific configuration
-    console.debug('Configuring PKI secret engine', {
-      path: validatedConfig.path,
-      commonName: validatedConfig.config.commonName,
-      keyType: validatedConfig.config.keyType,
-    });
+    // Debug: Configuring PKI secret engine (path: validatedConfig.path, commonName: validatedConfig.config.commonName, keyType: validatedConfig.config.keyType)
   }
 
   private async configureTransitEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = SecretEngineConfigSchema.parse(config);
     // Transit engine specific configuration
-    console.debug('Configuring transit secret engine', {
-      path: validatedConfig.path,
-      convergentEncryption: validatedConfig.config.convergentEncryption,
-    });
+    // Debug: Configuring transit secret engine (path: validatedConfig.path, convergentEncryption: validatedConfig.config.convergentEncryption)
   }
 
   private async configureAWSEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = SecretEngineConfigSchema.parse(config);
     // AWS engine specific configuration
-    console.debug('Configuring AWS secret engine', {
-      path: validatedConfig.path,
-      region: validatedConfig.config.region,
-    });
+    // Debug: Configuring AWS secret engine (path: validatedConfig.path, region: validatedConfig.config.region)
   }
 
   private async configureAzureEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = SecretEngineConfigSchema.parse(config);
     // Azure engine specific configuration
-    console.debug('Configuring Azure secret engine', {
-      path: validatedConfig.path,
-    });
+    // Debug: Configuring Azure secret engine (path: validatedConfig.path)
   }
 
   private async configureGCPEngine(config: Parameters<typeof SecretEngineConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = SecretEngineConfigSchema.parse(config);
     // GCP engine specific configuration
-    console.debug('Configuring GCP secret engine', {
-      path: validatedConfig.path,
-      project: validatedConfig.config.project,
-    });
+    // Debug: Configuring GCP secret engine (path: validatedConfig.path, project: validatedConfig.config.project)
   }
 }
 
@@ -217,7 +200,7 @@ export function createManageSecretEnginesTool(context: ToolContext): ToolDefinit
         });
 
         reportProgress?.({ progress: 100, total: 100 });
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Secret engine management failed', { error: errorMessage });

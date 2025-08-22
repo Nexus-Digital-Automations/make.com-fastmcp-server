@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/417</span>
+                <span class='fraction'>0/418</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/402</span>
+                <span class='fraction'>0/403</span>
             </div>
         
             
@@ -1652,7 +1652,8 @@
 <a name='L1587'></a><a href='#L1587'>1587</a>
 <a name='L1588'></a><a href='#L1588'>1588</a>
 <a name='L1589'></a><a href='#L1589'>1589</a>
-<a name='L1590'></a><a href='#L1590'>1590</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1590'></a><a href='#L1590'>1590</a>
+<a name='L1591'></a><a href='#L1591'>1591</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1671,6 +1672,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3262,11 +3264,12 @@ impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</
 import MakeApiClient from '../lib/make-api-client.js';
 <span class="cstat-no" title="statement not covered" >import { auditLogger } from '../lib/audit-logger.js';</span>
 <span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
+<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../utils/response-formatter.js';</span>
 <span class="cstat-no" title="statement not covered" ></span>
-// Define comprehe<span class="cstat-no" title="statement not covered" >nsive scenario arch</span>ival policy interfaces and schemas
+// Define comp<span class="cstat-no" title="statement not covered" >rehensive scena</span>rio archival policy interfaces and schemas
 <span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Scenario archival<span class="cstat-no" title="statement not covered" > trigger conditions</span>
+ * Scenario archival trigger con<span class="cstat-no" title="statement not covered" >ditions</span>
  */
 export enum ArchivalTrigger {
   INACTIVITY = 'inactivity',           // No executions for X period
@@ -4188,7 +4191,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
           estimatedImpact: estimatedImpact.potentiallyAffected,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policy,
           conditionValidation,
@@ -4211,7 +4214,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
             impactEstimated: estimatedImpact.sampleSize &gt; 0,
           },
           message: `Scenario archival policy "${input.name}" created successfully with ${input.conditions.length} conditions. Estimated impact: ${estimatedImpact.potentiallyAffected}/${estimatedImpact.totalScenariosInScope} scenarios.`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating scenario archival policy', { error: errorMessage, name: input.name });
@@ -4368,7 +4371,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
           enforcementPerformed: !input.evaluationOptions.dryRun &amp;&amp; enforcementResults !== null,
         });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        return JSON.stringify({</span>
+<span class="cstat-no" title="statement not covered" >        return formatSuccessResponse({</span>
           success: true,
           policyId: input.policyId,
           policyName: policy.name,
@@ -4393,7 +4396,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
             executionContext: input.exe<span class="cstat-no" title="statement not covered" >cutionContext,</span>
           },<span class="cstat-no" title="statement not covered" ></span>
           message: `Evaluated ${summary.totalEvaluated} scenarios: ${summary.shouldArchive} candidates for archival. ${input.evaluationOptions.dryRun ? 'Dry run - no actions taken.' : enforcementResults ? 'Enforcement actions executed.' : 'Manual review required.'}`,
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error evaluating scenario archival policy', { error: errorMessage, policyId: input.policyId });
@@ -4518,7 +4521,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
           inactive: summaryStats.inactivePolicies,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policies: Array.isArray(policies) ? policies : [],
           summary: summaryStats,
@@ -4534,7 +4537,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
             enforcementLevels: Object.values(ArchivalEnforcement),
           },
           timestamp: new Date().toISOString(),
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const err<span class="fstat-no" title="function not covered" >or</span>Message = error instanceof Error ? error.message : String(error);
         log.<span class="cstat-no" title="statement not covered" >error('Error listing scenario archival policies', { error: errorMessage });</span>
@@ -4671,7 +4674,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
           updatedFields: Object.keys(input).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined).length,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policy: updatedPolicy,
           changes: {
@@ -4686,7 +4689,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
             fieldsChanged: Object.keys(input).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined).length,
           },
           message: `Scenario archival policy "${updatedPolicy.name}" updated successfully`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating scenario archival policy', { error: errorMessage, policyId: input.policyId });
@@ -4787,7 +4790,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
           name: policy.name,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           deletedPolicy: {
             id: input.policyId,
@@ -4802,7 +4805,7 @@ export function addScenarioArchi<span class="cstat-no" title="statement not cove
             confirmationRequired: true,
           },
           message: `Scenario archival policy "${policy.name}" deleted successfully`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting scenario archival policy', { error: errorMessage, policyId: input.policyId });
@@ -4837,7 +4840,7 @@ export default addScenarioArchivalPolicyTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:41.788Z
+                at 2025-08-22T03:12:16.801Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

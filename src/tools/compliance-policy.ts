@@ -31,6 +31,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import { getComplianceTemplate, listComplianceTemplates, getTemplateMetadata } from './compliance-templates.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Core compliance policy type definitions
 export type RegulatoryFramework = 'sox' | 'gdpr' | 'hipaa' | 'pci_dss' | 'iso27001' | 'custom';
@@ -550,7 +551,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           automatedChecks: result.enforcement.automatedChecks,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error creating compliance policy', {
@@ -658,7 +659,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           violationsCount: validationResult.violations.length,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error validating compliance', {
@@ -792,7 +793,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           overallScore: metrics.overallScore,
         });
 
-        return JSON.stringify(report, null, 2);
+        return formatSuccessResponse(report).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error generating compliance report', {
@@ -873,7 +874,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           status: input.status,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error listing compliance policies', {
@@ -956,7 +957,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           updateReason: input.updateReason,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error updating compliance policy', {
@@ -1020,7 +1021,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
             templateId: template.templateId,
           });
 
-          return JSON.stringify(result, null, 2);
+          return formatSuccessResponse(result).content[0].text;
         } else {
           // Get all templates metadata
           const templates = input.includeFullTemplate 
@@ -1040,7 +1041,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
             includeFullTemplate: input.includeFullTemplate,
           });
 
-          return JSON.stringify(result, null, 2);
+          return formatSuccessResponse(result).content[0].text;
         }
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1231,7 +1232,7 @@ export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClie
           totalControls: result.controls.total,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         componentLogger.error('Error creating policy from template', {

@@ -110,10 +110,7 @@ export class HSMIntegrationManager {
   private async configureAWSCloudHSM(config: Parameters<typeof HSMConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = HSMConfigSchema.parse(config);
     // AWS CloudHSM configuration logic
-    console.debug('Configuring AWS CloudHSM', {
-      region: validatedConfig.config.region,
-      endpoint: validatedConfig.config.endpoint,
-    });
+    // Debug: Configuring AWS CloudHSM (region: validatedConfig.config.region, endpoint: validatedConfig.config.endpoint)
   }
 
   /**
@@ -122,10 +119,7 @@ export class HSMIntegrationManager {
   private async configureAzureKeyVault(config: Parameters<typeof HSMConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = HSMConfigSchema.parse(config);
     // Azure Key Vault HSM configuration logic
-    console.debug('Configuring Azure Key Vault HSM', {
-      tenantId: validatedConfig.config.tenantId,
-      vaultName: validatedConfig.config.vaultName,
-    });
+    // Debug: Configuring Azure Key Vault HSM (tenantId: validatedConfig.config.tenantId, vaultName: validatedConfig.config.vaultName)
   }
 
   /**
@@ -134,10 +128,7 @@ export class HSMIntegrationManager {
   private async configurePKCS11HSM(config: Parameters<typeof HSMConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = HSMConfigSchema.parse(config);
     // PKCS#11 HSM configuration logic
-    console.debug('Configuring PKCS#11 HSM', {
-      library: validatedConfig.config.library,
-      slot: validatedConfig.config.slot,
-    });
+    // Debug: Configuring PKCS#11 HSM (library: validatedConfig.config.library, slot: validatedConfig.config.slot)
   }
 
   /**

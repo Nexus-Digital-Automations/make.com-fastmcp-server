@@ -519,7 +519,8 @@ export function createExternalServiceErrorForOperation(service: string, operatio
 // Error handler for unhandled promise rejections and uncaught exceptions
 export function setupGlobalErrorHandlers(): void {
   process.on('unhandledRejection', (reason: unknown, promise: Promise<unknown>) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    // Use stderr to avoid interfering with MCP stdio protocol
+    process.stderr.write(`Unhandled Rejection at: ${promise} reason: ${reason}\n`);
     // Log error but don't exit in production
     if (process.env.NODE_ENV !== 'production') {
       process.exit(1);
@@ -527,7 +528,8 @@ export function setupGlobalErrorHandlers(): void {
   });
 
   process.on('uncaughtException', (error: Error) => {
-    console.error('Uncaught Exception:', error);
+    // Use stderr to avoid interfering with MCP stdio protocol
+    process.stderr.write(`Uncaught Exception: ${error}\n`);
     // Always exit on uncaught exception
     process.exit(1);
   });

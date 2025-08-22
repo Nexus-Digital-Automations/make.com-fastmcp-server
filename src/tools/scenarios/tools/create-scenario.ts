@@ -6,6 +6,7 @@
 import { UserError } from 'fastmcp';
 import { CreateScenarioSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create scenario tool configuration
@@ -22,8 +23,8 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
       readOnlyHint: false,
       openWorldHint: false,
     },
-    execute: async (args: unknown, execContext): Promise<string> => {
-      const { log, reportProgress } = execContext;
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const typedArgs = args as { 
         name: string; 
         teamId?: string; 
@@ -32,7 +33,7 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
         scheduling?: { type: string; interval?: number; cron?: string } 
       };
       
-      log?.info?.('Creating scenario', { name: typedArgs.name, teamId: typedArgs.teamId });
+      if (log && log.info) { log.info('Creating scenario', { name: typedArgs.name, teamId: typedArgs.teamId }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -66,12 +67,12 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
         // Type guard for created scenario
         const scenarioObj = createdScenario as { id?: unknown } | null | undefined;
         
-        log?.info?.('Scenario created successfully', { 
+        if (log && log.info) { log.info('Scenario created successfully', { 
           scenarioId: String(scenarioObj?.id ?? 'unknown'),
           name: typedArgs.name 
-        });
+        }); }
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Failed to create scenario', { name: typedArgs.name, error: errorMessage });

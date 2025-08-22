@@ -6,6 +6,7 @@
 import { UserError } from 'fastmcp';
 import { ScenarioFiltersSchema } from '../schemas/scenario-filters.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create list scenarios tool configuration
@@ -22,8 +23,9 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      log?.info?.('Listing scenarios', JSON.stringify(args));
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      if (log && log.info) { log.info('Listing scenarios', JSON.stringify(args)); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -76,12 +78,12 @@ export function createListScenariosTools(context: ToolContext): ToolDefinition {
           timestamp: new Date().toISOString(),
         };
 
-        log?.info?.('Scenarios listed successfully', { 
+        if (log && log.info) { log.info('Scenarios listed successfully', { 
           count: result.scenarios.length,
           total: result.pagination.total 
-        });
+        }); }
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Failed to list scenarios', { error: errorMessage });

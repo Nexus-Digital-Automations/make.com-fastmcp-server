@@ -6,6 +6,7 @@
 import { UserError } from 'fastmcp';
 import { UpdateScenarioSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create update scenario tool configuration
@@ -22,7 +23,8 @@ export function createUpdateScenarioTool(context: ToolContext): ToolDefinition {
       readOnlyHint: false,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const typedArgs = args as {
         scenarioId: string;
         name?: string;
@@ -31,7 +33,7 @@ export function createUpdateScenarioTool(context: ToolContext): ToolDefinition {
         scheduling?: { type: string; interval?: number; cron?: string };
       };
       
-      log?.info?.('Updating scenario', { scenarioId: typedArgs.scenarioId });
+      if (log && log.info) { log.info('Updating scenario', { scenarioId: typedArgs.scenarioId }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -65,8 +67,8 @@ export function createUpdateScenarioTool(context: ToolContext): ToolDefinition {
           timestamp: new Date().toISOString(),
         };
 
-        log?.info?.('Scenario updated successfully', { scenarioId: typedArgs.scenarioId });
-        return JSON.stringify(result, null, 2);
+        if (log && log.info) { log.info('Scenario updated successfully', { scenarioId: typedArgs.scenarioId }); }
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Failed to update scenario', { 

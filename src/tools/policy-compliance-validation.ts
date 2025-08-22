@@ -26,6 +26,7 @@ import { auditLogger } from '../lib/audit-logger.js';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Core policy compliance validation types and interfaces
 export type PolicyType = 'compliance' | 'naming_convention' | 'scenario_archival' | 'all';
@@ -1726,7 +1727,7 @@ export function addPolicyComplianceValidationTools(server: FastMCP, apiClient: M
           duration: summary.validationDuration,
         });
 
-        return JSON.stringify(finalResult, null, 2);
+        return formatSuccessResponse(finalResult).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error during comprehensive policy compliance validation', {

@@ -8,6 +8,7 @@ import { OptimizeBlueprintSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { optimizeBlueprint } from '../utils/optimization.js';
 import { Blueprint } from '../types/blueprint.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create optimize blueprint tool configuration
@@ -24,18 +25,19 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log }): Promise<string> => {
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
       const typedArgs = args as {
         blueprint?: Blueprint;
         optimizationType?: string;
         includeImplementationSteps?: boolean;
       };
       
-      log?.info?.('Starting blueprint optimization analysis', { 
+      if (log && log.info) { log.info('Starting blueprint optimization analysis', { 
         hasBlueprint: !!typedArgs.blueprint,
         optimizationType: typedArgs.optimizationType,
         includeImplementationSteps: typedArgs.includeImplementationSteps
-      });
+      }); }
 
       try {
         // Validate blueprint structure first
@@ -97,18 +99,18 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
           }
         };
 
-        log?.info?.('Blueprint optimization analysis completed', {
+        if (log && log.info) { log.info('Blueprint optimization analysis completed', {
           optimizationScore: optimizationResult.optimizationScore,
           recommendationCount: filteredRecommendations.length,
           priorityLevel: optimizationSummary.priorityLevel,
           moduleCount: optimizationResult.metrics.moduleCount
-        });
+        }); }
 
-        return JSON.stringify(response, null, 2);
+        return formatSuccessResponse(response).content[0].text;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error?.('Blueprint optimization failed', { error: errorMessage });
+        if (log && log.error) { log.error('Blueprint optimization failed', { error: errorMessage }); }
         throw new UserError(`Blueprint optimization failed: ${errorMessage}`);
       }
     }

@@ -7,6 +7,7 @@ import { UserError } from 'fastmcp';
 import { QueryLogsByTimeRangeSchema } from '../schemas/stream-config.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { MakeLogEntry } from '../types/streaming.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create query logs by time range tool configuration
@@ -237,7 +238,7 @@ export function createQueryLogsByTimeRangeTool(context: ToolContext): ToolDefini
           exportEnabled: !!exportConfig?.format,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);

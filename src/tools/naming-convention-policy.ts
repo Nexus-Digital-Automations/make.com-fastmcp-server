@@ -19,6 +19,7 @@ import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Define comprehensive naming convention policy interfaces and schemas
 
@@ -743,7 +744,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           resourceTypes: Object.keys(suggestions).length,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policy,
           validationResults,
@@ -764,7 +765,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             templateApplied: input.templateId || null,
           },
           message: `Naming convention policy "${input.name}" created successfully with ${finalRules.length} rules`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating naming convention policy', { error: errorMessage, name: input.name });
@@ -941,7 +942,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           warningNames: summaryStats.warningNames,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policyId: input.policyId,
           policyName: policy.name,
@@ -960,7 +961,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           },
           timestamp: new Date().toISOString(),
           message: `Validated ${summaryStats.totalNames} names: ${summaryStats.validNames} valid, ${summaryStats.invalidNames} invalid, ${summaryStats.warningNames} warnings`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error validating names against policy', { error: errorMessage, policyId: input.policyId });
@@ -1058,7 +1059,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           inactive: summaryStats.inactivePolicies,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policies: Array.isArray(policies) ? policies : [],
           summary: summaryStats,
@@ -1073,7 +1074,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             count: Object.keys(POLICY_TEMPLATES).length,
           },
           timestamp: new Date().toISOString(),
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing naming convention policies', { error: errorMessage });
@@ -1204,7 +1205,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined).length,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policy: updatedPolicy,
           changes: {
@@ -1219,7 +1220,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             fieldsChanged: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined).length,
           },
           message: `Naming convention policy "${updatedPolicy.name}" updated successfully`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating naming convention policy', { error: errorMessage, policyId: input.policyId });
@@ -1333,7 +1334,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           totalRules: summary.totalRules,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           templates: templatesWithDetails,
           summary,
@@ -1348,7 +1349,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             enforcement: 'Templates include recommended enforcement levels that can be adjusted',
           },
           timestamp: new Date().toISOString(),
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error retrieving naming policy templates', { error: errorMessage });
@@ -1435,7 +1436,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           name: policy.name,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           deletedPolicy: {
             id: input.policyId,
@@ -1450,7 +1451,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             confirmationRequired: true,
           },
           message: `Naming convention policy "${policy.name}" deleted successfully`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting naming convention policy', { error: errorMessage, policyId: input.policyId });

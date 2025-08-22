@@ -8,6 +8,7 @@ import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema } from 
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { generateTroubleshootingReport as _generateTroubleshootingReport } from '../utils/troubleshooting.js';
 import type MakeApiClient from '../../../lib/make-api-client.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create troubleshoot scenario tool configuration
@@ -24,8 +25,9 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      log?.info?.('Starting scenario troubleshooting', JSON.stringify(args));
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      if (log && log.info) { log.info('Starting scenario troubleshooting', JSON.stringify(args)); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -63,10 +65,10 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
 
         reportProgress?.({ progress: 30, total: 100 });
 
-        log?.info?.('Fetched scenario for troubleshooting', { 
+        if (log && log.info) { log.info('Fetched scenario for troubleshooting', { 
           scenarioId: scenarioId,
           timeRangeHours 
-        });
+        }); }
 
         // Generate comprehensive troubleshooting report
         const troubleshootingReport = await generateSingleScenarioTroubleshootingReport(
@@ -81,13 +83,13 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
 
         reportProgress?.({ progress: 100, total: 100 });
 
-        log?.info?.('Scenario troubleshooting completed', {
+        if (log && log.info) { log.info('Scenario troubleshooting completed', {
           scenarioId: scenarioId,
           reportGenerated: true,
           timeRangeHours
-        });
+        }); }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           report: troubleshootingReport,
           summary: {
             scenarioId: scenarioId,
@@ -97,7 +99,7 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
             performanceHistoryIncluded: includePerformanceHistory,
             autoFixAttempted: autoFix
           }
-        }, null, 2);
+        }).content[0].text;
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -179,8 +181,9 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      log?.info?.('Generating comprehensive troubleshooting report', JSON.stringify(args));
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      if (log && log.info) { log.info('Generating comprehensive troubleshooting report', JSON.stringify(args)); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -232,10 +235,10 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
         }
 
         if (scenarios.length === 0) {
-          return JSON.stringify({
+          return formatSuccessResponse({
             message: 'No scenarios found for analysis',
             timestamp: new Date().toISOString()
-          }, null, 2);
+          }).content[0].text;
         }
 
         reportProgress?.({ progress: 60, total: 100 });
@@ -279,20 +282,20 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
           }
         };
 
-        log?.info?.('Troubleshooting report generated successfully', {
+        if (log && log.info) { log.info('Troubleshooting report generated successfully', {
           reportId: report.reportId,
           scenarioCount: scenarios.length,
           formatType: reportOptions.formatType || 'json'
-        });
+        }); }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           report: report,
           summary: {
             totalScenarios: scenarios.length,
             reportGenerated: true,
             timestamp: new Date().toISOString()
           }
-        }, null, 2);
+        }).content[0].text;
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -321,10 +324,10 @@ async function _fetchScenariosForTroubleshooting(
       if (response.success && response.data) {
         scenarios.push(response.data);
       } else {
-        console.warn(`Failed to fetch scenario ${scenarioId}:`, response.error);
+        // Warning: Failed to fetch scenario (scenarioId, error: response.error)
       }
     } catch (error) {
-      console.warn(`Error fetching scenario ${scenarioId}:`, error);
+      // Warning: Error fetching scenario (scenarioId, error)
     }
   }
   
@@ -347,7 +350,7 @@ async function _fetchScenariosWithFilters(
     
     return [];
   } catch (error) {
-    console.warn('Error fetching scenarios with filters:', error);
+    // Warning: Error fetching scenarios with filters (error)
     return [];
   }
 }

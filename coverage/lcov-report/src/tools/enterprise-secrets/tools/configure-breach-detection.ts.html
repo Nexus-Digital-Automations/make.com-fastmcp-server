@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/74</span>
+                <span class='fraction'>0/71</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/73</span>
+                <span class='fraction'>0/70</span>
             </div>
         
             
@@ -334,16 +334,12 @@
 <a name='L269'></a><a href='#L269'>269</a>
 <a name='L270'></a><a href='#L270'>270</a>
 <a name='L271'></a><a href='#L271'>271</a>
-<a name='L272'></a><a href='#L272'>272</a>
-<a name='L273'></a><a href='#L273'>273</a>
-<a name='L274'></a><a href='#L274'>274</a>
-<a name='L275'></a><a href='#L275'>275</a>
-<a name='L276'></a><a href='#L276'>276</a>
-<a name='L277'></a><a href='#L277'>277</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L272'></a><a href='#L272'>272</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -394,19 +390,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -414,7 +404,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -625,6 +615,7 @@
 import { ToolConte<span class="cstat-no" title="statement not covered" >xt, ToolDefinition,</span> ToolExecutionContext } from '../../shared/types/tool-context.js';
 import { BreachIndi<span class="cstat-no" title="statement not covered" >cator } from '../types/index.js</span>';
 import { auditLogger } fro<span class="cstat-no" title="statement not covered" >m '../../../lib/audit-logger.js';</span>
+import { formatSuccessResponse }<span class="cstat-no" title="statement not covered" > from '../../../utils/response-formatter.js';</span>
 &nbsp;
 /**
  * Breach Detection Manager class
@@ -670,38 +661,32 @@ class BreachDetectionM<span class="cstat-no" title="statement not covered" >anag
 <span class="fstat-no" title="function not covered" ></span>        detectionMethods: validatedConfig.detectionMethods,
         monitoringTargets: valid<span class="cstat-no" title="statement not covered" >atedConfig.monitoringTargets,</span>
         responseConfig: validatedConfig.responseConfig,
-      },<span class="cstat-no" title="statement not covered" ></span>
+      },
       riskLevel: 'low',
-    });
-  }
-<span class="fstat-no" title="function not covered" ></span>
-  private async initializeAnomal<span class="cstat-no" title="statement not covered" >yDetection(config: Parameters&lt;typeof BreachDetectionC</span>onfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
-    const validatedConfig = BreachDetectionConfigSchema.parse(config);
-    // I<span class="cstat-no" title="statement not covered" >nitialize anomaly detection systems</span>
-    console.debug('Initializing anomaly detection', {
-      enabled: validatedConfig.detectionMethods.anomalyDetection,
-    });
-  }<span class="fstat-no" title="function not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  private async initializeThreatIntelligence(config: Parameters&lt;typeof BreachDetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
-    cons<span class="cstat-no" title="statement not covered" >t validatedConfig = BreachDetectionConfigSchema.parse(config);</span>
-    // Initialize threat intelligence feeds
-    console.debug('Initializing threat intelligence', {
-      enabled: validatedConfig.detectionMethods.threatIntelligence,
 <span class="fstat-no" title="function not covered" >    })</span>;
+  }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  private async initializeAnomalyDetection(config: Parameters&lt;typeof BreachDetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
+    const validatedConfig = BreachDetectionConfigSchema.parse(config);
+<span class="fstat-no" title="function not covered" >    //</span> Initialize anomaly detection systems
+    // Debug: Initializing anoma<span class="cstat-no" title="statement not covered" >ly detection (enabled: validatedConfig.detectionMetho</span>ds.anomalyDetection)
   }
-<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  private async initializeThreatIntelligence(config: Parameters&lt;typeof BreachDetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
+<span class="fstat-no" title="function not covered" >    co</span>nst validatedConfig = BreachDetectionConfigSchema.parse(config);
+    // Initialize threat intelligence feeds
+    // Debug: Initializing threat intelligence (enabled: validatedConfig.detectionMethods.threatIntelligence)
+  }
+&nbsp;
   private async initializeBehavioralAnalysis(config: Parameters&lt;typeof BreachDetectionConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
     const validatedConfig = BreachDetectionConfigSchema.parse(config);
-    // Initialize behavioral analysis
-    console.debug('Initializing behavioral analysis', {
-<span class="fstat-no" title="function not covered" ></span>      enabled: validatedConfig.detectionMethods.behavioralAnalysis,
-    });
+<span class="fstat-no" title="function not covered" >    //</span> Initialize behavioral analysis
+    // Debug: Initializing behavioral analysis (enabled: validatedConfig.detectionMethods.behavioralAnalysis)
   }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   privat<span class="cstat-no" title="statement not covered" >e async setupAutomaticContainment(): Promise&lt;void&gt; {</span>
     // Setup automatic contain<span class="cstat-no" title="statement not covered" >ment procedures</span>
-    console.debug('Setting up automatic containment');
+    // Debug: Setting up automatic containment
   }
 &nbsp;
   /**
@@ -883,7 +868,7 @@ export function createConfigureBreachDetectionTool(context: ToolContext): ToolDe
         });
 &nbsp;
         reportProgress?.({ progress: 100, total: 100 });
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Breach detection configuration failed', { error: errorMessage });
@@ -898,7 +883,7 @@ export function createConfigureBreachDetectionTool(context: ToolContext): ToolDe
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:41.788Z
+                at 2025-08-22T03:12:16.801Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

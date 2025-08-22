@@ -656,15 +656,15 @@ func<span class="cstat-no" title="statement not covered" >tion runValidationTest
 <span class="cstat-no" title="statement not covered" ></span>
   co<span class="cstat-no" title="statement not covered" >nst tests = [</span>
     { schema: 'ScenarioFiltersSchema', validator: ScenarioFiltersSchema, data: testData.scenarioFilters },
-<span class="cstat-no" title="statement not covered" >    { schema: 'ScenarioDetailSchema', validator: ScenarioDetailSchema, data: testData.scenarioDeta</span>il },
+<span class="cstat-no" title="statement not covered" >    { schema: 'ScenarioDetailSchema', validator: ScenarioDetailSchema, data: testData.scenarioDetail },</span>
 <span class="cstat-no" title="statement not covered" >    { schema: 'RunScenarioSchema', validator: RunScenarioSchema, data: testData.runScenario },</span>
-<span class="cstat-no" title="statement not covered" >    { schema: 'TroubleshootScenarioSchema', validator: TroubleshootScenarioSchema, data: testData.troubl</span>eshootScenario },
+<span class="cstat-no" title="statement not covered" >    { schema: 'TroubleshootScenarioSchema', validator: TroubleshootScenarioSchema, data: testData.troubleshootScenari</span>o },
     { schema: 'GenerateTroubleshootingReportSchema', validator: GenerateTroubleshootingReportSchema, data: testData.generateReport },
     { schema: 'CreateScenarioSchema', validator: CreateScenarioSchema, data: testData.createScenario },
     { schema: 'UpdateScenarioSchema', validator: UpdateScenarioSchema, data: testData.updateScenario },
     { schema: 'DeleteScenarioSchema', validator: DeleteScenarioSchema, data: testData.deleteScenario },
     { sch<span class="fstat-no" title="function not covered" >ema: 'CloneScenarioSchema</span>', validator: CloneScenarioSchema, data: testData.cloneScenario },
-<span class="cstat-no" title="statement not covered" >    { schema: 'ValidateBlueprintSchema', validator: Valid</span>ateBlueprintSchema, data: testData.validateBlueprint },
+<span class="cstat-no" title="statement not covered" >    { schema: 'ValidateBlueprintSchema', validator: ValidateBlueprin</span>tSchema, data: testData.validateBlueprint },
     { schema: 'Extra<span class="cstat-no" title="statement not covered" >ctBlueprintConnection</span>sSchema', validator: ExtractBlueprintConnectionsSchema, data: testData.extractConnections },
     { schema: 'Optim<span class="cstat-no" title="statement not covered" >izeBl</span>ueprintSchema', validator: OptimizeBlueprintSchema, data: testData.optimizeBlueprint },
   ];<span class="cstat-no" title="statement not covered" ></span>
@@ -678,7 +678,7 @@ func<span class="cstat-no" title="statement not covered" >tion runValidationTest
         data: result,
 <span class="cstat-no" title="statement not covered" >      });</span>
 <span class="cstat-no" title="statement not covered" >    } catch (error: unknown) {</span>
-<span class="cstat-no" title="statement not covered" >      const errorMessage = error instanceof Error ? error.me</span>ssage : 'Unknown error';
+<span class="cstat-no" title="statement not covered" >      const errorMessage = error instanceof Error ? error.message : 'Un</span>known error';
 <span class="cstat-no" title="statement not covered" >      results.push({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" >        schema: test.schema,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" >        success: false,</span>
@@ -694,48 +694,48 @@ func<span class="cstat-no" title="statement not covered" >tion runValidationTest
  * Test schema utilities
  */
 function testSchemaUtilities(): void {
-  console.log('\n=== Testing Schema Utilities ===');
+  process.stderr.write('\n=== Testing Schema Utilities ===\n');
   
   // Test SchemaValidation.validate
   const validateResult = SchemaValidation.validate(ScenarioFiltersSchema, testData.scenarioFilters);
-  console.log('SchemaValidation.validate result:', validateResult.success ? 'SUCCESS' : 'FAILED');
+  process.stderr.write(`SchemaValidation.validate result: ${validateResult.success ? 'SUCCESS' : 'FAILED'}\n`);
   
   // Test SchemaValidation.safeParse
   const safeParseResult = SchemaValidation.safeParse(CreateScenarioSchema, testData.createScenario);
-  console.log('SchemaValidation.safeParse result:', safeParseResult ? 'SUCCESS' : 'FAILED');
+  process.stderr.write(`SchemaValidation.safeParse result: ${safeParseResult ? 'SUCCESS' : 'FAILED'}\n`);
   
   // Test ScenariosSchemas structure
-  console.log('ScenariosSchemas.filters keys:', Object.keys(ScenariosSchemas.filters));
-  console.log('ScenariosSchemas.updates keys:', Object.keys(ScenariosSchemas.updates));
-  console.log('ScenariosSchemas.blueprints keys:', Object.keys(ScenariosSchemas.blueprints));
+  process.stderr.write(`ScenariosSchemas.filters keys: ${Object.keys(ScenariosSchemas.filters)}\n`);
+  process.stderr.write(`ScenariosSchemas.updates keys: ${Object.keys(ScenariosSchemas.updates)}\n`);
+  process.stderr.write(`ScenariosSchemas.blueprints keys: ${Object.keys(ScenariosSchemas.blueprints)}\n`);
 }
 &nbsp;
 /**
  * Main validation function
  */
 export function validateExtractedSchemas(): boolean {
-  console.log('=== Schema Extraction Validation ===');
+  process.stderr.write('=== Schema Extraction Validation ===\n');
   
   const results = runValidationTests();
   let allPassed = true;
   
-  console.log('\n=== Validation Results ===');
+  process.stderr.write('\n=== Validation Results ===\n');
   for (const result of results) {
     const status = result.success ? '✅ PASS' : '❌ FAIL';
-    console.log(`${status} ${result.schema}`);
+    process.stderr.write(`${status} ${result.schema}\n`);
     if (!result.success) {
-      console.log(`   Error: ${result.error}`);
+      process.stderr.write(`   Error: ${result.error}\n`);
       allPassed = false;
     }
   }
   
   testSchemaUtilities();
   
-  console.log('\n=== Summary ===');
-  console.log(`Total schemas tested: ${results.length}`);
-  console.log(`Passed: ${results.filter(r =&gt; r.success).length}`);
-  console.log(`Failed: ${results.filter(r =&gt; !r.success).length}`);
-  console.log(`Overall result: ${allPassed ? '✅ ALL SCHEMAS VALID' : '❌ SOME SCHEMAS FAILED'}`);
+  process.stderr.write('\n=== Summary ===\n');
+  process.stderr.write(`Total schemas tested: ${results.length}\n`);
+  process.stderr.write(`Passed: ${results.filter(r =&gt; r.success).length}\n`);
+  process.stderr.write(`Failed: ${results.filter(r =&gt; !r.success).length}\n`);
+  process.stderr.write(`Overall result: ${allPassed ? '✅ ALL SCHEMAS VALID' : '❌ SOME SCHEMAS FAILED'}\n`);
   
   return allPassed;
 }
@@ -751,7 +751,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:42.092Z
+                at 2025-08-22T03:12:16.956Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

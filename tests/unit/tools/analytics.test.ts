@@ -22,6 +22,12 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
   let mockApiClient: MockMakeApiClient;
   let mockTool: jest.MockedFunction<any>;
 
+  // Helper to parse response format consistently
+  const parseToolResult = (result: any) => {
+    const resultText = result.content?.[0]?.text || result;
+    return typeof resultText === 'string' ? JSON.parse(resultText) : resultText;
+  };
+
   beforeEach(() => {
     const serverSetup = createMockServer();
     mockServer = serverSetup.server;
@@ -76,10 +82,12 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
         const tool = findTool(mockTool, 'get-organization-analytics');
         const result = await executeTool(tool, { organizationId: 12345 });
         
-        expect(result).toContain(testAnalytics.period);
-        expect(result).toContain('totalExecutions');
-        expect(result).toContain('successRate');
-        expect(result).toContain('operationsUtilization');
+        const parsedResult = parseToolResult(result);
+        expect(parsedResult.success).toBe(true);
+        expect(parsedResult.analytics.period).toEqual(testAnalytics.period);
+        expect(parsedResult.summary.totalExecutions).toBeDefined();
+        expect(parsedResult.summary.successRate).toBeDefined();
+        expect(parsedResult.summary.operationsUtilization).toBeDefined();
       });
 
       it('should handle custom date range and period filters', async () => {
@@ -102,6 +110,9 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
           includeBilling: false
         });
 
+        const parsedResult = parseToolResult(result);
+        expect(parsedResult.success).toBe(true);
+        
         const calls = mockApiClient.getCallLog();
         expect(calls[0].params.startDate).toBe('2024-01-01T00:00:00Z');
         expect(calls[0].params.endDate).toBe('2024-01-31T23:59:59Z');
@@ -165,10 +176,13 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
         const tool = findTool(mockTool, 'list-audit-logs');
         const result = await executeTool(tool, {});
         
-        expect(result).toContain(testAuditLog.action);
-        expect(result).toContain(testAuditLog.resource);
-        expect(result).toContain('summary');
-        expect(result).toContain('pagination');
+        const parsedResult = parseToolResult(result);
+        expect(parsedResult.success).toBe(true);
+        const resultStr = JSON.stringify(parsedResult);
+        expect(resultStr).toContain(testAuditLog.action);
+        expect(resultStr).toContain(testAuditLog.resource);
+        expect(resultStr).toContain('summary');
+        expect(resultStr).toContain('pagination');
       });
 
       it('should filter audit logs by organization, team, and user', async () => {
@@ -221,7 +235,7 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
         const tool = findTool(mockTool, 'list-audit-logs');
         const result = await executeTool(tool, {});
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.summary.totalLogs).toBe(3);
         expect(parsed.summary.actionTypes).toContain('scenario_create');
         expect(parsed.summary.actionTypes).toContain('connection_update');
@@ -244,9 +258,12 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
         const tool = findTool(mockTool, 'get-audit-log');
         const result = await executeTool(tool, { logId: 12345 });
         
-        expect(result).toContain(testAuditLog.action);
-        expect(result).toContain(testAuditLog.resource);
-        expect(result).toContain(testAuditLog.timestamp);
+        const parsedResult = parseToolResult(result);
+        expect(parsedResult.success).toBe(true);
+        const resultStr = JSON.stringify(parsedResult);
+        expect(resultStr).toContain(testAuditLog.action);
+        expect(resultStr).toContain(testAuditLog.resource);
+        expect(resultStr).toContain(testAuditLog.timestamp);
       });
 
       it('should handle audit log not found', async () => {
@@ -285,9 +302,12 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
           limit: 100
         });
 
-        expect(result).toContain(testScenarioLog.message);
-        expect(result).toContain('summary');
-        expect(result).toContain('logLevels');
+        const parsedResult = parseToolResult(result);
+        expect(parsedResult.success).toBe(true);
+        const resultStr = JSON.stringify(parsedResult);
+        expect(resultStr).toContain(testScenarioLog.message);
+        expect(resultStr).toContain('summary');
+        expect(resultStr).toContain('logLevels');
         
         const calls = mockApiClient.getCallLog();
         expect(calls[0].endpoint).toBe('/scenarios/12345/logs');
@@ -315,7 +335,7 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
         const tool = findTool(mockTool, 'get-scenario-logs');
         const result = await executeTool(tool, { scenarioId: 12345 });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.summary.logLevels.info).toBe(1);
         expect(parsed.summary.logLevels.error).toBe(1);
         expect(parsed.summary.logLevels.warning).toBe(1);
@@ -352,7 +372,7 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
           limit: 100
         });
 
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.summary.totalExecutions).toBe(3);
         expect(parsed.summary.statusBreakdown.success).toBe(2);
         expect(parsed.summary.statusBreakdown.error).toBe(1);
@@ -407,7 +427,7 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
         const tool = findTool(mockTool, 'list-incomplete-executions');
         const result = await executeTool(tool, {});
 
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.summary.totalIncomplete).toBe(3);
         expect(parsed.summary.statusBreakdown.waiting).toBe(1);
         expect(parsed.summary.statusBreakdown.paused).toBe(1);
@@ -457,8 +477,11 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
           reason: 'Temporary network issue resolved'
         });
 
-        expect(result).toContain('retry successfully');
-        expect(result).toContain('retrying');
+        const parsedResult = parseToolResult(result);
+        expect(parsedResult.success).toBe(true);
+        const resultStr = JSON.stringify(parsedResult);
+        expect(resultStr).toContain('retry successfully');
+        expect(resultStr).toContain('retrying');
         
         const calls = mockApiClient.getCallLog();
         expect(calls[0].data.action).toBe('retry');
@@ -483,7 +506,9 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
             action: action as 'retry' | 'skip' | 'cancel'
           });
 
-          expect(result).toContain(`${action} successfully`);
+          const parsedResult = parseToolResult(result);
+          expect(parsedResult.success).toBe(true);
+          expect(JSON.stringify(parsedResult)).toContain(`${action} successfully`);
           mockApiClient.reset();
         }
       });
@@ -511,7 +536,7 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
         const tool = findTool(mockTool, 'get-hook-logs');
         const result = await executeTool(tool, { hookId: 12345 });
 
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.summary.totalLogs).toBe(3);
         expect(parsed.summary.successRate).toBe(67); // 2/3 * 100, rounded
         expect(parsed.summary.methodBreakdown.POST).toBe(2);
@@ -575,9 +600,12 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
             endDate: '2024-01-31T23:59:59Z'
           });
 
-          expect(result).toContain(`export_${format}_123`);
-          expect(result).toContain('downloadUrl');
-          expect(result).toContain('estimatedCompletionTime');
+          const parsedResult = parseToolResult(result);
+          expect(parsedResult.success).toBe(true);
+          const resultStr = JSON.stringify(parsedResult);
+          expect(resultStr).toContain(`export_${format}_123`);
+          expect(resultStr).toContain('downloadUrl');
+          expect(resultStr).toContain('estimatedCompletionTime');
           
           mockApiClient.reset();
         }
@@ -645,7 +673,7 @@ describe('Analytics and Audit Log Tools - Comprehensive Test Suite', () => {
           period: 'day'
         });
 
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.metrics.dataPoints).toHaveLength(3);
         expect(parsed.analysis.trend).toBe('improving');
         expect(parsed.analysis.currentValue).toBe(110);

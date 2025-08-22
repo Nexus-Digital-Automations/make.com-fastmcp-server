@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/252</span>
+                <span class='fraction'>0/253</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/249</span>
+                <span class='fraction'>0/250</span>
             </div>
         
             
@@ -911,7 +911,8 @@
 <a name='L846'></a><a href='#L846'>846</a>
 <a name='L847'></a><a href='#L847'>847</a>
 <a name='L848'></a><a href='#L848'>848</a>
-<a name='L849'></a><a href='#L849'>849</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L849'></a><a href='#L849'>849</a>
+<a name='L850'></a><a href='#L850'>850</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -919,6 +920,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1768,9 +1770,10 @@ import { FastMCP, User<span class="cstat-no" title="statement not covered" >Erro
 impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</span>
 import MakeApiClient from '../lib/make-api-client.js';
 <span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
+<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../u</span>tils/response-formatter.js';
 <span class="cstat-no" title="statement not covered" ></span>
-// AI Agent types <span class="cstat-no" title="statement not covered" >for comprehensive m</span>anagement
-export interfa<span class="cstat-no" title="statement not covered" >ce MakeAIAgent </span>{
+// AI Agent ty<span class="cstat-no" title="statement not covered" >pes for compreh</span>ensive management
+export interface Mak<span class="cstat-no" title="statement not covered" >eAIAgent {</span>
   id: number;<span class="cstat-no" title="statement not covered" ></span>
   name: string;
   description?: string;<span class="cstat-no" title="statement not covered" ></span>
@@ -2036,7 +2039,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           model: agent.configuration.model,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
-        return JSON.stringify({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        return formatSuccessResponse({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
           agent: {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
             ...agent,
             configuration: {
@@ -2047,7 +2050,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           },
           message: `AI agent "${name}" created succes<span class="fstat-no" title="function not covered" >sf</span>ully`,
           testUrl: `/ai-agents/${agent.id<span class="cstat-no" title="statement not covered" >}/test`,</span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+        }).content[0].te<span class="cstat-no" title="statement not covered" >xt;</span>
       } catch (error: un<span class="cstat-no" title="statement not covered" >known) {</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating AI agent', { n<span class="fstat-no" title="function not covered" >am</span>e, <span class="cstat-no" title="statement not covered" >error: erro</span>rMessage });
@@ -2139,7 +2142,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           } : undefined,
         };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           agents<span class="cstat-no" title="statement not covered" >: agents.map(agent =&gt; ({</span>
             ...agent,
             configuration: {
@@ -2158,7 +2161,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
             offset,
             hasMore: (metadata?.total || 0) &gt; (offset + agents.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing AI agents', { error: errorMessage });
@@ -2233,7 +2236,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           status: agent.status,
         });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           agent: {
             ...agent,
             configuration: {
@@ -2253,7 +2256,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
             lastHeal<span class="cstat-no" title="statement not covered" >thCheck: (usa</span>ge as Record&lt;string, unknown&gt;)?.lastHealthCheck,
             cost<span class="cstat-no" title="statement not covered" >Estimate: (usage as Record&lt;string, unknown&gt;)?.estimatedCost,</span>
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
 <span class="cstat-no" title="statement not covered" >        log.error('Error getting AI agent', { agentId, error: errorMessage });</span>
@@ -2322,7 +2325,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           changes: Object.keys(updateData),
         });
 &nbsp;
-        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
+        return formatSuccessRespon<span class="cstat-no" title="statement not covered" >se({</span>
           agent: {<span class="cstat-no" title="statement not covered" ></span>
             ...u<span class="cstat-no" title="statement not covered" >pdatedAgent,</span>
             configur<span class="cstat-no" title="statement not covered" >ation: {</span>
@@ -2335,7 +2338,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           },
           message: `AI agent "${updatedAgent.name}" updated successfully`,
           changes: Object.keys(updateData),
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
         log.error('Error updating AI agent', { agentId, error: errorMessage });
@@ -2382,11 +2385,11 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
 <span class="cstat-no" title="statement not covered" ></span>
         log.<span class="cstat-no" title="statement not covered" >info('Successfully deleted AI agent', { agentId });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
+        return formatSuccessResponse(<span class="cstat-no" title="statement not covered" >{</span>
           message: `AI agent ${agentId} deleted successfully`,
           agentId,
           forced: force,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting AI agent', { agentId, error: errorMessage });
@@ -2441,7 +2444,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           responseTime: totalTime,
         });<span class="fstat-no" title="function not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        retu<span class="cstat-no" title="statement not covered" >rn JSON.stringify({</span>
+        retu<span class="cstat-no" title="statement not covered" >rn formatSuccessResponse({</span>
           te<span class="cstat-no" title="statement not covered" >stResult,</span>
           performance: {<span class="cstat-no" title="statement not covered" ></span>
             totalTime: `${totalTime}ms`,
@@ -2460,7 +2463,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
             message: testResult?.message || 'Test completed',
             timestamp: new Date().toISOString(),<span class="fstat-no" title="function not covered" ></span>
           },<span class="cstat-no" title="statement not covered" ></span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? <span class="fstat-no" title="function not covered" >er</span>ror.message : String(error);
         log.error('Error<span class="cstat-no" title="statement not covered" > testing AI agent', { agentId, testType, error: errorMes</span>sage });
@@ -2514,7 +2517,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           type: provider.type,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           provider: {
             ...provider,
             configuration: {
@@ -2524,7 +2527,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           },
           message: `LLM provider "${name}" created successfully`,
           testUrl: `/llm-providers/${provider.id}/test`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating LLM provider', { name, error: errorMessage });
@@ -2585,7 +2588,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
           modelTypes: [...new Set(providers.flatMap(p =&gt; p.models.map(m =&gt; m.type)))],
         };
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           providers: providers.map(provider =&gt; ({
             ...provider,
             configuration: {
@@ -2594,7 +2597,7 @@ export function addA<span class="cstat-no" title="statement not covered" >IAgent
             },
           })),
           summary,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing LLM providers', { error: errorMessage });
@@ -2614,7 +2617,7 @@ export default addAIAgentTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:41.788Z
+                at 2025-08-22T03:12:16.801Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

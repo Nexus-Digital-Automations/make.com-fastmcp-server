@@ -7,6 +7,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Budget configuration types
 export interface BudgetConfiguration {
@@ -362,7 +363,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
           actionCount: budgetConfig.automatedActions.length,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           budget: budgetConfig,
           message: `Budget configuration "${name}" created successfully`,
           configuration: {
@@ -382,7 +383,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
             'Review automated action configurations',
             'Set up cost projection schedules',
           ],
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating budget configuration', { name, error: errorMessage });
@@ -565,7 +566,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
           triggeredAlerts: triggeredThresholds.length,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting budget status', { budgetId, error: errorMessage });
@@ -741,7 +742,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
           ],
         };
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error generating cost projection', { budgetId, error: errorMessage });
@@ -782,7 +783,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
         const scenarios = targetScenarios || await identifyHighCostScenarios(budgetId);
         
         if (scenarios.length === 0) {
-          return JSON.stringify({
+          return formatSuccessResponse({
             message: 'No scenarios identified for cost control action',
             analysis: {
               budgetId,
@@ -805,7 +806,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
               estimatedSavings: 0,
               rollbackPlan: { available: false, timeframe: 'n/a' }
             },
-          }, null, 2);
+          }).content[0].text;
         }
 
         reportProgress({ progress: 40, total: 100 });
@@ -837,7 +838,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
             estimatedSavings: scenarioAnalysis.estimatedSavings,
           });
 
-          return JSON.stringify({
+          return formatSuccessResponse({
             dryRun: true,
             executionPlan,
             message: `Dry run: ${action} would affect ${scenarios.length} scenarios`,
@@ -854,7 +855,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
               'Execute with dryRun=false when ready',
               ...(approvalRequired ? ['Obtain required approvals'] : []),
             ],
-          }, null, 2);
+          });
         }
 
         // Phase 4: Execute control action (if not dry run)
@@ -868,7 +869,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
             reason,
           });
 
-          return JSON.stringify({
+          return formatSuccessResponse({
             status: 'pending_approval',
             executionPlan,
             message: `Control action "${action}" requires approval before execution`,
@@ -879,7 +880,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
               approvalCode: generateApprovalCode(budgetId, action),
             },
             instructions: 'Provide approval code to execute this action',
-          }, null, 2);
+          });
         }
 
         // Special handling for 'analyze' action - return analysis structure
@@ -927,7 +928,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
               riskLevel: scenarioAnalysis.impact.level,
             },
           };
-          return JSON.stringify(analysisResult, null, 2);
+          return formatSuccessResponse(analysisResult).content[0].text;
         }
 
         const executionResult = await executeScenarioControl(scenarios, action, reason);
@@ -942,7 +943,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
           failed: executionResult.failed,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           status: 'executed',
           executionResult,
           message: `Successfully ${action} ${executionResult.successful} scenarios`,
@@ -960,7 +961,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
             trackingEnabled: true,
             nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error executing scenario control', { budgetId, action, error: errorMessage });

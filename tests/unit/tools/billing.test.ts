@@ -22,6 +22,12 @@ describe('Billing Management Tools', () => {
   let mockApiClient: MockMakeApiClient;
   let mockTool: jest.MockedFunction<any>;
 
+  // Helper to parse response format consistently
+  const parseToolResult = (result: any) => {
+    const resultText = result.content?.[0]?.text || result;
+    return typeof resultText === 'string' ? JSON.parse(resultText) : resultText;
+  };
+
   beforeEach(() => {
     const serverSetup = createMockServer();
     mockServer = serverSetup.server;
@@ -60,8 +66,12 @@ describe('Billing Management Tools', () => {
       
       const result = await executeTool(tool, {}, { reportProgress: mockReportProgress });
       
-      expect(result).toContain(testBillingAccount.organizationName);
-      expect(result).toContain(testBillingAccount.billingPlan.name);
+      // Handle the new response format
+      const resultText = result.content?.[0]?.text || result;
+      const parsedResult = typeof resultText === 'string' ? JSON.parse(resultText) : resultText;
+      expect(parsedResult.success).toBe(true);
+      expect(parsedResult.account.organizationName).toBe(testBillingAccount.organizationName);
+      expect(parsedResult.account.billingPlan.name).toBe(testBillingAccount.billingPlan.name);
       expectProgressReported(mockReportProgress, [
         { progress: 0, total: 100 },
         { progress: 50, total: 100 },
@@ -107,7 +117,7 @@ describe('Billing Management Tools', () => {
         includeHistory: true
       });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.summary.usage).toBeDefined();
       expect(parsedResult.alerts).toBeDefined();
     });
@@ -136,7 +146,7 @@ describe('Billing Management Tools', () => {
       const tool = findTool(mockTool, 'get-billing-account');
       const result = await executeTool(tool, { includePaymentMethods: true });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.account.paymentMethods[0]).toMatchObject({
         lastFour: '4242',
         type: 'credit_card',
@@ -179,7 +189,7 @@ describe('Billing Management Tools', () => {
       const tool = findTool(mockTool, 'get-billing-account');
       const result = await executeTool(tool, {});
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.alerts).toContain('Operations usage above 80%');
       expect(parsedResult.alerts).toContain('Data transfer usage above 80%');
     });
@@ -227,7 +237,7 @@ describe('Billing Management Tools', () => {
       const tool = findTool(mockTool, 'list-invoices');
       const result = await executeTool(tool, {});
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.invoices).toHaveLength(2);
       expect(parsedResult.analysis.totalInvoices).toBe(2);
       expect(parsedResult.analysis.financialSummary.totalAmount).toBe(217.80);
@@ -289,7 +299,7 @@ describe('Billing Management Tools', () => {
       const tool = findTool(mockTool, 'list-invoices');
       const result = await executeTool(tool, {});
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.analysis.statusBreakdown).toEqual({
         paid: 1,
         overdue: 1
@@ -375,7 +385,7 @@ describe('Billing Management Tools', () => {
       
       const result = await executeTool(tool, {}, { reportProgress: mockReportProgress });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.metrics.organizationId).toBe(67890);
       expect(parsedResult.summary.usage.operations).toBe(50000);
       expect(parsedResult.optimization.recommendations).toHaveLength(1);
@@ -484,7 +494,7 @@ describe('Billing Management Tools', () => {
         setAsDefault: true
       }, { reportProgress: mockReportProgress });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.summary.type).toBe('credit_card');
       expect(parsedResult.summary.isDefault).toBe(true);
       
@@ -559,7 +569,9 @@ describe('Billing Management Tools', () => {
         }
       });
       
-      expect(result).toContain('paypal');
+      const parsedResult = parseToolResult(result);
+      expect(parsedResult.success).toBe(true);
+      expect(parsedResult.paymentMethod.type).toBe('paypal');
     });
   });
 
@@ -603,7 +615,7 @@ describe('Billing Management Tools', () => {
         }
       });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.updates.contacts).toBe(true);
       expect(parsedResult.summary.billingContact).toContain('Jane Smith');
     });
@@ -639,7 +651,7 @@ describe('Billing Management Tools', () => {
         }
       });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.updates.taxInfo).toBe(true);
       expect(parsedResult.summary.taxExempt).toBe(false);
     });
@@ -666,7 +678,7 @@ describe('Billing Management Tools', () => {
         autoRenewal: false
       });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseToolResult(result);
       expect(parsedResult.updates.autoRenewal).toBe(true);
       expect(parsedResult.summary.autoRenewal).toBe(false);
     });
@@ -730,9 +742,11 @@ describe('Billing Management Tools', () => {
         }
       });
       
-      expect(result).not.toContain('4242424242424242');
-      expect(result).not.toContain('123');
-      expect(result).toContain('[PAYMENT_DETAILS_SECURE]');
+      const parsedResult = parseToolResult(result);
+      const resultStr = JSON.stringify(parsedResult);
+      expect(resultStr).not.toContain('4242424242424242');
+      expect(resultStr).not.toContain('123');
+      expect(resultStr).toContain('[PAYMENT_DETAILS_SECURE]');
     });
 
     it('should log billing operations for audit trail', async () => {

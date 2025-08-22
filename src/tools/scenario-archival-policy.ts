@@ -19,6 +19,7 @@ import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Define comprehensive scenario archival policy interfaces and schemas
 
@@ -945,7 +946,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           estimatedImpact: estimatedImpact.potentiallyAffected,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policy,
           conditionValidation,
@@ -968,7 +969,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
             impactEstimated: estimatedImpact.sampleSize > 0,
           },
           message: `Scenario archival policy "${input.name}" created successfully with ${input.conditions.length} conditions. Estimated impact: ${estimatedImpact.potentiallyAffected}/${estimatedImpact.totalScenariosInScope} scenarios.`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating scenario archival policy', { error: errorMessage, name: input.name });
@@ -1125,7 +1126,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           enforcementPerformed: !input.evaluationOptions.dryRun && enforcementResults !== null,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policyId: input.policyId,
           policyName: policy.name,
@@ -1150,7 +1151,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
             executionContext: input.executionContext,
           },
           message: `Evaluated ${summary.totalEvaluated} scenarios: ${summary.shouldArchive} candidates for archival. ${input.evaluationOptions.dryRun ? 'Dry run - no actions taken.' : enforcementResults ? 'Enforcement actions executed.' : 'Manual review required.'}`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error evaluating scenario archival policy', { error: errorMessage, policyId: input.policyId });
@@ -1275,7 +1276,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           inactive: summaryStats.inactivePolicies,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policies: Array.isArray(policies) ? policies : [],
           summary: summaryStats,
@@ -1291,7 +1292,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
             enforcementLevels: Object.values(ArchivalEnforcement),
           },
           timestamp: new Date().toISOString(),
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing scenario archival policies', { error: errorMessage });
@@ -1428,7 +1429,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined).length,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policy: updatedPolicy,
           changes: {
@@ -1443,7 +1444,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
             fieldsChanged: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined).length,
           },
           message: `Scenario archival policy "${updatedPolicy.name}" updated successfully`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating scenario archival policy', { error: errorMessage, policyId: input.policyId });
@@ -1544,7 +1545,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
           name: policy.name,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           deletedPolicy: {
             id: input.policyId,
@@ -1559,7 +1560,7 @@ export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeA
             confirmationRequired: true,
           },
           message: `Scenario archival policy "${policy.name}" deleted successfully`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting scenario archival policy', { error: errorMessage, policyId: input.policyId });

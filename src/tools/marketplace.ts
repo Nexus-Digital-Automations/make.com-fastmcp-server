@@ -10,6 +10,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Marketplace app data types based on industry best practices
 export interface MakePublicApp {
@@ -329,7 +330,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
           categories: Object.keys(analysis.categoryBreakdown).length,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           apps: searchResults.apps,
           search: {
             query,
@@ -349,7 +350,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
             responseCached: false,
             regionServiced: 'global',
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error searching public apps', { query, error: errorMessage });
@@ -473,7 +474,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
           overallScore: analysis.appAssessment.overallScore,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           app: appDetails.app,
           analysis,
           reviews: includeReviews ? appDetails.reviews : undefined,
@@ -489,7 +490,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
             integrationTips: generateIntegrationTips(appDetails.app),
             nextSteps: generateNextSteps(appDetails.app, analysis),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting app details', { appId, error: errorMessage });
@@ -615,7 +616,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
           recommendationsGenerated: recommendations?.length || 0,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           apps: popularApps.apps,
           analytics: popularApps.analytics,
           analysis,
@@ -637,7 +638,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
             actionableRecommendations: generateActionableRecommendations(popularApps, analysis, userContext),
             marketOpportunities: identifyMarketOpportunities(analysis),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing popular apps', { timeframe, category, error: errorMessage });

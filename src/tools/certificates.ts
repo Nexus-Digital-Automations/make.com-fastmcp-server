@@ -7,6 +7,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Certificate and key management types
 export interface MakeCertificate {
@@ -300,7 +301,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           expiryDays: certificate.certificate.validity.daysUntilExpiry,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           certificate: {
             ...certificate,
             certificate: {
@@ -332,7 +333,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
             vulnerabilityCount: certificate.security.vulnerabilities.length,
             compliance: certificate.security.complianceStatus,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating certificate', { name, error: errorMessage });
@@ -437,7 +438,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
             })),
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           certificates: certificates.map(cert => ({
             ...cert,
             certificate: {
@@ -456,7 +457,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
             offset,
             hasMore: (metadata?.total || 0) > (offset + certificates.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing certificates', { error: errorMessage });
@@ -549,7 +550,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           };
         }
 
-        return JSON.stringify(responseData, null, 2);
+        return formatSuccessResponse(responseData).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting certificate', { certificateId, error: errorMessage });
@@ -608,7 +609,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           warningCount: (validationResult?.warnings as unknown[])?.length || 0,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           validation: validationResult,
           summary: {
             isValid: validationResult?.isValid || false,
@@ -624,7 +625,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
               customValidationsPassed: Number((validationResult?.checks as Record<string, unknown>)?.customValidations || 0),
             },
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error validating certificate', { error: errorMessage });
@@ -709,7 +710,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           keySize: key.keyMaterial.keySize,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           key: {
             ...key,
             keyMaterial: {
@@ -740,7 +741,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
             useAccess: key.permissions.use.length,
             adminAccess: key.permissions.admin.length,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating key', { name, error: errorMessage });
@@ -818,7 +819,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
           backupId: String(rotationResult?.backupId || 'none'),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           rotation: rotationResult,
           message: `${resourceType} ${resourceId} rotated successfully`,
           summary: {
@@ -837,7 +838,7 @@ export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): 
             'Monitor for any issues in the next 24 hours',
             backupOldVersion ? 'Old version backed up and can be restored if needed' : null,
           ].filter(Boolean),
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error rotating certificate/key', { resourceId, resourceType, error: errorMessage });

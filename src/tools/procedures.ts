@@ -7,6 +7,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Remote procedure and device management types
 export interface MakeRemoteProcedure {
@@ -334,19 +335,26 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: false,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { name, description, type, category, organizationId, teamId, configuration, input: inputSpec, output: outputSpec, monitoring, security } = input;
 
-      log.info('Creating remote procedure', {
-        name,
-        type,
-        category,
-        organizationId,
-        teamId,
-      });
+      if (log && log.info) {
+        if (log && log.info) {
+          log.info('Creating remote procedure', {
+            name,
+            type,
+            category,
+            organizationId,
+            teamId,
+          });
+        }
+      }
 
       try {
-        reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }
 
         // Validate configuration based on procedure type
         if (type === 'webhook' || type === 'api_call') {
@@ -407,14 +415,16 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
 
         reportProgress({ progress: 100, total: 100 });
 
-        log.info('Successfully created remote procedure', {
-          procedureId: procedure.id,
-          name: procedure.name,
-          type: procedure.type,
-          category: procedure.category,
-        });
+        if (log && log.info) {
+          log.info('Successfully created remote procedure', {
+            procedureId: procedure.id,
+            name: procedure.name,
+            type: procedure.type,
+            category: procedure.category,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           procedure: {
             ...procedure,
             configuration: {
@@ -444,10 +454,14 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
             approvalRequired: procedure.security.requiresApproval,
           },
           testUrl: `/remote-procedures/${procedure.id}/test`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating remote procedure', { name, error: errorMessage });
+        if (log && log.error) {
+          if (log && log.error) {
+            log.error('Error creating remote procedure', { name, error: errorMessage });
+          }
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create remote procedure: ${errorMessage}`);
       }
@@ -476,16 +490,19 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { type, category, status, organizationId, teamId, includeStats, includeMonitoring, limit, offset, sortBy, sortOrder } = input;
 
-      log.info('Listing remote procedures', {
-        type,
-        category,
-        status,
-        limit,
-        offset,
-      });
+      if (log && log.info) {
+        log.info('Listing remote procedures', {
+          type,
+          category,
+          status,
+          limit,
+          offset,
+        });
+      }
 
       try {
         const params: Record<string, unknown> = {
@@ -512,10 +529,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         const procedures = response.data as MakeRemoteProcedure[] || [];
         const metadata = response.metadata;
 
-        log.info('Successfully retrieved remote procedures', {
-          count: procedures.length,
-          total: metadata?.total,
-        });
+        if (log && log.info) {
+          log.info('Successfully retrieved remote procedures', {
+            count: procedures.length,
+            total: metadata?.total,
+          });
+        }
 
         // Create execution and monitoring analysis
         const analysis = {
@@ -558,7 +577,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
           } : undefined,
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           procedures: procedures.map(proc => ({
             ...proc,
             configuration: {
@@ -584,10 +603,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
             offset,
             hasMore: (metadata?.total || 0) > (offset + procedures.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing remote procedures', { error: errorMessage });
+        if (log && log.error) {
+          log.error('Error listing remote procedures', { error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to list remote procedures: ${errorMessage}`);
       }
@@ -606,15 +627,18 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: false,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { procedureId, input: inputData, options, metadata } = input;
 
-      log.info('Executing remote procedure', {
-        procedureId,
-        async: options.async,
-        priority: options.priority,
-        correlationId: metadata.correlationId,
-      });
+      if (log && log.info) {
+        log.info('Executing remote procedure', {
+          procedureId,
+          async: options.async,
+          priority: options.priority,
+          correlationId: metadata.correlationId,
+        });
+      }
 
       try {
         reportProgress({ progress: 0, total: 100 });
@@ -647,14 +671,16 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         const executionResult = response.data as Record<string, unknown>;
         reportProgress({ progress: 100, total: 100 });
 
-        log.info('Successfully executed remote procedure', {
-          procedureId,
-          executionId: String(executionResult?.executionId || 'unknown'),
-          status: String(executionResult?.status || 'unknown'),
-          executionTime: Number(executionResult?.executionTime || 0),
-        });
+        if (log && log.info) {
+          log.info('Successfully executed remote procedure', {
+            procedureId,
+            executionId: String(executionResult?.executionId || 'unknown'),
+            status: String(executionResult?.status || 'unknown'),
+            executionTime: Number(executionResult?.executionTime || 0),
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           execution: executionResult,
           message: `Remote procedure ${procedureId} executed successfully`,
           summary: {
@@ -671,10 +697,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
             metrics: executionResult?.metrics || {},
             errors: executionResult?.errors || [],
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error executing remote procedure', { procedureId, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error executing remote procedure', { procedureId, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to execute remote procedure: ${errorMessage}`);
       }
@@ -693,16 +721,19 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { name, type, category, organizationId, teamId, configuration } = input;
 
-      log.info('Creating device', {
-        name,
-        type,
-        category,
-        host: configuration.connection.host,
-        port: configuration.connection.port,
-      });
+      if (log && log.info) {
+        log.info('Creating device', {
+          name,
+          type,
+          category,
+          host: configuration.connection.host,
+          port: configuration.connection.port,
+        });
+      }
 
       try {
         reportProgress({ progress: 0, total: 100 });
@@ -761,14 +792,16 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
 
         reportProgress({ progress: 100, total: 100 });
 
-        log.info('Successfully created device', {
-          deviceId: device.id,
-          name: device.name,
-          type: device.type,
-          status: device.status,
-        });
+        if (log && log.info) {
+          log.info('Successfully created device', {
+            deviceId: device.id,
+            name: device.name,
+            type: device.type,
+            status: device.status,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           device: {
             ...device,
             configuration: {
@@ -797,10 +830,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
             'Associate device with remote procedures',
             'Set up monitoring and alerts',
           ],
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating device', { name, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error creating device', { name, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create device: ${errorMessage}`);
       }
@@ -831,16 +866,19 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { type, category, status, organizationId, teamId, includeHealth, includeAlerts, limit, offset, sortBy, sortOrder } = input;
 
-      log.info('Listing devices', {
-        type,
-        category,
-        status,
-        limit,
-        offset,
-      });
+      if (log && log.info) {
+        log.info('Listing devices', {
+          type,
+          category,
+          status,
+          limit,
+          offset,
+        });
+      }
 
       try {
         const params: Record<string, unknown> = {
@@ -867,10 +905,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         const devices = response.data as MakeDevice[] || [];
         const metadata = response.metadata;
 
-        log.info('Successfully retrieved devices', {
-          count: devices.length,
-          total: metadata?.total,
-        });
+        if (log && log.info) {
+          log.info('Successfully retrieved devices', {
+            count: devices.length,
+            total: metadata?.total,
+          });
+        }
 
         // Create device and health analysis
         const analysis = {
@@ -914,7 +954,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
           },
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           devices: devices.map(device => ({
             ...device,
             configuration: {
@@ -932,10 +972,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
             offset,
             hasMore: (metadata?.total || 0) > (offset + devices.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing devices', { error: errorMessage });
+        if (log && log.error) {
+          log.error('Error listing devices', { error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to list devices: ${errorMessage}`);
       }
@@ -959,10 +1001,13 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { deviceId, testType, timeout, includePerformance } = input;
 
-      log.info('Testing device connectivity', { deviceId, testType, timeout });
+      if (log && log.info) {
+        log.info('Testing device connectivity', { deviceId, testType, timeout });
+      }
 
       try {
         reportProgress({ progress: 0, total: 100 });
@@ -990,12 +1035,14 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         
         reportProgress({ progress: 100, total: 100 });
 
-        log.info('Successfully tested device connectivity', {
-          deviceId,
-          testType,
-          success: success,
-          responseTime: responseTime,
-        });
+        if (log && log.info) {
+          log.info('Successfully tested device connectivity', {
+            deviceId,
+            testType,
+            success: success,
+            responseTime: responseTime,
+          });
+        }
 
         // Additional type guards for summary and diagnostics
         const deviceStatus = typeof testData.deviceStatus === 'string' ? testData.deviceStatus : 'unknown';
@@ -1009,7 +1056,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         const performance = diagnostics.performance && typeof diagnostics.performance === 'object' ? diagnostics.performance : {};
         const capabilities = diagnostics.capabilities && typeof diagnostics.capabilities === 'object' ? diagnostics.capabilities : {};
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           test: testResult,
           message: `Device ${deviceId} connectivity test completed`,
           summary: {
@@ -1028,10 +1075,12 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
             capabilities: capabilities,
           },
           recommendations: recommendations,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error testing device connectivity', { deviceId, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error testing device connectivity', { deviceId, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to test device connectivity: ${errorMessage}`);
       }

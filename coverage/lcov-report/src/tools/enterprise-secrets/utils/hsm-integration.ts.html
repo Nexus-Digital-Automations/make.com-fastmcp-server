@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/51</span>
+                <span class='fraction'>0/48</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/51</span>
+                <span class='fraction'>0/48</span>
             </div>
         
             
@@ -275,16 +275,7 @@
 <a name='L210'></a><a href='#L210'>210</a>
 <a name='L211'></a><a href='#L211'>211</a>
 <a name='L212'></a><a href='#L212'>212</a>
-<a name='L213'></a><a href='#L213'>213</a>
-<a name='L214'></a><a href='#L214'>214</a>
-<a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a>
-<a name='L217'></a><a href='#L217'>217</a>
-<a name='L218'></a><a href='#L218'>218</a>
-<a name='L219'></a><a href='#L219'>219</a>
-<a name='L220'></a><a href='#L220'>220</a>
-<a name='L221'></a><a href='#L221'>221</a>
-<a name='L222'></a><a href='#L222'>222</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L213'></a><a href='#L213'>213</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -383,20 +374,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -405,8 +382,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -604,47 +586,38 @@ export class HSMIntegrationManager {
 <span class="fstat-no" title="function not covered" ></span>        await this.configureAzureKeyVault(validatedConfig);
         break;<span class="cstat-no" title="statement not covered" ></span>
       case 'pkcs11':
-<span class="cstat-no" title="statement not covered" >        await this.configurePKCS11HSM(validatedConfig);</span>
+        await this.configurePKCS11HSM(validatedConfig);
         break;
       default:
         throw new Error(`Unsupported HSM provider: ${validatedConfig.provider}`);
     }
-  }
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**
+   * Configure AWS CloudHSM integration
+   */
+  private async configureAWSCloudHSM(config: Parameters&lt;typeof HSMConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
+    const validatedConfig = HSMConfigSchema.parse(config);
+    // AWS CloudHSM configuration logic
+<span class="fstat-no" title="function not covered" >    //</span> Debug: Configuring AWS CloudHSM (region: validatedConfig.config.region, endpoint: validatedConfig.config.endpoint)
+  }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
   /**
-   *<span class="fstat-no" title="function not covered" > C</span>onfigure AWS CloudHSM integration
-   */<span class="cstat-no" title="statement not covered" ></span>
-  private async configureAWSCloudHSM(config: Parameters&lt;typeof HSMConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
-    cons<span class="cstat-no" title="statement not covered" >t validatedConfig = HSMConfigSchema.parse(config);</span>
-    // AWS CloudHSM configuration logic
-    console.debug('Configuring AWS CloudHSM', {
-      region: validatedConfig.config.region,
-      endpoint: validatedConfig.config.endpoint,
-    });
-  }
-&nbsp;
-  /*<span class="fstat-no" title="function not covered" >*</span>
-   * Configure Azure Key Vault H<span class="cstat-no" title="statement not covered" >SM integration</span>
+   * Configure Azure Key Vault HSM integration
    */
-  privat<span class="cstat-no" title="statement not covered" >e async configureAzureKeyVault(config: Parameters&lt;typeof HSMConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {</span>
+  private async configureAzureKeyVault(config: Parameters&lt;typeof HSMConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
     const validatedConfig = HSMConfigSchema.parse(config);
-    // Azure Key Vault HSM configuration logic
-    console.debug('Configuring Azure Key Vault HSM', {
-      tenantId: validatedConfig.config.tenantId,
-      vaultName: validatedConfig.config.vaultName,
-    });
-  }
-<span class="fstat-no" title="function not covered" ></span>
-  /**<span class="cstat-no" title="statement not covered" ></span>
-   * Con<span class="cstat-no" title="statement not covered" >figure PKCS#11 HSM integration</span>
+<span class="fstat-no" title="function not covered" >    //</span> Azure Key Vault HSM configuration logic
+    // Debug: Configuring <span class="cstat-no" title="statement not covered" >Azure Key Vault HSM (tenantId: v</span>alidatedConfig.config.tenantId, vaultName: validatedConfig.config.vaultName)
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**
+   * Configure PKCS#11 HSM integration
    */<span class="cstat-no" title="statement not covered" ></span>
-  private async configurePKCS11HSM(config: Parameters&lt;typeof HSMConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
-    const validatedConfig = HSMConfigSchema.parse(config);
-    // P<span class="cstat-no" title="statement not covered" >KCS#11 HSM configuration logic</span>
-    cons<span class="cstat-no" title="statement not covered" >ole.debug('Configuring PKCS#11 HSM', {</span>
-      li<span class="cstat-no" title="statement not covered" >brary: validatedConfig.confi</span>g.library,
-      slot: validatedConfig.config.slot,
-    });
+  privat<span class="cstat-no" title="statement not covered" >e async configurePKCS11HSM(config: Parameter</span>s&lt;typeof HSMConfigSchema.parse&gt;[0]): Promise&lt;void&gt; {
+    cons<span class="cstat-no" title="statement not covered" >t validatedConfig = HSMConfi</span>gSchema.parse(config);
+    // PKCS#11 HSM configuration logic
+    // Debug: Configuring PKCS#11 HSM (library: validatedConfig.config.library, slot: validatedConfig.config.slot)
 <span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   /**
@@ -733,7 +706,7 @@ export const hsmManager = HSMIntegrationManager.getInstance();</pre></td></tr></
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:41.788Z
+                at 2025-08-22T03:12:16.801Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

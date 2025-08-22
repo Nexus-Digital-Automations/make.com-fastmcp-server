@@ -6,6 +6,7 @@
 import { UserError } from 'fastmcp';
 import { DeleteScenarioSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create delete scenario tool configuration
@@ -23,10 +24,11 @@ export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
       destructiveHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const typedArgs = args as { scenarioId: string; force?: boolean };
       
-      log?.info?.('Deleting scenario', { scenarioId: typedArgs.scenarioId, force: typedArgs.force });
+      if (log && log.info) { log.info('Deleting scenario', { scenarioId: typedArgs.scenarioId, force: typedArgs.force }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -63,12 +65,12 @@ export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
           timestamp: new Date().toISOString(),
         };
 
-        log?.info?.('Scenario deleted successfully', { 
+        if (log && log.info) { log.info('Scenario deleted successfully', { 
           scenarioId: typedArgs.scenarioId,
           force: typedArgs.force 
-        });
+        }); }
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Failed to delete scenario', { 

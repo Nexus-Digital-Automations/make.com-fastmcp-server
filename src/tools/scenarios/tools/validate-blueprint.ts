@@ -7,6 +7,7 @@ import { UserError } from 'fastmcp';
 import { ValidateBlueprintSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { validateBlueprintStructure } from '../utils/blueprint-analysis.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 interface ValidateBlueprintArgs {
   blueprint?: unknown;
@@ -29,13 +30,14 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log }): Promise<string> => {
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress: _reportProgress = () => {} } = context || {};
       const typedArgs = args as ValidateBlueprintArgs;
-      log?.info?.('Validating blueprint', { 
+      if (log && log.info) { log.info('Validating blueprint', { 
         hasBlueprint: !!typedArgs.blueprint,
         strict: typedArgs.strict,
         includeSecurityChecks: typedArgs.includeSecurityChecks
-      });
+      }); }
 
       try {
         const validationResult = validateBlueprintStructure(
@@ -43,14 +45,14 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
           typedArgs.strict
         );
 
-        log?.info?.('Blueprint validation completed', {
+        if (log && log.info) { log.info('Blueprint validation completed', {
           isValid: validationResult.isValid,
           errorCount: validationResult.errors.length,
           warningCount: validationResult.warnings.length,
           securityIssueCount: validationResult.securityIssues.length
-        });
+        }); }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           isValid: validationResult.isValid,
           summary: {
             totalErrors: validationResult.errors.length,
@@ -71,11 +73,11 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
               .filter((issue: { severity: string }) => issue.severity === 'critical' || issue.severity === 'high')
               .map((issue: { description: string }) => `Security: ${issue.description}`) : [])
           ].slice(0, 10)
-        }, null, 2);
+        }).content[0].text;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error?.('Blueprint validation failed', { error: errorMessage });
+        if (log && log.error) { log.error('Blueprint validation failed', { error: errorMessage }); }
         throw new UserError(`Blueprint validation failed: ${errorMessage}`);
       }
     }

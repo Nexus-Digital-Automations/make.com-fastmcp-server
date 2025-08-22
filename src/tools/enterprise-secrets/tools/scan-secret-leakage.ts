@@ -9,6 +9,7 @@ import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/
 import { SecretLeakageAlert } from '../types/index.js';
 import { auditLogger } from '../../../lib/audit-logger.js';
 import * as crypto from 'crypto';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Secret Scanning Manager class
@@ -236,7 +237,7 @@ export function createScanSecretLeakageTool(context: ToolContext): ToolDefinitio
         });
 
         reportProgress?.({ progress: 100, total: 100 });
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Secret scanning failed', { error: errorMessage });

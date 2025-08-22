@@ -7,6 +7,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Billing management types
 export interface MakeBillingAccount {
@@ -656,18 +657,23 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { organizationId, includeUsage, includeHistory, includePaymentMethods } = input;
 
-      log.info('Getting billing account information', {
-        organizationId,
-        includeUsage,
-        includeHistory,
-        includePaymentMethods,
-      });
+      if (log && log.info) {
+        log.info('Getting billing account information', {
+          organizationId,
+          includeUsage,
+          includeHistory,
+          includePaymentMethods,
+        });
+      }
 
       try {
-        reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }
 
         const params: Record<string, unknown> = {
           includeUsage,
@@ -680,7 +686,9 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           endpoint = `/organizations/${organizationId}/billing/account`;
         }
 
-        reportProgress({ progress: 50, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 50, total: 100 });
+        }
 
         const response = await apiClient.get(endpoint, { params });
 
@@ -693,19 +701,23 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           throw new UserError('Billing account information not found');
         }
 
-        reportProgress({ progress: 100, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 100, total: 100 });
+        }
 
-        log.info('Successfully retrieved billing account', {
-          organizationId: account.organizationId,
-          plan: account.billingPlan.name,
-          status: account.accountStatus,
-          nextBilling: account.billing.nextBillingDate,
-        });
+        if (log && log.info) {
+          log.info('Successfully retrieved billing account', {
+            organizationId: account.organizationId,
+            plan: account.billingPlan.name,
+            status: account.accountStatus,
+            nextBilling: account.billing.nextBillingDate,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           account: {
             ...account,
-            paymentMethods: includePaymentMethods ? account.paymentMethods.map(pm => ({
+            paymentMethods: includePaymentMethods && account.paymentMethods ? account.paymentMethods.map(pm => ({
               ...pm,
               // Mask sensitive payment information
               lastFour: pm.lastFour,
@@ -723,35 +735,37 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
               currency: account.billingPlan.currency,
               cycle: account.billingPlan.billingCycle,
             },
-            usage: includeUsage ? {
+            usage: includeUsage && account.usage && account.usage.currentPeriod ? {
               operations: {
-                used: account.usage.currentPeriod.operations.used,
-                limit: account.usage.currentPeriod.operations.limit,
-                percentage: account.usage.currentPeriod.operations.percentage,
+                used: account.usage.currentPeriod.operations?.used || 0,
+                limit: account.usage.currentPeriod.operations?.limit || 0,
+                percentage: account.usage.currentPeriod.operations?.percentage || 0,
               },
               dataTransfer: {
-                used: account.usage.currentPeriod.dataTransfer.used,
-                limit: account.usage.currentPeriod.dataTransfer.limit,
-                percentage: account.usage.currentPeriod.dataTransfer.percentage,
+                used: account.usage.currentPeriod.dataTransfer?.used || 0,
+                limit: account.usage.currentPeriod.dataTransfer?.limit || 0,
+                percentage: account.usage.currentPeriod.dataTransfer?.percentage || 0,
               },
             } : undefined,
             billing: {
-              status: account.billing.paymentStatus,
-              nextBillingDate: account.billing.nextBillingDate,
-              balance: account.billing.currentBalance,
-              autoRenewal: account.billing.autoRenewal,
+              status: account.billing?.paymentStatus || 'unknown',
+              nextBillingDate: account.billing?.nextBillingDate || 'unknown',
+              balance: account.billing?.currentBalance || 0,
+              autoRenewal: account.billing?.autoRenewal || false,
             },
           },
           alerts: [
-            account.usage.currentPeriod.operations.percentage > 80 ? 'Operations usage above 80%' : null,
-            account.usage.currentPeriod.dataTransfer.percentage > 80 ? 'Data transfer usage above 80%' : null,
-            account.billing.paymentStatus === 'overdue' ? 'Payment overdue' : null,
-            account.billing.paymentStatus === 'failed' ? 'Payment failed' : null,
+            (account.usage?.currentPeriod?.operations?.percentage || 0) > 80 ? 'Operations usage above 80%' : null,
+            (account.usage?.currentPeriod?.dataTransfer?.percentage || 0) > 80 ? 'Data transfer usage above 80%' : null,
+            account.billing?.paymentStatus === 'overdue' ? 'Payment overdue' : null,
+            account.billing?.paymentStatus === 'failed' ? 'Payment failed' : null,
           ].filter(Boolean),
-        }, null, 2);
+        }, "Billing account information retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting billing account', { organizationId, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error getting billing account', { organizationId, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get billing account: ${errorMessage}`);
       }
@@ -844,7 +858,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             })),
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           invoices,
           analysis,
           pagination: {
@@ -853,7 +867,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             offset,
             hasMore: (metadata?.total || 0) > (offset + invoices.length),
           },
-        }, null, 2);
+        }, "Invoices retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing invoices', { error: errorMessage });
@@ -930,7 +944,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           totalCost: metrics.costs.total,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           metrics,
           summary: {
             organizationId: metrics.organizationId,
@@ -957,7 +971,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             potentialSavings: metrics.recommendations.reduce((sum, rec) => sum + (rec.savings || 0), 0),
             highImpactRecommendations: metrics.recommendations.filter(rec => rec.impact === 'high'),
           } : undefined,
-        }, null, 2);
+        }, "Usage metrics retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting usage metrics', { organizationId, error: errorMessage });
@@ -1051,13 +1065,12 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           isDefault: Boolean(setAsDefault || validPaymentMethod.isDefault),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           paymentMethod: {
             ...validPaymentMethod,
             // Never expose sensitive payment details
             details: '[PAYMENT_DETAILS_SECURE]',
           },
-          message: `Payment method added successfully`,
           summary: {
             id: validPaymentMethod.id,
             type,
@@ -1070,7 +1083,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             setAsDefault ? 'Payment method set as default' : 'Set as default if needed',
             'Update billing preferences if necessary',
           ],
-        }, null, 2);
+        }, "Payment method added successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error adding payment method', { type, error: errorMessage });
@@ -1152,9 +1165,8 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           autoRenewalUpdated: autoRenewal !== undefined,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           account: validAccount,
-          message: 'Billing information updated successfully',
           updates: {
             contacts: !!contacts,
             taxInfo: !!taxInfo,
@@ -1167,7 +1179,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             taxExempt: taxInfo?.taxExempt,
             autoRenewal: autoRenewal !== undefined ? autoRenewal : accountBilling.autoRenewal,
           },
-        }, null, 2);
+        }, "Billing information updated successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating billing information', { organizationId, error: errorMessage });
@@ -1265,9 +1277,8 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           type: createdBudget.type,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           budget: createdBudget,
-          message: `Budget "${name}" created successfully`,
           summary: {
             id: createdBudget.id,
             name: createdBudget.name,
@@ -1288,7 +1299,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             budget.endDate ? null : 'No end date set - budget will continue indefinitely',
             thresholds.some(t => t.percentage >= 100) ? 'Budget includes 100% threshold - may cause service interruption' : null,
           ].filter(Boolean),
-        }, null, 2);
+        }, `Budget "${name}" created successfully`);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error setting budget', { name, type, error: errorMessage });
@@ -1378,9 +1389,8 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           status: createdAlert.status,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           alert: createdAlert,
-          message: `Cost alert "${name}" created successfully`,
           summary: {
             id: createdAlert.id,
             name: createdAlert.name,
@@ -1418,7 +1428,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             'Monitor alert trigger history',
             'Adjust thresholds based on actual usage patterns',
           ],
-        }, null, 2);
+        }, `Cost alert "${name}" created successfully`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating cost alert', { name, error: errorMessage });
@@ -1532,7 +1542,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
         const range = optimisticTotal - conservativeTotal;
         const variancePercentage = realisticTotal > 0 ? (range / realisticTotal) * 100 : 0;
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           projection,
           analysis: {
             period: `${period.count} ${period.type.replace('ly', '')}(s)`,
@@ -1590,7 +1600,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             'Monitor actual vs projected costs',
             includeSeasonality ? 'Plan for seasonal cost variations' : null,
           ].filter(Boolean),
-        }, null, 2);
+        }, "Cost projection generated successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error generating cost projection', { period, algorithm, error: errorMessage });
@@ -1709,7 +1719,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
           return acc;
         }, {});
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           evaluation: {
             action: validResult.action || action,
             dryRun: Boolean(dryRun),
@@ -1777,7 +1787,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             'Investigate root causes of high costs',
             'Update budgets and thresholds as needed',
           ],
-        }, null, 2);
+        }, `High cost scenarios evaluation completed - ${dryRun ? 'simulation mode' : 'actions executed'}`);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error evaluating high cost scenarios', { action, dryRun, error: errorMessage });

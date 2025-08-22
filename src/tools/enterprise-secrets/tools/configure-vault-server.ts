@@ -7,6 +7,7 @@ import { UserError } from 'fastmcp';
 import { VaultServerConfigSchema } from '../schemas/index.js';
 import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
 import { VaultServerManager } from '../utils/index.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Configure Vault server tool configuration
@@ -53,7 +54,7 @@ export function createConfigureVaultServerTool(context: ToolContext): ToolDefini
         });
 
         reportProgress?.({ progress: 100, total: 100 });
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Vault server configuration failed', { error: errorMessage });

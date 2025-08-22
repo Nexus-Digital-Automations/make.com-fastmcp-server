@@ -27,6 +27,12 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
   let mockLog: jest.MockedFunction<any>;
   let mockReportProgress: jest.MockedFunction<any>;
 
+  // Helper to parse response format consistently
+  const parseToolResult = (result: any) => {
+    const resultText = result.content?.[0]?.text || result;
+    return typeof resultText === 'string' ? JSON.parse(resultText) : resultText;
+  };
+
   const testRemoteProcedure: MakeRemoteProcedure = {
     id: 1,
     name: 'Test Webhook Procedure',
@@ -531,7 +537,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
         const tool = findTool(mockTool, 'list-remote-procedures');
         const result = await executeTool(tool, {}, { log: mockLog });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.procedures).toHaveLength(3);
         expect(parsed.analysis.totalProcedures).toBe(3);
         expect(parsed.analysis.typeBreakdown.webhook).toBe(2);
@@ -602,7 +608,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
         const tool = findTool(mockTool, 'list-remote-procedures');
         const result = await executeTool(tool, { includeMonitoring: true }, { log: mockLog });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.analysis.monitoringSummary.healthChecksEnabled).toBe(1);
         expect(parsed.analysis.monitoringSummary.alertsConfigured).toBe(1);
         expect(parsed.analysis.monitoringSummary.totalAlerts).toBe(1);
@@ -646,7 +652,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
           }
         }, { log: mockLog, reportProgress: mockReportProgress });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.execution.executionId).toBe('exec_123');
         expect(parsed.execution.status).toBe('success');
         expect(parsed.summary.executionTime).toBe(1.8);
@@ -690,7 +696,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
           options: { async: true, priority: 'urgent' }
         }, { log: mockLog, reportProgress: mockReportProgress });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.execution.status).toBe('submitted');
         expect(parsed.summary.async).toBe(true);
         expect(parsed.summary.correlationId).toMatch(/exec_\d+_[a-z0-9]+/);
@@ -807,7 +813,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
         expect(result).toContain('nextSteps');
         expect(result).toContain('[CREDENTIALS_STORED]');
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.configuration.connection).toBe('https://device.example.com:443');
         expect(parsed.configuration.capabilities.canExecute).toBe(true);
         expect(parsed.configuration.environment.os).toBe('Ubuntu');
@@ -961,7 +967,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
         const tool = findTool(mockTool, 'list-devices');
         const result = await executeTool(tool, {}, { log: mockLog });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.devices).toHaveLength(3);
         expect(parsed.analysis.totalDevices).toBe(3);
         expect(parsed.analysis.typeBreakdown.server).toBe(1);
@@ -1034,7 +1040,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
         const tool = findTool(mockTool, 'list-devices');
         const result = await executeTool(tool, { includeHealth: true }, { log: mockLog });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.analysis.healthSummary.onlineDevices).toBe(1);
         expect(parsed.analysis.healthSummary.offlineDevices).toBe(1);
         expect(parsed.analysis.healthSummary.devicesWithAlerts).toBe(1);
@@ -1098,7 +1104,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
           includePerformance: true
         }, { log: mockLog, reportProgress: mockReportProgress });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.test.success).toBe(true);
         expect(parsed.summary.responseTime).toBe(125);
         expect(parsed.summary.status).toBe('online');
@@ -1178,7 +1184,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
           testType: 'health_check'
         }, { log: mockLog, reportProgress: mockReportProgress });
         
-        const parsed = JSON.parse(result);
+        const parsed = parseToolResult(result);
         expect(parsed.summary.success).toBe(false);
         expect(parsed.summary.errors).toHaveLength(2);
         expect(parsed.diagnostics.connectivity.ping.success).toBe(false);
@@ -1366,7 +1372,7 @@ describe('Remote Procedure and Device Management Tools - Comprehensive Test Suit
       expect(result).toContain('[CREDENTIALS_STORED]');
       expect(result).not.toContain('super-secret-token');
       
-      const parsed = JSON.parse(result);
+      const parsed = parseToolResult(result);
       expect(parsed.procedure.configuration.endpoint.authentication.credentials).toBe('[CREDENTIALS_STORED]');
     });
 

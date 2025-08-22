@@ -6,6 +6,7 @@
 import { UserError } from 'fastmcp';
 import { CloneScenarioSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create clone scenario tool configuration
@@ -22,7 +23,8 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
       readOnlyHint: false,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const typedArgs = args as {
         scenarioId: string;
         name: string;
@@ -31,10 +33,10 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
         active?: boolean;
       };
       
-      log?.info?.('Cloning scenario', { 
+      if (log && log.info) { log.info('Cloning scenario', { 
         sourceId: typedArgs.scenarioId, 
         newName: typedArgs.name 
-      });
+      }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -78,13 +80,13 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
         // Type guard for cloned scenario
         const clonedScenarioObj = clonedScenario as { id?: unknown } | null | undefined;
         
-        log?.info?.('Scenario cloned successfully', { 
+        if (log && log.info) { log.info('Scenario cloned successfully', { 
           sourceId: typedArgs.scenarioId,
           cloneId: String(clonedScenarioObj?.id ?? 'unknown'),
           name: typedArgs.name 
-        });
+        }); }
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Failed to clone scenario', { 

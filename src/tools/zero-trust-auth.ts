@@ -13,6 +13,7 @@ import MakeApiClient from '../lib/make-api-client.js';
 import { credentialManager } from '../utils/encryption.js';
 import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 const componentLogger = logger.child({ component: 'ZeroTrustAuthTools' });
 const randomBytes = promisify(crypto.randomBytes);
@@ -670,7 +671,7 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
           securityEvents: ['Failed login attempt logged'],
         };
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       }
 
       // Assess device trust
@@ -720,13 +721,13 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
         if (isMfaValid) {
           authMethods.push('totp');
         } else {
-          return JSON.stringify({
+          return formatSuccessResponse({
             success: false,
             riskScore: overallRiskScore,
             requiresAdditionalAuth: true,
             authMethods: [],
             errors: ['Invalid MFA code'],
-          }, null, 2);
+          }).content[0].text;
         }
       }
 
@@ -773,7 +774,7 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
         ],
       };
 
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
       componentLogger.error('Zero trust authentication failed', {
@@ -782,13 +783,13 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
         ipAddress: parsedInput.ipAddress,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         riskScore: 100,
         requiresAdditionalAuth: false,
         authMethods: [],
         errors: ['Authentication service error'],
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -913,7 +914,7 @@ const createMFASetupTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
         success: result.success,
       });
 
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
       componentLogger.error('MFA setup failed', {
@@ -922,10 +923,10 @@ const createMFASetupTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
         method: 'unknown',
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         error: 'MFA setup service error',
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -968,7 +969,7 @@ const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTo
         issues: trustResult.issues.length,
       });
 
-      return JSON.stringify(trustResult, null, 2);
+      return formatSuccessResponse(trustResult).content[0].text;
 
     } catch (error) {
       componentLogger.error('Device trust assessment failed', {
@@ -976,14 +977,14 @@ const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTo
         deviceId: parsedInput.deviceId,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         trustScore: 0,
         riskLevel: 'critical',
         complianceStatus: 'non_compliant',
         issues: ['Assessment service error'],
         recommendations: ['Contact system administrator'],
         fingerprint: 'error',
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -1030,7 +1031,7 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): ZeroTrustTool
         anomalies: analysisResult.anomalies.length,
       });
 
-      return JSON.stringify(analysisResult, null, 2);
+      return formatSuccessResponse(analysisResult).content[0].text;
 
     } catch (error) {
       componentLogger.error('Behavior analysis failed', {
@@ -1039,13 +1040,13 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): ZeroTrustTool
         sessionId: parsedInput.sessionId,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         riskScore: 50,
         anomalies: ['Analysis service error'],
         confidence: 0,
         baseline: 'insufficient_data',
         recommendations: ['Contact system administrator'],
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -1067,10 +1068,10 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
       switch (parsedInput.action) {
         case 'create': {
           if (!parsedInput.userId || !parsedInput.deviceId) {
-            return JSON.stringify({
+            return formatSuccessResponse({
               success: false,
               error: 'User ID and Device ID required for session creation',
-            }, null, 2);
+            }).content[0].text;
           }
           
           const riskScore = parsedInput.sessionData?.riskScore || 25;
@@ -1081,10 +1082,10 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
 
         case 'validate': {
           if (!parsedInput.sessionId) {
-            return JSON.stringify({
+            return formatSuccessResponse({
               success: false,
               error: 'Session ID required for validation',
-            }, null, 2);
+            }).content[0].text;
           }
           
           const validatedSession = authEngine.validateSession(parsedInput.sessionId);
@@ -1098,10 +1099,10 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
 
         case 'terminate': {
           if (!parsedInput.sessionId) {
-            return JSON.stringify({
+            return formatSuccessResponse({
               success: false,
               error: 'Session ID required for termination',
-            }, null, 2);
+            }).content[0].text;
           }
 
           // Terminate session
@@ -1124,10 +1125,10 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
 
         case 'list': {
           if (!parsedInput.userId) {
-            return JSON.stringify({
+            return formatSuccessResponse({
               success: false,
               error: 'User ID required for session listing',
-            }, null, 2);
+            }).content[0].text;
           }
 
           const userSessions = Array.from(authEngine['sessions'].values())
@@ -1138,10 +1139,10 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
 
         case 'refresh': {
           if (!parsedInput.sessionId) {
-            return JSON.stringify({
+            return formatSuccessResponse({
               success: false,
               error: 'Session ID required for refresh',
-            }, null, 2);
+            }).content[0].text;
           }
 
           const existingSession = authEngine.validateSession(parsedInput.sessionId);
@@ -1169,7 +1170,7 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
         success: result.success,
       });
 
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
       componentLogger.error('Session management failed', {
@@ -1179,10 +1180,10 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
         userId: parsedInput.userId,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         error: 'Session management service error',
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -1328,7 +1329,7 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): ZeroTrustTool 
         success: result.success,
       });
 
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
       componentLogger.error('Identity federation failed', {
@@ -1337,10 +1338,10 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): ZeroTrustTool 
         action: parsedInput.action,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         error: 'Identity federation service error',
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -1453,7 +1454,7 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool => (
         riskLevel,
       });
 
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
       componentLogger.error('Risk assessment failed', {
@@ -1463,13 +1464,13 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool => (
         assessmentType: parsedInput.assessmentType,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         overallRiskScore: 100,
         riskLevel: 'critical',
         error: 'Risk assessment service error',
         recommendations: ['Contact system administrator'],
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });

@@ -5,9 +5,11 @@
 
 import { FastMCP } from 'fastmcp';
 import { z } from 'zod';
+import * as crypto from 'crypto';
 import MakeApiClient from '../lib/make-api-client.js';
 import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 const componentLogger = logger.child({ component: 'AuditComplianceTools' });
 
@@ -91,12 +93,12 @@ const createLogAuditEventTool = (apiClient: MakeApiClient): { name: string; desc
         riskLevel: input.riskLevel,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: true,
         eventId: `event_${Date.now()}`,
         timestamp: new Date().toISOString(),
         message: 'Audit event logged successfully',
-      }, null, 2);
+      }).content[0].text;
     } catch (error) {
       componentLogger.error('Failed to log audit event via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -104,12 +106,12 @@ const createLogAuditEventTool = (apiClient: MakeApiClient): { name: string; desc
         category: input.category,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         eventId: '',
         timestamp: new Date().toISOString(),
         message: error instanceof Error ? error.message : 'Failed to log audit event',
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -148,7 +150,7 @@ export const generateComplianceReportTool = {
         },
       };
 
-      return JSON.stringify(reportData, null, 2);
+      return formatSuccessResponse(reportData).content[0].text;
     } catch (error) {
       componentLogger.error('Failed to generate compliance report via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -156,7 +158,7 @@ export const generateComplianceReportTool = {
         endDate: input.endDate,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         report: {
           period: `${input.startDate} to ${input.endDate}`,
@@ -167,7 +169,7 @@ export const generateComplianceReportTool = {
           recommendations: [],
           summary: error instanceof Error ? error.message : 'Failed to generate compliance report',
         },
-      }, null, 2);
+      }).content[0].text;
     }
   },
 };
@@ -189,27 +191,27 @@ export const performAuditMaintenanceTool = {
         errors: result.errors.length,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: true,
         deletedFiles: result.deletedFiles || 0,
         rotatedFiles: result.rotatedFiles || 0,
         compactedFiles: (result as Record<string, unknown>).compactedFiles as number || 0,
         freedSpace: (result as Record<string, unknown>).freedSpace as number || 0,
         message: `Maintenance completed. Deleted ${result.deletedFiles} files, rotated ${result.rotatedFiles} files.`,
-      }, null, 2);
+      }).content[0].text;
     } catch (error) {
       componentLogger.error('Failed to perform audit maintenance via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         deletedFiles: 0,
         rotatedFiles: 0,
         compactedFiles: 0,
         freedSpace: 0,
         message: error instanceof Error ? error.message : 'Failed to perform audit maintenance',
-      }, null, 2);
+      }).content[0].text;
     }
   },
 };
@@ -235,15 +237,15 @@ export const getAuditConfigurationTool = {
 
       componentLogger.info('Audit configuration retrieved via MCP tool');
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         config,
-      }, null, 2);
+      }).content[0].text;
     } catch (error) {
       componentLogger.error('Failed to get audit configuration via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         config: {
           encryptionEnabled: false,
           retentionDays: 0,
@@ -252,7 +254,7 @@ export const getAuditConfigurationTool = {
           alertingEnabled: false,
           complianceMode: error instanceof Error ? error.message : 'Failed to get audit configuration',
         },
-      }, null, 2);
+      }).content[0].text;
     }
   },
 };
@@ -331,7 +333,7 @@ export const securityHealthCheckTool = {
         environment: healthCheck.environment,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         stats: {
           totalEvents: 1000,
           recentEvents: 50,
@@ -341,13 +343,13 @@ export const securityHealthCheckTool = {
           configChanges: 5,
           systemEvents: 8,
         },
-      }, null, 2);
+      }).content[0].text;
     } catch (error) {
       componentLogger.error('Failed to perform security health check via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         stats: {
           totalEvents: 0,
           recentEvents: 0,
@@ -357,7 +359,7 @@ export const securityHealthCheckTool = {
           configChanges: 0,
           systemEvents: 0,
         },
-      }, null, 2);
+      }).content[0].text;
     }
   },
 };
@@ -421,7 +423,7 @@ export const createSecurityIncidentTool = {
         affectedUsersCount: input.affectedUsers?.length || 0,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: true,
         incidentId,
         timestamp: timestamp.toISOString(),
@@ -432,7 +434,7 @@ export const createSecurityIncidentTool = {
           'Implement containment measures',
           'Document findings and response',
         ],
-      }, null, 2);
+      }).content[0].text;
     } catch (error) {
       componentLogger.error('Failed to create security incident via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -440,13 +442,13 @@ export const createSecurityIncidentTool = {
         severity: input.severity,
       });
 
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         incidentId: '',
         timestamp: new Date().toISOString(),
         message: error instanceof Error ? error.message : 'Failed to create security incident',
         nextSteps: [],
-      }, null, 2);
+      }).content[0].text;
     }
   },
 };

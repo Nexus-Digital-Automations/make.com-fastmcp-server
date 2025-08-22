@@ -7,6 +7,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Notification management types
 export interface MakeNotification {
@@ -543,19 +544,24 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: false, // Each notification is unique with timestamp
       openWorldHint: true, // External messaging services (email, SMS, Slack, etc.)
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
 
-      log.info('Creating notification', {
-        type,
-        category,
-        priority,
-        title: title.substring(0, 50),
-        recipientCount: recipients.users.length + recipients.teams.length + recipients.organizations.length + recipients.emails.length,
-      });
+      if (log && log.info) {
+        log.info('Creating notification', {
+          type,
+          category,
+          priority,
+          title: title.substring(0, 50),
+          recipientCount: recipients.users.length + recipients.teams.length + recipients.organizations.length + recipients.emails.length,
+        });
+      }
 
       try {
-        reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }
 
         // Validate recipients
         const totalRecipients = recipients.users.length + recipients.teams.length + recipients.organizations.length + recipients.emails.length;
@@ -586,7 +592,9 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           status: schedule?.sendAt ? 'scheduled' : 'draft',
         };
 
-        reportProgress({ progress: 50, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 50, total: 100 });
+        }
 
         const response = await apiClient.post('/notifications', notificationData);
 
@@ -599,16 +607,20 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError('Notification creation failed - no data returned');
         }
 
-        reportProgress({ progress: 100, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 100, total: 100 });
+        }
 
-        log.info('Successfully created notification', {
-          notificationId: notification.id,
-          type: notification.type,
-          status: notification.status,
-          recipientCount: notification.delivery.totalRecipients,
-        });
+        if (log && log.info) {
+          log.info('Successfully created notification', {
+            notificationId: notification.id,
+            type: notification.type,
+            status: notification.status,
+            recipientCount: notification.delivery.totalRecipients,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           notification: {
             ...notification,
             // Mask sensitive recipient data
@@ -639,10 +651,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             successfulDeliveries: notification.delivery.successfulDeliveries,
             failedDeliveries: notification.delivery.failedDeliveries,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating notification', { title, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error creating notification', { title, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create notification: ${errorMessage}`);
       }
@@ -662,10 +676,13 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       readOnlyHint: true,
       openWorldHint: true, // May access external preference systems
     },
-    execute: async (input, { log }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} } } = context || {};
       const { userId, includeStats } = input;
 
-      log.info('Getting email preferences', { userId, includeStats });
+      if (log && log.info) {
+        log.info('Getting email preferences', { userId, includeStats });
+      }
 
       try {
         const params: Record<string, unknown> = {
@@ -688,13 +705,15 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError('Email preferences not found');
         }
 
-        log.info('Successfully retrieved email preferences', {
-          userId: preferences.userId,
-          systemEnabled: preferences.preferences.system.enabled,
-          unsubscribeAll: preferences.unsubscribeAll,
-        });
+        if (log && log.info) {
+          log.info('Successfully retrieved email preferences', {
+            userId: preferences.userId,
+            systemEnabled: preferences.preferences.system.enabled,
+            unsubscribeAll: preferences.unsubscribeAll,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           preferences,
           summary: {
             userId: preferences.userId,
@@ -717,10 +736,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             scenarioFilters: preferences.preferences.scenarios.filters,
             lastUpdated: preferences.lastUpdated,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting email preferences', { userId, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error getting email preferences', { userId, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get email preferences: ${errorMessage}`);
       }
@@ -739,19 +760,24 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: true, // Same preferences produce same result
       openWorldHint: true, // May update external preference systems
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { userId, preferences, timezone, language, unsubscribeAll } = input;
 
-      log.info('Updating email preferences', {
-        userId,
-        hasPreferences: !!preferences,
-        timezone,
-        language,
-        unsubscribeAll,
-      });
+      if (log && log.info) {
+        log.info('Updating email preferences', {
+          userId,
+          hasPreferences: !!preferences,
+          timezone,
+          language,
+          unsubscribeAll,
+        });
+      }
 
       try {
-        reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }
 
         const updateData: Record<string, unknown> = {};
 
@@ -775,7 +801,9 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError('No preference updates provided');
         }
 
-        reportProgress({ progress: 50, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 50, total: 100 });
+        }
 
         let endpoint = '/notifications/email-preferences';
         if (userId) {
@@ -789,15 +817,19 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         }
 
         const updatedPreferences = response.data as MakeEmailPreferences;
-        reportProgress({ progress: 100, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 100, total: 100 });
+        }
 
-        log.info('Successfully updated email preferences', {
-          userId: updatedPreferences.userId,
-          unsubscribeAll: updatedPreferences.unsubscribeAll,
-          categoriesUpdated: !!preferences,
-        });
+        if (log && log.info) {
+          log.info('Successfully updated email preferences', {
+            userId: updatedPreferences.userId,
+            unsubscribeAll: updatedPreferences.unsubscribeAll,
+            categoriesUpdated: !!preferences,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           preferences: updatedPreferences,
           message: 'Email preferences updated successfully',
           changes: {
@@ -818,10 +850,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             }).filter(([, enabled]) => enabled).map(([category]) => category),
             lastUpdated: updatedPreferences.lastUpdated,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error updating email preferences', { userId, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error updating email preferences', { userId, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to update email preferences: ${errorMessage}`);
       }
@@ -840,19 +874,24 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: false, // Each template creation is unique
       openWorldHint: false, // Internal template management
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { name, description, type, category, organizationId, template, design } = input;
 
-      log.info('Creating notification template', {
-        name,
-        type,
-        category,
-        organizationId,
-        variableCount: template.variables.length,
-      });
+      if (log && log.info) {
+        log.info('Creating notification template', {
+          name,
+          type,
+          category,
+          organizationId,
+          variableCount: template.variables.length,
+        });
+      }
 
       try {
-        reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }
 
         const templateData = {
           name,
@@ -870,7 +909,9 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           design: design || {},
         };
 
-        reportProgress({ progress: 50, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 50, total: 100 });
+        }
 
         let endpoint = '/notifications/templates';
         if (organizationId) {
@@ -888,16 +929,20 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError('Notification template creation failed - no data returned');
         }
 
-        reportProgress({ progress: 100, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 100, total: 100 });
+        }
 
-        log.info('Successfully created notification template', {
-          templateId: notificationTemplate.id,
-          name: notificationTemplate.name,
-          type: notificationTemplate.type,
-          category: notificationTemplate.category,
-        });
+        if (log && log.info) {
+          log.info('Successfully created notification template', {
+            templateId: notificationTemplate.id,
+            name: notificationTemplate.name,
+            type: notificationTemplate.type,
+            category: notificationTemplate.category,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           template: notificationTemplate,
           message: `Notification template "${name}" created successfully`,
           summary: {
@@ -919,10 +964,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             'Use template in notifications',
             'Share with team members',
           ],
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating notification template', { name, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error creating notification template', { name, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create notification template: ${errorMessage}`);
       }
@@ -941,20 +988,25 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: false, // Each structure creation is unique
       openWorldHint: false, // Internal data structure management
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { name, description, type, organizationId, teamId, scope, structure, validation, transformation } = input;
 
-      log.info('Creating custom data structure', {
-        name,
-        type,
-        scope,
-        organizationId,
-        teamId,
-        format: structure.format,
-      });
+      if (log && log.info) {
+        log.info('Creating custom data structure', {
+          name,
+          type,
+          scope,
+          organizationId,
+          teamId,
+          format: structure.format,
+        });
+      }
 
       try {
-        reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }
 
         // Validate JSON Schema if provided
         if (structure.schema && typeof structure.schema === 'object') {
@@ -989,7 +1041,9 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           } : { enabled: false, mappings: [], filters: [] },
         };
 
-        reportProgress({ progress: 50, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 50, total: 100 });
+        }
 
         let endpoint = '/data-structures';
         if (organizationId) {
@@ -1009,16 +1063,20 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError('Data structure creation failed - no data returned');
         }
 
-        reportProgress({ progress: 100, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 100, total: 100 });
+        }
 
-        log.info('Successfully created custom data structure', {
-          dataStructureId: dataStructure.id,
-          name: dataStructure.name,
-          type: dataStructure.type,
-          scope: dataStructure.scope,
-        });
+        if (log && log.info) {
+          log.info('Successfully created custom data structure', {
+            dataStructureId: dataStructure.id,
+            name: dataStructure.name,
+            type: dataStructure.type,
+            scope: dataStructure.scope,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStructure,
           message: `Data structure "${name}" created successfully`,
           summary: {
@@ -1041,10 +1099,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             transformUrl: `/data-structures/${dataStructure.id}/transform`,
             testUrl: `/data-structures/${dataStructure.id}/test`,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating data structure', { name, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error creating data structure', { name, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create data structure: ${errorMessage}`);
       }
@@ -1074,19 +1134,22 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       readOnlyHint: true,
       openWorldHint: false, // Internal data structure listing
     },
-    execute: async (input, { log }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} } } = context || {};
       const { type, scope, organizationId, teamId, format, search, includeValidation, includeTransformation, limit, offset, sortBy, sortOrder } = input;
 
-      log.info('Listing custom data structures', {
-        type,
-        scope,
-        organizationId,
-        teamId,
-        format,
-        search,
-        limit,
-        offset,
-      });
+      if (log && log.info) {
+        log.info('Listing custom data structures', {
+          type,
+          scope,
+          organizationId,
+          teamId,
+          format,
+          search,
+          limit,
+          offset,
+        });
+      }
 
       try {
         const params: Record<string, unknown> = {
@@ -1124,13 +1187,15 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError('Invalid response format from data structures API');
         }
 
-        log.info('Successfully listed data structures', {
-          count: data.dataStructures.length,
-          total: data.pagination.total,
-          filters: data.filters,
-        });
+        if (log && log.info) {
+          log.info('Successfully listed data structures', {
+            count: data.dataStructures.length,
+            total: data.pagination.total,
+            filters: data.filters,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStructures: data.dataStructures,
           pagination: data.pagination,
           filters: data.filters,
@@ -1154,10 +1219,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
               return acc;
             }, {} as Record<string, number>),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing data structures', { error: errorMessage });
+        if (log && log.error) {
+          log.error('Error listing data structures', { error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to list data structures: ${errorMessage}`);
       }
@@ -1181,20 +1248,25 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       readOnlyHint: true,
       openWorldHint: false, // Internal data structure retrieval
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { dataStructureId, organizationId, teamId, includeUsageStats, includeValidationHistory, includeTransformationHistory } = input;
 
-      log.info('Getting data structure details', {
-        dataStructureId,
-        organizationId,
-        teamId,
-        includeUsageStats,
-        includeValidationHistory,
-        includeTransformationHistory,
-      });
+      if (log && log.info) {
+        log.info('Getting data structure details', {
+          dataStructureId,
+          organizationId,
+          teamId,
+          includeUsageStats,
+          includeValidationHistory,
+          includeTransformationHistory,
+        });
+      }
 
       try {
-        reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }
 
         let endpoint = `/data-structures/${dataStructureId}`;
         if (organizationId) {
@@ -1215,7 +1287,9 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError(`Failed to get data structure: ${response.error?.message || 'Unknown error'}`);
         }
 
-        reportProgress({ progress: 50, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 50, total: 100 });
+        }
 
         const dataStructure = response.data as DataStructureWithStats;
 
@@ -1223,16 +1297,20 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError('Data structure not found or access denied');
         }
 
-        reportProgress({ progress: 100, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 100, total: 100 });
+        }
 
-        log.info('Successfully retrieved data structure', {
-          dataStructureId: dataStructure.id,
-          name: dataStructure.name,
-          type: dataStructure.type,
-          scope: dataStructure.scope,
-        });
+        if (log && log.info) {
+          log.info('Successfully retrieved data structure', {
+            dataStructureId: dataStructure.id,
+            name: dataStructure.name,
+            type: dataStructure.type,
+            scope: dataStructure.scope,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStructure,
           metadata: {
             id: dataStructure.id,
@@ -1264,10 +1342,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             updateUrl: `/data-structures/${dataStructure.id}`,
             deleteUrl: `/data-structures/${dataStructure.id}`,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting data structure', { dataStructureId, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error getting data structure', { dataStructureId, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get data structure: ${errorMessage}`);
       }
@@ -1322,24 +1402,29 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: true, // Same updates produce same result
       openWorldHint: false, // Internal data structure management
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { dataStructureId, organizationId, teamId, name, description, structure, validation, transformation } = input;
 
-      log.info('Updating data structure', {
-        dataStructureId,
-        organizationId,
-        teamId,
-        updates: {
-          name: !!name,
-          description: !!description,
-          structure: !!structure,
-          validation: !!validation,
-          transformation: !!transformation,
-        },
-      });
+      if (log && log.info) {
+        log.info('Updating data structure', {
+          dataStructureId,
+          organizationId,
+          teamId,
+          updates: {
+            name: !!name,
+            description: !!description,
+            structure: !!structure,
+            validation: !!validation,
+            transformation: !!transformation,
+          },
+        });
+      }
 
       try {
-        reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }
 
         // Validate JSON Schema if provided in updates
         if (structure?.schema && typeof structure.schema === 'object') {
@@ -1381,7 +1466,9 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           }));
         }
 
-        reportProgress({ progress: 30, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 30, total: 100 });
+        }
 
         let endpoint = `/data-structures/${dataStructureId}`;
         if (organizationId) {
@@ -1396,23 +1483,29 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError(`Failed to update data structure: ${response.error?.message || 'Unknown error'}`);
         }
 
-        reportProgress({ progress: 80, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 80, total: 100 });
+        }
 
         const updatedDataStructure = response.data as MakeCustomDataStructure;
         if (!updatedDataStructure) {
           throw new UserError('Data structure update failed - no data returned');
         }
 
-        reportProgress({ progress: 100, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 100, total: 100 });
+        }
 
-        log.info('Successfully updated data structure', {
-          dataStructureId: updatedDataStructure.id,
-          name: updatedDataStructure.name,
-          type: updatedDataStructure.type,
-          updatedFields: Object.keys(updateData),
-        });
+        if (log && log.info) {
+          log.info('Successfully updated data structure', {
+            dataStructureId: updatedDataStructure.id,
+            name: updatedDataStructure.name,
+            type: updatedDataStructure.type,
+            updatedFields: Object.keys(updateData),
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStructure: updatedDataStructure,
           message: `Data structure "${updatedDataStructure.name}" updated successfully`,
           changes: {
@@ -1438,10 +1531,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             transformUrl: `/data-structures/${updatedDataStructure.id}/transform`,
             testUrl: `/data-structures/${updatedDataStructure.id}/test`,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error updating data structure', { dataStructureId, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error updating data structure', { dataStructureId, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to update data structure: ${errorMessage}`);
       }
@@ -1468,20 +1563,25 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       idempotentHint: true, // Multiple deletes of same structure have same effect
       openWorldHint: false, // Internal data structure management
     },
-    execute: async (input, { log, reportProgress }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const { dataStructureId, organizationId, teamId, force, checkDependencies, confirmationCode, archiveBeforeDelete } = input;
 
-      log.info('Deleting data structure', {
-        dataStructureId,
-        organizationId,
-        teamId,
-        force,
-        checkDependencies,
-        archiveBeforeDelete,
-      });
+      if (log && log.info) {
+        log.info('Deleting data structure', {
+          dataStructureId,
+          organizationId,
+          teamId,
+          force,
+          checkDependencies,
+          archiveBeforeDelete,
+        });
+      }
 
       try {
-        reportProgress({ progress: 0, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 0, total: 100 });
+        }
 
         let endpoint = `/data-structures/${dataStructureId}`;
         if (organizationId) {
@@ -1497,7 +1597,9 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         }
 
         const dataStructure = getResponse.data as MakeCustomDataStructure;
-        reportProgress({ progress: 20, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 20, total: 100 });
+        }
 
         // Check dependencies if requested
         let dependencies: DataStructureDependency[] = [];
@@ -1519,7 +1621,9 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           }
         }
 
-        reportProgress({ progress: 40, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 40, total: 100 });
+        }
 
         // Create archive if requested
         let archiveInfo: DataStructureArchiveInfo | null = null;
@@ -1541,7 +1645,9 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           }
         }
 
-        reportProgress({ progress: 60, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 60, total: 100 });
+        }
 
         // Perform deletion
         const deleteParams: Record<string, unknown> = {
@@ -1555,17 +1661,21 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           throw new UserError(`Failed to delete data structure: ${deleteResponse.error?.message || 'Unknown error'}`);
         }
 
-        reportProgress({ progress: 100, total: 100 });
+        if (reportProgress) {
+          reportProgress({ progress: 100, total: 100 });
+        }
 
-        log.info('Successfully deleted data structure', {
-          dataStructureId: dataStructure.id,
-          name: dataStructure.name,
-          type: dataStructure.type,
-          hadDependencies: dependencies.length > 0,
-          archiveCreated: !!archiveInfo,
-        });
+        if (log && log.info) {
+          log.info('Successfully deleted data structure', {
+            dataStructureId: dataStructure.id,
+            name: dataStructure.name,
+            type: dataStructure.type,
+            hadDependencies: dependencies.length > 0,
+            archiveCreated: !!archiveInfo,
+          });
+        }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           message: `Data structure "${dataStructure.name}" deleted successfully`,
           deletedStructure: {
             id: dataStructure.id,
@@ -1592,10 +1702,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
               'Use the archive download URL to restore this data structure if needed within 30 days.' :
               'No archive was created. This deletion cannot be undone.',
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error deleting data structure', { dataStructureId, error: errorMessage });
+        if (log && log.error) {
+          log.error('Error deleting data structure', { dataStructureId, error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to delete data structure: ${errorMessage}`);
       }
@@ -1626,17 +1738,20 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
       readOnlyHint: true,
       openWorldHint: true, // May query delivery status from external systems
     },
-    execute: async (input, { log }) => {
+    execute: async (input, context) => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} } } = context || {};
       const { type, status, priority, dateRange, includeDelivery, includeTracking, limit, offset, sortBy, sortOrder } = input;
 
-      log.info('Listing notifications', {
-        type,
-        status,
-        priority,
-        dateRange,
-        limit,
-        offset,
-      });
+      if (log && log.info) {
+        log.info('Listing notifications', {
+          type,
+          status,
+          priority,
+          dateRange,
+          limit,
+          offset,
+        });
+      }
 
       try {
         const params: Record<string, unknown> = {
@@ -1663,10 +1778,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
         const notifications = response.data as MakeNotification[] || [];
         const metadata = response.metadata;
 
-        log.info('Successfully retrieved notifications', {
-          count: notifications.length,
-          total: metadata?.total,
-        });
+        if (log && log.info) {
+          log.info('Successfully retrieved notifications', {
+            count: notifications.length,
+            total: metadata?.total,
+          });
+        }
 
         // Create notification analytics
         const analytics = {
@@ -1700,7 +1817,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
           }, {}),
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           notifications: notifications.map(notif => ({
             ...notif,
             recipients: {
@@ -1715,10 +1832,12 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             offset,
             hasMore: (metadata?.total || 0) > (offset + notifications.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing notifications', { error: errorMessage });
+        if (log && log.error) {
+          log.error('Error listing notifications', { error: errorMessage });
+        }
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to list notifications: ${errorMessage}`);
       }

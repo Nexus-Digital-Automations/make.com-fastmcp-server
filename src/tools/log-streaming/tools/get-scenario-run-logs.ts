@@ -8,6 +8,7 @@ import { ScenarioRunLogsSchema } from '../schemas/stream-config.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { LogStreamingManager, LogStreamingConfig } from '../utils/stream-processor.js';
 import { MakeLogEntry } from '../types/streaming.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create get scenario run logs tool configuration
@@ -134,7 +135,7 @@ export function createGetScenarioRunLogsTool(context: ToolContext): ToolDefiniti
             message: `Streamed ${totalLogs} logs successfully`,
           };
 
-          return JSON.stringify(result, null, 2);
+          return formatSuccessResponse(result).content[0].text;
 
         } else {
           // Static log retrieval
@@ -186,7 +187,7 @@ export function createGetScenarioRunLogsTool(context: ToolContext): ToolDefiniti
             message: `Retrieved ${logs.length} logs successfully`,
           };
 
-          return JSON.stringify(result, null, 2);
+          return formatSuccessResponse(result).content[0].text;
         }
 
       } catch (error) {

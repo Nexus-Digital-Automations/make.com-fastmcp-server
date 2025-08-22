@@ -21,6 +21,7 @@ import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { SSETransportEnhancer } from '../lib/sse-transport-enhancer.js';
 import PerformanceMonitor from '../lib/performance-monitor.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Core interfaces for real-time monitoring
 interface ExecutionState {
@@ -1083,7 +1084,7 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
 
         const status = monitor.getMonitoringStatus(monitorId);
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           monitorId,
           scenarioId,
           executionId: executionId || 'auto-detected',
@@ -1096,7 +1097,7 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
             stop: `Use stop_monitoring tool with monitorId: ${monitorId}`,
             status: `Use get_monitoring_status tool with monitorId: ${monitorId}`,
           },
-        }, null, 2);
+        });
 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1131,13 +1132,13 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
           throw new UserError(`Monitoring session ${monitorId} not found or already stopped`);
         }
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           monitorId,
           stopped: true,
           reason: reason || 'Manual stop',
           timestamp: new Date().toISOString(),
           message: 'Monitoring session stopped successfully',
-        }, null, 2);
+        });
 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1168,12 +1169,12 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
       try {
         const status = monitor.getMonitoringStatus(monitorId);
         
-        return JSON.stringify({
+        return formatSuccessResponse({
           requestedAt: new Date().toISOString(),
           monitorId: monitorId || 'all',
           status,
           includeHistory,
-        }, null, 2);
+        });
 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);

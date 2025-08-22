@@ -175,48 +175,48 @@ function runValidationTests(): ValidationResult[] {
  * Test schema utilities
  */
 function testSchemaUtilities(): void {
-  console.log('\n=== Testing Schema Utilities ===');
+  process.stderr.write('\n=== Testing Schema Utilities ===\n');
   
   // Test SchemaValidation.validate
   const validateResult = SchemaValidation.validate(ScenarioFiltersSchema, testData.scenarioFilters);
-  console.log('SchemaValidation.validate result:', validateResult.success ? 'SUCCESS' : 'FAILED');
+  process.stderr.write(`SchemaValidation.validate result: ${validateResult.success ? 'SUCCESS' : 'FAILED'}\n`);
   
   // Test SchemaValidation.safeParse
   const safeParseResult = SchemaValidation.safeParse(CreateScenarioSchema, testData.createScenario);
-  console.log('SchemaValidation.safeParse result:', safeParseResult ? 'SUCCESS' : 'FAILED');
+  process.stderr.write(`SchemaValidation.safeParse result: ${safeParseResult ? 'SUCCESS' : 'FAILED'}\n`);
   
   // Test ScenariosSchemas structure
-  console.log('ScenariosSchemas.filters keys:', Object.keys(ScenariosSchemas.filters));
-  console.log('ScenariosSchemas.updates keys:', Object.keys(ScenariosSchemas.updates));
-  console.log('ScenariosSchemas.blueprints keys:', Object.keys(ScenariosSchemas.blueprints));
+  process.stderr.write(`ScenariosSchemas.filters keys: ${Object.keys(ScenariosSchemas.filters)}\n`);
+  process.stderr.write(`ScenariosSchemas.updates keys: ${Object.keys(ScenariosSchemas.updates)}\n`);
+  process.stderr.write(`ScenariosSchemas.blueprints keys: ${Object.keys(ScenariosSchemas.blueprints)}\n`);
 }
 
 /**
  * Main validation function
  */
 export function validateExtractedSchemas(): boolean {
-  console.log('=== Schema Extraction Validation ===');
+  process.stderr.write('=== Schema Extraction Validation ===\n');
   
   const results = runValidationTests();
   let allPassed = true;
   
-  console.log('\n=== Validation Results ===');
+  process.stderr.write('\n=== Validation Results ===\n');
   for (const result of results) {
     const status = result.success ? '✅ PASS' : '❌ FAIL';
-    console.log(`${status} ${result.schema}`);
+    process.stderr.write(`${status} ${result.schema}\n`);
     if (!result.success) {
-      console.log(`   Error: ${result.error}`);
+      process.stderr.write(`   Error: ${result.error}\n`);
       allPassed = false;
     }
   }
   
   testSchemaUtilities();
   
-  console.log('\n=== Summary ===');
-  console.log(`Total schemas tested: ${results.length}`);
-  console.log(`Passed: ${results.filter(r => r.success).length}`);
-  console.log(`Failed: ${results.filter(r => !r.success).length}`);
-  console.log(`Overall result: ${allPassed ? '✅ ALL SCHEMAS VALID' : '❌ SOME SCHEMAS FAILED'}`);
+  process.stderr.write('\n=== Summary ===\n');
+  process.stderr.write(`Total schemas tested: ${results.length}\n`);
+  process.stderr.write(`Passed: ${results.filter(r => r.success).length}\n`);
+  process.stderr.write(`Failed: ${results.filter(r => !r.success).length}\n`);
+  process.stderr.write(`Overall result: ${allPassed ? '✅ ALL SCHEMAS VALID' : '❌ SOME SCHEMAS FAILED'}\n`);
   
   return allPassed;
 }

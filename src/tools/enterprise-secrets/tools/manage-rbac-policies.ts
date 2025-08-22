@@ -7,6 +7,7 @@ import { UserError } from 'fastmcp';
 import { RBACPolicySchema } from '../schemas/index.js';
 import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
 import { auditLogger } from '../../../lib/audit-logger.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * RBAC Policy Manager class
@@ -155,7 +156,7 @@ export function createManageRBACPoliciesTool(context: ToolContext): ToolDefiniti
         });
 
         reportProgress?.({ progress: 100, total: 100 });
-        return JSON.stringify(response, null, 2);
+        return formatSuccessResponse(response).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('RBAC policy management failed', { error: errorMessage });

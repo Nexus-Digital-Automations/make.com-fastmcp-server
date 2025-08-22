@@ -7,6 +7,7 @@ import { UserError } from 'fastmcp';
 import { StreamLiveExecutionSchema } from '../schemas/stream-config.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { MakeLogEntry } from '../types/streaming.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create stream live execution tool configuration
@@ -270,7 +271,7 @@ export function createStreamLiveExecutionTool(context: ToolContext): ToolDefinit
           alerts: (executionData.alerts as Array<unknown>).length,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);

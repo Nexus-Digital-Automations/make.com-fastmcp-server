@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/420</span>
+                <span class='fraction'>0/421</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/400</span>
+                <span class='fraction'>0/401</span>
             </div>
         
             
@@ -1695,7 +1695,8 @@
 <a name='L1630'></a><a href='#L1630'>1630</a>
 <a name='L1631'></a><a href='#L1631'>1631</a>
 <a name='L1632'></a><a href='#L1632'>1632</a>
-<a name='L1633'></a><a href='#L1633'>1633</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1633'></a><a href='#L1633'>1633</a>
+<a name='L1634'></a><a href='#L1634'>1634</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1737,6 +1738,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3342,43 +3344,44 @@ import MakeApiClient from '../lib/make-api-client.js';
 impo<span class="cstat-no" title="statement not covered" >rt { credentialManager } from '../ut</span>ils/encryption.js';
 import<span class="fstat-no" title="function not covered" > {</span> auditLogger } from '../lib/audit-logger.js';
 impo<span class="cstat-no" title="statement not covered" >rt logger from '../lib<span class="cstat-no" title="statement not covered" >/logger.</span></span>js';
-<span class="cstat-no" title="statement not covered" ></span>
-const componentLogger = logger.child({ component: 'ZeroTrustAuthTools' });
-const randomBytes = promi<span class="cstat-no" title="statement not covered" >sify(crypto.randomBytes);<span class="fstat-no" title="function not covered" ></span></span>
-<span class="cstat-no" title="statement not covered" ></span>
-// ==<span class="fstat-no" title="function not covered" >==</span>= CORE SCHEMAS =====
-<span class="cstat-no" title="statement not covered" ></span>
-// Authentication Request Schema
-const Authenticatio<span class="cstat-no" title="statement not covered" >nRequestSchema = z.object({<span class="fstat-no" title="function not covered" ></span></span>
-  username: z.stri<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ng</span>().min(1, 'Username is required'),</span>
-  passwo<span class="cstat-no" title="statement not covered" >rd: z.string().min(8, 'Password must be <span class="fstat-no" title="function not covered" >at</span> least 8 characters'),</span>
-  mfaCode: z.string()<span class="cstat-no" title="statement not covered" >.op</span>tional(),
-  deviceFing<span class="cstat-no" title="statement not covered" >erprint: z.object<span class="cstat-no" title="statement not covered" >({<span class="cstat-no" title="statement not covered" ></span></span></span>
-    userAgen<span class="cstat-no" title="statement not covered" >t: z.string</span>(),
-    screenResolution: z.string(),
-    time<span class="cstat-no" title="statement not covered" >zone: z.string(),</span>
-    language: z.string(),
-<span class="cstat-no" title="statement not covered" >    platfor<span class="fstat-no" title="function not covered" >m:</span> z.string(),</span>
-    hard<span class="cstat-no" title="statement not covered" >wareInfo: z.string().option<span class="cstat-no" title="statement not covered" >al(),</span></span>
-  }),<span class="cstat-no" title="statement not covered" ></span>
-  ipAddr<span class="cstat-no" title="statement not covered" >ess: z.string().i<span class="cstat-no" title="statement not covered" >p(),<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span></span>
-  geoloc<span class="cstat-no" title="statement not covered" >ation: z.object({</span>
-    lati<span class="cstat-no" title="statement not covered" >tude: z.number(</span>).optional(),
+impo<span class="cstat-no" title="statement not covered" >rt { formatSuc</span>cessResponse } from '../utils/response-formatter.js';
+&nbsp;
+const componentLogger = l<span class="cstat-no" title="statement not covered" >ogger.child({ component: 'ZeroTrustAuthTools' });<span class="fstat-no" title="function not covered" ></span></span>
+cons<span class="cstat-no" title="statement not covered" >t randomBytes = promisify(crypto.randomBytes);</span>
+<span class="fstat-no" title="function not covered" ></span>
+// =<span class="cstat-no" title="statement not covered" >==== CORE SCHEMAS </span>=====
+&nbsp;
+// Authentication R<span class="cstat-no" title="statement not covered" >equest Schema<span class="fstat-no" title="function not covered" ></span></span>
+const Authenticati<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >on</span>RequestSchema = z.object({</span>
+  userna<span class="cstat-no" title="statement not covered" >me: z.string().min(1, 'Username is requi<span class="fstat-no" title="function not covered" >re</span>d'),</span>
+  password: z.string(<span class="cstat-no" title="statement not covered" >).m</span>in(8, 'Password must be at least 8 characters'),
+  mfaCode: z<span class="cstat-no" title="statement not covered" >.string().optiona<span class="cstat-no" title="statement not covered" >l(),<span class="cstat-no" title="statement not covered" ></span></span></span>
+  deviceFing<span class="cstat-no" title="statement not covered" >erprint: z.</span>object({
+    userAgent: z.string(),
+    scre<span class="cstat-no" title="statement not covered" >enResolution: z.str</span>ing(),
+    timezone: z.string(),
+<span class="cstat-no" title="statement not covered" >    languag<span class="fstat-no" title="function not covered" >e:</span> z.string(),</span>
+    plat<span class="cstat-no" title="statement not covered" >form: z.string(),<span class="cstat-no" title="statement not covered" ></span></span>
+    hardwareInfo: z.s<span class="cstat-no" title="statement not covered" >tri</span>ng().optional(),
+  }),<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span></span>
+  ipAddr<span class="cstat-no" title="statement not covered" >ess: z.string().ip(),</span>
+  geoloc<span class="cstat-no" title="statement not covered" >ation: z.object</span>({
+    latitude: z.number().optional(),
     longitude: z.number().optional(),
-    country: z.string().optional(),
-    city: z.string().o<span class="cstat-no" title="statement not covered" >ptional(),<span class="fstat-no" title="function not covered" ></span></span>
-  })<span class="cstat-no" title="statement not covered" >.optional(),</span>
-  riskContext: z.object({
-<span class="cstat-no" title="statement not covered" >    networkType: z.enum(['corporate', 'public', 'mobile', 'vpn'</span>, 'tor']),
+    country: z.string(<span class="cstat-no" title="statement not covered" >).optional(),<span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >    city: z.string().optional(),</span>
+  }).optional(),
+<span class="cstat-no" title="statement not covered" >  riskContext: z.object({</span>
+<span class="cstat-no" title="statement not covered" >    networkType: z.enum(['corporate',</span> 'public', 'mobile', 'vpn', 'tor']),
 <span class="cstat-no" title="statement not covered" >    timeOfAccess: z.string(),</span>
-<span class="cstat-no" title="statement not covered" >    accessPattern: z.enum(['normal', 'unusual', 'first_</span>time']),
+    accessPatt<span class="cstat-no" title="statement not covered" >ern: z.enum(['n</span>ormal', 'unusual', 'first_time']),
   }),<span class="cstat-no" title="statement not covered" ></span>
 });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-// MFA Setup Sc<span class="cstat-no" title="statement not covered" >hema</span>
-const MFASetupSchema = z<span class="cstat-no" title="statement not covered" >.object({</span>
-  userId: z.string().min(1<span class="cstat-no" title="statement not covered" >, 'User ID is required'),</span>
-  method: z.enum(['t<span class="cstat-no" title="statement not covered" >otp', 'sms', 'hardware_token', 'biometric']),</span>
+// MFA Setup Schema<span class="cstat-no" title="statement not covered" ></span>
+const MFASetupSchema = z.o<span class="cstat-no" title="statement not covered" >bject({</span>
+  userId: z.string()<span class="cstat-no" title="statement not covered" >.min(1, 'User ID is required'),</span>
+  method: z.enum(['totp', 'sms',<span class="cstat-no" title="statement not covered" > 'hardware_token', 'biometric']),</span>
   phoneNumber: z.string(<span class="cstat-no" title="statement not covered" >).optional(),</span>
   deviceName: z.stri<span class="cstat-no" title="statement not covered" >ng().optional(),</span>
   backupCodes: z.boolean().optional().default(true),
@@ -3999,7 +4002,7 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool =&gt;
           securityEvents: ['Failed login attempt logged'],
         };
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       }
 &nbsp;
       // Assess device trust
@@ -4049,13 +4052,13 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool =&gt;
         if (isMfaValid) {
           authMethod<span class="cstat-no" title="statement not covered" >s.push('totp');</span>
         } else {<span class="cstat-no" title="statement not covered" ></span>
-          return JSON.stringify({
+          return formatSuccessResponse({
             success: false,
             riskScore: overallRiskScore,
             requires<span class="cstat-no" title="statement not covered" >Additio</span>nalAuth: true,
             authMethods: [],
             errors: ['Invalid MFA code'],
-          }, null, 2);
+          }).content[0].text;
         }<span class="cstat-no" title="statement not covered" ></span>
       }
 &nbsp;
@@ -4097,12 +4100,12 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool =&gt;
         authMethods,
         securityEvents: [
           `Device trust score: ${deviceTrust.trustScore}`,
-          `B<span class="cstat-no" title="statement not covered" >ehavior risk score: ${behaviorAnalysis.r</span>iskScore}`,
+          `B<span class="cstat-no" title="statement not covered" >ehavior risk score: ${behaviorAnalysis.riskScore}`,</span>
           `Overall risk score: ${overallRiskScore}`,
         ],
       };<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
 &nbsp;
     } catch (error) {
       compon<span class="cstat-no" title="statement not covered" >entLogger.error('Zero trust authentication failed', {</span>
@@ -4111,13 +4114,13 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool =&gt;
         ipAddress: parsedInput.ipAddress,
       });
 &nbsp;
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         riskScore: 100,
         requiresAdditionalAuth: false,
         authMethods: [],<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
         errors: ['Authentication service error'],
-      }, null, 2);
+      }).content[0].text;
     }
   },<span class="fstat-no" title="function not covered" ></span>
 });<span class="cstat-no" title="statement not covered" ></span>
@@ -4146,7 +4149,7 @@ const create<span class="cstat-no" title="statement not covered" >MFASetupTool =
           // Generate backup codes
           const backupCodes = parsedInput.backupCodes 
             ? await Promise.all(Array(10).fill(0).map(() =&gt; 
-<span class="cstat-no" title="statement not covered" >                randomBytes(8).then(buf =&gt; buf.toString('</span>hex'))
+<span class="cstat-no" title="statement not covered" >                randomBytes(8).then(buf =&gt; buf.toString('hex'))</span>
               ))
             : [];
 <span class="cstat-no" title="statement not covered" ></span>
@@ -4242,7 +4245,7 @@ const create<span class="cstat-no" title="statement not covered" >MFASetupTool =
         success: result.success,
       });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-      return JSON.st<span class="cstat-no" title="statement not covered" >ringify(result, null, 2);</span>
+      return formatS<span class="cstat-no" title="statement not covered" >uccessResponse(result).content[0].tex</span>t;
 <span class="cstat-no" title="statement not covered" ></span>
     } catch (error) {
       componentLogger.error('MFA setup failed', {
@@ -4251,10 +4254,10 @@ const create<span class="cstat-no" title="statement not covered" >MFASetupTool =
         method: 'unknown',
       });
 &nbsp;
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,<span class="cstat-no" title="statement not covered" ></span>
         error: 'MFA <span class="cstat-no" title="statement not covered" >setup service error',</span>
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -4297,7 +4300,7 @@ const createDeviceTrustA<span class="cstat-no" title="statement not covered" >ss
         issues: trustResult.issues.length,
       });
 <span class="cstat-no" title="statement not covered" ></span>
-      return JSON.string<span class="cstat-no" title="statement not covered" >ify(trustResult, null, 2);</span>
+      return formatSucce<span class="cstat-no" title="statement not covered" >ssResponse(trustResult).content[0].text;</span>
 &nbsp;
     } catch (error) {
       componentLogger.error('Device trust assessment failed', {
@@ -4305,14 +4308,14 @@ const createDeviceTrustA<span class="cstat-no" title="statement not covered" >ss
         deviceId: parsedInput.deviceId,<span class="cstat-no" title="statement not covered" ></span>
       });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-      return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
+      return formatSuccessResponse({<span class="cstat-no" title="statement not covered" ></span>
         trustScore: 0,<span class="cstat-no" title="statement not covered" ></span>
         riskLevel: 'crit<span class="cstat-no" title="statement not covered" >ical',</span>
         complianceStatus: 'non_compliant',
         issues: ['Assessment service error'],
         recommendations:<span class="cstat-no" title="statement not covered" > ['Contact system administrator'],</span>
         fingerprint: 'error',
-      }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+      }).content[0].<span class="cstat-no" title="statement not covered" >text;</span>
     }
   },
 });<span class="cstat-no" title="statement not covered" ></span>
@@ -4325,7 +4328,7 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): ZeroTrustTool
   description: 'Analyze user behavior patterns and detect anomalies',
   inputSchema: BehavioralAnalyticsSchema,
   execute: async (input: unknown): Promise&lt;string&gt; =&gt; {
-    const pa<span class="cstat-no" title="statement not covered" >rsedInput = BehavioralAnalyticsSchema.pa</span>rse(input);
+    const pa<span class="cstat-no" title="statement not covered" >rsedInput = BehavioralAnalyticsSchema.parse(input);</span>
     const authEngine = ZeroTrustAuthEngine.getInstance();
     
     try {<span class="cstat-no" title="statement not covered" ></span>
@@ -4359,7 +4362,7 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): ZeroTrustTool
         anomalies: analysisResult.<span class="cstat-no" title="statement not covered" >anomalies.length,</span>
       });
 <span class="cstat-no" title="statement not covered" ></span>
-      return JSON.stringify(analysisResult, null, 2);
+      return formatSuccessResponse(analysisResult).content[0].text;
 <span class="cstat-no" title="statement not covered" ></span>
     } catch (error) {<span class="cstat-no" title="statement not covered" ></span>
       componentLogger.error('Behavior analysis failed', {
@@ -4368,13 +4371,13 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): ZeroTrustTool
         sessionId: parsedInput.sessionId,
       });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-      return JSON.stringify({
+      return formatSuccessResponse({
         riskScore: 50,<span class="cstat-no" title="statement not covered" ></span>
         anomalies: ['Analysis service error'],
         confidence: <span class="cstat-no" title="statement not covered" >0,</span>
         baseline: 'insufficient_data',
         recommendations: ['Contact system administrator'],
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -4396,10 +4399,10 @@ const createSessionM<span class="cstat-no" title="statement not covered" >anagem
       switch (parsedInput.action) {
         case 'create': {
           if (!parsedInput.userId || !parsedInput.deviceId) {
-            return JSON.stringify({
+            return formatSuccessResponse({
               success: false,
               error: 'User ID and Device ID required for session creation',
-            }, null, 2);
+            }).content[0].text;
           }
           <span class="cstat-no" title="statement not covered" ></span>
           const riskScore = parsedInput.sessionData?.riskScore || 25;
@@ -4410,10 +4413,10 @@ const createSessionM<span class="cstat-no" title="statement not covered" >anagem
 &nbsp;
         case 'validate': {
           if (!parsedInput.sessionId) {
-            return JSON.<span class="cstat-no" title="statement not covered" >stringi</span>fy({
+            return forma<span class="cstat-no" title="statement not covered" >tSucces</span>sResponse({
               success: false,
               error: 'Session ID required f<span class="cstat-no" title="statement not covered" >or validation',</span>
-            }, null,<span class="cstat-no" title="statement not covered" > 2);</span>
+            }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
           }
           
           const validatedSession = authEngine.validateSession(parsedInput.sessionId);
@@ -4427,10 +4430,10 @@ const createSessionM<span class="cstat-no" title="statement not covered" >anagem
 &nbsp;
         case 'terminate': {
           if (!parse<span class="cstat-no" title="statement not covered" >dInput.</span>sessionId) {
-            return JSON.stringify({
+            return formatSuccessResponse({
               success: false,
               error: 'Session ID required for termination',
-            }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+            }).content[0].text;<span class="cstat-no" title="statement not covered" ></span>
           }<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
           // Terminate session
@@ -4453,10 +4456,10 @@ const createSessionM<span class="cstat-no" title="statement not covered" >anagem
 &nbsp;
         case 'list': {
           if (!parsedInput.userId) {
-<span class="cstat-no" title="statement not covered" >            return JSON.stringify({</span>
+<span class="cstat-no" title="statement not covered" >            return formatSuccessResponse({</span>
               success: false,
               error: 'User ID required for session listing',
-            }, null, 2);
+            }).content[0].text;
           }
 &nbsp;
           const userSessions = Array.from(authEngine['sessions'].values())
@@ -4467,10 +4470,10 @@ const createSessionM<span class="cstat-no" title="statement not covered" >anagem
 &nbsp;
         case<span class="cstat-no" title="statement not covered" > 'refresh': {</span>
           if (!parsedInput.sessionId) {
-            return JSON.stringify({
+            return formatSuccessResponse({
               success: false,
               error: 'Session ID required for refresh',
-<span class="cstat-no" title="statement not covered" >            }, null, 2);</span>
+<span class="cstat-no" title="statement not covered" >            }).content[0].text;</span>
           }
 &nbsp;
           co<span class="cstat-no" title="statement not covered" >nst existingSession = authEngine.validateSession(parsedInput.sessionId);</span>
@@ -4498,7 +4501,7 @@ const createSessionM<span class="cstat-no" title="statement not covered" >anagem
         success: result.success,
       });<span class="cstat-no" title="statement not covered" ></span>
 &nbsp;
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
 &nbsp;
     } catch (error) {
       componentLogger.error('Session management failed', {
@@ -4508,10 +4511,10 @@ const createSessionM<span class="cstat-no" title="statement not covered" >anagem
         userId: parsedInput.userId,
       });
 &nbsp;
-      return JSON.stringify({
+      return formatSuccessResponse({
         succ<span class="cstat-no" title="statement not covered" >ess: false,</span>
         error: '<span class="cstat-no" title="statement not covered" >Session management servi</span>ce error',
-      }, null, 2)<span class="cstat-no" title="statement not covered" >;</span>
+      }).content[<span class="cstat-no" title="statement not covered" >0].text;</span>
     }<span class="cstat-no" title="statement not covered" ></span>
   },<span class="cstat-no" title="statement not covered" ></span>
 });<span class="cstat-no" title="statement not covered" ></span>
@@ -4657,7 +4660,7 @@ const create<span class="cstat-no" title="statement not covered" >IdentityFedera
         success: result.success,
       });
 <span class="cstat-no" title="statement not covered" ></span>
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
 &nbsp;
     } catch (error) {
       componentLogger.error('Identity federation failed', {
@@ -4666,10 +4669,10 @@ const create<span class="cstat-no" title="statement not covered" >IdentityFedera
         action: parsedInput.action,
       });
 <span class="cstat-no" title="statement not covered" ></span>
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         error: 'Identity federation service error',
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -4782,7 +4785,7 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool =&gt
         riskLevel,
       });
 &nbsp;
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
 &nbsp;
     } catch (error) {
       componentLogger.error('Risk assessment failed', {
@@ -4792,13 +4795,13 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool =&gt
         assessmentType: parsedInput.assessmentType,
       });
 &nbsp;
-      return JSON.stringify({
+      return formatSuccessResponse({
         success: false,
         overallRiskScore: 100,
         riskLevel: 'critical',
         error: 'Risk assessment service error',
         recommendations: ['Contact system administrator'],
-      }, null, 2);
+      }).content[0].text;
     }
   },
 });
@@ -4966,7 +4969,7 @@ export default addZeroTrustAuthTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:42.092Z
+                at 2025-08-22T03:12:16.956Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

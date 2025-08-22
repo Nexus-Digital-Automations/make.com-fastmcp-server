@@ -16,6 +16,7 @@ import {
   DataTransformation
 } from '../types/export.js';
 import MakeApiClient from '../../../lib/make-api-client.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create export logs for analysis tool configuration
@@ -287,7 +288,7 @@ class EnhancedLogExportProcessor {
       external: destination.externalSystemConfig?.type || 'none',
     });
 
-    return JSON.stringify(result, null, 2);
+    return formatSuccessResponse(result).content[0].text;
   }
 
   /**
@@ -404,7 +405,7 @@ class EnhancedLogExportProcessor {
       totalLogs: streamingResults.totalLogsStreamed,
     });
 
-    return JSON.stringify(result, null, 2);
+    return formatSuccessResponse(result).content[0].text;
   }
 
   /**

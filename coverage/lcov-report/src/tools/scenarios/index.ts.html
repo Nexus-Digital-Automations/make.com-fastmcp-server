@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50.98% </span>
+                <span class="strong">92.15% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>26/51</span>
+                <span class='fraction'>47/51</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/4</span>
+                <span class='fraction'>2/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">53.06% </span>
+                <span class="strong">95.91% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>26/49</span>
+                <span class='fraction'>47/49</span>
             </div>
         
             
@@ -277,41 +277,41 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -402,7 +402,7 @@
  */
 &nbsp;
 import { FastMCP } from 'fastmcp';
-import MakeApiClient from '../../lib/<span class="branch-0 cbranch-no" title="branch not covered" >make</span>-api-client.js';
+import MakeApiClient from '../../lib/make-a<span class="branch-1 cbranch-no" title="branch not covered" >pi-client.js';</span>
 import logger from '../../lib/logger.js';
 import { ToolContext, createToolContextLogger } from '../shared/types/tool-context.js';
 &nbsp;
@@ -435,42 +435,42 @@ import { VERSION_INFO } from './constants.js';
  * 
  * @param server - FastMCP server instance
  * @param apiClient - Make.com API client
- */<span class="fstat-no" title="function not covered" ></span>
-export function addScenarioT<span class="cstat-no" title="statement not covered" >ools(server: FastMCP, apiClient: MakeApiClient): void {</span>
+ */
+export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): void {
   const componentLogger = logger.child({ 
     component: 'ScenariosModule',
     version: VERSION_INFO.SCENARIOS_MODULE_VERSION 
-  })<span class="cstat-no" title="statement not covered" >;</span>
+  });
   
   componentLogger.info('Initializing modular scenario management tools', {
     moduleVersion: VERSION_INFO.SCENARIOS_MODULE_VERSION,
     apiVersion: VERSION_INFO.API_VERSION
-  });<span class="cstat-no" title="statement not covered" ></span>
+  });
 &nbsp;
   // Create shared tool context for dependency injection
   const toolContext: ToolContext = { 
     server, 
-<span class="cstat-no" title="statement not covered" >    apiClient, </span>
+    apiClient, 
     logger: createToolContextLogger(componentLogger)
-  };<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" ></span>
-  try {<span class="cstat-no" title="statement not covered" ></span>
-    // R<span class="cstat-no" title="statement not covered" >egister CRUD operation tools</span>
-    comp<span class="cstat-no" title="statement not covered" >onentLogger.debug('Registering CRUD operation tools');</span>
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(createListScenariosTools(toolContext));</span>
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(createGetScenarioTool(toolContext));</span>
+  };
+&nbsp;
+  try {
+    // Register CRUD operation tools
+    componentLogger.debug('Registering CRUD operation tools');
+    server.addTool(createListScenariosTools(toolContext));
+    server.addTool(createGetScenarioTool(toolContext));
     server.addTool(createScenarioTool(toolContext));
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(createUpdateScenarioTool(toolContext));</span>
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(createDeleteScenarioTool(toolContext));</span>
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(createCloneScenarioTool(toolContext));</span>
-<span class="cstat-no" title="statement not covered" ></span>
+    server.addTool(createUpdateScenarioTool(toolContext));
+    server.addTool(createDeleteScenarioTool(toolContext));
+    server.addTool(createCloneScenarioTool(toolContext));
+&nbsp;
     // Register execution and analysis tools
-    comp<span class="cstat-no" title="statement not covered" >onentLogger.debug('Registering execution and analysis tools');</span>
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(createRunScenarioTool(toolContext));</span>
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(createTroubleshootScenarioTool(toolContext));</span>
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(createGenerateTroubleshootingReportTool(toolContext));</span>
-<span class="cstat-no" title="statement not covered" ></span>
-    // R<span class="cstat-no" title="statement not covered" >egister blueprint tools</span>
+    componentLogger.debug('Registering execution and analysis tools');
+    server.addTool(createRunScenarioTool(toolContext));
+    server.addTool(createTroubleshootScenarioTool(toolContext));
+    server.addTool(createGenerateTroubleshootingReportTool(toolContext));
+&nbsp;
+    // Register blueprint tools
     componentLogger.debug('Registering blueprint manipulation tools');
     server.addTool(createAnalyzeBlueprintTool(toolContext));
     server.addTool(createValidateBlueprintTool(toolContext));
@@ -547,7 +547,7 @@ export const ScenariosModuleInfo = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:41.788Z
+                at 2025-08-22T03:12:16.801Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

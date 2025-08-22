@@ -19,6 +19,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Input validation schemas
 const UserFiltersSchema = z.object({
@@ -168,7 +169,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           role: String(userObj.role ?? 'unknown'),
         });
 
-        return JSON.stringify({ user }, null, 2);
+        return formatSuccessResponse({ user }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting current user', { error: errorMessage });
@@ -238,7 +239,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           total: metadata?.total,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           users: usersArray,
           pagination: {
             total: metadata?.total || usersArray.length,
@@ -246,7 +247,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
             offset,
             hasMore: (metadata?.total || 0) > (offset + usersArray.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing users', { error: errorMessage });
@@ -294,7 +295,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           role: String(userObj.role ?? 'unknown'),
         });
 
-        return JSON.stringify({ user }, null, 2);
+        return formatSuccessResponse({ user }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting user', { userId, error: errorMessage });
@@ -349,10 +350,10 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           permissions: permissions?.length || 0,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           user,
           message: 'User role updated successfully',
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating user role', { userId, error: errorMessage });
@@ -413,7 +414,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           total: metadata?.total,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           teams: teamsArray,
           pagination: {
             total: metadata?.total || teamsArray.length,
@@ -421,7 +422,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
             offset,
             hasMore: (metadata?.total || 0) > (offset + teamsArray.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing teams', { error: errorMessage });
@@ -468,7 +469,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           name: String(teamObj.name ?? 'unknown'),
         });
 
-        return JSON.stringify({ team }, null, 2);
+        return formatSuccessResponse({ team }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting team', { teamId, error: errorMessage });
@@ -520,10 +521,10 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           name: String(teamObj.name ?? 'unknown'),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           team,
           message: `Team "${name}" created successfully`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating team', { name, error: errorMessage });
@@ -578,10 +579,10 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           updatedFields: Object.keys(updateData),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           team,
           message: 'Team updated successfully',
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating team', { teamId, error: errorMessage });
@@ -619,9 +620,9 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
 
         log.info('Successfully deleted team', { teamId });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           message: `Team ${teamId} deleted successfully`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting team', { teamId, error: errorMessage });
@@ -675,7 +676,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           total: metadata?.total,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           organizations: organizationsArray,
           pagination: {
             total: metadata?.total || organizationsArray.length,
@@ -683,7 +684,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
             offset,
             hasMore: (metadata?.total || 0) > (offset + organizationsArray.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing organizations', { error: errorMessage });
@@ -730,7 +731,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           name: String(orgObj.name ?? 'unknown'),
         });
 
-        return JSON.stringify({ organization }, null, 2);
+        return formatSuccessResponse({ organization }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting organization', { organizationId, error: errorMessage });
@@ -781,10 +782,10 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           name: String(orgObj.name ?? 'unknown'),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           organization,
           message: `Organization "${name}" created successfully`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating organization', { name, error: errorMessage });
@@ -839,10 +840,10 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           updatedFields: Object.keys(updateData),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           organization,
           message: 'Organization updated successfully',
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating organization', { organizationId, error: errorMessage });
@@ -880,9 +881,9 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
 
         log.info('Successfully deleted organization', { organizationId });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           message: `Organization ${organizationId} deleted successfully`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting organization', { organizationId, error: errorMessage });
@@ -942,10 +943,10 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           organizationId,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           invitation,
           message: `Invitation sent to ${email} successfully`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error inviting user', { email, error: errorMessage });

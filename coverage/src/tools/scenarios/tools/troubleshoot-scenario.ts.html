@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">5.05% </span>
+                <span class="strong">10.3% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/99</span>
+                <span class='fraction'>10/97</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.11% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>2/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">5.05% </span>
+                <span class="strong">10.3% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/99</span>
+                <span class='fraction'>10/97</span>
             </div>
         
             
@@ -597,7 +597,8 @@
 <a name='L532'></a><a href='#L532'>532</a>
 <a name='L533'></a><a href='#L533'>533</a>
 <a name='L534'></a><a href='#L534'>534</a>
-<a name='L535'></a><a href='#L535'>535</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L535'></a><a href='#L535'>535</a>
+<a name='L536'></a><a href='#L536'>536</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -607,12 +608,13 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -713,8 +715,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -828,13 +830,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -849,7 +851,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1141,12 +1143,13 @@ import { TroubleshootScenarioSchema, GenerateTroubleshootingReportSchema } from 
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { generateTroubleshootingReport as _generateTroubleshootingReport } from '../utils/troubleshooting.js';
 import type MakeApiClient from '../../../lib/make-api-client.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
 /**
  * Create troubleshoot scenario tool configuration
- */<span class="fstat-no" title="function not covered" ></span>
-export function createTroubleshoot<span class="cstat-no" title="statement not covered" >Scenario</span>Tool(context: ToolContext): ToolDefinition {
-  co<span class="cstat-no" title="statement not covered" >nst { apiClient, logger } = context;</span>
+ */
+export function createTroubleshootScenarioTool(context: ToolContext): ToolDefinition {
+  const { apiClient, logger } = context;
   
   return {
     name: 'troubleshoot-scenario',
@@ -1220,7 +1223,7 @@ export function createTroubleshoot<span class="cstat-no" title="statement not co
           timeRangeHours
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           report: troubleshootingReport,
           summary: {
             scenarioId: scenarioId,
@@ -1230,7 +1233,7 @@ export function createTroubleshoot<span class="cstat-no" title="statement not co
             performanceHistoryIncluded: includePerformanceHistory,
             autoFixAttempted: autoFix
           }
-        }, null, 2);
+        }).content[0].text;
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1246,9 +1249,9 @@ export function createTroubleshoot<span class="cstat-no" title="statement not co
  */
 async function fetchScenarioForTroubleshooting(
   apiClient: MakeApiClient, 
-  scenari<span class="fstat-no" title="function not covered" >oId: string</span>
-): Promise&lt;unknown&gt; {<span class="cstat-no" title="statement not covered" ></span>
-  co<span class="cstat-no" title="statement not covered" >nst response = await apiClient.get(`/scenarios/${scenarioId}`);</span>
+  scenarioId: string
+): Promise&lt;unknown&gt; {
+  const response = await apiClient.get(`/scenarios/${scenarioId}`);
   if (!response.success) {
     throw new Error(`Failed to fetch scenario ${scenarioId}`);
   }
@@ -1362,13 +1365,13 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
           if (re<span class="cstat-no" title="statement not covered" >sponse.success) {</span>
             scenarios = response.data as unknown[];
           }
-        }<span class="cstat-no" title="statement not covered" ></span>
+        }
 &nbsp;
         if (scenarios.length === 0) {
-          return JSON.stringify({
-<span class="cstat-no" title="statement not covered" >            message: 'No scenarios found for analysis',</span>
+          return formatSuccessResponse({
+            message: 'No scenarios found for analysis',
             timestamp: new Date().toISOString()
-          }, null, 2);
+          }).content[0].text;
 <span class="cstat-no" title="statement not covered" >        }</span>
 &nbsp;
         reportProgress?.({ progress: 60, total: 100 });
@@ -1383,7 +1386,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
 <span class="cstat-no" title="statement not covered" >            warning</span>Scenarios: Math.floor(scenarios.length * 0.15),
             criticalScenarios: Math.floor(scenarios.length * 0.05),
             systemHealthScore: 85
-<span class="cstat-no" title="statement not covered" >          },</span>
+          },
 <span class="cstat-no" title="statement not covered" >          findings:</span> {
             commonIssues: [
               {
@@ -1418,14 +1421,14 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
           formatType: reportOptions.formatType || 'json'
         });
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stringify({
+        return formatSuccessResponse({
           report: report,
 <span class="cstat-no" title="statement not covered" >          summary: {</span>
 <span class="cstat-no" title="statement not covered" >            totalScenarios: scenarios.length,</span>
             reportGenerated: true,
 <span class="cstat-no" title="statement not covered" >            timestamp: new D</span>ate().toISOString()
           }
-        }, null, 2);
+        }).content[0].text;
         
       } catch (error) {
         const e<span class="fstat-no" title="function not covered" >rrorMessage = error </span>instanceof Error ? error.message : String(error);
@@ -1454,10 +1457,10 @@ async function <span class="fstat-no" title="function not covered" >_fetchScenar
       if <span class="fstat-no" title="function not covered" >(response.success &amp;&amp; response.da</span>ta) {
 <span class="cstat-no" title="statement not covered" >        scenarios.push(response.data);</span>
       } else {
-        console.warn(`Failed to fetch scenario ${scenarioId}:`, response.error);
+        // Warning: Failed to fetch scenario (scenarioId, error: response.error)
       }
     } catch (error) {
-      console.warn(`Error fetching scenario ${scenarioId}:`, error);
+      // Warning: Error fetching scenario (scenarioId, error)
     }
   }
   
@@ -1480,7 +1483,7 @@ async function _fetchScenariosWithFilters(
     
     return [];
   } catch (error) {
-    console.warn('Error fetching scenarios with filters:', error);
+    // Warning: Error fetching scenarios with filters (error)
     return [];
   }
 }
@@ -1672,7 +1675,7 @@ async function generateSecurityAssessment(_scenarios: unknown[]): Promise&lt;unk
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:42.092Z
+                at 2025-08-22T03:12:16.956Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -9,6 +9,7 @@ import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import metrics from '../lib/metrics.js';
 import PerformanceMonitor from '../lib/performance-monitor.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 import { 
   type SystemMemoryMetrics, 
   type CpuMetrics,
@@ -1246,7 +1247,7 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
         // Record metrics
         metrics.recordToolExecution('analyze-performance-bottlenecks', 'success', Date.now() - Date.now());
 
-        return JSON.stringify(response, null, 2);
+        return formatSuccessResponse(response).content[0].text;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1303,7 +1304,7 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
           bottleneckCount: result.bottlenecks.length
         });
 
-        return JSON.stringify(response, null, 2);
+        return formatSuccessResponse(response).content[0].text;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1392,7 +1393,7 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
           avgResponseTime: summary.averageResponseTime
         });
 
-        return JSON.stringify(response, null, 2);
+        return formatSuccessResponse(response).content[0].text;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);

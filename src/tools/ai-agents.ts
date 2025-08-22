@@ -7,6 +7,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // AI Agent types for comprehensive management
 export interface MakeAIAgent {
@@ -275,7 +276,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           model: agent.configuration.model,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           agent: {
             ...agent,
             configuration: {
@@ -286,7 +287,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           },
           message: `AI agent "${name}" created successfully`,
           testUrl: `/ai-agents/${agent.id}/test`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating AI agent', { name, error: errorMessage });
@@ -378,7 +379,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           } : undefined,
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           agents: agents.map(agent => ({
             ...agent,
             configuration: {
@@ -397,7 +398,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
             offset,
             hasMore: (metadata?.total || 0) > (offset + agents.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing AI agents', { error: errorMessage });
@@ -472,7 +473,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           status: agent.status,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           agent: {
             ...agent,
             configuration: {
@@ -492,7 +493,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
             lastHealthCheck: (usage as Record<string, unknown>)?.lastHealthCheck,
             costEstimate: (usage as Record<string, unknown>)?.estimatedCost,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting AI agent', { agentId, error: errorMessage });
@@ -561,7 +562,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           changes: Object.keys(updateData),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           agent: {
             ...updatedAgent,
             configuration: {
@@ -574,7 +575,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           },
           message: `AI agent "${updatedAgent.name}" updated successfully`,
           changes: Object.keys(updateData),
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating AI agent', { agentId, error: errorMessage });
@@ -621,11 +622,11 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
 
         log.info('Successfully deleted AI agent', { agentId });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           message: `AI agent ${agentId} deleted successfully`,
           agentId,
           forced: force,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting AI agent', { agentId, error: errorMessage });
@@ -680,7 +681,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           responseTime: totalTime,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           testResult,
           performance: {
             totalTime: `${totalTime}ms`,
@@ -699,7 +700,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
             message: testResult?.message || 'Test completed',
             timestamp: new Date().toISOString(),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error testing AI agent', { agentId, testType, error: errorMessage });
@@ -753,7 +754,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           type: provider.type,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           provider: {
             ...provider,
             configuration: {
@@ -763,7 +764,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           },
           message: `LLM provider "${name}" created successfully`,
           testUrl: `/llm-providers/${provider.id}/test`,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating LLM provider', { name, error: errorMessage });
@@ -824,7 +825,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
           modelTypes: [...new Set(providers.flatMap(p => p.models.map(m => m.type)))],
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           providers: providers.map(provider => ({
             ...provider,
             configuration: {
@@ -833,7 +834,7 @@ export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void
             },
           })),
           summary,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing LLM providers', { error: errorMessage });

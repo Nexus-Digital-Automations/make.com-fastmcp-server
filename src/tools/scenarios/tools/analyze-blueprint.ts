@@ -8,6 +8,7 @@ import { ValidateBlueprintSchema } from '../schemas/blueprint-update.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { validateBlueprintStructure } from '../utils/blueprint-analysis.js';
 import { Blueprint } from '../types/blueprint.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create analyze blueprint tool configuration
@@ -24,8 +25,9 @@ export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      log?.info?.('Analyzing blueprint', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint });
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      if (log && log.info) { log.info('Analyzing blueprint', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -72,15 +74,15 @@ export function createAnalyzeBlueprintTool(context: ToolContext): ToolDefinition
 
         reportProgress?.({ progress: 100, total: 100 });
 
-        log?.info?.('Blueprint analysis completed', {
+        if (log && log.info) { log.info('Blueprint analysis completed', {
           isValid: analysisResult.validationSummary.isValid,
           score: analysisResult.validationSummary.score,
           errorCount: analysisResult.issues.errors.length,
           warningCount: analysisResult.issues.warnings.length,
           securityIssueCount: analysisResult.issues.securityIssues.length
-        });
+        }); }
 
-        return JSON.stringify(analysisResult, null, 2);
+        return formatSuccessResponse(analysisResult).content[0].text;
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);

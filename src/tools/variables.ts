@@ -8,6 +8,7 @@ import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import { MakeVariable, MakeIncompleteExecution } from '../types/index.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Extended variable types for comprehensive management
 export interface MakeCustomVariable extends MakeVariable {
@@ -212,11 +213,11 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           scope: variable.scope,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           variable,
           message: `Custom variable "${name}" created successfully`,
           warning: isEncrypted ? 'Variable value is encrypted and cannot be retrieved in plain text' : undefined,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating custom variable', { name, error: errorMessage });
@@ -306,7 +307,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           uniqueTags: Array.from(new Set(variables.flatMap(v => (v as MakeCustomVariable).tags || []))),
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           variables: variables.map(v => ({
             ...v,
             value: v.isEncrypted ? '[ENCRYPTED]' : v.value,
@@ -318,7 +319,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             offset,
             hasMore: (metadata?.total || 0) > (offset + variables.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing custom variables', { error: errorMessage });
@@ -377,7 +378,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           type: variable.type,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           variable: {
             ...variable,
             value: variable.isEncrypted ? '[ENCRYPTED]' : variable.value,
@@ -389,7 +390,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             lastAccessed: usage?.lastAccessed,
             accessCount: Number(usage?.accessCount || 0),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting custom variable', { variableId, error: errorMessage });
@@ -457,14 +458,14 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           changes: Object.keys(updateData),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           variable: {
             ...updatedVariable,
             value: updatedVariable.isEncrypted ? '[ENCRYPTED]' : updatedVariable.value,
           },
           message: `Variable "${updatedVariable.name}" updated successfully`,
           changes: Object.keys(updateData),
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating custom variable', { variableId, error: errorMessage });
@@ -511,11 +512,11 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         log.info('Successfully deleted custom variable', { variableId });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           message: `Variable ${variableId} deleted successfully`,
           variableId,
           forced: force,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting custom variable', { variableId, error: errorMessage });
@@ -572,7 +573,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           failed,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           result,
           message: `Bulk ${operation} completed successfully`,
           summary: {
@@ -581,7 +582,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             failed,
             errors,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error performing bulk variable operation', { operation, error: errorMessage });
@@ -645,7 +646,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           exportId,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           exportResult,
           message: `Variables exported successfully in ${format} format`,
           download: {
@@ -659,7 +660,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             format: format,
             includeMetadata,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error exporting custom variables', { scope, format, error: errorMessage });
@@ -722,7 +723,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           scope: resolvedVariable && typeof resolvedVariable.scope === 'string' ? resolvedVariable.scope : undefined,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           resolution: result,
           summary: {
             variableName,
@@ -732,7 +733,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             value: resolvedVariable && resolvedVariable.isEncrypted ? '[ENCRYPTED]' : (resolvedVariable ? resolvedVariable.value : undefined),
             inheritanceChain,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error testing variable resolution', { variableName, error: errorMessage });
@@ -852,7 +853,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           resumable: summary.recoveryBreakdown.canResume,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           incompleteExecutions: executionsWithRecovery,
           summary,
           pagination: {
@@ -861,7 +862,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             offset,
             hasMore: (metadata?.total || 0) > (offset + incompleteExecutions.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing incomplete executions', { error: errorMessage });
@@ -965,7 +966,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
         const estimatedCompletionTime = typeof resolveResult.estimatedCompletionTime === 'string' ? resolveResult.estimatedCompletionTime : undefined;
         const errors = Array.isArray(resolveResult.errors) ? resolveResult.errors : [];
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           result,
           statusUpdates,
           summary: {
@@ -978,7 +979,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           },
           message: `Bulk resolution initiated for ${executionIds.length} executions`,
           errors: errors,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error in bulk resolve operation', { error: errorMessage });
@@ -1078,7 +1079,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         const recommendations = Array.isArray(analysisData.recommendations) ? analysisData.recommendations : [];
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           analysis,
           insights,
           recommendations: includeRecommendations ? recommendations : undefined,
@@ -1090,7 +1091,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             topIssue: insights.mostCommonErrors[0]?.error || 'No dominant error pattern',
             actionableRecommendations: recommendations.filter((r: unknown) => typeof r === 'object' && r !== null && 'priority' in r && (r as { priority: string }).priority === 'high').length || 0,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error analyzing failure patterns', { error: errorMessage });
@@ -1171,7 +1172,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
           primaryAction: actions.primaryAction,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           rule,
           message: `Recovery automation rule "${name}" created successfully`,
           summary: {
@@ -1182,7 +1183,7 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
             priority,
             conditionCount: Object.keys(conditions).length,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating recovery automation rule', { name, error: errorMessage });

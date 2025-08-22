@@ -7,6 +7,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Custom app and hook management types
 export interface MakeCustomApp {
@@ -399,7 +400,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           runtime: app.configuration.runtime,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           app: {
             ...app,
             configuration: {
@@ -425,7 +426,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             'Write and run tests',
             'Deploy to staging for testing',
           ],
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating custom app', { name, error: errorMessage });
@@ -543,7 +544,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           } : undefined,
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           apps: apps.map(app => ({
             ...app,
             configuration: {
@@ -561,7 +562,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             offset,
             hasMore: (metadata?.total || 0) > (offset + apps.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing custom apps', { error: errorMessage });
@@ -649,7 +650,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           appId: hook.appId,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           hook: {
             ...hook,
             configuration: {
@@ -673,7 +674,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             webhookUrl: hook.type === 'webhook' ? hook.configuration.endpoint : undefined,
             pollingInterval: hook.configuration.polling?.interval,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating hook', { name, appId, error: errorMessage });
@@ -757,7 +758,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           language: customFunction.language,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           function: {
             ...customFunction,
             code: {
@@ -783,7 +784,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             testEndpoint: `/custom-functions/${customFunction.id}/test`,
             deployEndpoint: `/custom-functions/${customFunction.id}/deploy`,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating custom function', { name, error: errorMessage });
@@ -844,7 +845,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
           failed: Number((testResult?.summary as Record<string, unknown>)?.failed || 0),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           test: testResult,
           message: `Custom app ${appId} testing completed`,
           summary: {
@@ -864,7 +865,7 @@ export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): vo
             performance: includePerformance ? (testResult?.results as Record<string, unknown>)?.performance || {} : undefined,
           },
           recommendations: testResult?.recommendations || [],
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error testing custom app', { appId, error: errorMessage });

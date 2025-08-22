@@ -19,6 +19,7 @@ import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { safeGetRecord, safeGetArray } from '../utils/validation.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Type definitions for connection diagnostics
 interface ConnectionData {
@@ -234,7 +235,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           total: metadata?.total,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           connections,
           pagination: {
             total: metadata?.total || connections.length,
@@ -242,7 +243,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
             offset,
             hasMore: (metadata?.total || 0) > (offset + connections.length),
           },
-        }, null, 2);
+        }, "Connections retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing connections', { error: errorMessage });
@@ -313,7 +314,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           service: connection.service as string,
         });
 
-        return JSON.stringify({ connection }, null, 2);
+        return formatSuccessResponse({ connection }, "Connection details retrieved successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting connection', { connectionId, error: errorMessage });
@@ -411,10 +412,9 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           service: connection.service as string,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           connection,
-          message: `Connection "${name}" created successfully`,
-        }, null, 2);
+        }, `Connection "${name}" created successfully`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating connection', { name, service, error: errorMessage });
@@ -509,10 +509,9 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           updatedFields: Object.keys(updateData),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           connection,
-          message: 'Connection updated successfully',
-        }, null, 2);
+        }, "Connection updated successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating connection', { connectionId, error: errorMessage });
@@ -548,9 +547,10 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
 
         log.info('Successfully deleted connection', { connectionId });
 
-        return JSON.stringify({
-          message: `Connection ${connectionId} deleted successfully`,
-        }, null, 2);
+        return formatSuccessResponse(
+          {},
+          `Connection ${connectionId} deleted successfully`
+        ).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting connection', { connectionId, error: errorMessage });
@@ -602,12 +602,12 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           message,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           connectionId,
           isValid,
           message,
           details: testResult.details,
-        }, null, 2);
+        }, "Connection test completed").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error testing connection', { connectionId, error: errorMessage });
@@ -662,7 +662,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           total: metadata?.total,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           webhooks,
           pagination: {
             total: metadata?.total || webhooks.length,
@@ -670,7 +670,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
             offset,
             hasMore: (metadata?.total || 0) > (offset + webhooks.length),
           },
-        }, null, 2);
+        }, "Webhooks retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing webhooks', { error: errorMessage });
@@ -729,10 +729,9 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           url: webhook.url as string,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           webhook,
-          message: `Webhook "${name}" created successfully`,
-        }, null, 2);
+        }, `Webhook "${name}" created successfully`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating webhook', { name, url, error: errorMessage });
@@ -786,10 +785,9 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           updatedFields: Object.keys(updateData),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           webhook,
-          message: 'Webhook updated successfully',
-        }, null, 2);
+        }, "Webhook updated successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating webhook', { webhookId, error: errorMessage });
@@ -825,9 +823,10 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
 
         log.info('Successfully deleted webhook', { webhookId });
 
-        return JSON.stringify({
-          message: `Webhook ${webhookId} deleted successfully`,
-        }, null, 2);
+        return formatSuccessResponse(
+          {},
+          `Webhook ${webhookId} deleted successfully`
+        ).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting webhook', { webhookId, error: errorMessage });
@@ -1033,7 +1032,7 @@ export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): v
           executionTime: Date.now() - startTime
         });
 
-        return JSON.stringify(response, null, 2);
+        return formatSuccessResponse(response, "Connection diagnostics completed successfully").content[0].text;
 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);

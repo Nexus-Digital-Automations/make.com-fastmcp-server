@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.72% </span>
+                <span class="strong">34.78% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/22</span>
+                <span class='fraction'>8/23</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.72% </span>
+                <span class="strong">34.78% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/22</span>
+                <span class='fraction'>8/23</span>
             </div>
         
             
@@ -149,7 +149,8 @@
 <a name='L84'></a><a href='#L84'>84</a>
 <a name='L85'></a><a href='#L85'>85</a>
 <a name='L86'></a><a href='#L86'>86</a>
-<a name='L87'></a><a href='#L87'>87</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -159,12 +160,13 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -244,13 +246,14 @@ import { UserError } from 'fastmcp';
 import { ExtractBlueprintConnectionsSchema } from '../utils/blueprint-analysis.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { extractBlueprintConnections } from '../utils/blueprint-analysis.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 &nbsp;
 /**
  * Create extract blueprint connections tool configuration
  */
-export fu<span class="fstat-no" title="function not covered" >nction createExtractBlueprintConnectio</span>nsTool(context: ToolContext): ToolDefinition {
-  const { logger: _logger } = co<span class="cstat-no" title="statement not covered" >ntext;</span>
-  <span class="cstat-no" title="statement not covered" ></span>
+export function createExtractBlueprintConnectionsTool(context: ToolContext): ToolDefinition {
+  const { logger: _logger } = context;
+  
   return {
     name: 'extract-blueprint-connections',
     description: 'Extract and analyze connection requirements from Make.com blueprints for migration planning',
@@ -299,7 +302,7 @@ export fu<span class="fstat-no" title="function not covered" >nction createExtra
           },
           recommendations: [
             connectionResult.connectionSummary.modulesRequiringConnections === 0 ?
-              'N<span class="cstat-no" title="statement not covered" >o external connections required - bluepr</span>int can be deployed immediately' :
+              'N<span class="cstat-no" title="statement not covered" >o external connections required - blueprint can be deployed immediately' :</span>
               `Set up ${connectionResult.connectionSummary.uniqueServices.length} connection(s) before deployment`,
             connectionResult.connectionSummary.uniqueServices.length &gt; 0 ?
               `Required services: ${c<span class="cstat-no" title="statement not covered" >onnectionResult.connectionSummary.uniqueServices.join(', ')}` :</span>
@@ -312,7 +315,7 @@ export fu<span class="fstat-no" title="function not covered" >nction createExtra
           uniqueServices: result.migrationPlanning.uniqueServices.length
         });
 &nbsp;
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
 &nbsp;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error during connection extraction';
@@ -328,7 +331,7 @@ export fu<span class="fstat-no" title="function not covered" >nction createExtra
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:42.092Z
+                at 2025-08-22T03:12:16.956Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

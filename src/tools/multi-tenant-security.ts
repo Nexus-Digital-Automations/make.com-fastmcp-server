@@ -12,6 +12,7 @@ import MakeApiClient from '../lib/make-api-client.js';
 import { encryptionService } from '../utils/encryption.js';
 import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 const componentLogger = logger.child({ component: 'MultiTenantSecurityTools' });
 const randomBytes = promisify(crypto.randomBytes);
@@ -914,14 +915,14 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           frameworks: input.complianceFrameworks,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Tenant provisioning failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
           tenantId: input.tenantId,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           error: 'Tenant provisioning service error',
@@ -932,7 +933,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
             policies: [],
             complianceStatus: {},
           },
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -976,7 +977,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           success: result.success,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Cryptographic isolation operation failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -984,13 +985,13 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           operation: input.operation,
           tenantId: input.tenantId,
           keyManagement: {},
           error: 'Cryptographic isolation service error',
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -1035,7 +1036,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           isolationScore: result.isolationMetrics.trafficIsolation,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Network segmentation operation failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -1043,7 +1044,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           networkConfiguration: {},
@@ -1058,7 +1059,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
             anomalyDetection: false,
           },
           error: 'Network segmentation service error',
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -1150,7 +1151,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           utilizationMetrics: result.utilizationMetrics,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Resource quota management failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -1158,7 +1159,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           error: 'Resource quota management service error',
@@ -1166,7 +1167,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           currentUsage: {},
           utilizationMetrics: {},
           scalingStatus: {},
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -1238,7 +1239,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           complianceScore: result.policyManagement.complianceScore,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Governance policy management failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -1246,14 +1247,14 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           error: 'Governance policy management service error',
           policyManagement: {},
           complianceStatus: {},
           auditTrail: {},
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -1319,7 +1320,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           riskScore: result.threatDetection.riskScore,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Data leakage prevention failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -1327,14 +1328,14 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           error: 'Data leakage prevention service error',
           dataProtection: {},
           threatDetection: {},
           complianceStatus: {},
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });
@@ -1402,7 +1403,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           overallScore: result.complianceMetrics.overallScore,
         });
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         componentLogger.error('Compliance boundary management failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -1410,7 +1411,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           operation: input.operation,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
           complianceFramework: input.complianceFramework,
@@ -1418,7 +1419,7 @@ export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApi
           boundaryStatus: {},
           complianceMetrics: {},
           certificateStatus: {},
-        }, null, 2);
+        }).content[0].text;
       }
     },
   });

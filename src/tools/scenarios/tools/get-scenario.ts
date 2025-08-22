@@ -6,6 +6,7 @@
 import { UserError } from 'fastmcp';
 import { ScenarioDetailSchema } from '../schemas/scenario-filters.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create get scenario tool configuration
@@ -22,9 +23,10 @@ export function createGetScenarioTool(context: ToolContext): ToolDefinition {
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
       const typedArgs = args as { scenarioId: string; includeBlueprint?: boolean; includeExecutions?: boolean };
-      log?.info?.('Getting scenario details', { scenarioId: typedArgs.scenarioId });
+      if (log && log.info) { log.info('Getting scenario details', { scenarioId: typedArgs.scenarioId }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -61,13 +63,13 @@ export function createGetScenarioTool(context: ToolContext): ToolDefinition {
 
         reportProgress?.({ progress: 100, total: 100 });
 
-        log?.info?.('Scenario details retrieved successfully', { 
+        if (log && log.info) { log.info('Scenario details retrieved successfully', { 
           scenarioId: typedArgs.scenarioId,
           includeBlueprint: typedArgs.includeBlueprint,
           includeExecutions: typedArgs.includeExecutions 
-        });
+        }); }
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Failed to get scenario details', { 

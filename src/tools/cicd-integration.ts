@@ -11,6 +11,7 @@ import { resolve } from 'path';
 import logger from '../lib/logger.js';
 import MakeApiClient from '../lib/make-api-client.js';
 import { extractCorrelationId } from '../utils/error-response.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // ==================== SCHEMAS ====================
 
@@ -427,7 +428,7 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
           correlationId 
         });
         
-        return JSON.stringify({
+        return formatSuccessResponse({
           status: exitCode === 0 ? 'passed' : 'failed',
           summary: {
             category,
@@ -452,7 +453,7 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
             stdout: stdout.slice(0, 2000), // Truncate for readability
             stderr: stderr.slice(0, 1000),
           },
-        }, null, 2);
+        });
         
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -584,7 +585,7 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
           correlationId 
         });
         
-        return JSON.stringify({
+        return formatSuccessResponse({
           status: coverageData.threshold.met ? 'passed' : 'failed',
           coverage: coverageData,
           analysis: {
@@ -605,7 +606,7 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
             includeUncoveredFiles,
             outputPath,
           },
-        }, null, 2);
+        });
         
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -831,7 +832,7 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
           correlationId 
         });
         
-        return JSON.stringify({
+        return formatSuccessResponse({
           status: overallPassed ? 'ready' : 'not_ready',
           environment,
           readiness: deploymentCheck,
@@ -847,7 +848,7 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
               dependencies: includeDependencyCheck,
             },
           },
-        }, null, 2);
+        }).content[0].text;
         
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1083,7 +1084,7 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
           correlationId 
         });
         
-        return JSON.stringify({
+        return formatSuccessResponse({
           report: buildReport,
           summary: {
             overallGrade: calculateOverallGrade(buildReport),
@@ -1103,7 +1104,7 @@ export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClie
             includeSizeAnalysis,
             outputFormat,
           },
-        }, null, 2);
+        });
         
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);

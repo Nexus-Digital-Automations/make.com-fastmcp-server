@@ -9,6 +9,7 @@ import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/
 import { ComplianceReport } from '../types/index.js';
 import { auditLogger } from '../../../lib/audit-logger.js';
 import * as crypto from 'crypto';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Compliance Report Generator class
@@ -321,7 +322,7 @@ export function createGenerateComplianceReportTool(context: ToolContext): ToolDe
         });
 
         reportProgress?.({ progress: 100, total: 100 });
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Compliance report generation failed', { error: errorMessage });

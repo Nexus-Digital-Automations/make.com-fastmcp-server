@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/395</span>
+                <span class='fraction'>0/396</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/395</span>
+                <span class='fraction'>0/396</span>
             </div>
         
             
@@ -1260,7 +1260,8 @@
 <a name='L1195'></a><a href='#L1195'>1195</a>
 <a name='L1196'></a><a href='#L1196'>1196</a>
 <a name='L1197'></a><a href='#L1197'>1197</a>
-<a name='L1198'></a><a href='#L1198'>1198</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1198'></a><a href='#L1198'>1198</a>
+<a name='L1199'></a><a href='#L1199'>1199</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1268,6 +1269,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2467,9 +2469,10 @@ impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</
 import MakeApiClient from '../lib/make-api-client.js';
 <span class="cstat-no" title="statement not covered" >import { MakeVariable, MakeIncompleteExecution } from '../types</span>/index.js';
 <span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
+import { formatSuc<span class="cstat-no" title="statement not covered" >cessResponse } from</span> '../utils/response-formatter.js';
 <span class="cstat-no" title="statement not covered" ></span>
-// Extended va<span class="cstat-no" title="statement not covered" >riable types fo</span>r comprehensive management
-export interface Mak<span class="cstat-no" title="statement not covered" >eCustomVariable extends MakeVariable {</span>
+// Extended variable<span class="cstat-no" title="statement not covered" > types for comprehensive management</span>
+export interface MakeCustomVaria<span class="cstat-no" title="statement not covered" >ble extends MakeVariable {</span>
   organizationId?: number;
   teamId?: number;<span class="cstat-no" title="statement not covered" ></span>
   scenarioId?: number;
@@ -2671,11 +2674,11 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           scope: variable.scope,
         });
 &nbsp;
-        return JS<span class="fstat-no" title="function not covered" >ON</span>.stringify({
+        return fo<span class="fstat-no" title="function not covered" >rm</span>atSuccessResponse({
           variable,<span class="cstat-no" title="statement not covered" ></span>
           me<span class="cstat-no" title="statement not covered" >ssage: `Custom variable "${name}" created successfully`,</span>
           warning: isEncrypted ? 'Variable value is encrypted and cannot be retrieved in plain text' : undefined,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating custom variable', { name, error: errorMessage });
@@ -2765,7 +2768,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           uniqueTags: Array.from(new Set(variables.flatMap(v =&gt; (v as MakeCustomVariable).tags || []))),
         };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        return JSON.stringify({</span>
+<span class="cstat-no" title="statement not covered" >        return formatSuccessResponse({</span>
           variables: variables.map(v =&gt; ({
             ...v,
             value: v.isEncrypted ? '[ENCRYPTED]' : v.value,
@@ -2777,7 +2780,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
             offset,
             hasMore: (metadata?.total || 0) &gt; (offset + variables.length),
           },
-        }, null, <span class="fstat-no" title="function not covered" >2)</span>;
+        });<span class="fstat-no" title="function not covered" ></span>
       } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
         cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : Str</span>ing(error);
         log.<span class="cstat-no" title="statement not covered" >error('Error listing custom variables', { error: errorMessage });</span>
@@ -2836,7 +2839,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           type: variable.type,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           variable: {
             ...variable,
             value: variable.isEncrypted ? '[ENCRYPTED]' : variable.value,
@@ -2848,7 +2851,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
 <span class="cstat-no" title="statement not covered" >            lastAccessed: usage?.lastAccessed,</span>
             accessCount: Number(usa<span class="cstat-no" title="statement not covered" >ge?</span>.accessCount || 0),
           },<span class="cstat-no" title="statement not covered" ></span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
       } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
         const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Error ? error.message : Str</span>ing(error);
         log.error('E<span class="cstat-no" title="statement not covered" >rror getting custom vari</span>able', { variableId, error: errorMessage });
@@ -2916,14 +2919,14 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           changes: Object.keys(updateData),
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           variabl<span class="fstat-no" title="function not covered" >e:</span> {
             ...updatedVariable,<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >            value: updatedVariable.isEncrypted ? '[ENCRYPTED]' : updatedV</span>ariable.value,
           },<span class="cstat-no" title="statement not covered" ></span>
           message: `Variable "${updatedVariable.name}" updated successfully`,
           change<span class="cstat-no" title="statement not covered" >s: Object.keys(updateData),</span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
       } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
         const errorMessa<span class="cstat-no" title="statement not covered" >ge = error instanceof Error ? error.message : String(error);</span>
         log.error('Error updating custom variable', { variableId, error: errorMessage });
@@ -2970,11 +2973,11 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
 <span class="cstat-no" title="statement not covered" ></span>
         log.info('Successfully deleted custom variable', { variableId });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           message: `Variable ${variableId} deleted successfully`,
           variableId,<span class="cstat-no" title="statement not covered" ></span>
           forced<span class="cstat-no" title="statement not covered" >: force,</span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+        }).content[0<span class="cstat-no" title="statement not covered" >].text;</span>
       } catch (error: unknown) {
         const errorMessage = er<span class="cstat-no" title="statement not covered" >ror instanceof</span> Error ? error.message : String(error);
         log.error('Error deleting custom variable', { variableId, error: errorMessage });
@@ -3031,7 +3034,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           failed,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           result,
           message: `Bulk ${operation} completed successfully`,
           summary: {
@@ -3040,7 +3043,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
             failed,<span class="cstat-no" title="statement not covered" ></span>
             errors,
           },<span class="cstat-no" title="statement not covered" ></span>
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ></span>
         const errorMessage = e<span class="cstat-no" title="statement not covered" >rror instanceof Error ? error.message : String(error);</span>
         log.error('Error performi<span class="cstat-no" title="statement not covered" >ng bulk variable operation', { operation, error: errorMessage });</span>
@@ -3104,7 +3107,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           exportId,
         });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stringify({
+        return formatSuccessResponse({
           exportResult,
           message: `Variables exported successfully in ${format} format`,
           download: {
@@ -3118,7 +3121,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
             format: format,<span class="cstat-no" title="statement not covered" ></span>
             includeMetadata,
           },<span class="cstat-no" title="statement not covered" ></span>
-        }, null,<span class="cstat-no" title="statement not covered" > 2);</span>
+        }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error exporting custom variables', { scope, format, error: errorMessage });
@@ -3181,7 +3184,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           scope: resolvedVariable &amp;&amp; typeof resolvedVariable.scope === 'string' ? resolvedVariable.scope : undefined,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           resolu<span class="cstat-no" title="statement not covered" >tion: result,</span>
           summary: {<span class="cstat-no" title="statement not covered" ></span>
             vari<span class="cstat-no" title="statement not covered" >ableName,</span>
@@ -3191,7 +3194,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
             valu<span class="cstat-no" title="statement not covered" >e: resolvedVariable &amp;&amp; resolvedVariable.isEncrypted ? '[ENCRYPTED]' : (resolvedVariable ? resolvedVariable.value : undefined),</span>
             inherita<span class="cstat-no" title="statement not covered" >nceChain,</span>
           },<span class="cstat-no" title="statement not covered" ></span>
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
       } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
         const errorM<span class="cstat-no" title="statement not covered" >essage = error instanceof Erro</span>r ? error.message : String(error);
         log.error('Error testing <span class="cstat-no" title="statement not covered" >variable resolution', { variableName, error: errorMessage </span>});
@@ -3311,7 +3314,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           resuma<span class="cstat-no" title="statement not covered" >ble: summary.recoveryBreakdown.canResume,</span>
         });<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.<span class="cstat-no" title="statement not covered" >stringify({</span>
+        return forma<span class="cstat-no" title="statement not covered" >tSuccessResponse({</span>
           incompleteExecutions: executionsWithRecovery,
           summary,<span class="cstat-no" title="statement not covered" ></span>
           pagination: {
@@ -3320,7 +3323,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
             offset,<span class="cstat-no" title="statement not covered" ></span>
             hasM<span class="cstat-no" title="statement not covered" >ore: (metadata?.total || 0) &gt; (offset + incomp</span>leteExecutions.length),
           },
-        }, null, 2);<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        });<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
       } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
         const errorMessage = error instanceof E<span class="cstat-no" title="statement not covered" >rror ? error.message : String(error);</span>
         log.error('Error<span class="cstat-no" title="statement not covered" > listing incomplete executions', { error: errorMessage });</span>
@@ -3424,7 +3427,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
         const estimatedCompletionTime = t<span class="cstat-no" title="statement not covered" >ypeof resolveResult.estimatedCompletionTime === 'string' ? resolveResult.estimatedComp</span>letionTime : undefined;
         const errors = Array.isArray(r<span class="cstat-no" title="statement not covered" >esolveResult.errors) ? resolveResult.errors : [];</span>
 &nbsp;
-        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
+        return formatSuccessRespo<span class="cstat-no" title="statement not covered" >nse({</span>
           result,
           statusUpdates,
           summary: {
@@ -3437,7 +3440,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           },
           message: `Bulk resolution initiated for ${executionIds.length} executions`,
           errors: errors,
-        }, null,<span class="cstat-no" title="statement not covered" > 2);</span>
+        }).conte<span class="cstat-no" title="statement not covered" >nt[0].text;</span>
       } catch (e<span class="cstat-no" title="statement not covered" >rror: unknown) {</span>
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error in bulk resolve operation', { error: errorMessage });
@@ -3537,7 +3540,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
 &nbsp;
         const recommendations = Array.isArray(analysisData.recommendations) ? analysisData.recommendations : [];
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           analysis,
           insights,
           recommendations: includeRecommendations ? recommendations : undefined,
@@ -3549,7 +3552,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
             topI<span class="cstat-no" title="statement not covered" >ssue: insights.mostCommonErrors[0]?.error || 'No dominant error pattern',</span>
             actionab<span class="cstat-no" title="statement not covered" >leRecommendat</span>ions: recommendations.filter((r: unknown) =&gt; typeof r === 'object' &amp;&amp; r !== null &amp;&amp; 'priority' in r &amp;&amp; (r as { priority: string }).priority === 'high').length || 0,
           },<span class="cstat-no" title="statement not covered" ></span>
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
 <span class="cstat-no" title="statement not covered" >        log.error('Error analyzing failure patterns', { error: errorMessage });</span>
@@ -3630,7 +3633,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
           primaryAction: actions.primaryAction,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           rule,
           message: `Recovery automation rule "${name}" created successfully`,
           summary: {
@@ -3641,7 +3644,7 @@ export function a<span class="fstat-no" title="function not covered" >dd</span>V
             priority,
             conditionCount: Object.keys(conditions).length,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating recovery automation rule', { name, error: errorMessage });
@@ -3661,7 +3664,7 @@ export default addVariableTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:42.092Z
+                at 2025-08-22T03:12:16.956Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

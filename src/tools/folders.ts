@@ -7,6 +7,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Extended folder and data store types
 export interface MakeFolder {
@@ -358,9 +359,8 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           path: folder.path,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           folder,
-          message: `Folder "${name}" created successfully`,
           organization: {
             path: folder.path,
             type: folder.type,
@@ -370,7 +370,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
               adminAccess: folder.permissions.admin.length,
             },
           },
-        }, null, 2);
+        }, `Folder "${name}" created successfully`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating folder', { name, error: errorMessage });
@@ -460,7 +460,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             .sort((a, b) => new Date(b.metadata.lastActivity).getTime() - new Date(a.metadata.lastActivity).getTime())[0],
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           folders,
           hierarchy: includeContents ? hierarchy : undefined,
           summary,
@@ -470,7 +470,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             offset,
             hasMore: (metadata?.total || 0) > (offset + folders.length),
           },
-        }, null, 2);
+        }, "Folders retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing folders', { error: errorMessage });
@@ -525,7 +525,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           itemCount: (contents?.items as unknown[])?.length || 0,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           folder: contents?.folder,
           contents: (contents?.items as unknown[]) || [],
           summary: {
@@ -543,7 +543,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             offset,
             hasMore: (metadata?.total || 0) > (offset + ((contents?.items as unknown[])?.length || 0)),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting folder contents', { folderId, error: errorMessage });
@@ -608,7 +608,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           failed: Number(result?.failed || 0),
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           result,
           message: `Successfully ${copyInsteadOfMove ? 'copied' : 'moved'} ${result?.successful || 0} items`,
           summary: {
@@ -619,7 +619,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             targetFolder: targetFolderId ? result?.targetFolderName : 'Root',
           },
           errors: result?.errors || [],
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error moving/copying items', { error: errorMessage });
@@ -711,7 +711,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           type: dataStore.type,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStore,
           message: `Data store "${name}" created successfully`,
           configuration: {
@@ -727,7 +727,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             writeAccess: dataStore.permissions.write.length,
             adminAccess: dataStore.permissions.admin.length,
           },
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating data store', { name, error: errorMessage });
@@ -822,7 +822,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           },
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStores,
           summary,
           pagination: {
@@ -831,7 +831,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             offset,
             hasMore: (metadata?.total || 0) > (offset + dataStores.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing data stores', { error: errorMessage });
@@ -918,7 +918,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           });
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStructures,
           summary,
           pagination: {
@@ -927,7 +927,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             offset,
             hasMore: (metadata?.total || 0) > (offset + dataStructures.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing data structures', { error: errorMessage });
@@ -1017,7 +1017,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           };
         }
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting data structure', { id, error: errorMessage });
@@ -1106,7 +1106,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           fieldCount: dataStructure.specification.length,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStructure,
           message: `Data structure "${name}" created successfully`,
           configuration: {
@@ -1116,7 +1116,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             complexFields: dataStructure.specification.filter(f => f.type === 'collection' || f.type === 'array').length,
           },
           validationRules: dataStructure.validation.rules,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating data structure', { name, error: errorMessage });
@@ -1195,7 +1195,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           fieldCount: updatedStructure.specification.length,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStructure: updatedStructure,
           message: `Data structure "${updatedStructure.name}" updated successfully`,
           changes: {
@@ -1208,7 +1208,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             },
           },
           migration: (response as typeof response & { migration?: unknown }).migration || null,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating data structure', { id, error: errorMessage });
@@ -1264,7 +1264,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 
         // Require confirmation for deletion
         if (!confirmDeletion) {
-          return JSON.stringify({
+          return formatSuccessResponse({
             action: 'confirmation_required',
             dataStructure: {
               id: dataStructure.id,
@@ -1279,7 +1279,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
               'This data structure has associated data stores that will become invalid after deletion.' : 
               'This action cannot be undone.',
             nextStep: 'Call this tool again with confirmDeletion=true to proceed with deletion',
-          }, null, 2);
+          });
         }
 
         const response = await apiClient.delete(`/data-structures/${id}`, {
@@ -1296,7 +1296,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           hadDependencies: associatedStores.length > 0,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           message: `Data structure "${dataStructure.name}" deleted successfully`,
           deletedStructure: {
             id: dataStructure.id,
@@ -1307,7 +1307,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             affectedDataStores: associatedStores.length,
             dataStoresInvalidated: force ? associatedStores.map(s => s.name) : [],
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting data structure', { id, error: errorMessage });
@@ -1410,7 +1410,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           };
         }
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting data store', { id, error: errorMessage });
@@ -1482,7 +1482,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           type: updatedStore.type,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           dataStore: updatedStore,
           message: `Data store "${updatedStore.name}" updated successfully`,
           changes: {
@@ -1491,7 +1491,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
             permissionsChanged: JSON.stringify(currentStore.permissions) !== JSON.stringify(updatedStore.permissions),
             sizeLimitChanged: currentStore.settings.maxSize !== updatedStore.settings.maxSize,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating data store', { id, error: errorMessage });
@@ -1537,7 +1537,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 
         // Require confirmation for deletion
         if (!confirmDeletion) {
-          return JSON.stringify({
+          return formatSuccessResponse({
             action: 'confirmation_required',
             dataStore: {
               id: dataStore.id,
@@ -1551,7 +1551,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
               'Consider exporting data first by setting exportData=true' : 
               'Data store appears to be empty, safe to delete',
             nextStep: 'Call this tool again with confirmDeletion=true to proceed with deletion',
-          }, null, 2);
+          }).content[0].text;
         }
 
         let exportResult = null;
@@ -1605,7 +1605,7 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
           result.dataExport = exportResult;
         }
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting data store', { id, error: errorMessage });

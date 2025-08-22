@@ -7,6 +7,7 @@ import { UserError } from 'fastmcp';
 import { ExtractBlueprintConnectionsSchema } from '../utils/blueprint-analysis.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { extractBlueprintConnections } from '../utils/blueprint-analysis.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Create extract blueprint connections tool configuration
@@ -23,8 +24,9 @@ export function createExtractBlueprintConnectionsTool(context: ToolContext): Too
       readOnlyHint: true,
       openWorldHint: false,
     },
-    execute: async (args: unknown, { log, reportProgress }): Promise<string> => {
-      log?.info?.('Extracting blueprint connections', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint });
+    execute: async (args: unknown, context): Promise<string> => {
+      const { log = { info: () => {}, error: () => {}, warn: () => {}, debug: () => {} }, reportProgress = () => {} } = context || {};
+      if (log && log.info) { log.info('Extracting blueprint connections', { hasBlueprint: !!(args as { blueprint?: unknown }).blueprint }); }
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -70,16 +72,16 @@ export function createExtractBlueprintConnectionsTool(context: ToolContext): Too
           ]
         };
 
-        log?.info?.('Blueprint connection extraction completed', {
+        if (log && log.info) { log.info('Blueprint connection extraction completed', {
           totalConnections: result.connectionAnalysis.totalConnections,
           uniqueServices: result.migrationPlanning.uniqueServices.length
-        });
+        }); }
 
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error during connection extraction';
-        log?.error?.('Blueprint connection extraction failed', { error: errorMessage });
+        if (log && log.error) { log.error('Blueprint connection extraction failed', { error: errorMessage }); }
         throw new UserError(`Failed to extract blueprint connections: ${errorMessage}`);
       }
     }

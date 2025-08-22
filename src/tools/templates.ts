@@ -8,6 +8,7 @@ import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import { MakeTemplate } from '../types/index.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Extended template types for comprehensive management
 export interface MakeExtendedTemplate extends MakeTemplate {
@@ -251,9 +252,8 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
           complexity: template.metadata?.complexity || 'simple',
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           template,
-          message: `Template "${name}" created successfully`,
           analysis: {
             complexity: template.metadata?.complexity || 'simple',
             estimatedSetupTime: `${template.metadata?.estimatedSetupTime || 5} minutes`,
@@ -266,7 +266,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
             teamVisible: template.sharing?.teamVisible || false,
             specificShares: template.sharing?.sharedWith?.length || 0,
           },
-        }, null, 2);
+        }, `Template "${name}" created successfully`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating template', { name, error: errorMessage });
@@ -367,7 +367,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
             .slice(0, 10),
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           templates,
           summary,
           pagination: {
@@ -376,7 +376,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
             offset,
             hasMore: (metadata?.total || 0) > (offset + templates.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing templates', { error: errorMessage });
@@ -466,7 +466,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
           requiredConnections: template.metadata?.requiredConnections || [],
         };
 
-        return JSON.stringify(responseData, null, 2);
+        return formatSuccessResponse(responseData).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting template', { templateId, error: errorMessage });
@@ -534,7 +534,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
           newVersion: updatedTemplate.version,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           template: updatedTemplate,
           message: `Template "${updatedTemplate.name}" updated successfully`,
           changes: Object.keys(updateData),
@@ -542,7 +542,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
             previous: updatedTemplate.version - 1,
             current: updatedTemplate.version,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating template', { templateId, error: errorMessage });
@@ -597,7 +597,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
           scenarioName,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           result,
           message: `Scenario "${scenarioName}" created successfully from template`,
           scenario: {
@@ -611,7 +611,7 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
             connectionsMapped: Object.keys(connectionMappings).length,
             variablesOverridden: Object.keys(variableOverrides).length,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error using template', { templateId, scenarioName, error: errorMessage });
@@ -658,11 +658,11 @@ export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): voi
 
         log.info('Successfully deleted template', { templateId });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           message: `Template ${templateId} deleted successfully`,
           templateId,
           forced: force,
-        }, null, 2);
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting template', { templateId, error: errorMessage });

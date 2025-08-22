@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/404</span>
+                <span class='fraction'>0/405</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/390</span>
+                <span class='fraction'>0/391</span>
             </div>
         
             
@@ -1619,7 +1619,8 @@
 <a name='L1554'></a><a href='#L1554'>1554</a>
 <a name='L1555'></a><a href='#L1555'>1555</a>
 <a name='L1556'></a><a href='#L1556'>1556</a>
-<a name='L1557'></a><a href='#L1557'>1557</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1557'></a><a href='#L1557'>1557</a>
+<a name='L1558'></a><a href='#L1558'>1558</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1638,6 +1639,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3196,11 +3198,12 @@ impo<span class="cstat-no" title="statement not covered" >rt { z } from 'zod';</
 import MakeApiClient from '../lib/make-api-client.js';
 <span class="cstat-no" title="statement not covered" >import { auditLogger } from '../lib/audit-logger.js';</span>
 <span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
+<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../utils/response-formatter.js';</span>
 <span class="cstat-no" title="statement not covered" ></span>
-// Define comprehe<span class="cstat-no" title="statement not covered" >nsive naming conven</span>tion policy interfaces and schemas
+// Define comp<span class="cstat-no" title="statement not covered" >rehensive namin</span>g convention policy interfaces and schemas
 <span class="cstat-no" title="statement not covered" ></span>
 /**<span class="cstat-no" title="statement not covered" ></span>
- * Supported resourc<span class="cstat-no" title="statement not covered" >e types for naming conventions</span>
+ * Supported resource types for <span class="cstat-no" title="statement not covered" >naming conventions</span>
  */
 export enum ResourceType {
   SCENARIO = 'scenario',
@@ -3920,7 +3923,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           resour<span class="cstat-no" title="statement not covered" >ceTypes: Object.keys(suggestions).length,</span>
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policy,
           validationResults,
@@ -3941,7 +3944,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             templateApplied: input.templateId || null,
           },
           message: `Naming convention policy "${input.name}" created successfully with ${finalRules.length} rules`,
-        }, null, 2);
+        }).content[0].text;
       } catch (er<span class="fstat-no" title="function not covered" >ro</span>r: unknown) {
         cons<span class="cstat-no" title="statement not covered" >t errorMessage = error instanceof Error ? error.message : String(error);</span>
         log.error('Error creating naming convention policy', { error: errorMessage, name: input.name });
@@ -4118,7 +4121,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           warningNam<span class="cstat-no" title="statement not covered" >es: summaryStats.warningNames,</span>
         });
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stringify({<span class="cstat-no" title="statement not covered" ></span>
+        return formatSuccessRespo<span class="cstat-no" title="statement not covered" >nse({</span>
           success: true,
           policyId: input.policyId,<span class="cstat-no" title="statement not covered" ></span>
           policyName: policy.name,
@@ -4137,7 +4140,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           },<span class="fstat-no" title="function not covered" ></span>
           timestamp: new Dat<span class="cstat-no" title="statement not covered" >e().toISOString(),</span>
           message: `Validated ${summaryStats.t<span class="cstat-no" title="statement not covered" >otalName</span>s} names: ${summaryStats.validNames} valid, ${summaryStats.invalidNames} invalid, ${summaryStats.warningNames} warnings`,
-        }, null, 2);<span class="cstat-no" title="statement not covered" ></span>
+        });<span class="cstat-no" title="statement not covered" ></span>
       } catch (error: unknown) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
         const errorMessage = error insta<span class="cstat-no" title="statement not covered" >nceof Error ? error.message : String(error);</span>
         log.error('Error validating names against policy', { error<span class="cstat-no" title="statement not covered" >: errorMessage, </span>policyId: input.policyId });
@@ -4235,7 +4238,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           inactive: summaryStats.inactivePolicies,
         });
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           policies: Array.isArray(policies) ? policies : [],
           summary: s<span class="cstat-no" title="statement not covered" >ummaryStats,<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
@@ -4250,7 +4253,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             count: Object.keys(POLICY_TEMPLATES).length,
           },<span class="cstat-no" title="statement not covered" ></span>
           timestamp:<span class="cstat-no" title="statement not covered" > new Date().toISOString(),</span>
-        }, null,<span class="cstat-no" title="statement not covered" > 2);</span>
+        });<span class="cstat-no" title="statement not covered" ></span>
       } catch (error<span class="cstat-no" title="statement not covered" >: unknown) {</span>
         const er<span class="cstat-no" title="statement not covered" >rorMessage = error instanceof Error ? error.message : String(error);</span>
         log.error('E<span class="cstat-no" title="statement not covered" >rror listing naming convention policies', { erro</span>r: errorMessage });
@@ -4381,7 +4384,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           updatedFields: Object.keys(input).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined).length,
         });
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stri<span class="cstat-no" title="statement not covered" >ngify({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+        return formatSuc<span class="cstat-no" title="statement not covered" >cessResponse({<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
           success: true,
           policy: updatedPolicy,
           changes: {
@@ -4396,7 +4399,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             fieldsCh<span class="cstat-no" title="statement not covered" >anged: Object.keys(input).filter(k =&gt; k !== 'policyId' &amp;&amp; input[k as keyof typeof input] !== undefined).length,</span>
           },<span class="cstat-no" title="statement not covered" ></span>
           message: `Naming convention policy "${updatedPolicy.name}" updated successfully`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating naming convention policy', { error: errorMessage, policyId: input.policyId });
@@ -4510,7 +4513,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           totalRules: summary.totalRules,
         });
 &nbsp;
-        return JSON.stringify({
+        return formatSuccessResponse({
           success: true,
           templates: templatesWithDetails,
           summary,
@@ -4525,7 +4528,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             enfo<span class="cstat-no" title="statement not covered" >rcement: 'Templates include recommended enforcement levels that can be adjusted',</span>
           },
           timestamp: new Date().toISOString(),
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error retrieving naming policy templates', { error: errorMessage });
@@ -4612,7 +4615,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
           name: policy.name,
         });
 <span class="cstat-no" title="statement not covered" ></span>
-        return JSON.stringify({
+        return formatSuccessResponse({
 <span class="cstat-no" title="statement not covered" >          success: true,</span>
           deletedPolicy: {
             id: input.policyId,
@@ -4627,7 +4630,7 @@ export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeA
             confirmationRequired: true,
           },
           message: `Naming convention policy "${policy.name}" deleted successfully`,
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error deleting naming convention policy', { error: errorMessage, policyId: input.policyId });
@@ -4738,7 +4741,7 @@ export default addNamingConventionPolicyTools;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T00:06:42.092Z
+                at 2025-08-22T03:12:16.956Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

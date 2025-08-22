@@ -8,6 +8,7 @@ import { BreachDetectionConfigSchema } from '../schemas/index.js';
 import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
 import { BreachIndicator } from '../types/index.js';
 import { auditLogger } from '../../../lib/audit-logger.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 /**
  * Breach Detection Manager class
@@ -61,30 +62,24 @@ class BreachDetectionManager {
   private async initializeAnomalyDetection(config: Parameters<typeof BreachDetectionConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = BreachDetectionConfigSchema.parse(config);
     // Initialize anomaly detection systems
-    console.debug('Initializing anomaly detection', {
-      enabled: validatedConfig.detectionMethods.anomalyDetection,
-    });
+    // Debug: Initializing anomaly detection (enabled: validatedConfig.detectionMethods.anomalyDetection)
   }
 
   private async initializeThreatIntelligence(config: Parameters<typeof BreachDetectionConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = BreachDetectionConfigSchema.parse(config);
     // Initialize threat intelligence feeds
-    console.debug('Initializing threat intelligence', {
-      enabled: validatedConfig.detectionMethods.threatIntelligence,
-    });
+    // Debug: Initializing threat intelligence (enabled: validatedConfig.detectionMethods.threatIntelligence)
   }
 
   private async initializeBehavioralAnalysis(config: Parameters<typeof BreachDetectionConfigSchema.parse>[0]): Promise<void> {
     const validatedConfig = BreachDetectionConfigSchema.parse(config);
     // Initialize behavioral analysis
-    console.debug('Initializing behavioral analysis', {
-      enabled: validatedConfig.detectionMethods.behavioralAnalysis,
-    });
+    // Debug: Initializing behavioral analysis (enabled: validatedConfig.detectionMethods.behavioralAnalysis)
   }
 
   private async setupAutomaticContainment(): Promise<void> {
     // Setup automatic containment procedures
-    console.debug('Setting up automatic containment');
+    // Debug: Setting up automatic containment
   }
 
   /**
@@ -266,7 +261,7 @@ export function createConfigureBreachDetectionTool(context: ToolContext): ToolDe
         });
 
         reportProgress?.({ progress: 100, total: 100 });
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Breach detection configuration failed', { error: errorMessage });

@@ -7,6 +7,7 @@ import { FastMCP, UserError } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // SDK app management types
 export interface MakeSDKApp {
@@ -308,7 +309,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             })),
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           apps: apps.map(app => ({
             id: app.id,
             name: app.name,
@@ -339,7 +340,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             offset,
             hasMore: (metadata?.total || 0) > (offset + apps.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error searching SDK apps', { query, error: errorMessage });
@@ -446,7 +447,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         const installationPermissions = installation.permissions && typeof installation.permissions === 'object' ? installation.permissions as Record<string, unknown> : {};
         const granted = Array.isArray(installationPermissions.granted) ? installationPermissions.granted : [];
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           installation,
           message: `SDK app ${appId} installed successfully`,
           summary: {
@@ -469,7 +470,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             'Set up integrations if needed',
             'Train team members on app usage',
           ],
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error installing SDK app', { appId, error: errorMessage });
@@ -573,7 +574,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
           } : undefined,
         };
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           apps: apps.map(app => ({
             ...app,
             installation: {
@@ -588,7 +589,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             offset,
             hasMore: (metadata?.total || 0) > (offset + apps.length),
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing installed apps', { error: errorMessage });
@@ -680,7 +681,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         const breaking = typeof updateResultData.breaking === 'boolean' ? updateResultData.breaking : false;
         const backupId = typeof updateResultData.backupId === 'string' ? updateResultData.backupId : undefined;
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           update: updateResult,
           message: `SDK app ${appId} updated successfully`,
           summary: {
@@ -707,7 +708,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             testingRequired: typeof updateResultData.requiresTesting === 'boolean' ? updateResultData.requiresTesting : false,
             rollbackAvailable: typeof updateResultData.rollbackAvailable === 'boolean' ? updateResultData.rollbackAvailable : false,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating SDK app', { appId, error: errorMessage });
@@ -783,7 +784,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
         const validationWarnings = Array.isArray(validation.warnings) ? validation.warnings : [];
         const validationValid = typeof validation.valid === 'boolean' ? validation.valid : false;
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           configuration: configResult,
           message: `SDK app ${appId} configured successfully`,
           summary: {
@@ -805,7 +806,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             warnings: validationWarnings,
             valid: validationValid,
           },
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error configuring SDK app', { appId, error: errorMessage });
@@ -912,7 +913,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
           autoStart,
         });
 
-        return JSON.stringify({
+        return formatSuccessResponse({
           workflow: installation,
           message: `Workflow "${name}" installed successfully`,
           summary: {
@@ -941,7 +942,7 @@ export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
             'Customize workflow if needed',
             autoStart ? 'Monitor workflow execution' : 'Activate workflow when ready',
           ],
-        }, null, 2);
+        });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error installing workflow', { workflowId, name, error: errorMessage });

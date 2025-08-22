@@ -9,6 +9,7 @@ import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/
 import { auditLogger } from '../../../lib/audit-logger.js';
 import * as crypto from 'crypto';
 import { promisify } from 'util';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 
 const randomBytes = promisify(crypto.randomBytes);
 
@@ -230,7 +231,7 @@ PrivateKeyDataHere
 
   private async storeLease(leaseId: string, _leaseData: Record<string, unknown>): Promise<void> {
     // Store lease information for management
-    console.debug('Storing lease information', { leaseId });
+    // Debug: Storing lease information (leaseId)
   }
 }
 
@@ -279,7 +280,7 @@ export function createGenerateDynamicSecretsTool(context: ToolContext): ToolDefi
         });
 
         reportProgress?.({ progress: 100, total: 100 });
-        return JSON.stringify(result, null, 2);
+        return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error?.('Dynamic secret generation failed', { error: errorMessage });

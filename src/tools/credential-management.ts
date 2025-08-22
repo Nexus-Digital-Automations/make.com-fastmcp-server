@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { secureConfigManager } from '../lib/secure-config.js';
 import { credentialManager, encryptionService } from '../utils/encryption.js';
 import logger from '../lib/logger.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 const componentLogger = logger.child({ component: 'CredentialManagementTools' });
 
@@ -470,7 +471,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof StoreCredentialSchema>) => {
       const result = await storeCredentialTool.handler(input);
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
     },
   });
 
@@ -486,7 +487,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof GetCredentialSchema>) => {
       const result = await getCredentialStatusTool.handler(input);
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
     },
   });
 
@@ -504,7 +505,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof RotateCredentialSchema>) => {
       const result = await rotateCredentialTool.handler(input);
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
     },
   });
 
@@ -520,7 +521,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof ListCredentialsSchema>) => {
       const result = await listCredentialsTool.handler(input);
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
     },
   });
 
@@ -536,7 +537,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof AuditQuerySchema>) => {
       const result = await getAuditEventsTool.handler(input);
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
     },
   });
 
@@ -554,7 +555,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof MigrateCredentialsSchema>) => {
       const result = await migrateCredentialsTool.handler(input);
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
     },
   });
 
@@ -582,12 +583,12 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
       for (let i = 0; i < length; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      return JSON.stringify({
+      return formatSuccessResponse({
         type: input.type,
         value: result,
         length: result.length,
         generated: new Date().toISOString(),
-      }, null, 2);
+      });
     },
   });
 
@@ -611,7 +612,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
         oldAuditEvents: 20,
         message: 'Cleanup completed successfully'
       };
-      return JSON.stringify(result, null, 2);
+      return formatSuccessResponse(result).content[0].text;
     },
   });
 
