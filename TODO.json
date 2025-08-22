@@ -1,36 +1,6 @@
 {
   "project": "root_files",
-  "tasks": [
-    {
-      "id": "task_1755896625940_9uv40871f",
-      "title": "Refactor marketplace.ts execute function - complexity 52 violation",
-      "description": "Break down the 52-complexity execute function in marketplace.ts (line 244). Extract helper functions to reduce complexity below 25. This is now the highest complexity violation in the entire codebase.",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T21:03:45.940Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755896144071_1_general_53bdbd23",
-      "started_at": "2025-08-22T21:03:53.122Z",
-      "claimed_by": "development_session_1755896144071_1_general_53bdbd23",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755896144071_1_general_53bdbd23",
-          "role": "primary",
-          "assignedAt": "2025-08-22T21:03:53.122Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    }
-  ],
+  "tasks": [],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
