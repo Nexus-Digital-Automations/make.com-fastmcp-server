@@ -62,11 +62,10 @@ const UpdateConnectionSchema = z.object({
  * addConnectionCRUDTools(server, apiClient);
  * ```
  */
-export function addConnectionCRUDTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ConnectionCRUDTools' });
-  
-  componentLogger.info('Adding connection CRUD management tools');
-
+/**
+ * Add list connections tool
+ */
+function addListConnectionsTool(server: FastMCP, apiClient: MakeApiClient): void {
   /**
    * List and filter app connections in Make.com with advanced search capabilities
    * 
@@ -167,7 +166,12 @@ export function addConnectionCRUDTools(server: FastMCP, apiClient: MakeApiClient
       }
     },
   });
+}
 
+/**
+ * Add get connection tool
+ */
+function addGetConnectionTool(server: FastMCP, apiClient: MakeApiClient): void {
   /**
    * Get detailed information about a specific Make.com connection
    * 
@@ -238,7 +242,12 @@ export function addConnectionCRUDTools(server: FastMCP, apiClient: MakeApiClient
       }
     },
   });
+}
 
+/**
+ * Add create connection tool
+ */
+function addCreateConnectionTool(server: FastMCP, apiClient: MakeApiClient): void {
   /**
    * Create a new app connection in Make.com with secure credential handling
    * 
@@ -338,7 +347,12 @@ export function addConnectionCRUDTools(server: FastMCP, apiClient: MakeApiClient
       }
     },
   });
+}
 
+/**
+ * Add update connection tool
+ */
+function addUpdateConnectionTool(server: FastMCP, apiClient: MakeApiClient): void {
   /**
    * Update an existing app connection with secure credential management
    * 
@@ -435,7 +449,12 @@ export function addConnectionCRUDTools(server: FastMCP, apiClient: MakeApiClient
       }
     },
   });
+}
 
+/**
+ * Add delete connection tool
+ */
+function addDeleteConnectionTool(server: FastMCP, apiClient: MakeApiClient): void {
   /**
    * Delete an app connection from Make.com
    * 
@@ -499,7 +518,12 @@ export function addConnectionCRUDTools(server: FastMCP, apiClient: MakeApiClient
       }
     },
   });
+}
 
+/**
+ * Add test connection tool
+ */
+function addTestConnectionTool(server: FastMCP, apiClient: MakeApiClient): void {
   /**
    * Test an app connection to verify it's working correctly
    * 
@@ -589,6 +613,23 @@ export function addConnectionCRUDTools(server: FastMCP, apiClient: MakeApiClient
       }
     },
   });
+}
+
+/**
+ * Add connection management tools to FastMCP server
+ */
+export function addConnectionCRUDTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'ConnectionCRUDTools' });
+  
+  componentLogger.info('Adding connection CRUD management tools');
+
+  // Add all connection tools
+  addListConnectionsTool(server, apiClient);
+  addGetConnectionTool(server, apiClient);
+  addCreateConnectionTool(server, apiClient);
+  addUpdateConnectionTool(server, apiClient);
+  addDeleteConnectionTool(server, apiClient);
+  addTestConnectionTool(server, apiClient);
 
   componentLogger.info('Connection CRUD management tools added successfully');
 }

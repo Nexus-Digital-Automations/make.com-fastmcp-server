@@ -8,7 +8,7 @@
       "mode": "DEVELOPMENT",
       "category": "research",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -17,9 +17,9 @@
       "subtasks": [],
       "created_at": "2025-08-22T13:35:26.475Z",
       "auto_research_created": false,
-      "started_at": null,
-      "claimed_by": null,
-      "assigned_agent": null,
+      "started_at": "2025-08-22T18:09:00.964Z",
+      "claimed_by": "agent_1755886140964",
+      "assigned_agent": "agent_1755886140964",
       "agent_assignment_history": [
         {
           "agent": "agent_1755870755191",
@@ -53,6 +53,11 @@
           "action": "auto_reset_stale",
           "timestamp": "2025-08-22T17:19:59.186Z",
           "reason": "Task stale for 45 minutes"
+        },
+        {
+          "agent": "agent_1755886140964",
+          "action": "claimed",
+          "timestamp": "2025-08-22T18:09:00.964Z"
         }
       ]
     }
