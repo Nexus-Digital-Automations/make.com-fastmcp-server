@@ -350,10 +350,9 @@ function addUserManagementTools(server: FastMCP, apiClient: MakeApiClient, _comp
 }
 
 /**
- * Add team management tools
+ * Add list teams tool
  */
-function addTeamManagementTools(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // List teams
+function addListTeamsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'list-teams',
     description: 'List and filter teams',
@@ -421,8 +420,12 @@ function addTeamManagementTools(server: FastMCP, apiClient: MakeApiClient, _comp
       }
     },
   });
+}
 
-  // Get team details
+/**
+ * Add get team tool
+ */
+function addGetTeamTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-team',
     description: 'Get detailed information about a specific team',
@@ -468,8 +471,12 @@ function addTeamManagementTools(server: FastMCP, apiClient: MakeApiClient, _comp
       }
     },
   });
+}
 
-  // Create team
+/**
+ * Add create team tool
+ */
+function addCreateTeamTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-team',
     description: 'Create a new team',
@@ -523,8 +530,12 @@ function addTeamManagementTools(server: FastMCP, apiClient: MakeApiClient, _comp
       }
     },
   });
+}
 
-  // Update team
+/**
+ * Add update team tool
+ */
+function addUpdateTeamTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'update-team',
     description: 'Update team information',
@@ -581,8 +592,12 @@ function addTeamManagementTools(server: FastMCP, apiClient: MakeApiClient, _comp
       }
     },
   });
+}
 
-  // Delete team
+/**
+ * Add delete team tool
+ */
+function addDeleteTeamTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'delete-team',
     description: 'Delete a team',
@@ -621,6 +636,18 @@ function addTeamManagementTools(server: FastMCP, apiClient: MakeApiClient, _comp
       }
     },
   });
+}
+
+/**
+ * Add team management tools
+ */
+function addTeamManagementTools(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
+  // Add all team management tools
+  addListTeamsTool(server, apiClient);
+  addGetTeamTool(server, apiClient);
+  addCreateTeamTool(server, apiClient);
+  addUpdateTeamTool(server, apiClient);
+  addDeleteTeamTool(server, apiClient);
 }
 
 /**
