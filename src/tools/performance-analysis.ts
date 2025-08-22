@@ -822,7 +822,7 @@ class PerformanceAnalysisEngine {
     }
 
     // Rate limiting bottleneck detection
-    if (metrics.rateLimiter && metrics.rateLimiter.queued > 5) {
+    if (metrics.rateLimiter?.queued > 5) {
       bottlenecks.push({
         type: 'rate_limiting',
         severity: 'high',

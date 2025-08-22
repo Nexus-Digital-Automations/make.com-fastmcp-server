@@ -249,7 +249,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
     execute: async (input, { log, reportProgress }) => {
       const { query, filters, sorting, pagination, includeMetadata, includePricing, includeUsageStats } = input;
 
-      log.info('Searching public apps', {
+      log?.info('Searching public apps', {
         query,
         filters,
         sorting: sorting || { field: 'relevance', order: 'desc' },
@@ -324,7 +324,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
 
         reportProgress({ progress: 100, total: 100 });
 
-        log.info('Successfully searched public apps', {
+        log?.info('Successfully searched public apps', {
           totalResults: searchResults.total,
           returned: searchResults.apps.length,
           categories: Object.keys(analysis.categoryBreakdown).length,
@@ -353,7 +353,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error searching public apps', { query, error: errorMessage });
+        log?.error('Error searching public apps', { query, error: errorMessage });
         if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to search public apps: ${errorMessage}`);
       }
@@ -375,7 +375,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
     execute: async (input, { log, reportProgress }) => {
       const { appId, version, includeFullDetails, includeReviews, includeUsageExamples, includeCompatibilityInfo, includePricingDetails, includeComplianceInfo } = input;
 
-      log.info('Getting public app details', {
+      log?.info('Getting public app details', {
         appId,
         version,
         includeFullDetails,
@@ -467,7 +467,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
 
         reportProgress({ progress: 100, total: 100 });
 
-        log.info('Successfully retrieved app details', {
+        log?.info('Successfully retrieved app details', {
           appId,
           appName: appDetails.app.name,
           version: version || 'latest',
@@ -493,7 +493,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting app details', { appId, error: errorMessage });
+        log?.error('Error getting app details', { appId, error: errorMessage });
         if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to get app details: ${errorMessage}`);
       }
@@ -515,7 +515,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
     execute: async (input, { log, reportProgress }) => {
       const { timeframe, category, publisherType, metric, limit, includeGrowthMetrics, includeRecommendations, userContext } = input;
 
-      log.info('Listing popular apps', {
+      log?.info('Listing popular apps', {
         timeframe,
         category,
         publisherType,
@@ -609,7 +609,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
 
         reportProgress({ progress: 100, total: 100 });
 
-        log.info('Successfully listed popular apps', {
+        log?.info('Successfully listed popular apps', {
           appsReturned: popularApps.apps.length,
           timeframe,
           metric,
@@ -641,7 +641,7 @@ export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): 
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing popular apps', { timeframe, category, error: errorMessage });
+        log?.error('Error listing popular apps', { timeframe, category, error: errorMessage });
         if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to list popular apps: ${errorMessage}`);
       }

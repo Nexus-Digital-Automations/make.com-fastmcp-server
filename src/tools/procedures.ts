@@ -371,8 +371,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { name, description, type, category, organizationId, teamId, configuration, input: inputSpec, output: outputSpec, monitoring, security } = input;
 
-      if (log && log.info) {
-        if (log && log.info) {
+      if (log?.info) {
+        if (log?.info) {
           log.info('Creating remote procedure', {
             name,
             type,
@@ -447,7 +447,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
 
         reportProgress({ progress: 100, total: 100 });
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully created remote procedure', {
             procedureId: procedure.id,
             name: procedure.name,
@@ -489,10 +489,8 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
-          if (log && log.error) {
-            log.error('Error creating remote procedure', { name, error: errorMessage });
-          }
+        if (log?.error) {
+          log.error('Error creating remote procedure', { name, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create remote procedure: ${errorMessage}`);
@@ -526,7 +524,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { type, category, status, organizationId, teamId, includeStats, includeMonitoring, limit, offset, sortBy, sortOrder } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Listing remote procedures', {
           type,
           category,
@@ -561,7 +559,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         const procedures = response.data as MakeRemoteProcedure[] || [];
         const metadata = response.metadata;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved remote procedures', {
             count: procedures.length,
             total: metadata?.total,
@@ -638,7 +636,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error listing remote procedures', { error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -663,7 +661,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { procedureId, input: inputData, options, metadata } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Executing remote procedure', {
           procedureId,
           async: options.async,
@@ -703,7 +701,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         const executionResult = response.data as Record<string, unknown>;
         reportProgress({ progress: 100, total: 100 });
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully executed remote procedure', {
             procedureId,
             executionId: String(executionResult?.executionId || 'unknown'),
@@ -732,7 +730,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error executing remote procedure', { procedureId, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -757,7 +755,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { name, type, category, organizationId, teamId, configuration } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Creating device', {
           name,
           type,
@@ -824,7 +822,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
 
         reportProgress({ progress: 100, total: 100 });
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully created device', {
             deviceId: device.id,
             name: device.name,
@@ -865,7 +863,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error creating device', { name, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -902,7 +900,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { type, category, status, organizationId, teamId, includeHealth, includeAlerts, limit, offset, sortBy, sortOrder } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Listing devices', {
           type,
           category,
@@ -937,7 +935,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         const devices = response.data as MakeDevice[] || [];
         const metadata = response.metadata;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved devices', {
             count: devices.length,
             total: metadata?.total,
@@ -1007,7 +1005,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error listing devices', { error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -1037,7 +1035,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const { deviceId, testType, timeout, includePerformance } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Testing device connectivity', { deviceId, testType, timeout });
       }
 
@@ -1067,7 +1065,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         
         reportProgress({ progress: 100, total: 100 });
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully tested device connectivity', {
             deviceId,
             testType,
@@ -1110,7 +1108,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error testing device connectivity', { deviceId, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
