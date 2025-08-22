@@ -17,6 +17,7 @@ import logger from './lib/logger.js';
 import MakeApiClient from './lib/make-api-client.js';
 import { setupGlobalErrorHandlers, MakeServerError, createAuthenticationError } from './utils/errors.js';
 import { extractCorrelationId } from './utils/error-response.js';
+import { securityManager, createSecurityHealthCheck } from './middleware/security.js';
 import { addScenarioTools } from './tools/scenarios.js';
 import addConnectionTools from './tools/connections.js';
 import addPermissionTools from './tools/permissions.js';
@@ -61,6 +62,9 @@ export class MakeServerInstance {
 
     // Initialize API client
     this.apiClient = new MakeApiClient(configManager.getMakeConfig());
+    
+    // Initialize security systems
+    this.initializeSecurity();
 
     // Initialize FastMCP server with proper type annotations
     this.server = new FastMCP<MakeSessionAuth>({
@@ -78,6 +82,22 @@ export class MakeServerInstance {
     this.setupServerEvents();
     this.addBasicTools();
     this.addAdvancedTools();
+  }
+  
+  private async initializeSecurity(): Promise<void> {
+    try {
+      // Initialize circuit breakers for API client
+      await securityManager.initializeCircuitBreakers(this.apiClient);
+      
+      this.componentLogger.info('Security systems initialized', {
+        status: securityManager.getSecurityStatus().overall
+      });
+    } catch (error) {
+      this.componentLogger.error('Failed to initialize security systems', {
+        error: error instanceof Error ? error.message : String(error)
+      });
+      throw error;
+    }
   }
 
   private getServerInstructions(): string {
@@ -230,17 +250,19 @@ ${configManager.isAuthEnabled() ?
   }
 
   private addBasicTools(): void {
-    // Health check tool
+    // Enhanced health check tool with security status
     this.server.addTool({
       name: 'health-check',
-      description: 'Check server and Make.com API connectivity status',
-      parameters: z.object({}),
+      description: 'Check server, Make.com API connectivity, and security system status',
+      parameters: z.object({
+        includeSecurity: z.boolean().default(true).describe('Include security system status')
+      }),
       annotations: {
-        title: 'Health Check',
+        title: 'Enhanced Health Check',
         readOnlyHint: true,
         openWorldHint: true,
       },
-      execute: async (args, { log, session }) => {
+      execute: async ({ includeSecurity }, { log, session }) => {
         const correlationId = extractCorrelationId({ session });
         const componentLogger = logger.child({ 
           component: 'HealthCheck',
@@ -269,6 +291,9 @@ ${configManager.isAuthEnabled() ?
         const responseTime = Date.now() - startTime;
 
         const rateLimiterStatus = this.apiClient.getRateLimiterStatus();
+        
+        // Get security status if requested
+        const securityStatus = includeSecurity ? securityManager.getSecurityStatus() : null;
 
         const healthStatus = {
           ...serverHealth,
@@ -277,7 +302,8 @@ ${configManager.isAuthEnabled() ?
             responseTime: `${responseTime}ms`,
             rateLimiter: rateLimiterStatus,
           },
-          overall: apiHealthy ? 'healthy' : 'degraded',
+          ...(securityStatus && { security: securityStatus }),
+          overall: this.determineOverallHealth(apiHealthy, securityStatus),
         };
 
         componentLogger.info('Health check completed', { 
@@ -293,6 +319,56 @@ ${configManager.isAuthEnabled() ?
         });
 
         return JSON.stringify(healthStatus, null, 2);
+      },
+    });
+    
+    // Security status tool
+    this.server.addTool({
+      name: 'security-status',
+      description: 'Get detailed security system status and metrics',
+      parameters: z.object({
+        includeMetrics: z.boolean().default(false).describe('Include security metrics'),
+        includeEvents: z.boolean().default(false).describe('Include recent security events')
+      }),
+      annotations: {
+        title: 'Security Status',
+        readOnlyHint: true,
+      },
+      execute: async ({ includeMetrics, includeEvents }, { log, session }) => {
+        const correlationId = extractCorrelationId({ session });
+        const componentLogger = logger.child({ 
+          component: 'SecurityStatus',
+          operation: 'security-status',
+          correlationId 
+        });
+        
+        componentLogger.info('Getting security status');
+        log.info('Getting security status', { correlationId });
+        
+        const securityHealthCheck = createSecurityHealthCheck();
+        const securityHealth = await securityHealthCheck();
+        
+        const result: any = {
+          ...securityHealth,
+          configuration: {
+            rateLimiting: securityManager.getConfig().rateLimiting.enabled,
+            ddosProtection: securityManager.getConfig().ddosProtection.enabled,
+            monitoring: securityManager.getConfig().monitoring.enabled,
+            errorSanitization: securityManager.getConfig().errorSanitization.enabled
+          }
+        };
+        
+        if (includeMetrics) {
+          const { securityMonitoring } = await import('./middleware/security.js');
+          result.metrics = securityMonitoring.getMetrics(1); // Last hour
+        }
+        
+        if (includeEvents) {
+          const { securityMonitoring } = await import('./middleware/security.js');
+          result.recentEvents = securityMonitoring.getRecentEvents(50);
+        }
+        
+        return JSON.stringify(result, null, 2);
       },
     });
 
@@ -748,14 +824,35 @@ ${configManager.isAuthEnabled() ?
     }
   }
 
+  private determineOverallHealth(apiHealthy: boolean, securityStatus: any): string {
+    if (!apiHealthy) {
+      return 'degraded';
+    }
+    
+    if (securityStatus) {
+      if (securityStatus.overall === 'unhealthy') {
+        return 'degraded';
+      }
+      if (securityStatus.overall === 'degraded') {
+        return 'degraded';
+      }
+    }
+    
+    return 'healthy';
+  }
+  
   public async shutdown(): Promise<void> {
     this.componentLogger.info('Shutting down server');
     
     try {
+      // Shutdown security systems first
+      await securityManager.shutdown();
+      this.componentLogger.info('Security systems shutdown completed');
+      
       await this.apiClient.shutdown();
       this.componentLogger.info('API client shutdown completed');
     } catch (error) {
-      this.componentLogger.error('Error during API client shutdown', error as Record<string, unknown>);
+      this.componentLogger.error('Error during shutdown', error as Record<string, unknown>);
     }
 
     this.componentLogger.info('Server shutdown completed');

@@ -1,9 +1,12 @@
 /**
- * Input validation utilities for Make.com FastMCP Server
- * Provides common validation functions and schemas
+ * Enhanced Security-Focused Input validation utilities for Make.com FastMCP Server
+ * Provides enterprise-grade validation with XSS/injection prevention
+ * Phase 2 Security Enhancement Implementation
  */
 
 import { z } from 'zod';
+import DOMPurify from 'isomorphic-dompurify';
+import validator from 'validator';
 
 // Common validation schemas
 export const idSchema = z.number().int().positive();
@@ -30,43 +33,92 @@ export const dateRangeSchema = z.object({
   endDate: z.string().datetime().optional(),
 });
 
-// Scenario schemas
-export const scenarioCreateSchema = z.object({
-  name: nameSchema,
-  teamId: z.number().int().positive(),
-  folderId: z.number().int().positive().optional(),
-  blueprint: z.any(),
+// Enhanced secure scenario schemas with deep validation
+export const secureScenarioCreateSchema = z.object({
+  name: secureStringSchema,
+  teamId: secureIdSchema,
+  folderId: secureIdSchema.optional(),
+  blueprint: z.unknown()
+    .refine((val) => {
+      const str = JSON.stringify(val);
+      return str.length <= 1024 * 1024; // 1MB limit
+    }, { message: 'Blueprint payload too large' })
+    .refine((val) => {
+      const str = JSON.stringify(val);
+      return !/<script|javascript:|data:|vbscript:/i.test(str);
+    }, { message: 'Blueprint contains potentially malicious content' }),
   scheduling: z.object({
     type: z.enum(['immediate', 'indefinitely', 'on-demand']),
-    interval: z.number().int().positive().optional(),
+    interval: z.number().int().positive().max(86400).optional(), // Max 24 hours
   }),
   isActive: z.boolean().default(true),
-});
+  metadata: z.record(z.unknown())
+    .refine((val) => Object.keys(val).length <= 50, {
+      message: 'Too many metadata fields'
+    })
+    .optional()
+}).strict(); // Prevent additional properties
 
-export const scenarioUpdateSchema = z.object({
-  name: nameSchema.optional(),
-  folderId: z.number().int().positive().optional(),
-  blueprint: z.any().optional(),
+// Legacy schema for backward compatibility
+export const scenarioCreateSchema = secureScenarioCreateSchema;
+
+export const secureScenarioUpdateSchema = z.object({
+  name: secureStringSchema.optional(),
+  folderId: secureIdSchema.optional(),
+  blueprint: z.unknown()
+    .refine((val) => {
+      const str = JSON.stringify(val);
+      return str.length <= 1024 * 1024;
+    }, { message: 'Blueprint payload too large' })
+    .refine((val) => {
+      const str = JSON.stringify(val);
+      return !/<script|javascript:|data:|vbscript:/i.test(str);
+    }, { message: 'Blueprint contains potentially malicious content' })
+    .optional(),
   scheduling: z.object({
     type: z.enum(['immediate', 'indefinitely', 'on-demand']),
-    interval: z.number().int().positive().optional(),
+    interval: z.number().int().positive().max(86400).optional(),
   }).optional(),
   isActive: z.boolean().optional(),
-});
+  metadata: z.record(z.unknown())
+    .refine((val) => Object.keys(val).length <= 50)
+    .optional()
+}).strict();
 
-// Connection schemas
-export const connectionCreateSchema = z.object({
-  name: nameSchema,
-  accountName: z.string().min(1).max(255),
-  service: z.string().min(1).max(100),
-  metadata: z.record(z.any()),
-});
+export const scenarioUpdateSchema = secureScenarioUpdateSchema;
 
-export const connectionUpdateSchema = z.object({
-  name: nameSchema.optional(),
-  accountName: z.string().min(1).max(255).optional(),
-  metadata: z.record(z.any()).optional(),
-});
+// Enhanced secure connection schemas
+export const secureConnectionCreateSchema = z.object({
+  name: secureStringSchema,
+  accountName: secureStringSchema.max(255),
+  service: secureStringSchema.max(100)
+    .refine((val) => /^[a-zA-Z0-9_-]+$/.test(val), {
+      message: 'Service name can only contain alphanumeric characters, underscores, and hyphens'
+    }),
+  credentials: z.record(z.unknown())
+    .refine((val) => Object.keys(val).length <= 20, {
+      message: 'Too many credential fields'
+    })
+    .optional(),
+  metadata: z.record(z.unknown())
+    .refine((val) => Object.keys(val).length <= 30)
+    .optional()
+}).strict();
+
+export const connectionCreateSchema = secureConnectionCreateSchema;
+
+export const secureConnectionUpdateSchema = z.object({
+  name: secureStringSchema.optional(),
+  accountName: secureStringSchema.max(255).optional(),
+  credentials: z.record(z.unknown())
+    .refine((val) => Object.keys(val).length <= 20)
+    .optional(),
+  metadata: z.record(z.unknown())
+    .refine((val) => Object.keys(val).length <= 30)
+    .optional()
+}).strict();
+
+export const connectionUpdateSchema = secureConnectionUpdateSchema;
 
 // Template schemas
 export const templateCreateSchema = z.object({
@@ -172,9 +224,75 @@ export function validateDateRange(params: unknown): z.infer<typeof dateRangeSche
   return result.data;
 }
 
+// Enhanced security-focused string sanitization
 export function sanitizeString(str: string): string {
-  return str.trim().replace(/[<>"'&]/g, '');
+  // Remove dangerous patterns first
+  let sanitized = str.trim();
+  
+  // Remove script tags, javascript protocols, and data URIs
+  sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
+  sanitized = sanitized.replace(/javascript:/gi, '');
+  sanitized = sanitized.replace(/data:.*base64/gi, '');
+  sanitized = sanitized.replace(/vbscript:/gi, '');
+  
+  // Use DOMPurify for comprehensive XSS prevention
+  sanitized = DOMPurify.sanitize(sanitized, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+    RETURN_DOM: false,
+    RETURN_DOM_FRAGMENT: false
+  });
+  
+  // Additional character filtering
+  sanitized = sanitized.replace(/[<>"'&\u0000-\u001f\u007f]/g, '');
+  
+  return sanitized;
 }
+
+// Enhanced security string schema with XSS prevention
+export const secureStringSchema = z.string()
+  .min(1, 'Field cannot be empty')
+  .max(1000, 'Field exceeds maximum length')
+  .refine((val) => !/<script|javascript:|data:|vbscript:/i.test(val), {
+    message: 'Potentially malicious content detected'
+  })
+  .refine((val) => !validator.contains(val, '\u0000'), {
+    message: 'Null bytes not allowed'
+  })
+  .transform((val) => sanitizeString(val));
+
+// Secure ID schema with enhanced validation
+export const secureIdSchema = z.union([
+  z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
+  z.string().regex(/^\d+$/).transform((val) => parseInt(val, 10))
+]).refine((val) => val > 0 && val <= Number.MAX_SAFE_INTEGER, {
+  message: 'Invalid ID format'
+});
+
+// SQL injection prevention for search terms
+export const secureSearchSchema = z.string()
+  .max(500, 'Search term too long')
+  .refine((val) => !/(union|select|insert|update|delete|drop|create|alter|exec|execute)\s/i.test(val), {
+    message: 'Search term contains potentially dangerous SQL keywords'
+  })
+  .transform((val) => sanitizeString(val));
+
+// File upload validation
+export const fileUploadSchema = z.object({
+  filename: z.string()
+    .max(255, 'Filename too long')
+    .refine((val) => !/[\/<>:"|?*\x00-\x1f]/.test(val), {
+      message: 'Filename contains invalid characters'
+    })
+    .refine((val) => !/(\.\.|\/\.\.|\.\.\/)/g.test(val), {
+      message: 'Path traversal patterns not allowed'
+    }),
+  size: z.number().max(50 * 1024 * 1024, 'File too large (max 50MB)'),
+  mimeType: z.string().refine((val) => 
+    /^(image|text|application\/(json|pdf|zip|tar|gzip))\//i.test(val), {
+    message: 'File type not allowed'
+  })
+});
 
 export function isValidEmail(email: string): boolean {
   return emailSchema.safeParse(email).success;
