@@ -2,30 +2,13 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755868917557_hcdukqvf1",
-      "title": "Fix npm security vulnerabilities",
-      "description": "Address 7 npm security vulnerabilities: 3 high severity (cross-spawn ReDoS) and 4 moderate severity (mem DoS, yargs-parser prototype pollution). Update or replace vulnerable dependencies: ts-complexity, os-locale, mem, yargs-parser.",
-      "mode": "DEVELOPMENT",
-      "category": "bug",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T13:21:57.557Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755868885034_moy8dtie9",
       "title": "Refactor large files for better maintainability",
       "description": "Refactor files over 1500 lines for better maintainability. Priority targets: folders/core/index.ts (2141 lines), blueprint-collaboration.ts (1953 lines), connections.ts (1916 lines). Break into logical modules while preserving functionality.",
       "mode": "DEVELOPMENT",
       "category": "refactor",
       "priority": "medium",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -33,7 +16,17 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-22T13:21:25.035Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "started_at": "2025-08-22T13:25:09.000Z",
+      "claimed_by": "agent_1755869109000",
+      "assigned_agent": "agent_1755869109000",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755869109000",
+          "action": "claimed",
+          "timestamp": "2025-08-22T13:25:09.000Z"
+        }
+      ]
     },
     {
       "id": "task_1755868899872_e8nfvaxb0",
@@ -42,7 +35,7 @@
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "medium",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -50,7 +43,19 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-22T13:21:39.872Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755868700885_1_general_aa083af0",
+      "started_at": "2025-08-22T13:25:24.319Z",
+      "claimed_by": "development_session_1755868700885_1_general_aa083af0",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755868700885_1_general_aa083af0",
+          "role": "primary",
+          "assignedAt": "2025-08-22T13:25:24.319Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
     }
   ],
   "current_mode": "DEVELOPMENT",

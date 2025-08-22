@@ -15,7 +15,40 @@ import {
   expectValidZodParse,
   expectInvalidZodParse
 } from '../../utils/test-helpers.js';
-import { testUser, testTeam, testOrganization, testErrors } from '../../fixtures/test-data.js';
+import { testUsers, testScenarios, testErrors } from '../../fixtures/test-data.js';
+
+// Create test objects from the imported data
+const testTeam = {
+  id: 12345,
+  name: 'Test Team',
+  description: 'A test team for unit testing',
+  organizationId: 67890,
+  members: [testUsers.admin, testUsers.member],
+  settings: {
+    permissions: {
+      canCreateScenarios: true,
+      canManageMembers: false
+    }
+  },
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-15T12:00:00Z'
+};
+
+const testOrganization = {
+  id: 67890,
+  name: 'Test Organization',
+  description: 'A test organization for unit testing',
+  plan: 'Professional',
+  settings: {
+    features: ['advanced_scenarios', 'team_management'],
+    limits: {
+      maxTeams: 10,
+      maxUsers: 100
+    }
+  },
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-15T12:00:00Z'
+};
 
 describe('Permissions Management Tools - Comprehensive Test Suite', () => {
   let mockServer: any;
@@ -116,7 +149,7 @@ describe('Permissions Management Tools - Comprehensive Test Suite', () => {
       it('should handle authentication errors for current user', async () => {
         mockApiClient.mockResponse('GET', '/users/me', {
           success: false,
-          error: testErrors.authentication
+          error: testErrors.unauthorized
         });
 
         const { addPermissionTools } = await import('../../../src/tools/permissions.js');
@@ -165,7 +198,7 @@ describe('Permissions Management Tools - Comprehensive Test Suite', () => {
         expect(result).toContain('"total": 3');
         
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params).toEqual({ limit: 20, offset: 0 });
+        expect(calls[0].data).toEqual({ limit: 20, offset: 0 });
       });
 
       it('should filter users by team ID', async () => {
@@ -180,11 +213,11 @@ describe('Permissions Management Tools - Comprehensive Test Suite', () => {
         addPermissionTools(mockServer, mockApiClient as any);
         
         const tool = findTool(mockTool, 'list-users');
-        const result = await executeTool(tool, { teamId }, { log: mockLog });
+        const result = await executeTool(tool, { teamId: teamId }, { log: mockLog });
         
         const calls = mockApiClient.getCallLog();
         expect(calls[0].endpoint).toBe(`/teams/${teamId}/users`);
-        expect(calls[0].params.teamId).toBe(teamId);
+        expect(calls[0].data?.teamId).toBe(teamId);
       });
 
       it('should filter users by organization ID', async () => {
@@ -224,7 +257,7 @@ describe('Permissions Management Tools - Comprehensive Test Suite', () => {
         }, { log: mockLog });
         
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params).toEqual({
+        expect(calls[0].data).toEqual({
           limit: 10,
           offset: 0,
           role: 'admin',
@@ -552,7 +585,7 @@ describe('Permissions Management Tools - Comprehensive Test Suite', () => {
         await executeTool(tool, { search: 'test' }, { log: mockLog });
         
         const calls = mockApiClient.getCallLog();
-        expect(calls[0].params.search).toBe('test');
+        expect(calls[0].data.search).toBe('test');
       });
     });
 
