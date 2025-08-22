@@ -33,10 +33,10 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
         active?: boolean;
       };
       
-      if (log?.info) { log.info('Cloning scenario', { 
+      log?.info?.('Cloning scenario', { 
         sourceId: typedArgs.scenarioId, 
         newName: typedArgs.name 
-      }); }
+      });
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -80,19 +80,19 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
         // Type guard for cloned scenario
         const clonedScenarioObj = clonedScenario as { id?: unknown } | null | undefined;
         
-        if (log?.info) { log.info('Scenario cloned successfully', { 
+        log?.info?.('Scenario cloned successfully', { 
           sourceId: typedArgs.scenarioId,
           cloneId: String(clonedScenarioObj?.id ?? 'unknown'),
           name: typedArgs.name 
-        }); }
+        });
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) { log.error('Failed to clone scenario', { 
+        log?.error?.('Failed to clone scenario', { 
           scenarioId: typedArgs.scenarioId, 
           error: errorMessage 
-        }); }
+        });
         throw new UserError(`Failed to clone scenario: ${errorMessage}`);
       }
     },

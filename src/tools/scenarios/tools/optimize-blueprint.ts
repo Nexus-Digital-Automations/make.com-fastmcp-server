@@ -33,11 +33,11 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
         includeImplementationSteps?: boolean;
       };
       
-      if (log?.info) { log.info('Starting blueprint optimization analysis', { 
+      log?.info?.('Starting blueprint optimization analysis', { 
         hasBlueprint: !!typedArgs.blueprint,
         optimizationType: typedArgs.optimizationType,
         includeImplementationSteps: typedArgs.includeImplementationSteps
-      }); }
+      });
 
       try {
         // Validate blueprint structure first
@@ -99,18 +99,18 @@ export function createOptimizeBlueprintTool(context: ToolContext): ToolDefinitio
           }
         };
 
-        if (log?.info) { log.info('Blueprint optimization analysis completed', {
+        log?.info?.('Blueprint optimization analysis completed', {
           optimizationScore: optimizationResult.optimizationScore,
           recommendationCount: filteredRecommendations.length,
           priorityLevel: optimizationSummary.priorityLevel,
           moduleCount: optimizationResult.metrics.moduleCount
-        }); }
+        });
 
         return formatSuccessResponse(response).content[0].text;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) { log.error('Blueprint optimization failed', { error: errorMessage }); }
+        log?.error?.('Blueprint optimization failed', { error: errorMessage });
         throw new UserError(`Blueprint optimization failed: ${errorMessage}`);
       }
     }

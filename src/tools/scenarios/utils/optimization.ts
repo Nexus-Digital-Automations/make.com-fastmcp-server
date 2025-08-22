@@ -68,7 +68,7 @@ export function optimizeBlueprint(blueprint: unknown, optimizationType: 'perform
 
       // Performance optimizations
       if (optimizationType === 'performance' || optimizationType === 'all') {
-        if (module.module === 'builtin:Iterator' && bp.flow && bp.flow.length > 50) {
+        if (module.module === 'builtin:Iterator' && bp.flow?.length && bp.flow.length > 50) {
           recommendations.push({
             category: 'performance',
             priority: 'high',
@@ -84,7 +84,7 @@ export function optimizeBlueprint(blueprint: unknown, optimizationType: 'perform
           optimizationScore -= 15;
         }
 
-        if (module.module && module.module.includes('Database') && !module.parameters?.batchSize) {
+        if (module.module?.includes('Database') && !module.parameters?.batchSize) {
           recommendations.push({
             category: 'performance',
             priority: 'medium',
@@ -103,7 +103,7 @@ export function optimizeBlueprint(blueprint: unknown, optimizationType: 'perform
 
       // Cost optimizations
       if (optimizationType === 'cost' || optimizationType === 'all') {
-        if (module.module && (module.module.includes('AI') || module.module.includes('GPT'))) {
+        if (module.module?.includes('AI') || module.module?.includes('GPT')) {
           recommendations.push({
             category: 'cost',
             priority: 'high',

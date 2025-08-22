@@ -33,11 +33,11 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
     execute: async (args: unknown, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const typedArgs = args as ValidateBlueprintArgs;
-      if (log?.info) { log.info('Validating blueprint', { 
+      log?.info?.('Validating blueprint', { 
         hasBlueprint: !!typedArgs.blueprint,
         strict: typedArgs.strict,
         includeSecurityChecks: typedArgs.includeSecurityChecks
-      }); }
+      });
 
       try {
         const validationResult = validateBlueprintStructure(
@@ -45,12 +45,12 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
           typedArgs.strict
         );
 
-        if (log?.info) { log.info('Blueprint validation completed', {
+        log?.info?.('Blueprint validation completed', {
           isValid: validationResult.isValid,
           errorCount: validationResult.errors.length,
           warningCount: validationResult.warnings.length,
           securityIssueCount: validationResult.securityIssues.length
-        }); }
+        });
 
         return formatSuccessResponse({
           isValid: validationResult.isValid,
@@ -77,7 +77,7 @@ export function createValidateBlueprintTool(context: ToolContext): ToolDefinitio
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) { log.error('Blueprint validation failed', { error: errorMessage }); }
+        log?.error?.('Blueprint validation failed', { error: errorMessage });
         throw new UserError(`Blueprint validation failed: ${errorMessage}`);
       }
     }

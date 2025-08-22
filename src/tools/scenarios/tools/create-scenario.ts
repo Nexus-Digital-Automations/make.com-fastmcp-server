@@ -33,7 +33,7 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
         scheduling?: { type: string; interval?: number; cron?: string } 
       };
       
-      if (log?.info) { log.info('Creating scenario', { name: typedArgs.name, teamId: typedArgs.teamId }); }
+      log?.info?.('Creating scenario', { name: typedArgs.name, teamId: typedArgs.teamId });
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -67,15 +67,15 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
         // Type guard for created scenario
         const scenarioObj = createdScenario as { id?: unknown } | null | undefined;
         
-        if (log?.info) { log.info('Scenario created successfully', { 
+        log?.info?.('Scenario created successfully', { 
           scenarioId: String(scenarioObj?.id ?? 'unknown'),
           name: typedArgs.name 
-        }); }
+        });
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) { log.error('Failed to create scenario', { name: typedArgs.name, error: errorMessage }); }
+        log?.error?.('Failed to create scenario', { name: typedArgs.name, error: errorMessage });
         throw new UserError(`Failed to create scenario: ${errorMessage}`);
       }
     },

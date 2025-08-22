@@ -33,7 +33,7 @@ export function createUpdateScenarioTool(context: ToolContext): ToolDefinition {
         scheduling?: { type: string; interval?: number; cron?: string };
       };
       
-      if (log?.info) { log.info('Updating scenario', { scenarioId: typedArgs.scenarioId }); }
+      log?.info?.('Updating scenario', { scenarioId: typedArgs.scenarioId });
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -67,14 +67,14 @@ export function createUpdateScenarioTool(context: ToolContext): ToolDefinition {
           timestamp: new Date().toISOString(),
         };
 
-        if (log?.info) { log.info('Scenario updated successfully', { scenarioId: typedArgs.scenarioId }); }
+        log?.info?.('Scenario updated successfully', { scenarioId: typedArgs.scenarioId });
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) { log.error('Failed to update scenario', { 
+        log?.error?.('Failed to update scenario', { 
           scenarioId: typedArgs.scenarioId, 
           error: errorMessage 
-        }); }
+        });
         throw new UserError(`Failed to update scenario: ${errorMessage}`);
       }
     },

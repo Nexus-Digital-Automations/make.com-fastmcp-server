@@ -27,7 +27,7 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
     },
     execute: async (args: unknown, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      if (log?.info) { log.info('Starting scenario troubleshooting', JSON.stringify(args)); }
+      log?.info?.('Starting scenario troubleshooting', JSON.stringify(args));
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -65,10 +65,10 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
 
         reportProgress?.({ progress: 30, total: 100 });
 
-        if (log?.info) { log.info('Fetched scenario for troubleshooting', { 
+        log?.info?.('Fetched scenario for troubleshooting', { 
           scenarioId: scenarioId,
           timeRangeHours 
-        }); }
+        });
 
         // Generate comprehensive troubleshooting report
         const troubleshootingReport = await generateSingleScenarioTroubleshootingReport(
@@ -83,11 +83,11 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
 
         reportProgress?.({ progress: 100, total: 100 });
 
-        if (log?.info) { log.info('Scenario troubleshooting completed', {
+        log?.info?.('Scenario troubleshooting completed', {
           scenarioId: scenarioId,
           reportGenerated: true,
           timeRangeHours
-        }); }
+        });
 
         return formatSuccessResponse({
           report: troubleshootingReport,
@@ -103,7 +103,7 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) { log.error('Scenario troubleshooting failed', { error: errorMessage }); }
+        log?.error?.('Scenario troubleshooting failed', { error: errorMessage });
         throw new UserError(`Scenario troubleshooting failed: ${errorMessage}`);
       }
     },
@@ -183,7 +183,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
     },
     execute: async (args: unknown, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      if (log?.info) { log.info('Generating comprehensive troubleshooting report', JSON.stringify(args)); }
+      log?.info?.('Generating comprehensive troubleshooting report', JSON.stringify(args));
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -282,11 +282,11 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
           }
         };
 
-        if (log?.info) { log.info('Troubleshooting report generated successfully', {
+        log?.info?.('Troubleshooting report generated successfully', {
           reportId: report.reportId,
           scenarioCount: scenarios.length,
           formatType: reportOptions.formatType || 'json'
-        }); }
+        });
 
         return formatSuccessResponse({
           report: report,
@@ -299,7 +299,7 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) { log.error('Troubleshooting report generation failed', { error: errorMessage }); }
+        log?.error?.('Troubleshooting report generation failed', { error: errorMessage });
         throw new UserError(`Troubleshooting report generation failed: ${errorMessage}`);
       }
     },

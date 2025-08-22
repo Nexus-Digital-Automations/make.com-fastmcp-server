@@ -32,11 +32,11 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
     execute: async (args: unknown, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
       const typedArgs = args as RunScenarioArgs;
-      if (log?.info) { log.info('Starting scenario execution', { 
+      log?.info?.('Starting scenario execution', { 
         scenarioId: typedArgs.scenarioId,
         wait: typedArgs.wait,
         timeout: typedArgs.timeout
-      }); }
+      });
       
       reportProgress?.({ progress: 0, total: 100 });
       
@@ -62,7 +62,7 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
         }
         
         // Execute the scenario
-        if (log?.info) { log.info('Executing scenario', { scenarioId: typedArgs.scenarioId, scenarioName: scenario.name }); }
+        log?.info?.('Executing scenario', { scenarioId: typedArgs.scenarioId, scenarioName: scenario.name });
         const executionResponse = await apiClient.post(`/scenarios/${typedArgs.scenarioId}/run`, {
           wait: typedArgs.wait
         });
@@ -109,10 +109,10 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
           let attempts = 0;
           const maxAttempts = Math.ceil(timeoutSeconds / 2); // Check every 2 seconds
           
-          if (log?.info) { log.info('Waiting for scenario execution to complete', { 
+          log?.info?.('Waiting for scenario execution to complete', { 
             executionId: executionData.executionId,
             timeoutSeconds: timeoutSeconds 
-          }); }
+          });
           
           while (attempts < maxAttempts) {
             await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
@@ -146,61 +146,61 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
                 
                 // Check if execution is complete
                 if (['completed', 'error', 'stopped', 'failed'].includes(statusData.status)) {
-                  if (log?.info) { log.info('Scenario execution completed', {
+                  log?.info?.('Scenario execution completed', {
                     executionId: executionData.executionId,
                     status: statusData.status,
                     duration: finalResult.execution.duration
-                  }); }
+                  });
                   break;
                 }
               }
               
               // Check timeout
               if (Date.now() - startTime > timeoutMs) {
-                if (log?.warn) { log.warn('Scenario execution timeout reached', { 
+                log?.warn?.('Scenario execution timeout reached', { 
                   executionId: executionData.executionId,
                   timeoutSeconds: timeoutSeconds
-                }); }
+                });
                 finalResult.execution.status = 'timeout';
                 break;
               }
               
             } catch (statusError) {
-              if (log?.warn) { log.warn('Failed to check execution status', { 
+              log?.warn?.('Failed to check execution status', { 
                 executionId: executionData.executionId,
                 error: statusError instanceof Error ? statusError.message : String(statusError)
-              }); }
+              });
               // Continue polling despite status check errors
             }
           }
           
           if (attempts >= maxAttempts && !finalResult.execution.completedAt) {
             finalResult.execution.status = 'timeout';
-            if (log?.warn) { log.warn('Maximum polling attempts reached', { 
+            log?.warn?.('Maximum polling attempts reached', { 
               executionId: executionData.executionId,
               attempts: attempts
-            }); }
+            });
           }
         }
         
         reportProgress?.({ progress: 100, total: 100 });
         
-        if (log?.info) { log.info('Scenario execution request completed', {
+        log?.info?.('Scenario execution request completed', {
           scenarioId: typedArgs.scenarioId,
           executionId: executionData.executionId,
           finalStatus: finalResult.execution.status,
           waitedForCompletion: typedArgs.wait,
           duration: finalResult.execution.duration
-        }); }
+        });
         
         return formatSuccessResponse(finalResult).content[0].text;
         
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) { log.error('Scenario execution failed', { 
+        log?.error?.('Scenario execution failed', { 
           scenarioId: typedArgs.scenarioId,
           error: errorMessage 
-        }); }
+        });
         throw new UserError(`Scenario execution failed: ${errorMessage}`);
       }
     }
