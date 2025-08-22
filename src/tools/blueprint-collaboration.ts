@@ -20,34 +20,40 @@ import { FastMCP } from 'fastmcp';
 import logger from '../lib/logger.js';
 import MakeApiClient from '../lib/make-api-client.js';
 import { extractCorrelationId } from '../utils/error-response.js';
+import { 
+  BlueprintVersionManager, 
+  type BlueprintVersion, 
+  type SemanticVersion, 
+  type ChangeLogEntry, 
+  type DependencyChange, 
+  type PerformanceImpact, 
+  type OptimizationOpportunity, 
+  type Reviewer, 
+  type ReviewComment 
+} from './blueprint-collaboration/version-manager.js';
+import {
+  BlueprintConflictResolver,
+  type BlueprintValue,
+  type BlueprintConflict,
+  type ConflictResolution,
+  type ConflictResolutionOptions,
+  type ConflictResolutionRequest,
+  type ResolutionResult,
+  type ConflictResolutionOutput,
+  type ResolvedBlueprint,
+  type ValidationResults,
+  type UserIntentAnalysis,
+  type ResolutionOption,
+  type ConflictImpact,
+  type AIResolutionSuggestion,
+  type SuggestedCode,
+  type BlueprintPreview
+} from './blueprint-collaboration/conflict-resolver.js';
 
 // ==================== INTERFACES & TYPES ====================
 
-// Blueprint data structure interfaces
-interface BlueprintValue {
-  content: unknown;
-  type: string;
-  version?: string;
-  timestamp?: string;
-  metadata?: Record<string, unknown>;
-}
-
-interface BlueprintPreview {
-  previewId: string;
-  content: unknown;
-  type: string;
-  timestamp: string;
-  author?: string;
-  description?: string;
-}
-
-interface SuggestedCode {
-  language: string;
-  content: string;
-  lineNumbers?: number[];
-  fileName?: string;
-  description?: string;
-}
+// Blueprint data structure interfaces (some moved to conflict-resolver.ts)
+// BlueprintValue, BlueprintPreview, and SuggestedCode are now imported from conflict-resolver.ts
 
 interface NodeMetadata {
   category?: string;
@@ -76,52 +82,10 @@ interface RealTimeConfiguration {
   [key: string]: unknown;
 }
 
-interface ConflictResolutionOptions {
-  resolutionStrategy: string;
-  conflictResolutions: ConflictResolutionRequest[];
-  preserveUserIntent: boolean;
-  validateResult: boolean;
-  createBackup: boolean;
-}
-
-interface ConflictResolutionRequest {
-  conflictId: string;
-  resolution: string;
-  customResolution?: BlueprintValue;
-  reasoning?: string;
-}
-
-interface ResolutionResult {
-  conflictId: string;
-  status: 'resolved' | 'failed';
-  appliedResolution?: string;
-  result?: ConflictResolutionOutput;
-  error?: string;
-}
-
-interface ConflictResolutionOutput {
-  action: string;
-  value: BlueprintValue;
-  timestamp?: string;
-  appliedBy?: string;
-}
-
-interface ResolvedBlueprint {
-  blueprintId: string;
-  resolvedAt: string;
-  resolutions: ResolutionResult[];
-  status: string;
-  content?: unknown;
-  version?: string;
-}
-
-interface ValidationResults {
-  valid: boolean;
-  issues?: string[];
-  warnings?: string[];
-  recommendations?: string[];
-  score?: number;
-}
+// Conflict resolution interfaces moved to conflict-resolver.ts
+// ConflictResolutionOptions, ConflictResolutionRequest, ResolutionResult,
+// ConflictResolutionOutput, ResolvedBlueprint, and ValidationResults 
+// are now imported from conflict-resolver.ts
 
 interface DependencyAnalysisResult {
   summary: {
@@ -157,87 +121,7 @@ interface ImpactAssessment {
   recommendations: string[];
 }
 
-interface BlueprintVersion {
-  versionId: string;
-  blueprintId: string;
-  versionNumber: string;
-  semanticVersion: SemanticVersion;
-  commitHash: string;
-  branchName: string;
-  authorId: string;
-  authorName: string;
-  timestamp: string;
-  changeType: 'major' | 'minor' | 'patch' | 'prerelease';
-  changeDescription: string;
-  changeLog: ChangeLogEntry[];
-  parentVersionId?: string;
-  tags: string[];
-  isStable: boolean;
-  isBreakingChange: boolean;
-  migrationGuide?: string;
-  dependencyChanges: DependencyChange[];
-  performanceImpact: PerformanceImpact;
-  reviewStatus: 'pending' | 'approved' | 'rejected' | 'requires_changes';
-  reviewers: Reviewer[];
-  mergeStatus: 'pending' | 'merged' | 'conflicts' | 'draft';
-}
-
-interface SemanticVersion {
-  major: number;
-  minor: number;
-  patch: number;
-  prerelease?: string;
-  build?: string;
-}
-
-interface ChangeLogEntry {
-  type: 'added' | 'changed' | 'deprecated' | 'removed' | 'fixed' | 'security';
-  description: string;
-  modulePath: string;
-  impact: 'low' | 'medium' | 'high' | 'critical';
-  breakingChange: boolean;
-  migrationRequired: boolean;
-}
-
-interface DependencyChange {
-  dependencyId: string;
-  dependencyName: string;
-  changeType: 'added' | 'removed' | 'updated' | 'moved';
-  oldVersion?: string;
-  newVersion?: string;
-  impactedModules: string[];
-  breakingChange: boolean;
-}
-
-interface PerformanceImpact {
-  executionTimeChange: number;
-  memoryUsageChange: number;
-  operationsCountChange: number;
-  complexityScoreChange: number;
-  optimizationOpportunities: string[];
-  recommendations: string[];
-}
-
-interface Reviewer {
-  userId: string;
-  userName: string;
-  reviewType: 'technical' | 'business' | 'security' | 'performance';
-  status: 'pending' | 'approved' | 'rejected' | 'changes_requested';
-  comments: ReviewComment[];
-  reviewedAt?: string;
-}
-
-interface ReviewComment {
-  commentId: string;
-  modulePath: string;
-  lineNumber?: number;
-  comment: string;
-  severity: 'info' | 'warning' | 'error' | 'critical';
-  suggestedChange?: string;
-  resolved: boolean;
-  resolvedBy?: string;
-  resolvedAt?: string;
-}
+// Version-related interfaces are now imported from version-manager.ts
 
 interface CollaborationSession {
   sessionId: string;
@@ -288,69 +172,9 @@ interface ModuleLock {
   lockReason?: string;
 }
 
-interface ConflictResolution {
-  hasConflicts: boolean;
-  conflicts: BlueprintConflict[];
-  resolutionStrategy: 'manual' | 'auto' | 'ai_assisted' | 'abort';
-  resolutionStatus: 'pending' | 'in_progress' | 'resolved' | 'escalated';
-  aiSuggestions: AIResolutionSuggestion[];
-  lastResolutionAttempt?: string;
-}
-
-interface BlueprintConflict {
-  conflictId: string;
-  conflictType: 'content' | 'structural' | 'dependency' | 'configuration';
-  modulePath: string;
-  description: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  baseValue: BlueprintValue;
-  currentValue: BlueprintValue;
-  incomingValue: BlueprintValue;
-  userIntentAnalysis: UserIntentAnalysis;
-  resolutionOptions: ResolutionOption[];
-  autoResolvable: boolean;
-  requiresUserInput: boolean;
-}
-
-interface UserIntentAnalysis {
-  baseIntent: string;
-  currentIntent: string;
-  incomingIntent: string;
-  intentConflict: boolean;
-  suggestedResolution: string;
-  confidence: number;
-}
-
-interface ResolutionOption {
-  optionId: string;
-  description: string;
-  strategy: 'keep_current' | 'accept_incoming' | 'merge' | 'custom';
-  preview: BlueprintPreview;
-  impact: ConflictImpact;
-  aiRecommended: boolean;
-  userRecommended: boolean;
-}
-
-interface ConflictImpact {
-  modulesAffected: string[];
-  dependenciesAffected: string[];
-  performanceImpact: 'none' | 'minimal' | 'moderate' | 'significant';
-  breakingChange: boolean;
-  migrationRequired: boolean;
-  testingRequired: string[];
-}
-
-interface AIResolutionSuggestion {
-  suggestionId: string;
-  conflictId: string;
-  strategy: string;
-  reasoning: string;
-  confidence: number;
-  preservesUserIntent: boolean;
-  automationSafe: boolean;
-  suggestedCode?: SuggestedCode;
-  alternativeOptions: string[];
-}
+// Conflict resolution interfaces moved to conflict-resolver.ts
+// ConflictResolution, BlueprintConflict, UserIntentAnalysis, ResolutionOption,
+// ConflictImpact, and AIResolutionSuggestion are now imported from conflict-resolver.ts
 
 interface SessionPermissions {
   canEdit: boolean;
@@ -442,22 +266,7 @@ interface BreakSuggestion {
   expectedBenefit: string;
 }
 
-interface OptimizationOpportunity {
-  opportunityId: string;
-  type: 'redundancy_elimination' | 'caching' | 'parallelization' | 'simplification';
-  description: string;
-  affectedModules: string[];
-  expectedGain: ExpectedGain;
-  implementationComplexity: 'low' | 'medium' | 'high';
-  riskAssessment: string;
-}
-
-interface ExpectedGain {
-  performanceImprovement: number;
-  complexityReduction: number;
-  maintainabilityImprovement: number;
-  resourceSavings: number;
-}
+// OptimizationOpportunity and ExpectedGain interfaces are now imported from version-manager.ts
 
 // ==================== ZOD SCHEMAS ====================
 
@@ -516,11 +325,14 @@ const AnalyzeDependenciesSchema = z.object({
 class BlueprintCollaborationEngine {
   private static instance: BlueprintCollaborationEngine | null = null;
   private readonly activeSessions: Map<string, CollaborationSession> = new Map();
-  private readonly versionCache: Map<string, BlueprintVersion> = new Map();
   private readonly dependencyGraphs: Map<string, DependencyGraph> = new Map();
   private readonly componentLogger = logger.child({ component: 'BlueprintCollaborationEngine' });
+  private readonly versionManager: BlueprintVersionManager;
+  private readonly conflictResolver: BlueprintConflictResolver;
 
   private constructor() {
+    this.versionManager = new BlueprintVersionManager();
+    this.conflictResolver = new BlueprintConflictResolver();
     this.initializeEngine();
   }
 
@@ -572,78 +384,8 @@ class BlueprintCollaborationEngine {
     performanceImpact: PerformanceImpact;
     reviewRequirements: string[];
   }> {
-    const startTime = Date.now();
-
-    // Generate version ID and semantic version
-    const versionId = `version_${blueprintId}_${Date.now()}`;
-    const semanticVersion = await this.calculateSemanticVersion(blueprintId, options.versionType, options.basedOnVersion);
-    
-    // Analyze changes and generate changelog
-    const changeLog = await this.generateChangeLog(blueprintId, options.basedOnVersion);
-    const dependencyChanges = await this.analyzeDependencyChanges(blueprintId, options.basedOnVersion);
-    
-    // Perform performance analysis
-    const performanceImpact = options.performanceAnalysis 
-      ? await this.analyzePerformanceImpact(blueprintId, changeLog)
-      : this.getEmptyPerformanceImpact();
-
-    // Generate optimization opportunities
-    const optimizations = options.includeOptimizations 
-      ? await this.generateOptimizationOpportunities(blueprintId, changeLog)
-      : [];
-
-    // Detect breaking changes and generate migration guide
-    const isBreakingChange = this.detectBreakingChanges(changeLog, dependencyChanges);
-    const migrationGuide = isBreakingChange 
-      ? await this.generateMigrationGuide(changeLog, dependencyChanges)
-      : undefined;
-
-    // Create version object
-    const version: BlueprintVersion = {
-      versionId,
-      blueprintId,
-      versionNumber: this.formatSemanticVersion(semanticVersion),
-      semanticVersion,
-      commitHash: await this.generateCommitHash(blueprintId, changeLog),
-      branchName: options.branchName,
-      authorId: 'current_user', // This would come from authentication context
-      authorName: 'Current User',
-      timestamp: new Date().toISOString(),
-      changeType: options.versionType as 'major' | 'minor' | 'patch',
-      changeDescription: options.changeDescription,
-      changeLog,
-      parentVersionId: options.basedOnVersion,
-      tags: options.tags,
-      isStable: false, // New versions start as unstable
-      isBreakingChange,
-      migrationGuide,
-      dependencyChanges,
-      performanceImpact,
-      reviewStatus: isBreakingChange ? 'pending' : 'approved',
-      reviewers: [],
-      mergeStatus: 'draft',
-    };
-
-    // Cache the version
-    this.versionCache.set(versionId, version);
-
-    // Determine review requirements
-    const reviewRequirements = this.determineReviewRequirements(version);
-
-    this.componentLogger.info('Version created successfully', {
-      versionId,
-      blueprintId,
-      semanticVersion: version.versionNumber,
-      processingTime: Date.now() - startTime,
-    });
-
-    return {
-      version,
-      migrationGuide,
-      optimizations,
-      performanceImpact,
-      reviewRequirements,
-    };
+    // Delegate to version manager
+    return this.versionManager.createVersion(blueprintId, options);
   }
 
   async createCollaborationSession(
@@ -663,7 +405,7 @@ class BlueprintCollaborationEngine {
     realTimeConfig: RealTimeConfiguration;
   }> {
     const sessionId = `session_${blueprintId}_${Date.now()}`;
-    const versionId = options.versionId || await this.getLatestVersionId(blueprintId);
+    const versionId = options.versionId || await this.versionManager.getLatestVersionId(blueprintId);
 
     // Create active users from invites
     const activeUsers: ActiveUser[] = options.inviteUsers.map(invite => ({
@@ -777,72 +519,27 @@ class BlueprintCollaborationEngine {
       throw new Error(`Collaboration session ${sessionId} not found`);
     }
 
-    const startTime = Date.now();
-    let backupCreated = false;
-
-    // Create backup if requested
-    if (options.createBackup) {
-      await this.createConflictResolutionBackup(sessionId);
-      backupCreated = true;
-    }
-
-    const resolutionResults: ResolutionResult[] = [];
-    const unresolvedConflicts: BlueprintConflict[] = [];
-
-    // Process each conflict resolution
-    for (const resolution of options.conflictResolutions) {
-      const conflict = session.conflictResolution.conflicts.find(c => c.conflictId === resolution.conflictId);
-      if (!conflict) {
-        continue;
-      }
-
-      try {
-        const result = await this.applyConflictResolution(conflict, resolution, options);
-        resolutionResults.push({
-          conflictId: resolution.conflictId,
-          status: 'resolved',
-          appliedResolution: resolution.resolution,
-          result,
-        });
-      } catch (error) {
-        unresolvedConflicts.push(conflict);
-        resolutionResults.push({
-          conflictId: resolution.conflictId,
-          status: 'failed',
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    }
-
-    // Generate resolved blueprint
-    const resolvedBlueprint = await this.generateResolvedBlueprint(sessionId, resolutionResults);
-
-    // Validate result if requested
-    const validationResults = options.validateResult 
-      ? await this.validateResolvedBlueprint(resolvedBlueprint)
-      : { valid: true, issues: [] };
+    // Delegate to conflict resolver
+    const result = await this.conflictResolver.resolveConflicts(
+      sessionId,
+      session.conflictResolution,
+      options
+    );
 
     // Update session conflict status
-    session.conflictResolution.hasConflicts = unresolvedConflicts.length > 0;
-    session.conflictResolution.conflicts = unresolvedConflicts;
-    session.conflictResolution.resolutionStatus = unresolvedConflicts.length > 0 ? 'pending' : 'resolved';
+    session.conflictResolution.hasConflicts = result.unresolvedConflicts.length > 0;
+    session.conflictResolution.conflicts = result.unresolvedConflicts;
+    session.conflictResolution.resolutionStatus = result.unresolvedConflicts.length > 0 ? 'pending' : 'resolved';
     session.lastActivity = new Date().toISOString();
 
-    this.componentLogger.info('Conflict resolution completed', {
+    this.componentLogger.info('Conflict resolution delegated and session updated', {
       sessionId,
       totalConflicts: options.conflictResolutions.length,
-      resolved: resolutionResults.filter(r => r.status === 'resolved').length,
-      unresolved: unresolvedConflicts.length,
-      processingTime: Date.now() - startTime,
+      resolved: result.resolutionResults.filter(r => r.status === 'resolved').length,
+      unresolved: result.unresolvedConflicts.length,
     });
 
-    return {
-      resolutionResults,
-      resolvedBlueprint,
-      validationResults,
-      backupCreated,
-      unresolvedConflicts,
-    };
+    return result;
   }
 
   async analyzeDependencies(
@@ -863,7 +560,7 @@ class BlueprintCollaborationEngine {
     optimizationOpportunities: OptimizationOpportunity[];
     impactAssessment: ImpactAssessment | null;
   }> {
-    const versionId = options.versionId || await this.getLatestVersionId(blueprintId);
+    const versionId = options.versionId || await this.versionManager.getLatestVersionId(blueprintId);
     const cacheKey = `${blueprintId}_${versionId}_${options.analysisDepth}`;
 
     // Check cache first
@@ -932,256 +629,23 @@ class BlueprintCollaborationEngine {
 
   // ==================== HELPER METHODS ====================
 
-  private async calculateSemanticVersion(blueprintId: string, versionType: string, basedOnVersion?: string): Promise<SemanticVersion> {
-    // Get current version or default
-    const currentVersion = basedOnVersion 
-      ? await this.getVersion(basedOnVersion)
-      : await this.getLatestVersion(blueprintId);
-
-    const baseVersion = currentVersion?.semanticVersion || { major: 0, minor: 1, patch: 0 };
-
-    // Calculate new version based on type
-    switch (versionType) {
-      case 'major':
-        return { major: baseVersion.major + 1, minor: 0, patch: 0 };
-      case 'minor':
-        return { major: baseVersion.major, minor: baseVersion.minor + 1, patch: 0 };
-      case 'patch':
-        return { major: baseVersion.major, minor: baseVersion.minor, patch: baseVersion.patch + 1 };
-      case 'auto': {
-        // Analyze changes to determine version type
-        const changeAnalysis = await this.analyzeChangeImpact(blueprintId, basedOnVersion);
-        if (changeAnalysis.hasBreakingChanges) {
-          return { major: baseVersion.major + 1, minor: 0, patch: 0 };
-        } else if (changeAnalysis.hasNewFeatures) {
-          return { major: baseVersion.major, minor: baseVersion.minor + 1, patch: 0 };
-        } else {
-          return { major: baseVersion.major, minor: baseVersion.minor, patch: baseVersion.patch + 1 };
-        }
-      }
-      default:
-        return { major: baseVersion.major, minor: baseVersion.minor, patch: baseVersion.patch + 1 };
-    }
-  }
-
-  private formatSemanticVersion(version: SemanticVersion): string {
-    let versionString = `${version.major}.${version.minor}.${version.patch}`;
-    if (version.prerelease) {
-      versionString += `-${version.prerelease}`;
-    }
-    if (version.build) {
-      versionString += `+${version.build}`;
-    }
-    return versionString;
-  }
-
-  private async generateChangeLog(_blueprintId: string, _basedOnVersion?: string): Promise<ChangeLogEntry[]> {
-    // Simulate change detection and changelog generation
-    return [
-      {
-        type: 'added',
-        description: 'Added new webhook module for external integrations',
-        modulePath: '/modules/webhooks/external-webhook',
-        impact: 'medium',
-        breakingChange: false,
-        migrationRequired: false,
-      },
-      {
-        type: 'changed',
-        description: 'Updated authentication flow for improved security',
-        modulePath: '/modules/auth/oauth-flow',
-        impact: 'high',
-        breakingChange: true,
-        migrationRequired: true,
-      },
-      {
-        type: 'fixed',
-        description: 'Fixed memory leak in data processing module',
-        modulePath: '/modules/data/processor',
-        impact: 'low',
-        breakingChange: false,
-        migrationRequired: false,
-      },
-    ];
-  }
-
-  private async analyzeDependencyChanges(_blueprintId: string, _basedOnVersion?: string): Promise<DependencyChange[]> {
-    // Simulate dependency change analysis
-    return [
-      {
-        dependencyId: 'dep_001',
-        dependencyName: 'OAuth Provider',
-        changeType: 'updated',
-        oldVersion: '2.1.0',
-        newVersion: '3.0.0',
-        impactedModules: ['/modules/auth/oauth-flow'],
-        breakingChange: true,
-      },
-      {
-        dependencyId: 'dep_002',
-        dependencyName: 'Webhook Service',
-        changeType: 'added',
-        newVersion: '1.0.0',
-        impactedModules: ['/modules/webhooks/external-webhook'],
-        breakingChange: false,
-      },
-    ];
-  }
-
-  private async analyzePerformanceImpact(_blueprintId: string, _changeLog: ChangeLogEntry[]): Promise<PerformanceImpact> {
-    // Simulate performance impact analysis
-    return {
-      executionTimeChange: -150, // 150ms improvement
-      memoryUsageChange: 25, // 25MB increase
-      operationsCountChange: 2, // 2 additional operations
-      complexityScoreChange: -5, // Reduced complexity
-      optimizationOpportunities: [
-        'Cache OAuth tokens to reduce authentication overhead',
-        'Implement batch processing for webhook deliveries',
-        'Optimize data transformation pipelines',
-      ],
-      recommendations: [
-        'Monitor memory usage with new webhook module',
-        'Consider implementing connection pooling',
-        'Add performance metrics for new authentication flow',
-      ],
-    };
-  }
-
-  private async generateOptimizationOpportunities(_blueprintId: string, _changeLog: ChangeLogEntry[]): Promise<OptimizationOpportunity[]> {
-    return [
-      {
-        opportunityId: 'opt_001',
-        type: 'caching',
-        description: 'Implement response caching for frequently accessed API endpoints',
-        affectedModules: ['/modules/api/endpoints'],
-        expectedGain: {
-          performanceImprovement: 40,
-          complexityReduction: 10,
-          maintainabilityImprovement: 15,
-          resourceSavings: 25,
-        },
-        implementationComplexity: 'medium',
-        riskAssessment: 'low risk - well-established caching patterns',
-      },
-      {
-        opportunityId: 'opt_002',
-        type: 'parallelization',
-        description: 'Parallelize independent webhook delivery processes',
-        affectedModules: ['/modules/webhooks/delivery'],
-        expectedGain: {
-          performanceImprovement: 60,
-          complexityReduction: 5,
-          maintainabilityImprovement: 20,
-          resourceSavings: 15,
-        },
-        implementationComplexity: 'high',
-        riskAssessment: 'medium risk - requires careful error handling',
-      },
-    ];
-  }
-
-  private detectBreakingChanges(changeLog: ChangeLogEntry[], dependencyChanges: DependencyChange[]): boolean {
-    return changeLog.some(entry => entry.breakingChange) || 
-           dependencyChanges.some(dep => dep.breakingChange);
-  }
-
-  private async generateMigrationGuide(changeLog: ChangeLogEntry[], dependencyChanges: DependencyChange[]): Promise<string> {
-    const breakingChanges = changeLog.filter(entry => entry.breakingChange);
-    const breakingDeps = dependencyChanges.filter(dep => dep.breakingChange);
-
-    let guide = "# Migration Guide\n\n";
-    
-    if (breakingChanges.length > 0) {
-      guide += "## Breaking Changes\n\n";
-      breakingChanges.forEach(change => {
-        guide += `### ${change.modulePath}\n`;
-        guide += `**Change**: ${change.description}\n`;
-        guide += `**Impact**: ${change.impact}\n`;
-        guide += `**Migration Required**: ${change.migrationRequired ? 'Yes' : 'No'}\n\n`;
-      });
-    }
-
-    if (breakingDeps.length > 0) {
-      guide += "## Dependency Updates\n\n";
-      breakingDeps.forEach(dep => {
-        guide += `### ${dep.dependencyName}\n`;
-        guide += `**Change**: ${dep.changeType} from ${dep.oldVersion} to ${dep.newVersion}\n`;
-        guide += `**Impacted Modules**: ${dep.impactedModules.join(', ')}\n\n`;
-      });
-    }
-
-    guide += "## Recommended Migration Steps\n\n";
-    guide += "1. Review all breaking changes and their impact\n";
-    guide += "2. Update affected modules according to new API requirements\n";
-    guide += "3. Test thoroughly in development environment\n";
-    guide += "4. Update documentation and training materials\n";
-    guide += "5. Plan gradual rollout with monitoring\n";
-
-    return guide;
-  }
-
-  private async generateCommitHash(blueprintId: string, changeLog: ChangeLogEntry[]): Promise<string> {
-    // Generate a hash based on blueprint ID, timestamp, and changes
-    const content = `${blueprintId}_${Date.now()}_${JSON.stringify(changeLog)}`;
-    return Buffer.from(content).toString('base64').slice(0, 8);
-  }
-
-  private getEmptyPerformanceImpact(): PerformanceImpact {
-    return {
-      executionTimeChange: 0,
-      memoryUsageChange: 0,
-      operationsCountChange: 0,
-      complexityScoreChange: 0,
-      optimizationOpportunities: [],
-      recommendations: [],
-    };
-  }
-
-  private determineReviewRequirements(version: BlueprintVersion): string[] {
-    const requirements: string[] = [];
-
-    if (version.isBreakingChange) {
-      requirements.push('Technical review required for breaking changes');
-      requirements.push('Security review required for authentication changes');
-    }
-
-    if (version.performanceImpact.memoryUsageChange > 50) {
-      requirements.push('Performance review required for memory usage increase');
-    }
-
-    if (version.dependencyChanges.some(dep => dep.breakingChange)) {
-      requirements.push('Dependency review required for breaking dependency changes');
-    }
-
-    if (requirements.length === 0) {
-      requirements.push('Automated review - no special requirements');
-    }
-
-    return requirements;
-  }
-
-  private async getLatestVersionId(blueprintId: string): Promise<string> {
-    // Simulate getting latest version ID
-    return `version_${blueprintId}_latest`;
-  }
-
-  private async getVersion(versionId: string): Promise<BlueprintVersion | null> {
-    return this.versionCache.get(versionId) || null;
-  }
-
-  private async getLatestVersion(blueprintId: string): Promise<BlueprintVersion | null> {
-    const versionId = await this.getLatestVersionId(blueprintId);
-    return this.getVersion(versionId);
-  }
-
-  private async analyzeChangeImpact(_blueprintId: string, _basedOnVersion?: string): Promise<{ hasBreakingChanges: boolean; hasNewFeatures: boolean }> {
-    // Simulate change impact analysis
-    return {
-      hasBreakingChanges: false,
-      hasNewFeatures: true,
-    };
-  }
+  // ==================== VERSION MANAGEMENT METHODS MOVED ====================
+  // All version-related methods have been extracted to BlueprintVersionManager:
+  // - calculateSemanticVersion
+  // - formatSemanticVersion 
+  // - generateChangeLog
+  // - analyzeDependencyChanges
+  // - analyzePerformanceImpact
+  // - generateOptimizationOpportunities
+  // - detectBreakingChanges
+  // - generateMigrationGuide
+  // - generateCommitHash
+  // - getEmptyPerformanceImpact
+  // - determineReviewRequirements
+  // - getLatestVersionId
+  // - getVersion
+  // - getLatestVersion
+  // - analyzeChangeImpact
 
   private getEditingCapabilities(role: string, permissions?: string[]): string[] {
     const baseCapabilities: Record<string, string[]> = {
@@ -1199,62 +663,13 @@ class BlueprintCollaborationEngine {
     return Buffer.from(`${sessionId}_${userId}_${Date.now()}`).toString('base64');
   }
 
-  private async createConflictResolutionBackup(sessionId: string): Promise<string> {
-    // Create backup before conflict resolution
-    const backupId = `backup_${sessionId}_${Date.now()}`;
-    this.componentLogger.info('Created conflict resolution backup', { sessionId, backupId });
-    return backupId;
-  }
-
-  private async applyConflictResolution(conflict: BlueprintConflict, resolution: ConflictResolutionRequest, _options: ConflictResolutionOptions): Promise<ConflictResolutionOutput> {
-    // Apply specific conflict resolution
-    switch (resolution.resolution) {
-      case 'keep_current':
-        return { action: 'kept_current', value: conflict.currentValue };
-      case 'accept_incoming':
-        return { action: 'accepted_incoming', value: conflict.incomingValue };
-      case 'merge':
-        return { action: 'merged', value: this.mergeValues(conflict.currentValue, conflict.incomingValue) };
-      case 'custom':
-        return { action: 'custom', value: resolution.customResolution || { content: null, type: 'custom' } };
-      default:
-        throw new Error(`Unknown resolution strategy: ${resolution.resolution}`);
-    }
-  }
-
-  private mergeValues(current: BlueprintValue, incoming: BlueprintValue): BlueprintValue {
-    // Implement intelligent value merging
-    if (current.type === incoming.type) {
-      return {
-        content: incoming.content,
-        type: current.type,
-        version: incoming.version || current.version,
-        timestamp: new Date().toISOString(),
-        metadata: { ...current.metadata, ...incoming.metadata },
-      };
-    }
-    return incoming; // Default to incoming value when types differ
-  }
-
-  private async generateResolvedBlueprint(sessionId: string, resolutionResults: ResolutionResult[]): Promise<ResolvedBlueprint> {
-    // Generate the resolved blueprint based on conflict resolutions
-    return {
-      blueprintId: `resolved_${sessionId}`,
-      resolvedAt: new Date().toISOString(),
-      resolutions: resolutionResults,
-      status: 'resolved',
-    };
-  }
-
-  private async validateResolvedBlueprint(_blueprint: ResolvedBlueprint): Promise<ValidationResults> {
-    // Validate the resolved blueprint
-    return {
-      valid: true,
-      issues: [],
-      warnings: [],
-      recommendations: ['Consider performance testing', 'Update documentation'],
-    };
-  }
+  // ==================== CONFLICT RESOLUTION METHODS MOVED ====================
+  // All conflict resolution methods have been extracted to BlueprintConflictResolver:
+  // - createConflictResolutionBackup
+  // - applyConflictResolution
+  // - mergeValues
+  // - generateResolvedBlueprint
+  // - validateResolvedBlueprint
 
   private async buildDependencyGraph(_blueprintId: string, _versionId: string, _options: {
     analysisDepth: string;

@@ -17643,9 +17643,41 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755875672485_nesf0capb",
+      "title": "Extract folder management functionality into separate module",
+      "description": "Extract createfolder, listfolders, getfoldercontents, and moveitems methods from core/index.ts into a new FolderManager class in folder-manager.ts",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T15:14:32.485Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T15:18:46.401Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T15:18:46.402Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 405,
-  "last_completion": "2025-08-22T15:12:19.469Z",
+  "total_completed": 406,
+  "last_completion": "2025-08-22T15:18:46.402Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

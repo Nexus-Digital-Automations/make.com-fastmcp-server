@@ -62,23 +62,6 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755875672485_nesf0capb",
-      "title": "Extract folder management functionality into separate module",
-      "description": "Extract createfolder, listfolders, getfoldercontents, and moveitems methods from core/index.ts into a new FolderManager class in folder-manager.ts",
-      "mode": "DEVELOPMENT",
-      "category": "refactor",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-22T15:14:32.485Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755868885034_moy8dtie9",
       "title": "Refactor large files for better maintainability",
       "description": "Refactor files over 1500 lines for better maintainability. Priority targets: folders/core/index.ts (2141 lines), blueprint-collaboration.ts (1953 lines), connections.ts (1916 lines). Break into logical modules while preserving functionality.",
