@@ -450,6 +450,103 @@ function addGetDataStructureTool(server: FastMCP, apiClient: MakeApiClient): voi
 }
 
 /**
+ * Validate JSON Schema in structure updates
+ */
+function validateStructureSchema(structure: any): void {
+  if (structure?.schema && typeof structure.schema === 'object') {
+    try {
+      JSON.stringify(structure.schema);
+    } catch {
+      throw new UserError('Invalid JSON Schema provided in update');
+    }
+  }
+}
+
+/**
+ * Build update data from input parameters
+ */
+function buildUpdateData(name: any, description: any, structure: any, validation: any, transformation: any): DataStructureUpdateData {
+  const updateData: DataStructureUpdateData = {};
+  
+  if (name) {updateData.name = name;}
+  if (description !== undefined) {updateData.description = description;}
+  
+  if (structure) {
+    updateData.structure = {};
+    if (structure.schema) {updateData.structure.schema = structure.schema;}
+    if (structure.version) {updateData.structure.version = structure.version;}
+    if (structure.format) {updateData.structure.format = structure.format;}
+  }
+  
+  if (validation) {
+    updateData.validation = {};
+    if (validation.enabled !== undefined) {updateData.validation.enabled = validation.enabled;}
+    if (validation.strict !== undefined) {updateData.validation.strict = validation.strict;}
+    if (validation.rules) {updateData.validation.rules = validation.rules;}
+  }
+  
+  if (transformation) {
+    updateData.transformation = {};
+    if (transformation.enabled !== undefined) {updateData.transformation.enabled = transformation.enabled;}
+    if (transformation.mappings) {updateData.transformation.mappings = transformation.mappings;}
+    if (transformation.filters) {updateData.transformation.filters = transformation.filters.map((filter: any) => ({
+      field: filter.field,
+      operator: filter.operator,
+      value: filter.value,
+      caseSensitive: filter.caseSensitive
+    }));}
+  }
+
+  return updateData;
+}
+
+/**
+ * Determine the API endpoint based on organization/team context
+ */
+function determineUpdateEndpoint(dataStructureId: number, organizationId?: number, teamId?: number): string {
+  let endpoint = `/data-structures/${dataStructureId}`;
+  if (organizationId) {
+    endpoint = `/organizations/${organizationId}/data-structures/${dataStructureId}`;
+  } else if (teamId) {
+    endpoint = `/teams/${teamId}/data-structures/${dataStructureId}`;
+  }
+  return endpoint;
+}
+
+/**
+ * Format update response with metadata and configuration details
+ */
+function formatUpdateResponse(updatedDataStructure: MakeCustomDataStructure, updateData: DataStructureUpdateData, structure: any): any {
+  return formatSuccessResponse({
+    dataStructure: updatedDataStructure,
+    message: `Data structure "${updatedDataStructure.name}" updated successfully`,
+    changes: {
+      fieldsUpdated: Object.keys(updateData),
+      previousVersion: structure?.version,
+      newVersion: updatedDataStructure.structure.version,
+      lastModified: updatedDataStructure.updatedAt,
+    },
+    configuration: {
+      validation: {
+        enabled: updatedDataStructure.validation.enabled,
+        strict: updatedDataStructure.validation.strict,
+        rulesCount: updatedDataStructure.validation.rules.length,
+      },
+      transformation: {
+        enabled: updatedDataStructure.transformation.enabled,
+        mappingsCount: updatedDataStructure.transformation.mappings.length,
+        filtersCount: updatedDataStructure.transformation.filters.length,
+      },
+    },
+    operations: {
+      validateUrl: `/data-structures/${updatedDataStructure.id}/validate`,
+      transformUrl: `/data-structures/${updatedDataStructure.id}/transform`,
+      testUrl: `/data-structures/${updatedDataStructure.id}/test`,
+    },
+  }).content[0].text;
+}
+
+/**
  * Add update data structure tool
  */
 function addUpdateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -524,57 +621,20 @@ function addUpdateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
           reportProgress({ progress: 0, total: 100 });
         }
 
-        // Validate JSON Schema if provided in updates
-        if (structure?.schema && typeof structure.schema === 'object') {
-          try {
-            JSON.stringify(structure.schema);
-          } catch {
-            throw new UserError('Invalid JSON Schema provided in update');
-          }
-        }
+        // Step 1: Validate JSON Schema
+        validateStructureSchema(structure);
 
-        const updateData: DataStructureUpdateData = {};
-        
-        if (name) {updateData.name = name;}
-        if (description !== undefined) {updateData.description = description;}
-        
-        if (structure) {
-          updateData.structure = {};
-          if (structure.schema) {updateData.structure.schema = structure.schema;}
-          if (structure.version) {updateData.structure.version = structure.version;}
-          if (structure.format) {updateData.structure.format = structure.format;}
-        }
-        
-        if (validation) {
-          updateData.validation = {};
-          if (validation.enabled !== undefined) {updateData.validation.enabled = validation.enabled;}
-          if (validation.strict !== undefined) {updateData.validation.strict = validation.strict;}
-          if (validation.rules) {updateData.validation.rules = validation.rules;}
-        }
-        
-        if (transformation) {
-          updateData.transformation = {};
-          if (transformation.enabled !== undefined) {updateData.transformation.enabled = transformation.enabled;}
-          if (transformation.mappings) {updateData.transformation.mappings = transformation.mappings;}
-          if (transformation.filters) {updateData.transformation.filters = transformation.filters.map(filter => ({
-            field: filter.field,
-            operator: filter.operator,
-            value: filter.value,
-            caseSensitive: filter.caseSensitive
-          }));}
-        }
+        // Step 2: Build update data
+        const updateData = buildUpdateData(name, description, structure, validation, transformation);
 
         if (reportProgress) {
           reportProgress({ progress: 30, total: 100 });
         }
 
-        let endpoint = `/data-structures/${dataStructureId}`;
-        if (organizationId) {
-          endpoint = `/organizations/${organizationId}/data-structures/${dataStructureId}`;
-        } else if (teamId) {
-          endpoint = `/teams/${teamId}/data-structures/${dataStructureId}`;
-        }
+        // Step 3: Determine API endpoint
+        const endpoint = determineUpdateEndpoint(dataStructureId, organizationId, teamId);
 
+        // Step 4: Execute API call
         const response = await apiClient.patch(endpoint, updateData);
 
         if (!response.success) {
@@ -603,33 +663,8 @@ function addUpdateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
           });
         }
 
-        return formatSuccessResponse({
-          dataStructure: updatedDataStructure,
-          message: `Data structure "${updatedDataStructure.name}" updated successfully`,
-          changes: {
-            fieldsUpdated: Object.keys(updateData),
-            previousVersion: structure?.version,
-            newVersion: updatedDataStructure.structure.version,
-            lastModified: updatedDataStructure.updatedAt,
-          },
-          configuration: {
-            validation: {
-              enabled: updatedDataStructure.validation.enabled,
-              strict: updatedDataStructure.validation.strict,
-              rulesCount: updatedDataStructure.validation.rules.length,
-            },
-            transformation: {
-              enabled: updatedDataStructure.transformation.enabled,
-              mappingsCount: updatedDataStructure.transformation.mappings.length,
-              filtersCount: updatedDataStructure.transformation.filters.length,
-            },
-          },
-          operations: {
-            validateUrl: `/data-structures/${updatedDataStructure.id}/validate`,
-            transformUrl: `/data-structures/${updatedDataStructure.id}/transform`,
-            testUrl: `/data-structures/${updatedDataStructure.id}/test`,
-          },
-        }).content[0].text;
+        // Step 5: Format response
+        return formatUpdateResponse(updatedDataStructure, updateData, structure);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log?.error) {
