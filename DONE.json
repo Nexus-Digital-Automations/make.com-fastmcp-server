@@ -13622,9 +13622,73 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755837392893_lv8kro05q",
+      "title": "Fix 197 TypeScript ESLint explicit-function-return-type warnings",
+      "description": "Fix all @typescript-eslint/explicit-function-return-type violations across 17 files by adding appropriate return types to functions",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T04:36:32.894Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T04:42:37.869Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T04:42:37.870Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755837879896_x6a0mis1r",
+      "title": "Fix TypeScript compilation errors in formatSuccessResponse calls",
+      "description": "Fix TypeScript compilation errors by appending .content[0].text to formatSuccessResponse() calls in billing.ts, notifications.ts, and procedures.ts",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T04:44:39.896Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T04:49:25.995Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T04:49:25.996Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 304,
-  "last_completion": "2025-08-22T04:35:33.344Z",
+  "total_completed": 306,
+  "last_completion": "2025-08-22T04:49:25.996Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

@@ -651,7 +651,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             successfulDeliveries: notification.delivery.successfulDeliveries,
             failedDeliveries: notification.delivery.failedDeliveries,
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log && log.error) {
@@ -850,7 +850,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             }).filter(([, enabled]) => enabled).map(([category]) => category),
             lastUpdated: updatedPreferences.lastUpdated,
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log && log.error) {
@@ -1531,7 +1531,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
             transformUrl: `/data-structures/${updatedDataStructure.id}/transform`,
             testUrl: `/data-structures/${updatedDataStructure.id}/test`,
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log && log.error) {
@@ -1702,7 +1702,7 @@ export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient):
               'Use the archive download URL to restore this data structure if needed within 30 days.' :
               'No archive was created. This deletion cannot be undone.',
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log && log.error) {

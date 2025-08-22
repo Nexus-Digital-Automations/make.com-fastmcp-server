@@ -760,7 +760,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             account.billing?.paymentStatus === 'overdue' ? 'Payment overdue' : null,
             account.billing?.paymentStatus === 'failed' ? 'Payment failed' : null,
           ].filter(Boolean),
-        }, "Billing account information retrieved successfully");
+        }, "Billing account information retrieved successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log && log.error) {
@@ -867,7 +867,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             offset,
             hasMore: (metadata?.total || 0) > (offset + invoices.length),
           },
-        }, "Invoices retrieved successfully");
+        }, "Invoices retrieved successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing invoices', { error: errorMessage });
@@ -971,7 +971,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             potentialSavings: metrics.recommendations.reduce((sum, rec) => sum + (rec.savings || 0), 0),
             highImpactRecommendations: metrics.recommendations.filter(rec => rec.impact === 'high'),
           } : undefined,
-        }, "Usage metrics retrieved successfully");
+        }, "Usage metrics retrieved successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error getting usage metrics', { organizationId, error: errorMessage });
@@ -1083,7 +1083,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             setAsDefault ? 'Payment method set as default' : 'Set as default if needed',
             'Update billing preferences if necessary',
           ],
-        }, "Payment method added successfully");
+        }, "Payment method added successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error adding payment method', { type, error: errorMessage });
@@ -1299,7 +1299,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             budget.endDate ? null : 'No end date set - budget will continue indefinitely',
             thresholds.some(t => t.percentage >= 100) ? 'Budget includes 100% threshold - may cause service interruption' : null,
           ].filter(Boolean),
-        }, `Budget "${name}" created successfully`);
+        }, `Budget "${name}" created successfully`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error setting budget', { name, type, error: errorMessage });
@@ -1600,7 +1600,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             'Monitor actual vs projected costs',
             includeSeasonality ? 'Plan for seasonal cost variations' : null,
           ].filter(Boolean),
-        }, "Cost projection generated successfully");
+        }, "Cost projection generated successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error generating cost projection', { period, algorithm, error: errorMessage });
@@ -1787,7 +1787,7 @@ export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void
             'Investigate root causes of high costs',
             'Update budgets and thresholds as needed',
           ],
-        }, `High cost scenarios evaluation completed - ${dryRun ? 'simulation mode' : 'actions executed'}`);
+        }, `High cost scenarios evaluation completed - ${dryRun ? 'simulation mode' : 'actions executed'}`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error evaluating high cost scenarios', { action, dryRun, error: errorMessage });

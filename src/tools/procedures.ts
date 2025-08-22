@@ -697,7 +697,7 @@ export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): vo
             metrics: executionResult?.metrics || {},
             errors: executionResult?.errors || [],
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log && log.error) {
