@@ -251,14 +251,9 @@ const ScenarioControlSchema = z.object({
 }).strict();
 
 /**
- * Add budget control tools to FastMCP server
+ * Add create budget tool to FastMCP server
  */
-export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'BudgetControlTools' });
-  
-  componentLogger.info('Adding advanced budget control and cost management tools');
-
-  // Create budget configuration
+function addCreateBudgetTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'create-budget',
     description: 'Create advanced budget configuration with multi-tenant support and intelligent alerting',
@@ -392,8 +387,12 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
       }
     },
   });
+}
 
-  // Get budget status with real-time cost analysis
+/**
+ * Add get budget status tool to FastMCP server
+ */
+function addGetBudgetStatusTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
     name: 'get-budget-status',
     description: 'Get comprehensive budget status with real-time cost analysis and trend projections',
@@ -575,8 +574,12 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
       }
     },
   });
+}
 
-  // Generate ML-powered cost projections
+/**
+ * Add generate cost projection tool to FastMCP server
+ */
+function addGenerateCostProjectionTool(server: FastMCP, _apiClient: MakeApiClient): void {
   server.addTool({
     name: 'generate-cost-projection',
     description: 'Generate ML-powered cost projections with confidence intervals and optimization recommendations',
@@ -751,8 +754,12 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
       }
     },
   });
+}
 
-  // Automated scenario control for budget management
+/**
+ * Add control high cost scenarios tool to FastMCP server
+ */
+function addControlHighCostScenariosTool(server: FastMCP, _apiClient: MakeApiClient): void {
   server.addTool({
     name: 'control-high-cost-scenarios',
     description: 'Automatically control scenarios exceeding cost thresholds with graduated response and approval workflows',
@@ -970,6 +977,21 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
       }
     },
   });
+}
+
+/**
+ * Add budget control tools to FastMCP server
+ */
+export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const componentLogger = logger.child({ component: 'BudgetControlTools' });
+  
+  componentLogger.info('Adding advanced budget control and cost management tools');
+
+  // Add individual budget control tools
+  addCreateBudgetTool(server, apiClient);
+  addGetBudgetStatusTool(server, apiClient);
+  addGenerateCostProjectionTool(server, apiClient);
+  addControlHighCostScenariosTool(server, apiClient);
 
   componentLogger.info('Advanced budget control and cost management tools added successfully');
 }

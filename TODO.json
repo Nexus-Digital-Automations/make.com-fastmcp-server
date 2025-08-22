@@ -2,12 +2,12 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755880503212_gvix9ytek",
-      "title": "Address remaining ESLint warnings - function complexity and line count",
-      "description": "Address the remaining 111 ESLint warnings including: function complexity violations (cyclomatic complexity >25), max-lines-per-function violations (>200 lines), and code organization improvements. Focus on refactoring large functions into smaller, more maintainable units while preserving functionality.",
+      "id": "task_1755884555093_pkgh0yb7d",
+      "title": "Continue ESLint refactoring - tackle remaining large functions",
+      "description": "Continue the excellent ESLint refactoring momentum by tackling the remaining large function violations: addBudgetControlTools (623 lines), addAIAgentTools (567 lines), addCICDIntegrationTools (588 lines), addCertificateTools (560 lines), addCustomAppTools (517 lines), and others. Previous work successfully reduced ESLint problems from 136 to 101 (26% improvement). Goal is to reduce below 100 problems total.",
       "mode": "DEVELOPMENT",
       "category": "enhancement",
-      "priority": "medium",
+      "priority": "high",
       "status": "in_progress",
       "dependencies": [],
       "important_files": [],
@@ -15,33 +15,37 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-22T16:35:03.212Z",
+      "created_at": "2025-08-22T17:42:35.093Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755883204954_1_general_dfa87259",
-      "started_at": "2025-08-22T17:20:17.692Z",
-      "claimed_by": "development_session_1755883204954_1_general_dfa87259",
+      "assigned_agent": "development_session_1755884495000_1_general_5f2a21fd",
+      "started_at": "2025-08-22T17:42:44.682Z",
+      "claimed_by": "development_session_1755884495000_1_general_5f2a21fd",
       "agent_assignment_history": [
         {
-          "agentId": "development_session_1755880397156_1_general_4755cf37",
+          "agentId": "development_session_1755884495000_1_general_5f2a21fd",
           "role": "primary",
-          "assignedAt": "2025-08-22T16:35:10.726Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-22T17:19:59.186Z",
-          "reason": "Task stale for 45 minutes"
-        },
-        {
-          "agentId": "development_session_1755883204954_1_general_dfa87259",
-          "role": "primary",
-          "assignedAt": "2025-08-22T17:20:17.692Z",
+          "assignedAt": "2025-08-22T17:42:44.682Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
       ]
+    },
+    {
+      "id": "task_1755884896529_cczyv8b9b",
+      "title": "Refactor massive addBudgetControlTools function (623 lines)",
+      "description": "Break down the 623-line addBudgetControlTools function into individual helper functions following the established pattern. Extract each server.addTool() call into its own add[ToolName]Tool() function and create a clean coordinator. Continue ESLint reduction momentum from 136→101 problems.",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T17:48:16.529Z",
+      "auto_research_created": false
     },
     {
       "id": "task_1755869726475_je0c80mix",
@@ -106,13 +110,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755883204954_1_general_dfa87259": {
+    "development_session_1755884495000_1_general_5f2a21fd": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T17:20:04.955Z",
+      "lastHeartbeat": "2025-08-22T17:41:35.001Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -123,8 +127,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T17:20:04.955Z",
-      "sessionId": "session_1755883204954",
+      "createdAt": "2025-08-22T17:41:35.001Z",
+      "sessionId": "session_1755884495000",
       "metadata": {}
     }
   },
