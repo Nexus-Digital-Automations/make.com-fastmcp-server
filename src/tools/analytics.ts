@@ -106,7 +106,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { organizationId, startDate, endDate, period, includeUsage, includePerformance, includeBilling } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Getting organization analytics', {
           organizationId,
           period,
@@ -137,7 +137,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new UserError('Analytics data not available');
         }
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved analytics', {
             organizationId,
             period: analytics.period,
@@ -158,7 +158,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         }, "Organization analytics retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error getting analytics', { organizationId, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -183,7 +183,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { organizationId, teamId, userId, action, resource, startDate, endDate, limit, offset } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Listing audit logs', {
           organizationId,
           teamId,
@@ -218,7 +218,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         const auditLogs = response.data as MakeAuditLog[] || [];
         const metadata = response.metadata;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved audit logs', {
             count: auditLogs.length,
             total: metadata?.total,
@@ -249,7 +249,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         }, "Audit logs retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error listing audit logs', { error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -276,7 +276,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { logId } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Getting audit log details', { logId });
       }
 
@@ -292,7 +292,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
           throw new UserError(`Audit log with ID ${logId} not found`);
         }
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved audit log', {
             logId,
             action: auditLog.action,
@@ -304,7 +304,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         return formatSuccessResponse({ auditLog }, "Audit log details retrieved successfully").content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error getting audit log', { logId, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -329,7 +329,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { scenarioId, executionId, level, startDate, endDate, limit, offset } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Getting scenario logs', {
           scenarioId,
           executionId,
@@ -359,7 +359,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         const scenarioLogs = response.data as MakeScenarioLog[] || [];
         const metadata = response.metadata;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved scenario logs', {
             scenarioId,
             count: scenarioLogs.length,
@@ -392,7 +392,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         }, "Scenario logs retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error getting scenario logs', { scenarioId, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -417,7 +417,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { scenarioId, organizationId, teamId, status, startDate, endDate, limit, offset } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Getting execution history', {
           scenarioId,
           organizationId,
@@ -455,7 +455,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         const executions = response.data as MakeExecution[] || [];
         const metadata = response.metadata;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved execution history', {
             count: executions.length,
             total: metadata?.total,
@@ -494,7 +494,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         }, "Execution history retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error getting execution history', { error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -519,7 +519,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { scenarioId, organizationId, status, canResume, limit, offset } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Listing incomplete executions', {
           scenarioId,
           organizationId,
@@ -550,7 +550,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         const incompleteExecutions = response.data as MakeIncompleteExecution[] || [];
         const metadata = response.metadata;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved incomplete executions', {
             count: incompleteExecutions.length,
             total: metadata?.total,
@@ -581,7 +581,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         }, "Incomplete executions retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error listing incomplete executions', { error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -610,7 +610,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { executionId, action, reason } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Resolving incomplete execution', { executionId, action });
       }
 
@@ -628,7 +628,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
 
         const result = response.data as Record<string, unknown>;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully resolved incomplete execution', {
             executionId,
             action,
@@ -641,7 +641,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         }, `Incomplete execution ${executionId} ${action} successfully`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error resolving incomplete execution', { executionId, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -666,7 +666,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { hookId, success, method, startDate, endDate, limit, offset } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Getting hook logs', {
           hookId,
           success,
@@ -696,7 +696,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         const hookLogs = response.data as MakeHookLog[] || [];
         const metadata = response.metadata;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved hook logs', {
             hookId,
             count: hookLogs.length,
@@ -729,7 +729,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         }, "Hook logs retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error getting hook logs', { hookId, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -754,7 +754,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { organizationId, dataType, format, startDate, endDate, includeDetails } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Exporting analytics data', {
           organizationId,
           dataType,
@@ -781,7 +781,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
 
         const exportResult = response.data as Record<string, unknown>;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully initiated data export', {
             organizationId,
             dataType,
@@ -797,7 +797,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         }, `Data export initiated successfully. Export ID: ${exportResult?.exportId}`).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error exporting data', { organizationId, dataType, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
@@ -828,7 +828,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress: _reportProgress = (): void => {} } = context || {};
       const { organizationId, metric, period, startDate, endDate } = input;
 
-      if (log && log.info) {
+      if (log?.info) {
         log.info('Getting performance metrics', {
           organizationId,
           metric,
@@ -853,7 +853,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
 
         const metrics = response.data as Record<string, unknown>;
 
-        if (log && log.info) {
+        if (log?.info) {
           log.info('Successfully retrieved performance metrics', {
             organizationId,
             metric,
@@ -872,7 +872,7 @@ export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): vo
         }, "Performance metrics retrieved successfully");
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log && log.error) {
+        if (log?.error) {
           log.error('Error getting performance metrics', { organizationId, error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
