@@ -306,7 +306,7 @@ ${configManager.isAuthEnabled() ?
             rateLimiter: rateLimiterStatus,
           },
           ...(securityStatus && { security: securityStatus }),
-          overall: this.determineOverallHealth(apiHealthy, securityStatus),
+          overall: this.determineOverallHealth(apiHealthy, securityStatus || { overall: 'disabled' }),
         };
 
         componentLogger.info('Health check completed', { 
@@ -351,7 +351,7 @@ ${configManager.isAuthEnabled() ?
         // const securityHealthCheck = createSecurityHealthCheck();
         // const securityHealth = await securityHealthCheck();
         
-        const result: any = {
+        const result: Record<string, unknown> = {
           status: 'disabled',
           message: 'Security middleware temporarily disabled',
           configuration: {
@@ -841,7 +841,7 @@ ${configManager.isAuthEnabled() ?
     }
   }
 
-  private determineOverallHealth(apiHealthy: boolean, securityStatus: any): string {
+  private determineOverallHealth(apiHealthy: boolean, securityStatus: { overall: string }): string {
     if (!apiHealthy) {
       return 'degraded';
     }

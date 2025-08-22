@@ -10,6 +10,43 @@ import logger from '../lib/logger.js';
 // For Node.js fetch (18.0+ built-in, earlier versions need node-fetch)
 declare const fetch: typeof global.fetch;
 
+// Request interface for security middleware
+interface HttpRequest {
+  ip?: string;
+  method?: string;
+  url?: string;
+  path?: string;
+  headers: Record<string, string | string[] | undefined>;
+  connection?: {
+    remoteAddress?: string;
+  };
+  socket?: {
+    remoteAddress?: string;
+  };
+  body?: unknown;
+  user?: {
+    id: string;
+  };
+  securityContext?: {
+    correlationId: string;
+    startTime: number;
+    riskScore: number;
+  };
+}
+
+// Response interface for middleware
+interface HttpResponse {
+  statusCode?: number;
+  setHeader(name: string, value: string | number): void;
+  status(code: number): HttpResponse;
+  json(body: unknown): void;
+  on(event: string, callback: () => void): void;
+  locals?: Record<string, unknown>;
+}
+
+// Next function type
+type NextFunction = (error?: unknown) => void;
+
 // Security event types
 export enum SecurityEventType {
   AUTHENTICATION_FAILURE = 'authentication_failure',
@@ -43,7 +80,7 @@ interface SecurityEvent {
   severity: SecuritySeverity;
   timestamp: Date;
   source: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
   correlationId?: string;
   userId?: string;
   sessionId?: string;
@@ -250,7 +287,7 @@ export class SecurityMonitoringSystem extends EventEmitter {
     type: SecurityEventType,
     severity: SecuritySeverity,
     source: string,
-    details: Record<string, any>,
+    details: Record<string, unknown>,
     context?: {
       correlationId?: string;
       userId?: string;
@@ -300,8 +337,8 @@ export class SecurityMonitoringSystem extends EventEmitter {
     return `sec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
   
-  private sanitizeEventDetails(details: Record<string, any>): Record<string, any> {
-    const sanitized: Record<string, any> = {};
+  private sanitizeEventDetails(details: Record<string, unknown>): Record<string, unknown> {
+    const sanitized: Record<string, unknown> = {};
     
     for (const [key, value] of Object.entries(details)) {
       if (typeof value === 'string') {
@@ -365,7 +402,7 @@ export class SecurityMonitoringSystem extends EventEmitter {
     });
   }
   
-  private async sendAlertToChannel(channel: string, alert: any): Promise<void> {
+  private async sendAlertToChannel(channel: string, alert: unknown): Promise<void> {
     try {
       if (channel.startsWith('http')) {
         // Webhook notification
@@ -484,8 +521,8 @@ export class SecurityMonitoringSystem extends EventEmitter {
 export const securityMonitoring = new SecurityMonitoringSystem();
 
 // Middleware for automatic security event recording
-export function createSecurityMonitoringMiddleware() {
-  return (req: any, res: any, next: any): void => {
+export function createSecurityMonitoringMiddleware(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
+  return (req: HttpRequest, res: HttpResponse, next: NextFunction): void => {
     const startTime = Date.now();
     
     // Record request start
@@ -548,7 +585,7 @@ export function createSecurityMonitoringMiddleware() {
 }
 
 // Utility functions for manual event recording
-export function recordAuthenticationFailure(details: Record<string, any>, context?: any): string {
+export function recordAuthenticationFailure(details: Record<string, unknown>, context?: Record<string, unknown>): string {
   return securityMonitoring.recordSecurityEvent(
     SecurityEventType.AUTHENTICATION_FAILURE,
     SecuritySeverity.HIGH,
@@ -558,7 +595,7 @@ export function recordAuthenticationFailure(details: Record<string, any>, contex
   );
 }
 
-export function recordMaliciousInput(details: Record<string, any>, context?: any): string {
+export function recordMaliciousInput(details: Record<string, unknown>, context?: Record<string, unknown>): string {
   return securityMonitoring.recordSecurityEvent(
     SecurityEventType.MALICIOUS_INPUT_DETECTED,
     SecuritySeverity.HIGH,
@@ -568,7 +605,7 @@ export function recordMaliciousInput(details: Record<string, any>, context?: any
   );
 }
 
-export function recordSuspiciousBehavior(details: Record<string, any>, context?: any): string {
+export function recordSuspiciousBehavior(details: Record<string, unknown>, context?: Record<string, unknown>): string {
   return securityMonitoring.recordSecurityEvent(
     SecurityEventType.SUSPICIOUS_BEHAVIOR,
     SecuritySeverity.MEDIUM,
@@ -578,7 +615,7 @@ export function recordSuspiciousBehavior(details: Record<string, any>, context?:
   );
 }
 
-export function recordVulnerability(details: Record<string, any>, context?: any): string {
+export function recordVulnerability(details: Record<string, unknown>, context?: Record<string, unknown>): string {
   return securityMonitoring.recordSecurityEvent(
     SecurityEventType.VULNERABILITY_DETECTED,
     SecuritySeverity.CRITICAL,

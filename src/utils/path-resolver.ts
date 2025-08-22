@@ -18,7 +18,7 @@ export function getProjectRoot(): string {
   try {
     
     // Get the directory where this script is located - use process.cwd() for Jest compatibility
-    let scriptDir = process.cwd();
+    const scriptDir = process.cwd();
     
     // If we're in dist/utils, go up two levels to get project root
     if (scriptDir.includes('/dist/utils') || scriptDir.includes('\\dist\\utils')) {

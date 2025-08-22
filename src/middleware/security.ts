@@ -12,6 +12,9 @@ import { ddosProtection, circuitBreakerManager, createDDoSProtectionMiddleware }
 import { securityMonitoring, createSecurityMonitoringMiddleware } from './security-monitoring.js';
 import logger from '../lib/logger.js';
 
+// Middleware function type - generic to match various middleware signatures
+type MiddlewareFunction = (...args: unknown[]) => unknown;
+
 // Security configuration interface
 interface SecurityConfig {
   rateLimiting: {
@@ -119,8 +122,8 @@ export class IntegratedSecurityManager {
     });
   }
   
-  public getSecurityMiddlewareStack(): any[] {
-    const middlewares: any[] = [];
+  public getSecurityMiddlewareStack(): MiddlewareFunction[] {
+    const middlewares: MiddlewareFunction[] = [];
     
     // 1. Security monitoring (first to track all requests)
     if (this.config.monitoring.enabled) {
@@ -159,8 +162,8 @@ export class IntegratedSecurityManager {
     return middlewares;
   }
   
-  public getAuthSecurityMiddleware(): any[] {
-    const middlewares: any[] = [];
+  public getAuthSecurityMiddleware(): MiddlewareFunction[] {
+    const middlewares: MiddlewareFunction[] = [];
     
     if (this.config.rateLimiting.enabled && this.config.rateLimiting.tiers.auth) {
       middlewares.push(createRateLimitMiddleware('auth'));
@@ -169,8 +172,8 @@ export class IntegratedSecurityManager {
     return middlewares;
   }
   
-  public getSensitiveEndpointMiddleware(): any[] {
-    const middlewares: any[] = [];
+  public getSensitiveEndpointMiddleware(): MiddlewareFunction[] {
+    const middlewares: MiddlewareFunction[] = [];
     
     if (this.config.rateLimiting.enabled && this.config.rateLimiting.tiers.sensitive) {
       middlewares.push(createRateLimitMiddleware('sensitive'));
@@ -179,8 +182,8 @@ export class IntegratedSecurityManager {
     return middlewares;
   }
   
-  public getWebhookMiddleware(): any[] {
-    const middlewares: any[] = [];
+  public getWebhookMiddleware(): MiddlewareFunction[] {
+    const middlewares: MiddlewareFunction[] = [];
     
     if (this.config.rateLimiting.enabled && this.config.rateLimiting.tiers.webhooks) {
       middlewares.push(createRateLimitMiddleware('webhooks'));
@@ -189,8 +192,8 @@ export class IntegratedSecurityManager {
     return middlewares;
   }
   
-  public getErrorHandlingMiddleware(): any[] {
-    const middlewares: any[] = [];
+  public getErrorHandlingMiddleware(): MiddlewareFunction[] {
+    const middlewares: MiddlewareFunction[] = [];
     
     if (this.config.errorSanitization.enabled) {
       if (this.config.errorSanitization.developmentMode) {
@@ -203,7 +206,7 @@ export class IntegratedSecurityManager {
     return middlewares;
   }
   
-  public async initializeCircuitBreakers(apiClient: any): Promise<void> {
+  public async initializeCircuitBreakers(apiClient: unknown): Promise<void> {
     if (!this.config.circuitBreaker.enabled) {
       return;
     }
@@ -217,7 +220,7 @@ export class IntegratedSecurityManager {
           if (typeof operation !== 'string') {
             throw new Error('First argument must be a string operation name');
           }
-          return await (apiClient as any)[operation](...restArgs);
+          return await (apiClient as Record<string, (...args: unknown[]) => Promise<unknown>>)[operation](...restArgs);
         },
         {
           timeout: 10000, // 10 second timeout for API calls
@@ -232,10 +235,10 @@ export class IntegratedSecurityManager {
   }
   
   public getSecurityStatus(): {
-    rateLimiting: any;
-    ddosProtection: any;
-    circuitBreakers: any;
-    monitoring: any;
+    rateLimiting: Record<string, unknown>;
+    ddosProtection: Record<string, unknown>;
+    circuitBreakers: Record<string, unknown>;
+    monitoring: Record<string, unknown>;
     overall: string;
   } {
     const status = {
@@ -324,7 +327,7 @@ export {
 export function createSecurityHealthCheck() {
   return async (): Promise<{
     healthy: boolean;
-    status: any;
+    status: Record<string, unknown>;
     timestamp: string;
   }> => {
     const status = securityManager.getSecurityStatus();

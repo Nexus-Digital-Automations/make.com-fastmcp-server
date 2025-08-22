@@ -8,6 +8,37 @@ import helmet from 'helmet';
 import csrf from 'csurf';
 import logger from '../lib/logger.js';
 
+// Request interface for security middleware
+interface HttpRequest {
+  ip?: string;
+  method?: string;
+  url?: string;
+  path?: string;
+  headers: Record<string, string | string[] | undefined>;
+  connection?: {
+    remoteAddress?: string;
+  };
+  socket?: {
+    remoteAddress?: string;
+  };
+  body?: unknown;
+  user?: {
+    id: string;
+  };
+}
+
+// Response interface for middleware
+interface HttpResponse {
+  setHeader(name: string, value: string | number): void;
+  status(code: number): HttpResponse;
+  json(body: unknown): void;
+  on(event: string, callback: () => void): void;
+  locals?: Record<string, unknown>;
+}
+
+// Next function type
+type NextFunction = (error?: unknown) => void;
+
 // Security configuration interface
 interface SecurityConfig {
   environment: 'development' | 'production' | 'test';
@@ -20,12 +51,12 @@ interface SecurityConfig {
 // Enterprise security headers manager
 export class SecurityHeadersManager {
   private config: SecurityConfig;
-  private helmetInstance: any;
-  private csrfProtection: any;
+  private helmetInstance: (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
+  private csrfProtection: (req: HttpRequest, res: HttpResponse, next: NextFunction) => void;
   
   constructor(config?: Partial<SecurityConfig>) {
     this.config = {
-      environment: (process.env.NODE_ENV as any) || 'development',
+      environment: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
       allowedOrigins: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
       trustedDomains: process.env.TRUSTED_DOMAINS?.split(',') || ['make.com', 'eu1.make.com'],
       cspReportUri: process.env.CSP_REPORT_URI,
@@ -158,10 +189,12 @@ export class SecurityHeadersManager {
           signed: true
         },
         sessionKey: 'session',
-        value: (req: any) => {
+        value: (req: HttpRequest) => {
           // Extract CSRF token from multiple possible locations
-          return req.body._csrf ||
-                 req.query._csrf ||
+          const body = req.body as { _csrf?: string };
+          const query = req as unknown as { query?: { _csrf?: string } };
+          return body._csrf ||
+                 query.query?._csrf ||
                  req.headers['csrf-token'] ||
                  req.headers['x-csrf-token'] ||
                  req.headers['x-xsrf-token'];
@@ -172,12 +205,12 @@ export class SecurityHeadersManager {
   }
   
   // Main security headers middleware
-  public getSecurityMiddleware() {
-    return (req: any, res: any, next: any) => {
+  public getSecurityMiddleware(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
+    return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
       // Apply Helmet security headers
-      this.helmetInstance(req, res, (err: any) => {
+      this.helmetInstance(req, res, (err: unknown) => {
         if (err) {
-          logger.error('Helmet middleware error', { error: err.message });
+          logger.error('Helmet middleware error', { error: err instanceof Error ? err.message : String(err) });
           return next(err);
         }
         
@@ -190,13 +223,13 @@ export class SecurityHeadersManager {
   }
   
   // CSRF protection middleware
-  public getCSRFMiddleware() {
+  public getCSRFMiddleware(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
     if (!this.config.enableCSRF) {
-      return (req: any, res: any, next: any) => next();
+      return (req: HttpRequest, res: HttpResponse, next: NextFunction) => next();
     }
     
-    return (req: any, res: any, next: any) => {
-      this.csrfProtection(req, res, (err: any) => {
+    return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
+      this.csrfProtection(req, res, (err: unknown) => {
         if (err) {
           logger.warn('CSRF protection triggered', {
             ip: req.ip,
@@ -214,8 +247,11 @@ export class SecurityHeadersManager {
         }
         
         // Add CSRF token to response for client use
-        if (req.csrfToken) {
-          res.locals.csrfToken = req.csrfToken();
+        const reqWithCsrf = req as unknown as { csrfToken?: () => string };
+        if (reqWithCsrf.csrfToken) {
+          if (res.locals) {
+            res.locals.csrfToken = reqWithCsrf.csrfToken();
+          }
         }
         
         next();
@@ -223,7 +259,7 @@ export class SecurityHeadersManager {
     };
   }
   
-  private applyCustomSecurityHeaders(req: any, res: any): void {
+  private applyCustomSecurityHeaders(req: HttpRequest, res: HttpResponse): void {
     // API versioning header
     res.setHeader('X-API-Version', '1.0');
     
@@ -233,17 +269,19 @@ export class SecurityHeadersManager {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     
     // Rate limiting information (will be set by rate limiting middleware)
-    if (req.rateLimit) {
-      res.setHeader('X-RateLimit-Limit', req.rateLimit.limit || 'unknown');
-      res.setHeader('X-RateLimit-Remaining', req.rateLimit.remaining || 'unknown');
-      res.setHeader('X-RateLimit-Reset', req.rateLimit.reset || 'unknown');
+    const reqWithRateLimit = req as unknown as { rateLimit?: { limit?: string | number; remaining?: string | number; reset?: string | number } };
+    if (reqWithRateLimit.rateLimit) {
+      res.setHeader('X-RateLimit-Limit', reqWithRateLimit.rateLimit.limit || 'unknown');
+      res.setHeader('X-RateLimit-Remaining', reqWithRateLimit.rateLimit.remaining || 'unknown');
+      res.setHeader('X-RateLimit-Reset', reqWithRateLimit.rateLimit.reset || 'unknown');
     }
     
     // CORS security for production
     if (this.config.environment === 'production') {
       const origin = req.headers.origin;
-      if (origin && this.config.allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
+      const originString = Array.isArray(origin) ? origin[0] : origin;
+      if (originString && this.config.allowedOrigins.includes(originString)) {
+        res.setHeader('Access-Control-Allow-Origin', originString);
       } else {
         res.setHeader('Access-Control-Allow-Origin', 'null');
       }
@@ -285,11 +323,12 @@ export class SecurityHeadersManager {
   }
   
   // Content type validation middleware
-  public getContentTypeValidation() {
-    return (req: any, res: any, next: any) => {
+  public getContentTypeValidation(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
+    return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
       // Only validate content type for requests with body
-      if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+      if (req.method && ['POST', 'PUT', 'PATCH'].includes(req.method)) {
         const contentType = req.headers['content-type'];
+        const contentTypeString = Array.isArray(contentType) ? contentType[0] : contentType;
         
         // Allow common content types
         const allowedTypes = [
@@ -299,9 +338,9 @@ export class SecurityHeadersManager {
           'text/plain'
         ];
         
-        if (contentType && !allowedTypes.some(type => contentType.includes(type))) {
+        if (contentTypeString && !allowedTypes.some(type => contentTypeString.includes(type))) {
           logger.warn('Invalid content type detected', {
-            contentType,
+            contentType: contentTypeString,
             ip: req.ip,
             endpoint: req.path,
             method: req.method
@@ -322,10 +361,12 @@ export class SecurityHeadersManager {
   }
   
   // Request size limiting middleware
-  public getRequestSizeLimiter() {
-    return (req: any, res: any, next: any) => {
+  public getRequestSizeLimiter(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
+    return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
       const maxSize = 50 * 1024 * 1024; // 50MB max request size
-      const contentLength = parseInt(req.headers['content-length'] || '0', 10);
+      const contentLengthHeader = req.headers['content-length'];
+      const contentLengthValue = Array.isArray(contentLengthHeader) ? contentLengthHeader[0] : contentLengthHeader;
+      const contentLength = parseInt(contentLengthValue || '0', 10);
       
       if (contentLength > maxSize) {
         logger.warn('Request size limit exceeded', {
@@ -349,26 +390,32 @@ export class SecurityHeadersManager {
   }
   
   // Security audit middleware
-  public getSecurityAuditMiddleware() {
-    return (req: any, res: any, next: any) => {
+  public getSecurityAuditMiddleware(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
+    return (req: HttpRequest, res: HttpResponse, next: NextFunction) => {
       const startTime = Date.now();
       
       // Log security-relevant requests
       if (this.isSecurityRelevantRequest(req)) {
+        const correlationId = req.headers['x-correlation-id'];
+        const userAgent = req.headers['user-agent'];
+        const contentType = req.headers['content-type'];
+        const origin = req.headers['origin'];
+        const reqWithSession = req as unknown as { sessionID?: string };
+        
         logger.info('Security audit log', {
-          correlationId: req.headers['x-correlation-id'] || 'unknown',
+          correlationId: (Array.isArray(correlationId) ? correlationId[0] : correlationId) || 'unknown',
           method: req.method,
           endpoint: req.path,
           ip: this.hashIP(req.ip || 'unknown'),
-          userAgent: req.headers['user-agent']?.substring(0, 200),
+          userAgent: (Array.isArray(userAgent) ? userAgent[0] : userAgent)?.substring(0, 200),
           userId: req.user?.id,
-          sessionId: req.sessionID,
+          sessionId: reqWithSession.sessionID,
           timestamp: new Date().toISOString(),
           securityHeaders: {
             hasCSRF: !!req.headers['x-csrf-token'],
             hasAuth: !!(req.headers['authorization'] || req.headers['x-api-key']),
-            contentType: req.headers['content-type'],
-            origin: req.headers['origin']
+            contentType: Array.isArray(contentType) ? contentType[0] : contentType,
+            origin: Array.isArray(origin) ? origin[0] : origin
           }
         });
       }
@@ -392,7 +439,7 @@ export class SecurityHeadersManager {
     };
   }
   
-  private isSecurityRelevantRequest(req: any): boolean {
+  private isSecurityRelevantRequest(req: HttpRequest): boolean {
     const securityEndpoints = [
       '/api/auth',
       '/api/users',
@@ -402,7 +449,7 @@ export class SecurityHeadersManager {
       '/api/credentials'
     ];
     
-    return securityEndpoints.some(endpoint => req.path.startsWith(endpoint)) ||
+    return securityEndpoints.some(endpoint => req.path?.startsWith(endpoint)) ||
            req.method !== 'GET' ||
            !!req.headers['authorization'] ||
            !!req.headers['x-api-key'];
@@ -434,35 +481,35 @@ export class SecurityHeadersManager {
 export const securityHeadersManager = new SecurityHeadersManager();
 
 // Middleware factory functions
-export function createSecurityMiddleware(config?: Partial<SecurityConfig>) {
+export function createSecurityMiddleware(config?: Partial<SecurityConfig>): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
   const manager = config ? new SecurityHeadersManager(config) : securityHeadersManager;
   return manager.getSecurityMiddleware();
 }
 
-export function createCSRFMiddleware(config?: Partial<SecurityConfig>) {
+export function createCSRFMiddleware(config?: Partial<SecurityConfig>): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
   const manager = config ? new SecurityHeadersManager(config) : securityHeadersManager;
   return manager.getCSRFMiddleware();
 }
 
-export function createContentTypeValidation() {
+export function createContentTypeValidation(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
   return securityHeadersManager.getContentTypeValidation();
 }
 
-export function createRequestSizeLimiter() {
+export function createRequestSizeLimiter(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
   return securityHeadersManager.getRequestSizeLimiter();
 }
 
-export function createSecurityAuditMiddleware() {
+export function createSecurityAuditMiddleware(): (req: HttpRequest, res: HttpResponse, next: NextFunction) => void {
   return securityHeadersManager.getSecurityAuditMiddleware();
 }
 
 // Utility for checking if request passes security requirements
-export function validateSecurityHeaders(req: any): { valid: boolean; issues: string[] } {
+export function validateSecurityHeaders(req: HttpRequest): { valid: boolean; issues: string[] } {
   const issues: string[] = [];
   
   // Check for required security headers in sensitive endpoints
-  if (securityHeadersManager['isSensitiveEndpoint'](req.path)) {
-    if (!req.headers['x-csrf-token'] && ['POST', 'PUT', 'DELETE'].includes(req.method)) {
+  if (req.path && securityHeadersManager['isSensitiveEndpoint'](req.path)) {
+    if (!req.headers['x-csrf-token'] && req.method && ['POST', 'PUT', 'DELETE'].includes(req.method)) {
       issues.push('Missing CSRF token for sensitive endpoint');
     }
     

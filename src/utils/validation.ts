@@ -47,7 +47,7 @@ export const secureStringSchema = z.string()
   .transform((val) => sanitizeString(val));
 
 // Factory function for secure string schema with custom max length
-export const createSecureStringSchema = (maxLength: number = 1000) => 
+export const createSecureStringSchema = (maxLength: number = 1000): z.ZodSchema<string> => 
   z.string()
     .min(1, 'Field cannot be empty')
     .max(maxLength, `Field exceeds maximum length of ${maxLength}`)
