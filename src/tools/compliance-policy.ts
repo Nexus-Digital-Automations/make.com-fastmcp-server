@@ -81,7 +81,7 @@ const EscalationRuleSchema = z.object({
   name: z.string().min(1).max(200).describe('Human-readable rule name'),
   conditions: z.record(z.string(), z.unknown()).describe('Conditions that trigger escalation'),
   escalationPath: z.array(z.string()).describe('Ordered list of escalation recipients'),
-  timeframes: z.record(z.number()).describe('Time limits for each escalation level'),
+  timeframes: z.record(z.string(), z.number()).describe('Time limits for each escalation level'),
   actions: z.array(z.string()).describe('Actions to take at each escalation level'),
 }).strict();
 
@@ -137,7 +137,7 @@ const CompliancePolicySchema = z.object({
     continuousMonitoring: z.boolean().default(true).describe('Enable continuous monitoring'),
     alerting: z.object({
       channels: z.array(z.enum(['email', 'webhook', 'slack', 'teams'])).describe('Alert channels'),
-      thresholds: z.record(z.number()).optional().describe('Alert threshold configuration'),
+      thresholds: z.record(z.string(), z.number()).optional().describe('Alert threshold configuration'),
       suppressionRules: z.array(z.string()).optional().describe('Alert suppression logic'),
     }),
     metrics: z.object({
