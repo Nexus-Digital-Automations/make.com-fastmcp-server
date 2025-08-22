@@ -15523,9 +15523,41 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755856183298_tz5k06qtc",
+      "title": "Fix all execute functions in folders.ts to properly create toolContext",
+      "description": "Replace all execute functions that are calling foldersTools.XXX(toolContext, args) without defining toolContext. Need to add const toolContext = createToolContext(context); line to each execute function.",
+      "mode": "DEVELOPMENT",
+      "category": "bug",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T09:49:43.298Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T09:50:56.322Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T09:50:56.325Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 349,
-  "last_completion": "2025-08-22T09:35:01.730Z",
+  "total_completed": 350,
+  "last_completion": "2025-08-22T09:50:56.325Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
