@@ -855,7 +855,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
               'Execute with dryRun=false when ready',
               ...(approvalRequired ? ['Obtain required approvals'] : []),
             ],
-          });
+          }).content[0].text;
         }
 
         // Phase 4: Execute control action (if not dry run)
@@ -880,7 +880,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
               approvalCode: generateApprovalCode(budgetId, action),
             },
             instructions: 'Provide approval code to execute this action',
-          });
+          }).content[0].text;
         }
 
         // Special handling for 'analyze' action - return analysis structure
@@ -961,7 +961,7 @@ export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient)
             trackingEnabled: true,
             nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error executing scenario control', { budgetId, action, error: errorMessage });

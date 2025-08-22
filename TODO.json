@@ -1,6 +1,34 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1755835004565_tombr0y7x",
+      "title": "Fix 197 TypeScript linter warnings - missing return types",
+      "description": "Fix @typescript-eslint/explicit-function-return-type warnings across 17 files. These are warnings (not errors) but should be addressed for code quality.",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "low",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T03:56:44.567Z",
+      "auto_research_created": false,
+      "started_at": "2025-08-22T03:58:13.456Z",
+      "claimed_by": "agent_1755835093456",
+      "assigned_agent": "agent_1755835093456",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755835093456",
+          "action": "claimed",
+          "timestamp": "2025-08-22T03:58:13.456Z"
+        }
+      ]
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
@@ -8,13 +36,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755833765841_1_general_33ce339c": {
+    "development_session_1755834942304_1_general_29fee924": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T03:36:05.841Z",
+      "lastHeartbeat": "2025-08-22T03:55:42.306Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -25,8 +53,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T03:36:05.841Z",
-      "sessionId": "session_1755833765841",
+      "createdAt": "2025-08-22T03:55:42.306Z",
+      "sessionId": "session_1755834942304",
       "metadata": {}
     }
   },
