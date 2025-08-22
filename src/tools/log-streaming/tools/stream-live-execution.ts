@@ -296,9 +296,11 @@ function generateExecutionVisualization(logs: MakeLogEntry[]): string {
     }
     
     const module = modules.get(moduleName);
-    module.count++;
-    if (log.error) {module.errors++;}
-    if (log.metrics?.processingTime) {module.duration += log.metrics.processingTime;}
+    if (module) {
+      module.count++;
+      if (log.error) { module.errors++; }
+      if (log.metrics?.processingTime) { module.duration += log.metrics.processingTime; }
+    }
   });
 
   let visualization = 'Execution Flow Visualization:\n\n';

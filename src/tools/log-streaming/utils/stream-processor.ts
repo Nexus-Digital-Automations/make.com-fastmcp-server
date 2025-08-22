@@ -140,10 +140,13 @@ export class LogStreamingManager extends EventEmitter {
 
               // Trim buffer if too large
               if (buffer.length > config.bufferingStrategy.maxBufferSize) {
-                buffer.splice(0, buffer.length - config.bufferingStrategy.maxBufferSize);
+                const droppedCount = buffer.length - config.bufferingStrategy.maxBufferSize;
+                buffer.splice(0, droppedCount);
                 const metrics = this.streamMetrics.get(streamId);
-                metrics.droppedLogs += buffer.length - config.bufferingStrategy.maxBufferSize;
-                this.streamMetrics.set(streamId, metrics);
+                if (metrics) {
+                  metrics.droppedLogs += droppedCount;
+                  this.streamMetrics.set(streamId, metrics);
+                }
               }
 
               this.logBuffer.set(streamId, buffer);
@@ -151,8 +154,10 @@ export class LogStreamingManager extends EventEmitter {
 
             // Update metrics
             const metrics = this.streamMetrics.get(streamId);
-            metrics.totalLogsStreamed += filteredLogs.length;
-            this.streamMetrics.set(streamId, metrics);
+            if (metrics) {
+              metrics.totalLogsStreamed += filteredLogs.length;
+              this.streamMetrics.set(streamId, metrics);
+            }
 
             // Call callback with filtered logs
             if (filteredLogs.length > 0) {

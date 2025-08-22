@@ -531,13 +531,14 @@ class EnhancedLogExportProcessor {
   private analyzePerformance(logs: MakeLogEntry[]): Record<string, unknown> {
     const processingTimes = logs
       .filter(log => log.metrics?.processingTime)
-      .map(log => log.metrics.processingTime);
+      .map(log => log.metrics?.processingTime)
+      .filter((time): time is number => time !== undefined);
 
     if (processingTimes.length === 0) {
       return { message: 'No performance data available' };
     }
 
-    const sortedTimes = processingTimes.filter((time): time is number => time !== undefined).sort((a, b) => a - b);
+    const sortedTimes = processingTimes.sort((a, b) => a - b);
     const average = sortedTimes.reduce((sum, time) => sum + time, 0) / sortedTimes.length;
     const median = sortedTimes[Math.floor(sortedTimes.length / 2)];
     
