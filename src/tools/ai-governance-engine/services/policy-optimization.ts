@@ -11,16 +11,14 @@ import type {
   PolicyConflict,
   PolicyResolutionPlan,
   ConflictImpactAnalysis,
-  MLModelType,
-  _PredictionCacheEntry,
-  GovernanceMetrics
+  MLModelType
 } from '../types/index.js';
 import type { PolicyOptimizationRequest } from '../schemas/index.js';
 
 interface Policy {
   id: string;
   name: string;
-  category: string;
+  categoryName: string;
   rules: string[];
   priority: number;
   scope: string;
@@ -105,8 +103,8 @@ export class PolicyOptimizationService {
 
       // Perform ML-driven optimization if enabled
       const optimizationResults = _request.mlOptimization ? 
-        await this.performMLOptimization(_currentPolicies, _goals, _request) :
-        await this.performRuleBasedOptimization(_currentPolicies, _goals, _request);
+        await this.performMLOptimization(currentPolicies, goals, _request) :
+        await this.performRuleBasedOptimization(currentPolicies, goals, _request);
 
       // Run impact analysis
       const impactAnalysis = await this.analyzeOptimizationImpact(optimizationResults, currentPolicies);
@@ -258,7 +256,7 @@ export class PolicyOptimizationService {
     data?: {
       recommendedPolicies: Array<{
         name: string;
-        category: string;
+        categoryName: string;
         description: string;
         rules: string[];
         priority: number;
@@ -333,7 +331,7 @@ export class PolicyOptimizationService {
       {
         id: 'pol_data_access_001',
         name: 'Data Access Control Policy',
-        category: 'data_security',
+        categoryName: 'data_security',
         rules: [
           'All data access must be authenticated',
           'Role-based access controls must be enforced',
@@ -349,7 +347,7 @@ export class PolicyOptimizationService {
       {
         id: 'pol_password_001',
         name: 'Password Security Policy',
-        category: 'authentication',
+        categoryName: 'authentication',
         rules: [
           'Minimum 12 characters required',
           'Must include uppercase, lowercase, numbers, and symbols',
@@ -365,7 +363,7 @@ export class PolicyOptimizationService {
       {
         id: 'pol_incident_response_001',
         name: 'Incident Response Policy',
-        category: 'security_operations',
+        categoryName: 'security_operations',
         rules: [
           'Incidents must be reported within 1 hour',
           'Response team must be activated for critical incidents',
@@ -439,7 +437,7 @@ export class PolicyOptimizationService {
 
     for (const policy of policies) {
       // Use ML model to analyze policy and suggest optimizations
-      const optimization = await this.analyzePolicyWithML(policy, _goals, model);
+      const optimization = await this.analyzePolicyWithML(policy, goals, model);
       
       if (optimization.confidenceScore > 70) { // Only include high-confidence results
         optimizationResults.push(optimization);
@@ -447,7 +445,7 @@ export class PolicyOptimizationService {
     }
 
     // Apply ensemble optimization across related policies
-    const ensembleOptimizations = await this.performEnsembleOptimization(_policies, goals);
+    const ensembleOptimizations = await this.performEnsembleOptimization(policies, goals);
     optimizationResults.push(...ensembleOptimizations);
 
     return optimizationResults;
@@ -685,21 +683,21 @@ export class PolicyOptimizationService {
   }
 
   private findMergeCandidates(policies: Policy[]): Policy[][] {
-    // Group policies by category that might be mergeable
-    const categoryGroups = new Map<string, Policy[]>();
+    // Group policies by categoryName that might be mergeable
+    const categoryNameGroups = new Map<string, Policy[]>();
     
     for (const policy of policies) {
-      if (!categoryGroups.has(policy.category)) {
-        categoryGroups.set(policy._category, []);
+      if (!categoryNameGroups.has(policy.categoryName)) {
+        categoryNameGroups.set(policy.categoryName, []);
       }
-      categoryGroups.get(policy.category)!.push(policy);
+      categoryNameGroups.get(policy.categoryName)!.push(policy);
     }
 
     const mergeCandidates: Policy[][] = [];
     
-    for (const [_category, groupPolicies] of Array.from(categoryGroups.entries())) {
+    for (const [_categoryName, groupPolicies] of Array.from(categoryNameGroups.entries())) {
       if (groupPolicies.length > 2) {
-        // If more than 2 policies in same _category, they might be mergeable
+        // If more than 2 policies in same _categoryName, they might be mergeable
         mergeCandidates.push(groupPolicies.slice(0, 2)); // Take first 2 as example
       }
     }
@@ -740,7 +738,7 @@ export class PolicyOptimizationService {
 
   private policiesHaveConflict(policy1: Policy, policy2: Policy): boolean {
     // Simulate conflict detection logic
-    return policy1.category === policy2.category && 
+    return policy1.categoryName === policy2.categoryName && 
            policy1.priority === policy2.priority &&
            Math.random() > 0.7; // 30% chance of conflict
   }
@@ -803,7 +801,7 @@ export class PolicyOptimizationService {
     const policyTemplates: Record<string, any> = {
       'data_security': {
         name: 'Data Security Framework',
-        category: 'data_protection',
+        categoryName: 'data_protection',
         description: 'Comprehensive data security controls',
         rules: [
           'Encrypt all data at rest and in transit',
@@ -816,7 +814,7 @@ export class PolicyOptimizationService {
       },
       'cloud_security': {
         name: 'Cloud Security Policy',
-        category: 'infrastructure_security',
+        categoryName: 'infrastructure_security',
         description: 'Security controls for cloud environments',
         rules: [
           'Use approved cloud services only',

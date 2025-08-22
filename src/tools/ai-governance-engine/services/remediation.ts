@@ -695,9 +695,9 @@ export class RemediationService {
 
     const systems = new Set<string>();
     for (const trigger of _triggers) {
-      for (const [_category, categorySystemsq] of Object.entries(systemMap)) {
-        if (trigger.toLowerCase().includes(category)) {
-          categorySystemsq.forEach(system => systems.add(system));
+      for (const [_categoryName, categoryNameSystems] of Object.entries(systemMap)) {
+        if (trigger.toLowerCase().includes(_categoryName)) {
+          categoryNameSystems.forEach(system => systems.add(system));
         }
       }
     }

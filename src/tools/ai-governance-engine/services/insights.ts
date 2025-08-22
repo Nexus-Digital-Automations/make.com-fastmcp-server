@@ -10,11 +10,8 @@ import type { GovernanceContext } from '../types/context.js';
 import type {
   GovernanceInsight,
   TrendAnalysis,
-  _GovernanceMetrics,
-  _ComplianceStatus,
-  _RiskAssessment,
-  MLModelType,
-  PredictionCacheEntry
+  GovernanceMetrics,
+  MLModelType
 } from '../types/index.js';
 import type { GovernanceInsightsRequest } from '../schemas/index.js';
 
@@ -409,16 +406,16 @@ export class InsightsService {
 
     switch (type) {
       case 'trend':
-        insights.push(...await this.generateTrendInsights(_data, context));
+        insights.push(...await this.generateTrendInsights(data, context));
         break;
       case 'anomaly':
-        insights.push(...await this.generateAnomalyInsights(_data, context));
+        insights.push(...await this.generateAnomalyInsights(data, context));
         break;
       case 'prediction':
-        insights.push(...await this.generatePredictionInsights(_data, context));
+        insights.push(...await this.generatePredictionInsights(data, context));
         break;
       case 'recommendation':
-        insights.push(...await this.generateRecommendationInsights(_data, context));
+        insights.push(...await this.generateRecommendationInsights(data, context));
         break;
     }
 
@@ -472,7 +469,7 @@ export class InsightsService {
     const insights: GovernanceInsight[] = [];
 
     if (context.includeML) {
-      const predictions = await this.generateMLPredictions(_data, context);
+      const predictions = await this.generateMLPredictions(data, context);
 
       for (const prediction of predictions) {
         insights.push({
@@ -494,7 +491,7 @@ export class InsightsService {
   private async generateRecommendationInsights(data: AnalyticsData, context: InsightContext): Promise<GovernanceInsight[]> {
     const insights: GovernanceInsight[] = [];
 
-    const recommendations = await this.generateSmartRecommendations(_data, context);
+    const recommendations = await this.generateSmartRecommendations(data, context);
 
     for (const rec of recommendations) {
       insights.push({
@@ -785,7 +782,7 @@ export class InsightsService {
     return actions[trend.metric]?.[trend.direction] || ['Monitor trend', 'Analyze root causes'];
   }
 
-  private async getHistoricalValues(metric: keyof _GovernanceMetrics, timeframe: string): Promise<number[]> {
+  private async getHistoricalValues(metric: keyof GovernanceMetrics, timeframe: string): Promise<number[]> {
     // Simulate historical data
     const count = Math.min(this.getDataPointsForTimeframe(timeframe), 50);
     const values = [];
