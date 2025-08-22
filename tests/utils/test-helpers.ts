@@ -73,6 +73,7 @@ export const findTool = (mockTool: any, toolName: string) => {
 
 /**
  * Execute a tool with mock context and return result
+ * Automatically extracts text content from ToolResponse objects for easier testing
  */
 export const executeTool = async (
   tool: any, 
@@ -107,7 +108,19 @@ export const executeTool = async (
     ...context,
   };
   
-  return await tool.execute(input, mockContext);
+  const result = await tool.execute(input, mockContext);
+  
+  // Extract text content from ToolResponse format for easier testing
+  if (result && typeof result === 'object' && 'content' in result && Array.isArray(result.content)) {
+    // This is a ToolResponse object - extract the text content
+    const content = result.content[0];
+    if (content && content.type === 'text' && typeof content.text === 'string') {
+      return content.text;
+    }
+  }
+  
+  // Return result as-is if it's not a ToolResponse object
+  return result;
 };
 
 /**
@@ -294,6 +307,27 @@ export const expectToolExecutionToFail = async (executionFn: () => Promise<any>,
 };
 
 /**
+ * Safely parse JSON from test tool results
+ * Handles both direct JSON strings and extracted ToolResponse text content
+ */
+export const parseTestResult = (result: any): any => {
+  if (typeof result === 'string') {
+    try {
+      return JSON.parse(result);
+    } catch (error) {
+      throw new Error(`Failed to parse test result as JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+  
+  // If result is already an object, return it as-is
+  if (typeof result === 'object' && result !== null) {
+    return result;
+  }
+  
+  throw new Error(`Invalid test result type: ${typeof result}`);
+};
+
+/**
  * Mock API client with common response patterns
  */
 export const createMockApiClientWithDefaults = (): MockMakeApiClient => {
@@ -447,6 +481,7 @@ export default {
   expectValidZodParse,
   expectInvalidZodParse,
   expectToolExecutionToFail,
+  parseTestResult,
   createMockApiClientWithDefaults,
   simulateNetworkConditions,
   expectErrorResponse,

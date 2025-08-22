@@ -19,12 +19,12 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755866887153_0ychliyb6",
-      "title": "Fix 2 failing tests and Zod validation warnings",
-      "description": "Fix middleware chaining test, tool execution test, and resolve Zod schema warnings",
+      "id": "task_1755867316385_hzu3v9qhc",
+      "title": "Fix test failures - logging and validation errors",
+      "description": "Fix multiple test failures: 1) log.info is not a function errors in permissions.ts, 2) JSON parsing errors in custom-apps tests, 3) Zod validation issues in test helpers",
       "mode": "DEVELOPMENT",
       "category": "test-error",
-      "priority": "critical",
+      "priority": "high",
       "status": "pending",
       "dependencies": [],
       "important_files": [],
@@ -32,7 +32,7 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-22T12:48:07.153Z",
+      "created_at": "2025-08-22T12:55:16.385Z",
       "auto_research_created": false
     }
   ],

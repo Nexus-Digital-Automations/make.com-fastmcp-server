@@ -21,6 +21,30 @@ import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { formatSuccessResponse } from '../utils/response-formatter.js';
 
+/**
+ * Universal logging helper that works with both function-based and object-based loggers
+ * Handles different test and production logging patterns
+ */
+const logMessage = (log: any, level: 'info' | 'error' | 'warn' | 'debug', message: string, data?: any) => {
+  if (!log) return;
+  
+  if (typeof log === 'function') {
+    // Function-based logger (common in tests): log('info', 'message', data)
+    if (data !== undefined) {
+      log(level, message, data);
+    } else {
+      log(level, message);
+    }
+  } else if (log[level] && typeof log[level] === 'function') {
+    // Object-based logger (production): log.info('message', data)
+    if (data !== undefined) {
+      log[level](message, data);
+    } else {
+      log[level](message);
+    }
+  }
+};
+
 // Input validation schemas
 const UserFiltersSchema = z.object({
   teamId: z.number().min(1).optional().describe('Filter by team ID'),
@@ -146,7 +170,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
-      log.info('Getting current user information');
+      logMessage(log, 'info', 'Getting current user information');
 
       try {
         const response = await apiClient.get('/users/me');
@@ -163,16 +187,16 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for user object
         const userObj = user as { id?: unknown; email?: unknown; role?: unknown };
 
-        log.info('Successfully retrieved current user', {
-          userId: String(userObj.id ?? 'unknown'),
-          email: String(userObj.email ?? 'unknown'),
-          role: String(userObj.role ?? 'unknown'),
+        logMessage(log, 'info', 'Successfully retrieved current user', {
+          userId: userObj.id ?? 'unknown',
+          email: userObj.email ?? 'unknown',
+          role: userObj.role ?? 'unknown',
         });
 
         return formatSuccessResponse({ user }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting current user', { error: errorMessage });
+        logMessage(log, 'error', 'Error getting current user', { error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get current user: ${errorMessage}`);
       }
@@ -192,7 +216,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { teamId, organizationId, role, isActive, search, limit, offset } = input;
 
-      log.info('Listing users', {
+      logMessage(log, 'info', 'Listing users', {
         teamId,
         organizationId,
         role,
@@ -234,7 +258,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for users array
         const usersArray = Array.isArray(users) ? users : [];
 
-        log.info('Successfully retrieved users', {
+        logMessage(log, 'info', 'Successfully retrieved users', {
           count: usersArray.length,
           total: metadata?.total,
         });
@@ -250,7 +274,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing users', { error: errorMessage });
+        logMessage(log, 'error', 'Error listing users', { error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to list users: ${errorMessage}`);
       }
@@ -272,7 +296,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { userId } = input;
 
-      log.info('Getting user details', { userId });
+      logMessage(log, 'info', 'Getting user details', { userId });
 
       try {
         const response = await apiClient.get(`/users/${userId}`);
@@ -289,7 +313,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for user object
         const userObj = user as { email?: unknown; role?: unknown };
 
-        log.info('Successfully retrieved user', {
+        logMessage(log, 'info', 'Successfully retrieved user', {
           userId,
           email: String(userObj.email ?? 'unknown'),
           role: String(userObj.role ?? 'unknown'),
@@ -298,7 +322,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         return formatSuccessResponse({ user }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting user', { userId, error: errorMessage });
+        logMessage(log, 'error', 'Error getting user', { userId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get user details: ${errorMessage}`);
       }
@@ -320,7 +344,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { userId, role, teamId, permissions } = input;
 
-      log.info('Updating user role', { userId, role, teamId });
+      logMessage(log, 'info', 'Updating user role', { userId, role, teamId });
 
       try {
         const updateData: Record<string, unknown> = { role };
@@ -343,7 +367,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError('User role update failed - no data returned');
         }
 
-        log.info('Successfully updated user role', {
+        logMessage(log, 'info', 'Successfully updated user role', {
           userId,
           newRole: role,
           teamId,
@@ -356,7 +380,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error updating user role', { userId, error: errorMessage });
+        logMessage(log, 'error', 'Error updating user role', { userId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to update user role: ${errorMessage}`);
       }
@@ -376,7 +400,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { organizationId, search, limit, offset } = input;
 
-      log.info('Listing teams', {
+      logMessage(log, 'info', 'Listing teams', {
         organizationId,
         search,
         limit,
@@ -409,7 +433,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for teams array
         const teamsArray = Array.isArray(teams) ? teams : [];
 
-        log.info('Successfully retrieved teams', {
+        logMessage(log, 'info', 'Successfully retrieved teams', {
           count: teamsArray.length,
           total: metadata?.total,
         });
@@ -425,7 +449,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing teams', { error: errorMessage });
+        logMessage(log, 'error', 'Error listing teams', { error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to list teams: ${errorMessage}`);
       }
@@ -447,7 +471,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { teamId } = input;
 
-      log.info('Getting team details', { teamId });
+      logMessage(log, 'info', 'Getting team details', { teamId });
 
       try {
         const response = await apiClient.get(`/teams/${teamId}`);
@@ -464,7 +488,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for team object
         const teamObj = team as { name?: unknown };
 
-        log.info('Successfully retrieved team', {
+        logMessage(log, 'info', 'Successfully retrieved team', {
           teamId,
           name: String(teamObj.name ?? 'unknown'),
         });
@@ -472,7 +496,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         return formatSuccessResponse({ team }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting team', { teamId, error: errorMessage });
+        logMessage(log, 'error', 'Error getting team', { teamId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get team details: ${errorMessage}`);
       }
@@ -493,7 +517,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { name, description, organizationId } = input;
 
-      log.info('Creating new team', { name, organizationId });
+      logMessage(log, 'info', 'Creating new team', { name, organizationId });
 
       try {
         const teamData = {
@@ -516,7 +540,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for team object
         const teamObj = team as { id?: unknown; name?: unknown };
 
-        log.info('Successfully created team', {
+        logMessage(log, 'info', 'Successfully created team', {
           teamId: String(teamObj.id ?? 'unknown'),
           name: String(teamObj.name ?? 'unknown'),
         });
@@ -527,7 +551,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating team', { name, error: errorMessage });
+        logMessage(log, 'error', 'Error creating team', { name, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create team: ${errorMessage}`);
       }
@@ -548,7 +572,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { teamId, name, description } = input;
 
-      log.info('Updating team', { teamId });
+      logMessage(log, 'info', 'Updating team', { teamId });
 
       try {
         const updateData: Record<string, unknown> = {};
@@ -573,7 +597,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for team object
         const teamObj = team as { name?: unknown };
 
-        log.info('Successfully updated team', {
+        logMessage(log, 'info', 'Successfully updated team', {
           teamId,
           name: String(teamObj.name ?? 'unknown'),
           updatedFields: Object.keys(updateData),
@@ -585,7 +609,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error updating team', { teamId, error: errorMessage });
+        logMessage(log, 'error', 'Error updating team', { teamId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to update team: ${errorMessage}`);
       }
@@ -609,7 +633,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { teamId } = input;
 
-      log.info('Deleting team', { teamId });
+      logMessage(log, 'info', 'Deleting team', { teamId });
 
       try {
         const response = await apiClient.delete(`/teams/${teamId}`);
@@ -618,14 +642,14 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to delete team: ${response.error?.message || 'Unknown error'}`);
         }
 
-        log.info('Successfully deleted team', { teamId });
+        logMessage(log, 'info', 'Successfully deleted team', { teamId });
 
         return formatSuccessResponse({
           message: `Team ${teamId} deleted successfully`,
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error deleting team', { teamId, error: errorMessage });
+        logMessage(log, 'error', 'Error deleting team', { teamId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to delete team: ${errorMessage}`);
       }
@@ -645,7 +669,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { search, limit, offset } = input;
 
-      log.info('Listing organizations', {
+      logMessage(log, 'info', 'Listing organizations', {
         search,
         limit,
         offset,
@@ -671,7 +695,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for organizations array
         const organizationsArray = Array.isArray(organizations) ? organizations : [];
 
-        log.info('Successfully retrieved organizations', {
+        logMessage(log, 'info', 'Successfully retrieved organizations', {
           count: organizationsArray.length,
           total: metadata?.total,
         });
@@ -687,7 +711,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing organizations', { error: errorMessage });
+        logMessage(log, 'error', 'Error listing organizations', { error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to list organizations: ${errorMessage}`);
       }
@@ -709,7 +733,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { organizationId } = input;
 
-      log.info('Getting organization details', { organizationId });
+      logMessage(log, 'info', 'Getting organization details', { organizationId });
 
       try {
         const response = await apiClient.get(`/organizations/${organizationId}`);
@@ -726,7 +750,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for organization object
         const orgObj = organization as { name?: unknown };
 
-        log.info('Successfully retrieved organization', {
+        logMessage(log, 'info', 'Successfully retrieved organization', {
           organizationId,
           name: String(orgObj.name ?? 'unknown'),
         });
@@ -734,7 +758,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         return formatSuccessResponse({ organization }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error getting organization', { organizationId, error: errorMessage });
+        logMessage(log, 'error', 'Error getting organization', { organizationId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to get organization details: ${errorMessage}`);
       }
@@ -755,7 +779,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { name, description } = input;
 
-      log.info('Creating new organization', { name });
+      logMessage(log, 'info', 'Creating new organization', { name });
 
       try {
         const organizationData = {
@@ -777,7 +801,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for organization object
         const orgObj = organization as { id?: unknown; name?: unknown };
 
-        log.info('Successfully created organization', {
+        logMessage(log, 'info', 'Successfully created organization', {
           organizationId: String(orgObj.id ?? 'unknown'),
           name: String(orgObj.name ?? 'unknown'),
         });
@@ -788,7 +812,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error creating organization', { name, error: errorMessage });
+        logMessage(log, 'error', 'Error creating organization', { name, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to create organization: ${errorMessage}`);
       }
@@ -809,7 +833,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { organizationId, name, description } = input;
 
-      log.info('Updating organization', { organizationId });
+      logMessage(log, 'info', 'Updating organization', { organizationId });
 
       try {
         const updateData: Record<string, unknown> = {};
@@ -834,7 +858,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         // Type guard for organization object
         const orgObj = organization as { name?: unknown };
 
-        log.info('Successfully updated organization', {
+        logMessage(log, 'info', 'Successfully updated organization', {
           organizationId,
           name: String(orgObj.name ?? 'unknown'),
           updatedFields: Object.keys(updateData),
@@ -846,7 +870,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error updating organization', { organizationId, error: errorMessage });
+        logMessage(log, 'error', 'Error updating organization', { organizationId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to update organization: ${errorMessage}`);
       }
@@ -870,7 +894,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { organizationId } = input;
 
-      log.info('Deleting organization', { organizationId });
+      logMessage(log, 'info', 'Deleting organization', { organizationId });
 
       try {
         const response = await apiClient.delete(`/organizations/${organizationId}`);
@@ -879,14 +903,14 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
           throw new UserError(`Failed to delete organization: ${response.error?.message || 'Unknown error'}`);
         }
 
-        log.info('Successfully deleted organization', { organizationId });
+        logMessage(log, 'info', 'Successfully deleted organization', { organizationId });
 
         return formatSuccessResponse({
           message: `Organization ${organizationId} deleted successfully`,
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error deleting organization', { organizationId, error: errorMessage });
+        logMessage(log, 'error', 'Error deleting organization', { organizationId, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to delete organization: ${errorMessage}`);
       }
@@ -907,7 +931,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
     execute: async (input, { log }) => {
       const { email, role, teamId, organizationId, permissions } = input;
 
-      log.info('Inviting user', {
+      logMessage(log, 'info', 'Inviting user', {
         email,
         role,
         teamId,
@@ -936,7 +960,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
 
         const invitation = response.data;
 
-        log.info('Successfully sent user invitation', {
+        logMessage(log, 'info', 'Successfully sent user invitation', {
           email,
           role,
           teamId,
@@ -949,7 +973,7 @@ export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): v
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error inviting user', { email, error: errorMessage });
+        logMessage(log, 'error', 'Error inviting user', { email, error: errorMessage });
         if (error instanceof UserError) throw error;
         throw new UserError(`Failed to invite user: ${errorMessage}`);
       }

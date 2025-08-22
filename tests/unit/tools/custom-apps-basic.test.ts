@@ -13,7 +13,8 @@ import {
   executeTool, 
   expectProgressReported,
   expectValidZodParse,
-  expectInvalidZodParse
+  expectInvalidZodParse,
+  parseTestResult
 } from '../../utils/test-helpers.js';
 
 // Import types from custom-apps.ts
@@ -762,7 +763,7 @@ describe('Custom App Development Tools - Basic Tests', () => {
         expect(result).toContain('statusBreakdown');
         expect(result).toContain('developmentSummary');
         
-        const parsedResult = JSON.parse(result);
+        const parsedResult = parseTestResult(result);
         expect(parsedResult.apps).toHaveLength(2);
         expect(parsedResult.analysis.statusBreakdown).toHaveProperty('draft');
         expect(parsedResult.analysis.statusBreakdown).toHaveProperty('published');
@@ -825,7 +826,7 @@ describe('Custom App Development Tools - Basic Tests', () => {
           includeUsage: true
         }, { log: mockLog });
         
-        const parsedResult = JSON.parse(result);
+        const parsedResult = parseTestResult(result);
         expect(parsedResult.analysis.usageSummary).toBeDefined();
         expect(parsedResult.analysis.usageSummary.totalInstallations).toBe(100);
         expect(parsedResult.analysis.usageSummary.totalExecutions).toBe(50000);
@@ -872,7 +873,7 @@ describe('Custom App Development Tools - Basic Tests', () => {
         const tool = findTool(mockTool, 'list-custom-apps');
         const result = await executeTool(tool, {}, { log: mockLog });
         
-        const parsedResult = JSON.parse(result);
+        const parsedResult = parseTestResult(result);
         expect(parsedResult.apps).toHaveLength(0);
         expect(parsedResult.analysis.totalApps).toBe(0);
       });
@@ -1513,7 +1514,7 @@ def validate_email(email_address):
         expect(result).toContain('recommendations');
         expect(result).toContain('coverage');
         
-        const parsedResult = JSON.parse(result);
+        const parsedResult = parseTestResult(result);
         expect(parsedResult.summary.totalTests).toBe(25);
         expect(parsedResult.summary.passed).toBe(23);
         expect(parsedResult.summary.failed).toBe(2);
@@ -1616,7 +1617,7 @@ def validate_email(email_address):
           timeout: 300
         }, { log: mockLog, reportProgress: mockReportProgress });
         
-        const parsedResult = JSON.parse(result);
+        const parsedResult = parseTestResult(result);
         expect(parsedResult.results.performance).toBeDefined();
         expect(parsedResult.results.performance.loadTest.concurrent_users).toBe(100);
         expect(parsedResult.results.performance.stressTest.breaking_point).toBe(450);
@@ -1734,7 +1735,7 @@ def validate_email(email_address):
       const tool = findTool(mockTool, 'list-custom-apps');
       const result = await executeTool(tool, {}, { log: mockLog });
       
-      const parsedResult = JSON.parse(result);
+      const parsedResult = parseTestResult(result);
       expect(parsedResult.apps).toHaveLength(0);
       expect(parsedResult.analysis.totalApps).toBe(0);
     });
