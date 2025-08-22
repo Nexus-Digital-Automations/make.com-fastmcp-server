@@ -14,7 +14,7 @@ export interface PerformanceMetric {
   startTime: number;
   endTime?: number;
   duration?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   category: 'startup' | 'api' | 'tool' | 'database' | 'cache' | 'custom';
 }
 
@@ -37,12 +37,13 @@ class PerformanceMonitor {
   private baselines: Map<string, PerformanceBaseline> = new Map();
   
   // Performance targets from research analysis
-  private targets = {
+  private targets: Record<PerformanceMetric['category'], number> = {
     startup: 2000, // 2 seconds
     api: 100,      // 100ms
     tool: 500,     // 500ms
     database: 50,  // 50ms
     cache: 10,     // 10ms
+    custom: 1000,  // 1 second default for custom metrics
   };
 
   static getInstance(): PerformanceMonitor {
@@ -55,7 +56,7 @@ class PerformanceMonitor {
   /**
    * Start tracking a performance metric
    */
-  startMetric(name: string, category: PerformanceMetric['category'], metadata?: Record<string, any>): string {
+  startMetric(name: string, category: PerformanceMetric['category'], metadata?: Record<string, unknown>): string {
     const id = `${name}_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
     const metric: PerformanceMetric = {
       name,
@@ -92,7 +93,7 @@ class PerformanceMonitor {
   /**
    * Track a synchronous operation
    */
-  trackSync<T>(name: string, category: PerformanceMetric['category'], fn: () => T, metadata?: Record<string, any>): T {
+  trackSync<T>(name: string, category: PerformanceMetric['category'], fn: () => T, metadata?: Record<string, unknown>): T {
     const id = this.startMetric(name, category, metadata);
     try {
       const result = fn();
@@ -111,7 +112,7 @@ class PerformanceMonitor {
     name: string, 
     category: PerformanceMetric['category'], 
     fn: () => Promise<T>, 
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<T> {
     const id = this.startMetric(name, category, metadata);
     try {
@@ -131,7 +132,6 @@ class PerformanceMonitor {
     if (!metric.duration) return;
 
     const baselineKey = `${metric.category}_${metric.name}`;
-    const existingBaseline = this.baselines.get(baselineKey);
     
     // Get all metrics for this name and category
     const relevantMetrics = this.completedMetrics
@@ -244,7 +244,7 @@ class PerformanceMonitor {
   exportData(): {
     metrics: PerformanceMetric[];
     baselines: PerformanceBaseline[];
-    summary: ReturnType<typeof this.getPerformanceSummary>;
+    summary: ReturnType<PerformanceMonitor['getPerformanceSummary']>;
   } {
     return {
       metrics: [...this.completedMetrics],
