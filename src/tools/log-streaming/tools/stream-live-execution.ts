@@ -8,6 +8,46 @@ import { StreamLiveExecutionSchema } from '../schemas/stream-config.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { MakeLogEntry } from '../types/streaming.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+import MakeApiClient from '../../../lib/make-api-client.js';
+import logger from '../../../lib/logger.js';
+
+// Type definitions
+interface LogInterface {
+  info: (message: string, meta?: unknown) => void;
+  error: (message: string, meta?: unknown) => void;
+  warn: (message: string, meta?: unknown) => void;
+  debug: (message: string, meta?: unknown) => void;
+}
+
+interface MonitoringConfig {
+  polling: {
+    enabled: boolean;
+    interval: number;
+    maxDuration: number;
+    enableRealtime: boolean;
+  };
+  alertThresholds: {
+    duration: number;
+    errorCount: number;
+    performanceThreshold: number;
+  };
+  includeMetrics: boolean;
+  includeProgress: boolean;
+}
+
+interface AlertConfig {
+  enabled: boolean;
+  conditions: Array<{
+    type: string;
+    threshold: unknown;
+    action: string;
+  }>;
+  notifications: {
+    email: boolean;
+    webhook: boolean;
+    inApp: boolean;
+  };
+}
 
 /**
  * Resolve execution ID for monitoring
@@ -15,7 +55,7 @@ import { formatSuccessResponse } from '../../../utils/response-formatter.js';
 async function resolveExecutionId(
   scenarioId: number,
   executionId: string | undefined,
-  apiClient: any
+  apiClient: MakeApiClient
 ): Promise<string> {
   let targetExecutionId: string | null = executionId || null;
   
@@ -72,11 +112,11 @@ function initializeExecutionData(
 async function executeMonitoringLoop(
   targetExecutionId: string,
   executionData: Record<string, unknown>,
-  monitoring: any,
-  alerts: any,
-  apiClient: any,
-  logger: any,
-  log: any,
+  monitoring: MonitoringConfig,
+  alerts: AlertConfig,
+  apiClient: MakeApiClient,
+  streamLogger: typeof logger,
+  log: LogInterface,
   startTime: number,
   endTime: number
 ): Promise<void> {

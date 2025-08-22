@@ -7,6 +7,15 @@ import { UserError } from 'fastmcp';
 import { RunScenarioSchema } from '../schemas/scenario-filters.js';
 import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
 import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+import MakeApiClient from '../../../lib/make-api-client.js';
+
+// Type definitions
+interface LogInterface {
+  info?: (message: string, meta?: unknown) => void;
+  error?: (message: string, meta?: unknown) => void;
+  warn?: (message: string, meta?: unknown) => void;
+  debug?: (message: string, meta?: unknown) => void;
+}
 
 interface RunScenarioArgs {
   scenarioId: string;
@@ -53,9 +62,9 @@ interface FinalResult {
  * Validate scenario existence and active status
  */
 async function validateScenario(
-  apiClient: any,
+  apiClient: MakeApiClient,
   scenarioId: string,
-  log?: any
+  log?: LogInterface
 ): Promise<ScenarioData> {
   const scenarioResponse = await apiClient.get(`/scenarios/${scenarioId}`);
   if (!scenarioResponse.success) {
@@ -80,10 +89,10 @@ async function validateScenario(
  * Execute scenario and get initial execution data
  */
 async function executeScenario(
-  apiClient: any,
+  apiClient: MakeApiClient,
   scenarioId: string,
   wait: boolean,
-  log?: any
+  log?: LogInterface
 ): Promise<ExecutionData> {
   log?.info?.('Executing scenario', { scenarioId });
   
