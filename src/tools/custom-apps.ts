@@ -261,7 +261,7 @@ const HookCreateSchema = z.object({
     retention: z.number().min(1).max(365).default(30).describe('Log retention in days'),
     level: z.enum(['debug', 'info', 'warn', 'error']).default('info').describe('Log level'),
     destinations: z.array(z.enum(['console', 'file', 'webhook', 'external'])).default(['console']).describe('Log destinations'),
-  }).default(() => ({ retention: 30, level: 'info', destinations: ['console'] })).describe('Logging configuration'),
+  }).default({ retention: 30, level: 'info' as const, destinations: ['console' as const] }).describe('Logging configuration'),
 }).strict();
 
 const CustomFunctionCreateSchema = z.object({
@@ -292,7 +292,7 @@ const CustomFunctionCreateSchema = z.object({
     environment: z.enum(['development', 'staging', 'production']).default('development').describe('Deployment environment'),
     instances: z.number().min(1).max(10).default(1).describe('Number of instances'),
     autoScale: z.boolean().default(false).describe('Enable auto-scaling'),
-  }).default(() => ({ environment: 'development', instances: 1, autoScale: false })).describe('Deployment settings'),
+  }).default({ environment: 'development' as const, instances: 1, autoScale: false }).describe('Deployment settings'),
 }).strict();
 
 /**
