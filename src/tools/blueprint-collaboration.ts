@@ -49,6 +49,18 @@ import {
   type SuggestedCode,
   type BlueprintPreview
 } from './blueprint-collaboration/conflict-resolver.js';
+import {
+  BlueprintDependencyAnalyzer,
+  type DependencyGraph,
+  type DependencyNode,
+  type DependencyEdge,
+  type DependencyCluster,
+  type CriticalPath,
+  type CircularDependency,
+  type BreakSuggestion,
+  type DependencyAnalysisResult,
+  type ImpactAssessment
+} from './blueprint-collaboration/dependency-analyzer.js';
 
 // ==================== INTERFACES & TYPES ====================
 
@@ -87,39 +99,7 @@ interface RealTimeConfiguration {
 // ConflictResolutionOutput, ResolvedBlueprint, and ValidationResults 
 // are now imported from conflict-resolver.ts
 
-interface DependencyAnalysisResult {
-  summary: {
-    totalNodes: number;
-    totalEdges: number;
-    clusters: number;
-    criticalPaths: number;
-    circularDependencies: number;
-  };
-  complexity: {
-    overall: number;
-    mostComplex: DependencyNode;
-    leastComplex: DependencyNode;
-  };
-  performance: {
-    bottlenecks: string[];
-    optimizationPotential: number;
-  };
-  recommendations: string[];
-}
-
-interface ImpactAssessment {
-  changeImpact: {
-    highImpactNodes: DependencyNode[];
-    cascadeEffects: DependencyEdge[];
-    isolatedComponents: DependencyCluster[];
-  };
-  riskAssessment: {
-    overallRisk: string;
-    criticalDependencies: number;
-    singlePointsOfFailure: DependencyNode[];
-  };
-  recommendations: string[];
-}
+// DependencyAnalysisResult and ImpactAssessment interfaces are now imported from dependency-analyzer.ts
 
 // Version-related interfaces are now imported from version-manager.ts
 
@@ -195,76 +175,8 @@ interface TimeRestriction {
   weekdays: number[];
 }
 
-interface DependencyGraph {
-  nodes: DependencyNode[];
-  edges: DependencyEdge[];
-  clusters: DependencyCluster[];
-  criticalPaths: CriticalPath[];
-  circularDependencies: CircularDependency[];
-  optimizationOpportunities: OptimizationOpportunity[];
-}
-
-interface DependencyNode {
-  nodeId: string;
-  moduleName: string;
-  moduleType: string;
-  version?: string;
-  connectionType?: string;
-  complexity: number;
-  usageFrequency: number;
-  performanceImpact: number;
-  isExternal: boolean;
-  isCritical: boolean;
-  metadata: NodeMetadata;
-}
-
-interface DependencyEdge {
-  edgeId: string;
-  sourceNode: string;
-  targetNode: string;
-  dependencyType: 'data' | 'control' | 'resource' | 'configuration';
-  strength: number;
-  bidirectional: boolean;
-  conditional: boolean;
-  conditions?: string[];
-  metadata: EdgeMetadata;
-}
-
-interface DependencyCluster {
-  clusterId: string;
-  name: string;
-  nodes: string[];
-  clusterType: 'functional' | 'technical' | 'business' | 'performance';
-  cohesion: number;
-  coupling: number;
-  isolationPotential: number;
-}
-
-interface CriticalPath {
-  pathId: string;
-  nodes: string[];
-  totalComplexity: number;
-  performanceImpact: number;
-  bottleneckNodes: string[];
-  optimizationPotential: number;
-}
-
-interface CircularDependency {
-  circularId: string;
-  cycle: string[];
-  severity: 'warning' | 'error' | 'critical';
-  breakSuggestions: BreakSuggestion[];
-  impact: string;
-}
-
-interface BreakSuggestion {
-  suggestionId: string;
-  strategy: 'introduce_interface' | 'merge_modules' | 'extract_dependency' | 'refactor_flow';
-  description: string;
-  effort: 'low' | 'medium' | 'high';
-  riskLevel: 'low' | 'medium' | 'high';
-  expectedBenefit: string;
-}
+// Dependency-related interfaces (DependencyGraph, DependencyNode, DependencyEdge, DependencyCluster,
+// CriticalPath, CircularDependency, BreakSuggestion) are now imported from dependency-analyzer.ts
 
 // OptimizationOpportunity and ExpectedGain interfaces are now imported from version-manager.ts
 
@@ -325,14 +237,15 @@ const AnalyzeDependenciesSchema = z.object({
 class BlueprintCollaborationEngine {
   private static instance: BlueprintCollaborationEngine | null = null;
   private readonly activeSessions: Map<string, CollaborationSession> = new Map();
-  private readonly dependencyGraphs: Map<string, DependencyGraph> = new Map();
   private readonly componentLogger = logger.child({ component: 'BlueprintCollaborationEngine' });
   private readonly versionManager: BlueprintVersionManager;
   private readonly conflictResolver: BlueprintConflictResolver;
+  private readonly dependencyAnalyzer: BlueprintDependencyAnalyzer;
 
   private constructor() {
     this.versionManager = new BlueprintVersionManager();
     this.conflictResolver = new BlueprintConflictResolver();
+    this.dependencyAnalyzer = new BlueprintDependencyAnalyzer();
     this.initializeEngine();
   }
 
@@ -561,70 +474,9 @@ class BlueprintCollaborationEngine {
     impactAssessment: ImpactAssessment | null;
   }> {
     const versionId = options.versionId || await this.versionManager.getLatestVersionId(blueprintId);
-    const cacheKey = `${blueprintId}_${versionId}_${options.analysisDepth}`;
-
-    // Check cache first
-    if (this.dependencyGraphs.has(cacheKey)) {
-      const cachedGraph = this.dependencyGraphs.get(cacheKey);
-      if (!cachedGraph) {
-        throw new Error(`Cached dependency graph not found for key: ${cacheKey}`);
-      }
-      return {
-        dependencyGraph: cachedGraph,
-        analysis: await this.generateDependencyAnalysis(cachedGraph),
-        circularDependencies: cachedGraph.circularDependencies,
-        optimizationOpportunities: cachedGraph.optimizationOpportunities,
-        impactAssessment: options.impactAnalysis ? await this.generateImpactAssessment(cachedGraph) : null,
-      };
-    }
-
-    const startTime = Date.now();
-
-    // Build dependency graph
-    const dependencyGraph = await this.buildDependencyGraph(blueprintId, versionId, options);
-
-    // Detect circular dependencies
-    const circularDependencies = options.detectCircular 
-      ? await this.detectCircularDependencies(dependencyGraph)
-      : [];
-
-    // Generate optimization opportunities
-    const optimizationOpportunities = options.includeOptimizations 
-      ? await this.generateDependencyOptimizations(dependencyGraph)
-      : [];
-
-    // Update graph with analysis results
-    dependencyGraph.circularDependencies = circularDependencies;
-    dependencyGraph.optimizationOpportunities = optimizationOpportunities;
-
-    // Cache the graph
-    this.dependencyGraphs.set(cacheKey, dependencyGraph);
-
-    // Generate analysis report
-    const analysis = await this.generateDependencyAnalysis(dependencyGraph);
-
-    // Perform impact assessment
-    const impactAssessment = options.impactAnalysis 
-      ? await this.generateImpactAssessment(dependencyGraph)
-      : null;
-
-    this.componentLogger.info('Dependency analysis completed', {
-      blueprintId,
-      versionId,
-      nodeCount: dependencyGraph.nodes.length,
-      edgeCount: dependencyGraph.edges.length,
-      circularDependencies: circularDependencies.length,
-      optimizationOpportunities: optimizationOpportunities.length,
-      processingTime: Date.now() - startTime,
-    });
-
-    return {
-      dependencyGraph,
-      analysis,
-      circularDependencies,
-      optimizationOpportunities,
-      impactAssessment,
-    };
+    
+    // Delegate to dependency analyzer
+    return this.dependencyAnalyzer.analyzeDependencies(blueprintId, versionId, options);
   }
 
   // ==================== HELPER METHODS ====================
@@ -671,208 +523,15 @@ class BlueprintCollaborationEngine {
   // - generateResolvedBlueprint
   // - validateResolvedBlueprint
 
-  private async buildDependencyGraph(_blueprintId: string, _versionId: string, _options: {
-    analysisDepth: string;
-    includeExternal: boolean;
-    includeOptimizations: boolean;
-    detectCircular: boolean;
-    generateGraph: boolean;
-    impactAnalysis: boolean;
-  }): Promise<DependencyGraph> {
-    // Build comprehensive dependency graph
-    const nodes: DependencyNode[] = [
-      {
-        nodeId: 'node_001',
-        moduleName: 'Authentication Module',
-        moduleType: 'security',
-        version: '2.1.0',
-        complexity: 7,
-        usageFrequency: 95,
-        performanceImpact: 3,
-        isExternal: false,
-        isCritical: true,
-        metadata: { category: 'core' } as NodeMetadata,
-      },
-      {
-        nodeId: 'node_002',
-        moduleName: 'Data Processing Module',
-        moduleType: 'processing',
-        version: '1.8.2',
-        complexity: 9,
-        usageFrequency: 80,
-        performanceImpact: 7,
-        isExternal: false,
-        isCritical: true,
-        metadata: { category: 'processing' } as NodeMetadata,
-      },
-      {
-        nodeId: 'node_003',
-        moduleName: 'Webhook Handler',
-        moduleType: 'integration',
-        version: '1.0.0',
-        complexity: 5,
-        usageFrequency: 60,
-        performanceImpact: 4,
-        isExternal: false,
-        isCritical: false,
-        metadata: { category: 'integration' } as NodeMetadata,
-      },
-    ];
-
-    const edges: DependencyEdge[] = [
-      {
-        edgeId: 'edge_001',
-        sourceNode: 'node_001',
-        targetNode: 'node_002',
-        dependencyType: 'data',
-        strength: 8,
-        bidirectional: false,
-        conditional: false,
-        metadata: { required: true } as EdgeMetadata,
-      },
-      {
-        edgeId: 'edge_002',
-        sourceNode: 'node_002',
-        targetNode: 'node_003',
-        dependencyType: 'control',
-        strength: 6,
-        bidirectional: false,
-        conditional: true,
-        conditions: ['webhook_enabled'],
-        metadata: { optional: true } as EdgeMetadata,
-      },
-    ];
-
-    const clusters: DependencyCluster[] = [
-      {
-        clusterId: 'cluster_001',
-        name: 'Core Security Cluster',
-        nodes: ['node_001'],
-        clusterType: 'functional',
-        cohesion: 9,
-        coupling: 3,
-        isolationPotential: 2,
-      },
-      {
-        clusterId: 'cluster_002',
-        name: 'Data Processing Cluster',
-        nodes: ['node_002', 'node_003'],
-        clusterType: 'technical',
-        cohesion: 7,
-        coupling: 5,
-        isolationPotential: 6,
-      },
-    ];
-
-    const criticalPaths: CriticalPath[] = [
-      {
-        pathId: 'path_001',
-        nodes: ['node_001', 'node_002', 'node_003'],
-        totalComplexity: 21,
-        performanceImpact: 14,
-        bottleneckNodes: ['node_002'],
-        optimizationPotential: 7,
-      },
-    ];
-
-    return {
-      nodes,
-      edges,
-      clusters,
-      criticalPaths,
-      circularDependencies: [],
-      optimizationOpportunities: [],
-    };
-  }
-
-  private async detectCircularDependencies(_graph: DependencyGraph): Promise<CircularDependency[]> {
-    // Implement cycle detection algorithm
-    return [
-      {
-        circularId: 'circular_001',
-        cycle: ['node_001', 'node_002', 'node_001'],
-        severity: 'warning',
-        breakSuggestions: [
-          {
-            suggestionId: 'break_001',
-            strategy: 'introduce_interface',
-            description: 'Introduce an interface to break the circular dependency',
-            effort: 'medium',
-            riskLevel: 'low',
-            expectedBenefit: 'Improved modularity and testability',
-          },
-        ],
-        impact: 'Potential deployment issues and reduced modularity',
-      },
-    ];
-  }
-
-  private async generateDependencyOptimizations(_graph: DependencyGraph): Promise<OptimizationOpportunity[]> {
-    return [
-      {
-        opportunityId: 'dep_opt_001',
-        type: 'redundancy_elimination',
-        description: 'Eliminate redundant data transformation steps',
-        affectedModules: ['node_002'],
-        expectedGain: {
-          performanceImprovement: 35,
-          complexityReduction: 20,
-          maintainabilityImprovement: 25,
-          resourceSavings: 30,
-        },
-        implementationComplexity: 'medium',
-        riskAssessment: 'low risk - well-defined transformation patterns',
-      },
-    ];
-  }
-
-  private async generateDependencyAnalysis(graph: DependencyGraph): Promise<DependencyAnalysisResult> {
-    return {
-      summary: {
-        totalNodes: graph.nodes.length,
-        totalEdges: graph.edges.length,
-        clusters: graph.clusters.length,
-        criticalPaths: graph.criticalPaths.length,
-        circularDependencies: graph.circularDependencies.length,
-      },
-      complexity: {
-        overall: 7.5,
-        mostComplex: graph.nodes.reduce((max, node) => node.complexity > max.complexity ? node : max),
-        leastComplex: graph.nodes.reduce((min, node) => node.complexity < min.complexity ? node : min),
-      },
-      performance: {
-        bottlenecks: graph.criticalPaths.flatMap(path => path.bottleneckNodes),
-        optimizationPotential: graph.criticalPaths.reduce((sum, path) => sum + path.optimizationPotential, 0),
-      },
-      recommendations: [
-        'Consider refactoring high-complexity modules',
-        'Implement caching for frequently accessed data',
-        'Review and optimize critical path performance',
-      ],
-    };
-  }
-
-  private async generateImpactAssessment(graph: DependencyGraph): Promise<ImpactAssessment> {
-    return {
-      changeImpact: {
-        highImpactNodes: graph.nodes.filter(node => node.isCritical),
-        cascadeEffects: graph.edges.filter(edge => edge.strength > 7),
-        isolatedComponents: graph.clusters.filter(cluster => cluster.coupling < 3),
-      },
-      riskAssessment: {
-        overallRisk: 'medium',
-        criticalDependencies: graph.nodes.filter(node => node.isCritical).length,
-        singlePointsOfFailure: graph.nodes.filter(node => 
-          graph.edges.filter(edge => edge.targetNode === node.nodeId).length > 3
-        ),
-      },
-      recommendations: [
-        'Implement redundancy for critical single points of failure',
-        'Add monitoring for high-impact dependencies',
-        'Consider dependency injection for loose coupling',
-      ],
-    };
-  }
+  // ==================== DEPENDENCY ANALYSIS METHODS MOVED ====================
+  // All dependency analysis methods have been extracted to BlueprintDependencyAnalyzer:
+  // - buildDependencyGraph
+  // - detectCircularDependencies
+  // - suggestDependencyOptimizations (renamed from generateDependencyOptimizations)
+  // - generateDependencyAnalysis
+  // - generateImpactAssessment
+  // - analyzeClusterPerformance
+  // - validateDependencyIntegrity
 }
 
 // ==================== TOOL IMPLEMENTATIONS ====================
