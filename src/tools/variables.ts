@@ -251,6 +251,94 @@ export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): voi
 }
 
 /**
+ * Build API parameters for variable list request
+ */
+function buildVariableListParams(input: Record<string, unknown>): Record<string, unknown> {
+  const { scope, organizationId, teamId, scenarioId, namePattern, tags, type, isEncrypted, limit, offset, sortBy, sortOrder } = input;
+  
+  const params: Record<string, unknown> = {
+    limit,
+    offset,
+    sortBy,
+    sortOrder,
+  };
+
+  if (scope !== 'all') {params.scope = scope;}
+  if (organizationId) {params.organizationId = organizationId;}
+  if (teamId) {params.teamId = teamId;}
+  if (scenarioId) {params.scenarioId = scenarioId;}
+  if (namePattern) {params.namePattern = namePattern;}
+  if (tags && Array.isArray(tags) && tags.length > 0) {params.tags = tags.join(',');}
+  if (type) {params.type = type;}
+  if (isEncrypted !== undefined) {params.isEncrypted = isEncrypted;}
+
+  return params;
+}
+
+/**
+ * Determine API endpoint based on scope and IDs
+ */
+function getVariableListEndpoint(scope: string, organizationId?: number, teamId?: number, scenarioId?: number): string {
+  if (scope === 'organization' && organizationId) {
+    return `/organizations/${organizationId}/variables`;
+  }
+  if (scope === 'team' && teamId) {
+    return `/teams/${teamId}/variables`;
+  }
+  if (scope === 'scenario' && scenarioId) {
+    return `/scenarios/${scenarioId}/variables`;
+  }
+  return '/variables';
+}
+
+/**
+ * Create summary statistics for variable list response
+ */
+function createVariableListSummary(variables: MakeCustomVariable[], metadata?: Record<string, unknown>): Record<string, unknown> {
+  return {
+    totalVariables: metadata?.total || variables.length,
+    scopeBreakdown: {
+      organization: variables.filter(v => v.scope === 'global').length,
+      team: variables.filter(v => v.scope === 'team').length,
+      scenario: variables.filter(v => v.scope === 'scenario').length,
+    },
+    typeBreakdown: {
+      string: variables.filter(v => v.type === 'string').length,
+      number: variables.filter(v => v.type === 'number').length,
+      boolean: variables.filter(v => v.type === 'boolean').length,
+      json: variables.filter(v => v.type === 'json').length,
+    },
+    encryptedCount: variables.filter(v => v.isEncrypted).length,
+    uniqueTags: Array.from(new Set(variables.flatMap(v => v.tags || []))),
+  };
+}
+
+/**
+ * Format variables response with encrypted value masking
+ */
+function formatVariablesResponse(
+  variables: MakeCustomVariable[],
+  summary: Record<string, unknown>,
+  metadata?: Record<string, unknown>,
+  limit?: number,
+  offset?: number
+): Record<string, unknown> {
+  return {
+    variables: variables.map(v => ({
+      ...v,
+      value: v.isEncrypted ? '[ENCRYPTED]' : v.value,
+    })),
+    summary,
+    pagination: {
+      total: metadata?.total || variables.length,
+      limit,
+      offset,
+      hasMore: (typeof metadata?.total === 'number' ? metadata.total : 0) > ((offset || 0) + variables.length),
+    },
+  };
+}
+
+/**
  * Add list custom variables tool
  */
 function addListCustomVariablesTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -264,7 +352,7 @@ function addListCustomVariablesTool(server: FastMCP, apiClient: MakeApiClient): 
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
-      const { scope, organizationId, teamId, scenarioId, namePattern, tags, type, isEncrypted, limit, offset, sortBy, sortOrder } = input;
+      const { scope, organizationId, teamId, scenarioId, limit, offset } = input;
 
       log.info('Listing custom variables', {
         scope,
@@ -276,30 +364,8 @@ function addListCustomVariablesTool(server: FastMCP, apiClient: MakeApiClient): 
       });
 
       try {
-        const params: Record<string, unknown> = {
-          limit,
-          offset,
-          sortBy,
-          sortOrder,
-        };
-
-        if (scope !== 'all') {params.scope = scope;}
-        if (organizationId) {params.organizationId = organizationId;}
-        if (teamId) {params.teamId = teamId;}
-        if (scenarioId) {params.scenarioId = scenarioId;}
-        if (namePattern) {params.namePattern = namePattern;}
-        if (tags && tags.length > 0) {params.tags = tags.join(',');}
-        if (type) {params.type = type;}
-        if (isEncrypted !== undefined) {params.isEncrypted = isEncrypted;}
-
-        let endpoint = '/variables';
-        if (scope === 'organization' && organizationId) {
-          endpoint = `/organizations/${organizationId}/variables`;
-        } else if (scope === 'team' && teamId) {
-          endpoint = `/teams/${teamId}/variables`;
-        } else if (scope === 'scenario' && scenarioId) {
-          endpoint = `/scenarios/${scenarioId}/variables`;
-        }
+        const params = buildVariableListParams(input);
+        const endpoint = getVariableListEndpoint(scope as string, organizationId, teamId, scenarioId);
 
         const response = await apiClient.get(endpoint, { params });
 
@@ -315,37 +381,10 @@ function addListCustomVariablesTool(server: FastMCP, apiClient: MakeApiClient): 
           total: metadata?.total,
         });
 
-        // Create summary statistics
-        const summary = {
-          totalVariables: metadata?.total || variables.length,
-          scopeBreakdown: {
-            organization: variables.filter(v => v.scope === 'global').length,
-            team: variables.filter(v => v.scope === 'team').length,
-            scenario: variables.filter(v => v.scope === 'scenario').length,
-          },
-          typeBreakdown: {
-            string: variables.filter(v => v.type === 'string').length,
-            number: variables.filter(v => v.type === 'number').length,
-            boolean: variables.filter(v => v.type === 'boolean').length,
-            json: variables.filter(v => v.type === 'json').length,
-          },
-          encryptedCount: variables.filter(v => v.isEncrypted).length,
-          uniqueTags: Array.from(new Set(variables.flatMap(v => (v).tags || []))),
-        };
+        const summary = createVariableListSummary(variables, metadata);
+        const formattedResponse = formatVariablesResponse(variables, summary, metadata, limit, offset);
 
-        return formatSuccessResponse({
-          variables: variables.map(v => ({
-            ...v,
-            value: v.isEncrypted ? '[ENCRYPTED]' : v.value,
-          })),
-          summary,
-          pagination: {
-            total: metadata?.total || variables.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) > (offset + variables.length),
-          },
-        });
+        return formatSuccessResponse(formattedResponse);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing custom variables', { error: errorMessage });
@@ -1047,6 +1086,73 @@ function addBulkResolveIncompleteExecutionsTool(server: FastMCP, apiClient: Make
 }
 
 /**
+ * Extract and validate analysis data from API response
+ */
+function extractAnalysisData(analysis: unknown): Record<string, unknown> {
+  const analysisData = analysis && typeof analysis === 'object' ? analysis as Record<string, unknown> : {};
+  
+  return {
+    totalFailures: typeof analysisData.totalFailures === 'number' ? analysisData.totalFailures : 0,
+    failureRate: typeof analysisData.failureRate === 'number' ? analysisData.failureRate : 0,
+    topErrors: Array.isArray(analysisData.topErrors) ? analysisData.topErrors : [],
+    topScenarios: Array.isArray(analysisData.topScenarios) ? analysisData.topScenarios : [],
+    timePatterns: analysisData.timePatterns && typeof analysisData.timePatterns === 'object' ? analysisData.timePatterns : {},
+    recoveryStats: analysisData.recoveryStats && typeof analysisData.recoveryStats === 'object' ? analysisData.recoveryStats as Record<string, unknown> : {},
+    operationsLost: typeof analysisData.operationsLost === 'number' ? analysisData.operationsLost : 0,
+    dataTransferLost: typeof analysisData.dataTransferLost === 'number' ? analysisData.dataTransferLost : 0,
+    estimatedCost: typeof analysisData.estimatedCost === 'number' ? analysisData.estimatedCost : 0,
+    recommendations: Array.isArray(analysisData.recommendations) ? analysisData.recommendations : [],
+  };
+}
+
+/**
+ * Generate insights from extracted analysis data
+ */
+function generateAnalysisInsights(data: Record<string, unknown>): Record<string, unknown> {
+  const topErrors = Array.isArray(data.topErrors) ? data.topErrors : [];
+  const topScenarios = Array.isArray(data.topScenarios) ? data.topScenarios : [];
+  const recoveryStats = data.recoveryStats && typeof data.recoveryStats === 'object' ? data.recoveryStats as Record<string, unknown> : {};
+  
+  return {
+    totalFailures: data.totalFailures,
+    failureRate: data.failureRate,
+    mostCommonErrors: topErrors.slice(0, 5),
+    mostAffectedScenarios: topScenarios.slice(0, 5),
+    timePatterns: data.timePatterns,
+    recoverySuccess: typeof recoveryStats.successRate === 'number' ? recoveryStats.successRate : 0,
+    operationalImpact: {
+      operationsLost: data.operationsLost,
+      dataTransferLost: data.dataTransferLost,
+      estimatedCost: data.estimatedCost,
+    },
+  };
+}
+
+/**
+ * Create analysis summary response
+ */
+function createAnalysisSummary(
+  insights: Record<string, unknown>,
+  recommendations: unknown[],
+  timeRange: Record<string, unknown>,
+  groupBy: string
+): Record<string, unknown> {
+  const mostCommonErrors = Array.isArray(insights.mostCommonErrors) ? insights.mostCommonErrors : [];
+  const failureRate = typeof insights.failureRate === 'number' ? insights.failureRate : 0;
+  
+  return {
+    analysisTimeRange: timeRange,
+    groupBy,
+    totalFailures: insights.totalFailures,
+    failureRate: `${(failureRate * 100).toFixed(2)}%`,
+    topIssue: mostCommonErrors[0]?.error || 'No dominant error pattern',
+    actionableRecommendations: recommendations.filter((r: unknown) => 
+      typeof r === 'object' && r !== null && 'priority' in r && (r as { priority: string }).priority === 'high'
+    ).length || 0,
+  };
+}
+
+/**
  * Add analyze execution failure patterns tool
  */
 function addAnalyzeExecutionFailurePatternsTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -1102,55 +1208,25 @@ function addAnalyzeExecutionFailurePatternsTool(server: FastMCP, apiClient: Make
         const analysis = response.data;
         reportProgress({ progress: 75, total: 100 });
 
-        // Type guard for analysis result
-        const analysisData = analysis && typeof analysis === 'object' ? analysis as Record<string, unknown> : {};
-        const totalFailures = typeof analysisData.totalFailures === 'number' ? analysisData.totalFailures : 0;
-        const failureRate = typeof analysisData.failureRate === 'number' ? analysisData.failureRate : 0;
-        const topErrors = Array.isArray(analysisData.topErrors) ? analysisData.topErrors : [];
-        const topScenarios = Array.isArray(analysisData.topScenarios) ? analysisData.topScenarios : [];
-        const timePatterns = analysisData.timePatterns && typeof analysisData.timePatterns === 'object' ? analysisData.timePatterns : {};
-        const recoveryStats = analysisData.recoveryStats && typeof analysisData.recoveryStats === 'object' ? analysisData.recoveryStats as Record<string, unknown> : {};
-        const operationsLost = typeof analysisData.operationsLost === 'number' ? analysisData.operationsLost : 0;
-        const dataTransferLost = typeof analysisData.dataTransferLost === 'number' ? analysisData.dataTransferLost : 0;
-        const estimatedCost = typeof analysisData.estimatedCost === 'number' ? analysisData.estimatedCost : 0;
-
-        // Generate additional insights
-        const insights = {
-          totalFailures: totalFailures,
-          failureRate: failureRate,
-          mostCommonErrors: topErrors.slice(0, 5),
-          mostAffectedScenarios: topScenarios.slice(0, 5),
-          timePatterns: timePatterns,
-          recoverySuccess: typeof recoveryStats.successRate === 'number' ? recoveryStats.successRate : 0,
-          operationalImpact: {
-            operationsLost: operationsLost,
-            dataTransferLost: dataTransferLost,
-            estimatedCost: estimatedCost,
-          },
-        };
-
+        const extractedData = extractAnalysisData(analysis);
+        const insights = generateAnalysisInsights(extractedData);
+        
         reportProgress({ progress: 100, total: 100 });
 
         log.info('Successfully completed failure pattern analysis', {
-          totalFailures: insights.totalFailures,
-          failureRate: insights.failureRate,
+          totalFailures: insights.totalFailures as number,
+          failureRate: insights.failureRate as number,
           analysisTimeRange: timeRange,
         });
 
-        const recommendations = Array.isArray(analysisData.recommendations) ? analysisData.recommendations : [];
+        const recommendations = extractedData.recommendations as unknown[];
+        const summary = createAnalysisSummary(insights, recommendations, timeRange as Record<string, unknown>, groupBy as string);
 
         return formatSuccessResponse({
           analysis,
           insights,
           recommendations: includeRecommendations ? recommendations : undefined,
-          summary: {
-            analysisTimeRange: timeRange,
-            groupBy,
-            totalFailures: insights.totalFailures,
-            failureRate: `${(insights.failureRate * 100).toFixed(2)}%`,
-            topIssue: insights.mostCommonErrors[0]?.error || 'No dominant error pattern',
-            actionableRecommendations: recommendations.filter((r: unknown) => typeof r === 'object' && r !== null && 'priority' in r && (r as { priority: string }).priority === 'high').length || 0,
-          },
+          summary,
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
