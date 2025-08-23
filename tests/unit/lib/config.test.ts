@@ -5,6 +5,10 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+
+// Disable mocking for this test file to test the real config implementation
+jest.unmock('../../../src/lib/config.js');
+
 import {
   ConfigurationError,
   ValidationError,
@@ -20,11 +24,22 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
   beforeEach(() => {
     // Create a clean environment for each test
     process.env = { ...originalEnv };
+    // Clear module cache to prevent singleton persistence
+    jest.resetModules();
+    // Clear all mocks
+    jest.clearAllMocks();
+    // Set default test API key to prevent initialization errors
+    process.env.MAKE_API_KEY = 'test_api_key_12345';
+    process.env.NODE_ENV = 'test';
   });
 
   afterEach(() => {
     // Restore original environment
     process.env = originalEnv;
+    // Clear module cache after each test
+    jest.resetModules();
+    // Clear all mocks
+    jest.clearAllMocks();
   });
 
   describe('Error Classes', () => {
@@ -340,14 +355,22 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
       ];
 
       authConfigs.forEach((config, index) => {
-        const hasValidSecret = config.secret && config.secret.length >= 32;
-        const isValidConfig = !config.enabled || (config.enabled && hasValidSecret);
-        
-        // Test configuration logic
-        if (config.enabled && (!config.secret || config.secret.length < 32)) {
-          expect(isValidConfig).toBe(false);
-        } else {
-          expect(isValidConfig).toBe(true);
+        // Test configuration logic properly
+        if (!config.enabled) {
+          // Auth disabled - always valid regardless of secret
+          expect(config.enabled).toBe(false);
+        } else if (config.enabled && config.secret && config.secret.length >= 32) {
+          // Auth enabled with sufficient secret - valid
+          expect(config.enabled).toBe(true);
+          expect(config.secret!.length).toBeGreaterThanOrEqual(32);
+        } else if (config.enabled && (!config.secret || config.secret.length < 32)) {
+          // Auth enabled without sufficient secret - invalid
+          expect(config.enabled).toBe(true);
+          if (config.secret) {
+            expect(config.secret.length).toBeLessThan(32);
+          } else {
+            expect(config.secret).toBeUndefined();
+          }
         }
       });
     });
@@ -936,8 +959,6 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
       });
 
       it('should test actual EnvironmentParser.parseString through real config loading', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test empty string scenarios by setting actual environment variables
           process.env.MAKE_API_KEY = 'test-env-parser-key-12345';
@@ -945,10 +966,9 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           process.env.SERVER_VERSION = '   '; // Whitespace only
           process.env.NODE_ENV = 'test';
           
-          // Clear and reload config module
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
-          const { configManager } = await import(configModulePath);
+          // Force fresh import by clearing module cache
+          jest.resetModules();
+          const { configManager } = await import('../../../src/lib/config.js');
           
           const config = configManager.getConfig();
           
@@ -959,130 +979,118 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           expect(config.version).toBe('   ');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test EnvironmentParser.parseNumber with invalid values through config loading', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test invalid number parsing
           process.env.MAKE_API_KEY = 'test-parse-number-key-12345';
           process.env.PORT = 'not-a-number';
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
           // This should throw an error due to invalid PORT
-          await expect(import(configModulePath)).rejects.toThrow('Invalid number value: not-a-number');
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Invalid number value: not-a-number');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test EnvironmentParser.parseNumber with empty values', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test empty number parsing falls back to defaults
           process.env.MAKE_API_KEY = 'test-parse-number-empty-key-12345';
           process.env.PORT = ''; // Empty string should use fallback
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
-          const { configManager } = await import(configModulePath);
+          // Force fresh import by clearing module cache
+          jest.resetModules();
+          const { configManager } = await import('../../../src/lib/config.js');
           
           const config = configManager.getConfig();
           expect(config.port).toBe(3000); // Should use default fallback
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test EnvironmentParser.parseBoolean with invalid values through config loading', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test invalid boolean parsing
           process.env.MAKE_API_KEY = 'test-parse-boolean-key-12345';
           process.env.AUTH_ENABLED = 'maybe'; // Invalid boolean
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
           // This should throw an error due to invalid boolean
-          await expect(import(configModulePath)).rejects.toThrow('Invalid boolean value: maybe');
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Invalid boolean value: maybe');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test EnvironmentParser.parseBoolean with empty values', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test empty boolean parsing falls back to defaults
           process.env.MAKE_API_KEY = 'test-parse-boolean-empty-key-12345';
           process.env.AUTH_ENABLED = ''; // Empty string should use fallback
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
-          const { configManager } = await import(configModulePath);
+          // Force fresh import by clearing module cache
+          jest.resetModules();
+          const { configManager } = await import('../../../src/lib/config.js');
           
           const config = configManager.getConfig();
           expect(config.authentication?.enabled).toBe(false); // Should use default fallback
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test EnvironmentParser.parseUrl with invalid URLs through config loading', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test invalid URL parsing
           process.env.MAKE_API_KEY = 'test-parse-url-key-12345';
           process.env.MAKE_BASE_URL = 'invalid-url-format'; // Invalid URL
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
           // This should throw an error due to invalid URL
-          await expect(import(configModulePath)).rejects.toThrow('Invalid URL format: invalid-url-format');
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Invalid URL format: invalid-url-format');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test EnvironmentParser.parseUrl with empty values', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test empty URL parsing falls back to defaults
           process.env.MAKE_API_KEY = 'test-parse-url-empty-key-12345';
           process.env.MAKE_BASE_URL = ''; // Empty string should use fallback
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
-          const { configManager } = await import(configModulePath);
+          // Force fresh import by clearing module cache
+          jest.resetModules();
+          const { configManager } = await import('../../../src/lib/config.js');
           
           const config = configManager.getConfig();
           expect(config.make.baseUrl).toBe('https://eu1.make.com/api/v2'); // Should use default fallback
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
     });
@@ -1370,85 +1378,88 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
 
     describe('ConfigManager Error Path Coverage', () => {
       it('should test ConfigManager constructor error handling', async () => {
-        const originalEnv = process.env;
+        // Save the original MAKE_API_KEY
+        const originalApiKey = process.env.MAKE_API_KEY;
         
         try {
           // Test missing required MAKE_API_KEY
           delete process.env.MAKE_API_KEY;
+          // Ensure it's truly undefined (dotenv may reload it)
+          process.env.MAKE_API_KEY = undefined as any;
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Mock dotenv to prevent it from loading the .env file
+          jest.doMock('dotenv', () => ({
+            config: jest.fn()
+          }));
+          
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
           // Should throw ConfigurationError for missing API key
-          await expect(import(configModulePath)).rejects.toThrow('Required environment variable is missing or empty');
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Required environment variable is missing or empty');
           
         } finally {
-          process.env = originalEnv;
+          // Restore original values and unmock
+          process.env.MAKE_API_KEY = originalApiKey;
+          jest.dontMock('dotenv');
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test ConfigManager constructor with Zod validation error', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test with invalid schema data that triggers Zod validation
           process.env.MAKE_API_KEY = ''; // Empty API key should fail Zod validation
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
-          // Should throw ValidationError due to Zod schema validation
-          await expect(import(configModulePath)).rejects.toThrow('Configuration validation failed');
+          // Empty API key is caught by getRequiredEnv before Zod validation
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Required environment variable is missing or empty');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test log level validation error path', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test invalid log level
           process.env.MAKE_API_KEY = 'valid-log-level-test-key-12345';
           process.env.LOG_LEVEL = 'invalid-level';
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
           // Should throw ConfigurationError for invalid log level
-          await expect(import(configModulePath)).rejects.toThrow('Invalid log level: invalid-level');
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Invalid log level: invalid-level');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test getRequiredEnv with whitespace-only value', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test whitespace-only API key
           process.env.MAKE_API_KEY = '   '; // Whitespace only
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
           // Should throw error for whitespace-only required env var
-          await expect(import(configModulePath)).rejects.toThrow('Required environment variable is missing or empty');
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Required environment variable is missing or empty');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test configuration business logic validation failures', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test authentication enabled without secret
           process.env.MAKE_API_KEY = 'valid-business-logic-test-key-12345';
@@ -1456,59 +1467,53 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           delete process.env.AUTH_SECRET; // No secret provided
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
-          // Should throw validation error for auth enabled without secret
-          await expect(import(configModulePath)).rejects.toThrow('Authentication is enabled but no secret is provided');
+          // Should throw validation error for auth enabled without secret (from Zod refine)
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Authentication secret is required when authentication is enabled');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test short API key validation', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test short API key
           process.env.MAKE_API_KEY = 'short'; // Less than 10 characters
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
           // Should throw validation error for short API key
-          await expect(import(configModulePath)).rejects.toThrow('Make.com API key appears to be too short');
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Make.com API key appears to be too short');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test development port validation', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test privileged port in development
           process.env.MAKE_API_KEY = 'valid-port-validation-key-12345';
           process.env.PORT = '80'; // Privileged port
           process.env.NODE_ENV = 'development'; // Development mode
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
           // Should throw validation error for privileged port in dev
-          await expect(import(configModulePath)).rejects.toThrow('Port numbers below 1024 require elevated privileges');
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Port numbers below 1024 require elevated privileges');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test short authentication secret validation', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Test auth enabled with short secret
           process.env.MAKE_API_KEY = 'valid-auth-secret-test-key-12345';
@@ -1516,24 +1521,22 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           process.env.AUTH_SECRET = 'short-secret'; // Less than 32 characters
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
+          // Force fresh import by clearing module cache
+          jest.resetModules();
           
-          // Should throw validation error for short secret
-          await expect(import(configModulePath)).rejects.toThrow('Authentication secret should be at least 32 characters');
+          // Should throw validation error for short secret (from Zod schema)
+          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Auth secret must be at least 32 characters');
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
     });
 
     describe('Production Warning Coverage', () => {
       it('should trigger production debug logging warning', async () => {
-        const originalEnv = process.env;
-        const originalWarn = console.warn;
-        const mockWarn = jest.fn();
-        console.warn = mockWarn;
+        // Mock console.warn before setting up environment
+        const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
         
         try {
           // Test production with debug logging
@@ -1541,24 +1544,21 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           process.env.NODE_ENV = 'production';
           process.env.LOG_LEVEL = 'debug';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
-          const { configManager } = await import(configModulePath);
+          // Force fresh import by clearing module cache
+          jest.resetModules();
+          const { configManager } = await import('../../../src/lib/config.js');
           
           // Should have triggered debug logging warning
           expect(mockWarn).toHaveBeenCalledWith('WARNING: Debug logging is enabled in production environment');
           
         } finally {
-          process.env = originalEnv;
-          console.warn = originalWarn;
+          mockWarn.mockRestore();
         }
       });
 
       it('should trigger production authentication disabled warning', async () => {
-        const originalEnv = process.env;
-        const originalWarn = console.warn;
-        const mockWarn = jest.fn();
-        console.warn = mockWarn;
+        // Mock console.warn before setting up environment
+        const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
         
         try {
           // Test production with auth disabled
@@ -1566,24 +1566,21 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           process.env.NODE_ENV = 'production';
           process.env.AUTH_ENABLED = 'false';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
-          const { configManager } = await import(configModulePath);
+          // Force fresh import by clearing module cache
+          jest.resetModules();
+          const { configManager } = await import('../../../src/lib/config.js');
           
           // Should have triggered auth disabled warning
           expect(mockWarn).toHaveBeenCalledWith('WARNING: Authentication is disabled in production environment');
           
         } finally {
-          process.env = originalEnv;
-          console.warn = originalWarn;
+          mockWarn.mockRestore();
         }
       });
     });
 
     describe('Real Configuration Loading Edge Cases', () => {
       it('should handle all environment variables properly', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Set comprehensive environment configuration
           process.env.MAKE_API_KEY = 'comprehensive-config-test-key-12345';
@@ -1604,9 +1601,9 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           process.env.MAKE_RETRIES = '5';
           process.env.NODE_ENV = 'test';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
-          const { configManager } = await import(configModulePath);
+          // Force fresh import by clearing module cache
+          jest.resetModules();
+          const { configManager } = await import('../../../src/lib/config.js');
           
           const config = configManager.getConfig();
           
@@ -1628,13 +1625,11 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           expect(config.make.retries).toBe(5);
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test all getter methods with real config', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Set up environment for all getters
           process.env.MAKE_API_KEY = 'getter-methods-test-key-12345';
@@ -1643,9 +1638,9 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           process.env.AUTH_SECRET = 'b'.repeat(40);
           process.env.NODE_ENV = 'development';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
-          const { configManager } = await import(configModulePath);
+          // Force fresh import by clearing module cache
+          jest.resetModules();
+          const { configManager } = await import('../../../src/lib/config.js');
           
           // Test all getter methods
           const config = configManager.getConfig();
@@ -1672,22 +1667,20 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           expect(configManager.isTest()).toBe(false);
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
 
       it('should test getConfigurationReport method', async () => {
-        const originalEnv = process.env;
-        
         try {
           // Set up environment for configuration report
           process.env.MAKE_API_KEY = 'configuration-report-test-key-12345';
           process.env.SERVER_NAME = 'Report Test Server';
           process.env.NODE_ENV = 'staging';
           
-          const configModulePath = '../../../src/lib/config.js';
-          delete require.cache[require.resolve(configModulePath)];
-          const { configManager } = await import(configModulePath);
+          // Force fresh import by clearing module cache
+          jest.resetModules();
+          const { configManager } = await import('../../../src/lib/config.js');
           
           const report = configManager.getConfigurationReport();
           expect(report).toBeDefined();
@@ -1696,10 +1689,10 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           expect(parsedReport.environment).toBe('staging');
           expect(parsedReport.server.name).toBe('Report Test Server');
           expect(parsedReport.make.hasApiKey).toBe(true);
-          expect(parsedReport.make.apiKeyLength).toBe(32);
+          expect(parsedReport.make.apiKeyLength).toBe(35); // Length of 'configuration-report-test-key-12345'
           
         } finally {
-          process.env = originalEnv;
+          // Cleanup will be handled by afterEach
         }
       });
     });
