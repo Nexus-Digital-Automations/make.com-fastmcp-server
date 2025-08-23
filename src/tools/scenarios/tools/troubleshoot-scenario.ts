@@ -31,83 +31,185 @@ export function createTroubleshootScenarioTool(context: ToolContext): ToolDefini
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
-        const {
-          scenarioId,
-          diagnosticTypes = ['all'],
-          includeRecommendations = true,
-          includePerformanceHistory = true,
-          severityFilter,
-          autoFix = false,
-          timeRange
-        } = args as {
-          scenarioId?: string;
-          diagnosticTypes?: string[];
-          includeRecommendations?: boolean;
-          includePerformanceHistory?: boolean;
-          severityFilter?: string;
-          autoFix?: boolean;
-          timeRange?: { hours?: number };
-        };
-
-        if (!scenarioId) {
-          throw new UserError('Scenario ID is required');
-        }
-
-        const timeRangeHours = timeRange?.hours || 24;
-
-        reportProgress?.({ progress: 10, total: 100 });
-
-        // Fetch scenario for analysis
-        const scenario = await fetchScenarioForTroubleshooting(
-          apiClient, 
-          scenarioId
-        );
-
-        reportProgress?.({ progress: 30, total: 100 });
-
-        log?.info?.('Fetched scenario for troubleshooting', { 
-          scenarioId: scenarioId,
-          timeRangeHours 
-        });
-
-        // Generate comprehensive troubleshooting report
-        const troubleshootingReport = await generateSingleScenarioTroubleshootingReport(
-          scenario,
-          timeRangeHours,
-          diagnosticTypes,
-          includeRecommendations,
-          includePerformanceHistory,
-          severityFilter,
-          autoFix
-        );
-
-        reportProgress?.({ progress: 100, total: 100 });
-
-        log?.info?.('Scenario troubleshooting completed', {
-          scenarioId: scenarioId,
-          reportGenerated: true,
-          timeRangeHours
-        });
-
-        return formatSuccessResponse({
-          report: troubleshootingReport,
-          summary: {
-            scenarioId: scenarioId,
-            diagnosticsRun: diagnosticTypes,
-            timeRangeHours,
-            recommendationsIncluded: includeRecommendations,
-            performanceHistoryIncluded: includePerformanceHistory,
-            autoFixAttempted: autoFix
-          }
-        }).content[0].text;
+        const parsedArgs = parseTroubleshootArgs(args);
+        validateTroubleshootArgs(parsedArgs);
         
+        const scenario = await performScenarioFetch(apiClient, parsedArgs.scenarioId!, reportProgress);
+        const troubleshootingReport = await performTroubleshootingAnalysis(
+          scenario, parsedArgs, reportProgress
+        );
+        
+        logTroubleshootingCompletion(log, parsedArgs);
+        
+        return formatTroubleshootingResponse(
+          troubleshootingReport, 
+          parsedArgs
+        );
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error?.('Scenario troubleshooting failed', { error: errorMessage });
-        throw new UserError(`Scenario troubleshooting failed: ${errorMessage}`);
+        handleTroubleshootingError(log, error);
+        throw error;
       }
     },
   };
+}
+
+/**
+ * Parse troubleshoot scenario arguments
+ */
+function parseTroubleshootArgs(args: unknown): {
+  scenarioId?: string;
+  diagnosticTypes?: string[];
+  includeRecommendations?: boolean;
+  includePerformanceHistory?: boolean;
+  severityFilter?: string;
+  autoFix?: boolean;
+  timeRange?: { hours?: number };
+} {
+  const {
+    scenarioId,
+    diagnosticTypes = ['all'],
+    includeRecommendations = true,
+    includePerformanceHistory = true,
+    severityFilter,
+    autoFix = false,
+    timeRange
+  } = args as {
+    scenarioId?: string;
+    diagnosticTypes?: string[];
+    includeRecommendations?: boolean;
+    includePerformanceHistory?: boolean;
+    severityFilter?: string;
+    autoFix?: boolean;
+    timeRange?: { hours?: number };
+  };
+
+  return {
+    scenarioId,
+    diagnosticTypes,
+    includeRecommendations,
+    includePerformanceHistory,
+    severityFilter,
+    autoFix,
+    timeRange
+  };
+}
+
+/**
+ * Validate troubleshoot scenario arguments
+ */
+function validateTroubleshootArgs(parsedArgs: { scenarioId?: string }): void {
+  if (!parsedArgs.scenarioId) {
+    throw new UserError('Scenario ID is required');
+  }
+}
+
+/**
+ * Perform scenario fetch with progress reporting
+ */
+async function performScenarioFetch(
+  apiClient: MakeApiClient,
+  scenarioId: string,
+  reportProgress: (progress: { progress: number; total: number }) => void
+): Promise<unknown> {
+  reportProgress({ progress: 10, total: 100 });
+  
+  const scenario = await fetchScenarioForTroubleshooting(apiClient, scenarioId);
+  
+  reportProgress({ progress: 30, total: 100 });
+  
+  return scenario;
+}
+
+/**
+ * Perform troubleshooting analysis
+ */
+async function performTroubleshootingAnalysis(
+  scenario: unknown,
+  parsedArgs: {
+    diagnosticTypes?: string[];
+    includeRecommendations?: boolean;
+    includePerformanceHistory?: boolean;
+    severityFilter?: string;
+    autoFix?: boolean;
+    timeRange?: { hours?: number };
+  },
+  reportProgress: (progress: { progress: number; total: number }) => void
+): Promise<unknown> {
+  const timeRangeHours = parsedArgs.timeRange?.hours || 24;
+  
+  const troubleshootingReport = await generateSingleScenarioTroubleshootingReport(
+    scenario,
+    timeRangeHours,
+    parsedArgs.diagnosticTypes || ['all'],
+    parsedArgs.includeRecommendations || true,
+    parsedArgs.includePerformanceHistory || true,
+    parsedArgs.severityFilter,
+    parsedArgs.autoFix || false
+  );
+  
+  reportProgress({ progress: 100, total: 100 });
+  
+  return troubleshootingReport;
+}
+
+/**
+ * Log troubleshooting completion
+ */
+function logTroubleshootingCompletion(
+  log: { info?: (message: string, meta?: unknown) => void },
+  parsedArgs: { scenarioId?: string; timeRange?: { hours?: number } }
+): void {
+  const timeRangeHours = parsedArgs.timeRange?.hours || 24;
+  
+  log?.info?.('Scenario troubleshooting completed', {
+    scenarioId: parsedArgs.scenarioId,
+    reportGenerated: true,
+    timeRangeHours
+  });
+}
+
+/**
+ * Format troubleshooting response
+ */
+function formatTroubleshootingResponse(
+  troubleshootingReport: unknown,
+  parsedArgs: {
+    scenarioId?: string;
+    diagnosticTypes?: string[];
+    includeRecommendations?: boolean;
+    includePerformanceHistory?: boolean;
+    autoFix?: boolean;
+    timeRange?: { hours?: number };
+  }
+): string {
+  const timeRangeHours = parsedArgs.timeRange?.hours || 24;
+  
+  return formatSuccessResponse({
+    report: troubleshootingReport,
+    summary: {
+      scenarioId: parsedArgs.scenarioId,
+      diagnosticsRun: parsedArgs.diagnosticTypes,
+      timeRangeHours,
+      recommendationsIncluded: parsedArgs.includeRecommendations,
+      performanceHistoryIncluded: parsedArgs.includePerformanceHistory,
+      autoFixAttempted: parsedArgs.autoFix
+    }
+  }).content[0].text;
+}
+
+/**
+ * Handle troubleshooting errors
+ */
+function handleTroubleshootingError(
+  log: { error?: (message: string, meta?: unknown) => void },
+  error: unknown
+): void {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  log?.error?.('Scenario troubleshooting failed', { error: errorMessage });
+  
+  if (!(error instanceof UserError)) {
+    throw new UserError(`Scenario troubleshooting failed: ${errorMessage}`);
+  }
 }
 
 /**
@@ -187,120 +289,25 @@ export function createGenerateTroubleshootingReportTool(context: ToolContext): T
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
-        const {
-          scenarioIds,
-          reportOptions = {},
-          analysisFilters = {},
-          comparisonBaseline = {}
-        } = args as {
-          scenarioIds?: string[];
-          reportOptions?: {
-            includeExecutiveSummary?: boolean;
-            includeActionPlan?: boolean;
-            includeRecommendationTimeline?: boolean;
-            formatType?: string;
-          };
-          analysisFilters?: {
-            timeRangeHours?: number;
-            severityThreshold?: string;
-            maxScenariosToAnalyze?: number;
-          };
-          comparisonBaseline?: {
-            compareToHistorical?: boolean;
-            baselineTimeRangeHours?: number;
-            includeBenchmarks?: boolean;
-          };
-        };
-
-        const timeRangeHours = analysisFilters.timeRangeHours || 24;
-
-        reportProgress?.({ progress: 10, total: 100 });
-
-        // Fetch scenarios for analysis
-        let scenarios: unknown[] = [];
-        if (scenarioIds && scenarioIds.length > 0) {
-          // Fetch specific scenarios
-          for (const scenarioId of scenarioIds) {
-            const response = await apiClient.get(`/scenarios/${scenarioId}`);
-            if (response.success) {
-              scenarios.push(response.data);
-            }
-          }
-        } else {
-          // Fetch all scenarios
-          const response = await apiClient.get('/scenarios');
-          if (response.success) {
-            scenarios = response.data as unknown[];
-          }
-        }
-
-        if (scenarios.length === 0) {
-          return formatSuccessResponse({
-            message: 'No scenarios found for analysis',
-            timestamp: new Date().toISOString()
-          }).content[0].text;
-        }
-
-        reportProgress?.({ progress: 60, total: 100 });
-
-        // Generate comprehensive report
-        const report = {
-          reportId: 'report_' + Date.now(),
-          generatedAt: new Date().toISOString(),
-          executiveSummary: {
-            totalScenarios: scenarios.length,
-            healthyScenarios: Math.floor(scenarios.length * 0.8),
-            warningScenarios: Math.floor(scenarios.length * 0.15),
-            criticalScenarios: Math.floor(scenarios.length * 0.05),
-            systemHealthScore: 85
-          },
-          findings: {
-            commonIssues: [
-              {
-                pattern: 'Slow API response times',
-                frequency: Math.floor(scenarios.length * 0.3),
-                severity: 'medium',
-                affectedScenarios: scenarioIds || scenarios.slice(0, 3).map(s => (s as { id: string }).id)
-              }
-            ],
-            recommendations: [
-              'Implement connection pooling for database operations',
-              'Add retry logic for external API calls',
-              'Optimize webhook payload processing'
-            ]
-          },
-          actionPlan: reportOptions.includeActionPlan ? {
-            immediate: ['Fix critical authentication errors'],
-            shortTerm: ['Optimize performance bottlenecks'],
-            longTerm: ['Implement comprehensive monitoring']
-          } : undefined,
-          metadata: {
-            timeRangeHours,
-            analysisFilters,
-            comparisonBaseline,
-            formatType: reportOptions.formatType || 'json'
-          }
-        };
-
-        log?.info?.('Troubleshooting report generated successfully', {
-          reportId: report.reportId,
-          scenarioCount: scenarios.length,
-          formatType: reportOptions.formatType || 'json'
-        });
-
-        return formatSuccessResponse({
-          report: report,
-          summary: {
-            totalScenarios: scenarios.length,
-            reportGenerated: true,
-            timestamp: new Date().toISOString()
-          }
-        }).content[0].text;
+        const parsedReportArgs = parseReportGenerationArgs(args);
+        const scenarios = await fetchScenariosForReport(apiClient, parsedReportArgs, reportProgress);
         
+        if (scenarios.length === 0) {
+          return formatEmptyReportResponse();
+        }
+        
+        const report = generateComprehensiveReport(
+          scenarios, 
+          parsedReportArgs, 
+          reportProgress
+        );
+        
+        logReportGeneration(log, report, scenarios.length, parsedReportArgs.reportOptions);
+        
+        return formatReportResponse(report, scenarios.length);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error?.('Troubleshooting report generation failed', { error: errorMessage });
-        throw new UserError(`Troubleshooting report generation failed: ${errorMessage}`);
+        handleReportGenerationError(log, error);
+        throw error;
       }
     },
   };
@@ -535,4 +542,225 @@ async function generateSecurityAssessment(_scenarios: unknown[]): Promise<unknow
       secretsManagement: 'compliant'
     }
   };
+}
+
+/**
+ * Parse report generation arguments
+ */
+function parseReportGenerationArgs(args: unknown): {
+  scenarioIds?: string[];
+  reportOptions: {
+    includeExecutiveSummary?: boolean;
+    includeActionPlan?: boolean;
+    includeRecommendationTimeline?: boolean;
+    formatType?: string;
+  };
+  analysisFilters: {
+    timeRangeHours?: number;
+    severityThreshold?: string;
+    maxScenariosToAnalyze?: number;
+  };
+  comparisonBaseline: {
+    compareToHistorical?: boolean;
+    baselineTimeRangeHours?: number;
+    includeBenchmarks?: boolean;
+  };
+} {
+  const {
+    scenarioIds,
+    reportOptions = {},
+    analysisFilters = {},
+    comparisonBaseline = {}
+  } = args as {
+    scenarioIds?: string[];
+    reportOptions?: {
+      includeExecutiveSummary?: boolean;
+      includeActionPlan?: boolean;
+      includeRecommendationTimeline?: boolean;
+      formatType?: string;
+    };
+    analysisFilters?: {
+      timeRangeHours?: number;
+      severityThreshold?: string;
+      maxScenariosToAnalyze?: number;
+    };
+    comparisonBaseline?: {
+      compareToHistorical?: boolean;
+      baselineTimeRangeHours?: number;
+      includeBenchmarks?: boolean;
+    };
+  };
+
+  return {
+    scenarioIds,
+    reportOptions,
+    analysisFilters,
+    comparisonBaseline
+  };
+}
+
+/**
+ * Fetch scenarios for report generation
+ */
+async function fetchScenariosForReport(
+  apiClient: MakeApiClient,
+  parsedArgs: { scenarioIds?: string[] },
+  reportProgress: (progress: { progress: number; total: number }) => void
+): Promise<unknown[]> {
+  reportProgress({ progress: 10, total: 100 });
+  
+  let scenarios: unknown[] = [];
+  
+  if (parsedArgs.scenarioIds && parsedArgs.scenarioIds.length > 0) {
+    scenarios = await fetchSpecificScenarios(apiClient, parsedArgs.scenarioIds);
+  } else {
+    scenarios = await fetchAllScenarios(apiClient);
+  }
+  
+  return scenarios;
+}
+
+/**
+ * Fetch specific scenarios by IDs
+ */
+async function fetchSpecificScenarios(apiClient: MakeApiClient, scenarioIds: string[]): Promise<unknown[]> {
+  const scenarios: unknown[] = [];
+  
+  for (const scenarioId of scenarioIds) {
+    const response = await apiClient.get(`/scenarios/${scenarioId}`);
+    if (response.success) {
+      scenarios.push(response.data);
+    }
+  }
+  
+  return scenarios;
+}
+
+/**
+ * Fetch all scenarios
+ */
+async function fetchAllScenarios(apiClient: MakeApiClient): Promise<unknown[]> {
+  const response = await apiClient.get('/scenarios');
+  return response.success ? response.data as unknown[] : [];
+}
+
+/**
+ * Format empty report response
+ */
+function formatEmptyReportResponse(): string {
+  return formatSuccessResponse({
+    message: 'No scenarios found for analysis',
+    timestamp: new Date().toISOString()
+  }).content[0].text;
+}
+
+/**
+ * Generate comprehensive troubleshooting report
+ */
+function generateComprehensiveReport(
+  scenarios: unknown[],
+  parsedArgs: {
+    scenarioIds?: string[];
+    reportOptions: { includeActionPlan?: boolean; formatType?: string };
+    analysisFilters: { timeRangeHours?: number };
+    comparisonBaseline: unknown;
+  },
+  reportProgress: (progress: { progress: number; total: number }) => void
+): {
+  reportId: string;
+  generatedAt: string;
+  executiveSummary: unknown;
+  findings: unknown;
+  actionPlan?: unknown;
+  metadata: unknown;
+} {
+  reportProgress({ progress: 60, total: 100 });
+  
+  const timeRangeHours = parsedArgs.analysisFilters.timeRangeHours || 24;
+  
+  return {
+    reportId: 'report_' + Date.now(),
+    generatedAt: new Date().toISOString(),
+    executiveSummary: {
+      totalScenarios: scenarios.length,
+      healthyScenarios: Math.floor(scenarios.length * 0.8),
+      warningScenarios: Math.floor(scenarios.length * 0.15),
+      criticalScenarios: Math.floor(scenarios.length * 0.05),
+      systemHealthScore: 85
+    },
+    findings: {
+      commonIssues: [
+        {
+          pattern: 'Slow API response times',
+          frequency: Math.floor(scenarios.length * 0.3),
+          severity: 'medium',
+          affectedScenarios: parsedArgs.scenarioIds || scenarios.slice(0, 3).map(s => (s as { id: string }).id)
+        }
+      ],
+      recommendations: [
+        'Implement connection pooling for database operations',
+        'Add retry logic for external API calls',
+        'Optimize webhook payload processing'
+      ]
+    },
+    actionPlan: parsedArgs.reportOptions.includeActionPlan ? {
+      immediate: ['Fix critical authentication errors'],
+      shortTerm: ['Optimize performance bottlenecks'],
+      longTerm: ['Implement comprehensive monitoring']
+    } : undefined,
+    metadata: {
+      timeRangeHours,
+      analysisFilters: parsedArgs.analysisFilters,
+      comparisonBaseline: parsedArgs.comparisonBaseline,
+      formatType: parsedArgs.reportOptions.formatType || 'json'
+    }
+  };
+}
+
+/**
+ * Log report generation success
+ */
+function logReportGeneration(
+  log: { info?: (message: string, meta?: unknown) => void },
+  report: { reportId: string },
+  scenarioCount: number,
+  reportOptions: { formatType?: string }
+): void {
+  log?.info?.('Troubleshooting report generated successfully', {
+    reportId: report.reportId,
+    scenarioCount,
+    formatType: reportOptions.formatType || 'json'
+  });
+}
+
+/**
+ * Format report response
+ */
+function formatReportResponse(
+  report: unknown,
+  scenarioCount: number
+): string {
+  return formatSuccessResponse({
+    report: report,
+    summary: {
+      totalScenarios: scenarioCount,
+      reportGenerated: true,
+      timestamp: new Date().toISOString()
+    }
+  }).content[0].text;
+}
+
+/**
+ * Handle report generation errors
+ */
+function handleReportGenerationError(
+  log: { error?: (message: string, meta?: unknown) => void },
+  error: unknown
+): void {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  log?.error?.('Troubleshooting report generation failed', { error: errorMessage });
+  
+  if (!(error instanceof UserError)) {
+    throw new UserError(`Troubleshooting report generation failed: ${errorMessage}`);
+  }
 }

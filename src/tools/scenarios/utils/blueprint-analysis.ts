@@ -1,5 +1,5 @@
 /**
- * @fileoverview Blueprint Analysis Utilities
+ * @fileoverview Blueprint Analysis Utilities - Refactored
  * 
  * Provides comprehensive blueprint validation, structure analysis, and security checks
  * for Make.com blueprint files. Includes utilities for connection extraction and
@@ -37,6 +37,13 @@ export interface Blueprint {
   [key: string]: unknown;
 }
 
+// Type for validation results
+type ValidationResult = {
+  errors: string[];
+  warnings: string[];
+  securityIssues: Array<{ type: string; description: string; severity: 'low' | 'medium' | 'high' | 'critical' }>;
+};
+
 // Zod schemas for validation
 export const ValidateBlueprintSchema = z.object({
   blueprint: z.any().describe('Blueprint JSON to validate against Make.com schema'),
@@ -57,163 +64,291 @@ export function validateBlueprintStructure(blueprint: unknown, strict: boolean =
   warnings: string[]; 
   securityIssues: Array<{ type: string; description: string; severity: 'low' | 'medium' | 'high' | 'critical' }>; 
 } {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const securityIssues: Array<{ type: string; description: string; severity: 'low' | 'medium' | 'high' | 'critical' }> = [];
+  const result: ValidationResult = {
+    errors: [],
+    warnings: [],
+    securityIssues: []
+  };
 
   try {
-    // Check if blueprint is an object
-    if (!blueprint || typeof blueprint !== 'object') {
-      errors.push('Blueprint must be a valid JSON object');
-      return { isValid: false, errors, warnings, securityIssues };
+    if (!validateBlueprintObject(blueprint, result)) {
+      return { isValid: false, ...result };
     }
 
     const bp = blueprint as Blueprint;
-
-    // Validate required top-level properties
-    if (!bp.name || typeof bp.name !== 'string') {
-      errors.push('Blueprint must have a name property of type string');
-    }
-
-    if (!bp.flow || !Array.isArray(bp.flow)) {
-      errors.push('Blueprint must have a flow property containing an array of modules');
-    }
-
-    if (!bp.metadata || typeof bp.metadata !== 'object') {
-      errors.push('Blueprint must have metadata property');
-    } else {
-      // Validate metadata structure
-      if (typeof bp.metadata.version !== 'number') {
-        errors.push('Blueprint metadata must include version number');
-      }
-
-      if (!bp.metadata.scenario || typeof bp.metadata.scenario !== 'object') {
-        errors.push('Blueprint metadata must include scenario configuration');
-      } else {
-        const scenario = bp.metadata.scenario;
-        
-        // Check critical scenario settings
-        if (typeof scenario.roundtrips !== 'number' || scenario.roundtrips < 1) {
-          warnings.push('Scenario roundtrips should be a positive number');
-        }
-        
-        if (typeof scenario.maxErrors !== 'number' || scenario.maxErrors < 0) {
-          warnings.push('Scenario maxErrors should be a non-negative number');
-        }
-
-        if (typeof scenario.autoCommit !== 'boolean') {
-          warnings.push('Scenario autoCommit should be a boolean value');
-        }
-
-        if (typeof scenario.sequential !== 'boolean') {
-          warnings.push('Scenario sequential should be a boolean value');
-        }
-
-        if (typeof scenario.confidential !== 'boolean') {
-          warnings.push('Scenario confidential should be a boolean value');
-        }
-      }
-    }
-
-    // Validate flow modules
-    if (bp.flow && Array.isArray(bp.flow)) {
-      bp.flow.forEach((module: BlueprintModule, index: number) => {
-        if (!module || typeof module !== 'object') {
-          errors.push(`Module at index ${index} must be an object`);
-          return;
-        }
-
-        if (typeof module.id !== 'number' || module.id < 1) {
-          errors.push(`Module at index ${index} must have a positive numeric id`);
-        }
-
-        if (!module.module || typeof module.module !== 'string') {
-          errors.push(`Module at index ${index} must have a module type string`);
-        }
-
-        if (typeof module.version !== 'number' || module.version < 1) {
-          errors.push(`Module at index ${index} must have a positive version number`);
-        }
-
-        // Security checks
-        if (module.parameters) {
-          const paramStr = JSON.stringify(module.parameters).toLowerCase();
-          
-          // Check for potential hardcoded secrets
-          const secretPatterns = ['password', 'secret', 'token', 'apikey', 'api_key', 'key'];
-          secretPatterns.forEach(pattern => {
-            if (paramStr.includes(pattern) && paramStr.includes('=')) {
-              securityIssues.push({
-                type: 'potential_hardcoded_secret',
-                description: `Module ${module.id} may contain hardcoded secrets in parameters`,
-                severity: 'high'
-              });
-            }
-          });
-
-          // Check for URLs with credentials
-          const urlWithCredentialsPattern = /https?:\/\/[^:/\s]+:[^@/\s]+@/;
-          if (urlWithCredentialsPattern.test(paramStr)) {
-            securityIssues.push({
-              type: 'credentials_in_url',
-              description: `Module ${module.id} contains credentials in URL parameters`,
-              severity: 'critical'
-            });
-          }
-        }
-
-        // Performance warnings
-        if (strict) {
-          if (!module.metadata) {
-            warnings.push(`Module ${module.id} is missing metadata (recommended for better performance)`);
-          }
-
-          if (module.connection && typeof module.connection !== 'number') {
-            warnings.push(`Module ${module.id} has invalid connection reference`);
-          }
-        }
-      });
-
-      // Check for duplicate module IDs
-      const moduleIds = bp.flow.map((m: BlueprintModule) => m.id).filter((id: number | undefined): id is number => typeof id === 'number');
-      const duplicateIds = moduleIds.filter((id: number, index: number) => moduleIds.indexOf(id) !== index);
-      if (duplicateIds.length > 0) {
-        errors.push(`Duplicate module IDs found: ${duplicateIds.join(', ')}`);
-      }
-
-      // Check for sequential module ID gaps (warning only)
-      const sortedIds = Array.from(new Set(moduleIds)).sort((a: number, b: number) => a - b);
-      for (let i = 1; i < sortedIds.length; i++) {
-        if (sortedIds[i] - sortedIds[i - 1] > 1) {
-          warnings.push(`Non-sequential module IDs detected (gap between ${sortedIds[i - 1]} and ${sortedIds[i]})`);
-          break;
-        }
-      }
-    }
-
-    // Additional security checks
-    if (bp.metadata?.scenario?.confidential === false) {
-      securityIssues.push({
-        type: 'non_confidential_scenario',
-        description: 'Scenario is not marked as confidential - consider security implications',
-        severity: 'low'
-      });
-    }
-
-    if (bp.metadata?.scenario?.dlq === false) {
-      warnings.push('Dead Letter Queue is disabled - failed executions may be lost');
-    }
+    
+    validateBlueprintTopLevel(bp, result);
+    validateBlueprintMetadata(bp, result);
+    validateBlueprintFlow(bp, result, strict);
+    performAdditionalSecurityChecks(bp, result);
 
   } catch (error) {
-    errors.push(`Blueprint validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    result.errors.push(`Blueprint validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 
   return {
-    isValid: errors.length === 0,
-    errors,
-    warnings,
-    securityIssues
+    isValid: result.errors.length === 0,
+    ...result
   };
+}
+
+/**
+ * Validate that blueprint is a valid object
+ */
+function validateBlueprintObject(blueprint: unknown, result: ValidationResult): boolean {
+  if (!blueprint || typeof blueprint !== 'object') {
+    result.errors.push('Blueprint must be a valid JSON object');
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Validate top-level blueprint properties
+ */
+function validateBlueprintTopLevel(bp: Blueprint, result: ValidationResult): void {
+  if (!bp.name || typeof bp.name !== 'string') {
+    result.errors.push('Blueprint must have a name property of type string');
+  }
+
+  if (!bp.flow || !Array.isArray(bp.flow)) {
+    result.errors.push('Blueprint must have a flow property containing an array of modules');
+  }
+
+  if (!bp.metadata || typeof bp.metadata !== 'object') {
+    result.errors.push('Blueprint must have metadata property');
+  }
+}
+
+/**
+ * Validate blueprint metadata structure
+ */
+function validateBlueprintMetadata(bp: Blueprint, result: ValidationResult): void {
+  if (!bp.metadata || typeof bp.metadata !== 'object') {
+    return; // Already validated in top-level
+  }
+
+  validateMetadataVersion(bp.metadata, result);
+  validateScenarioConfiguration(bp.metadata, result);
+}
+
+/**
+ * Validate metadata version
+ */
+function validateMetadataVersion(metadata: NonNullable<Blueprint['metadata']>, result: ValidationResult): void {
+  if (typeof metadata.version !== 'number') {
+    result.errors.push('Blueprint metadata must include version number');
+  }
+}
+
+/**
+ * Validate scenario configuration in metadata
+ */
+function validateScenarioConfiguration(metadata: NonNullable<Blueprint['metadata']>, result: ValidationResult): void {
+  if (!metadata.scenario || typeof metadata.scenario !== 'object') {
+    result.errors.push('Blueprint metadata must include scenario configuration');
+    return;
+  }
+
+  const scenario = metadata.scenario;
+  validateScenarioSettings(scenario, result);
+}
+
+/**
+ * Validate individual scenario settings
+ */
+function validateScenarioSettings(scenario: NonNullable<Blueprint['metadata']>['scenario'], result: ValidationResult): void {
+  if (!scenario) return;
+
+  if (typeof scenario.roundtrips !== 'number' || scenario.roundtrips < 1) {
+    result.warnings.push('Scenario roundtrips should be a positive number');
+  }
+  
+  if (typeof scenario.maxErrors !== 'number' || scenario.maxErrors < 0) {
+    result.warnings.push('Scenario maxErrors should be a non-negative number');
+  }
+
+  if (typeof scenario.autoCommit !== 'boolean') {
+    result.warnings.push('Scenario autoCommit should be a boolean value');
+  }
+
+  if (typeof scenario.sequential !== 'boolean') {
+    result.warnings.push('Scenario sequential should be a boolean value');
+  }
+
+  if (typeof scenario.confidential !== 'boolean') {
+    result.warnings.push('Scenario confidential should be a boolean value');
+  }
+}
+
+/**
+ * Validate blueprint flow modules
+ */
+function validateBlueprintFlow(bp: Blueprint, result: ValidationResult, strict: boolean): void {
+  if (!bp.flow || !Array.isArray(bp.flow)) {
+    return; // Already validated in top-level
+  }
+
+  bp.flow.forEach((module, index) => {
+    validateIndividualModule(module, index, result, strict);
+  });
+
+  validateModuleIds(bp.flow, result);
+}
+
+/**
+ * Validate individual module structure
+ */
+function validateIndividualModule(module: BlueprintModule, index: number, result: ValidationResult, strict: boolean): void {
+  if (!module || typeof module !== 'object') {
+    result.errors.push(`Module at index ${index} must be an object`);
+    return;
+  }
+
+  validateModuleBasicProperties(module, index, result);
+  validateModuleParameters(module, result);
+  validateModulePerformance(module, result, strict);
+}
+
+/**
+ * Validate basic module properties
+ */
+function validateModuleBasicProperties(module: BlueprintModule, index: number, result: ValidationResult): void {
+  if (typeof module.id !== 'number' || module.id < 1) {
+    result.errors.push(`Module at index ${index} must have a positive numeric id`);
+  }
+
+  if (!module.module || typeof module.module !== 'string') {
+    result.errors.push(`Module at index ${index} must have a module type string`);
+  }
+
+  if (typeof module.version !== 'number' || module.version < 1) {
+    result.errors.push(`Module at index ${index} must have a positive version number`);
+  }
+}
+
+/**
+ * Validate module parameters for security issues
+ */
+function validateModuleParameters(module: BlueprintModule, result: ValidationResult): void {
+  if (!module.parameters) return;
+
+  const paramStr = JSON.stringify(module.parameters).toLowerCase();
+  
+  checkForHardcodedSecrets(paramStr, module.id, result);
+  checkForCredentialsInUrls(paramStr, module.id, result);
+}
+
+/**
+ * Check for potential hardcoded secrets
+ */
+function checkForHardcodedSecrets(paramStr: string, moduleId: number, result: ValidationResult): void {
+  const secretPatterns = ['password', 'secret', 'token', 'apikey', 'api_key', 'key'];
+  
+  secretPatterns.forEach(pattern => {
+    if (paramStr.includes(pattern) && paramStr.includes('=')) {
+      result.securityIssues.push({
+        type: 'potential_hardcoded_secret',
+        description: `Module ${moduleId} may contain hardcoded secrets in parameters`,
+        severity: 'high'
+      });
+    }
+  });
+}
+
+/**
+ * Check for credentials in URLs
+ */
+function checkForCredentialsInUrls(paramStr: string, moduleId: number, result: ValidationResult): void {
+  const urlWithCredentialsPattern = /https?:\/\/[^:\/\s]+:[^@\/\s]+@/;
+  
+  if (urlWithCredentialsPattern.test(paramStr)) {
+    result.securityIssues.push({
+      type: 'credentials_in_url',
+      description: `Module ${moduleId} contains credentials in URL parameters`,
+      severity: 'critical'
+    });
+  }
+}
+
+/**
+ * Validate module performance-related properties
+ */
+function validateModulePerformance(module: BlueprintModule, result: ValidationResult, strict: boolean): void {
+  if (!strict) return;
+
+  if (!module.metadata) {
+    result.warnings.push(`Module ${module.id} is missing metadata (recommended for better performance)`);
+  }
+
+  if (module.connection && typeof module.connection !== 'number') {
+    result.warnings.push(`Module ${module.id} has invalid connection reference`);
+  }
+}
+
+/**
+ * Validate module IDs for duplicates and sequential gaps
+ */
+function validateModuleIds(flow: BlueprintModule[], result: ValidationResult): void {
+  const moduleIds = flow.map(m => m.id).filter((id): id is number => typeof id === 'number');
+  
+  checkForDuplicateIds(moduleIds, result);
+  checkForSequentialGaps(moduleIds, result);
+}
+
+/**
+ * Check for duplicate module IDs
+ */
+function checkForDuplicateIds(moduleIds: number[], result: ValidationResult): void {
+  const duplicateIds = moduleIds.filter((id, index) => moduleIds.indexOf(id) !== index);
+  
+  if (duplicateIds.length > 0) {
+    result.errors.push(`Duplicate module IDs found: ${duplicateIds.join(', ')}`);
+  }
+}
+
+/**
+ * Check for sequential module ID gaps
+ */
+function checkForSequentialGaps(moduleIds: number[], result: ValidationResult): void {
+  const sortedIds = Array.from(new Set(moduleIds)).sort((a, b) => a - b);
+  
+  for (let i = 1; i < sortedIds.length; i++) {
+    if (sortedIds[i] - sortedIds[i - 1] > 1) {
+      result.warnings.push(`Non-sequential module IDs detected (gap between ${sortedIds[i - 1]} and ${sortedIds[i]})`);
+      break;
+    }
+  }
+}
+
+/**
+ * Perform additional security checks
+ */
+function performAdditionalSecurityChecks(bp: Blueprint, result: ValidationResult): void {
+  checkConfidentialMode(bp, result);
+  checkDeadLetterQueue(bp, result);
+}
+
+/**
+ * Check confidential mode setting
+ */
+function checkConfidentialMode(bp: Blueprint, result: ValidationResult): void {
+  if (bp.metadata?.scenario?.confidential === false) {
+    result.securityIssues.push({
+      type: 'non_confidential_scenario',
+      description: 'Scenario is not marked as confidential - consider security implications',
+      severity: 'low'
+    });
+  }
+}
+
+/**
+ * Check Dead Letter Queue setting
+ */
+function checkDeadLetterQueue(bp: Blueprint, result: ValidationResult): void {
+  if (bp.metadata?.scenario?.dlq === false) {
+    result.warnings.push('Dead Letter Queue is disabled - failed executions may be lost');
+  }
 }
 
 // Connection extraction function
