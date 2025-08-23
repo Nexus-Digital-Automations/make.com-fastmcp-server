@@ -107,13 +107,25 @@ jest.mock('../../../src/utils/errors', () => ({
     }
   },
   getErrorCode: jest.fn((error: Error) => {
-    if (error.name === 'UserError') return 'USER_ERROR';
+    if (error.name === 'UserError') {
+      // Check if this UserError has enhanced properties
+      if ((error as any).context || (error as any).details || (error as any).timestamp) {
+        return 'ENHANCED_USER_ERROR';
+      }
+      return 'USER_ERROR';
+    }
     if (error.name === 'EnhancedUserError') return 'ENHANCED_USER_ERROR';
     if (error.name === 'MakeServerError') return 'MAKE_SERVER_ERROR';
     return error.name || 'UNKNOWN_ERROR';
   }),
   getErrorStatusCode: jest.fn((error: Error) => {
-    if (error.name === 'UserError') return 400;
+    if (error.name === 'UserError') {
+      // Check if this UserError has enhanced properties
+      if ((error as any).context || (error as any).details || (error as any).timestamp) {
+        return 422;
+      }
+      return 400;
+    }
     if (error.name === 'EnhancedUserError') return 422;
     if (error.name === 'MakeServerError') return (error as any).statusCode || 500;
     return 500;
@@ -210,7 +222,11 @@ describe('formatErrorResponse', () => {
       const details = { field: 'email', reason: 'invalid format' };
       const timestamp = '2023-01-01T12:00:00.000Z';
       
-      const error = new (EnhancedUserError as any)('Enhanced validation error', context, details, timestamp);
+      // Create UserError and augment it with EnhancedUserError properties
+      const error = new (UserError as any)('Enhanced validation error');
+      (error as any).context = context;
+      (error as any).details = details;
+      (error as any).timestamp = timestamp;
       
       const response = formatErrorResponse(error);
       

@@ -269,10 +269,15 @@ export function extractCorrelationId(context: {
   correlationId?: string;
   session?: Record<string, unknown>;
 }): string {
+  // Helper function to validate correlation ID is a non-empty string
+  const isValidCorrelationId = (value: unknown): value is string => {
+    return typeof value === 'string' && value.length > 0;
+  };
+
   return (
-    context.correlationId ||
-    context.headers?.['x-correlation-id'] ||
-    (context.session?.correlationId as string) ||
+    (isValidCorrelationId(context.correlationId) ? context.correlationId : null) ||
+    (isValidCorrelationId(context.headers?.['x-correlation-id']) ? context.headers['x-correlation-id'] : null) ||
+    (isValidCorrelationId(context.session?.correlationId) ? context.session.correlationId : null) ||
     randomUUID()
   );
 }
