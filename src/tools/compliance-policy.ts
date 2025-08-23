@@ -367,6 +367,144 @@ class CompliancePolicyStore {
 }
 
 /**
+ * Helper function to validate policy framework requirements
+ */
+async function validatePolicyFramework(
+  input: z.infer<typeof CompliancePolicySchema>,
+  log: { info: (message: string, data?: unknown) => void }
+): Promise<void> {
+  log.info('Validating regulatory framework requirements');
+  const frameworkValidation = await validateFrameworkRequirements(input.framework, input.controls);
+  
+  if (!frameworkValidation.valid) {
+    throw new UserError(`Framework validation failed: ${frameworkValidation.errors.join(', ')}`);
+  }
+}
+
+/**
+ * Helper function to log policy creation audit event
+ */
+async function logPolicyCreationAudit(
+  policyId: string,
+  input: z.infer<typeof CompliancePolicySchema>
+): Promise<void> {
+  await auditLogger.logEvent({
+    level: 'info',
+    category: 'system',
+    action: 'compliance_policy_created',
+    resource: `policy/${policyId}`,
+    success: true,
+    details: {
+      policyId,
+      policyName: input.policyName,
+      frameworks: input.framework,
+      scope: input.scope,
+      controlsCount: {
+        preventive: input.controls.preventive.length,
+        detective: input.controls.detective.length,
+        corrective: input.controls.corrective.length,
+        compensating: input.controls.compensating?.length || 0,
+      },
+      automatedChecksCount: input.enforcement.automatedChecks.length,
+      continuousMonitoring: input.monitoring?.continuousMonitoring || false,
+    },
+    riskLevel: 'low',
+  });
+}
+
+/**
+ * Helper function to initialize continuous monitoring if enabled
+ */
+async function initializeMonitoringIfEnabled(
+  input: z.infer<typeof CompliancePolicySchema>,
+  log: { info: (message: string, data?: unknown) => void },
+  reportProgress: (progress: { progress: number; total: number }) => void
+): Promise<void> {
+  if (input.monitoring?.continuousMonitoring) {
+    log.info('Initializing continuous compliance monitoring');
+    // In a real implementation, this would set up monitoring infrastructure
+    reportProgress({ progress: 80, total: 100 });
+  }
+}
+
+/**
+ * Helper function to build policy creation result
+ */
+function buildPolicyCreationResult(
+  policyId: string,
+  created: boolean,
+  input: z.infer<typeof CompliancePolicySchema>,
+  initialAssessment: Record<string, unknown>
+): Record<string, unknown> {
+  return {
+    success: true,
+    policyId,
+    status: 'active',
+    created,
+    policy: {
+      name: input.policyName,
+      version: input.version,
+      frameworks: input.framework,
+      effectiveDate: input.effectiveDate,
+      scope: input.scope,
+    },
+    controls: {
+      preventive: input.controls.preventive.length,
+      detective: input.controls.detective.length,
+      corrective: input.controls.corrective.length,
+      compensating: input.controls.compensating?.length || 0,
+      total: input.controls.preventive.length + input.controls.detective.length + input.controls.corrective.length + (input.controls.compensating?.length || 0),
+    },
+    enforcement: {
+      automatedChecks: input.enforcement.automatedChecks.length,
+      enforcementActions: input.enforcement.violations.actions.length,
+      reportingFrequency: input.enforcement.reporting.frequency,
+      reportFormats: input.enforcement.reporting.format,
+    },
+    monitoring: {
+      continuousMonitoring: input.monitoring?.continuousMonitoring || false,
+      alertChannels: input.monitoring?.alerting.channels || [],
+      complianceScoring: input.monitoring?.metrics?.complianceScore || false,
+      riskScoring: input.monitoring?.metrics?.riskScore || false,
+    },
+    integration: {
+      makeComIntegration: input.integration?.makeComIntegration || {},
+      externalSystems: input.integration?.externalSystems || {},
+    },
+    assessment: initialAssessment,
+    auditTrail: {
+      created: true,
+      timestamp: new Date().toISOString(),
+      event: 'compliance_policy_created',
+    },
+    message: `Compliance policy '${input.policyName}' created successfully with ${input.framework.length} regulatory framework(s) and ${input.controls.preventive.length + input.controls.detective.length + input.controls.corrective.length + (input.controls.compensating?.length || 0)} controls`,
+  };
+}
+
+/**
+ * Helper function to log policy creation error
+ */
+async function logPolicyCreationError(
+  error: unknown,
+  input: z.infer<typeof CompliancePolicySchema>
+): Promise<void> {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  
+  await auditLogger.logEvent({
+    level: 'error',
+    category: 'system',
+    action: 'compliance_policy_creation_failed',
+    success: false,
+    details: {
+      policyName: input.policyName,
+      frameworks: input.framework,
+      error: errorMessage,
+    },
+    riskLevel: 'medium',
+  });
+}
+
+/**
  * Create a comprehensive compliance policy for regulatory requirements
  */
 function addCreateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
@@ -433,13 +571,8 @@ function addCreateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient
 
       try {
         // Validate regulatory framework requirements
-        log.info('Validating regulatory framework requirements');
-        const frameworkValidation = await validateFrameworkRequirements(input.framework, input.controls);
+        await validatePolicyFramework(input, log);
         reportProgress({ progress: 20, total: 100 });
-
-        if (!frameworkValidation.valid) {
-          throw new UserError(`Framework validation failed: ${frameworkValidation.errors.join(', ')}`);
-        }
 
         // Create policy in storage
         log.info('Creating policy in compliance policy store');
@@ -447,92 +580,25 @@ function addCreateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient
         reportProgress({ progress: 40, total: 100 });
 
         // Log policy creation event to audit system
-        await auditLogger.logEvent({
-          level: 'info',
-          category: 'system',
-          action: 'compliance_policy_created',
-          resource: `policy/${policyId}`,
-          success: true,
-          details: {
-            policyId,
-            policyName: input.policyName,
-            frameworks: input.framework,
-            scope: input.scope,
-            controlsCount: {
-              preventive: input.controls.preventive.length,
-              detective: input.controls.detective.length,
-              corrective: input.controls.corrective.length,
-              compensating: input.controls.compensating?.length || 0,
-            },
-            automatedChecksCount: input.enforcement.automatedChecks.length,
-            continuousMonitoring: input.monitoring?.continuousMonitoring || false,
-          },
-          riskLevel: 'low',
-        });
+        await logPolicyCreationAudit(policyId, input);
         reportProgress({ progress: 60, total: 100 });
 
         // Initialize policy monitoring if enabled
-        if (input.monitoring?.continuousMonitoring) {
-          log.info('Initializing continuous compliance monitoring');
-          // In a real implementation, this would set up monitoring infrastructure
-          reportProgress({ progress: 80, total: 100 });
-        }
+        await initializeMonitoringIfEnabled(input, log, reportProgress);
 
         // Generate initial compliance assessment
         log.info('Generating initial compliance assessment');
         const initialAssessment = await generateComplianceAssessment(policyId, input);
         reportProgress({ progress: 100, total: 100 });
 
-        const result = {
-          success: true,
-          policyId,
-          status: 'active',
-          created,
-          policy: {
-            name: input.policyName,
-            version: input.version,
-            frameworks: input.framework,
-            effectiveDate: input.effectiveDate,
-            scope: input.scope,
-          },
-          controls: {
-            preventive: input.controls.preventive.length,
-            detective: input.controls.detective.length,
-            corrective: input.controls.corrective.length,
-            compensating: input.controls.compensating?.length || 0,
-            total: input.controls.preventive.length + input.controls.detective.length + input.controls.corrective.length + (input.controls.compensating?.length || 0),
-          },
-          enforcement: {
-            automatedChecks: input.enforcement.automatedChecks.length,
-            enforcementActions: input.enforcement.violations.actions.length,
-            reportingFrequency: input.enforcement.reporting.frequency,
-            reportFormats: input.enforcement.reporting.format,
-          },
-          monitoring: {
-            continuousMonitoring: input.monitoring?.continuousMonitoring || false,
-            alertChannels: input.monitoring?.alerting.channels || [],
-            complianceScoring: input.monitoring?.metrics?.complianceScore || false,
-            riskScoring: input.monitoring?.metrics?.riskScore || false,
-          },
-          integration: {
-            makeComIntegration: input.integration?.makeComIntegration || {},
-            externalSystems: input.integration?.externalSystems || {},
-          },
-          assessment: initialAssessment,
-          auditTrail: {
-            created: true,
-            timestamp: new Date().toISOString(),
-            event: 'compliance_policy_created',
-          },
-          message: `Compliance policy '${input.policyName}' created successfully with ${input.framework.length} regulatory framework(s) and ${input.controls.preventive.length + input.controls.detective.length + input.controls.corrective.length + (input.controls.compensating?.length || 0)} controls`,
-        };
+        const result = buildPolicyCreationResult(policyId, created, input, initialAssessment);
 
         componentLogger.info('Compliance policy created successfully', {
           policyId,
           policyName: input.policyName,
           frameworks: input.framework,
-          controlsTotal: result.controls.total,
-          automatedChecks: result.enforcement.automatedChecks,
+          controlsTotal: (result.controls as { total: number }).total,
+          automatedChecks: (result.enforcement as { automatedChecks: number }).automatedChecks,
         });
 
         return formatSuccessResponse(result).content[0].text;
@@ -545,18 +611,7 @@ function addCreateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient
         });
         
         // Log error event to audit system
-        await auditLogger.logEvent({
-          level: 'error',
-          category: 'system',
-          action: 'compliance_policy_creation_failed',
-          success: false,
-          details: {
-            policyName: input.policyName,
-            frameworks: input.framework,
-            error: errorMessage,
-          },
-          riskLevel: 'medium',
-        });
+        await logPolicyCreationError(error, input);
 
         if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to create compliance policy: ${errorMessage}`);
