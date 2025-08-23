@@ -109,7 +109,11 @@ async function fetchScenariosWithParams(
     throw new UserError(`Failed to list scenarios: ${response.error?.message}`);
   }
 
-  return response;
+  return {
+    ...response,
+    data: response.data || null,
+    metadata: response.metadata || null
+  };
 }
 
 /**

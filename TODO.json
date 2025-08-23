@@ -2,9 +2,9 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755912334868_llsaknhc8",
-      "title": "Fix critical TypeScript compilation errors in SDK tools",
-      "description": "Fix all TypeScript compilation errors in src/tools/sdk.ts including missing properties, type mismatches, and FastMCP compatibility issues",
+      "id": "task_1755913122177_5y5dogl6b",
+      "title": "Fix critical TypeScript compilation errors",
+      "description": "Fix remaining TypeScript errors in procedures.ts, real-time-monitoring.ts, list-scenarios.ts, and run-scenario.ts",
       "mode": "DEVELOPMENT",
       "category": "linter-error",
       "priority": "critical",
@@ -15,7 +15,7 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T01:25:34.868Z",
+      "created_at": "2025-08-23T01:38:42.177Z",
       "auto_research_created": false
     },
     {

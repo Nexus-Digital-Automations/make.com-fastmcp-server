@@ -1240,14 +1240,14 @@ function addExecuteRemoteProcedureTool(server: FastMCP, apiClient: MakeApiClient
         reportProgress({ progress: 25, total: 100 });
 
         // Step 2: Execute remote procedure API call
-        const executionResult = await executeRemoteProcedureCall(apiClient, procedureId, executionData);
+        const executionResult = await executeRemoteProcedureCall(apiClient, procedureId.toString(), executionData);
         reportProgress({ progress: 75, total: 100 });
 
         // Step 3: Process results and extract monitoring data
-        const { result, monitoring } = processExecutionResult(executionResult, procedureId, log);
+        const { result, monitoring } = processExecutionResult(executionResult, procedureId.toString(), log);
 
         // Step 4: Format response with summary and monitoring
-        const response = formatExecutionResponse(result, procedureId, executionData, options, monitoring);
+        const response = formatExecutionResponse(result, procedureId.toString(), executionData, options, monitoring);
         
         reportProgress({ progress: 100, total: 100 });
         return response;

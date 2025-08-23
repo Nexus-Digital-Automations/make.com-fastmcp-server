@@ -21,7 +21,7 @@ import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { SSETransportEnhancer } from '../lib/sse-transport-enhancer.js';
 import PerformanceMonitor from '../lib/performance-monitor.js';
-import { formatSuccessResponse } from '../utils/response-formatter.js';
+import { formatSuccessResponse, ToolResponse } from '../utils/response-formatter.js';
 
 // Core interfaces for real-time monitoring
 interface ExecutionState {
@@ -1223,7 +1223,7 @@ function buildStartMonitoringResponse(
   executionId: string | undefined,
   config: RealTimeMonitoringConfig,
   status: Record<string, unknown>
-): { success: true; data: StartMonitoringResponseData } {
+): ToolResponse {
   return formatSuccessResponse({
     monitorId,
     scenarioId,

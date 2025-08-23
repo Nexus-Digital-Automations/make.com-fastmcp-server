@@ -50,10 +50,17 @@ export interface ConflictResolutionRequest {
 
 export interface ResolutionResult {
   conflictId: string;
-  status: 'resolved' | 'failed';
+  status: 'resolved' | 'failed' | 'skipped';
   appliedResolution?: string;
   result?: ConflictResolutionOutput;
   error?: string;
+  strategy: string;
+  aiAssisted: boolean;
+  reason?: string;
+  validation?: {
+    isValid: boolean;
+    errors?: string[];
+  };
 }
 
 export interface ConflictResolutionOutput {
@@ -70,6 +77,7 @@ export interface ResolvedBlueprint {
   status: string;
   content?: unknown;
   version?: string;
+  versionId: string;
 }
 
 export interface ValidationResults {
@@ -150,6 +158,7 @@ export interface ConflictResolution {
   resolutionStatus: 'pending' | 'in_progress' | 'resolved' | 'escalated';
   aiSuggestions: AIResolutionSuggestion[];
   lastResolutionAttempt?: string;
+  enabled: boolean;
 }
 
 // ==================== BLUEPRINT CONFLICT RESOLVER ====================
@@ -226,6 +235,8 @@ export class BlueprintConflictResolver {
           conflictId: resolution.conflictId,
           status: 'resolved',
           appliedResolution: resolution.resolution,
+          strategy: resolution.resolution,
+          aiAssisted: options.preserveUserIntent,
           result,
         });
 
@@ -239,6 +250,8 @@ export class BlueprintConflictResolver {
         resolutionResults.push({
           conflictId: resolution.conflictId,
           status: 'failed',
+          strategy: resolution.resolution,
+          aiAssisted: false,
           error: error instanceof Error ? error.message : String(error),
         });
 
@@ -469,6 +482,7 @@ export class BlueprintConflictResolver {
       resolutions: resolutionResults,
       status,
       version: `resolved_${Date.now()}`,
+      versionId: `v_resolved_${Date.now()}`,
       content: {
         resolutionSummary: {
           totalConflicts: resolutionResults.length,

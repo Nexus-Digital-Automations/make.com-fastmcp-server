@@ -273,11 +273,8 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
         reportProgress?.({ progress: 50, total: 100 });
         
         // Step 3: Handle polling if waiting for completion
-        let executionStatus = {
-          status: executionData.status,
-          completedAt: undefined as string | undefined,
-          duration: undefined as number | undefined,
-          result: undefined as unknown
+        let executionStatus: { status: string; completedAt?: string; duration?: number; result?: unknown } = {
+          status: executionData.status
         };
         
         if (typedArgs.wait) {

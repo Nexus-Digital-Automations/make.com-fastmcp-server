@@ -228,7 +228,8 @@ class BlueprintCollaborationEngine {
         conflicts: [],
         resolutionStrategy: 'auto',
         resolutionStatus: 'resolved',
-        aiSuggestions: []
+        aiSuggestions: [],
+        enabled: true
       },
       lastActivity: new Date().toISOString(),
       sessionType: 'editing',
@@ -246,7 +247,8 @@ class BlueprintCollaborationEngine {
       conflicts: [],
       resolutionStrategy: 'auto',
       resolutionStatus: 'pending',
-      aiSuggestions: []
+      aiSuggestions: [],
+      enabled: true
     };
     const resolveOptions = options as {
       resolutionStrategy: string;
@@ -270,19 +272,41 @@ class BlueprintCollaborationEngine {
     detectCircular: boolean;
     generateGraph: boolean;
     impactAnalysis: boolean;
-  }): Promise<DependencyAnalysisResult & {
+  }): Promise<{
+    dependencyGraph: {
+      nodes: any[];
+      edges: any[];
+      clusters: any[];
+      criticalPaths: any[];
+    };
+    summary: {
+      totalNodes: number;
+      totalEdges: number;
+      clusters: number;
+      criticalPaths: number;
+      circularDependencies: number;
+    };
+    complexity: {
+      overall: number;
+      mostComplex: any;
+      leastComplex: any;
+    };
+    performance: {
+      bottlenecks: string[];
+      optimizationPotential: number;
+    };
+    recommendations: string[];
     circularDependencies: CircularDependency[];
     optimizationOpportunities: OptimizationOpportunity[];
     impactAssessment?: ImpactAssessment;
-    dependencyGraph: any;
   }> {
     const result = await this.dependencyAnalyzer.analyzeDependencies(blueprintId, versionId, options);
     return {
+      dependencyGraph: result.dependencyGraph,
       ...result.analysis,
       circularDependencies: result.circularDependencies,
       optimizationOpportunities: result.optimizationOpportunities,
-      impactAssessment: result.impactAssessment || undefined,
-      dependencyGraph: result.dependencyGraph
+      impactAssessment: result.impactAssessment || undefined
     };
   }
 }
@@ -292,7 +316,34 @@ class BlueprintCollaborationEngine {
 /**
  * Generate dependency analysis report
  */
-function generateDependencyAnalysisReport(result: DependencyAnalysisResult & { circularDependencies: CircularDependency[]; optimizationOpportunities: OptimizationOpportunity[]; impactAssessment?: ImpactAssessment }): string {
+function generateDependencyAnalysisReport(result: {
+  dependencyGraph: {
+    nodes: any[];
+    edges: any[];
+    clusters: any[];
+    criticalPaths: any[];
+  };
+  summary: {
+    totalNodes: number;
+    totalEdges: number;
+    clusters: number;
+    criticalPaths: number;
+    circularDependencies: number;
+  };
+  complexity: {
+    overall: number;
+    mostComplex: any;
+    leastComplex: any;
+  };
+  performance: {
+    bottlenecks: string[];
+    optimizationPotential: number;
+  };
+  recommendations: string[];
+  circularDependencies: CircularDependency[];
+  optimizationOpportunities: OptimizationOpportunity[];
+  impactAssessment?: ImpactAssessment;
+}): string {
   return `# Blueprint Dependency Analysis Results
 
 ## 📊 Dependency Graph Overview
