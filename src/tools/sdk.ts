@@ -380,7 +380,7 @@ function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
-      const { query, category, publisher, verified, rating, features, compatibility, sortBy, sortOrder, limit, offset } = input;
+      const { query, category, publisher, verified, rating: _rating, features: _features, compatibility: _compatibility, sortBy: _sortBy, sortOrder: _sortOrder, limit, offset } = input;
 
       log.info('Searching SDK apps', {
         query,
@@ -536,7 +536,7 @@ function formatSdkAppInstallResponse(
   configuration: Record<string, unknown>;
   permissions: Record<string, unknown>;
 } {
-  const { appId, autoUpdate, configuration } = input;
+  const { appId, autoUpdate, configuration: _configuration } = input;
   
   // Type guards for installation data
   const _installationId = typeof installation.id === 'string' || typeof installation.id === 'number' ? installation.id : 'unknown';
@@ -544,7 +544,7 @@ function formatSdkAppInstallResponse(
   const installedAt = typeof installation.installedAt === 'string' ? installation.installedAt : new Date().toISOString();
   const installedVersion = typeof installation.version === 'string' ? installation.version : 'unknown';
   const installationPermissions = installation.permissions && typeof installation.permissions === 'object' ? installation.permissions : {};
-  const granted = Array.isArray(installationPermissions.granted) ? installationPermissions.granted : [];
+  const _granted = Array.isArray(installationPermissions.granted) ? installationPermissions.granted : [];
 
   return {
     installationId: _installationId,
@@ -555,7 +555,7 @@ function formatSdkAppInstallResponse(
     installedAt: installedAt,
     autoUpdate: autoUpdate,
     configuration: typeof installation.configuration === 'object' && installation.configuration !== null 
-      ? installation.configuration as Record<string, unknown>
+      ? installation.configuration
       : {},
     permissions: installationPermissions,
   };
@@ -577,7 +577,7 @@ function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { appId, version, organizationId, teamId, configuration, permissions, autoUpdate, skipValidation } = input;
+      const { appId, version, organizationId, teamId, configuration: _configuration, permissions: _permissions, autoUpdate, skipValidation } = input;
 
       log.info('Installing SDK app', {
         appId,
@@ -880,7 +880,7 @@ function addUpdateSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { appId, version, force, backup, rollbackOnFailure } = input;
+      const { appId, version, force, backup, rollbackOnFailure: _rollbackOnFailure } = input;
 
       log.info('Updating SDK app', {
         appId,
@@ -1200,7 +1200,7 @@ function addInstallWorkflowTool(server: FastMCP, apiClient: MakeApiClient): void
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { workflowId, name, teamId, folderId, configuration, autoStart, installDependencies } = input;
+      const { workflowId, name, teamId, folderId, configuration: _configuration, autoStart, installDependencies } = input;
 
       log.info('Installing workflow template', {
         workflowId,
