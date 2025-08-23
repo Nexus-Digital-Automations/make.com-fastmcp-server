@@ -224,6 +224,7 @@ const NotificationCreateSchema = z.object({
     sendAt: z.string().optional().describe('Schedule send time (ISO 8601)'),
     timezone: z.string().default('UTC').describe('Timezone for scheduling'),
     recurring: z.object({
+      enabled: z.boolean().default(true).describe('Enable recurring schedule'),
       frequency: z.enum(['daily', 'weekly', 'monthly', 'quarterly', 'yearly']).describe('Recurrence frequency'),
       interval: z.number().min(1).default(1).describe('Interval between recurrences'),
       daysOfWeek: z.array(z.number().min(0).max(6)).optional().describe('Days of week (0=Sunday)'),
@@ -349,7 +350,7 @@ function addCreateNotificationTool(server: FastMCP, apiClient: MakeApiClient, _c
     },
     execute: async (input, context): Promise<string> => {
       const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      const { type, category, priority, title, recipients, channels, schedule } = input;
+      const { type, category, priority, title, recipients, channels } = input;
 
       if (log?.info) {
         log.info('Creating notification', {
@@ -400,7 +401,7 @@ function addCreateNotificationTool(server: FastMCP, apiClient: MakeApiClient, _c
           });
         }
 
-        return formatCreateNotificationResponse(notification, title, schedule).content[0].text;
+        return formatCreateNotificationResponse(notification, title, input.schedule as MakeNotification['schedule']).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log?.error) {
@@ -896,21 +897,34 @@ function validateNotificationChannels(channels: MakeNotification['channels']): v
 function buildNotificationData(input: Record<string, unknown>): Partial<MakeNotification> {
   const { type, category, priority, title, message, data, recipients, channels, schedule, templateId, templateVariables } = input;
   
+  // Type-safe destructuring with proper type assertions
+  const typedType = type as MakeNotification['type'];
+  const typedCategory = category as MakeNotification['category'];
+  const typedPriority = priority as MakeNotification['priority'];
+  const typedTitle = title as string;
+  const typedMessage = message as string;
+  const typedData = data as Record<string, unknown> | undefined;
+  const typedRecipients = recipients as MakeNotification['recipients'];
+  const typedChannels = channels as MakeNotification['channels'];
+  const typedSchedule = schedule as MakeNotification['schedule'] | undefined;
+  const typedTemplateId = templateId as number | undefined;
+  const typedTemplateVariables = templateVariables as Record<string, unknown> | undefined;
+  
   return {
-    type,
-    category,
-    priority,
-    title,
-    message,
-    data,
-    recipients,
-    channels,
-    schedule: schedule || {},
-    template: templateId ? {
-      id: templateId,
-      variables: templateVariables,
+    type: typedType,
+    category: typedCategory,
+    priority: typedPriority,
+    title: typedTitle,
+    message: typedMessage,
+    data: typedData,
+    recipients: typedRecipients,
+    channels: typedChannels,
+    schedule: typedSchedule || {},
+    template: typedTemplateId ? {
+      id: typedTemplateId,
+      variables: typedTemplateVariables || {},
     } : undefined,
-    status: schedule?.sendAt ? 'scheduled' : 'draft',
+    status: typedSchedule?.sendAt ? 'scheduled' : 'draft',
   };
 }
 
@@ -996,7 +1010,11 @@ function addListNotificationsTool(server: FastMCP, apiClient: MakeApiClient, _co
       }
 
       try {
-        const params = buildNotificationQueryParams(input);
+        const params = buildNotificationQueryParams(
+          type, status, priority, dateRange, 
+          limit, offset, input.sortBy, input.sortOrder, 
+          includeDelivery, input.includeTracking
+        );
         const response = await apiClient.get('/notifications', { params });
 
         if (!response.success) {
