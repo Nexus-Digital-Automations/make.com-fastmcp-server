@@ -323,12 +323,15 @@ describe('Audit and Compliance Tools', () => {
 
   describe('Tool Registration', () => {
     it('should register all audit and compliance tools', async () => {
-      const { addAuditComplianceTools } = await import('../../../src/tools/audit-compliance.js');
-      addAuditComplianceTools(mockServer, mockApiClient as any);
+      // Tools are already registered in beforeEach
       
       const expectedTools = [
         'log_audit_event',
-        'generate_compliance_report',
+        'search-audit-events',
+        'generate-compliance-report',
+        'list-compliance-reports',
+        'create-security-alert',
+        'manage-security-alerts',
         'perform_audit_maintenance',
         'get_audit_configuration',
         'security_health_check',
@@ -341,17 +344,20 @@ describe('Audit and Compliance Tools', () => {
         expect(tool.name).toBe(toolName);
       });
       
-      expect(expectedTools).toHaveLength(6);
+      expect(expectedTools).toHaveLength(10);
       expect(mockTool).toHaveBeenCalledTimes(10);
     });
 
     it('should have correct tool schemas', async () => {
-      const { addAuditComplianceTools } = await import('../../../src/tools/audit-compliance.js');
-      addAuditComplianceTools(mockServer, mockApiClient as any);
+      // Tools are already registered in beforeEach
       
       const expectedTools = [
         'log_audit_event',
-        'generate_compliance_report',
+        'search-audit-events',
+        'generate-compliance-report',
+        'list-compliance-reports',
+        'create-security-alert',
+        'manage-security-alerts',
         'perform_audit_maintenance', 
         'get_audit_configuration',
         'security_health_check',
@@ -369,9 +375,7 @@ describe('Audit and Compliance Tools', () => {
   describe('log-audit-event', () => {
     describe('Basic Functionality', () => {
       test('should log a basic audit event successfully', async () => {
-        // Register tools for this test
-        const { addAuditComplianceTools } = await import('../../../src/tools/audit-compliance.js');
-        addAuditComplianceTools(mockServer, mockApiClient as any);
+        // Tools are already registered in beforeEach
         
         const mockEvent = generateMockAuditEvent();
         mockApiClient.setMockResponse('post', '/audit/events', {

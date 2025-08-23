@@ -158,9 +158,12 @@ export class AuditLogger {
   }
 
   private startBufferFlush(): void {
-    this.bufferFlushInterval = setInterval(async () => {
-      await this.flushBuffer();
-    }, 5000); // Flush every 5 seconds
+    // Only start the interval in production, not in test environments
+    if (process.env.NODE_ENV !== 'test') {
+      this.bufferFlushInterval = setInterval(async () => {
+        await this.flushBuffer();
+      }, 5000); // Flush every 5 seconds
+    }
   }
 
   /**
