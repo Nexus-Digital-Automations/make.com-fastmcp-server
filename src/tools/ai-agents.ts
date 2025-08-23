@@ -891,7 +891,15 @@ function addListLLMProvidersTool(server: FastMCP, apiClient: MakeApiClient): voi
  * Add AI agent management tools to FastMCP server
  */
 export function addAIAgentTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'AIAgentTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'AIAgentTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding AI agent management tools');
 

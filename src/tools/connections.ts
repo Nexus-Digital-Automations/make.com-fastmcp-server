@@ -45,7 +45,15 @@ import { addConnectionDiagnosticsTools } from './connections/diagnostics-manager
  * ```
  */
 export function addConnectionTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ConnectionTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'ConnectionTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding connection management tools');
 

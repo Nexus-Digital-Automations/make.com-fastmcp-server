@@ -125,7 +125,15 @@ function addListFoldersTool(server: FastMCP, apiClient: MakeApiClient, component
  * Uses the new modular architecture with FoldersManager core business logic
  */
 export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'FolderTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'FolderTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding modular folder organization and data store tools');
 

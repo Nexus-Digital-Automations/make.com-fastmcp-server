@@ -18,7 +18,15 @@ import { createExportLogsForAnalysisTool } from './tools/export-logs-for-analysi
  * Add all log streaming tools to the FastMCP server
  */
 export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'LogStreamingTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'LogStreamingTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Initializing log streaming tools with modular architecture');
 

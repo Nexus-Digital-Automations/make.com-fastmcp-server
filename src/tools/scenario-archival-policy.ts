@@ -1828,7 +1828,15 @@ const getConditionBreakdown = (
  * @returns {void}
  */
 export function addScenarioArchivalPolicyTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ScenarioArchivalPolicyTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'ScenarioArchivalPolicyTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   const policyEngine = new ScenarioArchivalPolicyEngine(apiClient);
   
   componentLogger.info('Adding scenario archival policy management tools');

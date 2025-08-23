@@ -84,11 +84,19 @@ type MakeSessionAuth = {
  * ```
  */
 export function addEnterpriseSecretsTools(server: FastMCP<MakeSessionAuth>, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ 
-    component: 'EnterpriseSecretsManagement',
-    version: MODULE_METADATA.VERSION,
-    apiVersion: MODULE_METADATA.API_VERSION
-  });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ 
+        component: 'EnterpriseSecretsManagement',
+        version: MODULE_METADATA.VERSION,
+        apiVersion: MODULE_METADATA.API_VERSION
+      });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   componentLogger.info('Initializing enterprise secrets management tools', {
     version: MODULE_METADATA.VERSION,

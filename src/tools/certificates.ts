@@ -951,7 +951,15 @@ function addRotateCertificateTool(server: FastMCP, apiClient: MakeApiClient): vo
  * Add certificate and key management tools to FastMCP server
  */
 export function addCertificateTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'CertificateTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'CertificateTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding certificate and key management tools');
 

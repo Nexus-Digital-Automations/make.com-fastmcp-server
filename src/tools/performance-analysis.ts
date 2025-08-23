@@ -1429,7 +1429,15 @@ function addLivePerformanceMonitoringTool(
  * Add performance analysis tools to FastMCP server
  */
 export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'PerformanceAnalysisTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'PerformanceAnalysisTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   const analysisEngine = new PerformanceAnalysisEngine();
   
   componentLogger.info('Adding performance analysis tools');

@@ -1543,7 +1543,15 @@ function addTestDeviceConnectivityTool(server: FastMCP, apiClient: MakeApiClient
  * Add remote procedure and device management tools to FastMCP server
  */
 export function addProcedureTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ProcedureTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'ProcedureTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding remote procedure and device management tools');
 

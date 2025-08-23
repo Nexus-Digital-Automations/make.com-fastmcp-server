@@ -946,7 +946,15 @@ function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
  * Add data structure management tools to FastMCP server
  */
 export function addDataStructureTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'DataStructureTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'DataStructureTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding data structure management tools');
 

@@ -11,7 +11,14 @@ import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
 import { formatSuccessResponse } from '../utils/response-formatter.js';
 
-const componentLogger = logger.child({ component: 'AuditComplianceTools' });
+const getComponentLogger = () => {
+  try {
+    return logger.child({ component: 'AuditComplianceTools' });
+  } catch (error) {
+    // Fallback for test environments
+    return logger as any;
+  }
+};
 
 // Input schemas for audit and compliance tools
 const LogAuditEventSchema = z.object({
@@ -85,7 +92,7 @@ const createLogAuditEventTool = (apiClient: MakeApiClient): { name: string; desc
         timestamp: new Date().toISOString(),
       });
 
-      componentLogger.info('Audit event logged via MCP tool', {
+      getComponentLogger().info('Audit event logged via MCP tool', {
         action: input.action,
         category: input.category,
         level: input.level,
@@ -100,7 +107,7 @@ const createLogAuditEventTool = (apiClient: MakeApiClient): { name: string; desc
         message: 'Audit event logged successfully',
       }).content[0].text;
     } catch (error) {
-      componentLogger.error('Failed to log audit event via MCP tool', {
+      getComponentLogger().error('Failed to log audit event via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
         action: input.action,
         category: input.category,
@@ -130,7 +137,7 @@ export const generateComplianceReportTool = {
 
       const report = await auditLogger.generateComplianceReport(startDate, endDate);
 
-      componentLogger.info('Compliance report generated via MCP tool', {
+      getComponentLogger().info('Compliance report generated via MCP tool', {
         startDate: input.startDate,
         endDate: input.endDate,
         totalEvents: report.summary.totalEvents,
@@ -152,7 +159,7 @@ export const generateComplianceReportTool = {
 
       return formatSuccessResponse(reportData).content[0].text;
     } catch (error) {
-      componentLogger.error('Failed to generate compliance report via MCP tool', {
+      getComponentLogger().error('Failed to generate compliance report via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
         startDate: input.startDate,
         endDate: input.endDate,
@@ -185,7 +192,7 @@ export const performAuditMaintenanceTool = {
     try {
       const result = await auditLogger.performMaintenance();
 
-      componentLogger.info('Audit maintenance performed via MCP tool', {
+      getComponentLogger().info('Audit maintenance performed via MCP tool', {
         deletedFiles: result.deletedFiles,
         rotatedFiles: result.rotatedFiles,
         errors: result.errors.length,
@@ -200,7 +207,7 @@ export const performAuditMaintenanceTool = {
         message: `Maintenance completed. Deleted ${result.deletedFiles} files, rotated ${result.rotatedFiles} files.`,
       }).content[0].text;
     } catch (error) {
-      componentLogger.error('Failed to perform audit maintenance via MCP tool', {
+      getComponentLogger().error('Failed to perform audit maintenance via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
@@ -235,13 +242,13 @@ export const getAuditConfigurationTool = {
         complianceMode: process.env.COMPLIANCE_MODE || 'standard',
       };
 
-      componentLogger.info('Audit configuration retrieved via MCP tool');
+      getComponentLogger().info('Audit configuration retrieved via MCP tool');
 
       return formatSuccessResponse({
         config,
       }).content[0].text;
     } catch (error) {
-      componentLogger.error('Failed to get audit configuration via MCP tool', {
+      getComponentLogger().error('Failed to get audit configuration via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
@@ -328,7 +335,7 @@ export const securityHealthCheckTool = {
         riskLevel: healthCheck.recommendations.length > 3 ? 'high' : 'low',
       });
 
-      componentLogger.info('Security health check performed via MCP tool', {
+      getComponentLogger().info('Security health check performed via MCP tool', {
         recommendationsCount: healthCheck.recommendations.length,
         environment: healthCheck.environment,
       });
@@ -345,7 +352,7 @@ export const securityHealthCheckTool = {
         },
       }).content[0].text;
     } catch (error) {
-      componentLogger.error('Failed to perform security health check via MCP tool', {
+      getComponentLogger().error('Failed to perform security health check via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
@@ -414,7 +421,7 @@ export const createSecurityIncidentTool = {
         riskLevel: input.severity === 'critical' ? 'critical' : input.severity === 'high' ? 'high' : 'medium',
       });
 
-      componentLogger.error('Security incident created via MCP tool', {
+      getComponentLogger().error('Security incident created via MCP tool', {
         incidentId,
         title: input.title,
         severity: input.severity,
@@ -436,7 +443,7 @@ export const createSecurityIncidentTool = {
         ],
       }).content[0].text;
     } catch (error) {
-      componentLogger.error('Failed to create security incident via MCP tool', {
+      getComponentLogger().error('Failed to create security incident via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
         title: input.title,
         severity: input.severity,

@@ -990,7 +990,15 @@ function addTestCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void {
  * Add custom app development and management tools to FastMCP server
  */
 export function addCustomAppTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'CustomAppTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'CustomAppTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding custom app development and management tools');
 

@@ -41,7 +41,15 @@ import {
  * @param apiClient - Make.com API client instance
  */
 export function addExtractedScenarioTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ExtractedScenarioTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'ExtractedScenarioTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding extracted scenario management tools (modular architecture)');
 

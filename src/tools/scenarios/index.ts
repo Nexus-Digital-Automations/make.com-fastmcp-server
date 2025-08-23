@@ -54,10 +54,18 @@ import { VERSION_INFO } from './constants.js';
  * @param apiClient - Make.com API client
  */
 export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ 
-    component: 'ScenariosModule',
-    version: VERSION_INFO.SCENARIOS_MODULE_VERSION 
-  });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ 
+        component: 'ScenariosModule',
+        version: VERSION_INFO.SCENARIOS_MODULE_VERSION 
+      });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Initializing modular scenario management tools', {
     moduleVersion: VERSION_INFO.SCENARIOS_MODULE_VERSION,

@@ -508,7 +508,15 @@ async function logPolicyCreationError(
  * Create a comprehensive compliance policy for regulatory requirements
  */
 function addCreateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
-  const componentLogger = logger.child({ component: 'CreateCompliancePolicyTool' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'CreateCompliancePolicyTool' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   /**
    * Create a comprehensive compliance policy for regulatory requirements
@@ -624,7 +632,15 @@ function addCreateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient
  * Validate compliance for Make.com scenarios, connections, or data flows
  */
 function addValidateComplianceTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
-  const componentLogger = logger.child({ component: 'ValidateComplianceTool' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'ValidateComplianceTool' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   /**
    * Validate compliance for Make.com scenarios, connections, or data flows
@@ -726,7 +742,15 @@ function addValidateComplianceTool(server: FastMCP, apiClient: MakeApiClient, po
  * Generate comprehensive compliance report
  */
 function addGenerateComplianceReportTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
-  const componentLogger = logger.child({ component: 'GenerateComplianceReportTool' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'GenerateComplianceReportTool' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   /**
    * Generate comprehensive compliance report
@@ -866,7 +890,15 @@ function addGenerateComplianceReportTool(server: FastMCP, apiClient: MakeApiClie
  * List all compliance policies with filtering
  */
 function addListCompliancePoliciesTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
-  const componentLogger = logger.child({ component: 'ListCompliancePoliciesTool' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'ListCompliancePoliciesTool' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   /**
    * List all compliance policies with filtering
@@ -951,7 +983,15 @@ function addListCompliancePoliciesTool(server: FastMCP, apiClient: MakeApiClient
  * Update existing compliance policy
  */
 function addUpdateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
-  const componentLogger = logger.child({ component: 'UpdateCompliancePolicyTool' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'UpdateCompliancePolicyTool' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   /**
    * Update existing compliance policy
@@ -1043,7 +1083,15 @@ function addUpdateCompliancePolicyTool(server: FastMCP, apiClient: MakeApiClient
  * Get compliance policy templates for regulatory frameworks
  */
 function addGetComplianceTemplatesTool(server: FastMCP, _apiClient: MakeApiClient, _policyStore: CompliancePolicyStore): void {
-  const componentLogger = logger.child({ component: 'GetComplianceTemplatesTool' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'GetComplianceTemplatesTool' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   /**
    * Get compliance policy templates for regulatory frameworks
@@ -1135,7 +1183,15 @@ function addGetComplianceTemplatesTool(server: FastMCP, _apiClient: MakeApiClien
  * Create compliance policy from template
  */
 function addCreatePolicyFromTemplateTool(server: FastMCP, apiClient: MakeApiClient, policyStore: CompliancePolicyStore): void {
-  const componentLogger = logger.child({ component: 'CreatePolicyFromTemplateTool' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'CreatePolicyFromTemplateTool' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   /**
    * Create compliance policy from template
@@ -1346,7 +1402,15 @@ function addCreatePolicyFromTemplateTool(server: FastMCP, apiClient: MakeApiClie
  * ```
  */
 export function addCompliancePolicyTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'CompliancePolicyTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'CompliancePolicyTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   const policyStore = new CompliancePolicyStore();
 
   componentLogger.info('Adding comprehensive compliance policy management tools');

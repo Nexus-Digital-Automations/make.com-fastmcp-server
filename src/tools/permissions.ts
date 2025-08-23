@@ -1015,7 +1015,15 @@ function addUserInvitationTool(server: FastMCP, apiClient: MakeApiClient, _compo
  * Adds comprehensive user permission and role management tools to the FastMCP server
  */
 export function addPermissionTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'PermissionTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'PermissionTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding user permission management tools');
 

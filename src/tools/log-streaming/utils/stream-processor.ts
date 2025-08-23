@@ -68,7 +68,15 @@ export class LogStreamingManager extends EventEmitter {
     callback: (logs: MakeLogEntry[]) => void
   ): Promise<string> {
     const streamId = `${scenarioId}-${executionId || 'live'}-${Date.now()}`;
-    const componentLogger = logger.child({ component: 'LogStreamingManager', streamId });
+    const getComponentLogger = () => {
+      try {
+        return logger.child({ component: 'LogStreamingManager', streamId });
+      } catch (error) {
+        // Fallback for test environments
+        return logger as any;
+      }
+    };
+    const componentLogger = getComponentLogger();
 
     componentLogger.info('Starting log streaming', { scenarioId, executionId, config });
 

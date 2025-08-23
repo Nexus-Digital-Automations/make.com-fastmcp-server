@@ -981,7 +981,15 @@ function addGetPerformanceMetricsTool(server: FastMCP, apiClient: MakeApiClient)
  * Add analytics and audit log tools to FastMCP server
  */
 export function addAnalyticsTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'AnalyticsTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'AnalyticsTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding analytics and audit log tools');
 

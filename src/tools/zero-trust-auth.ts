@@ -15,7 +15,14 @@ import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
 import { formatSuccessResponse } from '../utils/response-formatter.js';
 
-const componentLogger = logger.child({ component: 'ZeroTrustAuthTools' });
+const getComponentLogger = () => {
+  try {
+    return logger.child({ component: 'ZeroTrustAuthTools' });
+  } catch (error) {
+    // Fallback for test environments
+    return logger as any;
+  }
+};
 const randomBytes = promisify(crypto.randomBytes);
 
 // ===== CORE SCHEMAS =====
@@ -777,7 +784,7 @@ const createZeroTrustAuthTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
       return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
-      componentLogger.error('Zero trust authentication failed', {
+      getComponentLogger().error('Zero trust authentication failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
         username: parsedInput.username,
         ipAddress: parsedInput.ipAddress,
@@ -908,7 +915,7 @@ const createMFASetupTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
         riskLevel: 'low',
       });
 
-      componentLogger.info('MFA setup completed', {
+      getComponentLogger().info('MFA setup completed', {
         userId: parsedInput.userId,
         method: parsedInput.method,
         success: result.success,
@@ -917,7 +924,7 @@ const createMFASetupTool = (_apiClient: MakeApiClient): ZeroTrustTool => ({
       return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
-      componentLogger.error('MFA setup failed', {
+      getComponentLogger().error('MFA setup failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
         userId: 'unknown',
         method: 'unknown',
@@ -962,7 +969,7 @@ const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTo
                   trustResult.riskLevel === 'high' ? 'high' : 'low',
       });
 
-      componentLogger.info('Device trust assessment completed', {
+      getComponentLogger().info('Device trust assessment completed', {
         deviceId: parsedInput.deviceId,
         trustScore: trustResult.trustScore,
         riskLevel: trustResult.riskLevel,
@@ -972,7 +979,7 @@ const createDeviceTrustAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTo
       return formatSuccessResponse(trustResult).content[0].text;
 
     } catch (error) {
-      componentLogger.error('Device trust assessment failed', {
+      getComponentLogger().error('Device trust assessment failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
         deviceId: parsedInput.deviceId,
       });
@@ -1024,7 +1031,7 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): ZeroTrustTool
                   analysisResult.riskScore > 40 ? 'medium' : 'low',
       });
 
-      componentLogger.info('Behavior analysis completed', {
+      getComponentLogger().info('Behavior analysis completed', {
         userId: parsedInput.userId,
         sessionId: parsedInput.sessionId,
         riskScore: analysisResult.riskScore,
@@ -1034,7 +1041,7 @@ const createBehavioralAnalyticsTool = (_apiClient: MakeApiClient): ZeroTrustTool
       return formatSuccessResponse(analysisResult).content[0].text;
 
     } catch (error) {
-      componentLogger.error('Behavior analysis failed', {
+      getComponentLogger().error('Behavior analysis failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
         userId: parsedInput.userId,
         sessionId: parsedInput.sessionId,
@@ -1163,7 +1170,7 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
         }
       }
 
-      componentLogger.info('Session management operation completed', {
+      getComponentLogger().info('Session management operation completed', {
         action: parsedInput.action,
         sessionId: parsedInput.sessionId,
         userId: parsedInput.userId,
@@ -1173,7 +1180,7 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
       return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
-      componentLogger.error('Session management failed', {
+      getComponentLogger().error('Session management failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
         action: parsedInput.action,
         sessionId: parsedInput.sessionId,
@@ -1363,7 +1370,7 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): ZeroTrustTool 
         riskLevel: 'low',
       });
 
-      componentLogger.info('Identity federation operation completed', {
+      getComponentLogger().info('Identity federation operation completed', {
         provider: parsedInput.provider,
         action: parsedInput.action,
         success: result.success,
@@ -1372,7 +1379,7 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): ZeroTrustTool 
       return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
-      componentLogger.error('Identity federation failed', {
+      getComponentLogger().error('Identity federation failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
         provider: parsedInput.provider,
         action: parsedInput.action,
@@ -1486,7 +1493,7 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool => (
         riskLevel: riskLevel === 'critical' ? 'critical' : riskLevel === 'high' ? 'high' : 'medium',
       });
 
-      componentLogger.info('Risk assessment completed', {
+      getComponentLogger().info('Risk assessment completed', {
         userId: parsedInput.userId,
         sessionId: parsedInput.sessionId,
         assessmentType: parsedInput.assessmentType,
@@ -1497,7 +1504,7 @@ const createRiskAssessmentTool = (_apiClient: MakeApiClient): ZeroTrustTool => (
       return formatSuccessResponse(result).content[0].text;
 
     } catch (error) {
-      componentLogger.error('Risk assessment failed', {
+      getComponentLogger().error('Risk assessment failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
         userId: parsedInput.userId,
         sessionId: parsedInput.sessionId,
@@ -1665,7 +1672,7 @@ export function addZeroTrustAuthTools(server: FastMCP, apiClient: MakeApiClient)
     });
   });
 
-  componentLogger.info('Zero Trust Authentication tools registered', {
+  getComponentLogger().info('Zero Trust Authentication tools registered', {
     toolCount: zeroTrustAuthTools.length,
     tools: zeroTrustAuthTools.map(createTool => createTool(apiClient).name),
   });

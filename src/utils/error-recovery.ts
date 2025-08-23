@@ -208,11 +208,19 @@ export async function retryWithBackoff<T>(
     onRetry,
   } = options;
 
-  const operationLogger = logger.child({
-    component: 'RetryMechanism',
-    correlationId: correlationId || randomUUID(),
-    operation: 'retry-with-backoff',
-  });
+  const getOperationLogger = () => {
+    try {
+      return logger.child({
+        component: 'RetryMechanism',
+        correlationId: correlationId || randomUUID(),
+        operation: 'retry-with-backoff',
+      });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const operationLogger = getOperationLogger();
 
   let lastError: Error = new Error('No attempts made');
   

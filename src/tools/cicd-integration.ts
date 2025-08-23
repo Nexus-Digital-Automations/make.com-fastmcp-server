@@ -1263,7 +1263,15 @@ function addGenerateBuildReportTool(server: FastMCP, componentLogger: typeof log
 }
 
 export function addCICDIntegrationTools(server: FastMCP, _apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'CICDIntegration' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'CICDIntegration' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   // Add all CI/CD integration tools
   addRunTestSuiteTool(server, componentLogger);

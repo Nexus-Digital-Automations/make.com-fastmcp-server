@@ -1767,7 +1767,15 @@ function generateFinalValidationResult(
  * @returns {void}
  */
 export function addPolicyComplianceValidationTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'PolicyComplianceValidationTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'PolicyComplianceValidationTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   const validator = new PolicyComplianceValidator(apiClient);
   
   componentLogger.info('Adding unified policy compliance validation tools');

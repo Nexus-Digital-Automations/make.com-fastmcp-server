@@ -811,7 +811,15 @@ function addAnalyzeBlueprintDependenciesTool(server: FastMCP, componentLogger: t
  * Main function to add all blueprint collaboration tools
  */
 export function addBlueprintCollaborationTools(server: FastMCP, _apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'BlueprintCollaborationTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'BlueprintCollaborationTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   const engine = BlueprintCollaborationEngine.getInstance();
 
   // Add all blueprint collaboration tools

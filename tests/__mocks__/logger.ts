@@ -1,4 +1,4 @@
-// Simple mock logger that doesn't depend on Jest globals
+// Enhanced mock logger that works with all test scenarios
 const createMockLogger = () => ({
   info: (...args: any[]) => {},
   debug: (...args: any[]) => {},
@@ -12,22 +12,27 @@ const createMockLogger = () => ({
   generateSpanId: () => 'mock_span_id',
   generateRequestId: () => 'mock_request_id',
   setLogLevel: (...args: any[]) => {},
-  getLogLevel: () => 'info',
+  getLogLevel: () => 'info' as const,
   trace: (...args: any[]) => {},
   fatal: (...args: any[]) => {},
-  level: 'info',
+  level: 'info' as const,
 });
 
 // Create mock logger instance
 const mockLogger = createMockLogger();
 
-// ES module exports
+// ES module exports with explicit __esModule flag for better compatibility
 export default mockLogger;
 export const logger = mockLogger;
 
+// Enhanced CommonJS/ESM compatibility for Jest's module resolution
+const moduleExports = {
+  __esModule: true,
+  default: mockLogger,
+  logger: mockLogger,
+};
+
 // CommonJS compatibility
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = mockLogger;
-  module.exports.default = mockLogger;
-  module.exports.logger = mockLogger;
+  module.exports = moduleExports;
 }

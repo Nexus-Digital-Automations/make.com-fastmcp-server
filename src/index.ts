@@ -38,7 +38,15 @@ function createServerInstance(serverType: Exclude<ServerType, 'both'>): ServerIn
 }
 
 async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promise<void> {
-  const componentLogger = logger.child({ component: 'Main', serverType });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'Main', serverType });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   try {
     componentLogger.info(`Initializing Make.com ${serverType} server`);
@@ -96,7 +104,15 @@ async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promi
 }
 
 async function startBothServers(): Promise<void> {
-  const componentLogger = logger.child({ component: 'Main', mode: 'dual' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'Main', mode: 'dual' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Starting both Core and Analytics servers');
   

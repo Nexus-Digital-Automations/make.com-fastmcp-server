@@ -1058,7 +1058,15 @@ function addListNotificationsTool(server: FastMCP, apiClient: MakeApiClient, _co
  * - list-notifications
  */
 export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'NotificationManager' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'NotificationManager' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding notification management tools');
 

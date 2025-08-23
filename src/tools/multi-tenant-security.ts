@@ -14,7 +14,15 @@ import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
 import { formatSuccessResponse } from '../utils/response-formatter.js';
 
-const componentLogger = logger.child({ component: 'MultiTenantSecurityTools' });
+const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'MultiTenantSecurityTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 const randomBytes = promisify(crypto.randomBytes);
 
 // ===== CORE SCHEMAS =====

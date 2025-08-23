@@ -15,7 +15,15 @@ import { addAIGovernanceEngineTools as addModularGovernanceTools } from './ai-go
  * Uses the new modular architecture with AIGovernanceManager core business logic
  */
 export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'AIGovernanceEngine' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'AIGovernanceEngine' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding modular AI governance engine tools');
   

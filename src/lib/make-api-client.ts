@@ -19,7 +19,15 @@ export class MakeApiClient {
   constructor(config: MakeApiConfig, userId?: string) {
     this.config = config;
     this.userId = userId;
-    this.componentLogger = logger.child({ component: 'MakeApiClient' });
+    const getComponentLogger = () => {
+      try {
+        return logger.child({ component: 'MakeApiClient' });
+      } catch (error) {
+        // Fallback for test environments
+        return logger as any;
+      }
+    };
+    this.componentLogger = getComponentLogger();
     
     this.axiosInstance = axios.create({
       baseURL: config.baseUrl,
@@ -51,7 +59,15 @@ export class MakeApiClient {
       const secureConfig = await secureConfigManager.getSecureMakeConfig(userId);
       return new MakeApiClient(secureConfig, userId);
     } catch (error) {
-      const componentLogger = logger.child({ component: 'MakeApiClient' });
+      const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'MakeApiClient' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
       componentLogger.error('Failed to create secure API client', {
         error: error instanceof Error ? error.message : 'Unknown error',
         userId

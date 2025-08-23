@@ -619,7 +619,15 @@ function addTestConnectionTool(server: FastMCP, apiClient: MakeApiClient): void 
  * Add connection management tools to FastMCP server
  */
 export function addConnectionCRUDTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'ConnectionCRUDTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'ConnectionCRUDTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding connection CRUD management tools');
 

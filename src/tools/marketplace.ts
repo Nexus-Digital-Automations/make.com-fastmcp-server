@@ -742,7 +742,15 @@ function addListPopularAppsTool(server: FastMCP, apiClient: MakeApiClient, _comp
  * Add public app marketplace integration tools to FastMCP server
  */
 export function addMarketplaceTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'MarketplaceTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'MarketplaceTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding public app marketplace integration tools');
 

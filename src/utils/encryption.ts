@@ -53,10 +53,22 @@ export class EncryptionService {
   private static readonly TAG_LENGTH = 16;
   private static readonly SALT_LENGTH = 32;
   
-  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private _componentLogger: ReturnType<typeof logger.child> | null = null;
+
+  private get componentLogger(): ReturnType<typeof logger.child> {
+    if (!this._componentLogger) {
+      try {
+        this._componentLogger = logger.child({ component: 'EncryptionService' });
+      } catch (error) {
+        // Fallback for test environments where logger.child might not be available
+        this._componentLogger = logger as any;
+      }
+    }
+    return this._componentLogger;
+  }
 
   constructor() {
-    this.componentLogger = logger.child({ component: 'EncryptionService' });
+    // componentLogger is now lazy-initialized
   }
 
   /**
@@ -246,7 +258,7 @@ export class EncryptionService {
 export class CredentialManager {
   private readonly encryptionService: EncryptionService;
   private readonly credentials: Map<string, CredentialMetadata> = new Map();
-  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private _componentLogger: ReturnType<typeof logger.child> | null = null;
   private auditLog: Array<{
     timestamp: Date;
     operation: string;
@@ -256,9 +268,21 @@ export class CredentialManager {
     details?: Record<string, unknown>;
   }> = [];
 
+  private get componentLogger(): ReturnType<typeof logger.child> {
+    if (!this._componentLogger) {
+      try {
+        this._componentLogger = logger.child({ component: 'CredentialManager' });
+      } catch (error) {
+        // Fallback for test environments where logger.child might not be available
+        this._componentLogger = logger as any;
+      }
+    }
+    return this._componentLogger;
+  }
+
   constructor() {
     this.encryptionService = new EncryptionService();
-    this.componentLogger = logger.child({ component: 'CredentialManager' });
+    // componentLogger is now lazy-initialized
   }
 
   /**

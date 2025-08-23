@@ -39,10 +39,18 @@ export function formatErrorResponse(
   correlationId?: string
 ): ErrorResponse {
   const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
-  const componentLogger = logger.child({ 
-    component: 'ErrorResponseFormatter',
-    correlationId: errorCorrelationId
-  });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ 
+        component: 'ErrorResponseFormatter',
+        correlationId: errorCorrelationId
+      });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   let formattedError: ErrorResponse['error'];
 
@@ -141,11 +149,19 @@ export function errorHandlerMiddleware() {
   return (error: Error, req: Record<string, unknown>, res: Record<string, unknown>): void => {
     const correlationId = (req.correlationId as string) || (req.headers as Record<string, string>)?.['x-correlation-id'] || randomUUID();
     
-    const componentLogger = logger.child({ 
-      component: 'ErrorMiddleware',
-      correlationId,
-      operation: `${req.method as string} ${req.path as string}`,
-    });
+    const getComponentLogger = () => {
+      try {
+        return logger.child({ 
+          component: 'ErrorMiddleware',
+          correlationId,
+          operation: `${req.method as string} ${req.path as string}`,
+        });
+      } catch (error) {
+        // Fallback for test environments
+        return logger as any;
+      }
+    };
+    const componentLogger = getComponentLogger();
 
     const errorResponse = formatErrorResponse(error, correlationId);
 
@@ -182,11 +198,19 @@ export function createToolErrorResponse(
   correlationId?: string
 ): string {
   const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
-  const componentLogger = logger.child({ 
-    component: 'ToolErrorHandler',
-    operation,
-    correlationId: errorCorrelationId
-  });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ 
+        component: 'ToolErrorHandler',
+        operation,
+        correlationId: errorCorrelationId
+      });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   const errorResponse = formatErrorResponse(error, errorCorrelationId);
 
@@ -209,11 +233,19 @@ export function createToolSuccessResponse<T>(
   operation: string,
   correlationId?: string
 ): string {
-  const componentLogger = logger.child({ 
-    component: 'ToolSuccessHandler',
-    operation,
-    correlationId,
-  });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ 
+        component: 'ToolSuccessHandler',
+        operation,
+        correlationId,
+      });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
   const successResponse = formatSuccessResponse(data, correlationId);
 

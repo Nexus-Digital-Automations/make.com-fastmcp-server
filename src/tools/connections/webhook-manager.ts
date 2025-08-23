@@ -66,7 +66,15 @@ const UpdateWebhookSchema = z.object({
  * ```
  */
 export function addWebhookTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'WebhookTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'WebhookTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding webhook management tools');
 

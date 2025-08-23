@@ -357,7 +357,15 @@ export interface DataStructureWithStats extends MakeCustomDataStructure {
  * Add notification and email management tools to FastMCP server
  */
 export function addNotificationTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'NotificationTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'NotificationTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding notification and email management tools');
 

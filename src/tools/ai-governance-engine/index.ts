@@ -153,7 +153,15 @@ function addOptimizePoliciesTool(_server: FastMCP, _apiClient: MakeApiClient, _c
  * Uses the new modular architecture with AIGovernanceManager core business logic
  */
 export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'AIGovernanceEngineTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'AIGovernanceEngineTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding modular AI governance engine tools');
 

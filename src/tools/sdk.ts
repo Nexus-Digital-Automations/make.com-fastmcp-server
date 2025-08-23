@@ -1260,7 +1260,15 @@ function addInstallWorkflowTool(server: FastMCP, apiClient: MakeApiClient): void
  * Add SDK app management tools to FastMCP server
  */
 export function addSDKTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'SDKTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'SDKTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding SDK app management tools');
 

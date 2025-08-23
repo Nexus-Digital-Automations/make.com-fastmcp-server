@@ -1834,7 +1834,15 @@ function addDeleteNamingConventionPolicyTool(server: FastMCP, apiClient: MakeApi
  * @returns {void}
  */
 export function addNamingConventionPolicyTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'NamingConventionPolicyTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'NamingConventionPolicyTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding naming convention policy management tools');
 

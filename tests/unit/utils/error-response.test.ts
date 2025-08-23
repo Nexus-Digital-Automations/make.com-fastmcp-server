@@ -30,17 +30,35 @@ import {
   getErrorCorrelationId
 } from '../../../src/utils/errors';
 
-// Mock dependencies
-jest.mock('../../../src/lib/logger', () => ({
-  default: {
-    child: jest.fn(() => ({
-      info: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn()
-    }))
-  }
-}));
+// Mock dependencies - use same pattern as global mock
+jest.mock('../../../src/lib/logger.js', () => {
+  const createMockLogger = () => ({
+    info: jest.fn(),
+    debug: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    child: jest.fn(() => createMockLogger()),
+    logWithCorrelation: jest.fn(() => 'mock_correlation_id'),
+    logDuration: jest.fn(),
+    generateCorrelationId: jest.fn(() => 'mock_correlation_id'),
+    generateTraceId: jest.fn(() => 'mock_trace_id'),
+    generateSpanId: jest.fn(() => 'mock_span_id'),
+    generateRequestId: jest.fn(() => 'mock_request_id'),
+    setLogLevel: jest.fn(),
+    getLogLevel: jest.fn(() => 'info'),
+    trace: jest.fn(),
+    fatal: jest.fn(),
+    level: 'info',
+  });
+
+  const mockLogger = createMockLogger();
+  
+  return {
+    __esModule: true,
+    default: mockLogger,
+    logger: mockLogger,
+  };
+});
 
 jest.mock('crypto', () => ({
   randomUUID: jest.fn(() => 'test-uuid-123')

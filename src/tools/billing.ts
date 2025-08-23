@@ -825,7 +825,15 @@ function addGetBillingAccountTool(server: FastMCP, apiClient: MakeApiClient): vo
  * Add billing and payment management tools to FastMCP server
  */
 export function addBillingTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'BillingTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'BillingTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   
   componentLogger.info('Adding billing and payment management tools');
   

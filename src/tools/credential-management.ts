@@ -9,7 +9,15 @@ import { credentialManager, encryptionService } from '../utils/encryption.js';
 import logger from '../lib/logger.js';
 import { formatSuccessResponse } from '../utils/response-formatter.js';
 
-const componentLogger = logger.child({ component: 'CredentialManagementTools' });
+const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'CredentialManagementTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
 
 // Input schemas for credential management tools
 const StoreCredentialSchema = z.object({

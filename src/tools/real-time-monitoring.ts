@@ -1244,7 +1244,15 @@ function buildStartMonitoringResponse(
  * Add real-time monitoring tools to FastMCP server
  */
 export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'RealTimeMonitoringTools' });
+  const getComponentLogger = () => {
+    try {
+      return logger.child({ component: 'RealTimeMonitoringTools' });
+    } catch (error) {
+      // Fallback for test environments
+      return logger as any;
+    }
+  };
+  const componentLogger = getComponentLogger();
   const monitor = new RealTimeExecutionMonitor(apiClient);
   
   componentLogger.info('Adding real-time monitoring tools');
