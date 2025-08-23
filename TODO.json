@@ -29,33 +29,29 @@
       ]
     },
     {
-      "id": "task_1755982240978_4so62n9z0",
-      "title": "Fix critical test failures in make-api-client and logger tests",
-      "description": "Multiple core component tests are failing with module import/export issues and mock configuration problems. These failures prevent accurate coverage measurement of the implemented tests.",
+      "id": "task_1755991073243_y0befya0d",
+      "title": "Fix remaining make-api-client test failure",
+      "description": "Fix the health check failure test that is still failing despite mock setup fixes",
       "mode": "DEVELOPMENT",
       "category": "test-error",
-      "priority": "critical",
+      "priority": "high",
       "status": "in_progress",
       "dependencies": [],
-      "important_files": [
-        "tests/unit/lib/make-api-client.test.ts",
-        "tests/unit/lib/logger.test.ts",
-        "tests/unit/server.test.ts"
-      ],
+      "important_files": [],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T20:50:40.978Z",
+      "created_at": "2025-08-23T23:17:53.244Z",
       "auto_research_created": false,
       "assigned_agent": "development_session_1755988507752_1_general_c1e00e83",
-      "started_at": "2025-08-23T22:49:45.475Z",
+      "started_at": "2025-08-23T23:17:59.953Z",
       "claimed_by": "development_session_1755988507752_1_general_c1e00e83",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755988507752_1_general_c1e00e83",
           "role": "primary",
-          "assignedAt": "2025-08-23T22:49:45.475Z",
+          "assignedAt": "2025-08-23T23:17:59.953Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
