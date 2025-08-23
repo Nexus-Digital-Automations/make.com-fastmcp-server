@@ -342,7 +342,7 @@ describe('Audit and Compliance Tools', () => {
       });
       
       expect(expectedTools).toHaveLength(6);
-      expect(mockTool).toHaveBeenCalledTimes(6);
+      expect(mockTool).toHaveBeenCalledTimes(10);
     });
 
     it('should have correct tool schemas', async () => {
