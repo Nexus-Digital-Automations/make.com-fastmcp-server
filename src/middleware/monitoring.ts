@@ -38,7 +38,7 @@ class MonitoringMiddleware {
         this.componentLogger = logger.child({ component: 'MonitoringMiddleware' });
       } else {
         // Fallback for test environments when logger.child is not available
-        this.componentLogger = logger as ReturnType<typeof logger.child>;
+        this.componentLogger = logger;
       }
     } catch (error) {
       // Ultimate fallback for test environments
