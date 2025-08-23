@@ -185,14 +185,14 @@ describe('Credential Management Tools - Basic Tests', () => {
       addCredentialManagementTools(mockServer, mockApiClient as any);
       
       const expectedTools = [
-        'store_credential',
-        'get_credential_status',
-        'rotate_credential',
-        'list_credentials',
-        'get_audit_events',
-        'migrate_credentials',
-        'generate_credential',
-        'cleanup_credentials',
+        'store-credential',
+        'get-credential-status',
+        'rotate-credential',
+        'list-credentials',
+        'get-audit-events',
+        'migrate-credentials',
+        'generate-credential',
+        'cleanup-credentials',
       ];
 
       expectedTools.forEach(toolName => {
@@ -200,9 +200,9 @@ describe('Credential Management Tools - Basic Tests', () => {
         expect(tool).toBeDefined();
         expect(tool.name).toBe(toolName);
         expect(tool.description).toBeDefined();
-        expect(tool.inputSchema).toBeDefined();
-        expect(tool.handler).toBeDefined();
-        expect(typeof tool.handler).toBe('function');
+        expect(tool.parameters).toBeDefined();
+        expect(tool.execute).toBeDefined();
+        expect(typeof tool.execute).toBe('function');
       });
 
       // Verify we have all 8 tools
@@ -214,18 +214,18 @@ describe('Credential Management Tools - Basic Tests', () => {
       addCredentialManagementTools(mockServer, mockApiClient as any);
       
       const coreTools = [
-        'store_credential',
-        'get_credential_status',
-        'rotate_credential',
-        'list_credentials',
-        'get_audit_events',
+        'store-credential',
+        'get-credential-status',
+        'rotate-credential',
+        'list-credentials',
+        'get-audit-events',
       ];
       
       coreTools.forEach(toolName => {
         const tool = findTool(mockTool, toolName);
         expect(tool.description).toMatch(/(credential|audit|security)/i);
-        expect(tool.inputSchema).toBeDefined();
-        expect(typeof tool.handler).toBe('function');
+        expect(tool.parameters).toBeDefined();
+        expect(typeof tool.execute).toBe('function');
       });
     });
 
@@ -234,30 +234,30 @@ describe('Credential Management Tools - Basic Tests', () => {
       addCredentialManagementTools(mockServer, mockApiClient as any);
       
       const securityTools = [
-        'migrate_credentials',
-        'generate_credential', 
-        'cleanup_credentials',
+        'migrate-credentials',
+        'generate-credential', 
+        'cleanup-credentials',
       ];
       
       securityTools.forEach(toolName => {
         const tool = findTool(mockTool, toolName);
         expect(tool.description).toMatch(/(migrate|generate|cleanup|clean|credential)/i);
-        expect(tool.inputSchema).toBeDefined();
-        expect(typeof tool.handler).toBe('function');
+        expect(tool.parameters).toBeDefined();
+        expect(typeof tool.execute).toBe('function');
       });
     });
   });
 
   describe('Credential Storage and Encryption', () => {
-    describe('store_credential tool', () => {
+    describe('store-credential tool', () => {
       it('should store API key credential with auto-rotation', async () => {
         mockSecureConfigManager.storeCredential.mockResolvedValue('cred_123');
 
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'store_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'store-credential');
+        const result = await tool.execute({
           type: 'api_key',
           service: 'payment-gateway',
           value: 'ak_test_123456789abcdef',
@@ -288,8 +288,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'store_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'store-credential');
+        const result = await tool.execute({
           type: 'secret',
           service: 'database',
           value: 'super_secret_password_123',
@@ -318,8 +318,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'store_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'store-credential');
+        const result = await tool.execute({
           type: 'certificate',
           service: 'ssl-provider',
           value: '-----BEGIN CERTIFICATE-----\nMIIDXTCCAkW...\n-----END CERTIFICATE-----',
@@ -347,8 +347,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'store_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'store-credential');
+        const result = await tool.execute({
           type: 'api_key',
           service: 'test-service',
           value: 'test_key',
@@ -363,10 +363,10 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'store_credential');
+        const tool = findTool(mockTool, 'store-credential');
         
         // Test valid inputs
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {
           type: 'api_key',
           service: 'test-service',
           value: 'test_value',
@@ -375,39 +375,39 @@ describe('Credential Management Tools - Basic Tests', () => {
           userId: 'user_123',
         });
 
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {
           type: 'secret',
           service: 'database',
           value: 'password123',
         });
 
         // Test invalid inputs
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           type: 'invalid_type',
           service: 'test-service',
           value: 'test_value',
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           type: 'api_key',
           service: '',
           value: 'test_value',
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           type: 'api_key',
           service: 'test-service',
           value: '',
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           type: 'api_key',
           service: 'test-service',
           value: 'test_value',
           rotationIntervalDays: 0,
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           type: 'api_key',
           service: 'test-service',
           value: 'test_value',
@@ -418,7 +418,7 @@ describe('Credential Management Tools - Basic Tests', () => {
   });
 
   describe('Credential Status and Metadata', () => {
-    describe('get_credential_status tool', () => {
+    describe('get-credential-status tool', () => {
       it('should get credential status with metadata', async () => {
         mockSecureConfigManager.getCredentialStatus.mockReturnValue({
           status: 'active',
@@ -435,8 +435,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'get_credential_status');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'get-credential-status');
+        const result = await tool.execute({
           credentialId: 'cred_123',
           userId: 'user_456',
         });
@@ -460,8 +460,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'get_credential_status');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'get-credential-status');
+        const result = await tool.execute({
           credentialId: 'cred_nonexistent',
           userId: 'user_456',
         });
@@ -478,8 +478,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'get_credential_status');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'get-credential-status');
+        const result = await tool.execute({
           credentialId: 'cred_123',
           userId: 'user_456',
         });
@@ -492,20 +492,20 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'get_credential_status');
+        const tool = findTool(mockTool, 'get-credential-status');
         
         // Test valid inputs
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {
           credentialId: 'cred_123',
           userId: 'user_456',
         });
 
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {
           credentialId: 'cred_123',
         });
 
         // Test invalid inputs
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           credentialId: '',
         });
       });
@@ -513,15 +513,15 @@ describe('Credential Management Tools - Basic Tests', () => {
   });
 
   describe('Credential Rotation and Security', () => {
-    describe('rotate_credential tool', () => {
+    describe('rotate-credential tool', () => {
       it('should rotate credential with new value and grace period', async () => {
         mockSecureConfigManager.rotateCredential.mockResolvedValue('cred_123_new');
 
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'rotate_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'rotate-credential');
+        const result = await tool.execute({
           credentialId: 'cred_123',
           newValue: 'ak_test_new_987654321fedcba',
           gracePeriodHours: 48,
@@ -550,8 +550,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'rotate_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'rotate-credential');
+        const result = await tool.execute({
           credentialId: 'cred_456',
           gracePeriodHours: 24,
           userId: 'user_789',
@@ -576,8 +576,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'rotate_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'rotate-credential');
+        const result = await tool.execute({
           credentialId: 'cred_123',
           userId: 'user_456',
         });
@@ -590,31 +590,31 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'rotate_credential');
+        const tool = findTool(mockTool, 'rotate-credential');
         
         // Test valid inputs
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {
           credentialId: 'cred_123',
           newValue: 'new_secret_value',
           gracePeriodHours: 48,
           userId: 'user_456',
         });
 
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {
           credentialId: 'cred_123',
         });
 
         // Test invalid inputs
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           credentialId: '',
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           credentialId: 'cred_123',
           gracePeriodHours: 0,
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           credentialId: 'cred_123',
           gracePeriodHours: 169, // > 168 hours (1 week)
         });
@@ -623,7 +623,7 @@ describe('Credential Management Tools - Basic Tests', () => {
   });
 
   describe('Credential Listing and Filtering', () => {
-    describe('list_credentials tool', () => {
+    describe('list-credentials tool', () => {
       it('should list all credentials with default filters', async () => {
         mockCredentialManager.listCredentials.mockReturnValue([
           testCredential,
@@ -634,8 +634,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'list_credentials');
-        const result = await tool.handler({});
+        const tool = findTool(mockTool, 'list-credentials');
+        const result = await tool.execute({});
         
         expect(result.credentials).toHaveLength(3);
         expect(result.credentials[0].credentialId).toBe('cred_123');
@@ -659,8 +659,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'list_credentials');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'list-credentials');
+        const result = await tool.execute({
           service: 'payment-gateway',
         });
         
@@ -680,8 +680,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'list_credentials');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'list-credentials');
+        const result = await tool.execute({
           type: 'secret',
           status: 'rotating',
         });
@@ -703,8 +703,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'list_credentials');
-        const result = await tool.handler({});
+        const tool = findTool(mockTool, 'list-credentials');
+        const result = await tool.execute({});
         
         expect(result.credentials).toHaveLength(0);
       });
@@ -717,8 +717,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'list_credentials');
-        const result = await tool.handler({});
+        const tool = findTool(mockTool, 'list-credentials');
+        const result = await tool.execute({});
         
         expect(result.credentials).toHaveLength(0);
       });
@@ -727,22 +727,22 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'list_credentials');
+        const tool = findTool(mockTool, 'list-credentials');
         
         // Test valid inputs
-        expectValidZodParse(tool.inputSchema, {});
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {});
+        expectValidZodParse(tool.parameters, {
           service: 'test-service',
           type: 'api_key',
           status: 'active',
         });
 
         // Test invalid inputs
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           type: 'invalid_type',
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           status: 'invalid_status',
         });
       });
@@ -750,15 +750,15 @@ describe('Credential Management Tools - Basic Tests', () => {
   });
 
   describe('Security Audit and Events', () => {
-    describe('get_audit_events tool', () => {
+    describe('get-audit-events tool', () => {
       it('should retrieve audit events with filtering', async () => {
         mockSecureConfigManager.getSecurityEvents.mockReturnValue(testAuditEvents);
 
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'get_audit_events');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'get-audit-events');
+        const result = await tool.execute({
           credentialId: 'cred_123',
           userId: 'user_456',
           event: 'credential_accessed',
@@ -795,8 +795,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'get_audit_events');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'get-audit-events');
+        const result = await tool.execute({
           limit: 100,
         });
         
@@ -821,8 +821,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'get_audit_events');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'get-audit-events');
+        const result = await tool.execute({
           event: 'unauthorized_access',
         });
         
@@ -840,8 +840,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'get_audit_events');
-        const result = await tool.handler({});
+        const tool = findTool(mockTool, 'get-audit-events');
+        const result = await tool.execute({});
         
         expect(result.events).toHaveLength(0);
       });
@@ -850,11 +850,11 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'get_audit_events');
+        const tool = findTool(mockTool, 'get-audit-events');
         
         // Test valid inputs
-        expectValidZodParse(tool.inputSchema, {});
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {});
+        expectValidZodParse(tool.parameters, {
           credentialId: 'cred_123',
           userId: 'user_456',
           event: 'credential_accessed',
@@ -864,15 +864,15 @@ describe('Credential Management Tools - Basic Tests', () => {
         });
 
         // Test invalid inputs
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           event: 'invalid_event',
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           limit: 0,
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           limit: 1001,
         });
       });
@@ -880,7 +880,7 @@ describe('Credential Management Tools - Basic Tests', () => {
   });
 
   describe('Credential Migration and Utilities', () => {
-    describe('migrate_credentials tool', () => {
+    describe('migrate-credentials tool', () => {
       it('should migrate credentials to secure storage successfully', async () => {
         mockSecureConfigManager.migrateToSecureStorage.mockResolvedValue({
           migrated: ['cred_001', 'cred_002', 'cred_003'],
@@ -890,8 +890,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'migrate_credentials');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'migrate-credentials');
+        const result = await tool.execute({
           userId: 'user_456',
         });
         
@@ -916,8 +916,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'migrate_credentials');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'migrate-credentials');
+        const result = await tool.execute({
           userId: 'user_456',
         });
         
@@ -936,8 +936,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'migrate_credentials');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'migrate-credentials');
+        const result = await tool.execute({
           userId: 'user_456',
         });
         
@@ -952,17 +952,17 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'migrate_credentials');
+        const tool = findTool(mockTool, 'migrate-credentials');
         
         // Test valid inputs
-        expectValidZodParse(tool.inputSchema, {});
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {});
+        expectValidZodParse(tool.parameters, {
           userId: 'user_456',
         });
       });
     });
 
-    describe('generate_credential tool', () => {
+    describe('generate-credential tool', () => {
       it('should generate API key with prefix and custom length', async () => {
         // Reset and setup mocks
         jest.clearAllMocks();
@@ -971,8 +971,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'generate_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'generate-credential');
+        const result = await tool.execute({
           type: 'api_key',
           prefix: 'sk_test',
           length: 32,
@@ -994,8 +994,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'generate_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'generate-credential');
+        const result = await tool.execute({
           type: 'secret',
         });
         
@@ -1015,8 +1015,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'generate_credential');
-        const result = await tool.handler({
+        const tool = findTool(mockTool, 'generate-credential');
+        const result = await tool.execute({
           type: 'api_key',
         });
         
@@ -1030,37 +1030,37 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'generate_credential');
+        const tool = findTool(mockTool, 'generate-credential');
         
         // Test valid inputs - Note: we need to test the actual schema from the tool
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {
           type: 'api_key',
           prefix: 'test',
           length: 32,
         });
 
-        expectValidZodParse(tool.inputSchema, {
+        expectValidZodParse(tool.parameters, {
           type: 'secret',
         });
 
         // Test invalid inputs
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           type: 'invalid_type',
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           type: 'api_key',
           length: 15, // < 16
         });
 
-        expectInvalidZodParse(tool.inputSchema, {
+        expectInvalidZodParse(tool.parameters, {
           type: 'api_key',
           length: 129, // > 128
         });
       });
     });
 
-    describe('cleanup_credentials tool', () => {
+    describe('cleanup-credentials tool', () => {
       it('should perform cleanup and return health status', async () => {
         mockSecureConfigManager.cleanup.mockReturnValue({
           expiredCredentials: 5,
@@ -1070,8 +1070,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'cleanup_credentials');
-        const result = await tool.handler({});
+        const tool = findTool(mockTool, 'cleanup-credentials');
+        const result = await tool.execute({});
         
         expect(result.status).toBe('healthy');
         expect(result.totalCredentials).toBe(100);
@@ -1092,8 +1092,8 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'cleanup_credentials');
-        const result = await tool.handler({});
+        const tool = findTool(mockTool, 'cleanup-credentials');
+        const result = await tool.execute({});
         
         expect(result.status).toBe('error');
         expect(result.totalCredentials).toBe(0);
@@ -1107,10 +1107,10 @@ describe('Credential Management Tools - Basic Tests', () => {
         const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
         addCredentialManagementTools(mockServer, mockApiClient as any);
         
-        const tool = findTool(mockTool, 'cleanup_credentials');
+        const tool = findTool(mockTool, 'cleanup-credentials');
         
         // Test valid input (empty object)
-        expectValidZodParse(tool.inputSchema, {});
+        expectValidZodParse(tool.parameters, {});
       });
     });
   });
@@ -1122,8 +1122,8 @@ describe('Credential Management Tools - Basic Tests', () => {
       const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
       addCredentialManagementTools(mockServer, mockApiClient as any);
       
-      const tool = findTool(mockTool, 'rotate_credential');
-      const result = await tool.handler({
+      const tool = findTool(mockTool, 'rotate-credential');
+      const result = await tool.execute({
         credentialId: 'cred_123',
         userId: 'user_456',
       });
@@ -1138,8 +1138,8 @@ describe('Credential Management Tools - Basic Tests', () => {
       const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
       addCredentialManagementTools(mockServer, mockApiClient as any);
       
-      const tool = findTool(mockTool, 'store_credential');
-      const result = await tool.handler({
+      const tool = findTool(mockTool, 'store-credential');
+      const result = await tool.execute({
         type: 'api_key',
         service: 'test-service',
         value: 'test_key',
@@ -1157,8 +1157,8 @@ describe('Credential Management Tools - Basic Tests', () => {
       const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
       addCredentialManagementTools(mockServer, mockApiClient as any);
       
-      const tool = findTool(mockTool, 'get_credential_status');
-      const result = await tool.handler({
+      const tool = findTool(mockTool, 'get-credential-status');
+      const result = await tool.execute({
         credentialId: 'cred_revoked',
         userId: 'user_456',
       });
@@ -1175,8 +1175,8 @@ describe('Credential Management Tools - Basic Tests', () => {
       const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
       addCredentialManagementTools(mockServer, mockApiClient as any);
       
-      const tool = findTool(mockTool, 'list_credentials');
-      const result = await tool.handler({});
+      const tool = findTool(mockTool, 'list-credentials');
+      const result = await tool.execute({});
       
       expect(result.credentials).toHaveLength(0);
     });
@@ -1193,8 +1193,8 @@ describe('Credential Management Tools - Basic Tests', () => {
       const { addCredentialManagementTools } = await import('../../../src/tools/credential-management.js');
       addCredentialManagementTools(mockServer, mockApiClient as any);
       
-      const tool = findTool(mockTool, 'get_audit_events');
-      const result = await tool.handler({
+      const tool = findTool(mockTool, 'get-audit-events');
+      const result = await tool.execute({
         limit: 100,
       });
       
@@ -1209,7 +1209,7 @@ describe('Credential Management Tools - Basic Tests', () => {
 
       // 1. Store credential
       mockSecureConfigManager.storeCredential.mockResolvedValue('cred_lifecycle');
-      const storeTool = findTool(mockTool, 'store_credential');
+      const storeTool = findTool(mockTool, 'store-credential');
       await storeTool.handler({
         type: 'api_key',
         service: 'integration-test',
@@ -1226,12 +1226,12 @@ describe('Credential Management Tools - Basic Tests', () => {
         metadata: { lastUsed: new Date() },
         nextRotation: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       });
-      const statusTool = findTool(mockTool, 'get_credential_status');
+      const statusTool = findTool(mockTool, 'get-credential-status');
       await statusTool.handler({ credentialId: 'cred_lifecycle' });
 
       // 3. Rotate credential
       mockSecureConfigManager.rotateCredential.mockResolvedValue('cred_lifecycle_rotated');
-      const rotateTool = findTool(mockTool, 'rotate_credential');
+      const rotateTool = findTool(mockTool, 'rotate-credential');
       await rotateTool.handler({
         credentialId: 'cred_lifecycle',
         gracePeriodHours: 24,
@@ -1249,7 +1249,7 @@ describe('Credential Management Tools - Basic Tests', () => {
           metadata: {},
         },
       ]);
-      const auditTool = findTool(mockTool, 'get_audit_events');
+      const auditTool = findTool(mockTool, 'get-audit-events');
       await auditTool.handler({ credentialId: 'cred_lifecycle' });
 
       // Verify all operations were called
@@ -1275,7 +1275,7 @@ describe('Credential Management Tools - Basic Tests', () => {
         },
       ]);
       
-      const auditTool = findTool(mockTool, 'get_audit_events');
+      const auditTool = findTool(mockTool, 'get-audit-events');
       const auditResult = await auditTool.handler({
         event: 'unauthorized_access',
         credentialId: 'cred_compromised',
@@ -1286,7 +1286,7 @@ describe('Credential Management Tools - Basic Tests', () => {
 
       // 2. Immediately rotate compromised credential
       mockSecureConfigManager.rotateCredential.mockResolvedValue('cred_compromised_secure');
-      const rotateTool = findTool(mockTool, 'rotate_credential');
+      const rotateTool = findTool(mockTool, 'rotate-credential');
       const rotateResult = await rotateTool.handler({
         credentialId: 'cred_compromised',
         gracePeriodHours: 1, // Minimal grace period for security
@@ -1307,7 +1307,7 @@ describe('Credential Management Tools - Basic Tests', () => {
         { ...testSecretCredential, encrypted: false },
       ]);
       
-      const listTool = findTool(mockTool, 'list_credentials');
+      const listTool = findTool(mockTool, 'list-credentials');
       const listResult = await listTool.handler({});
       expect(listResult.credentials).toHaveLength(2);
 
@@ -1317,7 +1317,7 @@ describe('Credential Management Tools - Basic Tests', () => {
         errors: [],
       });
       
-      const migrateTool = findTool(mockTool, 'migrate_credentials');
+      const migrateTool = findTool(mockTool, 'migrate-credentials');
       const migrateResult = await migrateTool.handler({
         userId: 'migration_admin',
       });
@@ -1332,7 +1332,7 @@ describe('Credential Management Tools - Basic Tests', () => {
         oldEvents: 500,
       });
       
-      const cleanupTool = findTool(mockTool, 'cleanup_credentials');
+      const cleanupTool = findTool(mockTool, 'cleanup-credentials');
       const cleanupResult = await cleanupTool.handler({});
       expect(cleanupResult.status).toBe('healthy');
     });

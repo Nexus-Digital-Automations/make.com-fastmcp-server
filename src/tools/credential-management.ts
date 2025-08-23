@@ -480,7 +480,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof StoreCredentialSchema>) => {
       const result = await storeCredentialTool.handler(input);
-      return formatSuccessResponse(result).content[0].text;
+      return result;
     },
   });
 
@@ -496,7 +496,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof GetCredentialSchema>) => {
       const result = await getCredentialStatusTool.handler(input);
-      return formatSuccessResponse(result).content[0].text;
+      return result;
     },
   });
 
@@ -514,7 +514,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof RotateCredentialSchema>) => {
       const result = await rotateCredentialTool.handler(input);
-      return formatSuccessResponse(result).content[0].text;
+      return result;
     },
   });
 
@@ -530,7 +530,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof ListCredentialsSchema>) => {
       const result = await listCredentialsTool.handler(input);
-      return formatSuccessResponse(result).content[0].text;
+      return result;
     },
   });
 
@@ -546,7 +546,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof AuditQuerySchema>) => {
       const result = await getAuditEventsTool.handler(input);
-      return formatSuccessResponse(result).content[0].text;
+      return result;
     },
   });
 
@@ -564,7 +564,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
     },
     execute: async (input: z.infer<typeof MigrateCredentialsSchema>) => {
       const result = await migrateCredentialsTool.handler(input);
-      return formatSuccessResponse(result).content[0].text;
+      return result;
     },
   });
 
@@ -621,7 +621,7 @@ export function addCredentialManagementTools(server: { addTool: (tool: unknown) 
         oldAuditEvents: 20,
         message: 'Cleanup completed successfully'
       };
-      return formatSuccessResponse(result).content[0].text;
+      return result;
     },
   });
 
