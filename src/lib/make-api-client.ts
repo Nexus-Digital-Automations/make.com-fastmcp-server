@@ -19,11 +19,12 @@ export class MakeApiClient {
   constructor(config: MakeApiConfig, userId?: string) {
     this.config = config;
     this.userId = userId;
-    const getComponentLogger = () => {
+    const getComponentLogger = (): ReturnType<typeof logger.child> => {
       try {
         return logger.child({ component: 'MakeApiClient' });
-      } catch (error) {
+      } catch {
         // Fallback for test environments
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return logger as any;
       }
     };
@@ -59,11 +60,12 @@ export class MakeApiClient {
       const secureConfig = await secureConfigManager.getSecureMakeConfig(userId);
       return new MakeApiClient(secureConfig, userId);
     } catch (error) {
-      const getComponentLogger = () => {
+      const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ component: 'MakeApiClient' });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };
