@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">14% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/100</span>
+                <span class='fraction'>14/100</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">14% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/100</span>
+                <span class='fraction'>14/100</span>
             </div>
         
             
@@ -162,7 +162,20 @@
 <a name='L97'></a><a href='#L97'>97</a>
 <a name='L98'></a><a href='#L98'>98</a>
 <a name='L99'></a><a href='#L99'>99</a>
-<a name='L100'></a><a href='#L100'>100</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L100'></a><a href='#L100'>100</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -248,33 +261,20 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >/**</span></span></span>
-<span class="cstat-no" title="statement not covered" > * @fileoverview Clone Scenario Tool Implementation</span>
-<span class="cstat-no" title="statement not covered" > * Clones an existing Make.com scenario with customizable options</span>
-<span class="cstat-no" title="statement not covered" > */</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { CloneScenarioSchema } from '../schemas/blueprint-update.js';</span>
-<span class="cstat-no" title="statement not covered" >import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';</span>
-<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../../../utils/response-formatter.js';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >/**</span>
-<span class="cstat-no" title="statement not covered" > * Create clone scenario tool configuration</span>
-<span class="cstat-no" title="statement not covered" > */</span>
-<span class="cstat-no" title="statement not covered" >export function createCloneScenarioTool(context: ToolContext): ToolDefinition {</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * @fileoverview Clone Scenario Tool Implementation
+ * Clones an existing Make.com scenario with customizable options
+ */
+&nbsp;
+import { UserError } from 'fastmcp';
+import { CloneScenarioSchema } from '../schemas/blueprint-update.js';
+import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
+import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+&nbsp;
+/**
+ * Create clone scenario tool configuration
+ */
+export function createCloneScenarioTool(context: ToolContex<span class="fstat-no" title="function not covered" >t): ToolDefinition {</span>
 <span class="cstat-no" title="statement not covered" >  const { apiClient } = context;</span>
 <span class="cstat-no" title="statement not covered" >  </span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
@@ -367,7 +367,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T22:43:11.905Z
+                at 2025-08-23T22:54:48.479Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">48.64% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/37</span>
+                <span class='fraction'>18/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>2/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">48.64% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/37</span>
+                <span class='fraction'>18/37</span>
             </div>
         
             
@@ -99,7 +99,25 @@
 <a name='L34'></a><a href='#L34'>34</a>
 <a name='L35'></a><a href='#L35'>35</a>
 <a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L37'></a><a href='#L37'>37</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -117,43 +135,25 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >/**</span></span></span>
-<span class="cstat-no" title="statement not covered" > * AI-Driven Governance Engine for Make.com FastMCP Server</span>
-<span class="cstat-no" title="statement not covered" > * Updated to use modular architecture from ai-governance-engine module refactoring</span>
-<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * AI-Driven Governance Engine for Make.com FastMCP Server
+ * Updated to use modular architecture from ai-governance-engine module refactoring
+ */
+&nbsp;
+import { FastMCP } from 'fastmcp';
+import { MakeApiClient } from '../lib/make-api-client.js';
+import logger from '../lib/logger<span class="branch-0 cbranch-no" title="branch not covered" >.js';</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >import { FastMCP } from 'fastmcp';</span>
-<span class="cstat-no" title="statement not covered" >import { MakeApiClient } from '../lib/make-api-client.js';</span>
-<span class="cstat-no" title="statement not covered" >import logger from '../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >// Import the modular implementation from the refactored ai-governance-engine module</span>
-<span class="cstat-no" title="statement not covered" >import { addAIGovernanceEngineTools as addModularGovernanceTools } from './ai-governance-engine/index.js';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >/**</span>
-<span class="cstat-no" title="statement not covered" > * Add AI governance engine tools to FastMCP server</span>
-<span class="cstat-no" title="statement not covered" > * Uses the new modular architecture with AIGovernanceManager core business logic</span>
-<span class="cstat-no" title="statement not covered" > */</span>
-<span class="cstat-no" title="statement not covered" >export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiClient): void {</span>
-<span class="cstat-no" title="statement not covered" >  const getComponentLogger = (): ReturnType&lt;typeof logger.child&gt; =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
+// Import the modular implementation from the refactored ai-governance-engine module
+import { addAIGovernanceEngineTools as addModularGovernanceTools } from './ai-governance-engine/index.js';
+&nbsp;
+/**
+ * Add AI governance engine tools to FastMCP server
+ * Uses the new modular architecture with AIGovernanceManager core business logic
+ */
+export function addAIGovernanceEngineTools(server: FastMCP, apiClient: MakeApiClient): void {
+  const getComponentLogger = (): ReturnType&lt;typeof logger.child&gt; =&gt; {
+<span class="fstat-no" title="function not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      return logger.child({ component: 'AIGovernanceEngine' });</span>
 <span class="cstat-no" title="statement not covered" >    } catch {</span>
 <span class="cstat-no" title="statement not covered" >      // Fallback for test environments</span>
@@ -178,7 +178,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T22:43:12.732Z
+                at 2025-08-23T22:54:49.447Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

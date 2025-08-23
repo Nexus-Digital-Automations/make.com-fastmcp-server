@@ -203,7 +203,21 @@ export class MakeApiClient {
           },
         };
       } catch (error) {
-        lastError = error as MakeApiError;
+        // Handle null/undefined errors specifically for retry logic
+        if (error === null || error === undefined) {
+          lastError = {
+            name: 'MakeApiError',
+            message: 'Unknown error',
+            code: 'UNKNOWN',
+            retryable: false,
+            details: { message: 'No error details available' }
+          } as MakeApiError;
+        } else if (error && typeof error === 'object' && 'name' in error && error.name === 'MakeApiError') {
+          lastError = error as MakeApiError;
+        } else {
+          // Process other errors through handleAxiosError
+          lastError = this.handleAxiosError(error);
+        }
         
         if (!lastError.retryable || attempt === retries) {
           break;
