@@ -152,8 +152,9 @@ function isMainModule(): boolean {
   }
   
   try {
-    // Use import.meta.url for runtime detection
-    return import.meta.url === `file://${process.argv[1]}`;
+    // Dynamic import.meta access to avoid Jest parsing issues
+    const importMeta = (0, eval)('import.meta');
+    return importMeta.url === `file://${process.argv[1]}`;
   } catch {
     // Fallback for environments that don't support import.meta
     return false;

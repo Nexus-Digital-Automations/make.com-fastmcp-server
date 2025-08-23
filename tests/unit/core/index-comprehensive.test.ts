@@ -28,19 +28,17 @@ jest.mock('../../../src/server.js', () => ({
   MakeServerInstance: jest.fn().mockImplementation(() => mockServerInstance)
 }));
 
-// Mock logger
-const mockLogger = {
-  child: jest.fn(() => ({
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn()
-  })),
+// Mock logger with proper child method  
+const createMockLogger = () => ({
   info: jest.fn(),
-  error: jest.fn(),
+  error: jest.fn(), 
   warn: jest.fn(),
-  debug: jest.fn()
-};
+  debug: jest.fn(),
+  child: jest.fn(() => createMockLogger())
+});
+
+const componentLogger = createMockLogger();
+const mockLogger = createMockLogger();
 
 jest.mock('../../../src/lib/logger.js', () => ({
   default: mockLogger
@@ -77,14 +75,8 @@ describe('Main Entry Point - Comprehensive Tests', () => {
     process.exit = mockProcessExit as any;
     process.on = mockProcessOn as any;
     
-    // Setup component logger mock
-    componentLogger = {
-      info: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn()
-    };
-    mockLogger.child.mockReturnValue(componentLogger);
+    // Clear mock calls for fresh test
+    jest.clearAllMocks();
     
     // Import fresh modules after mocks are set up
     return import('../../../src/index.js').then(module => {
@@ -446,7 +438,7 @@ describe('Main Entry Point - Comprehensive Tests', () => {
     it('should create component logger with correct context', async () => {
       await main();
       
-      expect(mockLogger.child).toHaveBeenCalledWith({ component: 'Main' });
+      expect(mockLogger.child).toHaveBeenCalledWith({ component: 'Main', serverType: 'server' });
     });
 
     it('should log initialization and completion messages', async () => {
