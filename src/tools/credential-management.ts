@@ -415,7 +415,7 @@ export const cleanupCredentialsTool = {
   inputSchema: z.object({}),
   handler: async (): Promise<{ status: string; totalCredentials: number; activeCredentials: number; rotationsPending: number; encryptionStrength: string; storageType: string; lastAudit?: string }> => {
     try {
-      const result = secureConfigManager.cleanup();
+      const result = await secureConfigManager.cleanup();
 
       componentLogger.info('Credential cleanup performed via MCP tool', {
         expiredCredentials: result.expiredCredentials,

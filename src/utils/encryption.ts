@@ -600,7 +600,7 @@ export class CredentialManager {
   /**
    * Clean up expired credentials
    */
-  public cleanupExpiredCredentials(): number {
+  public async cleanupExpiredCredentials(): Promise<number> {
     const now = new Date();
     let cleanedCount = 0;
 
