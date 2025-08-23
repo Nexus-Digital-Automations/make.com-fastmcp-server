@@ -36,6 +36,23 @@
       "auto_research_created": false
     },
     {
+      "id": "task_1755983481923_m5w8j5aru",
+      "title": "Fix make-api-client.test.ts mock setup failures",
+      "description": "Fix TypeError: mockedLogger.child.mockReturnValue is not a function - correct mock setup for logger and Bottleneck dependencies",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T21:11:21.923Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755982240978_4so62n9z0",
       "title": "Fix critical test failures in make-api-client and logger tests",
       "description": "Multiple core component tests are failing with module import/export issues and mock configuration problems. These failures prevent accurate coverage measurement of the implemented tests.",

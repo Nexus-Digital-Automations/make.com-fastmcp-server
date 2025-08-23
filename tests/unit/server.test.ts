@@ -187,6 +187,21 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
   let serverInstance: MakeServerInstance;
   let mockFastMCP: any;
   const { FastMCP } = require("fastmcp");
+  const originalMaxListeners = process.getMaxListeners();
+
+  beforeAll(() => {
+    // Increase max listeners for testing to prevent warnings during test runs
+    process.setMaxListeners(50);
+  });
+
+  afterAll(() => {
+    // Restore original max listeners setting
+    process.setMaxListeners(originalMaxListeners);
+    
+    // Clean up any remaining listeners from tests
+    process.removeAllListeners('uncaughtException');
+    process.removeAllListeners('unhandledRejection');
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -230,7 +245,16 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
     mockApiClientInstance.shutdown.mockResolvedValue(undefined);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Clean up server instance if it was created
+    if (serverInstance) {
+      try {
+        await serverInstance.shutdown();
+      } catch (error) {
+        // Ignore cleanup errors in tests
+      }
+    }
+    
     jest.clearAllMocks();
   });
 

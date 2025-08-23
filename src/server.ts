@@ -55,6 +55,9 @@ export class MakeServerInstance {
   private readonly server: FastMCP<MakeSessionAuth>;
   private readonly apiClient: MakeApiClient;
   private readonly componentLogger: ReturnType<typeof logger.child>;
+  private processErrorHandlersBound = false;
+  private uncaughtExceptionHandler?: (error: Error) => void;
+  private unhandledRejectionHandler?: (reason: unknown, promise: Promise<unknown>) => void;
 
   constructor() {
     const getComponentLogger = (): ReturnType<typeof logger.child> => {
@@ -223,8 +226,18 @@ ${configManager.isAuthEnabled() ?
     // Note: FastMCP server doesn't expose 'error' event, 
     // so we'll handle errors at the process level instead
 
-    // Setup process-level error handlers for MCP protocol issues
-    process.on('uncaughtException', (error) => {
+    // Setup process-level error handlers for MCP protocol issues (only once per process)
+    this.setupProcessErrorHandlers();
+  }
+
+  private setupProcessErrorHandlers(): void {
+    // Only set up process error handlers once per process to prevent memory leaks
+    if (this.processErrorHandlersBound || process.listenerCount('uncaughtException') > 0) {
+      return;
+    }
+
+    // Store references to bound handlers for cleanup
+    this.uncaughtExceptionHandler = (error: Error) => {
       if (error.message.includes('JSON') || error.message.includes('parse')) {
         this.componentLogger.error('JSON parsing error intercepted', {
           error: {
@@ -246,10 +259,14 @@ ${configManager.isAuthEnabled() ?
           stack: error.stack
         }
       });
-      process.exit(1);
-    });
+      
+      // Only exit in non-test environments
+      if (process.env.NODE_ENV !== 'test') {
+        process.exit(1);
+      }
+    };
 
-    process.on('unhandledRejection', (reason, promise) => {
+    this.unhandledRejectionHandler = (reason: unknown, promise: Promise<unknown>) => {
       this.componentLogger.error('Unhandled promise rejection', {
         reason: reason instanceof Error ? {
           name: reason.name,
@@ -258,7 +275,11 @@ ${configManager.isAuthEnabled() ?
         } : reason,
         promise: promise.toString()
       });
-    });
+    };
+
+    process.on('uncaughtException', this.uncaughtExceptionHandler);
+    process.on('unhandledRejection', this.unhandledRejectionHandler);
+    this.processErrorHandlersBound = true;
   }
 
   private addHealthCheckTool(): void {
@@ -921,6 +942,9 @@ ${configManager.isAuthEnabled() ?
     this.componentLogger.info('Shutting down server');
     
     try {
+      // Cleanup process error handlers to prevent memory leaks
+      this.cleanupProcessErrorHandlers();
+      
       // Shutdown security systems first
       // await securityManager.shutdown();
       this.componentLogger.info('Security systems shutdown (temporarily disabled)');
@@ -932,6 +956,21 @@ ${configManager.isAuthEnabled() ?
     }
 
     this.componentLogger.info('Server shutdown completed');
+  }
+
+  private cleanupProcessErrorHandlers(): void {
+    // Remove our specific error handlers to prevent memory leaks
+    if (this.uncaughtExceptionHandler) {
+      process.removeListener('uncaughtException', this.uncaughtExceptionHandler);
+      this.uncaughtExceptionHandler = undefined;
+    }
+    
+    if (this.unhandledRejectionHandler) {
+      process.removeListener('unhandledRejection', this.unhandledRejectionHandler);
+      this.unhandledRejectionHandler = undefined;
+    }
+    
+    this.processErrorHandlersBound = false;
   }
 }
 

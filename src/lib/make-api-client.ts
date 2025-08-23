@@ -142,7 +142,7 @@ export class MakeApiClient {
   }
 
   private handleAxiosError(error: unknown): MakeApiError {
-    const makeError = new Error() as MakeApiError;
+    const makeError = new Error('API client error') as MakeApiError;
     
     // Type guard for axios error
     const axiosError = error as {

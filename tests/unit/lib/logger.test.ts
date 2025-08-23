@@ -10,26 +10,66 @@ import { jest } from '@jest/globals';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Mock dependencies first, before importing logger
-const mockGetLogLevel = jest.fn().mockReturnValue('info');
+// Set up global mock variables that will be hoisted
+const mockGetLogLevel = jest.fn();
+const mockGetLogsDirectory = jest.fn();
+
+// Mock filesystem first
+jest.mock('fs');
+const mockFs = fs as jest.Mocked<typeof fs>;
+
+// Mock config module with properly hoisted factory
 jest.mock('../../../src/lib/config.js', () => {
-  // Mock the ConfigManager class and its instance
-  const mockConfigManager = {
-    getLogLevel: mockGetLogLevel,
-    getInstance: jest.fn(() => mockConfigManager)
-  };
   return {
-    default: mockConfigManager,
-    configManager: mockConfigManager
+    __esModule: true,
+    default: {
+      getLogLevel: () => 'info',
+      getConfig: jest.fn(),
+      getMakeConfig: jest.fn(),
+      isAuthEnabled: jest.fn().mockReturnValue(false),
+      getAuthSecret: jest.fn(),
+      getRateLimitConfig: jest.fn(),
+      isDevelopment: jest.fn().mockReturnValue(false),
+      isProduction: jest.fn().mockReturnValue(false),
+      isTest: jest.fn().mockReturnValue(true),
+      validateEnvironment: jest.fn(),
+      getConfigurationReport: jest.fn()
+    },
+    configManager: {
+      getLogLevel: () => 'info',
+      getConfig: jest.fn(),
+      getMakeConfig: jest.fn(),
+      isAuthEnabled: jest.fn().mockReturnValue(false),
+      getAuthSecret: jest.fn(),
+      getRateLimitConfig: jest.fn(),
+      isDevelopment: jest.fn().mockReturnValue(false),
+      isProduction: jest.fn().mockReturnValue(false),
+      isTest: jest.fn().mockReturnValue(true),
+      validateEnvironment: jest.fn(),
+      getConfigurationReport: jest.fn()
+    },
+    ConfigManager: {
+      getInstance: jest.fn(() => ({
+        getLogLevel: () => 'info',
+        getConfig: jest.fn(),
+        getMakeConfig: jest.fn(),
+        isAuthEnabled: jest.fn().mockReturnValue(false),
+        getAuthSecret: jest.fn(),
+        getRateLimitConfig: jest.fn(),
+        isDevelopment: jest.fn().mockReturnValue(false),
+        isProduction: jest.fn().mockReturnValue(false),
+        isTest: jest.fn().mockReturnValue(true),
+        validateEnvironment: jest.fn(),
+        getConfigurationReport: jest.fn()
+      }))
+    }
   };
 });
 
+// Mock path resolver 
 jest.mock('../../../src/utils/path-resolver.js', () => ({
-  getLogsDirectory: jest.fn().mockReturnValue('/mock/logs')
+  getLogsDirectory: () => '/mock/logs'
 }));
-
-jest.mock('fs');
-const mockFs = fs as jest.Mocked<typeof fs>;
 
 // Now import logger after mocks are set up
 import { logger, Logger, type LogLevel, type LogContext, type LogEntry } from '../../../src/lib/logger.js';

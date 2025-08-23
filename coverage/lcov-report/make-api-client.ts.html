@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">5.66% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/300</span>
+                <span class='fraction'>17/300</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>4/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">5.66% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/300</span>
+                <span class='fraction'>17/300</span>
             </div>
         
             
@@ -362,7 +362,22 @@
 <a name='L297'></a><a href='#L297'>297</a>
 <a name='L298'></a><a href='#L298'>298</a>
 <a name='L299'></a><a href='#L299'>299</a>
-<a name='L300'></a><a href='#L300'>300</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L300'></a><a href='#L300'>300</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -646,37 +661,22 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >/**</span></span></span>
-<span class="cstat-no" title="statement not covered" > * Make.com API Client with rate limiting, retry logic, and error handling</span>
-<span class="cstat-no" title="statement not covered" > * Provides robust interface to Make.com API endpoints with secure credential management</span>
-<span class="cstat-no" title="statement not covered" > */</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';</span>
-<span class="cstat-no" title="statement not covered" >import Bottleneck from 'bottleneck';</span>
-<span class="cstat-no" title="statement not covered" >import { MakeApiConfig, ApiResponse, MakeApiError } from '../types/index.js';</span>
-<span class="cstat-no" title="statement not covered" >import logger from './logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import { secureConfigManager } from './secure-config.js';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >export class MakeApiClient {</span>
-<span class="cstat-no" title="statement not covered" >  private readonly axiosInstance: AxiosInstance;</span>
-<span class="cstat-no" title="statement not covered" >  private readonly limiter: Bottleneck;</span>
-<span class="cstat-no" title="statement not covered" >  private config: MakeApiConfig;</span>
-<span class="cstat-no" title="statement not covered" >  private readonly componentLogger: ReturnType&lt;typeof logger.child&gt;;</span>
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Make.com API Client with rate limiting, retry logic, and error handling
+ * Provides robust interface to Make.com API endpoints with secure credential management
+ */
+&nbsp;
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import Bottleneck from 'bottleneck';
+import { MakeApiConfig, ApiResponse, MakeApiError } from '../types/index.js';
+import logger from './logger.js';
+import { secureConfigManager } from './secure-config.js';
+&nbsp;
+export class MakeApiClient {
+  private readonly axiosInstance: AxiosInstance;
+  private readonly limiter: Bottleneck;
+  private config: MakeApiConfig;
+  private readonly componentLogger: ReturnType&lt;typeof logg<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >er.child&gt;;</span></span>
 <span class="cstat-no" title="statement not covered" >  private readonly userId?: string;</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  constructor(config: MakeApiConfig, userId?: string) {</span>
@@ -805,7 +805,7 @@
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  private handleAxiosError(error: unknown): MakeApiError {</span>
-<span class="cstat-no" title="statement not covered" >    const makeError = new Error() as MakeApiError;</span>
+<span class="cstat-no" title="statement not covered" >    const makeError = new Error('API client error') as MakeApiError;</span>
 <span class="cstat-no" title="statement not covered" >    </span>
 <span class="cstat-no" title="statement not covered" >    // Type guard for axios error</span>
 <span class="cstat-no" title="statement not covered" >    const axiosError = error as {</span>
@@ -960,14 +960,14 @@
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >export default MakeApiClient;</span></pre></td></tr></table></pre>
+export default MakeApiClient;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T20:48:28.696Z
+                at 2025-08-23T21:11:34.077Z
             </div>
         <script src="prettify.js"></script>
         <script>

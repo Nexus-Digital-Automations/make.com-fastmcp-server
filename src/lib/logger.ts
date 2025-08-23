@@ -71,6 +71,32 @@ export class Logger {
     return this.logLevels[level] >= this.logLevels[this.logLevel];
   }
 
+  private safeStringify(obj: any): string {
+    try {
+      return JSON.stringify(obj, (key, value) => {
+        // Handle circular references by replacing them with a placeholder
+        if (typeof value === 'object' && value !== null) {
+          // Use a WeakSet to detect circular references
+          if (this.circularRefs?.has(value)) {
+            return '[Circular Reference]';
+          }
+          if (!this.circularRefs) {
+            this.circularRefs = new WeakSet();
+          }
+          this.circularRefs.add(value);
+        }
+        return value;
+      });
+    } catch (error) {
+      return '[Object with circular references or unstringifiable content]';
+    } finally {
+      // Clear the circular reference tracker after each stringify operation
+      this.circularRefs = undefined;
+    }
+  }
+
+  private circularRefs?: WeakSet<object>;
+
   private formatLogEntry(entry: LogEntry): string {
     const { 
       timestamp, level, message, component, operation, sessionId, userId, 
@@ -92,11 +118,11 @@ export class Logger {
     logLine += `: ${message}`;
     
     if (data && Object.keys(data).length > 0) {
-      logLine += ` | Data: ${JSON.stringify(data)}`;
+      logLine += ` | Data: ${this.safeStringify(data)}`;
     }
 
     if (metadata && Object.keys(metadata).length > 0) {
-      logLine += ` | Meta: ${JSON.stringify(metadata)}`;
+      logLine += ` | Meta: ${this.safeStringify(metadata)}`;
     }
     
     return logLine;
