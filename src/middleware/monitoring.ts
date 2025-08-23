@@ -32,7 +32,36 @@ class MonitoringMiddleware {
   private readonly toolExecutions: Map<string, ToolMetrics> = new Map();
 
   constructor() {
-    this.componentLogger = logger.child({ component: 'MonitoringMiddleware' });
+    // Robust logger initialization for both production and test environments
+    try {
+      if (logger && typeof logger.child === 'function') {
+        this.componentLogger = logger.child({ component: 'MonitoringMiddleware' });
+      } else {
+        // Fallback for test environments when logger.child is not available
+        this.componentLogger = logger as ReturnType<typeof logger.child>;
+      }
+    } catch (error) {
+      // Ultimate fallback for test environments
+      console.warn('MonitoringMiddleware logger initialization failed, using fallback:', error);
+      this.componentLogger = {
+        info: (..._args: unknown[]) => {},
+        debug: (..._args: unknown[]) => {},
+        warn: (..._args: unknown[]) => {},
+        error: (..._args: unknown[]) => {},
+        child: () => this.componentLogger
+      } as ReturnType<typeof logger.child>;
+    }
+
+    // Additional safety check for test environments
+    if (!this.componentLogger || typeof this.componentLogger.info !== 'function') {
+      this.componentLogger = {
+        info: (..._args: unknown[]) => {},
+        debug: (..._args: unknown[]) => {},
+        warn: (..._args: unknown[]) => {},
+        error: (..._args: unknown[]) => {},
+        child: () => this.componentLogger
+      } as ReturnType<typeof logger.child>;
+    }
   }
 
   /**
@@ -382,9 +411,29 @@ let monitoringInstance: MonitoringMiddleware | null = null;
 
 export function getMonitoringInstance(): MonitoringMiddleware {
   if (!monitoringInstance) {
-    monitoringInstance = new MonitoringMiddleware();
+    try {
+      monitoringInstance = new MonitoringMiddleware();
+    } catch (error) {
+      console.error('Failed to create MonitoringMiddleware instance:', error);
+      throw error;
+    }
   }
   return monitoringInstance;
+}
+
+/**
+ * Reset the monitoring singleton - for testing purposes only
+ * @internal
+ */
+export function resetMonitoringInstance(): void {
+  if (monitoringInstance) {
+    try {
+      monitoringInstance.shutdown();
+    } catch (error) {
+      console.warn('Error during monitoring middleware shutdown:', error);
+    }
+    monitoringInstance = null;
+  }
 }
 
 // Create and export singleton instance
