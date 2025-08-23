@@ -24013,9 +24013,85 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755945025476_etk2naiqo",
+      "title": "Fix monitoring-optimized.test.ts constructor errors",
+      "description": "monitoring-optimized.test.ts is failing with TypeError: monitoring_js_1.default is not a constructor errors. The monitoring middleware class import/export structure needs to be fixed for this test file.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T10:30:25.476Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755942864772_1_general_572de571",
+      "started_at": "2025-08-23T10:30:32.654Z",
+      "claimed_by": "development_session_1755942864772_1_general_572de571",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755942864772_1_general_572de571",
+          "role": "primary",
+          "assignedAt": "2025-08-23T10:30:32.654Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T10:41:11.954Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T10:41:11.955Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755945778806_1ivquvqh4",
+      "title": "Fix monitoring-comprehensive test import error",
+      "description": "Change default import to named import for MonitoringMiddleware to fix constructor error",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T10:42:58.806Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T10:43:48.873Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T10:43:48.874Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 555,
-  "last_completion": "2025-08-23T10:29:47.832Z",
+  "total_completed": 557,
+  "last_completion": "2025-08-23T10:43:48.874Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
