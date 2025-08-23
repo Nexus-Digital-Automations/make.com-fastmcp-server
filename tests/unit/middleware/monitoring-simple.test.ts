@@ -6,45 +6,15 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { FastMCP } from 'fastmcp';
 
-// Mock dependencies before any imports
-jest.mock('../../../src/lib/metrics.js', () => ({
-  default: {
-    setActiveConnections: jest.fn(),
-    recordRequest: jest.fn(),
-    createTimer: jest.fn().mockReturnValue(() => 1.5), // 1.5 seconds
-    recordToolExecution: jest.fn(),
-    recordError: jest.fn(),
-    recordAuthAttempt: jest.fn(),
-    recordAuthDuration: jest.fn(),
-    recordMakeApiCall: jest.fn(),
-    healthCheck: jest.fn().mockResolvedValue({ healthy: true, metricsCount: 100 })
-  }
-}));
-
-jest.mock('../../../src/lib/logger.js', () => ({
-  default: {
-    child: jest.fn().mockReturnValue({
-      info: jest.fn(),
-      debug: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      child: jest.fn().mockReturnThis()
-    })
-  }
-}));
-
-jest.mock('../../../src/lib/config.js', () => ({
-  default: {
-    getLogLevel: jest.fn().mockReturnValue('info')
-  }
-}));
+// The module mocks are now handled by Jest's moduleNameMapper configuration
 
 import { MonitoringMiddleware } from '../../../src/middleware/monitoring.js';
 import metrics from '../../../src/lib/metrics.js';
 import logger from '../../../src/lib/logger.js';
 
-const mockMetrics = metrics as jest.Mocked<typeof metrics>;
-const mockLogger = logger as jest.Mocked<typeof logger>;
+// Assert that the imported modules are actually mocked
+const mockMetrics = metrics as jest.MockedObject<typeof metrics>;
+const mockLogger = logger as jest.MockedObject<typeof logger>;
 
 describe('MonitoringMiddleware', () => {
   it('should verify logger mock is working', () => {
@@ -54,12 +24,36 @@ describe('MonitoringMiddleware', () => {
     expect(typeof logger.child).toBe('function');
   });
 
+  it('should verify metrics mock is working', () => {
+    console.log('Metrics mock:', metrics);
+    console.log('Metrics.setActiveConnections:', metrics.setActiveConnections);
+    console.log('Type of setActiveConnections:', typeof metrics.setActiveConnections);
+    console.log('Is jest function:', jest.isMockFunction(metrics.setActiveConnections));
+    console.log('mockMetrics === metrics:', mockMetrics === metrics);
+    console.log('Is mockMetrics.setActiveConnections a Jest fn:', jest.isMockFunction(mockMetrics.setActiveConnections));
+    
+    expect(metrics.setActiveConnections).toBeDefined();
+    expect(typeof metrics.setActiveConnections).toBe('function');
+    expect(jest.isMockFunction(metrics.setActiveConnections)).toBe(true);
+    
+    // Test that the mock function can be called and tracked
+    metrics.setActiveConnections(1);
+    expect(metrics.setActiveConnections).toHaveBeenCalledWith(1);
+  });
+
   let monitoringMiddleware: MonitoringMiddleware;
   let mockServer: jest.Mocked<FastMCP>;
   let mockChildLogger: jest.Mocked<ReturnType<typeof logger.child>>;
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Reset metrics mock functions explicitly after clearAllMocks
+    Object.values(mockMetrics).forEach(mockFn => {
+      if (typeof mockFn === 'function' && jest.isMockFunction(mockFn)) {
+        mockFn.mockClear();
+      }
+    });
 
     mockChildLogger = {
       info: jest.fn(),
