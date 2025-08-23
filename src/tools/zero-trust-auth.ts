@@ -1188,6 +1188,134 @@ const createSessionManagementTool = (_apiClient: MakeApiClient): ZeroTrustTool =
   },
 });
 
+// ===== IDENTITY FEDERATION HELPER FUNCTIONS =====
+
+/**
+ * Generate SSO URL for different providers
+ */
+const generateSsoUrl = (
+  provider: string,
+  redirectUri: string,
+  state: string,
+  nonce: string
+): string => {
+  switch (provider) {
+    case 'okta':
+      return `https://your-domain.okta.com/oauth2/v1/authorize?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&nonce=${nonce}`;
+    case 'azure_ad':
+      return `https://login.microsoftonline.com/your-tenant-id/oauth2/v2.0/authorize?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&nonce=${nonce}`;
+    case 'google':
+      return `https://accounts.google.com/oauth2/v2/auth?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&nonce=${nonce}`;
+    default:
+      return `https://example.com/sso/${provider}?state=${state}&nonce=${nonce}`;
+  }
+};
+
+/**
+ * Handle SSO initiation process
+ */
+const handleSsoInitiate = (
+  parsedInput: z.infer<typeof IdentityFederationSchema>
+): Record<string, unknown> => {
+  // Generate SSO initiation URL
+  const state = crypto.randomBytes(32).toString('base64url');
+  const nonce = crypto.randomBytes(32).toString('base64url');
+  
+  const ssoUrl = generateSsoUrl(
+    parsedInput.provider,
+    parsedInput.parameters.redirectUri || '',
+    state,
+    nonce
+  );
+
+  return {
+    success: true,
+    ssoUrl,
+    state,
+    nonce,
+    provider: parsedInput.provider,
+  };
+};
+
+/**
+ * Handle token validation
+ */
+const handleTokenValidate = (
+  parsedInput: z.infer<typeof IdentityFederationSchema>
+): Record<string, unknown> => {
+  // Validate OAuth/SAML token
+  if (!parsedInput.parameters.token) {
+    return {
+      success: false,
+      error: 'Token required for validation',
+    };
+  }
+
+  // Simplified token validation
+  const isValidToken = parsedInput.parameters.token.length > 10;
+  return {
+    success: isValidToken,
+    valid: isValidToken,
+    claims: isValidToken ? {
+      sub: 'user123',
+      email: 'user@example.com',
+      name: 'Example User',
+      roles: ['user'],
+    } : null,
+  };
+};
+
+/**
+ * Handle user provisioning
+ */
+const handleUserProvision = (
+  parsedInput: z.infer<typeof IdentityFederationSchema>
+): Record<string, unknown> => {
+  // Just-in-time user provisioning
+  if (!parsedInput.parameters.userAttributes) {
+    return {
+      success: false,
+      error: 'User attributes required for provisioning',
+    };
+  }
+
+  const userAttributes = parsedInput.parameters.userAttributes;
+  return {
+    success: true,
+    user: {
+      id: crypto.randomUUID(),
+      email: userAttributes.email,
+      firstName: userAttributes.firstName,
+      lastName: userAttributes.lastName,
+      roles: userAttributes.roles || ['user'],
+      groups: userAttributes.groups || [],
+      department: userAttributes.department,
+      provisionedAt: new Date().toISOString(),
+    },
+  };
+};
+
+/**
+ * Handle attribute mapping
+ */
+const handleAttributeMap = (
+  parsedInput: z.infer<typeof IdentityFederationSchema>
+): Record<string, unknown> => {
+  // Map identity provider attributes to local user attributes
+  const claims = parsedInput.parameters.claims || {};
+  return {
+    success: true,
+    mappedAttributes: {
+      userId: claims.sub || claims.user_id,
+      email: claims.email || claims.mail,
+      firstName: claims.given_name || claims.first_name,
+      lastName: claims.family_name || claims.last_name,
+      roles: (claims.roles as string[]) || (claims.groups as string[]) || ['user'],
+      department: claims.department || claims.dept,
+    },
+  };
+};
+
 /**
  * Identity Federation Tool
  */
@@ -1201,112 +1329,24 @@ const createIdentityFederationTool = (_apiClient: MakeApiClient): ZeroTrustTool 
       let result: Record<string, unknown>;
 
       switch (parsedInput.action) {
-        case 'sso_initiate': {
-          // Generate SSO initiation URL
-          const state = crypto.randomBytes(32).toString('base64url');
-          const nonce = crypto.randomBytes(32).toString('base64url');
-          
-          let ssoUrl: string;
-          switch (parsedInput.provider) {
-            case 'okta':
-              ssoUrl = `https://your-domain.okta.com/oauth2/v1/authorize?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(parsedInput.parameters.redirectUri || '')}&state=${state}&nonce=${nonce}`;
-              break;
-            case 'azure_ad':
-              ssoUrl = `https://login.microsoftonline.com/your-tenant-id/oauth2/v2.0/authorize?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(parsedInput.parameters.redirectUri || '')}&state=${state}&nonce=${nonce}`;
-              break;
-            case 'google':
-              ssoUrl = `https://accounts.google.com/oauth2/v2/auth?client_id=your-client-id&response_type=code&scope=openid profile email&redirect_uri=${encodeURIComponent(parsedInput.parameters.redirectUri || '')}&state=${state}&nonce=${nonce}`;
-              break;
-            default:
-              ssoUrl = `https://example.com/sso/${parsedInput.provider}?state=${state}&nonce=${nonce}`;
-          }
-
-          result = {
-            success: true,
-            ssoUrl,
-            state,
-            nonce,
-            provider: parsedInput.provider,
-          };
+        case 'sso_initiate':
+          result = handleSsoInitiate(parsedInput);
           break;
-        }
-
-        case 'token_validate': {
-          // Validate OAuth/SAML token
-          if (!parsedInput.parameters.token) {
-            result = {
-              success: false,
-              error: 'Token required for validation',
-            };
-            break;
-          }
-
-          // Simplified token validation
-          const isValidToken = parsedInput.parameters.token.length > 10;
-          result = {
-            success: isValidToken,
-            valid: isValidToken,
-            claims: isValidToken ? {
-              sub: 'user123',
-              email: 'user@example.com',
-              name: 'Example User',
-              roles: ['user'],
-            } : null,
-          };
+        case 'token_validate':
+          result = handleTokenValidate(parsedInput);
           break;
-        }
-
-        case 'user_provision': {
-          // Just-in-time user provisioning
-          if (!parsedInput.parameters.userAttributes) {
-            result = {
-              success: false,
-              error: 'User attributes required for provisioning',
-            };
-            break;
-          }
-
-          const userAttributes = parsedInput.parameters.userAttributes;
-          result = {
-            success: true,
-            user: {
-              id: crypto.randomUUID(),
-              email: userAttributes.email,
-              firstName: userAttributes.firstName,
-              lastName: userAttributes.lastName,
-              roles: userAttributes.roles || ['user'],
-              groups: userAttributes.groups || [],
-              department: userAttributes.department,
-              provisionedAt: new Date().toISOString(),
-            },
-          };
+        case 'user_provision':
+          result = handleUserProvision(parsedInput);
           break;
-        }
-
-        case 'attribute_map': {
-          // Map identity provider attributes to local user attributes
-          const claims = parsedInput.parameters.claims || {};
-          result = {
-            success: true,
-            mappedAttributes: {
-              userId: claims.sub || claims.user_id,
-              email: claims.email || claims.mail,
-              firstName: claims.given_name || claims.first_name,
-              lastName: claims.family_name || claims.last_name,
-              roles: (claims.roles as string[]) || (claims.groups as string[]) || ['user'],
-              department: claims.department || claims.dept,
-            },
-          };
+        case 'attribute_map':
+          result = handleAttributeMap(parsedInput);
           break;
-        }
-
-        default: {
+        default:
           result = {
             success: false,
             error: 'Invalid federation action',
           };
           break;
-        }
       }
 
       // Log federation operation
