@@ -9,6 +9,11 @@ import { FoldersManager } from '../core/index.js';
 import { MakeApiClient } from '../../../lib/make-api-client.js';
 import logger from '../../../lib/logger.js';
 
+// Extended context interface that includes the apiClient property
+interface ExtendedToolContext extends FastMCPToolContext {
+  apiClient?: MakeApiClient;
+}
+
 type ToolResult = Promise<{ 
   success?: boolean; 
   error?: string; 
@@ -54,7 +59,7 @@ async function createFoldersManager(context: FastMCPToolContext, providedApiClie
  */
 export async function createfolder(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   // Extract API client from context if available
-  const apiClient = (context as any).apiClient;
+  const apiClient = (context as ExtendedToolContext).apiClient;
   const manager = await createFoldersManager(context, apiClient);
   
   try {
@@ -127,7 +132,7 @@ createfolder.metadata = {
  */
 export async function listfolders(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
   // Extract API client from context if available
-  const apiClient = (context as any).apiClient;
+  const apiClient = (context as ExtendedToolContext).apiClient;
   const manager = await createFoldersManager(context, apiClient);
   
   try {

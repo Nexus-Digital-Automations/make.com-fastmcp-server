@@ -24133,9 +24133,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755946455008_lmp7b1ts5",
+      "title": "Fix TypeScript linting warnings",
+      "description": "Address 7 linting warnings in src/lib/metrics.ts (5 warnings) and src/tools/folders/tools/index.ts (2 warnings) - improve type safety by replacing any types with specific types and addressing console.log usage",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T10:54:15.008Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755945881120_1_general_749ecdb0",
+      "started_at": "2025-08-23T10:54:21.117Z",
+      "claimed_by": "development_session_1755945881120_1_general_749ecdb0",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755945881120_1_general_749ecdb0",
+          "role": "primary",
+          "assignedAt": "2025-08-23T10:54:21.117Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T11:01:26.730Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T11:01:26.731Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 558,
-  "last_completion": "2025-08-23T10:52:17.455Z",
+  "total_completed": 559,
+  "last_completion": "2025-08-23T11:01:26.731Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
