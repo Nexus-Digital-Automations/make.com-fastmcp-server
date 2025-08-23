@@ -118,7 +118,7 @@ export abstract class BaseServer {
         if (authObj.token && typeof authObj.token === 'string') {
           // Validate token (simplified validation for now)
           if (authObj.token.length < 10) {
-            throw createAuthenticationError('Invalid token format', 'INVALID_TOKEN');
+            throw createAuthenticationError('Invalid token format', { code: 'INVALID_TOKEN' });
           }
           
           return {
@@ -139,7 +139,7 @@ export abstract class BaseServer {
         };
       }
       
-      throw createAuthenticationError('Authentication required', 'MISSING_AUTH');
+      throw createAuthenticationError('Authentication required', { code: 'MISSING_AUTH' });
       
     } catch (error) {
       this.componentLogger.error('Authentication failed', error instanceof Error ? { message: error.message } : { error: String(error) });
@@ -153,7 +153,7 @@ export abstract class BaseServer {
       this.server.addTool({
         name: 'health_check',
         description: `Check ${this.getServerType()} server health and status`,
-        input_schema: z.object({}),
+        parameters: z.object({}),
         execute: async (input, { log }) => {
           log.info(`${this.getServerType()} server health check requested`);
           
@@ -177,7 +177,7 @@ export abstract class BaseServer {
       this.server.addTool({
         name: 'server_info',
         description: `Get ${this.getServerType()} server information and capabilities`,
-        input_schema: z.object({}),
+        parameters: z.object({}),
         execute: async (input, { log }) => {
           log.info(`${this.getServerType()} server info requested`);
           
@@ -197,10 +197,13 @@ export abstract class BaseServer {
       this.componentLogger.error('Failed to add basic tools', {
         error: error instanceof Error ? error.message : String(error)
       });
-      throw new MakeServerError('Failed to initialize basic tools', {
-        originalError: error,
-        category: 'SERVER_INIT'
-      });
+      throw new MakeServerError(
+        'Failed to initialize basic tools',
+        'SERVER_INIT',
+        500,
+        true,
+        { originalError: error }
+      );
     }
   }
 
@@ -254,8 +257,28 @@ export abstract class BaseServer {
       // Register all tools before starting
       this.registerTools();
 
-      // Start the server
-      await this.server.start(options);
+      // Start the server with proper type conversion
+      let fastMcpOptions: Parameters<typeof this.server.start>[0] | undefined;
+      
+      if (options?.transportType === 'httpStream' && options.httpStream) {
+        fastMcpOptions = {
+          transportType: 'httpStream',
+          httpStream: {
+            port: options.httpStream.port || 3000,
+            ...(options.httpStream.endpoint && {
+              endpoint: options.httpStream.endpoint.startsWith('/') 
+                ? options.httpStream.endpoint as `/${string}`
+                : `/${options.httpStream.endpoint}` as `/${string}`
+            })
+          }
+        };
+      } else if (options?.transportType) {
+        fastMcpOptions = {
+          transportType: options.transportType
+        };
+      }
+      
+      await this.server.start(fastMcpOptions);
       
       this.componentLogger.info(`${this.getServerType()} server started successfully`, {
         name: this.config.name,
@@ -267,10 +290,13 @@ export abstract class BaseServer {
       this.componentLogger.error(`Failed to start ${this.getServerType()} server`, {
         error: error instanceof Error ? error.message : String(error)
       });
-      throw new MakeServerError(`Failed to start ${this.getServerType()} server`, {
-        originalError: error,
-        category: 'SERVER_START'
-      });
+      throw new MakeServerError(
+        `Failed to start ${this.getServerType()} server`,
+        'SERVER_START',
+        500,
+        true,
+        { originalError: error }
+      );
     }
   }
 

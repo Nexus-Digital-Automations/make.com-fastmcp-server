@@ -2,11 +2,11 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755911709781_v6kqqang9",
-      "title": "Fix 8 remaining linting warnings in FastMCP server",
-      "description": "Fix max-depth warning in stream-processor.ts and no-explicit-any + missing return type warnings in real-time-monitoring.ts",
+      "id": "task_1755911903558_tp2btfcu8",
+      "title": "Fix critical TypeScript compilation errors",
+      "description": "Fix 30+ TypeScript compilation errors across base-server.ts, blueprint-collaboration.ts, sdk.ts and other files",
       "mode": "DEVELOPMENT",
-      "category": "linter-error",
+      "category": "error",
       "priority": "critical",
       "status": "in_progress",
       "dependencies": [],
@@ -15,41 +15,13 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T01:15:09.781Z",
+      "created_at": "2025-08-23T01:18:23.558Z",
       "auto_research_created": false,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-23T01:15:52.804Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
-    },
-    {
-      "id": "task_1755911659201_nxmz7po83",
-      "title": "Fix remaining linting warnings",
-      "description": "Fix 8 linting warnings: 1 max-depth violation, 5 no-explicit-any violations, 2 missing return types",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-23T01:14:19.201Z",
-      "auto_research_created": false,
-      "started_at": "2025-08-23T01:14:29.200Z",
+      "started_at": "2025-08-23T01:18:35.057Z",
       "agent_assignment_history": [
         {
           "role": "primary",
-          "assignedAt": "2025-08-23T01:14:29.200Z",
+          "assignedAt": "2025-08-23T01:18:35.057Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
