@@ -38,23 +38,23 @@ function createServerInstance(serverType: Exclude<ServerType, 'both'>): ServerIn
 }
 
 async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promise<void> {
-  const getComponentLogger = () => {
+  const getComponentLogger = (): { info: (...args: unknown[]) => void; error: (...args: unknown[]) => void; warn: (...args: unknown[]) => void; debug: (...args: unknown[]) => void; } => {
     try {
       const childLogger = logger.child({ component: 'Main', serverType });
       // Verify the child logger has required methods
       if (childLogger && typeof childLogger.error === 'function') {
         return childLogger;
       }
-    } catch (error) {
+    } catch {
       // Fall through to fallback
     }
     
     // Robust fallback for test environments
     return {
-      info: (...args: any[]) => logger?.info?.(...args) || console.log(...args),
-      error: (...args: any[]) => logger?.error?.(...args) || console.error(...args),
-      warn: (...args: any[]) => logger?.warn?.(...args) || console.warn(...args),
-      debug: (...args: any[]) => logger?.debug?.(...args) || console.debug(...args),
+      info: (...args: unknown[]): void => logger?.info?.(...args) || process.stdout.write(`${args.join(' ')}\\n`),
+      error: (...args: unknown[]): void => logger?.error?.(...args) || process.stderr.write(`${args.join(' ')}\\n`),
+      warn: (...args: unknown[]): void => logger?.warn?.(...args) || process.stderr.write(`${args.join(' ')}\\n`),
+      debug: (...args: unknown[]): void => logger?.debug?.(...args) || process.stdout.write(`${args.join(' ')}\\n`),
     };
   };
   const componentLogger = getComponentLogger();
@@ -115,23 +115,23 @@ async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promi
 }
 
 async function startBothServers(): Promise<void> {
-  const getComponentLogger = () => {
+  const getComponentLogger = (): { info: (...args: unknown[]) => void; error: (...args: unknown[]) => void; warn: (...args: unknown[]) => void; debug: (...args: unknown[]) => void; } => {
     try {
       const childLogger = logger.child({ component: 'Main', mode: 'dual' });
       // Verify the child logger has required methods
       if (childLogger && typeof childLogger.error === 'function') {
         return childLogger;
       }
-    } catch (error) {
+    } catch {
       // Fall through to fallback
     }
     
     // Robust fallback for test environments
     return {
-      info: (...args: any[]) => logger?.info?.(...args) || console.log(...args),
-      error: (...args: any[]) => logger?.error?.(...args) || console.error(...args),
-      warn: (...args: any[]) => logger?.warn?.(...args) || console.warn(...args),
-      debug: (...args: any[]) => logger?.debug?.(...args) || console.debug(...args),
+      info: (...args: unknown[]): void => logger?.info?.(...args) || process.stdout.write(`${args.join(' ')}\\n`),
+      error: (...args: unknown[]): void => logger?.error?.(...args) || process.stderr.write(`${args.join(' ')}\\n`),
+      warn: (...args: unknown[]): void => logger?.warn?.(...args) || process.stderr.write(`${args.join(' ')}\\n`),
+      debug: (...args: unknown[]): void => logger?.debug?.(...args) || process.stdout.write(`${args.join(' ')}\\n`),
     };
   };
   const componentLogger = getComponentLogger();
@@ -174,7 +174,8 @@ function isMainModule(): boolean {
   }
   
   try {
-    // Dynamic import.meta access to avoid Jest parsing issues
+    // Dynamic import.meta access to avoid Jest parsing issues  
+    // eslint-disable-next-line no-eval
     const importMeta = (0, eval)('import.meta');
     return importMeta.url === `file://${process.argv[1]}`;
   } catch {
