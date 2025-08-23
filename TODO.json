@@ -2,32 +2,21 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755912125314_nbnh20jbt",
-      "title": "Fix critical TypeScript compilation errors in blueprint-collaboration files",
-      "description": "Fix TypeScript errors in blueprint-collaboration-fixed.ts (line 622) and blueprint-collaboration.ts (lines 262, 270). Critical errors: missing function arguments, type mismatches with BlueprintValue/unknown, DependencyAnalysisResult interface compatibility.",
+      "id": "task_1755912334868_llsaknhc8",
+      "title": "Fix critical TypeScript compilation errors in SDK tools",
+      "description": "Fix all TypeScript compilation errors in src/tools/sdk.ts including missing properties, type mismatches, and FastMCP compatibility issues",
       "mode": "DEVELOPMENT",
       "category": "linter-error",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T01:22:05.314Z",
-      "auto_research_created": false,
-      "access_history": [
-        {
-          "agentId": "system",
-          "timestamp": "2025-08-23T01:22:48.903Z",
-          "action": "status_change",
-          "details": {
-            "oldStatus": "pending",
-            "newStatus": "in_progress"
-          }
-        }
-      ]
+      "created_at": "2025-08-23T01:25:34.868Z",
+      "auto_research_created": false
     },
     {
       "id": "task_1755911903558_tp2btfcu8",

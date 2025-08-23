@@ -11,10 +11,10 @@ import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // SDK app management types
 interface LogInterface {
-  info: (message: string, meta?: unknown) => void;
-  error: (message: string, meta?: unknown) => void;
-  warn: (message: string, meta?: unknown) => void;
-  debug: (message: string, meta?: unknown) => void;
+  info: (message: string, data?: unknown) => void;
+  error: (message: string, data?: unknown) => void;
+  warn: (message: string, data?: unknown) => void;
+  debug: (message: string, data?: unknown) => void;
 }
 
 export interface MakeSDKApp {
@@ -258,13 +258,24 @@ function generateMarketplaceAnalysis(
   totalApps: number;
   categoryBreakdown: Record<string, number>;
   publisherBreakdown: Record<string, number>;
-  averageRating: number;
-  verifiedApps: number;
-  trends: {
-    popular: Array<{ id: number; name: string; installs: number }>;
-    recent: Array<{ id: number; name: string; publishedAt: string }>;
-    topRated: Array<{ id: number; name: string; rating: number }>;
+  verificationStatus: {
+    verified: number;
+    unverified: number;
   };
+  ratingDistribution: {
+    excellent: number;
+    good: number;
+    average: number;
+    poor: number;
+  };
+  popularApps: Array<{
+    id: number;
+    name: string;
+    publisher: string;
+    installations: number;
+    rating: number;
+    category: string;
+  }>;
 } {
   return {
     totalApps: metadata?.total || apps.length,
@@ -328,20 +339,14 @@ function transformAppForResponse(app: MakeSDKApp): {
     publisher: app.publisher,
     category: app.category,
     status: app.status,
-    usage: app.usage,
-    metadata: {
-      ...app.metadata,
-      screenshots: app.metadata.screenshots.slice(0, 3), // Limited screenshots
-    },
-    security: app.security,
-    compatibility: app.compatibility,
-    integration: {
-      ...app.integration,
-      endpoints: app.integration.endpoints.length,
-      webhooks: app.integration.webhooks.length,
-      triggers: app.integration.triggers.length,
-      actions: app.integration.actions.length,
-    },
+    verified: app.security.verified,
+    rating: app.usage.rating,
+    installs: app.usage.installations,
+    tags: app.metadata.tags,
+    homepage: app.metadata.homepage,
+    documentation: app.metadata.documentation,
+    icon: app.metadata.icon,
+    lastUpdated: app.updatedAt,
   };
 }
 
@@ -375,7 +380,7 @@ function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
-      const { query, category, publisher, verified, _rating, _features, _compatibility, _sortBy, _sortOrder, limit, offset } = input;
+      const { query, category, publisher, verified, rating, features, compatibility, sortBy, sortOrder, limit, offset } = input;
 
       log.info('Searching SDK apps', {
         query,
@@ -405,7 +410,7 @@ function addSearchSdkAppsTool(server: FastMCP, apiClient: MakeApiClient): void {
         });
 
         // Create marketplace analysis
-        const analysis = generateMarketplaceAnalysis(apps, metadata);
+        const analysis = generateMarketplaceAnalysis(apps, metadata || {});
 
         return formatSuccessResponse({
           apps: apps.map(transformAppForResponse),
@@ -486,11 +491,7 @@ function buildSdkAppInstallData(input: {
       restrictions: permissions?.restrictions ?? {},
     },
     autoUpdate,
-    installOptions: {
-      skipValidation,
-      createBackup: true,
-      notifyUsers: true,
-    },
+    skipValidation,
   };
 }
 
@@ -545,30 +546,19 @@ function formatSdkAppInstallResponse(
   const installationPermissions = installation.permissions && typeof installation.permissions === 'object' ? installation.permissions : {};
   const granted = Array.isArray(installationPermissions.granted) ? installationPermissions.granted : [];
 
-  return formatSuccessResponse({
-    installation,
-    message: `SDK app ${appId} installed successfully`,
-    summary: {
-      appId,
-      appName: appName,
-      version: installedVersion,
-      installedAt: installedAt,
-      autoUpdate,
-      permissionsGranted: granted.length,
-      configurationApplied: Object.keys(configuration).length > 0,
-    },
-    postInstall: {
-      configurationUrl: `/sdk-apps/${appId}/configure`,
-      documentationUrl: ((installation?.app as Record<string, unknown>)?.metadata as Record<string, unknown>)?.documentation,
-      supportUrl: ((installation?.app as Record<string, unknown>)?.metadata as Record<string, unknown>)?.support,
-    },
-    nextSteps: [
-      'Review and configure app settings',
-      'Test app functionality',
-      'Set up integrations if needed',
-      'Train team members on app usage',
-    ],
-  });
+  return {
+    installationId: _installationId,
+    appId: appId,
+    appName: appName,
+    version: installedVersion,
+    status: typeof installation.status === 'string' ? installation.status : 'unknown',
+    installedAt: installedAt,
+    autoUpdate: autoUpdate,
+    configuration: typeof installation.configuration === 'object' && installation.configuration !== null 
+      ? installation.configuration as Record<string, unknown>
+      : {},
+    permissions: installationPermissions,
+  };
 }
 
 /**
@@ -587,7 +577,7 @@ function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { appId, version, organizationId, teamId, _configuration, _permissions, autoUpdate, skipValidation } = input;
+      const { appId, version, organizationId, teamId, configuration, permissions, autoUpdate, skipValidation } = input;
 
       log.info('Installing SDK app', {
         appId,
@@ -602,7 +592,7 @@ function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
 
         // Validate compatibility unless skipped
         if (!skipValidation) {
-          await validateSdkAppCompatibility(apiClient, appId, log);
+          await validateSdkAppCompatibility(apiClient, String(appId), log);
         }
 
         reportProgress({ progress: 25, total: 100 });
@@ -611,7 +601,7 @@ function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
 
         reportProgress({ progress: 50, total: 100 });
 
-        const endpoint = determineSdkAppEndpoint(organizationId, teamId);
+        const endpoint = determineSdkAppEndpoint(organizationId ? String(organizationId) : undefined, teamId ? String(teamId) : undefined);
 
         const response = await apiClient.post(endpoint, installData);
 
@@ -631,7 +621,15 @@ function addInstallSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
           version: typeof installation.version === 'string' ? installation.version : 'unknown',
         });
 
-        return formatSdkAppInstallResponse(installation, input);
+        return formatSuccessResponse(formatSdkAppInstallResponse(installation as {
+          id: string | number;
+          appName: string;
+          installedAt: string;
+          version: string;
+          status: string;
+          configuration: Record<string, unknown>;
+          permissions: Record<string, unknown>;
+        }, input));
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error installing SDK app', { appId, error: errorMessage });
@@ -882,7 +880,7 @@ function addUpdateSdkAppTool(server: FastMCP, apiClient: MakeApiClient): void {
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { appId, version, force, backup, _rollbackOnFailure } = input;
+      const { appId, version, force, backup, rollbackOnFailure } = input;
 
       log.info('Updating SDK app', {
         appId,
@@ -1202,7 +1200,7 @@ function addInstallWorkflowTool(server: FastMCP, apiClient: MakeApiClient): void
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { workflowId, name, teamId, folderId, _configuration, autoStart, installDependencies } = input;
+      const { workflowId, name, teamId, folderId, configuration, autoStart, installDependencies } = input;
 
       log.info('Installing workflow template', {
         workflowId,
