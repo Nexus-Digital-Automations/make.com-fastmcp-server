@@ -268,7 +268,7 @@ export abstract class BaseServer {
             ...(options.httpStream.endpoint && {
               endpoint: options.httpStream.endpoint.startsWith('/') 
                 ? options.httpStream.endpoint as `/${string}`
-                : `/${options.httpStream.endpoint}` as `/${string}`
+                : `/${options.httpStream.endpoint}`
             })
           }
         };
