@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.54% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>19/199</span>
+                <span class='fraction'>0/199</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/3</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.54% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>19/199</span>
+                <span class='fraction'>0/199</span>
             </div>
         
             
@@ -261,22 +261,7 @@
 <a name='L196'></a><a href='#L196'>196</a>
 <a name='L197'></a><a href='#L197'>197</a>
 <a name='L198'></a><a href='#L198'>198</a>
-<a name='L199'></a><a href='#L199'>199</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L199'></a><a href='#L199'>199</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -412,9 +397,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -459,22 +441,40 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * @fileoverview Configure Key Rotation Tool Implementation
- * Configure automated key rotation policies with scheduled and event-driven triggers
- */
-&nbsp;
-import { UserError } from 'fastmcp';
-import { KeyRotationPolicySchema } from '../schemas/index.js';
-import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
-import { KeyRotationStatus } from '../types/index.js';
-import { auditLogger } from '../../../lib/audit-logger.js';
-import { formatSuccessResponse } from '../../../utils/response-formatter.js';
-&nbsp;
-/**
- * Key Rotation Manager class
- */
-class KeyRota<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >tionManager {</span></span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >/**</span></span></span>
+<span class="cstat-no" title="statement not covered" > * @fileoverview Configure Key Rotation Tool Implementation</span>
+<span class="cstat-no" title="statement not covered" > * Configure automated key rotation policies with scheduled and event-driven triggers</span>
+<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
+<span class="cstat-no" title="statement not covered" >import { KeyRotationPolicySchema } from '../schemas/index.js';</span>
+<span class="cstat-no" title="statement not covered" >import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';</span>
+<span class="cstat-no" title="statement not covered" >import { KeyRotationStatus } from '../types/index.js';</span>
+<span class="cstat-no" title="statement not covered" >import { auditLogger } from '../../../lib/audit-logger.js';</span>
+<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../../../utils/response-formatter.js';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >/**</span>
+<span class="cstat-no" title="statement not covered" > * Key Rotation Manager class</span>
+<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cstat-no" title="statement not covered" >class KeyRotationManager {</span>
 <span class="cstat-no" title="statement not covered" >  private static instance: KeyRotationManager | null = null;</span>
 <span class="cstat-no" title="statement not covered" >  private readonly rotationPolicies: Map&lt;string, KeyRotationStatus&gt; = new Map();</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -610,9 +610,9 @@ class KeyRota<span class="fstat-no" title="function not covered" ><span class="b
 <span class="cstat-no" title="statement not covered" >export function createConfigureKeyRotationTool(context: ToolContext): ToolDefinition {</span>
 <span class="cstat-no" title="statement not covered" >  const { logger } = context;</span>
 <span class="cstat-no" title="statement not covered" >  </span>
-  return {
-    name: 'configure-key-rotation',
-    description<span class="fstat-no" title="function not covered" >: 'Configure automated key rotation policies with scheduled and event-driven triggers',</span>
+<span class="cstat-no" title="statement not covered" >  return {</span>
+<span class="cstat-no" title="statement not covered" >    name: 'configure-key-rotation',</span>
+<span class="cstat-no" title="statement not covered" >    description: 'Configure automated key rotation policies with scheduled and event-driven triggers',</span>
 <span class="cstat-no" title="statement not covered" >    parameters: KeyRotationPolicySchema,</span>
 <span class="cstat-no" title="statement not covered" >    annotations: {</span>
 <span class="cstat-no" title="statement not covered" >      title: 'Configure Automated Key Rotation Policies',</span>
@@ -664,7 +664,7 @@ class KeyRota<span class="fstat-no" title="function not covered" ><span class="b
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T13:56:26.773Z
+                at 2025-08-23T14:03:26.784Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -2,9 +2,9 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755952090955_92xw9wiiw",
-      "title": "Fix performance test timeout failures",
-      "description": "Performance tests are failing with timeout issues and exceeding expected response times",
+      "id": "task_1755952089805_hbermkzim",
+      "title": "Fix API client integration test failures",
+      "description": "Multiple tests in tests/integration/api-client.test.ts are failing with retry logic, timeout, and network error handling issues",
       "mode": "DEVELOPMENT",
       "category": "test-error",
       "priority": "high",
@@ -15,50 +15,20 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T12:28:10.956Z",
+      "created_at": "2025-08-23T12:28:09.805Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755956536006_1_general_f3db049a",
-      "started_at": "2025-08-23T13:46:05.099Z",
-      "claimed_by": "development_session_1755956536006_1_general_f3db049a",
+      "assigned_agent": "development_session_1755957564736_1_general_4a39e17b",
+      "started_at": "2025-08-23T13:59:40.748Z",
+      "claimed_by": "development_session_1755957564736_1_general_4a39e17b",
       "agent_assignment_history": [
         {
-          "agentId": "development_session_1755953204925_1_general_70fa767e",
+          "agentId": "development_session_1755957564736_1_general_4a39e17b",
           "role": "primary",
-          "assignedAt": "2025-08-23T13:04:19.954Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-23T13:42:09.838Z",
-          "reason": "Task stale for 38 minutes"
-        },
-        {
-          "agentId": "development_session_1755956536006_1_general_f3db049a",
-          "role": "primary",
-          "assignedAt": "2025-08-23T13:46:05.099Z",
+          "assignedAt": "2025-08-23T13:59:40.748Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
       ]
-    },
-    {
-      "id": "task_1755952089805_hbermkzim",
-      "title": "Fix API client integration test failures",
-      "description": "Multiple tests in tests/integration/api-client.test.ts are failing with retry logic, timeout, and network error handling issues",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-23T12:28:09.805Z",
-      "auto_research_created": false
     }
   ],
   "current_mode": "DEVELOPMENT",
@@ -68,13 +38,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755956536006_1_general_f3db049a": {
+    "development_session_1755957564736_1_general_4a39e17b": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-23T13:42:16.025Z",
+      "lastHeartbeat": "2025-08-23T13:59:24.739Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -85,8 +55,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-23T13:42:16.025Z",
-      "sessionId": "session_1755956536006",
+      "createdAt": "2025-08-23T13:59:24.739Z",
+      "sessionId": "session_1755957564736",
       "metadata": {}
     }
   },
