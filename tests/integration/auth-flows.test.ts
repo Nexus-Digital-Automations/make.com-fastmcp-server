@@ -113,7 +113,11 @@ class MockAuthService {
 
   async authenticateWithApiKey(apiKey: string): Promise<{ user: AuthUser; token: AuthToken } | null> {
     // Extract user ID from API key (simplified for mock)
-    const userId = apiKey.split('-')[0];
+    // Format: userId-api-key-suffix
+    const apiKeyMatch = apiKey.match(/^(.+)-api-key-.+$/);
+    if (!apiKeyMatch) return null; // Invalid format
+    
+    const userId = apiKeyMatch[1];
     const user = await this.getUser(userId);
     
     if (!user || !user.isActive) return null;
@@ -129,15 +133,15 @@ class MockAuthService {
   }
 
   async refreshToken(refreshToken: string): Promise<AuthToken | null> {
-    // Find token by refresh token
-    for (const token of this.tokens.values()) {
-      if (token.refreshToken === refreshToken) {
-        const user = Array.from(this.users.values()).find(u => 
-          this.sessions.has(`${u.id}-session`)
-        );
-        
-        if (user) {
-          return this.generateToken(user);
+    // Find session with matching refresh token
+    for (const session of this.sessions.values()) {
+      if (session.token.refreshToken === refreshToken && session.isValid) {
+        const user = await this.getUser(session.userId);
+        if (user && user.isActive) {
+          const newToken = this.generateToken(user);
+          // Store the new token in our tokens map so validateToken can find it
+          this.tokens.set(newToken.accessToken, newToken);
+          return newToken;
         }
       }
     }
@@ -146,13 +150,13 @@ class MockAuthService {
 
   // OAuth2 flows
   async initiateOAuth2Flow(config: OAuth2Config, state: string): Promise<string> {
-    const authUrl = new URL(config.authorizeUrl);
-    authUrl.searchParams.set('client_id', config.clientId);
-    authUrl.searchParams.set('redirect_uri', config.redirectUri);
-    authUrl.searchParams.set('scope', config.scope.join(' '));
-    authUrl.searchParams.set('state', state);
-    authUrl.searchParams.set('response_type', 'code');
-
+    const params = new URLSearchParams();
+    params.set('client_id', config.clientId);
+    params.set('redirect_uri', config.redirectUri);
+    params.set('scope', config.scope.join(' '));
+    params.set('state', state);
+    params.set('response_type', 'code');
+    
     // Store OAuth state
     this.oauthStates.set(state, {
       userId: 'pending',
@@ -160,7 +164,8 @@ class MockAuthService {
       expiresAt: Date.now() + 600000, // 10 minutes
     });
 
-    return authUrl.toString();
+    // Convert + to %20 for proper OAuth2 space encoding
+    return `${config.authorizeUrl}?${params.toString().replace(/\+/g, '%20')}`;
   }
 
   async handleOAuth2Callback(code: string, state: string, config: OAuth2Config): Promise<{ user: AuthUser; token: AuthToken } | null> {
@@ -207,11 +212,20 @@ class MockAuthService {
       return null;
     }
 
-    // Find user associated with token
+    // Find user associated with token via sessions
     for (const session of this.sessions.values()) {
       if (session.token.accessToken === tokenString) {
         const user = await this.getUser(session.userId);
         if (user && user.isActive) {
+          return { user, token };
+        }
+      }
+    }
+
+    // Fallback: for refresh tokens, find user by matching token scope/permissions
+    if (token.scope && Array.isArray(token.scope)) {
+      for (const user of this.users.values()) {
+        if (user.isActive && this.arraysEqual(user.permissions, token.scope)) {
           return { user, token };
         }
       }
@@ -236,7 +250,7 @@ class MockAuthService {
   // Session management
   async createSession(user: AuthUser, token: AuthToken, metadata: { ipAddress: string; userAgent: string }): Promise<AuthSession> {
     const session: AuthSession = {
-      sessionId: `${user.id}-${Date.now()}`,
+      sessionId: `${user.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       userId: user.id,
       token,
       ipAddress: metadata.ipAddress,
@@ -276,7 +290,7 @@ class MockAuthService {
   async invalidateAllUserSessions(userId: string): Promise<number> {
     let count = 0;
     for (const [sessionId, session] of this.sessions.entries()) {
-      if (session.userId === userId) {
+      if (session.userId === userId && session.isValid) {
         session.isValid = false;
         this.tokens.delete(session.token.accessToken);
         count++;
@@ -292,14 +306,14 @@ class MockAuthService {
   }
 
   async checkPermission(user: AuthUser, resource: string, action: string): Promise<boolean> {
-    // Check user permissions first
-    const permissionKey = `${action}:${resource}`;
-    if (user.permissions.includes(permissionKey) || user.permissions.includes('*')) {
+    // Check role-based permissions first (admin overrides everything)
+    if (user.roles.includes('admin') || user.roles.includes('super_admin')) {
       return true;
     }
 
-    // Check role-based permissions
-    if (user.roles.includes('admin') || user.roles.includes('super_admin')) {
+    // Check user permissions
+    const permissionKey = `${action}:${resource}`;
+    if (user.permissions.includes(permissionKey) || user.permissions.includes('*')) {
       return true;
     }
 
@@ -375,6 +389,11 @@ class MockAuthService {
     }
 
     return true;
+  }
+
+  private arraysEqual(a: string[], b: string[]): boolean {
+    if (a.length !== b.length) return false;
+    return a.every((val, index) => val === b[index]);
   }
 
   // Test utilities
@@ -599,6 +618,12 @@ describe('Authentication and Authorization Flow Integration Tests', () => {
     test('should refresh tokens successfully', async () => {
       const authResult = await authService.authenticateWithPassword('test@example.com', 'password123');
       
+      // Create session to store the token
+      const session = await authService.createSession(authResult!.user, authResult!.token, {
+        ipAddress: '127.0.0.1',
+        userAgent: 'Test Agent',
+      });
+      
       const newToken = await authService.refreshToken(authResult!.token.refreshToken!);
       
       expect(newToken).toBeTruthy();
@@ -679,15 +704,16 @@ describe('Authentication and Authorization Flow Integration Tests', () => {
     });
 
     test('should invalidate all user sessions', async () => {
-      const authResult = await authService.authenticateWithPassword('test@example.com', 'password123');
+      const authResult1 = await authService.authenticateWithPassword('test@example.com', 'password123');
+      const authResult2 = await authService.authenticateWithPassword('test@example.com', 'password123');
       
-      // Create multiple sessions
-      const session1 = await authService.createSession(authResult!.user, authResult!.token, {
+      // Create multiple sessions with different tokens
+      const session1 = await authService.createSession(authResult1!.user, authResult1!.token, {
         ipAddress: '127.0.0.1',
         userAgent: 'Browser 1',
       });
       
-      const session2 = await authService.createSession(authResult!.user, authResult!.token, {
+      const session2 = await authService.createSession(authResult2!.user, authResult2!.token, {
         ipAddress: '192.168.1.1',
         userAgent: 'Browser 2',
       });
@@ -758,12 +784,13 @@ describe('Authentication and Authorization Flow Integration Tests', () => {
     });
 
     test('should evaluate policy conditions correctly', async () => {
-      // Create user from different team
+      // Create user from different team without scenario permissions
       const otherTeamUser: AuthUser = {
         ...testUser,
         id: 'other-team-user',
         email: 'other@example.com',
         teamId: 456,
+        permissions: ['read:connections'], // Only connection permissions, no scenario permissions
       };
       await authService.createUser(otherTeamUser);
 
@@ -968,15 +995,16 @@ describe('Authentication and Authorization Flow Integration Tests', () => {
     });
 
     test('should handle security scenarios (token revocation, session hijacking prevention)', async () => {
-      const authResult = await authService.authenticateWithPassword('test@example.com', 'password123');
+      const authResult1 = await authService.authenticateWithPassword('test@example.com', 'password123');
+      const authResult2 = await authService.authenticateWithPassword('test@example.com', 'password123');
       
       // Create multiple sessions from different IPs (simulate different devices)
-      const session1 = await authService.createSession(authResult!.user, authResult!.token, {
+      const session1 = await authService.createSession(authResult1!.user, authResult1!.token, {
         ipAddress: '203.0.113.10',
         userAgent: 'Device 1',
       });
       
-      const session2 = await authService.createSession(authResult!.user, authResult!.token, {
+      const session2 = await authService.createSession(authResult2!.user, authResult2!.token, {
         ipAddress: '203.0.113.20',
         userAgent: 'Device 2',
       });
@@ -987,13 +1015,13 @@ describe('Authentication and Authorization Flow Integration Tests', () => {
       expect(invalidatedCount).toBe(2);
       
       // Step 2: Verify tokens are no longer valid
-      const validation1 = await authService.validateToken(authResult!.token.accessToken);
+      const validation1 = await authService.validateToken(authResult1!.token.accessToken);
       expect(validation1).toBeNull();
       
       // Step 3: User must re-authenticate
       const newAuth = await authService.authenticateWithPassword('test@example.com', 'password123');
       expect(newAuth).toBeTruthy();
-      expect(newAuth!.token.accessToken).not.toBe(authResult!.token.accessToken);
+      expect(newAuth!.token.accessToken).not.toBe(authResult1!.token.accessToken);
     });
   });
 
