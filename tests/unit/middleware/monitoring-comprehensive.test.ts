@@ -38,9 +38,13 @@ const mockMetricsInstance = {
 
 // Mock dependencies with enhanced monitoring capabilities
 jest.mock('../../../src/lib/metrics.js', () => ({
+  __esModule: true,
   default: mockMetricsInstance,
-  // Ensure both named and default exports are mocked
-  ...mockMetricsInstance
+  metrics: mockMetricsInstance,
+  MetricsCollector: {
+    getInstance: jest.fn().mockReturnValue(mockMetricsInstance),
+    resetInstance: jest.fn()
+  }
 }));
 
 jest.mock('../../../src/lib/logger.js', () => ({
@@ -83,9 +87,9 @@ describe('MonitoringMiddleware - Comprehensive Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     
-    // Reset metrics mock state
+    // Reset metrics mock state but keep the jest.fn() references intact
     Object.values(mockMetricsInstance).forEach(mock => {
-      if (typeof mock === 'function') {
+      if (typeof mock === 'function' && 'mockClear' in mock) {
         mock.mockClear();
       }
     });
@@ -702,6 +706,8 @@ describe('MonitoringMiddleware - Comprehensive Tests', () => {
         }
       ];
 
+      let errorCallsProcessed = 0;
+      
       for (const scenario of apiCallScenarios) {
         for (const call of scenario.calls) {
           // Mock timer to return specific duration
@@ -732,17 +738,23 @@ describe('MonitoringMiddleware - Comprehensive Tests', () => {
 
           try {
             const result = await wrappedCall();
-            expect(mockMetrics.recordMakeApiCall).toHaveBeenLastCalledWith(
+            // This should be for successful calls (2xx status codes)
+            expect(mockMetricsInstance.recordMakeApiCall).toHaveBeenLastCalledWith(
               call.endpoint, call.method, 'success', call.duration / 1000
             );
           } catch (error) {
-            expect(mockMetrics.recordMakeApiCall).toHaveBeenLastCalledWith(
+            // This should be for error calls (4xx, 5xx status codes)
+            errorCallsProcessed++;
+            expect(mockMetricsInstance.recordMakeApiCall).toHaveBeenLastCalledWith(
               call.endpoint, call.method, 'error', call.duration / 1000
             );
-            expect(mockMetrics.recordError).toHaveBeenCalled();
+            expect(mockMetricsInstance.recordError).toHaveBeenCalled();
           }
         }
       }
+
+      // Verify that we processed some error calls
+      expect(errorCallsProcessed).toBeGreaterThan(0);
     });
 
     it('should analyze API call efficiency and suggest optimizations', async () => {
@@ -867,7 +879,7 @@ describe('MonitoringMiddleware - Comprehensive Tests', () => {
       ];
 
       for (const scenario of healthScenarios) {
-        mockMetrics.healthCheck.mockResolvedValueOnce(scenario.metricsHealth);
+        mockMetricsInstance.healthCheck.mockResolvedValueOnce(scenario.metricsHealth);
         
         const healthStatus = await monitoringMiddleware.healthCheck();
         
@@ -920,11 +932,20 @@ describe('MonitoringMiddleware - Comprehensive Tests', () => {
       ];
 
       for (const scenario of resourceScenarios) {
-        // Set up monitoring state
-        monitoringMiddleware.initializeServerMonitoring(mockServer);
+        // Create fresh middleware and mock server for each scenario 
+        const scenarioMiddleware = new MonitoringMiddleware();
+        const scenarioMockServer = {
+          on: jest.fn(),
+          emit: jest.fn(),
+          addTool: jest.fn(),
+          start: jest.fn(),
+          stop: jest.fn()
+        } as any;
+        
+        scenarioMiddleware.initializeServerMonitoring(scenarioMockServer);
         
         // Simulate resource utilization
-        const connectHandler = mockServer.on.mock.calls.find(
+        const connectHandler = scenarioMockServer.on.mock.calls.find(
           call => call[0] === 'connect'
         )?.[1] as Function;
         
@@ -935,7 +956,7 @@ describe('MonitoringMiddleware - Comprehensive Tests', () => {
         // Simulate tool executions
         for (let i = 0; i < scenario.metrics.activeToolExecutions; i++) {
           const mockExecution = jest.fn().mockResolvedValue({ success: true });
-          const wrappedExecution = monitoringMiddleware.wrapToolExecution(
+          const wrappedExecution = scenarioMiddleware.wrapToolExecution(
             `resource-tool-${i}`,
             'resource-operation',
             mockExecution
@@ -945,7 +966,7 @@ describe('MonitoringMiddleware - Comprehensive Tests', () => {
           wrappedExecution();
         }
         
-        const stats = monitoringMiddleware.getMonitoringStats();
+        const stats = scenarioMiddleware.getMonitoringStats();
         
         expect(stats.activeConnections).toBe(scenario.metrics.activeConnections);
         
@@ -1078,7 +1099,7 @@ describe('MonitoringMiddleware - Comprehensive Tests', () => {
 
     it('should handle shutdown errors gracefully without crashing', () => {
       // Simulate shutdown errors
-      mockMetrics.setActiveConnections.mockImplementationOnce(() => {
+      mockMetricsInstance.setActiveConnections.mockImplementationOnce(() => {
         throw new Error('Metrics cleanup failed');
       });
       

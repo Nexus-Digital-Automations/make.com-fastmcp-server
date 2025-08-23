@@ -413,9 +413,17 @@ class MonitoringMiddleware {
    */
   public shutdown(): void {
     this.componentLogger.info('Shutting down monitoring middleware');
-    this.toolExecutions.clear();
-    this.activeConnections = 0;
-    metrics.setActiveConnections(0);
+    
+    try {
+      this.toolExecutions.clear();
+      this.activeConnections = 0;
+      metrics.setActiveConnections(0);
+    } catch (error) {
+      this.componentLogger.error('Error during monitoring middleware shutdown', {
+        error: error instanceof Error ? error.message : String(error)
+      });
+      // Continue shutdown process despite errors
+    }
   }
 }
 
