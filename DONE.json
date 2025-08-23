@@ -23505,9 +23505,167 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755931735098_r5z5eojq9",
+      "title": "Fix TypeScript syntax errors in folders.test.ts",
+      "description": "Fix all executeTool function calls that incorrectly use parameters: label syntax",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T06:48:55.099Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T08:34:15.264Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T08:44:10.044Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T08:44:10.045Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755931641070_aa27lr8a8",
+      "title": "Fix critical syntax errors in folders.test.ts",
+      "description": "Multiple TypeScript declaration/statement expected errors in tests/unit/tools/folders.test.ts causing test failures. Lines 1086-1178 have syntax issues that prevent compilation.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T06:47:21.070Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755931012089_1_general_cc97185b",
+      "started_at": "2025-08-23T06:47:26.644Z",
+      "claimed_by": "development_session_1755931012089_1_general_cc97185b",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755931012089_1_general_cc97185b",
+          "role": "primary",
+          "assignedAt": "2025-08-23T06:47:26.644Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T08:44:21.268Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T08:44:21.269Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755938691889_w9vjjl3l9",
+      "title": "Fix runtime errors in folders.test.ts - resolve findTool undefined issues",
+      "description": "Fix tool name mismatches causing findTool to return undefined and executeTool to fail with \"Cannot read properties of undefined (reading parameters)\". Need to align tool names between test calls and actual registration.",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T08:44:51.889Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T08:49:27.623Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T08:49:27.624Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755938656216_4wi1bu278",
+      "title": "Fix runtime errors in folders.test.ts",
+      "description": "Tests are failing with \"Cannot read properties of undefined (reading parameters)\" errors. The findTool calls are not finding the correct tools, causing undefined tool references in executeTool calls.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T08:44:16.216Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T08:44:26.706Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T08:49:50.828Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T08:49:50.828Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 541,
-  "last_completion": "2025-08-23T08:42:10.994Z",
+  "total_completed": 545,
+  "last_completion": "2025-08-23T08:49:50.828Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
