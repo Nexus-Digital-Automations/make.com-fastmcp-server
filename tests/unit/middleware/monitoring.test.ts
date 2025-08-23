@@ -13,25 +13,47 @@
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { FastMCP } from 'fastmcp';
-import MonitoringMiddleware from '../../../src/middleware/monitoring.js';
+import { MonitoringMiddleware } from '../../../src/middleware/monitoring.js';
 
 // Mock dependencies before any imports
-jest.mock('../../../src/lib/metrics.js', () => ({
-  default: {
-    setActiveConnections: jest.fn(),
-    incrementCounter: jest.fn(),
-    recordHistogram: jest.fn(),
-    setGauge: jest.fn(),
-    createTimer: jest.fn().mockReturnValue(() => 1000),
-    recordRequest: jest.fn(),
-    recordToolExecution: jest.fn(),
-    recordError: jest.fn(),
-    recordAuthAttempt: jest.fn(),
-    recordAuthDuration: jest.fn(),
-    recordMakeApiCall: jest.fn(),
-    healthCheck: jest.fn().mockResolvedValue({ healthy: true, metricsCount: 100 })
-  }
-}));
+jest.mock('../../../src/lib/metrics.js', () => {
+  const mockFns = {
+    setActiveConnections: jest.fn().mockName('setActiveConnections'),
+    incrementCounter: jest.fn().mockName('incrementCounter'),
+    recordHistogram: jest.fn().mockName('recordHistogram'),
+    setGauge: jest.fn().mockName('setGauge'),
+    createTimer: jest.fn().mockName('createTimer').mockReturnValue(() => 1.5),
+    recordRequest: jest.fn().mockName('recordRequest'),
+    recordToolExecution: jest.fn().mockName('recordToolExecution'),
+    recordError: jest.fn().mockName('recordError'),
+    recordAuthAttempt: jest.fn().mockName('recordAuthAttempt'),
+    recordAuthDuration: jest.fn().mockName('recordAuthDuration'),
+    recordMakeApiCall: jest.fn().mockName('recordMakeApiCall'),
+    healthCheck: jest.fn().mockName('healthCheck').mockResolvedValue({ healthy: true, metricsCount: 100 }),
+    recordCacheHit: jest.fn().mockName('recordCacheHit'),
+    recordCacheMiss: jest.fn().mockName('recordCacheMiss'),
+    recordCacheInvalidation: jest.fn().mockName('recordCacheInvalidation'),
+    recordCacheDuration: jest.fn().mockName('recordCacheDuration'),
+    updateCacheSize: jest.fn().mockName('updateCacheSize'),
+    updateCacheHitRate: jest.fn().mockName('updateCacheHitRate'),
+    updateRateLimiterState: jest.fn().mockName('updateRateLimiterState'),
+    getMetrics: jest.fn().mockName('getMetrics').mockResolvedValue('# Mock metrics data'),
+    getRegistry: jest.fn().mockName('getRegistry'),
+    shutdown: jest.fn().mockName('shutdown')
+  };
+
+  const mockMetricsCollector = {
+    getInstance: jest.fn().mockReturnValue(mockFns),
+    resetInstance: jest.fn()
+  };
+
+  return {
+    __esModule: true,
+    default: mockFns,
+    metrics: mockFns,
+    MetricsCollector: mockMetricsCollector
+  };
+});
 
 jest.mock('../../../src/lib/logger.js', () => ({
   default: {
