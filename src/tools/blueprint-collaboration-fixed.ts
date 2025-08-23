@@ -619,10 +619,16 @@ function addResolveBlueprintConflictsTool(server: FastMCP, componentLogger: type
           aiSuggestions: []
         };
         
-        const result = await engine.resolveConflicts(args.blueprintId, {
-          versionId: args.versionId,
-          conflicts: args.conflicts,
-          resolutionOptions: args.resolutionOptions,
+        const sessionId = `session_${Date.now()}_${args.blueprintId}`;
+        const result = await engine.resolveConflicts(sessionId, _conflictResolution, {
+          resolutionStrategy: 'manual',
+          conflictResolutions: args.conflicts.map((conflict, index) => ({
+            conflictId: conflict.conflictId || `conflict_${index}`,
+            resolution: args.resolutionOptions?.[index]?.resolution || 'manual',
+            customResolution: args.resolutionOptions?.[index]?.customResolution as BlueprintValue | undefined,
+            reasoning: args.resolutionOptions?.[index]?.reasoning
+          })),
+          preserveUserIntent: true,
           validateResult: true,
           createBackup: true
         });

@@ -30,7 +30,8 @@ import {
   BlueprintConflictResolver,
   type ConflictResolution,
   type ResolutionResult,
-  type ResolvedBlueprint
+  type ResolvedBlueprint,
+  type BlueprintValue
 } from './blueprint-collaboration/conflict-resolver.js';
 import {
   BlueprintDependencyAnalyzer,
@@ -252,7 +253,7 @@ class BlueprintCollaborationEngine {
       conflictResolutions: Array<{
         conflictId: string;
         resolution: string;
-        customResolution?: unknown;
+        customResolution?: BlueprintValue | undefined;
         reasoning?: string;
       }>;
       preserveUserIntent: boolean;
@@ -262,12 +263,27 @@ class BlueprintCollaborationEngine {
     return this.conflictResolver.resolveConflicts(sessionId, conflictResolution, resolveOptions);
   }
 
-  async analyzeDependencies(blueprintId: string, options: unknown): Promise<DependencyAnalysisResult & {
+  async analyzeDependencies(blueprintId: string, versionId: string, options: {
+    analysisDepth: string;
+    includeExternal: boolean;
+    includeOptimizations: boolean;
+    detectCircular: boolean;
+    generateGraph: boolean;
+    impactAnalysis: boolean;
+  }): Promise<DependencyAnalysisResult & {
     circularDependencies: CircularDependency[];
     optimizationOpportunities: OptimizationOpportunity[];
     impactAssessment?: ImpactAssessment;
+    dependencyGraph: any;
   }> {
-    return this.dependencyAnalyzer.analyzeDependencies(blueprintId, options);
+    const result = await this.dependencyAnalyzer.analyzeDependencies(blueprintId, versionId, options);
+    return {
+      ...result.analysis,
+      circularDependencies: result.circularDependencies,
+      optimizationOpportunities: result.optimizationOpportunities,
+      impactAssessment: result.impactAssessment || undefined,
+      dependencyGraph: result.dependencyGraph
+    };
   }
 }
 
@@ -678,8 +694,7 @@ function addAnalyzeBlueprintDependenciesTool(server: FastMCP, componentLogger: t
       reportProgress({ progress: 35, total: 100 });
       
       try {
-        const result = await engine.analyzeDependencies(args.blueprintId, {
-          versionId: args.versionId,
+        const result = await engine.analyzeDependencies(args.blueprintId, args.versionId, {
           analysisDepth: args.analysisDepth,
           includeExternal: args.includeExternal,
           includeOptimizations: args.includeOptimizations,
