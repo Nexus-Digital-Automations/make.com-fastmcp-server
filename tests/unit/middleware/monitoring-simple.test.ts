@@ -6,7 +6,64 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { FastMCP } from 'fastmcp';
 
-// The module mocks are now handled by Jest's moduleNameMapper configuration
+// CRITICAL FIX: Use jest.mock() BEFORE any imports that might use the mocked module
+// This ensures Jest replaces the module before any code tries to import it
+jest.mock('../../../src/lib/metrics.js', () => {
+  // Create actual Jest mock functions
+  const mockFns = {
+    setActiveConnections: jest.fn().mockName('setActiveConnections'),
+    recordRequest: jest.fn().mockName('recordRequest'),
+    createTimer: jest.fn().mockName('createTimer').mockReturnValue(() => 1.5),
+    recordToolExecution: jest.fn().mockName('recordToolExecution'),
+    recordError: jest.fn().mockName('recordError'),
+    recordAuthAttempt: jest.fn().mockName('recordAuthAttempt'),
+    recordAuthDuration: jest.fn().mockName('recordAuthDuration'),
+    recordMakeApiCall: jest.fn().mockName('recordMakeApiCall'),
+    healthCheck: jest.fn().mockName('healthCheck').mockResolvedValue({ 
+      healthy: true, 
+      metricsCount: 100 
+    }),
+    recordCacheHit: jest.fn().mockName('recordCacheHit'),
+    recordCacheMiss: jest.fn().mockName('recordCacheMiss'),
+    recordCacheInvalidation: jest.fn().mockName('recordCacheInvalidation'),
+    recordCacheDuration: jest.fn().mockName('recordCacheDuration'),
+    updateCacheSize: jest.fn().mockName('updateCacheSize'),
+    updateCacheHitRate: jest.fn().mockName('updateCacheHitRate'),
+    updateRateLimiterState: jest.fn().mockName('updateRateLimiterState'),
+    getMetrics: jest.fn().mockName('getMetrics').mockResolvedValue('# Mock metrics data'),
+    getRegistry: jest.fn().mockName('getRegistry'),
+    shutdown: jest.fn().mockName('shutdown'),
+  };
+
+  const mockMetricsCollector = {
+    getInstance: jest.fn().mockReturnValue(mockFns),
+    resetInstance: jest.fn(),
+  };
+
+  return {
+    __esModule: true,
+    default: mockFns,
+    metrics: mockFns,
+    MetricsCollector: mockMetricsCollector,
+  };
+});
+
+jest.mock('../../../src/lib/logger.js', () => ({
+  __esModule: true,
+  default: {
+    child: jest.fn().mockReturnValue({
+      info: jest.fn(),
+      debug: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    }),
+    info: jest.fn(),
+    debug: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+  }
+}));
 
 import { MonitoringMiddleware } from '../../../src/middleware/monitoring.js';
 import metrics from '../../../src/lib/metrics.js';
@@ -25,20 +82,22 @@ describe('MonitoringMiddleware', () => {
   });
 
   it('should verify metrics mock is working', () => {
-    console.log('Metrics mock:', metrics);
-    console.log('Metrics.setActiveConnections:', metrics.setActiveConnections);
-    console.log('Type of setActiveConnections:', typeof metrics.setActiveConnections);
-    console.log('Is jest function:', jest.isMockFunction(metrics.setActiveConnections));
-    console.log('mockMetrics === metrics:', mockMetrics === metrics);
-    console.log('Is mockMetrics.setActiveConnections a Jest fn:', jest.isMockFunction(mockMetrics.setActiveConnections));
-    
+    // Basic assertions first
+    expect(metrics).toBeDefined();
     expect(metrics.setActiveConnections).toBeDefined();
     expect(typeof metrics.setActiveConnections).toBe('function');
+    
+    // Check if it's a Jest mock function
     expect(jest.isMockFunction(metrics.setActiveConnections)).toBe(true);
     
     // Test that the mock function can be called and tracked
     metrics.setActiveConnections(1);
     expect(metrics.setActiveConnections).toHaveBeenCalledWith(1);
+    
+    // Test other mock functions
+    expect(jest.isMockFunction(metrics.recordRequest)).toBe(true);
+    expect(jest.isMockFunction(metrics.recordToolExecution)).toBe(true);
+    expect(jest.isMockFunction(metrics.healthCheck)).toBe(true);
   });
 
   let monitoringMiddleware: MonitoringMiddleware;

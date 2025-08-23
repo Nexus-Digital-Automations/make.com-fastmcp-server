@@ -16,9 +16,11 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     // Mock fastmcp
     '^fastmcp$': '<rootDir>/tests/__mocks__/fastmcp.ts',
-    // Mock metrics
+    // Mock metrics - more specific patterns
+    '^.*src/lib/metrics(\\.js)?$': '<rootDir>/tests/__mocks__/metrics.ts',
     '.*\\/metrics\\.js$': '<rootDir>/tests/__mocks__/metrics.ts',
     // Mock logger
+    '^.*src/lib/logger(\\.js)?$': '<rootDir>/tests/__mocks__/logger.ts',
     '.*\\/logger\\.js$': '<rootDir>/tests/__mocks__/logger.ts',
     // Mock config manager
     '.*\\/config\\.js$': '<rootDir>/tests/__mocks__/config.ts',

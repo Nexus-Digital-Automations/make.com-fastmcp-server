@@ -23905,9 +23905,117 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755943911433_5zuyqtcgp",
+      "title": "Fix critical monitoring middleware metrics integration failures",
+      "description": "Fix missing methods in metrics system causing test failures: healthCheck, setActiveConnections, createTimer, recordRequest, recordToolExecution",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T10:11:51.433Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T10:19:56.336Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T10:19:56.337Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755944476263_v3cbnell8",
+      "title": "Fix critical Jest mocking issue - metrics mock functions not recognized",
+      "description": "Jest is not recognizing metrics mock functions as proper mocks. Issues: jest.isMockFunction() returns false, cannot use .toHaveBeenCalledWith() assertions. Need to fix module mocking setup for proper Jest mock recognition.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T10:21:16.264Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T10:28:16.484Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T10:28:16.485Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755943578705_gzel5u712",
+      "title": "Fix monitoring middleware metrics integration failures",
+      "description": "Critical test failures in monitoring middleware due to missing metrics methods (healthCheck, setActiveConnections, createTimer, etc.). The metrics system is not providing the expected API methods that the monitoring middleware depends on.",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T10:06:18.705Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755942864772_1_general_572de571",
+      "started_at": "2025-08-23T10:06:24.692Z",
+      "claimed_by": "development_session_1755942864772_1_general_572de571",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755942864772_1_general_572de571",
+          "role": "primary",
+          "assignedAt": "2025-08-23T10:06:24.692Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T10:29:47.831Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T10:29:47.832Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 552,
-  "last_completion": "2025-08-23T10:03:06.394Z",
+  "total_completed": 555,
+  "last_completion": "2025-08-23T10:29:47.832Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
