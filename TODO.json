@@ -36,66 +36,6 @@
       "auto_research_created": false
     },
     {
-      "id": "task_1755958161642_emvbwjmio",
-      "title": "Implement strategic test coverage for core library components",
-      "description": "Current test coverage is critically low at 0.93% (847/90,263 lines). Need to implement strategic testing approach focusing on high-impact areas: src/lib/ components (config, logger, make-api-client, secure-config), server components, and critical tool modules. Start with files that already have some coverage to build foundation.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-test",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "development/reports/comprehensive-testing-validation-strategies-fastmcp-make-integration.md",
-        "development/reports/test-optimization-analysis.json",
-        "development/research-reports/successful-test-patterns-make-com-fastmcp-server-2025.md",
-        "development/research-reports/test-infrastructure-quality-performance-optimization-research-2025.md"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-23T14:09:21.642Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755981830629_1_general_26ff9f0a",
-      "started_at": "2025-08-23T20:44:12.351Z",
-      "claimed_by": "development_session_1755981830629_1_general_26ff9f0a",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755957564736_1_general_4a39e17b",
-          "role": "primary",
-          "assignedAt": "2025-08-23T14:09:31.313Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-23T14:25:51.804Z",
-          "reason": "Task stale for 16 minutes"
-        },
-        {
-          "agentId": "development_session_1755959157810_1_general_f0f5a891",
-          "role": "primary",
-          "assignedAt": "2025-08-23T14:26:12.641Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-23T20:43:44.912Z",
-          "reason": "Task stale for 378 minutes"
-        },
-        {
-          "agentId": "development_session_1755981830629_1_general_26ff9f0a",
-          "role": "primary",
-          "assignedAt": "2025-08-23T20:44:12.351Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1755982240978_4so62n9z0",
       "title": "Fix critical test failures in make-api-client and logger tests",
       "description": "Multiple core component tests are failing with module import/export issues and mock configuration problems. These failures prevent accurate coverage measurement of the implemented tests.",
