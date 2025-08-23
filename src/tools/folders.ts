@@ -313,85 +313,369 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 /**
  * Add get folder contents tool
  */
-function addGetFolderContentsTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addGetFolderContentsTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'get-folder-contents',
+    description: 'Get contents of a specific folder including files, subfolders, and metadata',
+    parameters: z.object({
+      folderId: z.number().min(1).describe('Folder ID to get contents from'),
+      includeSubfolders: z.boolean().optional().describe('Include subfolders in results'),
+      includeMetadata: z.boolean().optional().describe('Include metadata for each item'),
+    }),
+    annotations: {
+      title: 'Get Folder Contents',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.getfoldercontents(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add move items tool
  */
-function addMoveItemsTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addMoveItemsTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'move-items',
+    description: 'Move items (templates, scenarios, connections) between folders',
+    parameters: z.object({
+      itemIds: z.array(z.number()).describe('Array of item IDs to move'),
+      targetFolderId: z.number().min(1).describe('Target folder ID'),
+      itemType: z.enum(['template', 'scenario', 'connection']).describe('Type of items being moved'),
+    }),
+    annotations: {
+      title: 'Move Items',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.moveitems(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add create data store tool
  */
-function addCreateDataStoreTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addCreateDataStoreTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'create-data-store',
+    description: 'Create a new data store for persistent data management',
+    parameters: z.object({
+      name: z.string().min(1).max(100).describe('Data store name'),
+      description: z.string().max(500).optional().describe('Data store description'),
+      type: z.enum(['key-value', 'document', 'relational']).describe('Data store type'),
+      organizationId: z.number().min(1).optional().describe('Organization ID'),
+      teamId: z.number().min(1).optional().describe('Team ID'),
+    }),
+    annotations: {
+      title: 'Create Data Store',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.createdatastore(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add list data stores tool
  */
-function addListDataStoresTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addListDataStoresTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'list-data-stores',
+    description: 'List available data stores with filtering and metadata',
+    parameters: z.object({
+      organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
+      teamId: z.number().min(1).optional().describe('Filter by team ID'),
+      type: z.enum(['key-value', 'document', 'relational']).optional().describe('Filter by data store type'),
+      includeMetadata: z.boolean().optional().describe('Include metadata in results'),
+    }),
+    annotations: {
+      title: 'List Data Stores',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.listdatastores(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add list data structures tool
  */
-function addListDataStructuresTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addListDataStructuresTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'list-data-structures',
+    description: 'List data structures with schema information and metadata',
+    parameters: z.object({
+      dataStoreId: z.number().min(1).optional().describe('Filter by data store ID'),
+      organizationId: z.number().min(1).optional().describe('Filter by organization ID'),
+      teamId: z.number().min(1).optional().describe('Filter by team ID'),
+      includeSchema: z.boolean().optional().describe('Include schema information'),
+    }),
+    annotations: {
+      title: 'List Data Structures',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.listdatastructures(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add get data structure tool
  */
-function addGetDataStructureTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addGetDataStructureTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'get-data-structure',
+    description: 'Get detailed information about a specific data structure',
+    parameters: z.object({
+      dataStructureId: z.number().min(1).describe('Data structure ID to retrieve'),
+      includeSchema: z.boolean().optional().describe('Include detailed schema information'),
+      includeData: z.boolean().optional().describe('Include sample data'),
+    }),
+    annotations: {
+      title: 'Get Data Structure',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.getdatastructure(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add create data structure tool
  */
-function addCreateDataStructureTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addCreateDataStructureTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'create-data-structure',
+    description: 'Create a new data structure with schema definition',
+    parameters: z.object({
+      name: z.string().min(1).max(100).describe('Data structure name'),
+      description: z.string().max(500).optional().describe('Data structure description'),
+      dataStoreId: z.number().min(1).describe('Data store ID to create structure in'),
+      schema: z.record(z.string(), z.any()).describe('Data structure schema definition'),
+      organizationId: z.number().min(1).optional().describe('Organization ID'),
+    }),
+    annotations: {
+      title: 'Create Data Structure',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.createdatastructure(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add update data structure tool
  */
-function addUpdateDataStructureTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addUpdateDataStructureTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'update-data-structure',
+    description: 'Update an existing data structure schema and properties',
+    parameters: z.object({
+      dataStructureId: z.number().min(1).describe('Data structure ID to update'),
+      name: z.string().min(1).max(100).optional().describe('Updated data structure name'),
+      description: z.string().max(500).optional().describe('Updated description'),
+      schema: z.record(z.string(), z.any()).optional().describe('Updated schema definition'),
+    }),
+    annotations: {
+      title: 'Update Data Structure',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.updatedatastructure(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add delete data structure tool
  */
-function addDeleteDataStructureTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'delete-data-structure',
+    description: 'Delete a data structure and all associated data',
+    parameters: z.object({
+      dataStructureId: z.number().min(1).describe('Data structure ID to delete'),
+      confirmDeletion: z.boolean().describe('Confirmation that data will be permanently deleted'),
+      cascadeDelete: z.boolean().optional().describe('Delete all dependent data'),
+    }),
+    annotations: {
+      title: 'Delete Data Structure',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.deletedatastructure(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add get data store tool
  */
-function addGetDataStoreTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addGetDataStoreTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'get-data-store',
+    description: 'Get detailed information about a specific data store',
+    parameters: z.object({
+      dataStoreId: z.number().min(1).describe('Data store ID to retrieve'),
+      includeMetadata: z.boolean().optional().describe('Include metadata information'),
+      includeStructures: z.boolean().optional().describe('Include data structures list'),
+    }),
+    annotations: {
+      title: 'Get Data Store',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.getdatastore(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add update data store tool
  */
-function addUpdateDataStoreTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addUpdateDataStoreTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'update-data-store',
+    description: 'Update data store configuration and metadata',
+    parameters: z.object({
+      dataStoreId: z.number().min(1).describe('Data store ID to update'),
+      name: z.string().min(1).max(100).optional().describe('Updated data store name'),
+      description: z.string().max(500).optional().describe('Updated description'),
+      configuration: z.record(z.string(), z.any()).optional().describe('Updated configuration settings'),
+    }),
+    annotations: {
+      title: 'Update Data Store',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.updatedatastore(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 /**
  * Add delete data store tool
  */
-function addDeleteDataStoreTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addDeleteDataStoreTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'delete-data-store',
+    description: 'Delete a data store and all its contents permanently',
+    parameters: z.object({
+      dataStoreId: z.number().min(1).describe('Data store ID to delete'),
+      confirmDeletion: z.boolean().describe('Confirmation that all data will be permanently deleted'),
+      cascadeDelete: z.boolean().optional().describe('Delete all structures and data'),
+    }),
+    annotations: {
+      title: 'Delete Data Store',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      const result = await foldersTools.deletedatastore(toolContext, args as Record<string, unknown>);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return formatSuccessResponse(result.data || {}).content[0].text;
+    }
+  });
 }
 
 export default addFolderTools;
