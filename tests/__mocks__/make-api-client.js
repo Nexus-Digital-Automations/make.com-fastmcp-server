@@ -6,7 +6,22 @@
 // Mock constructor function that returns an instance with all the needed methods
 function MockMakeApiClient(config) {
   return {
-    get: jest.fn(() => Promise.resolve({ success: true, data: {} })),
+    get: jest.fn((url) => {
+      // Return specific data based on the endpoint
+      if (url === '/users/me') {
+        return Promise.resolve({ 
+          success: true, 
+          data: { 
+            id: 'test_user_123',
+            name: 'Test User',
+            email: 'test@example.com',
+            role: 'admin'
+          } 
+        });
+      }
+      // Default response for other endpoints
+      return Promise.resolve({ success: true, data: {} });
+    }),
     post: jest.fn(() => Promise.resolve({ success: true, data: {} })),
     put: jest.fn(() => Promise.resolve({ success: true, data: {} })),
     patch: jest.fn(() => Promise.resolve({ success: true, data: {} })),

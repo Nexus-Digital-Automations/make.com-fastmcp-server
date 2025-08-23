@@ -19,6 +19,8 @@ global.console = {
 
 // Setup environment variables for testing
 process.env.NODE_ENV = 'test';
+process.env.SERVER_NAME = 'Test Make.com FastMCP Server'; // Match test expectations  
+process.env.SERVER_VERSION = '1.0.0';
 process.env.MAKE_API_KEY = 'test_api_key_12345';
 process.env.MAKE_BASE_URL = 'https://api.make.com/api/v2';
 process.env.MAKE_TEAM_ID = '12345';
