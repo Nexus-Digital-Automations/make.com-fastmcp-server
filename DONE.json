@@ -21495,9 +21495,114 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755913863233_4al2w6tqg",
+      "title": "Fix 12 linting errors in sdk.ts file",
+      "description": "Fix all linting errors in src/tools/sdk.ts: 5 unused vars line 383, unused config line 539, unused granted line 547, unnecessary type assertion line 558, 2 unused vars line 580, unused rollbackOnFailure line 883, unused config line 1203",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T01:51:03.234Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T01:52:42.795Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T01:52:42.796Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755913439456_l7s26192e",
+      "title": "Fix linting errors and warnings",
+      "description": "Fix 27 linting issues: 15 errors (unused vars, unnecessary type assertions) and 12 warnings (no-explicit-any violations)",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T01:43:59.456Z",
+      "auto_research_created": false,
+      "started_at": "2025-08-23T01:44:05.023Z",
+      "agent_assignment_history": [
+        {
+          "role": "primary",
+          "assignedAt": "2025-08-23T01:44:05.023Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T01:53:27.223Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T01:53:27.224Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755914050645_xyzdvdxff",
+      "title": "Fix TypeScript compilation errors in blueprint-collaboration-fixed.ts",
+      "description": "Fix missing enabled property in ConflictResolution objects on lines 219 and 614",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T01:54:10.645Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T01:55:18.188Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T01:55:18.189Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 493,
-  "last_completion": "2025-08-23T01:50:09.677Z",
+  "total_completed": 496,
+  "last_completion": "2025-08-23T01:55:18.189Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

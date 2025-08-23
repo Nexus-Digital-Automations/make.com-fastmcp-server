@@ -227,7 +227,8 @@ class BlueprintCollaborationEngine {
         conflicts: [],
         resolutionStrategy: 'auto',
         resolutionStatus: 'pending',
-        aiSuggestions: []
+        aiSuggestions: [],
+        enabled: true
       },
       lastActivity: new Date().toISOString(),
       sessionType: 'editing',
@@ -616,7 +617,8 @@ function addResolveBlueprintConflictsTool(server: FastMCP, componentLogger: type
           conflicts: [], // Empty conflicts array as we're passing resolution data separately
           resolutionStrategy: 'manual' as const,
           resolutionStatus: 'pending' as const,
-          aiSuggestions: []
+          aiSuggestions: [],
+          enabled: true
         };
         
         const sessionId = `session_${Date.now()}_${args.blueprintId}`;
