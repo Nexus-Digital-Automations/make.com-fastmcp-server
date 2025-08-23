@@ -956,13 +956,13 @@
 <span class="cstat-no" title="statement not covered" >}</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >export class AsyncErrorBoundary {</span>
-<span class="cstat-no" title="statement not covered" >  private static globalResources = new Map&lt;string, ResourceCleanup&gt;();</span>
-<span class="cstat-no" title="statement not covered" >  private static shutdownHandlers = new Set&lt;() =&gt; Promise&lt;void&gt;&gt;();</span>
+<span class="cstat-no" title="statement not covered" >  private static readonly globalResources = new Map&lt;string, ResourceCleanup&gt;();</span>
+<span class="cstat-no" title="statement not covered" >  private static readonly shutdownHandlers = new Set&lt;() =&gt; Promise&lt;void&gt;&gt;();</span>
 <span class="cstat-no" title="statement not covered" >  private static isShuttingDown = false;</span>
 <span class="cstat-no" title="statement not covered" >  </span>
-<span class="cstat-no" title="statement not covered" >  private resources = new Map&lt;string, ResourceCleanup&gt;();</span>
-<span class="cstat-no" title="statement not covered" >  private options: Required&lt;ErrorBoundaryOptions&gt;;</span>
-<span class="cstat-no" title="statement not covered" >  private componentLogger: ReturnType&lt;typeof logger.child&gt;;</span>
+<span class="cstat-no" title="statement not covered" >  private readonly resources = new Map&lt;string, ResourceCleanup&gt;();</span>
+<span class="cstat-no" title="statement not covered" >  private readonly options: Required&lt;ErrorBoundaryOptions&gt;;</span>
+<span class="cstat-no" title="statement not covered" >  private readonly componentLogger: ReturnType&lt;typeof logger.child&gt;;</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  constructor(options: ErrorBoundaryOptions) {</span>
 <span class="cstat-no" title="statement not covered" >    this.options = {</span>
@@ -1041,7 +1041,7 @@
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        // If this is the last attempt, break to fallback</span>
-<span class="cstat-no" title="statement not covered" >        if (attempt &gt; this.options.retryAttempts) break;</span>
+<span class="cstat-no" title="statement not covered" >        if (attempt &gt; this.options.retryAttempts) {break;}</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >        // Wait before retry</span>
 <span class="cstat-no" title="statement not covered" >        if (this.options.retryDelayMs &gt; 0) {</span>
@@ -1080,7 +1080,7 @@
 <span class="cstat-no" title="statement not covered" >   * Register a resource for cleanup</span>
 <span class="cstat-no" title="statement not covered" >   */</span>
 <span class="cstat-no" title="statement not covered" >  registerResource(resource: ResourceCleanup): void {</span>
-<span class="cstat-no" title="statement not covered" >    if (!this.options.enableResourceTracking) return;</span>
+<span class="cstat-no" title="statement not covered" >    if (!this.options.enableResourceTracking) {return;}</span>
 <span class="cstat-no" title="statement not covered" >    </span>
 <span class="cstat-no" title="statement not covered" >    this.resources.set(resource.name, resource);</span>
 <span class="cstat-no" title="statement not covered" >    </span>
@@ -1153,7 +1153,7 @@
 <span class="cstat-no" title="statement not covered" >   * Cleanup all registered resources</span>
 <span class="cstat-no" title="statement not covered" >   */</span>
 <span class="cstat-no" title="statement not covered" >  async cleanup(): Promise&lt;void&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (this.resources.size === 0) return;</span>
+<span class="cstat-no" title="statement not covered" >    if (this.resources.size === 0) {return;}</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    this.componentLogger.info('Starting resource cleanup', {</span>
 <span class="cstat-no" title="statement not covered" >      resourceCount: this.resources.size</span>
@@ -1209,7 +1209,7 @@
 <span class="cstat-no" title="statement not covered" >   * Global shutdown handler - cleanup all boundaries and resources</span>
 <span class="cstat-no" title="statement not covered" >   */</span>
 <span class="cstat-no" title="statement not covered" >  static async shutdown(): Promise&lt;void&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (AsyncErrorBoundary.isShuttingDown) return;</span>
+<span class="cstat-no" title="statement not covered" >    if (AsyncErrorBoundary.isShuttingDown) {return;}</span>
 <span class="cstat-no" title="statement not covered" >    </span>
 <span class="cstat-no" title="statement not covered" >    AsyncErrorBoundary.isShuttingDown = true;</span>
 <span class="cstat-no" title="statement not covered" >    </span>
@@ -1299,7 +1299,7 @@
 <span class="cstat-no" title="statement not covered" >  });</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  // Handle unhandled promise rejections</span>
-<span class="cstat-no" title="statement not covered" >  process.on('unhandledRejection', async (reason, promise) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  process.on('unhandledRejection', async (reason, _promise) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    logger.error('Unhandled promise rejection detected', {</span>
 <span class="cstat-no" title="statement not covered" >      reason: reason instanceof Error ? reason.message : String(reason),</span>
 <span class="cstat-no" title="statement not covered" >      stack: reason instanceof Error ? reason.stack : undefined</span>
@@ -1360,7 +1360,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T14:44:31.886Z
+                at 2025-08-23T20:50:41.592Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

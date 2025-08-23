@@ -2,6 +2,57 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755981963768_sstrqx245",
+      "title": "Implement comprehensive test coverage for src/server.ts - main FastMCP server",
+      "description": "Create comprehensive test coverage for the main FastMCP server entry point (currently 0% coverage). Test server initialization, FastMCP protocol handling, tool registration, session management, error handling, health checks, and graceful shutdown. Target 85%+ coverage with proper mocking of dependencies.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T20:46:03.768Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755981929715_sld7glk6q",
+      "title": "Implement comprehensive test coverage for logger.ts infrastructure",
+      "description": "Create thorough test coverage for src/lib/logger.ts - critical logging infrastructure with 0% coverage. Test singleton pattern, all log levels, structured logging, correlation IDs, external integrations, and performance characteristics. Target 95%+ coverage.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T20:45:29.715Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755981919649_ugz3fe6zk",
+      "title": "Implement comprehensive test coverage for make-api-client.ts",
+      "description": "Critical 0% coverage component - implement authentication, rate limiting, error handling, and API method tests",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T20:45:19.650Z",
+      "auto_research_created": false
+    },
+    {
       "id": "task_1755958161642_emvbwjmio",
       "title": "Implement strategic test coverage for core library components",
       "description": "Current test coverage is critically low at 0.93% (847/90,263 lines). Need to implement strategic testing approach focusing on high-impact areas: src/lib/ components (config, logger, make-api-client, secure-config), server components, and critical tool modules. Start with files that already have some coverage to build foundation.",
@@ -22,9 +73,9 @@
       "subtasks": [],
       "created_at": "2025-08-23T14:09:21.642Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755959157810_1_general_f0f5a891",
-      "started_at": "2025-08-23T14:26:12.641Z",
-      "claimed_by": "development_session_1755959157810_1_general_f0f5a891",
+      "assigned_agent": "development_session_1755981830629_1_general_26ff9f0a",
+      "started_at": "2025-08-23T20:44:12.351Z",
+      "claimed_by": "development_session_1755981830629_1_general_26ff9f0a",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755957564736_1_general_4a39e17b",
@@ -45,8 +96,42 @@
           "assignedAt": "2025-08-23T14:26:12.641Z",
           "reassignReason": null,
           "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-23T20:43:44.912Z",
+          "reason": "Task stale for 378 minutes"
+        },
+        {
+          "agentId": "development_session_1755981830629_1_general_26ff9f0a",
+          "role": "primary",
+          "assignedAt": "2025-08-23T20:44:12.351Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
+    },
+    {
+      "id": "task_1755982240978_4so62n9z0",
+      "title": "Fix critical test failures in make-api-client and logger tests",
+      "description": "Multiple core component tests are failing with module import/export issues and mock configuration problems. These failures prevent accurate coverage measurement of the implemented tests.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "tests/unit/lib/make-api-client.test.ts",
+        "tests/unit/lib/logger.test.ts",
+        "tests/unit/server.test.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T20:50:40.978Z",
+      "auto_research_created": false
     }
   ],
   "current_mode": "DEVELOPMENT",
@@ -56,13 +141,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755959157810_1_general_f0f5a891": {
+    "development_session_1755981830629_1_general_26ff9f0a": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-23T14:25:57.812Z",
+      "lastHeartbeat": "2025-08-23T20:43:50.630Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -73,8 +158,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-23T14:25:57.812Z",
-      "sessionId": "session_1755959157810",
+      "createdAt": "2025-08-23T20:43:50.630Z",
+      "sessionId": "session_1755981830629",
       "metadata": {}
     }
   },
