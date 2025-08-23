@@ -2,23 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755924364280_ku8owcrn2",
-      "title": "Complete final ESLint cleanup to achieve ZERO errors",
-      "description": "Systematic cleanup of remaining 35 ESLint errors using proven transformation patterns to achieve complete code quality compliance",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-23T04:46:04.280Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755924322700_zqntttwo9",
       "title": "Fix final batch of ESLint errors - complete cleanup",
       "description": "Final systematic cleanup of remaining 35 ESLint errors across the codebase. Continue pattern: missing return types, unused error variables, any type usage. Goal: achieve zero ESLint errors for full code quality compliance.",
