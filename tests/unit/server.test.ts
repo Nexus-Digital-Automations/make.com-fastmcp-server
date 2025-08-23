@@ -197,10 +197,10 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
   afterAll(() => {
     // Restore original max listeners setting
     process.setMaxListeners(originalMaxListeners);
-    
+
     // Clean up any remaining listeners from tests
-    process.removeAllListeners('uncaughtException');
-    process.removeAllListeners('unhandledRejection');
+    process.removeAllListeners("uncaughtException");
+    process.removeAllListeners("unhandledRejection");
   });
 
   beforeEach(() => {
@@ -254,7 +254,7 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
         // Ignore cleanup errors in tests
       }
     }
-    
+
     jest.clearAllMocks();
   });
 
@@ -934,6 +934,361 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
       expect(() => {
         serverInstance = new MakeServerInstance();
       }).not.toThrow();
+    });
+  });
+
+  describe("Process Error Handlers and Security", () => {
+    it("should setup process error handlers without duplication", () => {
+      const processOnSpy = jest.spyOn(process, "on");
+      const originalListenerCount = process.listenerCount;
+
+      // Mock listenerCount to simulate existing handlers
+      jest.spyOn(process, "listenerCount").mockReturnValue(0);
+
+      serverInstance = new MakeServerInstance();
+
+      expect(processOnSpy).toHaveBeenCalledWith(
+        "uncaughtException",
+        expect.any(Function),
+      );
+      expect(processOnSpy).toHaveBeenCalledWith(
+        "unhandledRejection",
+        expect.any(Function),
+      );
+
+      processOnSpy.mockRestore();
+      jest
+        .spyOn(process, "listenerCount")
+        .mockImplementation(originalListenerCount);
+    });
+
+    it("should skip setting up process handlers if already bound", () => {
+      const processOnSpy = jest.spyOn(process, "on");
+      const originalListenerCount = process.listenerCount;
+
+      // Mock listenerCount to simulate existing handlers
+      jest.spyOn(process, "listenerCount").mockReturnValue(5); // Simulate handlers exist
+
+      serverInstance = new MakeServerInstance();
+
+      // Should not add more handlers if they already exist
+      expect(processOnSpy).not.toHaveBeenCalledWith(
+        "uncaughtException",
+        expect.any(Function),
+      );
+
+      processOnSpy.mockRestore();
+      jest
+        .spyOn(process, "listenerCount")
+        .mockImplementation(originalListenerCount);
+    });
+
+    it("should handle uncaught JSON parsing errors without exit", () => {
+      const originalExit = process.exit;
+      const mockExit = jest.fn();
+      process.exit = mockExit as any;
+
+      const mockLogger = require("../../src/lib/logger.js").default;
+
+      serverInstance = new MakeServerInstance();
+
+      // Simulate an uncaught JSON parsing error
+      const jsonError = new Error("Unexpected token in JSON at position 0");
+      process.emit("uncaughtException", jsonError);
+
+      // Should not exit for JSON errors
+      expect(mockExit).not.toHaveBeenCalled();
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        "JSON parsing error intercepted",
+        expect.objectContaining({
+          suggestion:
+            "This may be a message framing issue in MCP protocol communication",
+        }),
+      );
+
+      process.exit = originalExit;
+    });
+
+    it("should handle uncaught non-JSON errors with exit in non-test env", () => {
+      const originalExit = process.exit;
+      const originalNodeEnv = process.env.NODE_ENV;
+      const mockExit = jest.fn();
+      process.exit = mockExit as any;
+      process.env.NODE_ENV = "production";
+
+      serverInstance = new MakeServerInstance();
+
+      // Simulate a non-JSON error
+      const genericError = new Error("Generic server error");
+      process.emit("uncaughtException", genericError);
+
+      // Should exit in non-test environments
+      expect(mockExit).toHaveBeenCalledWith(1);
+
+      process.exit = originalExit;
+      process.env.NODE_ENV = originalNodeEnv;
+    });
+
+    it("should handle unhandled promise rejections", () => {
+      const mockLogger = require("../../src/lib/logger.js").default;
+
+      serverInstance = new MakeServerInstance();
+
+      // Simulate an unhandled promise rejection (without creating actual promise)
+      const rejectionReason = new Error("Promise rejection");
+      const mockPromise = { toString: () => "Promise{<rejected>}" };
+
+      process.emit("unhandledRejection", rejectionReason, mockPromise);
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        "Unhandled promise rejection",
+        expect.objectContaining({
+          reason: expect.objectContaining({
+            name: "Error",
+            message: "Promise rejection",
+          }),
+        }),
+      );
+    });
+  });
+
+  describe("Enhanced Tool Execution Coverage", () => {
+    beforeEach(() => {
+      serverInstance = new MakeServerInstance();
+    });
+
+    it("should handle health-check tool with correlation ID from session", async () => {
+      const addToolCalls = mockFastMCP.addTool.mock.calls;
+      const healthCheckTool = addToolCalls.find(
+        (call) => call[0].name === "health-check",
+      );
+
+      const mockContext = {
+        log: { info: jest.fn(), error: jest.fn() },
+        session: { correlationId: "session-correlation-id" },
+      };
+
+      const result = await healthCheckTool[0].execute(
+        { includeSecurity: true },
+        mockContext,
+      );
+
+      expect(result).toBeDefined();
+      const parsedResult = JSON.parse(result);
+      expect(parsedResult.server).toBe("healthy");
+
+      // Verify correlation ID logging
+      expect(mockContext.log.info).toHaveBeenCalledWith(
+        expect.stringContaining("Health check"),
+        expect.objectContaining({ correlationId: "session-correlation-id" }),
+      );
+    });
+
+    it("should handle test-configuration tool with permissions check", async () => {
+      const addToolCalls = mockFastMCP.addTool.mock.calls;
+      const configTestTool = addToolCalls.find(
+        (call) => call[0].name === "test-configuration",
+      );
+
+      // Mock team data for permissions test
+      mockApiClientInstance.get.mockImplementation(async (url: string) => {
+        if (url === "/users/me") {
+          return {
+            success: true,
+            data: {
+              id: "test_user_123",
+              name: "Test User",
+              email: "test@example.com",
+              role: "admin",
+            },
+          };
+        }
+        if (url.includes("/teams/")) {
+          return {
+            success: true,
+            data: { id: "test_team", name: "Test Team" },
+          };
+        }
+        return { success: true, data: {} };
+      });
+
+      const mockContext = {
+        log: { info: jest.fn(), error: jest.fn() },
+        reportProgress: jest.fn(),
+        session: { correlationId: "config-test-id" },
+      };
+
+      const result = await configTestTool[0].execute(
+        { includePermissions: true },
+        mockContext,
+      );
+
+      expect(result).toBeDefined();
+      const parsedResult = JSON.parse(result);
+      expect(parsedResult.apiConnectivity).toBe(true);
+      expect(parsedResult.permissions).toBeDefined();
+      expect(parsedResult.permissions.hasTeamAccess).toBe(true);
+    });
+
+    it("should handle API errors in test-configuration tool", async () => {
+      const addToolCalls = mockFastMCP.addTool.mock.calls;
+      const configTestTool = addToolCalls.find(
+        (call) => call[0].name === "test-configuration",
+      );
+
+      // Mock API error
+      const apiError = new Error("Network connection failed");
+      mockApiClientInstance.get.mockRejectedValue(apiError);
+
+      const mockContext = {
+        log: { info: jest.fn(), error: jest.fn() },
+        reportProgress: jest.fn(),
+        session: null,
+      };
+
+      await expect(
+        configTestTool[0].execute({ includePermissions: false }, mockContext),
+      ).rejects.toThrow(UserError);
+
+      expect(mockContext.log.error).toHaveBeenCalledWith(
+        "Configuration test failed",
+        expect.objectContaining({
+          error: "Network connection failed",
+        }),
+      );
+    });
+  });
+
+  describe("Server Lifecycle Edge Cases", () => {
+    beforeEach(() => {
+      serverInstance = new MakeServerInstance();
+    });
+
+    it("should handle API validation error during startup", async () => {
+      mockApiClientInstance.healthCheck.mockImplementation(() => {
+        throw new Error("API validation network error");
+      });
+
+      const mockConfig = require("../../src/lib/config.js").default;
+      mockConfig.getMakeConfig.mockReturnValue({
+        ...mockConfig.getMakeConfig(),
+        apiKey: "real_production_key", // Not a test key
+      });
+
+      await expect(serverInstance.start()).rejects.toThrow(
+        "API validation network error",
+      );
+    });
+
+    it("should handle shutdown with API client errors", async () => {
+      mockApiClientInstance.shutdown.mockRejectedValue(
+        new Error("Graceful shutdown timeout"),
+      );
+
+      // Should not throw even if API client shutdown fails
+      await expect(serverInstance.shutdown()).resolves.not.toThrow();
+    });
+
+    it("should handle FastMCP shutdown failures during server shutdown", async () => {
+      mockFastMCP.shutdown.mockRejectedValue(
+        new Error("FastMCP shutdown failed"),
+      );
+
+      // Should handle FastMCP shutdown errors gracefully
+      await expect(serverInstance.shutdown()).resolves.not.toThrow();
+    });
+  });
+
+  describe("Advanced Authentication Scenarios", () => {
+    it("should handle authentication with missing headers object", async () => {
+      const mockConfig = require("../../src/lib/config.js").default;
+      mockConfig.isAuthEnabled.mockReturnValue(true);
+      mockConfig.getAuthSecret.mockReturnValue("valid-secret");
+
+      serverInstance = new MakeServerInstance();
+      const fastMCPCall = (FastMCP as jest.MockedClass<any>).mock.calls[0][0];
+
+      // Mock request without headers
+      const mockRequest = {};
+
+      await expect(
+        fastMCPCall.authenticate(mockRequest),
+      ).rejects.toBeInstanceOf(Response);
+    });
+
+    it("should handle authentication with null/undefined headers", async () => {
+      const mockConfig = require("../../src/lib/config.js").default;
+      mockConfig.isAuthEnabled.mockReturnValue(true);
+      mockConfig.getAuthSecret.mockReturnValue("valid-secret");
+
+      serverInstance = new MakeServerInstance();
+      const fastMCPCall = (FastMCP as jest.MockedClass<any>).mock.calls[0][0];
+
+      // Mock request with null headers
+      const mockRequest = { headers: null };
+
+      await expect(
+        fastMCPCall.authenticate(mockRequest),
+      ).rejects.toBeInstanceOf(Response);
+    });
+  });
+
+  describe("Event Handler Edge Cases", () => {
+    beforeEach(() => {
+      serverInstance = new MakeServerInstance();
+    });
+
+    it("should handle connect events with null session", () => {
+      const connectHandler = mockFastMCP.on.mock.calls.find(
+        (call) => call[0] === "connect",
+      )[1];
+
+      expect(() => {
+        connectHandler({
+          session: null,
+        });
+      }).not.toThrow();
+    });
+
+    it("should handle disconnect events with null session", () => {
+      const disconnectHandler = mockFastMCP.on.mock.calls.find(
+        (call) => call[0] === "disconnect",
+      )[1];
+
+      expect(() => {
+        disconnectHandler({
+          session: null,
+        });
+      }).not.toThrow();
+    });
+  });
+
+  describe("Error Recovery and Health Determination", () => {
+    beforeEach(() => {
+      serverInstance = new MakeServerInstance();
+    });
+
+    it("should determine overall health with null security status", () => {
+      // Test health determination with null security status
+      let health = (serverInstance as any).determineOverallHealth(true, null);
+      expect(health).toBe("healthy");
+
+      // Test with false API health and null security
+      health = (serverInstance as any).determineOverallHealth(false, null);
+      expect(health).toBe("degraded");
+    });
+
+    it("should determine overall health with undefined security status", () => {
+      // Test health determination with undefined security status
+      let health = (serverInstance as any).determineOverallHealth(
+        true,
+        undefined,
+      );
+      expect(health).toBe("healthy");
+
+      // Test with false API health and undefined security
+      health = (serverInstance as any).determineOverallHealth(false, undefined);
+      expect(health).toBe("degraded");
     });
   });
 });

@@ -2,11 +2,83 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755983861122_dslt80t7s",
+      "title": "Research: Expand test coverage for config.ts and server.ts to achieve 90%+ and 85%+ coverage respectively",
+      "description": "Research and analysis required for implementing: \"Expand test coverage for config.ts and server.ts to achieve 90%+ and 85%+ coverage respectively\"\n\n**Implementation Task Details:**\nEnhance config.ts test coverage from 53.93% to 90%+ and optimize server.ts from 77.89% to 85%+. Focus on environment configuration scenarios, validation edge cases, error handling, server lifecycle, tool loading integration, and production-critical scenarios.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755983861121_8kptmw6cr\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755983861122_dslt80t7s.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755983861122_dslt80t7s.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T21:17:41.122Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755983861121_8kptmw6cr"
+    },
+    {
       "id": "task_1755981919649_ugz3fe6zk",
       "title": "Implement comprehensive test coverage for make-api-client.ts",
       "description": "Critical 0% coverage component - implement authentication, rate limiting, error handling, and API method tests",
       "mode": "DEVELOPMENT",
       "category": "missing-test",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T20:45:19.650Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755983740108_1_general_3e8fa255",
+      "started_at": "2025-08-23T21:16:17.389Z",
+      "claimed_by": "development_session_1755983740108_1_general_3e8fa255",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755983740108_1_general_3e8fa255",
+          "role": "primary",
+          "assignedAt": "2025-08-23T21:16:17.389Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
+      "id": "task_1755983854857_g2q07lw8v",
+      "title": "Expand make-api-client.ts test coverage to 90%+ from current 49.66%",
+      "description": "Analyze current test gaps and implement comprehensive test coverage for authentication, rate limiting, error handling, HTTP methods, OAuth 2.0 + PKCE flow, and all business logic paths",
+      "mode": "DEVELOPMENT",
+      "category": "missing-test",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T21:17:34.857Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755983985348_kbmtjpdj7",
+      "title": "Fix critical test failures preventing accurate coverage analysis",
+      "description": "Address test failures in config.test.ts and make-api-client-fixed.test.ts that are preventing accurate coverage measurement",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
       "priority": "critical",
       "status": "pending",
       "dependencies": [],
@@ -15,7 +87,7 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T20:45:19.650Z",
+      "created_at": "2025-08-23T21:19:45.348Z",
       "auto_research_created": false
     },
     {
@@ -64,13 +136,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755981830629_1_general_26ff9f0a": {
+    "development_session_1755983740108_1_general_3e8fa255": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-23T20:43:50.630Z",
+      "lastHeartbeat": "2025-08-23T21:15:40.110Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -81,8 +153,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-23T20:43:50.630Z",
-      "sessionId": "session_1755981830629",
+      "createdAt": "2025-08-23T21:15:40.110Z",
+      "sessionId": "session_1755983740108",
       "metadata": {}
     }
   },
