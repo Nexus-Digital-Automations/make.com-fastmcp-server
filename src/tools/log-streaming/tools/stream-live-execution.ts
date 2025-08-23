@@ -429,8 +429,8 @@ export function createStreamLiveExecutionTool(context: ToolContext): ToolDefinit
           monitoringConfig,
           alertConfig,
           apiClient,
-          log! as import('../../../../lib/logger.js').Logger,
-          log! as import('../../../../lib/logger.js').Logger,
+          logger as never,
+          log as never,
           startTime,
           endTime
         );

@@ -33,7 +33,7 @@ const AuthenticationRequestSchema = z.object({
     platform: z.string(),
     hardwareInfo: z.string().optional(),
   }),
-  ipAddress: z.string().regex(/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/, 'Invalid IP address'),
+  ipAddress: z.string().regex(/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/, 'Invalid IP address'),
   geolocation: z.object({
     latitude: z.number().optional(),
     longitude: z.number().optional(),
@@ -112,7 +112,7 @@ const BehavioralAnalyticsSchema = z.object({
     }),
   }),
   contextualData: z.object({
-    ipAddress: z.string().regex(/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/, 'Invalid IP address'),
+    ipAddress: z.string().regex(/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/, 'Invalid IP address'),
     geolocation: z.object({
       latitude: z.number().optional(),
       longitude: z.number().optional(),
