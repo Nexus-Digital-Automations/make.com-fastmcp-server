@@ -133,6 +133,19 @@ export class MockMakeApiClient {
 
     // Return configured response or default
     const response = this.responses.get(key) || this.responses.get('DEFAULT');
+    
+    // Ensure the response is properly structured as ApiResponse
+    if (!response) {
+      return {
+        success: false,
+        error: {
+          message: 'No mock response configured',
+          code: 'MOCK_ERROR'
+        }
+      };
+    }
+
+    // Return the response as-is since it should already be properly formatted
     return response;
   }
 

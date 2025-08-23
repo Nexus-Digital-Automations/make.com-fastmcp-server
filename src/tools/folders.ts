@@ -8,6 +8,7 @@ import { MakeApiClient } from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
 import { z } from 'zod';
 import type { ToolExecutionContext } from '../types/index.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
 
 // Import the modular tools from the refactored folders module
 import { foldersTools } from './folders/tools/index.js';
@@ -81,7 +82,22 @@ function addCreateFolderTool(server: FastMCP, apiClient: MakeApiClient, componen
       if (result.error) {
         throw new Error(result.error);
       }
-      return result.message || 'Folder created successfully';
+      
+      // Format response as JSON for the test expectations
+      const responseData = {
+        folder: result.data,
+        message: 'Folder created successfully',
+        organization: {
+          path: result.data?.path || '/',
+          permissions: {
+            readAccess: result.data?.permissions?.read?.length || 0,
+            writeAccess: result.data?.permissions?.write?.length || 0,
+            adminAccess: result.data?.permissions?.admin?.length || 0,
+          }
+        }
+      };
+      
+      return formatSuccessResponse(responseData).content[0].text;
     }
   });
 }
@@ -115,7 +131,38 @@ function addListFoldersTool(server: FastMCP, apiClient: MakeApiClient, component
       if (result.error) {
         throw new Error(result.error);
       }
-      return result.message || 'Folders listed successfully';
+      
+      // Format response as JSON for the test expectations
+      const responseData = {
+        folders: result.data?.folders || [],
+        message: result.message || 'Folders listed successfully',
+        summary: {
+          totalFolders: result.data?.folders?.length || 0,
+          typeBreakdown: {
+            template: result.data?.folders?.filter((f: any) => f.type === 'template').length || 0,
+            scenario: result.data?.folders?.filter((f: any) => f.type === 'scenario').length || 0,
+            connection: result.data?.folders?.filter((f: any) => f.type === 'connection').length || 0,
+            mixed: result.data?.folders?.filter((f: any) => f.type === 'mixed').length || 0,
+          },
+          contentSummary: {
+            totalItems: result.data?.folders?.reduce((sum: number, f: any) => sum + (f.itemCount?.total || 0), 0) || 0,
+            templates: result.data?.folders?.reduce((sum: number, f: any) => sum + (f.itemCount?.templates || 0), 0) || 0,
+            scenarios: result.data?.folders?.reduce((sum: number, f: any) => sum + (f.itemCount?.scenarios || 0), 0) || 0,
+          },
+          largestFolder: result.data?.folders?.reduce((largest: any, current: any) => 
+            (current.itemCount?.total || 0) > (largest?.itemCount?.total || 0) ? current : largest, null),
+          mostRecentActivity: result.data?.folders?.reduce((most: any, current: any) => 
+            new Date(current.metadata?.lastActivity || 0) > new Date(most?.metadata?.lastActivity || 0) ? current : most, null),
+        },
+        hierarchy: result.data?.folders?.map((f: any) => ({
+          id: f.id,
+          name: f.name,
+          parentId: f.parentId,
+          path: f.path,
+        })) || [],
+      };
+      
+      return formatSuccessResponse(responseData).content[0].text;
     }
   });
 }

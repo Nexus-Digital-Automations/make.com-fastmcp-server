@@ -474,7 +474,7 @@ function addCreateCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void
             'Write and run tests',
             'Deploy to staging for testing',
           ],
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error creating custom app', { name, error: errorMessage });
@@ -614,7 +614,7 @@ function addListCustomAppsTool(server: FastMCP, apiClient: MakeApiClient): void 
             offset,
             hasMore: (metadata?.total || 0) > (offset + apps.length),
           },
-        });
+        }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error listing custom apps', { error: errorMessage });

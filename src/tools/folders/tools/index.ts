@@ -21,7 +21,7 @@ type ToolResult = Promise<{
 /**
  * Initialize folders module manager
  */
-async function createFoldersManager(context: FastMCPToolContext): Promise<FoldersManager> {
+async function createFoldersManager(context: FastMCPToolContext, providedApiClient?: MakeApiClient): Promise<FoldersManager> {
   const foldersContext: FoldersContext = {
     ...context,
     config: {
@@ -36,8 +36,14 @@ async function createFoldersManager(context: FastMCPToolContext): Promise<Folder
     }
   };
 
-  // Create a secure MakeApiClient instance
-  const apiClient = await MakeApiClient.createSecure();
+  // Use the provided API client if available, otherwise create a secure instance
+  let apiClient: MakeApiClient;
+  if (providedApiClient) {
+    apiClient = providedApiClient;
+  } else {
+    // Create a secure MakeApiClient instance
+    apiClient = await MakeApiClient.createSecure();
+  }
   
   return new FoldersManager(foldersContext, apiClient);
 }
@@ -47,7 +53,9 @@ async function createFoldersManager(context: FastMCPToolContext): Promise<Folder
  * createFolder FastMCP tool
  */
 export async function createfolder(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = await createFoldersManager(context);
+  // Extract API client from context if available
+  const apiClient = (context as any).apiClient;
+  const manager = await createFoldersManager(context, apiClient);
   
   try {
     // Initialize manager if not already done
@@ -118,7 +126,9 @@ createfolder.metadata = {
  * listFolders FastMCP tool
  */
 export async function listfolders(context: FastMCPToolContext, args: Record<string, unknown>): ToolResult {
-  const manager = await createFoldersManager(context);
+  // Extract API client from context if available
+  const apiClient = (context as any).apiClient;
+  const manager = await createFoldersManager(context, apiClient);
   
   try {
     // Initialize manager if not already done
