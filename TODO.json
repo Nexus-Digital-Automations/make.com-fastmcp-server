@@ -2,11 +2,11 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755924322700_zqntttwo9",
-      "title": "Fix final batch of ESLint errors - complete cleanup",
-      "description": "Final systematic cleanup of remaining 35 ESLint errors across the codebase. Continue pattern: missing return types, unused error variables, any type usage. Goal: achieve zero ESLint errors for full code quality compliance.",
+      "id": "task_1755925331252_hzqlnpgtw",
+      "title": "Fix critical test failures in server and log-streaming tests",
+      "description": "Multiple test failures detected: server-comprehensive.test.ts health-check tool mismatch and stream-live-execution-comprehensive.test.ts function import errors. These are blocking issues preventing reliable deployment.",
       "mode": "DEVELOPMENT",
-      "category": "linter-error",
+      "category": "bug",
       "priority": "critical",
       "status": "in_progress",
       "dependencies": [],
@@ -15,47 +15,37 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T04:45:22.700Z",
+      "created_at": "2025-08-23T05:02:11.252Z",
       "auto_research_created": false,
-      "assigned_agent": "agent_1755924330000",
-      "started_at": "2025-08-23T04:45:29.698Z",
-      "claimed_by": "agent_1755924330000",
+      "assigned_agent": "development_session_1755924959086_1_general_89a67171",
+      "started_at": "2025-08-23T05:02:18.313Z",
+      "claimed_by": "development_session_1755924959086_1_general_89a67171",
       "agent_assignment_history": [
         {
-          "agentId": "agent_1755924330000",
+          "agentId": "development_session_1755924959086_1_general_89a67171",
           "role": "primary",
-          "assignedAt": "2025-08-23T04:45:29.698Z",
+          "assignedAt": "2025-08-23T05:02:18.313Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
       ]
     },
     {
-      "id": "task_1755922756066_wbd35k5vg",
-      "title": "Fix ESLint errors in mcp-protocol-handler.ts",
-      "description": "ESLint errors detected in src/lib/mcp-protocol-handler.ts: missing return type annotation, unused error variable, any type usage. These linting violations need immediate resolution to maintain code quality.",
+      "id": "task_1755925373707_41g8ry9hx",
+      "title": "Fix critical test failures in server and stream-live-execution tests",
+      "description": "Fix health-check tool mismatch and stream-live-execution import errors blocking deployment",
       "mode": "DEVELOPMENT",
-      "category": "linter-error",
+      "category": "test-error",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T04:19:16.066Z",
-      "auto_research_created": false,
-      "started_at": "2025-08-23T04:19:39.808Z",
-      "claimed_by": "agent_1755922779808",
-      "assigned_agent": "agent_1755922779808",
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1755922779808",
-          "action": "claimed",
-          "timestamp": "2025-08-23T04:19:39.809Z"
-        }
-      ]
+      "created_at": "2025-08-23T05:02:53.707Z",
+      "auto_research_created": false
     }
   ],
   "current_mode": "DEVELOPMENT",
@@ -65,13 +55,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755921933515_1_general_25013e96": {
+    "development_session_1755924959086_1_general_89a67171": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-23T04:05:33.516Z",
+      "lastHeartbeat": "2025-08-23T04:55:59.087Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -82,8 +72,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-23T04:05:33.516Z",
-      "sessionId": "session_1755921933515",
+      "createdAt": "2025-08-23T04:55:59.087Z",
+      "sessionId": "session_1755924959086",
       "metadata": {}
     }
   },

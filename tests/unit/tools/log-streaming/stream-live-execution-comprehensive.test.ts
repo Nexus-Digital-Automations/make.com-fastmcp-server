@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { streamLiveExecutionTool } from '../../../../src/tools/log-streaming/tools/stream-live-execution.js';
+import { createStreamLiveExecutionTool } from '../../../../src/tools/log-streaming/tools/stream-live-execution.js';
 import { ToolContext } from '../../../../src/tools/shared/types/tool-context.js';
 import { UserError } from 'fastmcp';
 
@@ -47,17 +47,17 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
 
   describe('Tool Registration and Structure', () => {
     it('should create tool with correct configuration', () => {
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
-      expect(tool.name).toBe('stream-live-execution');
-      expect(tool.description).toContain('live execution');
+      expect(tool.name).toBe('stream_live_execution');
+      expect(tool.description).toContain('real-time');
       expect(tool.parameters).toBeDefined();
       expect(tool.annotations).toBeDefined();
       expect(typeof tool.execute).toBe('function');
     });
 
     it('should have proper streaming annotations', () => {
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       expect(tool.annotations.title).toBeDefined();
       expect(tool.annotations.readOnlyHint).toBe(true);
@@ -68,7 +68,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
 
   describe('Parameter Validation', () => {
     it('should validate required scenario ID', async () => {
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       await expect(tool.execute({
         // Missing scenarioId
@@ -77,7 +77,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
     });
 
     it('should validate output format options', async () => {
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       await expect(tool.execute({
         scenarioId: 'scenario-123',
@@ -86,7 +86,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
     });
 
     it('should validate log level options', async () => {
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       await expect(tool.execute({
         scenarioId: 'scenario-123',
@@ -105,7 +105,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -135,7 +135,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
     });
 
     it('should start basic live execution stream', async () => {
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -174,7 +174,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-456',
@@ -214,7 +214,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-789',
@@ -247,7 +247,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -275,7 +275,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -305,7 +305,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -341,7 +341,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -376,7 +376,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -407,7 +407,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -447,7 +447,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -488,7 +488,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -526,7 +526,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'high-volume-scenario',
@@ -552,7 +552,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         error: { message: 'Scenario not found', code: 'SCENARIO_NOT_FOUND' }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       await expect(tool.execute({
         scenarioId: 'nonexistent-scenario',
@@ -564,7 +564,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
     it('should handle streaming service unavailable', async () => {
       mockApiClient.post.mockRejectedValue(new Error('Streaming service unavailable'));
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       await expect(tool.execute({
         scenarioId: 'scenario-123',
@@ -584,7 +584,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         error: { message: 'Insufficient permissions to stream scenario', code: 'PERMISSION_DENIED' }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       await expect(tool.execute({
         scenarioId: 'restricted-scenario',
@@ -599,7 +599,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         error: { message: 'Streaming capacity exceeded', code: 'CAPACITY_EXCEEDED' }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       await expect(tool.execute({
         scenarioId: 'scenario-123',
@@ -631,7 +631,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -665,7 +665,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'scenario-123',
@@ -688,7 +688,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         data: { streamId: 'stream-123', status: 'active' }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const streams = Array(5).fill(0).map(async (_, i) => {
         return tool.execute({
@@ -721,7 +721,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'secure-scenario',
@@ -751,7 +751,7 @@ describe('Live Execution Streaming - Comprehensive Tests', () => {
         }
       });
 
-      const tool = streamLiveExecutionTool(toolContext);
+      const tool = createStreamLiveExecutionTool(toolContext);
       
       const result = await tool.execute({
         scenarioId: 'privacy-scenario',

@@ -265,12 +265,12 @@ ${configManager.isAuthEnabled() ?
     // Enhanced health check tool with security status
     this.server.addTool({
       name: 'health-check',
-      description: 'Check server, Make.com API connectivity, and security system status',
+      description: 'Check server and Make.com API connectivity status',
       parameters: z.object({
         includeSecurity: z.boolean().default(true).describe('Include security system status')
       }),
       annotations: {
-        title: 'Enhanced Health Check',
+        title: 'Health Check',
         readOnlyHint: true,
         openWorldHint: true,
       },
