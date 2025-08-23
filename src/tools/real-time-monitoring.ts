@@ -203,7 +203,7 @@ interface VisualizationInput {
   includePredictions?: boolean;
 }
 
-interface StartMonitoringResponseData {
+interface _StartMonitoringResponseData {
   monitorId: string;
   scenarioId: number;
   executionId: string | undefined;
