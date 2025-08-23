@@ -189,6 +189,13 @@ function addListTemplatesTool(server: FastMCP, _apiClient: MakeApiClient, _compo
     name: 'list-templates',
     description: 'List available templates',
     parameters: TemplateListSchema,
+    annotations: {
+      title: 'List Templates',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     execute: async (_input, _context) => {
       return 'Templates listed';
     },
@@ -203,8 +210,19 @@ function addGetTemplateTool(server: FastMCP, _apiClient: MakeApiClient, _compone
     name: 'get-template',
     description: 'Get template details',
     parameters: z.object({
-      templateId: z.string().describe('Template ID'),
-    }),
+      templateId: z.number().min(1).describe('Template ID'),
+      includeBlueprint: z.boolean().default(false).describe('Include blueprint details'),
+      includeUsage: z.boolean().default(false).describe('Include usage statistics'),
+      includeSharing: z.boolean().default(false).describe('Include sharing information'),
+      includeVersions: z.boolean().default(false).describe('Include version history'),
+    }).strict(),
+    annotations: {
+      title: 'Get Template',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     execute: async (input, _context) => {
       return `Template ${input.templateId} retrieved`;
     },
@@ -219,6 +237,13 @@ function addUpdateTemplateTool(server: FastMCP, _apiClient: MakeApiClient, _comp
     name: 'update-template',
     description: 'Update template',
     parameters: TemplateUpdateSchema,
+    annotations: {
+      title: 'Update Template',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
     execute: async (input, _context) => {
       return `Template ${input.templateId} updated`;
     },
@@ -233,6 +258,13 @@ function addUseTemplateTool(server: FastMCP, _apiClient: MakeApiClient, _compone
     name: 'use-template',
     description: 'Use template to create scenario',
     parameters: TemplateUseSchema,
+    annotations: {
+      title: 'Use Template',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
     execute: async (input, _context) => {
       return `Template ${input.templateId} used`;
     },
@@ -247,8 +279,16 @@ function addDeleteTemplateTool(server: FastMCP, _apiClient: MakeApiClient, _comp
     name: 'delete-template',
     description: 'Delete template',
     parameters: z.object({
-      templateId: z.string().describe('Template ID'),
-    }),
+      templateId: z.number().min(1).describe('Template ID'),
+      force: z.boolean().default(false).describe('Force delete even if template is in use'),
+    }).strict(),
+    annotations: {
+      title: 'Delete Template',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
     execute: async (input, _context) => {
       return `Template ${input.templateId} deleted`;
     },

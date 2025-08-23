@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/1057</span>
+                <span class='fraction'>0/1067</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/1057</span>
+                <span class='fraction'>0/1067</span>
             </div>
         
             
@@ -1120,7 +1120,27 @@
 <a name='L1055'></a><a href='#L1055'>1055</a>
 <a name='L1056'></a><a href='#L1056'>1056</a>
 <a name='L1057'></a><a href='#L1057'>1057</a>
-<a name='L1058'></a><a href='#L1058'>1058</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L1058'></a><a href='#L1058'>1058</a>
+<a name='L1059'></a><a href='#L1059'>1059</a>
+<a name='L1060'></a><a href='#L1060'>1060</a>
+<a name='L1061'></a><a href='#L1061'>1061</a>
+<a name='L1062'></a><a href='#L1062'>1062</a>
+<a name='L1063'></a><a href='#L1063'>1063</a>
+<a name='L1064'></a><a href='#L1064'>1064</a>
+<a name='L1065'></a><a href='#L1065'>1065</a>
+<a name='L1066'></a><a href='#L1066'>1066</a>
+<a name='L1067'></a><a href='#L1067'>1067</a>
+<a name='L1068'></a><a href='#L1068'>1068</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2200,7 +2220,7 @@
 <span class="cstat-no" title="statement not covered" >/**</span>
 <span class="cstat-no" title="statement not covered" > * Initialize folders module manager</span>
 <span class="cstat-no" title="statement not covered" > */</span>
-<span class="cstat-no" title="statement not covered" >async function createFoldersManager(context: FastMCPToolContext): Promise&lt;FoldersManager&gt; {</span>
+<span class="cstat-no" title="statement not covered" >async function createFoldersManager(context: FastMCPToolContext, providedApiClient?: MakeApiClient): Promise&lt;FoldersManager&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  const foldersContext: FoldersContext = {</span>
 <span class="cstat-no" title="statement not covered" >    ...context,</span>
 <span class="cstat-no" title="statement not covered" >    config: {</span>
@@ -2215,8 +2235,14 @@
 <span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  // Create a secure MakeApiClient instance</span>
-<span class="cstat-no" title="statement not covered" >  const apiClient = await MakeApiClient.createSecure();</span>
+<span class="cstat-no" title="statement not covered" >  // Use the provided API client if available, otherwise create a secure instance</span>
+<span class="cstat-no" title="statement not covered" >  let apiClient: MakeApiClient;</span>
+<span class="cstat-no" title="statement not covered" >  if (providedApiClient) {</span>
+<span class="cstat-no" title="statement not covered" >    apiClient = providedApiClient;</span>
+<span class="cstat-no" title="statement not covered" >  } else {</span>
+<span class="cstat-no" title="statement not covered" >    // Create a secure MakeApiClient instance</span>
+<span class="cstat-no" title="statement not covered" >    apiClient = await MakeApiClient.createSecure();</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" >  </span>
 <span class="cstat-no" title="statement not covered" >  return new FoldersManager(foldersContext, apiClient);</span>
 <span class="cstat-no" title="statement not covered" >}</span>
@@ -2226,7 +2252,9 @@
 <span class="cstat-no" title="statement not covered" > * createFolder FastMCP tool</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" >export async function createfolder(context: FastMCPToolContext, args: Record&lt;string, unknown&gt;): ToolResult {</span>
-<span class="cstat-no" title="statement not covered" >  const manager = await createFoldersManager(context);</span>
+<span class="cstat-no" title="statement not covered" >  // Extract API client from context if available</span>
+<span class="cstat-no" title="statement not covered" >  const apiClient = (context as any).apiClient;</span>
+<span class="cstat-no" title="statement not covered" >  const manager = await createFoldersManager(context, apiClient);</span>
 <span class="cstat-no" title="statement not covered" >  </span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    // Initialize manager if not already done</span>
@@ -2297,7 +2325,9 @@
 <span class="cstat-no" title="statement not covered" > * listFolders FastMCP tool</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" >export async function listfolders(context: FastMCPToolContext, args: Record&lt;string, unknown&gt;): ToolResult {</span>
-<span class="cstat-no" title="statement not covered" >  const manager = await createFoldersManager(context);</span>
+<span class="cstat-no" title="statement not covered" >  // Extract API client from context if available</span>
+<span class="cstat-no" title="statement not covered" >  const apiClient = (context as any).apiClient;</span>
+<span class="cstat-no" title="statement not covered" >  const manager = await createFoldersManager(context, apiClient);</span>
 <span class="cstat-no" title="statement not covered" >  </span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    // Initialize manager if not already done</span>
@@ -3241,7 +3271,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T06:44:13.480Z
+                at 2025-08-23T09:36:50.750Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

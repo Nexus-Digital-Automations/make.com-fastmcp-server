@@ -249,8 +249,12 @@ describe('Template Management Tools', () => {
       scenarios: ['latency', 'error', 'timeout'],
     });
 
-    // Clear previous mock calls
+    // Clear previous mock calls BEFORE registering tools
     mockTool.mockClear();
+
+    // Register tools for all tests
+    const { addTemplateTools } = await import('../../../src/tools/templates.js');
+    addTemplateTools(mockServer, mockApiClient as any);
   });
 
   afterEach(() => {
@@ -276,12 +280,12 @@ describe('Template Management Tools', () => {
       addTemplateTools(mockServer, mockApiClient as any);
       
       const expectedTools = [
-        'create_template',
-        'list_templates',
-        'get_template',
-        'update_template',
-        'use_template',
-        'delete_template',
+        'create-template',
+        'list-templates',
+        'get-template',
+        'update-template',
+        'use-template',
+        'delete-template',
       ];
 
       expectedTools.forEach(toolName => {
