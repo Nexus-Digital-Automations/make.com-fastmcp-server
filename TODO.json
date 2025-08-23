@@ -29,41 +29,6 @@
       ]
     },
     {
-      "id": "task_1755952151265_fqm4p8wkc",
-      "title": "Fix API client integration test retry logic failures",
-      "description": "7 out of 31 API client integration tests are failing, specifically related to exponential backoff, retry logic, network timeouts, and error simulation. These are critical infrastructure tests that need to pass for reliable API communication.",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "critical",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "development/research-reports/make-api-performance-rate-limiting-optimization-comprehensive-research-2025.md",
-        "development/research-reports/test-infrastructure-quality-performance-optimization-research-2025.md",
-        "development/research-reports/successful-test-patterns-make-com-fastmcp-server-2025.md",
-        "tests/integration/api-client.test.ts"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-23T12:29:11.265Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1755953204925_1_general_70fa767e",
-      "started_at": "2025-08-23T12:47:47.877Z",
-      "claimed_by": "development_session_1755953204925_1_general_70fa767e",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1755953204925_1_general_70fa767e",
-          "role": "primary",
-          "assignedAt": "2025-08-23T12:47:47.877Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ],
-      "last_modified": "2025-08-23T12:48:25.986Z"
-    },
-    {
       "id": "task_1755952092551_9cdirh1np",
       "title": "Fix blueprint analysis test validation errors",
       "description": "Blueprint analysis utility tests have validation issues with undefined results and incorrect array lengths",

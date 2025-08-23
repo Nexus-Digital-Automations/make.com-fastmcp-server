@@ -654,6 +654,9 @@ describe('Make.com API Client Integration Tests', () => {
     });
 
     it('should handle partial response failures and malformed data', async () => {
+      // Store original method for cleanup
+      const originalPut = (realApiClient as any).put;
+      
       const malformedScenarios = [
         {
           name: 'truncated_json',
@@ -677,26 +680,31 @@ describe('Make.com API Client Integration Tests', () => {
         }
       ];
       
-      for (const scenario of malformedScenarios) {
-        let attemptCount = 0;
-        
-        const malformedHandler = jest.fn(async () => {
-          attemptCount++;
-          // Simulate parsing/validation error
-          throw scenario.error;
-        });
-        
-        (realApiClient as any).put = malformedHandler;
-        
-        try {
-          await realApiClient.put(`/malformed-${scenario.name}`, { test: 'data' });
-          fail(`Expected ${scenario.name} error to be thrown`);
-        } catch (error) {
-          expect(error).toBeInstanceOf(Error);
-          expect((error as Error).message).toContain(scenario.error.message);
-          // Data parsing errors should not be retried
-          expect(attemptCount).toBe(1);
+      try {
+        for (const scenario of malformedScenarios) {
+          let attemptCount = 0;
+          
+          const malformedHandler = jest.fn(async () => {
+            attemptCount++;
+            // Simulate parsing/validation error
+            throw scenario.error;
+          });
+          
+          (realApiClient as any).put = malformedHandler;
+          
+          try {
+            await realApiClient.put(`/malformed-${scenario.name}`, { test: 'data' });
+            fail(`Expected ${scenario.name} error to be thrown`);
+          } catch (error) {
+            expect(error).toBeInstanceOf(Error);
+            expect((error as Error).message).toContain(scenario.error.message);
+            // Data parsing errors should not be retried
+            expect(attemptCount).toBe(1);
+          }
         }
+      } finally {
+        // Always restore original method to prevent test interference
+        (realApiClient as any).put = originalPut;
       }
     });
 
@@ -807,30 +815,49 @@ describe('Make.com API Client Integration Tests', () => {
     });
 
     it('should handle cascading failure scenarios', async () => {
-      // Simplified test: First attempt succeeds to verify basic mocking works
+      // Test cascading failure handling with proper retry logic
+      // Mock implementation that simulates 2 failures followed by success
       let attemptCount = 0;
-      
-      const successHandler = jest.fn(async () => {
+      const mockImplementation = async () => {
         attemptCount++;
-        return {
-          data: { message: 'Success on first try', attemptNumber: attemptCount },
-          status: 200,
-          statusText: 'OK',
-          headers: {},
-          config: {}
-        };
-      });
+        
+        if (attemptCount <= 2) {
+          // First two attempts fail with retryable errors
+          const error = new Error(`Attempt ${attemptCount} failed`) as any;
+          error.response = {
+            status: attemptCount === 1 ? 503 : 502,
+            data: { message: `Error on attempt ${attemptCount}` }
+          };
+          error.isAxiosError = true;
+          throw error;
+        } else {
+          // Third attempt succeeds
+          return {
+            data: { message: 'Service recovered', attempts: attemptCount },
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+            config: {}
+          };
+        }
+      };
       
-      // Mock the axios instance patch method directly
+      // Mock the axiosInstance.patch method to test retry behavior
       const axiosInstance = (realApiClient as any).axiosInstance;
-      axiosInstance.patch = successHandler;
+      const originalPatch = axiosInstance.patch;
+      axiosInstance.patch = jest.fn().mockImplementation(mockImplementation);
       
-      const result = await realApiClient.patch('/simple-test', { data: 'test' });
-      
-      // Basic assertions
-      expect(result.success).toBe(true);
-      expect(result.data?.message).toBe('Success on first try');
-      expect(attemptCount).toBe(1);
+      try {
+        const result = await realApiClient.patch('/cascading-test', { data: 'test' });
+        
+        // Should succeed after retries
+        expect(result.success).toBe(true);
+        expect(attemptCount).toBe(3); // 2 failures + 1 success
+        expect(result.data?.message).toBe('Service recovered');
+      } finally {
+        // Restore original method
+        axiosInstance.patch = originalPatch;
+      }
     });
   });
 
