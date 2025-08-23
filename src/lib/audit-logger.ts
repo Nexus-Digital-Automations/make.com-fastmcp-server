@@ -186,15 +186,33 @@ export class AuditLogger {
     }
 
     // Log to standard logger for immediate visibility
-    const logLevel = auditEntry.level === 'critical' ? 'error' : auditEntry.level;
-    this.componentLogger[logLevel]('Audit event logged', {
+    const logData = {
       id: auditEntry.id,
       category: auditEntry.category,
       action: auditEntry.action,
       success: auditEntry.success,
       riskLevel: auditEntry.riskLevel,
       userId: auditEntry.userId,
-    });
+    };
+
+    // Use explicit method calls instead of dynamic calls to avoid method binding issues
+    switch (auditEntry.level) {
+      case 'critical':
+        this.componentLogger.error('Audit event logged', logData);
+        break;
+      case 'error':
+        this.componentLogger.error('Audit event logged', logData);
+        break;
+      case 'warn':
+        this.componentLogger.warn('Audit event logged', logData);
+        break;
+      case 'info':
+        this.componentLogger.info('Audit event logged', logData);
+        break;
+      default:
+        this.componentLogger.info('Audit event logged', logData);
+        break;
+    }
   }
 
   /**
