@@ -40,11 +40,22 @@ function createServerInstance(serverType: Exclude<ServerType, 'both'>): ServerIn
 async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promise<void> {
   const getComponentLogger = () => {
     try {
-      return logger.child({ component: 'Main', serverType });
+      const childLogger = logger.child({ component: 'Main', serverType });
+      // Verify the child logger has required methods
+      if (childLogger && typeof childLogger.error === 'function') {
+        return childLogger;
+      }
     } catch (error) {
-      // Fallback for test environments
-      return logger as any;
+      // Fall through to fallback
     }
+    
+    // Robust fallback for test environments
+    return {
+      info: (...args: any[]) => logger?.info?.(...args) || console.log(...args),
+      error: (...args: any[]) => logger?.error?.(...args) || console.error(...args),
+      warn: (...args: any[]) => logger?.warn?.(...args) || console.warn(...args),
+      debug: (...args: any[]) => logger?.debug?.(...args) || console.debug(...args),
+    };
   };
   const componentLogger = getComponentLogger();
   
@@ -106,11 +117,22 @@ async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promi
 async function startBothServers(): Promise<void> {
   const getComponentLogger = () => {
     try {
-      return logger.child({ component: 'Main', mode: 'dual' });
+      const childLogger = logger.child({ component: 'Main', mode: 'dual' });
+      // Verify the child logger has required methods
+      if (childLogger && typeof childLogger.error === 'function') {
+        return childLogger;
+      }
     } catch (error) {
-      // Fallback for test environments
-      return logger as any;
+      // Fall through to fallback
     }
+    
+    // Robust fallback for test environments
+    return {
+      info: (...args: any[]) => logger?.info?.(...args) || console.log(...args),
+      error: (...args: any[]) => logger?.error?.(...args) || console.error(...args),
+      warn: (...args: any[]) => logger?.warn?.(...args) || console.warn(...args),
+      debug: (...args: any[]) => logger?.debug?.(...args) || console.debug(...args),
+    };
   };
   const componentLogger = getComponentLogger();
   

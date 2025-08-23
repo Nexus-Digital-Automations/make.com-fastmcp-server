@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/751</span>
+                <span class='fraction'>0/767</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/751</span>
+                <span class='fraction'>0/767</span>
             </div>
         
             
@@ -813,7 +813,39 @@
 <a name='L748'></a><a href='#L748'>748</a>
 <a name='L749'></a><a href='#L749'>749</a>
 <a name='L750'></a><a href='#L750'>750</a>
-<a name='L751'></a><a href='#L751'>751</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L751'></a><a href='#L751'>751</a>
+<a name='L752'></a><a href='#L752'>752</a>
+<a name='L753'></a><a href='#L753'>753</a>
+<a name='L754'></a><a href='#L754'>754</a>
+<a name='L755'></a><a href='#L755'>755</a>
+<a name='L756'></a><a href='#L756'>756</a>
+<a name='L757'></a><a href='#L757'>757</a>
+<a name='L758'></a><a href='#L758'>758</a>
+<a name='L759'></a><a href='#L759'>759</a>
+<a name='L760'></a><a href='#L760'>760</a>
+<a name='L761'></a><a href='#L761'>761</a>
+<a name='L762'></a><a href='#L762'>762</a>
+<a name='L763'></a><a href='#L763'>763</a>
+<a name='L764'></a><a href='#L764'>764</a>
+<a name='L765'></a><a href='#L765'>765</a>
+<a name='L766'></a><a href='#L766'>766</a>
+<a name='L767'></a><a href='#L767'>767</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1792,7 +1824,8 @@
 <span class="cstat-no" title="statement not covered" >        conflicts: [],</span>
 <span class="cstat-no" title="statement not covered" >        resolutionStrategy: 'auto',</span>
 <span class="cstat-no" title="statement not covered" >        resolutionStatus: 'pending',</span>
-<span class="cstat-no" title="statement not covered" >        aiSuggestions: []</span>
+<span class="cstat-no" title="statement not covered" >        aiSuggestions: [],</span>
+<span class="cstat-no" title="statement not covered" >        enabled: true</span>
 <span class="cstat-no" title="statement not covered" >      },</span>
 <span class="cstat-no" title="statement not covered" >      lastActivity: new Date().toISOString(),</span>
 <span class="cstat-no" title="statement not covered" >      sessionType: 'editing',</span>
@@ -2181,13 +2214,20 @@
 <span class="cstat-no" title="statement not covered" >          conflicts: [], // Empty conflicts array as we're passing resolution data separately</span>
 <span class="cstat-no" title="statement not covered" >          resolutionStrategy: 'manual' as const,</span>
 <span class="cstat-no" title="statement not covered" >          resolutionStatus: 'pending' as const,</span>
-<span class="cstat-no" title="statement not covered" >          aiSuggestions: []</span>
+<span class="cstat-no" title="statement not covered" >          aiSuggestions: [],</span>
+<span class="cstat-no" title="statement not covered" >          enabled: true</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
 <span class="cstat-no" title="statement not covered" >        </span>
-<span class="cstat-no" title="statement not covered" >        const result = await engine.resolveConflicts(args.blueprintId, {</span>
-<span class="cstat-no" title="statement not covered" >          versionId: args.versionId,</span>
-<span class="cstat-no" title="statement not covered" >          conflicts: args.conflicts,</span>
-<span class="cstat-no" title="statement not covered" >          resolutionOptions: args.resolutionOptions,</span>
+<span class="cstat-no" title="statement not covered" >        const sessionId = `session_${Date.now()}_${args.blueprintId}`;</span>
+<span class="cstat-no" title="statement not covered" >        const result = await engine.resolveConflicts(sessionId, _conflictResolution, {</span>
+<span class="cstat-no" title="statement not covered" >          resolutionStrategy: 'manual',</span>
+<span class="cstat-no" title="statement not covered" >          conflictResolutions: args.conflicts.map((conflict, index) =&gt; ({</span>
+<span class="cstat-no" title="statement not covered" >            conflictId: conflict.conflictId || `conflict_${index}`,</span>
+<span class="cstat-no" title="statement not covered" >            resolution: args.resolutionOptions?.[index]?.resolution || 'manual',</span>
+<span class="cstat-no" title="statement not covered" >            customResolution: args.resolutionOptions?.[index]?.customResolution as BlueprintValue | undefined,</span>
+<span class="cstat-no" title="statement not covered" >            reasoning: args.resolutionOptions?.[index]?.reasoning</span>
+<span class="cstat-no" title="statement not covered" >          })),</span>
+<span class="cstat-no" title="statement not covered" >          preserveUserIntent: true,</span>
 <span class="cstat-no" title="statement not covered" >          validateResult: true,</span>
 <span class="cstat-no" title="statement not covered" >          createBackup: true</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
@@ -2301,7 +2341,15 @@
 <span class="cstat-no" title="statement not covered" > * Main function to add all blueprint collaboration tools</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" >export function addBlueprintCollaborationTools(server: FastMCP, _apiClient: MakeApiClient): void {</span>
-<span class="cstat-no" title="statement not covered" >  const componentLogger = logger.child({ component: 'BlueprintCollaborationTools' });</span>
+<span class="cstat-no" title="statement not covered" >  const getComponentLogger = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      return logger.child({ component: 'BlueprintCollaborationTools' });</span>
+<span class="cstat-no" title="statement not covered" >    } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >      // Fallback for test environments</span>
+<span class="cstat-no" title="statement not covered" >      return logger as any;</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" >  const componentLogger = getComponentLogger();</span>
 <span class="cstat-no" title="statement not covered" >  const engine = BlueprintCollaborationEngine.getInstance();</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  // Add all blueprint collaboration tools</span>
@@ -2320,7 +2368,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T00:04:21.144Z
+                at 2025-08-23T03:47:48.282Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

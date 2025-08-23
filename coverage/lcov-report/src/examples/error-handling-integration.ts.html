@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/458</span>
+                <span class='fraction'>0/482</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/458</span>
+                <span class='fraction'>0/482</span>
             </div>
         
             
@@ -520,7 +520,55 @@
 <a name='L455'></a><a href='#L455'>455</a>
 <a name='L456'></a><a href='#L456'>456</a>
 <a name='L457'></a><a href='#L457'>457</a>
-<a name='L458'></a><a href='#L458'>458</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L458'></a><a href='#L458'>458</a>
+<a name='L459'></a><a href='#L459'>459</a>
+<a name='L460'></a><a href='#L460'>460</a>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a>
+<a name='L466'></a><a href='#L466'>466</a>
+<a name='L467'></a><a href='#L467'>467</a>
+<a name='L468'></a><a href='#L468'>468</a>
+<a name='L469'></a><a href='#L469'>469</a>
+<a name='L470'></a><a href='#L470'>470</a>
+<a name='L471'></a><a href='#L471'>471</a>
+<a name='L472'></a><a href='#L472'>472</a>
+<a name='L473'></a><a href='#L473'>473</a>
+<a name='L474'></a><a href='#L474'>474</a>
+<a name='L475'></a><a href='#L475'>475</a>
+<a name='L476'></a><a href='#L476'>476</a>
+<a name='L477'></a><a href='#L477'>477</a>
+<a name='L478'></a><a href='#L478'>478</a>
+<a name='L479'></a><a href='#L479'>479</a>
+<a name='L480'></a><a href='#L480'>480</a>
+<a name='L481'></a><a href='#L481'>481</a>
+<a name='L482'></a><a href='#L482'>482</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1204,11 +1252,19 @@
 <span class="cstat-no" title="statement not covered" >      };</span>
 <span class="cstat-no" title="statement not covered" >    }): Promise&lt;string&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      const correlationId = extractCorrelationId({ session: context.session });</span>
-<span class="cstat-no" title="statement not covered" >      const operationLogger = logger.child({</span>
-<span class="cstat-no" title="statement not covered" >        component: 'EnhancedTool',</span>
-<span class="cstat-no" title="statement not covered" >        operation: 'enhanced-make-request',</span>
-<span class="cstat-no" title="statement not covered" >        correlationId,</span>
-<span class="cstat-no" title="statement not covered" >      });</span>
+<span class="cstat-no" title="statement not covered" >      const getOperationLogger = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >          return logger.child({</span>
+<span class="cstat-no" title="statement not covered" >            component: 'EnhancedTool',</span>
+<span class="cstat-no" title="statement not covered" >            operation: 'enhanced-make-request',</span>
+<span class="cstat-no" title="statement not covered" >            correlationId,</span>
+<span class="cstat-no" title="statement not covered" >          });</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >          // Fallback for test environments</span>
+<span class="cstat-no" title="statement not covered" >          return logger as any;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >      };</span>
+<span class="cstat-no" title="statement not covered" >      const operationLogger = getOperationLogger();</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
 <span class="cstat-no" title="statement not covered" >        // Validate input parameters</span>
@@ -1322,11 +1378,19 @@
 <span class="cstat-no" title="statement not covered" >  analytics: ReturnType&lt;typeof getErrorAnalyticsDashboard&gt;;</span>
 <span class="cstat-no" title="statement not covered" >}&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  const correlationId = extractCorrelationId({});</span>
-<span class="cstat-no" title="statement not covered" >  const healthLogger = logger.child({</span>
-<span class="cstat-no" title="statement not covered" >    component: 'HealthCheck',</span>
-<span class="cstat-no" title="statement not covered" >    operation: 'enhanced-health-check',</span>
-<span class="cstat-no" title="statement not covered" >    correlationId,</span>
-<span class="cstat-no" title="statement not covered" >  });</span>
+<span class="cstat-no" title="statement not covered" >  const getHealthLogger = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      return logger.child({</span>
+<span class="cstat-no" title="statement not covered" >        component: 'HealthCheck',</span>
+<span class="cstat-no" title="statement not covered" >        operation: 'enhanced-health-check',</span>
+<span class="cstat-no" title="statement not covered" >        correlationId,</span>
+<span class="cstat-no" title="statement not covered" >      });</span>
+<span class="cstat-no" title="statement not covered" >    } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >      // Fallback for test environments</span>
+<span class="cstat-no" title="statement not covered" >      return logger as any;</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" >  const healthLogger = getHealthLogger();</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  const services: Record&lt;string, {</span>
 <span class="cstat-no" title="statement not covered" >    status: 'healthy' | 'degraded' | 'unhealthy';</span>
@@ -1390,10 +1454,18 @@
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" >export async function demonstrateErrorHandling(): Promise&lt;void&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  const correlationId = extractCorrelationId({});</span>
-<span class="cstat-no" title="statement not covered" >  const demoLogger = logger.child({</span>
-<span class="cstat-no" title="statement not covered" >    component: 'ErrorHandlingDemo',</span>
-<span class="cstat-no" title="statement not covered" >    correlationId,</span>
-<span class="cstat-no" title="statement not covered" >  });</span>
+<span class="cstat-no" title="statement not covered" >  const getDemoLogger = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      return logger.child({</span>
+<span class="cstat-no" title="statement not covered" >        component: 'ErrorHandlingDemo',</span>
+<span class="cstat-no" title="statement not covered" >        correlationId,</span>
+<span class="cstat-no" title="statement not covered" >      });</span>
+<span class="cstat-no" title="statement not covered" >    } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >      // Fallback for test environments</span>
+<span class="cstat-no" title="statement not covered" >      return logger as any;</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" >  const demoLogger = getDemoLogger();</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  demoLogger.info('Starting error handling demonstration');</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -1441,7 +1513,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T00:04:21.144Z
+                at 2025-08-23T03:47:48.282Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
