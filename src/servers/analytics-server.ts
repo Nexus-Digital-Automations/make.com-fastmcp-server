@@ -13,7 +13,7 @@ import {
 } from '../config/analytics-tools.js';
 
 export class AnalyticsServer extends BaseServer {
-  private backgroundTasks: Set<NodeJS.Timeout> = new Set();
+  private readonly backgroundTasks: Set<NodeJS.Timeout> = new Set();
 
   constructor() {
     const config: ServerConfig = {

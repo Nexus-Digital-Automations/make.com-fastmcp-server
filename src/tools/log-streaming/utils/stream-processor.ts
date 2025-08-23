@@ -135,21 +135,7 @@ export class LogStreamingManager extends EventEmitter {
 
             // Buffer management
             if (config.bufferingStrategy.enabled) {
-              const buffer = this.logBuffer.get(streamId) || [];
-              buffer.push(...filteredLogs);
-
-              // Trim buffer if too large
-              if (buffer.length > config.bufferingStrategy.maxBufferSize) {
-                const droppedCount = buffer.length - config.bufferingStrategy.maxBufferSize;
-                buffer.splice(0, droppedCount);
-                const metrics = this.streamMetrics.get(streamId);
-                if (metrics) {
-                  metrics.droppedLogs += droppedCount;
-                  this.streamMetrics.set(streamId, metrics);
-                }
-              }
-
-              this.logBuffer.set(streamId, buffer);
+              this.handleLogBuffering(streamId, filteredLogs, config.bufferingStrategy.maxBufferSize);
             }
 
             // Update metrics
@@ -214,6 +200,27 @@ export class LogStreamingManager extends EventEmitter {
    */
   getBufferedLogs(streamId: string): MakeLogEntry[] | undefined {
     return this.logBuffer.get(streamId);
+  }
+
+  /**
+   * Handle log buffering with trimming if necessary
+   */
+  private handleLogBuffering(streamId: string, filteredLogs: MakeLogEntry[], maxBufferSize: number): void {
+    const buffer = this.logBuffer.get(streamId) || [];
+    buffer.push(...filteredLogs);
+
+    // Trim buffer if too large
+    if (buffer.length > maxBufferSize) {
+      const droppedCount = buffer.length - maxBufferSize;
+      buffer.splice(0, droppedCount);
+      const metrics = this.streamMetrics.get(streamId);
+      if (metrics) {
+        metrics.droppedLogs += droppedCount;
+        this.streamMetrics.set(streamId, metrics);
+      }
+    }
+
+    this.logBuffer.set(streamId, buffer);
   }
 
   /**

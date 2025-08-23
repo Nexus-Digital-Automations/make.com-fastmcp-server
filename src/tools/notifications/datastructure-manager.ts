@@ -59,6 +59,99 @@ const DataStructureSchema = z.object({
 }).strict();
 
 /**
+ * Validate and process structure data for creation
+ */
+function validateAndProcessStructureData(input: {
+  name: string;
+  description?: string;
+  type: string;
+  organizationId?: number;
+  teamId?: number;
+  scope: string;
+  structure: { schema?: unknown; version?: string; format?: string };
+  validation?: { enabled?: boolean; strict?: boolean; rules?: Array<Record<string, unknown>> };
+  transformation?: { enabled?: boolean; mappings?: Array<Record<string, unknown>>; filters?: Array<Record<string, unknown>> };
+}): Record<string, unknown> {
+  const { name, description, type, organizationId, teamId, scope, structure, validation, transformation } = input;
+
+  // Validate JSON Schema if provided
+  if (structure.schema && typeof structure.schema === 'object') {
+    try {
+      JSON.stringify(structure.schema);
+    } catch {
+      throw new UserError('Invalid JSON Schema provided');
+    }
+  }
+
+  return {
+    name,
+    description,
+    type,
+    organizationId,
+    teamId,
+    scope,
+    structure: {
+      schema: structure.schema,
+      version: structure.version || '1.0.0',
+      format: structure.format || 'json',
+    },
+    validation: validation ? {
+      enabled: validation.enabled !== false,
+      strict: validation.strict || false,
+      rules: validation.rules || [],
+    } : { enabled: true, strict: false, rules: [] },
+    transformation: transformation ? {
+      enabled: transformation.enabled || false,
+      mappings: transformation.mappings || [],
+      filters: transformation.filters || [],
+    } : { enabled: false, mappings: [], filters: [] },
+  };
+}
+
+/**
+ * Determine endpoint for data structure creation
+ */
+function determineCreateEndpoint(organizationId?: number, teamId?: number): string {
+  if (organizationId) {
+    return `/organizations/${organizationId}/data-structures`;
+  }
+  if (teamId) {
+    return `/teams/${teamId}/data-structures`;
+  }
+  return '/data-structures';
+}
+
+/**
+ * Format creation response with detailed metadata
+ */
+function formatCreateResponse(dataStructure: MakeCustomDataStructure, name: string): string {
+  return formatSuccessResponse({
+    dataStructure,
+    message: `Data structure "${name}" created successfully`,
+    summary: {
+      id: dataStructure.id,
+      name: dataStructure.name,
+      type: dataStructure.type,
+      scope: dataStructure.scope,
+      format: dataStructure.structure.format,
+      version: dataStructure.structure.version,
+      validationEnabled: dataStructure.validation.enabled,
+      transformationEnabled: dataStructure.transformation.enabled,
+    },
+    configuration: {
+      validationRules: dataStructure.validation.rules.length,
+      transformationMappings: dataStructure.transformation.mappings.length,
+      transformationFilters: dataStructure.transformation.filters.length,
+    },
+    usage: {
+      validateUrl: `/data-structures/${dataStructure.id}/validate`,
+      transformUrl: `/data-structures/${dataStructure.id}/transform`,
+      testUrl: `/data-structures/${dataStructure.id}/test`,
+    },
+  }).content[0].text;
+}
+
+/**
  * Add create data structure tool
  */
 function addCreateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -93,50 +186,15 @@ function addCreateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
           reportProgress({ progress: 0, total: 100 });
         }
 
-        // Validate JSON Schema if provided
-        if (structure.schema && typeof structure.schema === 'object') {
-          try {
-            JSON.stringify(structure.schema);
-          } catch {
-            throw new UserError('Invalid JSON Schema provided');
-          }
-        }
-
-        const dataStructureData = {
-          name,
-          description,
-          type,
-          organizationId,
-          teamId,
-          scope,
-          structure: {
-            schema: structure.schema,
-            version: structure.version || '1.0.0',
-            format: structure.format || 'json',
-          },
-          validation: validation ? {
-            enabled: validation.enabled !== false,
-            strict: validation.strict || false,
-            rules: validation.rules || [],
-          } : { enabled: true, strict: false, rules: [] },
-          transformation: transformation ? {
-            enabled: transformation.enabled || false,
-            mappings: transformation.mappings || [],
-            filters: transformation.filters || [],
-          } : { enabled: false, mappings: [], filters: [] },
-        };
+        const dataStructureData = validateAndProcessStructureData({
+          name, description, type, organizationId, teamId, scope, structure, validation, transformation
+        });
 
         if (reportProgress) {
           reportProgress({ progress: 50, total: 100 });
         }
 
-        let endpoint = '/data-structures';
-        if (organizationId) {
-          endpoint = `/organizations/${organizationId}/data-structures`;
-        } else if (teamId) {
-          endpoint = `/teams/${teamId}/data-structures`;
-        }
-
+        const endpoint = determineCreateEndpoint(organizationId, teamId);
         const response = await apiClient.post(endpoint, dataStructureData);
 
         if (!response.success) {
@@ -161,30 +219,7 @@ function addCreateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
           });
         }
 
-        return formatSuccessResponse({
-          dataStructure,
-          message: `Data structure "${name}" created successfully`,
-          summary: {
-            id: dataStructure.id,
-            name: dataStructure.name,
-            type: dataStructure.type,
-            scope: dataStructure.scope,
-            format: dataStructure.structure.format,
-            version: dataStructure.structure.version,
-            validationEnabled: dataStructure.validation.enabled,
-            transformationEnabled: dataStructure.transformation.enabled,
-          },
-          configuration: {
-            validationRules: dataStructure.validation.rules.length,
-            transformationMappings: dataStructure.transformation.mappings.length,
-            transformationFilters: dataStructure.transformation.filters.length,
-          },
-          usage: {
-            validateUrl: `/data-structures/${dataStructure.id}/validate`,
-            transformUrl: `/data-structures/${dataStructure.id}/transform`,
-            testUrl: `/data-structures/${dataStructure.id}/test`,
-          },
-        }).content[0].text;
+        return formatCreateResponse(dataStructure, name);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log?.error) {
@@ -479,27 +514,27 @@ function buildUpdateData(
   
   if (structure) {
     updateData.structure = {};
-    if (structure.schema) {updateData.structure.schema = structure.schema;}
+    if (structure.schema) {updateData.structure.schema = structure.schema as Record<string, unknown>;}
     if (structure.version) {updateData.structure.version = structure.version;}
-    if (structure.format) {updateData.structure.format = structure.format;}
+    if (structure.format) {updateData.structure.format = structure.format as 'json' | 'xml' | 'yaml' | 'csv' | 'custom';}
   }
   
   if (validation) {
     updateData.validation = {};
     if (validation.enabled !== undefined) {updateData.validation.enabled = validation.enabled;}
     if (validation.strict !== undefined) {updateData.validation.strict = validation.strict;}
-    if (validation.rules) {updateData.validation.rules = validation.rules;}
+    if (validation.rules) {updateData.validation.rules = validation.rules as Array<{ field: string; type: 'required' | 'format' | 'range' | 'custom'; parameters?: unknown; message: string }>;}
   }
   
   if (transformation) {
     updateData.transformation = {};
     if (transformation.enabled !== undefined) {updateData.transformation.enabled = transformation.enabled;}
-    if (transformation.mappings) {updateData.transformation.mappings = transformation.mappings;}
+    if (transformation.mappings) {updateData.transformation.mappings = transformation.mappings as Array<{ source: string; target: string; type: 'direct' | 'computed' | 'lookup' | 'constant'; parameters?: unknown }>;}
     if (transformation.filters) {updateData.transformation.filters = transformation.filters.map((filter: Record<string, unknown>) => ({
-      field: filter.field,
-      operator: filter.operator,
+      field: filter.field as string,
+      operator: filter.operator as 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'notIn',
       value: filter.value,
-      caseSensitive: filter.caseSensitive
+      caseSensitive: filter.caseSensitive as boolean | undefined
     }));}
   }
 
@@ -522,7 +557,7 @@ function determineUpdateEndpoint(dataStructureId: number, organizationId?: numbe
 /**
  * Format update response with metadata and configuration details
  */
-function formatUpdateResponse(updatedDataStructure: MakeCustomDataStructure, updateData: DataStructureUpdateData, structure: { schema?: unknown; version?: string; format?: string } | undefined): import('../../utils/response-formatter.js').ToolResponse {
+function formatUpdateResponse(updatedDataStructure: MakeCustomDataStructure, updateData: DataStructureUpdateData, structure: { schema?: unknown; version?: string; format?: string } | undefined): string {
   return formatSuccessResponse({
     dataStructure: updatedDataStructure,
     message: `Data structure "${updatedDataStructure.name}" updated successfully`,
@@ -684,6 +719,122 @@ function addUpdateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
 }
 
 /**
+ * Check for data structure dependencies
+ */
+async function checkDataStructureDependencies(
+  apiClient: MakeApiClient,
+  endpoint: string,
+  force: boolean,
+  dataStructureName: string
+): Promise<DataStructureDependency[]> {
+  const depResponse = await apiClient.get(`${endpoint}/dependencies`);
+  const dependencies: DataStructureDependency[] = [];
+
+  if (depResponse.success && depResponse?.data) {
+    dependencies.push(...((depResponse.data as DataStructureDependencyResponse).dependencies || []));
+  }
+
+  if (dependencies.length > 0 && !force) {
+    const dependencyList = dependencies.map(dep => 
+      `- ${dep.type} "${dep.name}" (${dep.id}) - ${dep.usage}`
+    ).join('\n');
+
+    throw new UserError(
+      `Cannot delete data structure "${dataStructureName}" because it has dependencies:\n${dependencyList}\n\nUse force=true to delete anyway, or remove dependencies first.`
+    );
+  }
+
+  return dependencies;
+}
+
+/**
+ * Create archive backup before deletion
+ */
+async function createArchiveBackup(
+  apiClient: MakeApiClient,
+  endpoint: string,
+  log: { warn: (message: string, context?: Record<string, unknown>) => void }
+): Promise<DataStructureArchiveInfo | null> {
+  try {
+    const archiveResponse = await apiClient.post(`${endpoint}/archive`, {
+      reason: 'Pre-deletion backup',
+      includeHistory: true,
+    });
+    
+    if (archiveResponse.success && archiveResponse?.data) {
+      const archiveData = archiveResponse.data as DataStructureArchiveResponse;
+      return {
+        archiveId: archiveData.archiveId,
+        archiveUrl: archiveData.downloadUrl,
+      };
+    }
+  } catch (archiveError) {
+    log.warn('Failed to create archive before deletion', { error: String(archiveError) });
+  }
+  return null;
+}
+
+/**
+ * Execute deletion request
+ */
+async function executeDataStructureDeletion(
+  apiClient: MakeApiClient,
+  endpoint: string,
+  force: boolean,
+  confirmationCode?: string
+): Promise<void> {
+  const deleteParams: Record<string, unknown> = {
+    force,
+    confirmationCode: confirmationCode || undefined,
+  };
+
+  const deleteResponse = await apiClient.delete(endpoint, { params: deleteParams });
+
+  if (!deleteResponse.success) {
+    throw new UserError(`Failed to delete data structure: ${deleteResponse.error?.message || 'Unknown error'}`);
+  }
+}
+
+/**
+ * Format deletion response with recovery information
+ */
+function formatDeletionResponse(
+  dataStructure: MakeCustomDataStructure,
+  dependencies: DataStructureDependency[],
+  archiveInfo: DataStructureArchiveInfo | null,
+  force: boolean
+): string {
+  return formatSuccessResponse({
+    message: `Data structure "${dataStructure.name}" deleted successfully`,
+    deletedStructure: {
+      id: dataStructure.id,
+      name: dataStructure.name,
+      type: dataStructure.type,
+      scope: dataStructure.scope,
+      format: dataStructure.structure.format,
+      deletedAt: new Date().toISOString(),
+    },
+    dependencies: dependencies.length > 0 ? {
+      count: dependencies.length,
+      items: dependencies,
+      forcedDeletion: force,
+    } : null,
+    archive: archiveInfo ? {
+      created: true,
+      archiveId: archiveInfo.archiveId,
+      downloadUrl: archiveInfo.archiveUrl,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+    } : null,
+    recovery: {
+      canRestore: !!archiveInfo,
+      restoreInstructions: archiveInfo ? 
+        'Use the archive download URL to restore this data structure if needed within 30 days.' :
+        'No archive was created. This deletion cannot be undone.',
+    },
+  }).content[0].text;
+}
+
+/**
  * Add delete data structure tool
  */
 function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -726,12 +877,7 @@ function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
           reportProgress({ progress: 0, total: 100 });
         }
 
-        let endpoint = `/data-structures/${dataStructureId}`;
-        if (organizationId) {
-          endpoint = `/organizations/${organizationId}/data-structures/${dataStructureId}`;
-        } else if (teamId) {
-          endpoint = `/teams/${teamId}/data-structures/${dataStructureId}`;
-        }
+        const endpoint = determineUpdateEndpoint(dataStructureId, organizationId, teamId);
 
         // Get current data structure for reference
         const getResponse = await apiClient.get(endpoint);
@@ -746,22 +892,8 @@ function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
 
         // Check dependencies if requested
         let dependencies: DataStructureDependency[] = [];
-
         if (checkDependencies) {
-          const depResponse = await apiClient.get(`${endpoint}/dependencies`);
-          if (depResponse.success && depResponse?.data) {
-            dependencies = (depResponse.data as DataStructureDependencyResponse).dependencies || [];
-          }
-
-          if (dependencies.length > 0 && !force) {
-            const dependencyList = dependencies.map(dep => 
-              `- ${dep.type} "${dep.name}" (${dep.id}) - ${dep.usage}`
-            ).join('\n');
-
-            throw new UserError(
-              `Cannot delete data structure "${dataStructure.name}" because it has dependencies:\n${dependencyList}\n\nUse force=true to delete anyway, or remove dependencies first.`
-            );
-          }
+          dependencies = await checkDataStructureDependencies(apiClient, endpoint, force, dataStructure.name);
         }
 
         if (reportProgress) {
@@ -771,21 +903,7 @@ function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
         // Create archive if requested
         let archiveInfo: DataStructureArchiveInfo | null = null;
         if (archiveBeforeDelete) {
-          try {
-            const archiveResponse = await apiClient.post(`${endpoint}/archive`, {
-              reason: 'Pre-deletion backup',
-              includeHistory: true,
-            });
-            if (archiveResponse.success && archiveResponse?.data) {
-              const archiveData = archiveResponse.data as DataStructureArchiveResponse;
-              archiveInfo = {
-                archiveId: archiveData.archiveId,
-                archiveUrl: archiveData.downloadUrl,
-              };
-            }
-          } catch (archiveError) {
-            log.warn('Failed to create archive before deletion', { error: String(archiveError) });
-          }
+          archiveInfo = await createArchiveBackup(apiClient, endpoint, { warn: (message: string, context?: Record<string, unknown>) => log.warn(message, context as Parameters<typeof log.warn>[1]) });
         }
 
         if (reportProgress) {
@@ -793,16 +911,7 @@ function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
         }
 
         // Perform deletion
-        const deleteParams: Record<string, unknown> = {
-          force,
-          confirmationCode: confirmationCode || undefined,
-        };
-
-        const deleteResponse = await apiClient.delete(endpoint, { params: deleteParams });
-
-        if (!deleteResponse.success) {
-          throw new UserError(`Failed to delete data structure: ${deleteResponse.error?.message || 'Unknown error'}`);
-        }
+        await executeDataStructureDeletion(apiClient, endpoint, force, confirmationCode);
 
         if (reportProgress) {
           reportProgress({ progress: 100, total: 100 });
@@ -818,34 +927,7 @@ function addDeleteDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
           });
         }
 
-        return formatSuccessResponse({
-          message: `Data structure "${dataStructure.name}" deleted successfully`,
-          deletedStructure: {
-            id: dataStructure.id,
-            name: dataStructure.name,
-            type: dataStructure.type,
-            scope: dataStructure.scope,
-            format: dataStructure.structure.format,
-            deletedAt: new Date().toISOString(),
-          },
-          dependencies: dependencies.length > 0 ? {
-            count: dependencies.length,
-            items: dependencies,
-            forcedDeletion: force,
-          } : null,
-          archive: archiveInfo ? {
-            created: true,
-            archiveId: archiveInfo.archiveId,
-            downloadUrl: archiveInfo.archiveUrl,
-            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
-          } : null,
-          recovery: {
-            canRestore: !!archiveInfo,
-            restoreInstructions: archiveInfo ? 
-              'Use the archive download URL to restore this data structure if needed within 30 days.' :
-              'No archive was created. This deletion cannot be undone.',
-          },
-        }).content[0].text;
+        return formatDeletionResponse(dataStructure, dependencies, archiveInfo, force);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log?.error) {

@@ -158,7 +158,7 @@ function validateScenarioConfiguration(metadata: NonNullable<Blueprint['metadata
  * Validate individual scenario settings
  */
 function validateScenarioSettings(scenario: NonNullable<Blueprint['metadata']>['scenario'], result: ValidationResult): void {
-  if (!scenario) return;
+  if (!scenario) {return;}
 
   if (typeof scenario.roundtrips !== 'number' || scenario.roundtrips < 1) {
     result.warnings.push('Scenario roundtrips should be a positive number');
@@ -231,7 +231,7 @@ function validateModuleBasicProperties(module: BlueprintModule, index: number, r
  * Validate module parameters for security issues
  */
 function validateModuleParameters(module: BlueprintModule, result: ValidationResult): void {
-  if (!module.parameters) return;
+  if (!module.parameters) {return;}
 
   const paramStr = JSON.stringify(module.parameters).toLowerCase();
   
@@ -260,7 +260,7 @@ function checkForHardcodedSecrets(paramStr: string, moduleId: number, result: Va
  * Check for credentials in URLs
  */
 function checkForCredentialsInUrls(paramStr: string, moduleId: number, result: ValidationResult): void {
-  const urlWithCredentialsPattern = /https?:\/\/[^:\/\s]+:[^@\/\s]+@/;
+  const urlWithCredentialsPattern = /https?:\/\/[^:/\s]+:[^@/\s]+@/;
   
   if (urlWithCredentialsPattern.test(paramStr)) {
     result.securityIssues.push({
@@ -275,7 +275,7 @@ function checkForCredentialsInUrls(paramStr: string, moduleId: number, result: V
  * Validate module performance-related properties
  */
 function validateModulePerformance(module: BlueprintModule, result: ValidationResult, strict: boolean): void {
-  if (!strict) return;
+  if (!strict) {return;}
 
   if (!module.metadata) {
     result.warnings.push(`Module ${module.id} is missing metadata (recommended for better performance)`);

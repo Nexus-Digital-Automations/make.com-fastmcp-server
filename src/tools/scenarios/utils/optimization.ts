@@ -338,7 +338,7 @@ function checkCredentialSecurity(
     metrics: OptimizationMetrics;
   }
 ): void {
-  if (!module.parameters) return;
+  if (!module.parameters) {return;}
 
   const paramStr = JSON.stringify(module.parameters);
   if (paramStr.includes('password') || paramStr.includes('secret') || paramStr.includes('token')) {

@@ -16,10 +16,10 @@ type ServerInstance = MakeServerInstance | CoreServer | AnalyticsServer;
 function getServerType(): ServerType {
   const args = process.argv;
   
-  if (args.includes('--core')) return 'core';
-  if (args.includes('--analytics')) return 'analytics'; 
-  if (args.includes('--both')) return 'both';
-  if (args.includes('--legacy')) return 'legacy';
+  if (args.includes('--core')) {return 'core';}
+  if (args.includes('--analytics')) {return 'analytics';} 
+  if (args.includes('--both')) {return 'both';}
+  if (args.includes('--legacy')) {return 'legacy';}
   
   // Default to legacy for backward compatibility
   return 'legacy';

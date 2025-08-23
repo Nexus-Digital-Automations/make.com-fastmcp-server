@@ -164,6 +164,54 @@ interface AlertThresholds {
   };
 }
 
+// Type definitions for function parameters
+interface MonitoringConfigInput {
+  updateInterval: number;
+  monitorDuration: number;
+  enableProgressVisualization: boolean;
+  enablePerformanceAlerts: boolean;
+  enableDataFlowTracking: boolean;
+  enablePredictiveAnalysis: boolean;
+  enableSSEStreaming: boolean;
+}
+
+interface AlertThresholdsInput {
+  performance?: {
+    maxModuleDuration?: number;
+    maxTotalDuration?: number;
+    minThroughput?: number;
+    maxErrorRate?: number;
+  };
+  resource?: {
+    maxMemoryUsage?: number;
+    maxCpuUsage?: number;
+    maxNetworkLatency?: number;
+  };
+  execution?: {
+    maxStuckTime?: number;
+    maxRetries?: number;
+    minSuccessRate?: number;
+  };
+}
+
+interface VisualizationInput {
+  format?: 'ascii' | 'structured' | 'compact';
+  colorEnabled?: boolean;
+  includeMetrics?: boolean;
+  includeDataFlow?: boolean;
+  includeTimeline?: boolean;
+  includePredictions?: boolean;
+}
+
+interface StartMonitoringResponseData {
+  monitorId: string;
+  scenarioId: number;
+  executionId: string | undefined;
+  status: string;
+  configuration: RealTimeMonitoringConfig;
+  monitoring: Record<string, unknown>;
+}
+
 // Input validation schemas
 const RealTimeMonitoringSchema = z.object({
   scenarioId: z.number().min(1).describe('Scenario ID to monitor in real-time'),
@@ -1114,9 +1162,9 @@ Active Alerts (${activeAlerts.length}):
  * Build monitoring configuration from input parameters
  */
 function buildMonitoringConfig(
-  monitoringConfig: any,
-  alertThresholds: any,
-  visualization: any
+  monitoringConfig: MonitoringConfigInput,
+  alertThresholds: AlertThresholdsInput,
+  visualization: VisualizationInput
 ): RealTimeMonitoringConfig {
   return {
     updateInterval: monitoringConfig.updateInterval,
@@ -1133,7 +1181,7 @@ function buildMonitoringConfig(
 /**
  * Build alert thresholds configuration
  */
-function buildAlertThresholds(alertThresholds: any): AlertThresholds {
+function buildAlertThresholds(alertThresholds: AlertThresholdsInput): AlertThresholds {
   return {
     performance: {
       maxModuleDuration: alertThresholds.performance?.maxModuleDuration || 60000,
@@ -1157,7 +1205,7 @@ function buildAlertThresholds(alertThresholds: any): AlertThresholds {
 /**
  * Build visualization configuration
  */
-function buildVisualizationConfig(visualization: any) {
+function buildVisualizationConfig(visualization: VisualizationInput): RealTimeMonitoringConfig['visualization'] {
   return {
     format: visualization.format || 'structured',
     colorEnabled: visualization.colorEnabled !== false,
@@ -1175,7 +1223,7 @@ function buildStartMonitoringResponse(
   executionId: string | undefined,
   config: RealTimeMonitoringConfig,
   status: Record<string, unknown>
-) {
+): { success: true; data: StartMonitoringResponseData } {
   return formatSuccessResponse({
     monitorId,
     scenarioId,

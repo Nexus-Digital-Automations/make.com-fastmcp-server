@@ -3,7 +3,7 @@
  * Shared functionality between Core and Analytics servers
  */
 
-import { FastMCP, UserError } from 'fastmcp';
+import { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import configManager from '../lib/config.js';
 import logger from '../lib/logger.js';
