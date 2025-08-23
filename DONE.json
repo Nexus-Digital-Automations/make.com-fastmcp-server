@@ -25867,9 +25867,108 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755991073243_y0befya0d",
+      "title": "Fix remaining make-api-client test failure",
+      "description": "Fix the health check failure test that is still failing despite mock setup fixes",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T23:17:53.244Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755988507752_1_general_c1e00e83",
+      "started_at": "2025-08-23T23:17:59.953Z",
+      "claimed_by": "development_session_1755988507752_1_general_c1e00e83",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755988507752_1_general_c1e00e83",
+          "role": "primary",
+          "assignedAt": "2025-08-23T23:17:59.953Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T23:19:49.768Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T23:19:49.770Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755983481923_m5w8j5aru",
+      "title": "Fix make-api-client.test.ts mock setup failures",
+      "description": "Fix TypeError: mockedLogger.child.mockReturnValue is not a function - correct mock setup for logger and Bottleneck dependencies",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T21:11:21.923Z",
+      "auto_research_created": false,
+      "started_at": "2025-08-23T23:20:58.357Z",
+      "claimed_by": "development_session_1755991240504_1_general_1bcaeafb",
+      "assigned_agent": "development_session_1755991240504_1_general_1bcaeafb",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755989373613",
+          "action": "claimed",
+          "timestamp": "2025-08-23T22:49:33.613Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-23T23:20:35.023Z",
+          "reason": "Task stale for 31 minutes"
+        },
+        {
+          "agentId": "development_session_1755991240504_1_general_1bcaeafb",
+          "role": "primary",
+          "assignedAt": "2025-08-23T23:20:58.357Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T23:22:55.913Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T23:22:55.914Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 600,
-  "last_completion": "2025-08-23T23:16:56.539Z",
+  "total_completed": 602,
+  "last_completion": "2025-08-23T23:22:55.914Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
