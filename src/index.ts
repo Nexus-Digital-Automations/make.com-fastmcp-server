@@ -51,10 +51,38 @@ async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promi
     
     // Robust fallback for test environments
     return {
-      info: (...args: unknown[]): void => logger?.info?.(...args) || process.stdout.write(`${args.join(' ')}\\n`),
-      error: (...args: unknown[]): void => logger?.error?.(...args) || process.stderr.write(`${args.join(' ')}\\n`),
-      warn: (...args: unknown[]): void => logger?.warn?.(...args) || process.stderr.write(`${args.join(' ')}\\n`),
-      debug: (...args: unknown[]): void => logger?.debug?.(...args) || process.stdout.write(`${args.join(' ')}\\n`),
+      info: (...args: unknown[]): void => {
+        if (logger?.info) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (logger.info as any)(...args);
+        } else {
+          process.stdout.write(`${args.join(' ')}\n`);
+        }
+      },
+      error: (...args: unknown[]): void => {
+        if (logger?.error) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (logger.error as any)(...args);
+        } else {
+          process.stderr.write(`${args.join(' ')}\n`);
+        }
+      },
+      warn: (...args: unknown[]): void => {
+        if (logger?.warn) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (logger.warn as any)(...args);
+        } else {
+          process.stderr.write(`${args.join(' ')}\n`);
+        }
+      },
+      debug: (...args: unknown[]): void => {
+        if (logger?.debug) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (logger.debug as any)(...args);
+        } else {
+          process.stdout.write(`${args.join(' ')}\n`);
+        }
+      },
     };
   };
   const componentLogger = getComponentLogger();
@@ -128,10 +156,38 @@ async function startBothServers(): Promise<void> {
     
     // Robust fallback for test environments
     return {
-      info: (...args: unknown[]): void => logger?.info?.(...args) || process.stdout.write(`${args.join(' ')}\\n`),
-      error: (...args: unknown[]): void => logger?.error?.(...args) || process.stderr.write(`${args.join(' ')}\\n`),
-      warn: (...args: unknown[]): void => logger?.warn?.(...args) || process.stderr.write(`${args.join(' ')}\\n`),
-      debug: (...args: unknown[]): void => logger?.debug?.(...args) || process.stdout.write(`${args.join(' ')}\\n`),
+      info: (...args: unknown[]): void => {
+        if (logger?.info) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (logger.info as any)(...args);
+        } else {
+          process.stdout.write(`${args.join(' ')}\n`);
+        }
+      },
+      error: (...args: unknown[]): void => {
+        if (logger?.error) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (logger.error as any)(...args);
+        } else {
+          process.stderr.write(`${args.join(' ')}\n`);
+        }
+      },
+      warn: (...args: unknown[]): void => {
+        if (logger?.warn) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (logger.warn as any)(...args);
+        } else {
+          process.stderr.write(`${args.join(' ')}\n`);
+        }
+      },
+      debug: (...args: unknown[]): void => {
+        if (logger?.debug) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (logger.debug as any)(...args);
+        } else {
+          process.stdout.write(`${args.join(' ')}\n`);
+        }
+      },
     };
   };
   const componentLogger = getComponentLogger();
