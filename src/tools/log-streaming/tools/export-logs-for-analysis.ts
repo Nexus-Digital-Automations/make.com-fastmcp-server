@@ -409,97 +409,35 @@ class EnhancedLogExportProcessor {
       maxDuration: exportConfig.streaming?.maxDuration || 300,
     });
 
-    const streamingResults = {
-      streamId: `stream_${this.exportMetadata.exportId}`,
-      startTime: new Date().toISOString(),
-      endTime: '',
-      batchesProcessed: 0,
-      totalLogsStreamed: 0,
-      errors: [] as string[],
-      deliveryResults: [] as Record<string, unknown>[],
-    };
-
-    let lastLogTimestamp = exportConfig.timeRange?.start || exportConfig.timeRange?.startTime || new Date(0).toISOString();
-    const streamEndTime = Date.now() + ((exportConfig.streaming?.maxDuration || 300) * 1000);
-
-    // Initialize external system connection if needed
+    // Initialize streaming session
+    const streamingResults = this.initializeStreamingSession();
+    const streamConfig = this.getStreamingConfiguration(exportConfig, params);
     const externalConnector = await initializeExternalConnector(destination, this.logger);
 
-    while (Date.now() < streamEndTime) {
-      try {
-        // Prepare batch parameters
-        const batchParams = {
-          ...params,
-          limit: exportConfig.streaming?.batchSize || 1000,
-          offset: 0,
-          dateFrom: lastLogTimestamp,
-        };
+    // Execute streaming process
+    await this.executeStreamingProcess(
+      endpoint,
+      streamConfig,
+      exportConfig,
+      outputConfig,
+      externalConnector,
+      streamingResults
+    );
 
-        // Process streaming batch
-        const batchResult = await processStreamingBatch(
-          this.apiClient,
-          endpoint,
-          batchParams,
-          exportConfig,
-          outputConfig,
-          this.exportMetadata,
-          externalConnector,
-          this
-        );
+    // Cleanup and finalize
+    await this.finalizeStreamingExport(externalConnector, streamingResults);
 
-        // Update streaming results
-        if (batchResult.logsProcessed > 0) {
-          streamingResults.batchesProcessed++;
-          streamingResults.totalLogsStreamed += batchResult.logsProcessed;
-          if (batchResult.lastTimestamp) {
-            lastLogTimestamp = batchResult.lastTimestamp;
-          }
-          if (batchResult.deliveryResult) {
-            streamingResults.deliveryResults.push(batchResult.deliveryResult);
-          }
-        }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        this.logger.warn?.('Error processing streaming batch', { error: errorMessage });
-        streamingResults.errors.push(errorMessage);
-      }
-
-      // Wait for next interval
-      await new Promise(resolve => setTimeout(resolve, exportConfig.streaming?.intervalMs || 5000));
-    }
-
-    // Cleanup external connection
-    if (externalConnector) {
-      await externalConnector.disconnect();
-    }
-
-    streamingResults.endTime = new Date().toISOString();
-
-    const result = {
-      exportMetadata: this.exportMetadata,
-      streaming: streamingResults,
-      summary: {
-        mode: 'streaming',
-        duration: `${exportConfig.streaming?.maxDuration || 300}s`,
-        totalBatches: streamingResults.batchesProcessed,
-        totalLogs: streamingResults.totalLogsStreamed,
-        errors: streamingResults.errors.length,
-      },
-    };
-
-    this.logger.info?.('Streaming export completed successfully', {
-      exportId: String(this.exportMetadata.exportId),
-      totalBatches: streamingResults.batchesProcessed,
-      totalLogs: streamingResults.totalLogsStreamed,
-    });
-
+    // Generate and return result
+    const result = this.buildStreamingResult(streamingResults, exportConfig);
+    this.logStreamingCompletion(streamingResults);
+    
     return formatSuccessResponse(result).content[0].text;
   }
 
   /**
    * Apply advanced filtering to logs
    */
-  private applyAdvancedFiltering(logs: MakeLogEntry[], filtering?: ExportConfig['filtering']): MakeLogEntry[] {
+  public applyAdvancedFiltering(logs: MakeLogEntry[], filtering?: ExportConfig['filtering']): MakeLogEntry[] {
     if (!filtering) {return logs;}
 
     return logs.filter(log => {
@@ -539,7 +477,7 @@ class EnhancedLogExportProcessor {
   /**
    * Apply data transformations
    */
-  private applyDataTransformations(logs: MakeLogEntry[], transformations?: DataTransformation[]): MakeLogEntry[] {
+  public applyDataTransformations(logs: MakeLogEntry[], transformations?: DataTransformation[]): MakeLogEntry[] {
     if (!transformations?.length) {return logs;}
 
     let transformedLogs = [...logs];
@@ -712,7 +650,7 @@ class EnhancedLogExportProcessor {
   /**
    * Format logs for export
    */
-  private async formatLogsForExport(
+  public async formatLogsForExport(
     logs: MakeLogEntry[], 
     outputConfig: OutputConfig, 
     metadata: Record<string, unknown>,
@@ -773,6 +711,218 @@ class EnhancedLogExportProcessor {
       await connector.disconnect();
       throw error;
     }
+  }
+
+  /**
+   * Initialize streaming session data structure
+   */
+  private initializeStreamingSession(): {
+    streamId: string;
+    startTime: string;
+    endTime: string;
+    batchesProcessed: number;
+    totalLogsStreamed: number;
+    errors: string[];
+    deliveryResults: Record<string, unknown>[];
+  } {
+    return {
+      streamId: `stream_${this.exportMetadata.exportId}`,
+      startTime: new Date().toISOString(),
+      endTime: '',
+      batchesProcessed: 0,
+      totalLogsStreamed: 0,
+      errors: [],
+      deliveryResults: [],
+    };
+  }
+
+  /**
+   * Get streaming configuration parameters
+   */
+  private getStreamingConfiguration(
+    exportConfig: ExportConfig,
+    params: Record<string, unknown>
+  ): {
+    lastLogTimestamp: string;
+    streamEndTime: number;
+    baseParams: Record<string, unknown>;
+  } {
+    const lastLogTimestamp = exportConfig.timeRange?.start || 
+      exportConfig.timeRange?.startTime || 
+      new Date(0).toISOString();
+    const streamEndTime = Date.now() + ((exportConfig.streaming?.maxDuration || 300) * 1000);
+    
+    return {
+      lastLogTimestamp,
+      streamEndTime,
+      baseParams: params
+    };
+  }
+
+  /**
+   * Execute the main streaming process loop
+   */
+  private async executeStreamingProcess(
+    endpoint: string,
+    streamConfig: { lastLogTimestamp: string; streamEndTime: number; baseParams: Record<string, unknown> },
+    exportConfig: ExportConfig,
+    outputConfig: OutputConfig,
+    externalConnector: ExternalSystemConnector | null,
+    streamingResults: {
+      batchesProcessed: number;
+      totalLogsStreamed: number;
+      errors: string[];
+      deliveryResults: Record<string, unknown>[];
+    }
+  ): Promise<void> {
+    let { lastLogTimestamp } = streamConfig;
+    const { streamEndTime, baseParams } = streamConfig;
+
+    while (Date.now() < streamEndTime) {
+      try {
+        const batchParams = this.prepareBatchParameters(
+          baseParams,
+          lastLogTimestamp,
+          exportConfig
+        );
+
+        const batchResult = await processStreamingBatch(
+          this.apiClient,
+          endpoint,
+          batchParams,
+          exportConfig,
+          outputConfig,
+          this.exportMetadata,
+          externalConnector,
+          this
+        );
+
+        lastLogTimestamp = this.updateStreamingResults(batchResult, streamingResults, lastLogTimestamp);
+      } catch (error) {
+        this.handleStreamingError(error, streamingResults);
+      }
+
+      await this.waitForNextInterval(exportConfig);
+    }
+  }
+
+  /**
+   * Prepare batch parameters for streaming request
+   */
+  private prepareBatchParameters(
+    baseParams: Record<string, unknown>,
+    lastLogTimestamp: string,
+    exportConfig: ExportConfig
+  ): Record<string, unknown> {
+    return {
+      ...baseParams,
+      limit: exportConfig.streaming?.batchSize || 1000,
+      offset: 0,
+      dateFrom: lastLogTimestamp,
+    };
+  }
+
+  /**
+   * Update streaming results with batch results
+   */
+  private updateStreamingResults(
+    batchResult: { logsProcessed: number; lastTimestamp?: string; deliveryResult?: Record<string, unknown> },
+    streamingResults: {
+      batchesProcessed: number;
+      totalLogsStreamed: number;
+      deliveryResults: Record<string, unknown>[];
+    },
+    lastLogTimestamp: string
+  ): string {
+    if (batchResult.logsProcessed > 0) {
+      streamingResults.batchesProcessed++;
+      streamingResults.totalLogsStreamed += batchResult.logsProcessed;
+      
+      if (batchResult.lastTimestamp) {
+        lastLogTimestamp = batchResult.lastTimestamp;
+      }
+      
+      if (batchResult.deliveryResult) {
+        streamingResults.deliveryResults.push(batchResult.deliveryResult);
+      }
+    }
+    
+    return lastLogTimestamp;
+  }
+
+  /**
+   * Handle streaming errors
+   */
+  private handleStreamingError(
+    error: unknown,
+    streamingResults: { errors: string[] }
+  ): void {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    this.logger.warn?.('Error processing streaming batch', { error: errorMessage });
+    streamingResults.errors.push(errorMessage);
+  }
+
+  /**
+   * Wait for next streaming interval
+   */
+  private async waitForNextInterval(exportConfig: ExportConfig): Promise<void> {
+    await new Promise(resolve => 
+      setTimeout(resolve, exportConfig.streaming?.intervalMs || 5000)
+    );
+  }
+
+  /**
+   * Finalize streaming export and cleanup resources
+   */
+  private async finalizeStreamingExport(
+    externalConnector: ExternalSystemConnector | null,
+    streamingResults: { endTime: string }
+  ): Promise<void> {
+    if (externalConnector) {
+      await externalConnector.disconnect();
+    }
+    streamingResults.endTime = new Date().toISOString();
+  }
+
+  /**
+   * Build streaming result object
+   */
+  private buildStreamingResult(
+    streamingResults: {
+      streamId: string;
+      startTime: string;
+      endTime: string;
+      batchesProcessed: number;
+      totalLogsStreamed: number;
+      errors: string[];
+      deliveryResults: Record<string, unknown>[];
+    },
+    exportConfig: ExportConfig
+  ): Record<string, unknown> {
+    return {
+      exportMetadata: this.exportMetadata,
+      streaming: streamingResults,
+      summary: {
+        mode: 'streaming',
+        duration: `${exportConfig.streaming?.maxDuration || 300}s`,
+        totalBatches: streamingResults.batchesProcessed,
+        totalLogs: streamingResults.totalLogsStreamed,
+        errors: streamingResults.errors.length,
+      },
+    };
+  }
+
+  /**
+   * Log streaming completion
+   */
+  private logStreamingCompletion(
+    streamingResults: { batchesProcessed: number; totalLogsStreamed: number }
+  ): void {
+    this.logger.info?.('Streaming export completed successfully', {
+      exportId: String(this.exportMetadata.exportId),
+      totalBatches: streamingResults.batchesProcessed,
+      totalLogs: streamingResults.totalLogsStreamed,
+    });
   }
 
   /**
