@@ -150,32 +150,40 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
   inputSchema: SearchAuditEventsSchema,
   handler: async (input: z.infer<typeof SearchAuditEventsSchema>): Promise<string> => {
     try {
+      // Validate input with Zod schema
+      const validatedInput = SearchAuditEventsSchema.parse(input);
       // Handle organizational context from parameters  
       let endpoint = '/audit/events';
-      if (input.organizationId) {
-        endpoint = `/organizations/${input.organizationId}/audit/events`;
+      if (validatedInput.organizationId) {
+        endpoint = `/organizations/${validatedInput.organizationId}/audit/events`;
       }
 
       // Build query parameters object
       const queryParams: Record<string, string> = {};
-      if (input.level) queryParams.level = input.level;
-      if (input.category) queryParams.category = input.category;
-      if (input.action) queryParams.action = input.action;
-      if (input.startDate) queryParams.startDate = input.startDate;
-      if (input.endDate) queryParams.endDate = input.endDate;
-      if (input.userId) queryParams.userId = input.userId;
-      if (input.actorId) queryParams.actorId = input.actorId;
-      if (input.resourceType) queryParams.resourceType = input.resourceType;
-      if (input.riskLevel) queryParams.riskLevel = input.riskLevel;
-      if (input.complianceFramework) queryParams.complianceFramework = input.complianceFramework;
-      if (input.outcome) queryParams.outcome = input.outcome;
-      if (input.correlationId) queryParams.correlationId = input.correlationId;
-      queryParams.limit = input.limit?.toString() || '100';
-      queryParams.offset = input.offset?.toString() || '0';
-      if (input.includeMetadata) queryParams.includeMetadata = input.includeMetadata.toString();
+      if (validatedInput.level) { queryParams.level = validatedInput.level; }
+      if (validatedInput.category) { queryParams.category = validatedInput.category; }
+      if (validatedInput.action) { queryParams.action = validatedInput.action; }
+      if (validatedInput.startDate) { queryParams.startDate = validatedInput.startDate; }
+      if (validatedInput.endDate) { queryParams.endDate = validatedInput.endDate; }
+      if (validatedInput.userId) { queryParams.userId = validatedInput.userId; }
+      if (validatedInput.actorId) { queryParams.actorId = validatedInput.actorId; }
+      if (validatedInput.resourceType) { queryParams.resourceType = validatedInput.resourceType; }
+      if (validatedInput.riskLevel) { queryParams.riskLevel = validatedInput.riskLevel; }
+      if (validatedInput.complianceFramework) { queryParams.complianceFramework = validatedInput.complianceFramework; }
+      if (validatedInput.outcome) { queryParams.outcome = validatedInput.outcome; }
+      if (validatedInput.correlationId) { queryParams.correlationId = validatedInput.correlationId; }
+      queryParams.limit = validatedInput.limit?.toString() || '100';
+      queryParams.offset = validatedInput.offset?.toString() || '0';
+      if (validatedInput.includeMetadata) { queryParams.includeMetadata = validatedInput.includeMetadata.toString(); }
 
       // Make API call to search events
       const response = await apiClient.get(endpoint, { params: queryParams });
+      
+      // Check API response for errors
+      if (response && !response.success && response.error) {
+        throw new Error(`Failed to search audit events: ${response.error.message}`);
+      }
+      
       const events = Array.isArray(response) ? response : (response.data || response.events || []);
       const metadata = response.metadata || { total: events.length, hasMore: false };
 
@@ -221,7 +229,7 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
         totalCount: metadata.total || events.length,
         filters: queryParams,
         analysis,
-        timeRange: input.startDate && input.endDate ? { startDate: input.startDate, endDate: input.endDate } : undefined,
+        timeRange: validatedInput.startDate && validatedInput.endDate ? { startDate: validatedInput.startDate, endDate: validatedInput.endDate } : undefined,
         metadata: {
           searchTime: new Date().toISOString(),
           endpoint,
@@ -234,6 +242,16 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
         error: error instanceof Error ? error.message : 'Unknown error',
         filters: input,
       });
+
+      // Re-throw validation errors and API errors to let FastMCP handle them
+      if (error instanceof Error && (error.message.startsWith('Failed to search audit events:') || error.message.includes('Invalid input:'))) {
+        throw error;
+      }
+      
+      // Also re-throw Zod errors by checking error structure
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
 
       return formatSuccessResponse({
         success: false,
@@ -255,58 +273,66 @@ const createLogAuditEventTool = (apiClient: MakeApiClient): { name: string; desc
   inputSchema: LogAuditEventSchema,
   handler: async (input: z.infer<typeof LogAuditEventSchema>): Promise<string> => {
     try {
+      // Validate input with Zod schema
+      const validatedInput = LogAuditEventSchema.parse(input);
+      
       // Log to internal audit logger
       await auditLogger.logEvent({
-        level: input.level,
-        category: input.category,
-        action: input.action,
-        resource: input.resource,
-        userId: input.userId,
-        userAgent: input.userAgent,
-        ipAddress: input.ipAddress,
-        sessionId: input.sessionId,
-        requestId: input.requestId,
-        success: input.success,
-        details: input.details,
-        riskLevel: input.riskLevel,
+        level: validatedInput.level,
+        category: validatedInput.category,
+        action: validatedInput.action,
+        resource: validatedInput.resource,
+        userId: validatedInput.userId,
+        userAgent: validatedInput.userAgent,
+        ipAddress: validatedInput.ipAddress,
+        sessionId: validatedInput.sessionId,
+        requestId: validatedInput.requestId,
+        success: validatedInput.success,
+        details: validatedInput.details,
+        riskLevel: validatedInput.riskLevel,
       });
 
       // Handle organizational context from parameters
       let endpoint = '/audit/events';
-      if (input.organizationId) {
-        endpoint = `/organizations/${input.organizationId}/audit/events`;
+      if (validatedInput.organizationId) {
+        endpoint = `/organizations/${validatedInput.organizationId}/audit/events`;
       }
       
       getComponentLogger().debug('Log audit event endpoint determination', {
-        organizationId: input.organizationId,
+        organizationId: validatedInput.organizationId,
         endpoint,
-        inputKeys: Object.keys(input),
+        inputKeys: Object.keys(validatedInput),
       });
 
       // Send to Make.com API
-      await apiClient.post(endpoint, {
-        level: input.level,
-        category: input.category,
-        action: input.action,
-        resource: input.resource,
-        userId: input.userId,
-        userAgent: input.userAgent,
-        ipAddress: input.ipAddress,
-        sessionId: input.sessionId,
-        requestId: input.requestId,
-        success: input.success,
-        details: input.details,
-        riskLevel: input.riskLevel,
+      const apiResponse = await apiClient.post(endpoint, {
+        level: validatedInput.level,
+        category: validatedInput.category,
+        action: validatedInput.action,
+        resource: validatedInput.resource,
+        userId: validatedInput.userId,
+        userAgent: validatedInput.userAgent,
+        ipAddress: validatedInput.ipAddress,
+        sessionId: validatedInput.sessionId,
+        requestId: validatedInput.requestId,
+        success: validatedInput.success,
+        details: validatedInput.details,
+        riskLevel: validatedInput.riskLevel,
         timestamp: new Date().toISOString(),
-        organizationId: input.organizationId,
+        organizationId: validatedInput.organizationId,
       });
 
+      // Check API response for errors
+      if (apiResponse && !apiResponse.success && apiResponse.error) {
+        throw new Error(`Failed to log audit event: ${apiResponse.error.message}`);
+      }
+
       getComponentLogger().info('Audit event logged via MCP tool', {
-        action: input.action,
-        category: input.category,
-        level: input.level,
-        success: input.success,
-        riskLevel: input.riskLevel,
+        action: validatedInput.action,
+        category: validatedInput.category,
+        level: validatedInput.level,
+        success: validatedInput.success,
+        riskLevel: validatedInput.riskLevel,
       });
 
       return formatSuccessResponse({
@@ -315,18 +341,28 @@ const createLogAuditEventTool = (apiClient: MakeApiClient): { name: string; desc
         timestamp: new Date().toISOString(),
         message: 'Audit event logged successfully',
         event: {
-          organizationId: input.organizationId,
-          action: input.action,
-          category: input.category,
-          level: input.level,
+          organizationId: validatedInput.organizationId,
+          action: validatedInput.action,
+          category: validatedInput.category,
+          level: validatedInput.level,
         },
       }).content[0].text;
     } catch (error) {
       getComponentLogger().error('Failed to log audit event via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        action: input.action,
-        category: input.category,
+        action: input?.action || 'unknown',
+        category: input?.category || 'unknown',
       });
+
+      // Re-throw validation errors and API errors to let FastMCP handle them
+      if (error instanceof Error && (error.message.startsWith('Failed to log audit event:') || error.message.includes('Invalid input:'))) {
+        throw error;
+      }
+      
+      // Also re-throw Zod errors by checking error structure
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
 
       return formatSuccessResponse({
         success: false,
@@ -347,6 +383,9 @@ export const listComplianceReportsTool = {
   inputSchema: ListComplianceReportsSchema,
   handler: async (input: z.infer<typeof ListComplianceReportsSchema>): Promise<string> => {
     try {
+      // Validate input with Zod schema
+      const validatedInput = ListComplianceReportsSchema.parse(input);
+      
       // Generate mock compliance reports data for testing
       const mockReports = [
         {
@@ -383,30 +422,30 @@ export const listComplianceReportsTool = {
 
       // Apply filters
       let filteredReports = mockReports;
-      if (input.framework) {
-        filteredReports = filteredReports.filter(r => r.framework === input.framework);
+      if (validatedInput.framework) {
+        filteredReports = filteredReports.filter(r => r.framework === validatedInput.framework);
       }
-      if (input.reportType) {
-        filteredReports = filteredReports.filter(r => r.reportType === input.reportType);
+      if (validatedInput.reportType) {
+        filteredReports = filteredReports.filter(r => r.reportType === validatedInput.reportType);
       }
-      if (input.status) {
-        filteredReports = filteredReports.filter(r => r.status === input.status);
+      if (validatedInput.status) {
+        filteredReports = filteredReports.filter(r => r.status === validatedInput.status);
       }
-      if (input.startDate) {
-        filteredReports = filteredReports.filter(r => r.period.startDate >= input.startDate!);
+      if (validatedInput.startDate) {
+        filteredReports = filteredReports.filter(r => r.period.startDate >= validatedInput.startDate!);
       }
-      if (input.endDate) {
-        filteredReports = filteredReports.filter(r => r.period.endDate <= input.endDate!);
+      if (validatedInput.endDate) {
+        filteredReports = filteredReports.filter(r => r.period.endDate <= validatedInput.endDate!);
       }
 
       // Apply limit
-      const limitedReports = filteredReports.slice(0, input.limit);
+      const limitedReports = filteredReports.slice(0, validatedInput.limit);
 
       // Generate analytics if requested
       let analytics = {};
       let metrics = {};
 
-      if (input.includeAnalytics) {
+      if (validatedInput.includeAnalytics) {
         analytics = {
           totalReports: filteredReports.length,
           completedReports: filteredReports.filter(r => r.status === 'completed').length,
@@ -417,7 +456,7 @@ export const listComplianceReportsTool = {
         };
       }
 
-      if (input.includeMetrics) {
+      if (validatedInput.includeMetrics) {
         metrics = {
           totalEvents: filteredReports.reduce((sum, r) => sum + r.summary.totalEvents, 0),
           totalCriticalFindings: filteredReports.reduce((sum, r) => sum + r.summary.criticalFindings, 0),
@@ -429,16 +468,16 @@ export const listComplianceReportsTool = {
 
       getComponentLogger().info('Compliance reports listed via MCP tool', {
         totalResults: limitedReports.length,
-        filters: input,
-        includeAnalytics: input.includeAnalytics,
-        includeMetrics: input.includeMetrics,
+        filters: validatedInput,
+        includeAnalytics: validatedInput.includeAnalytics,
+        includeMetrics: validatedInput.includeMetrics,
       });
 
       return formatSuccessResponse({
         success: true,
         reports: limitedReports,
         totalCount: filteredReports.length,
-        filters: input,
+        filters: validatedInput,
         analytics,
         metrics,
         metadata: {
@@ -451,6 +490,16 @@ export const listComplianceReportsTool = {
         error: error instanceof Error ? error.message : 'Unknown error',
         filters: input,
       });
+
+      // Re-throw validation errors and API errors
+      if (error instanceof Error && error.message.includes('Invalid input:')) {
+        throw error;
+      }
+      
+      // Also re-throw Zod errors by checking error structure
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
 
       return formatSuccessResponse({
         success: false,
@@ -466,29 +515,31 @@ export const listComplianceReportsTool = {
 /**
  * Generate compliance report
  */
-export const generateComplianceReportTool = {
+const createGenerateComplianceReportTool = (apiClient: MakeApiClient) => ({
   name: 'generate-compliance-report',
   description: 'Generate a comprehensive compliance report for audit purposes',
   inputSchema: GenerateComplianceReportSchema,
   handler: async (input: z.infer<typeof GenerateComplianceReportSchema>): Promise<string> => {
     try {
+      // Validate input with Zod schema
+      const validatedInput = GenerateComplianceReportSchema.parse(input);
       // Handle both new and legacy date formats
-      const startDate = input.period?.startDate || input.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      const endDate = input.period?.endDate || input.endDate || new Date().toISOString();
+      const startDate = validatedInput.period?.startDate || validatedInput.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const endDate = validatedInput.period?.endDate || validatedInput.endDate || new Date().toISOString();
       
       const report = await auditLogger.generateComplianceReport(new Date(startDate), new Date(endDate));
       
       // Handle organizational reports
-      if (input.organizationId) {
+      if (validatedInput.organizationId) {
         getComponentLogger().info('Organizational compliance report generated', {
-          organizationId: input.organizationId,
-          framework: input.framework,
+          organizationId: validatedInput.organizationId,
+          framework: validatedInput.framework,
         });
       }
 
       getComponentLogger().info('Compliance report generated via MCP tool', {
-        startDate: input.startDate,
-        endDate: input.endDate,
+        startDate: validatedInput.startDate,
+        endDate: validatedInput.endDate,
         totalEvents: report.summary.totalEvents,
         criticalEvents: report.summary.criticalEvents,
       });
@@ -497,46 +548,80 @@ export const generateComplianceReportTool = {
         success: true,
         report: {
           id: Math.floor(Math.random() * 100000),
-          title: input.title || `Compliance Report - ${new Date().toISOString().split('T')[0]}`,
-          framework: input.framework || 'SOX',
-          reportType: input.reportType || 'periodic',
+          title: validatedInput.title || `Compliance Report - ${new Date().toISOString().split('T')[0]}`,
+          framework: validatedInput.framework || 'SOX',
+          reportType: validatedInput.reportType || 'periodic',
           period: { startDate, endDate },
-          organizationId: input.organizationId,
+          organizationId: validatedInput.organizationId,
           totalEvents: (report.summary as Record<string, unknown>)?.totalEvents as number || 0,
           criticalEvents: (report.summary as Record<string, unknown>)?.criticalEvents as number || 0,
           securityEvents: (report.summary as Record<string, unknown>)?.criticalEvents as number || 0,
           complianceScore: 85, // Default compliance score
-          recommendations: input.includeRecommendations ? ['Review security policies', 'Update access controls', 'Implement multi-factor authentication'] : [],
+          recommendations: validatedInput.includeRecommendations ? ['Review security policies', 'Update access controls', 'Implement multi-factor authentication'] : [],
           summary: 'Compliance report generated successfully',
         },
         summary: {
           analysisComplete: true,
           reportGenerated: true,
-          framework: input.framework || 'SOX',
+          framework: validatedInput.framework || 'SOX',
         },
-        incidentAnalysis: input.reportType === 'incident' ? {
-          incidentId: input.incidentId,
-          severity: input.urgency,
+        incidentAnalysis: validatedInput.reportType === 'incident' ? {
+          incidentId: validatedInput.incidentId,
+          severity: validatedInput.urgency,
           timeline: [],
         } : undefined,
-        customAnalysis: input.customCriteria ? {
-          criteria: input.customCriteria,
+        customAnalysis: validatedInput.customCriteria ? {
+          criteria: validatedInput.customCriteria,
           evaluation: 'Custom criteria evaluated successfully',
         } : undefined,
-        recommendations: input.includeRecommendations ? [
+        recommendations: validatedInput.includeRecommendations ? [
           'Implement multi-factor authentication for all admin accounts',
           'Enhance data encryption for sensitive customer information', 
           'Establish automated compliance monitoring dashboard'
         ] : undefined,
       };
 
+      // Make API call to create the compliance report
+      const endpoint = validatedInput.organizationId 
+        ? `/organizations/${validatedInput.organizationId}/compliance/reports`
+        : '/compliance/reports';
+        
+      const apiResponse = await apiClient.post(endpoint, {
+        title: validatedInput.title,
+        framework: validatedInput.framework,
+        reportType: validatedInput.reportType,
+        period: validatedInput.period,
+        scope: validatedInput.scope,
+        organizationId: validatedInput.organizationId,
+        incidentId: validatedInput.incidentId,
+        urgency: validatedInput.urgency,
+        customCriteria: validatedInput.customCriteria,
+        includeRecommendations: validatedInput.includeRecommendations,
+        detailLevel: validatedInput.detailLevel,
+      });
+
+      // Check API response for errors
+      if (apiResponse && !apiResponse.success && apiResponse.error) {
+        throw new Error(`Failed to generate compliance report: ${apiResponse.error.message}`);
+      }
+
       return formatSuccessResponse(reportData).content[0].text;
     } catch (error) {
       getComponentLogger().error('Failed to generate compliance report via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        startDate: input.startDate,
-        endDate: input.endDate,
+        startDate: input?.startDate,
+        endDate: input?.endDate,
       });
+
+      // Re-throw validation errors and API errors
+      if (error instanceof Error && (error.message.startsWith('Failed to generate compliance report:') || error.message.includes('Invalid input:'))) {
+        throw error;
+      }
+      
+      // Also re-throw Zod errors by checking error structure
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
 
       return formatSuccessResponse({
         success: false,
@@ -552,7 +637,7 @@ export const generateComplianceReportTool = {
       }).content[0].text;
     }
   },
-};
+});
 
 /**
  * Perform audit log maintenance
@@ -583,6 +668,15 @@ export const performAuditMaintenanceTool = {
       getComponentLogger().error('Failed to perform audit maintenance via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
+
+      // Re-throw validation errors
+      if (error instanceof Error && error.message.includes('Invalid input:')) {
+        throw error;
+      }
+      
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
 
       return formatSuccessResponse({
         success: false,
@@ -624,6 +718,15 @@ export const getAuditConfigurationTool = {
       getComponentLogger().error('Failed to get audit configuration via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
+
+      // Re-throw validation errors
+      if (error instanceof Error && error.message.includes('Invalid input:')) {
+        throw error;
+      }
+      
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
 
       return formatSuccessResponse({
         config: {
@@ -729,6 +832,15 @@ export const securityHealthCheckTool = {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
 
+      // Re-throw validation errors
+      if (error instanceof Error && error.message.includes('Invalid input:')) {
+        throw error;
+      }
+      
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
+
       return formatSuccessResponse({
         stats: {
           totalEvents: 0,
@@ -753,46 +865,49 @@ export const createSecurityAlertTool = {
   inputSchema: CreateSecurityAlertSchema,
   handler: async (input: z.infer<typeof CreateSecurityAlertSchema>): Promise<string> => {
     try {
+      // Validate input with Zod schema
+      const validatedInput = CreateSecurityAlertSchema.parse(input);
+      
       const alertId = Math.floor(Math.random() * 100000) + 10000;
       const timestamp = new Date().toISOString();
 
       // Log the security alert creation
       await auditLogger.logEvent({
-        level: input.severity === 'critical' ? 'critical' : 'warn',
+        level: validatedInput.severity === 'critical' ? 'critical' : 'warn',
         category: 'security',
         action: 'security_alert_created',
         success: true,
         details: {
           alertId,
-          title: input.title,
-          description: input.description,
-          severity: input.severity,
-          category: input.category,
-          source: input.source,
-          affectedAssets: input.affectedAssets,
-          detectionTime: input.detectionTime,
-          status: input.status,
-          automatedResponse: input.automatedResponse,
+          title: validatedInput.title,
+          description: validatedInput.description,
+          severity: validatedInput.severity,
+          category: validatedInput.category,
+          source: validatedInput.source,
+          affectedAssets: validatedInput.affectedAssets,
+          detectionTime: validatedInput.detectionTime,
+          status: validatedInput.status,
+          automatedResponse: validatedInput.automatedResponse,
         },
-        riskLevel: input.severity === 'critical' ? 'critical' : input.severity === 'high' ? 'high' : 'medium',
+        riskLevel: validatedInput.severity === 'critical' ? 'critical' : validatedInput.severity === 'high' ? 'high' : 'medium',
       });
 
       // Mock API call to create security alert
       const alertData = {
         id: alertId,
-        title: input.title,
-        description: input.description,
-        severity: input.severity,
-        category: input.category,
-        source: input.source || 'manual',
-        affectedAssets: input.affectedAssets,
-        detectionTime: input.detectionTime || timestamp,
+        title: validatedInput.title,
+        description: validatedInput.description,
+        severity: validatedInput.severity,
+        category: validatedInput.category,
+        source: validatedInput.source || 'manual',
+        affectedAssets: validatedInput.affectedAssets,
+        detectionTime: validatedInput.detectionTime || timestamp,
         createdAt: timestamp,
-        status: input.status,
+        status: validatedInput.status,
         assignedTo: null,
-        priority: input.severity === 'critical' ? 4 : input.severity === 'high' ? 3 : input.severity === 'medium' ? 2 : 1,
-        automatedResponse: input.automatedResponse,
-        tags: [`severity:${input.severity}`, `category:${input.category}`],
+        priority: validatedInput.severity === 'critical' ? 4 : validatedInput.severity === 'high' ? 3 : validatedInput.severity === 'medium' ? 2 : 1,
+        automatedResponse: validatedInput.automatedResponse,
+        tags: [`severity:${validatedInput.severity}`, `category:${validatedInput.category}`],
         metadata: {
           createdBy: 'mcp-audit-system',
           source: 'fastmcp-audit-compliance',
@@ -802,18 +917,18 @@ export const createSecurityAlertTool = {
 
       getComponentLogger().info('Security alert created via MCP tool', {
         alertId,
-        title: input.title,
-        severity: input.severity,
-        category: input.category,
-        affectedAssetsCount: input.affectedAssets?.length || 0,
-        automatedResponse: input.automatedResponse,
+        title: validatedInput.title,
+        severity: validatedInput.severity,
+        category: validatedInput.category,
+        affectedAssetsCount: validatedInput.affectedAssets?.length || 0,
+        automatedResponse: validatedInput.automatedResponse,
       });
 
       return formatSuccessResponse({
         success: true,
         alert: alertData,
-        message: `Security alert "${input.title}" created successfully with ID ${alertId}`,
-        nextSteps: input.automatedResponse 
+        message: `Security alert "${validatedInput.title}" created successfully with ID ${alertId}`,
+        nextSteps: validatedInput.automatedResponse 
           ? ['Automated response triggered', 'Monitor alert status', 'Review response logs']
           : ['Review alert details', 'Assign to security team', 'Investigate threat', 'Implement response'],
       }).content[0].text;
@@ -824,6 +939,15 @@ export const createSecurityAlertTool = {
         severity: input.severity,
         category: input.category,
       });
+
+      // Re-throw validation errors
+      if (error instanceof Error && error.message.includes('Invalid input:')) {
+        throw error;
+      }
+      
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
 
       return formatSuccessResponse({
         success: false,
@@ -844,7 +968,10 @@ export const manageSecurityAlertsTool = {
   inputSchema: ManageSecurityAlertsSchema,
   handler: async (input: z.infer<typeof ManageSecurityAlertsSchema>): Promise<string> => {
     try {
-      switch (input.action) {
+      // Validate input with Zod schema
+      const validatedInput = ManageSecurityAlertsSchema.parse(input);
+      
+      switch (validatedInput.action) {
         case 'list': {
           // Mock security alerts data
           const mockAlerts = [
@@ -1035,8 +1162,13 @@ export const manageSecurityAlertsTool = {
         alertIds: input.alertIds,
       });
 
-      // Re-throw validation errors to let FastMCP handle them
-      if (error instanceof Error && error.message.startsWith('Unsupported action:')) {
+      // Re-throw validation errors and API errors to let FastMCP handle them
+      if (error instanceof Error && (error.message.startsWith('Unsupported action:') || error.message.includes('Invalid input:'))) {
+        throw error;
+      }
+      
+      // Also re-throw Zod errors by checking error structure
+      if (error && typeof error === 'object' && 'code' in error) {
         throw error;
       }
 
@@ -1127,6 +1259,15 @@ export const createSecurityIncidentTool = {
         severity: input.severity,
       });
 
+      // Re-throw validation errors
+      if (error instanceof Error && error.message.includes('Invalid input:')) {
+        throw error;
+      }
+      
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
+
       return formatSuccessResponse({
         success: false,
         incidentId: '',
@@ -1141,7 +1282,6 @@ export const createSecurityIncidentTool = {
 // Export all audit and compliance tools (excluding factory-created tools)
 export const auditComplianceTools = [
   listComplianceReportsTool,
-  generateComplianceReportTool,
   performAuditMaintenanceTool,
   getAuditConfigurationTool,
   securityHealthCheckTool,
@@ -1157,6 +1297,7 @@ export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClien
   // Create factory-based tools with API client
   const logAuditEventTool = createLogAuditEventTool(apiClient);
   const searchAuditEventsTool = createSearchAuditEventsTool(apiClient);
+  const generateComplianceReportTool = createGenerateComplianceReportTool(apiClient);
 
   // Add log audit event tool
   server.addTool({
@@ -1190,7 +1331,7 @@ export function addAuditComplianceTools(server: FastMCP, apiClient: MakeApiClien
 
   // Generate compliance report tool
   server.addTool({
-    name: 'generate-compliance-report',
+    name: generateComplianceReportTool.name,
     description: generateComplianceReportTool.description,
     parameters: generateComplianceReportTool.inputSchema,
     annotations: {

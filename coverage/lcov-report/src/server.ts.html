@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/933</span>
+                <span class='fraction'>0/938</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/933</span>
+                <span class='fraction'>0/938</span>
             </div>
         
             
@@ -995,7 +995,17 @@
 <a name='L930'></a><a href='#L930'>930</a>
 <a name='L931'></a><a href='#L931'>931</a>
 <a name='L932'></a><a href='#L932'>932</a>
-<a name='L933'></a><a href='#L933'>933</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L933'></a><a href='#L933'>933</a>
+<a name='L934'></a><a href='#L934'>934</a>
+<a name='L935'></a><a href='#L935'>935</a>
+<a name='L936'></a><a href='#L936'>936</a>
+<a name='L937'></a><a href='#L937'>937</a>
+<a name='L938'></a><a href='#L938'>938</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1986,11 +1996,12 @@
 <span class="cstat-no" title="statement not covered" >  private readonly componentLogger: ReturnType&lt;typeof logger.child&gt;;</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  constructor() {</span>
-<span class="cstat-no" title="statement not covered" >    const getComponentLogger = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    const getComponentLogger = (): ReturnType&lt;typeof logger.child&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
 <span class="cstat-no" title="statement not covered" >        return logger.child({ component: 'MakeServer' });</span>
-<span class="cstat-no" title="statement not covered" >      } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >      } catch {</span>
 <span class="cstat-no" title="statement not covered" >        // Fallback for test environments</span>
+<span class="cstat-no" title="statement not covered" >        // eslint-disable-next-line @typescript-eslint/no-explicit-any</span>
 <span class="cstat-no" title="statement not covered" >        return logger as any;</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 <span class="cstat-no" title="statement not covered" >    };</span>
@@ -2193,26 +2204,27 @@
 <span class="cstat-no" title="statement not covered" >    // Enhanced health check tool with security status</span>
 <span class="cstat-no" title="statement not covered" >    this.server.addTool({</span>
 <span class="cstat-no" title="statement not covered" >      name: 'health-check',</span>
-<span class="cstat-no" title="statement not covered" >      description: 'Check server, Make.com API connectivity, and security system status',</span>
+<span class="cstat-no" title="statement not covered" >      description: 'Check server and Make.com API connectivity status',</span>
 <span class="cstat-no" title="statement not covered" >      parameters: z.object({</span>
 <span class="cstat-no" title="statement not covered" >        includeSecurity: z.boolean().default(true).describe('Include security system status')</span>
 <span class="cstat-no" title="statement not covered" >      }),</span>
 <span class="cstat-no" title="statement not covered" >      annotations: {</span>
-<span class="cstat-no" title="statement not covered" >        title: 'Enhanced Health Check',</span>
+<span class="cstat-no" title="statement not covered" >        title: 'Health Check',</span>
 <span class="cstat-no" title="statement not covered" >        readOnlyHint: true,</span>
 <span class="cstat-no" title="statement not covered" >        openWorldHint: true,</span>
 <span class="cstat-no" title="statement not covered" >      },</span>
 <span class="cstat-no" title="statement not covered" >      execute: async ({ includeSecurity }, { log, session }) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        const correlationId = extractCorrelationId({ session });</span>
-<span class="cstat-no" title="statement not covered" >        const getComponentLogger = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const getComponentLogger = (): ReturnType&lt;typeof logger.child&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >          try {</span>
 <span class="cstat-no" title="statement not covered" >            return logger.child({ </span>
 <span class="cstat-no" title="statement not covered" >              component: 'HealthCheck',</span>
 <span class="cstat-no" title="statement not covered" >              operation: 'health-check',</span>
 <span class="cstat-no" title="statement not covered" >              correlationId </span>
 <span class="cstat-no" title="statement not covered" >            });</span>
-<span class="cstat-no" title="statement not covered" >          } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >          } catch {</span>
 <span class="cstat-no" title="statement not covered" >            // Fallback for test environments</span>
+<span class="cstat-no" title="statement not covered" >            // eslint-disable-next-line @typescript-eslint/no-explicit-any</span>
 <span class="cstat-no" title="statement not covered" >            return logger as any;</span>
 <span class="cstat-no" title="statement not covered" >          }</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
@@ -2286,15 +2298,16 @@
 <span class="cstat-no" title="statement not covered" >      },</span>
 <span class="cstat-no" title="statement not covered" >      execute: async ({ includeMetrics, includeEvents }, { log, session }) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        const correlationId = extractCorrelationId({ session });</span>
-<span class="cstat-no" title="statement not covered" >        const getComponentLogger = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const getComponentLogger = (): ReturnType&lt;typeof logger.child&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >          try {</span>
 <span class="cstat-no" title="statement not covered" >            return logger.child({ </span>
 <span class="cstat-no" title="statement not covered" >              component: 'SecurityStatus',</span>
 <span class="cstat-no" title="statement not covered" >              operation: 'security-status',</span>
 <span class="cstat-no" title="statement not covered" >              correlationId </span>
 <span class="cstat-no" title="statement not covered" >            });</span>
-<span class="cstat-no" title="statement not covered" >          } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >          } catch {</span>
 <span class="cstat-no" title="statement not covered" >            // Fallback for test environments</span>
+<span class="cstat-no" title="statement not covered" >            // eslint-disable-next-line @typescript-eslint/no-explicit-any</span>
 <span class="cstat-no" title="statement not covered" >            return logger as any;</span>
 <span class="cstat-no" title="statement not covered" >          }</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
@@ -2344,15 +2357,16 @@
 <span class="cstat-no" title="statement not covered" >      },</span>
 <span class="cstat-no" title="statement not covered" >      execute: async (args, { log, session }) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        const correlationId = extractCorrelationId({ session });</span>
-<span class="cstat-no" title="statement not covered" >        const getComponentLogger = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const getComponentLogger = (): ReturnType&lt;typeof logger.child&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >          try {</span>
 <span class="cstat-no" title="statement not covered" >            return logger.child({ </span>
 <span class="cstat-no" title="statement not covered" >              component: 'ServerInfo',</span>
 <span class="cstat-no" title="statement not covered" >              operation: 'server-info',</span>
 <span class="cstat-no" title="statement not covered" >              correlationId </span>
 <span class="cstat-no" title="statement not covered" >            });</span>
-<span class="cstat-no" title="statement not covered" >          } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >          } catch {</span>
 <span class="cstat-no" title="statement not covered" >            // Fallback for test environments</span>
+<span class="cstat-no" title="statement not covered" >            // eslint-disable-next-line @typescript-eslint/no-explicit-any</span>
 <span class="cstat-no" title="statement not covered" >            return logger as any;</span>
 <span class="cstat-no" title="statement not covered" >          }</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
@@ -2537,15 +2551,16 @@
 <span class="cstat-no" title="statement not covered" >      },</span>
 <span class="cstat-no" title="statement not covered" >      execute: async ({ includePermissions }, { log, reportProgress, session }) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        const correlationId = extractCorrelationId({ session });</span>
-<span class="cstat-no" title="statement not covered" >        const getComponentLogger = () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        const getComponentLogger = (): ReturnType&lt;typeof logger.child&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >          try {</span>
 <span class="cstat-no" title="statement not covered" >            return logger.child({ </span>
 <span class="cstat-no" title="statement not covered" >              component: 'ConfigTest',</span>
 <span class="cstat-no" title="statement not covered" >              operation: 'test-configuration',</span>
 <span class="cstat-no" title="statement not covered" >              correlationId </span>
 <span class="cstat-no" title="statement not covered" >            });</span>
-<span class="cstat-no" title="statement not covered" >          } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >          } catch {</span>
 <span class="cstat-no" title="statement not covered" >            // Fallback for test environments</span>
+<span class="cstat-no" title="statement not covered" >            // eslint-disable-next-line @typescript-eslint/no-explicit-any</span>
 <span class="cstat-no" title="statement not covered" >            return logger as any;</span>
 <span class="cstat-no" title="statement not covered" >          }</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
@@ -2866,7 +2881,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T04:27:25.092Z
+                at 2025-08-23T06:14:21.105Z
             </div>
         <script src="../prettify.js"></script>
         <script>

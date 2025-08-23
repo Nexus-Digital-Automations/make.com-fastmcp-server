@@ -159,7 +159,7 @@ describe('Audit and Compliance Tools', () => {
       classification: 'internal',
     },
     riskLevel: 'low',
-    outcome: 'success',
+    success: true,
     errorDetails: null,
     ...overrides,
   });
@@ -435,7 +435,7 @@ describe('Audit and Compliance Tools', () => {
             actorName: 'suspicious.user@external.com',
             resourceType: 'sensitive_data',
             resourceId: 'financial_records_2024',
-            outcome: 'blocked',
+            success: false,
             riskLevel: 'critical',
             metadata: {
               threatSignature: 'SQL_INJECTION_ATTEMPT',
@@ -476,7 +476,8 @@ describe('Audit and Compliance Tools', () => {
             actorName: 'admin@company.com',
             resourceType: 'organization',
             resourceId: 'org_1001',
-            outcome: 'success',
+            success: true,
+            riskLevel: 'low',
             organizationId: 1001,
           },
         });
@@ -508,7 +509,8 @@ describe('Audit and Compliance Tools', () => {
                 actorName: field === 'actorName' ? value : 'test@example.com',
                 resourceType: 'test',
                 resourceId: 'test_123',
-                outcome: 'success',
+                success: true,
+                riskLevel: 'low',
                 description: field === 'description' ? value : 'Test description',
               },
             });
@@ -530,7 +532,8 @@ describe('Audit and Compliance Tools', () => {
           actorName: 'test@example.com',
           resourceType: 'user',
           resourceId: 'user_123',
-          outcome: 'success',
+          success: true,
+          riskLevel: 'low',
           // Attempting to override system fields
           id: 999999,
           timestamp: '1970-01-01T00:00:00.000Z',
@@ -569,11 +572,12 @@ describe('Audit and Compliance Tools', () => {
             level: 'info',
             category: 'authentication',
             action: 'user_login',
+            success: true,
+            riskLevel: 'low',
             actorId: '12345',
             actorName: 'test@example.com',
             resourceType: 'user',
             resourceId: 'user_123',
-            outcome: 'success',
           },
         })).rejects.toThrow('Failed to log audit event: Audit service temporarily unavailable');
       });
@@ -600,7 +604,8 @@ describe('Audit and Compliance Tools', () => {
             actorName: 'test@example.com',
             resourceType: 'user',
             resourceId: 'user_123',
-            outcome: 'success',
+            success: true,
+            riskLevel: 'low',
           },
         })).rejects.toThrow();
       });
@@ -627,7 +632,8 @@ describe('Audit and Compliance Tools', () => {
               actorName: `test${i}@example.com`,
               resourceType: 'test',
               resourceId: `test_${i}`,
-              outcome: 'success',
+              success: true,
+              riskLevel: 'low',
             },
           }));
         }
@@ -718,7 +724,7 @@ describe('Audit and Compliance Tools', () => {
           parameters: {
             actorId: '12345',
             resourceType: 'user_account',
-            outcome: 'success',
+            success: true,
             riskLevel: 'high',
             complianceFramework: 'SOX',
             includeMetadata: true,
@@ -1584,7 +1590,7 @@ describe('Audit and Compliance Tools', () => {
           actorName: 'suspicious.user@external.com',
           resourceType: 'sensitive_data',
           resourceId: 'financial_records',
-          outcome: 'blocked',
+          success: false,
           riskLevel: 'critical',
         },
       });
@@ -1735,7 +1741,8 @@ describe('Audit and Compliance Tools', () => {
               actorName: 'chaos.test@example.com',
               resourceType: 'test',
               resourceId: 'chaos_test',
-              outcome: 'success',
+              success: true,
+              riskLevel: 'low',
             },
           });
 
