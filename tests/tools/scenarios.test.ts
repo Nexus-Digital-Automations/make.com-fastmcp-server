@@ -1176,9 +1176,21 @@ describe("Scenario Management Tools", () => {
         success: true,
         data: mockExecution,
       });
-      mockApiClient.get.mockResolvedValue({
-        success: true,
-        data: mockCompletedExecution,
+
+      // Setup different responses for different GET calls
+      mockApiClient.get.mockImplementation((url) => {
+        if (url === "/scenarios/scn_123") {
+          // Scenario details call - return active scenario
+          return Promise.resolve({
+            success: true,
+            data: { id: "scn_123", name: "Test Scenario", active: true },
+          });
+        }
+        // Default to execution status call
+        return Promise.resolve({
+          success: true,
+          data: mockCompletedExecution,
+        });
       });
     });
 
@@ -1492,7 +1504,7 @@ describe("Scenario Management Tools", () => {
         data: { id: "scn_cloned_large" },
       });
 
-      const tool = (server as any).tools["clone-scenario"];
+      const tool = (server as any).tools.get("clone-scenario");
       await expect(
         tool.execute(largeBlueprintClone, {
           log: mockLog,
@@ -1510,7 +1522,7 @@ describe("Scenario Management Tools", () => {
 
     test("should handle Unicode scenario names", async () => {
       const unicodeName = "测试场景 🚀 Тест сценарий";
-      const tool = (server as any).tools["create-scenario"];
+      const tool = (server as any).tools.get("create-scenario");
 
       mockApiClient.post.mockResolvedValue({
         success: true,
@@ -1539,7 +1551,7 @@ describe("Scenario Management Tools", () => {
         retryable: true,
       });
 
-      const tool = (server as any).tools["list-scenarios"];
+      const tool = (server as any).tools.get("list-scenarios");
       await expect(
         tool.execute({}, { log: mockLog, reportProgress: mockReportProgress }),
       ).rejects.toThrow(UserError);
@@ -1548,7 +1560,7 @@ describe("Scenario Management Tools", () => {
 
   describe("Logging and Monitoring", () => {
     test("should log all operations correctly", async () => {
-      const tool = (server as any).tools["create-scenario"];
+      const tool = (server as any).tools.get("create-scenario");
       mockApiClient.post.mockResolvedValue({
         success: true,
         data: { id: "scn_logged" },
@@ -1572,7 +1584,7 @@ describe("Scenario Management Tools", () => {
     });
 
     test("should log errors appropriately", async () => {
-      const tool = (server as any).tools["get-scenario"];
+      const tool = (server as any).tools.get("get-scenario");
       mockApiClient.get.mockRejectedValue(new Error("Network failure"));
 
       await expect(

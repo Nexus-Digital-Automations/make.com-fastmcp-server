@@ -3,47 +3,66 @@
  * Clones an existing Make.com scenario with customizable options
  */
 
-import { UserError } from 'fastmcp';
-import { CloneScenarioSchema } from '../schemas/blueprint-update.js';
-import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
-import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+import { UserError } from "fastmcp";
+import { CloneScenarioSchema } from "../schemas/blueprint-update.js";
+import {
+  ToolContext,
+  ToolDefinition,
+} from "../../shared/types/tool-context.js";
+import { formatSuccessResponse } from "../../../utils/response-formatter.js";
 
 /**
  * Create clone scenario tool configuration
  */
 export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
   const { apiClient } = context;
-  
+
   return {
-    name: 'clone-scenario',
-    description: 'Clone an existing Make.com scenario with a new name',
+    name: "clone-scenario",
+    description: "Clone an existing Make.com scenario with a new name",
     parameters: CloneScenarioSchema,
     annotations: {
-      title: 'Clone Scenario',
+      title: "Clone Scenario",
       readOnlyHint: false,
       openWorldHint: false,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      const typedArgs = args as {
-        scenarioId: string;
-        name: string;
-        teamId?: string;
-        folderId?: string;
-        active?: boolean;
-      };
-      
-      log?.info?.('Cloning scenario', { 
-        sourceId: typedArgs.scenarioId, 
-        newName: typedArgs.name 
+      const {
+        log = {
+          info: (): void => {},
+          error: (): void => {},
+          warn: (): void => {},
+          debug: (): void => {},
+        },
+        reportProgress = (): void => {},
+      } = context || {};
+
+      let typedArgs;
+      try {
+        typedArgs = CloneScenarioSchema.parse(args);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Invalid parameters provided";
+        throw new UserError(`Invalid parameters: ${errorMessage}`);
+      }
+
+      log?.info?.("Cloning scenario", {
+        sourceId: typedArgs.scenarioId,
+        newName: typedArgs.name,
       });
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
         // Get source scenario blueprint
-        const blueprintResponse = await apiClient.get(`/scenarios/${typedArgs.scenarioId}/blueprint`);
+        const blueprintResponse = await apiClient.get(
+          `/scenarios/${typedArgs.scenarioId}/blueprint`,
+        );
         if (!blueprintResponse.success) {
-          throw new UserError(`Failed to get source scenario blueprint: ${blueprintResponse.error?.message}`);
+          throw new UserError(
+            `Failed to get source scenario blueprint: ${blueprintResponse.error?.message}`,
+          );
         }
 
         reportProgress?.({ progress: 25, total: 100 });
@@ -55,17 +74,23 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
           active: typedArgs.active,
         };
 
-        if (typedArgs.teamId) {cloneData.teamId = typedArgs.teamId;}
-        if (typedArgs.folderId) {cloneData.folderId = typedArgs.folderId;}
+        if (typedArgs.teamId) {
+          cloneData.teamId = typedArgs.teamId;
+        }
+        if (typedArgs.folderId) {
+          cloneData.folderId = typedArgs.folderId;
+        }
 
         reportProgress?.({ progress: 50, total: 100 });
 
         // Create the cloned scenario
-        const response = await apiClient.post('/scenarios', cloneData);
+        const response = await apiClient.post("/scenarios", cloneData);
         reportProgress?.({ progress: 100, total: 100 });
 
         if (!response.success) {
-          throw new UserError(`Failed to clone scenario: ${response.error?.message}`);
+          throw new UserError(
+            `Failed to clone scenario: ${response.error?.message}`,
+          );
         }
 
         const clonedScenario = response.data;
@@ -78,20 +103,24 @@ export function createCloneScenarioTool(context: ToolContext): ToolDefinition {
         };
 
         // Type guard for cloned scenario
-        const clonedScenarioObj = clonedScenario as { id?: unknown } | null | undefined;
-        
-        log?.info?.('Scenario cloned successfully', { 
+        const clonedScenarioObj = clonedScenario as
+          | { id?: unknown }
+          | null
+          | undefined;
+
+        log?.info?.("Scenario cloned successfully", {
           sourceId: typedArgs.scenarioId,
-          cloneId: String(clonedScenarioObj?.id ?? 'unknown'),
-          name: typedArgs.name 
+          cloneId: String(clonedScenarioObj?.id ?? "unknown"),
+          name: typedArgs.name,
         });
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error?.('Failed to clone scenario', { 
-          scenarioId: typedArgs.scenarioId, 
-          error: errorMessage 
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        log?.error?.("Failed to clone scenario", {
+          scenarioId: typedArgs.scenarioId,
+          error: errorMessage,
         });
         throw new UserError(`Failed to clone scenario: ${errorMessage}`);
       }

@@ -3,11 +3,14 @@
  * Execute Make.com scenarios with monitoring and timeout control
  */
 
-import { UserError } from 'fastmcp';
-import { RunScenarioSchema } from '../schemas/scenario-filters.js';
-import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
-import { formatSuccessResponse } from '../../../utils/response-formatter.js';
-import MakeApiClient from '../../../lib/make-api-client.js';
+import { UserError } from "fastmcp";
+import { RunScenarioSchema } from "../schemas/scenario-filters.js";
+import {
+  ToolContext,
+  ToolDefinition,
+} from "../../shared/types/tool-context.js";
+import { formatSuccessResponse } from "../../../utils/response-formatter.js";
+import MakeApiClient from "../../../lib/make-api-client.js";
 
 // Type definitions
 interface LogInterface {
@@ -64,24 +67,24 @@ interface FinalResult {
 async function validateScenario(
   apiClient: MakeApiClient,
   scenarioId: string,
-  log?: LogInterface
+  log?: LogInterface,
 ): Promise<ScenarioData> {
   const scenarioResponse = await apiClient.get(`/scenarios/${scenarioId}`);
   if (!scenarioResponse.success) {
     throw new UserError(`Scenario not found: ${scenarioId}`);
   }
-  
+
   const scenario = scenarioResponse.data as ScenarioData;
-  
+
   if (!scenario.active) {
     throw new UserError(`Cannot execute inactive scenario: ${scenarioId}`);
   }
-  
-  log?.info?.('Scenario validated successfully', { 
-    scenarioId: scenario.id, 
-    scenarioName: scenario.name 
+
+  log?.info?.("Scenario validated successfully", {
+    scenarioId: scenario.id,
+    scenarioName: scenario.name,
   });
-  
+
   return scenario;
 }
 
@@ -92,25 +95,30 @@ async function executeScenario(
   apiClient: MakeApiClient,
   scenarioId: string,
   wait: boolean,
-  log?: LogInterface
+  log?: LogInterface,
 ): Promise<ExecutionData> {
-  log?.info?.('Executing scenario', { scenarioId });
-  
-  const executionResponse = await apiClient.post(`/scenarios/${scenarioId}/run`, {
-    wait
-  });
-  
+  log?.info?.("Executing scenario", { scenarioId });
+
+  const executionResponse = await apiClient.post(
+    `/scenarios/${scenarioId}/run`,
+    {
+      wait,
+    },
+  );
+
   if (!executionResponse.success) {
-    throw new UserError(`Failed to start scenario execution: ${executionResponse.error?.message || 'Unknown error'}`);
+    throw new UserError(
+      `Failed to start scenario execution: ${executionResponse.error?.message || "Unknown error"}`,
+    );
   }
-  
+
   const executionData = executionResponse.data as ExecutionData;
-  
-  log?.info?.('Scenario execution started', { 
-    scenarioId, 
-    executionId: executionData.executionId 
+
+  log?.info?.("Scenario execution started", {
+    scenarioId,
+    executionId: executionData.executionId,
   });
-  
+
   return executionData;
 }
 
@@ -123,28 +131,35 @@ async function pollExecutionStatus(
   executionId: string,
   timeoutSeconds: number,
   reportProgress?: (progress: { progress: number; total: number }) => void,
-  log?: LogInterface
-): Promise<{ status: string; completedAt?: string; duration?: number; result?: unknown }> {
+  log?: LogInterface,
+): Promise<{
+  status: string;
+  completedAt?: string;
+  duration?: number;
+  result?: unknown;
+}> {
   const startTime = Date.now();
   const timeoutMs = timeoutSeconds * 1000;
   let attempts = 0;
   const maxAttempts = Math.ceil(timeoutSeconds / 2);
-  
-  log?.info?.('Waiting for scenario execution to complete', { 
+
+  log?.info?.("Waiting for scenario execution to complete", {
     executionId,
-    timeoutSeconds 
+    timeoutSeconds,
   });
-  
+
   while (attempts < maxAttempts) {
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     attempts++;
-    
+
     const progress = 50 + (attempts / maxAttempts) * 45;
     reportProgress?.({ progress: Math.min(95, progress), total: 100 });
-    
+
     try {
-      const statusResponse = await apiClient.get(`/scenarios/${scenarioId}/executions/${executionId}`);
-      
+      const statusResponse = await apiClient.get(
+        `/scenarios/${scenarioId}/executions/${executionId}`,
+      );
+
       if (statusResponse.success) {
         const statusData = statusResponse.data as {
           id: string;
@@ -154,55 +169,63 @@ async function pollExecutionStatus(
           result?: unknown;
           error?: unknown;
         };
-        
+
         let duration: number | undefined;
         if (statusData.completedAt) {
           duration = Math.round(
-            (new Date(statusData.completedAt).getTime() - new Date(statusData.startedAt).getTime()) / 1000
+            (new Date(statusData.completedAt).getTime() -
+              new Date(statusData.startedAt).getTime()) /
+              1000,
           );
         }
-        
-        if (['completed', 'error', 'stopped', 'failed'].includes(statusData.status)) {
-          log?.info?.('Scenario execution completed', {
+
+        if (
+          ["completed", "error", "stopped", "failed"].includes(
+            statusData.status,
+          )
+        ) {
+          log?.info?.("Scenario execution completed", {
             executionId,
             status: statusData.status,
-            duration
+            duration,
           });
-          
+
           return {
             status: statusData.status,
             completedAt: statusData.completedAt,
             duration,
-            result: statusData.result
+            result: statusData.result,
           };
         }
       }
-      
+
       if (Date.now() - startTime > timeoutMs) {
-        log?.warn?.('Scenario execution timeout reached', { 
+        log?.warn?.("Scenario execution timeout reached", {
           executionId,
-          timeoutSeconds
+          timeoutSeconds,
         });
-        return { status: 'timeout' };
+        return { status: "timeout" };
       }
-      
     } catch (statusError) {
-      log?.warn?.('Failed to check execution status', { 
+      log?.warn?.("Failed to check execution status", {
         executionId,
-        error: statusError instanceof Error ? statusError.message : String(statusError)
+        error:
+          statusError instanceof Error
+            ? statusError.message
+            : String(statusError),
       });
     }
   }
-  
+
   if (attempts >= maxAttempts) {
-    log?.warn?.('Maximum polling attempts reached', { 
+    log?.warn?.("Maximum polling attempts reached", {
       executionId,
-      attempts
+      attempts,
     });
-    return { status: 'timeout' };
+    return { status: "timeout" };
   }
-  
-  return { status: 'unknown' };
+
+  return { status: "unknown" };
 }
 
 /**
@@ -211,14 +234,19 @@ async function pollExecutionStatus(
 function assembleFinalResult(
   scenario: ScenarioData,
   executionData: ExecutionData,
-  executionStatus: { status: string; completedAt?: string; duration?: number; result?: unknown },
-  args: RunScenarioArgs
+  executionStatus: {
+    status: string;
+    completedAt?: string;
+    duration?: number;
+    result?: unknown;
+  },
+  args: RunScenarioArgs,
 ): FinalResult {
   return {
     scenario: {
       id: scenario.id,
       name: scenario.name,
-      team: scenario.team
+      team: scenario.team,
     },
     execution: {
       id: executionData.executionId,
@@ -226,13 +254,13 @@ function assembleFinalResult(
       startedAt: executionData.startedAt,
       completedAt: executionStatus.completedAt,
       duration: executionStatus.duration,
-      result: executionStatus.result
+      result: executionStatus.result,
     },
     metadata: {
       waitForCompletion: args.wait || false,
       timeoutSeconds: args.timeout,
-      executionTimestamp: new Date().toISOString()
-    }
+      executionTimestamp: new Date().toISOString(),
+    },
   };
 }
 
@@ -241,42 +269,75 @@ function assembleFinalResult(
  */
 export function createRunScenarioTool(context: ToolContext): ToolDefinition {
   const { apiClient, logger: _logger } = context;
-  
+
   return {
-    name: 'run-scenario',
-    description: 'Execute Make.com scenarios with monitoring, timeout control, and execution tracking',
+    name: "run-scenario",
+    description:
+      "Execute Make.com scenarios with monitoring, timeout control, and execution tracking",
     parameters: RunScenarioSchema,
     annotations: {
-      title: 'Run Scenario',
+      title: "Run Scenario",
       readOnlyHint: false, // Executes scenarios, not read-only
       openWorldHint: false,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      const typedArgs = args as RunScenarioArgs;
-      
-      log?.info?.('Starting scenario execution', { 
+      const {
+        log = {
+          info: (): void => {},
+          error: (): void => {},
+          warn: (): void => {},
+          debug: (): void => {},
+        },
+        reportProgress = (): void => {},
+      } = context || {};
+
+      let typedArgs;
+      try {
+        typedArgs = RunScenarioSchema.parse(args);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Invalid parameters provided";
+        throw new UserError(`Invalid parameters: ${errorMessage}`);
+      }
+
+      log?.info?.("Starting scenario execution", {
         scenarioId: typedArgs.scenarioId,
         wait: typedArgs.wait,
-        timeout: typedArgs.timeout
+        timeout: typedArgs.timeout,
       });
-      
+
       try {
         reportProgress?.({ progress: 0, total: 100 });
-        
+
         // Step 1: Validate scenario
-        const scenario = await validateScenario(apiClient, typedArgs.scenarioId, log);
+        const scenario = await validateScenario(
+          apiClient,
+          typedArgs.scenarioId,
+          log,
+        );
         reportProgress?.({ progress: 20, total: 100 });
-        
+
         // Step 2: Execute scenario
-        const executionData = await executeScenario(apiClient, typedArgs.scenarioId, typedArgs.wait || false, log);
+        const executionData = await executeScenario(
+          apiClient,
+          typedArgs.scenarioId,
+          typedArgs.wait || false,
+          log,
+        );
         reportProgress?.({ progress: 50, total: 100 });
-        
+
         // Step 3: Handle polling if waiting for completion
-        let executionStatus: { status: string; completedAt?: string; duration?: number; result?: unknown } = {
-          status: executionData.status
+        let executionStatus: {
+          status: string;
+          completedAt?: string;
+          duration?: number;
+          result?: unknown;
+        } = {
+          status: executionData.status,
         };
-        
+
         if (typedArgs.wait) {
           const timeoutSeconds = typedArgs.timeout || 300;
           executionStatus = await pollExecutionStatus(
@@ -285,33 +346,38 @@ export function createRunScenarioTool(context: ToolContext): ToolDefinition {
             executionData.executionId,
             timeoutSeconds,
             reportProgress,
-            log
+            log,
           );
         }
-        
+
         // Step 4: Assemble final result
-        const finalResult = assembleFinalResult(scenario, executionData, executionStatus, typedArgs);
-        
+        const finalResult = assembleFinalResult(
+          scenario,
+          executionData,
+          executionStatus,
+          typedArgs,
+        );
+
         reportProgress?.({ progress: 100, total: 100 });
-        
-        log?.info?.('Scenario execution request completed', {
+
+        log?.info?.("Scenario execution request completed", {
           scenarioId: typedArgs.scenarioId,
           executionId: executionData.executionId,
           finalStatus: finalResult.execution.status,
           waitedForCompletion: typedArgs.wait,
-          duration: finalResult.execution.duration
+          duration: finalResult.execution.duration,
         });
-        
+
         return formatSuccessResponse(finalResult).content[0].text;
-        
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error?.('Scenario execution failed', { 
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        log?.error?.("Scenario execution failed", {
           scenarioId: typedArgs.scenarioId,
-          error: errorMessage 
+          error: errorMessage,
         });
         throw new UserError(`Scenario execution failed: ${errorMessage}`);
       }
-    }
+    },
   };
 }

@@ -3,37 +3,55 @@
  * Creates a new Make.com scenario with optional configuration
  */
 
-import { UserError } from 'fastmcp';
-import { CreateScenarioSchema } from '../schemas/blueprint-update.js';
-import { ToolContext, ToolDefinition } from '../../shared/types/tool-context.js';
-import { formatSuccessResponse } from '../../../utils/response-formatter.js';
+import { UserError } from "fastmcp";
+import { CreateScenarioSchema } from "../schemas/blueprint-update.js";
+import {
+  ToolContext,
+  ToolDefinition,
+} from "../../shared/types/tool-context.js";
+import { formatSuccessResponse } from "../../../utils/response-formatter.js";
 
 /**
  * Create scenario tool configuration
  */
 export function createScenarioTool(context: ToolContext): ToolDefinition {
   const { apiClient } = context;
-  
+
   return {
-    name: 'create-scenario',
-    description: 'Create a new Make.com scenario with optional configuration',
+    name: "create-scenario",
+    description: "Create a new Make.com scenario with optional configuration",
     parameters: CreateScenarioSchema,
     annotations: {
-      title: 'Create Scenario',
+      title: "Create Scenario",
       readOnlyHint: false,
       openWorldHint: false,
     },
     execute: async (args: unknown, context): Promise<string> => {
-      const { log = { info: (): void => {}, error: (): void => {}, warn: (): void => {}, debug: (): void => {} }, reportProgress = (): void => {} } = context || {};
-      const typedArgs = args as { 
-        name: string; 
-        teamId?: string; 
-        folderId?: string; 
-        blueprint?: unknown; 
-        scheduling?: { type: string; interval?: number; cron?: string } 
-      };
-      
-      log?.info?.('Creating scenario', { name: typedArgs.name, teamId: typedArgs.teamId });
+      const {
+        log = {
+          info: (): void => {},
+          error: (): void => {},
+          warn: (): void => {},
+          debug: (): void => {},
+        },
+        reportProgress = (): void => {},
+      } = context || {};
+
+      let typedArgs;
+      try {
+        typedArgs = CreateScenarioSchema.parse(args);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Invalid parameters provided";
+        throw new UserError(`Invalid parameters: ${errorMessage}`);
+      }
+
+      log?.info?.("Creating scenario", {
+        name: typedArgs.name,
+        teamId: typedArgs.teamId,
+      });
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
@@ -41,18 +59,28 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
           name: typedArgs.name,
         };
 
-        if (typedArgs.teamId) {scenarioData.teamId = typedArgs.teamId;}
-        if (typedArgs.folderId) {scenarioData.folderId = typedArgs.folderId;}
-        if (typedArgs.blueprint) {scenarioData.blueprint = typedArgs.blueprint;}
-        if (typedArgs.scheduling) {scenarioData.scheduling = typedArgs.scheduling;}
+        if (typedArgs.teamId) {
+          scenarioData.teamId = typedArgs.teamId;
+        }
+        if (typedArgs.folderId) {
+          scenarioData.folderId = typedArgs.folderId;
+        }
+        if (typedArgs.blueprint) {
+          scenarioData.blueprint = typedArgs.blueprint;
+        }
+        if (typedArgs.scheduling) {
+          scenarioData.scheduling = typedArgs.scheduling;
+        }
 
         reportProgress?.({ progress: 25, total: 100 });
 
-        const response = await apiClient.post('/scenarios', scenarioData);
+        const response = await apiClient.post("/scenarios", scenarioData);
         reportProgress?.({ progress: 75, total: 100 });
 
         if (!response.success) {
-          throw new UserError(`Failed to create scenario: ${response.error?.message}`);
+          throw new UserError(
+            `Failed to create scenario: ${response.error?.message}`,
+          );
         }
 
         const createdScenario = response.data;
@@ -65,17 +93,24 @@ export function createScenarioTool(context: ToolContext): ToolDefinition {
         };
 
         // Type guard for created scenario
-        const scenarioObj = createdScenario as { id?: unknown } | null | undefined;
-        
-        log?.info?.('Scenario created successfully', { 
-          scenarioId: String(scenarioObj?.id ?? 'unknown'),
-          name: typedArgs.name 
+        const scenarioObj = createdScenario as
+          | { id?: unknown }
+          | null
+          | undefined;
+
+        log?.info?.("Scenario created successfully", {
+          scenarioId: String(scenarioObj?.id ?? "unknown"),
+          name: typedArgs.name,
         });
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error?.('Failed to create scenario', { name: typedArgs.name, error: errorMessage });
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        log?.error?.("Failed to create scenario", {
+          name: typedArgs.name,
+          error: errorMessage,
+        });
         throw new UserError(`Failed to create scenario: ${errorMessage}`);
       }
     },
