@@ -8,7 +8,7 @@
       "mode": "DEVELOPMENT",
       "category": "missing-test",
       "priority": "high",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -16,24 +16,17 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-23T21:17:34.857Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1755983985348_kbmtjpdj7",
-      "title": "Fix critical test failures preventing accurate coverage analysis",
-      "description": "Address test failures in config.test.ts and make-api-client-fixed.test.ts that are preventing accurate coverage measurement",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-23T21:19:45.348Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "started_at": "2025-08-23T21:43:18.896Z",
+      "claimed_by": "agent_1755985398896",
+      "assigned_agent": "agent_1755985398896",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755985398896",
+          "action": "claimed",
+          "timestamp": "2025-08-23T21:43:18.896Z"
+        }
+      ]
     },
     {
       "id": "task_1755983481923_m5w8j5aru",
