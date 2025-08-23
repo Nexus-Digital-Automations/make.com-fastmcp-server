@@ -342,3 +342,21 @@ TODO.json.*
 *.logs
 
 .turbo/
+
+# =========================
+# Security & Credentials
+# =========================
+# Secure credential storage directory
+.secure-credentials/
+*.enc
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# Backup credential files
+*.credential.*
+*credentials*
+*secrets*
+*.secret

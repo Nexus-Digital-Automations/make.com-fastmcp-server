@@ -42,7 +42,8 @@ class MonitoringMiddleware {
       }
     } catch (error) {
       // Ultimate fallback for test environments
-      console.warn('MonitoringMiddleware logger initialization failed, using fallback:', error);
+      // Use stderr for logger initialization failures to avoid interfering with application output
+      process.stderr.write(`MonitoringMiddleware logger initialization failed, using fallback: ${error}\n`);
       this.componentLogger = this.createFallbackLogger();
     }
 
@@ -438,7 +439,8 @@ export function getMonitoringInstance(): MonitoringMiddleware {
     try {
       monitoringInstance = new MonitoringMiddleware();
     } catch (error) {
-      console.error('Failed to create MonitoringMiddleware instance:', error);
+      // Use stderr for critical initialization errors
+      process.stderr.write(`Failed to create MonitoringMiddleware instance: ${error}\n`);
       throw error;
     }
   }
@@ -454,7 +456,8 @@ export function resetMonitoringInstance(): void {
     try {
       monitoringInstance.shutdown();
     } catch (error) {
-      console.warn('Error during monitoring middleware shutdown:', error);
+      // Use stderr for shutdown errors to avoid interfering with application output
+      process.stderr.write(`Error during monitoring middleware shutdown: ${error}\n`);
     }
     monitoringInstance = null;
   }

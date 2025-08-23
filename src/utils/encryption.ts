@@ -6,6 +6,7 @@
 import * as crypto from 'crypto';
 import { promisify } from 'util';
 import logger from '../lib/logger.js';
+import { secureCredentialStorage } from './secure-credential-storage.js';
 
 const scrypt = promisify(crypto.scrypt);
 const randomBytes = promisify(crypto.randomBytes);
@@ -282,9 +283,28 @@ export class CredentialManager {
     return this._componentLogger!;
   }
 
+  private storageInitialized = false;
+
   constructor() {
     this.encryptionService = new EncryptionService();
     // componentLogger is now lazy-initialized
+  }
+  
+  /**
+   * Initialize secure credential storage if not already done
+   */
+  private async ensureStorageInitialized(): Promise<void> {
+    if (this.storageInitialized) return;
+    
+    try {
+      await secureCredentialStorage.initialize();
+      this.storageInitialized = true;
+    } catch (error) {
+      this.componentLogger.error('Failed to initialize secure credential storage', {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      throw error; // Throw to prevent credential operations with uninitialized storage
+    }
   }
 
   /**
@@ -302,6 +322,7 @@ export class CredentialManager {
     } = {}
   ): Promise<string> {
     try {
+      await this.ensureStorageInitialized();
       const credentialId = options.id || crypto.randomUUID();
       const now = new Date();
       
@@ -326,8 +347,8 @@ export class CredentialManager {
       // Store metadata and encrypted data (in real implementation, use secure storage)
       this.credentials.set(credentialId, metadata);
       
-      // Store encrypted data (placeholder - in production, use secure database/vault)
-      process.env[`ENCRYPTED_CREDENTIAL_${credentialId}`] = JSON.stringify(encryptedData);
+      // Store encrypted data using secure file-based storage
+      await secureCredentialStorage.storeCredential(credentialId, encryptedData);
       
       // Audit log
       this.logAuditEvent('store_credential', credentialId, options.userId, true, {
@@ -361,6 +382,7 @@ export class CredentialManager {
     userId?: string
   ): Promise<string> {
     try {
+      await this.ensureStorageInitialized();
       const metadata = this.credentials.get(credentialId);
       if (!metadata) {
         throw new Error(`Credential ${credentialId} not found`);
@@ -376,13 +398,8 @@ export class CredentialManager {
         throw new Error(`Credential ${credentialId} has been revoked`);
       }
 
-      // Get encrypted data
-      const encryptedDataStr = process.env[`ENCRYPTED_CREDENTIAL_${credentialId}`];
-      if (!encryptedDataStr) {
-        throw new Error(`Encrypted data for credential ${credentialId} not found`);
-      }
-
-      const encryptedData = JSON.parse(encryptedDataStr) as EncryptedData;
+      // Get encrypted data from secure storage
+      const encryptedData = await secureCredentialStorage.retrieveCredential(credentialId);
       
       // Decrypt credential
       const credential = await this.encryptionService.decrypt(encryptedData, masterPassword);
@@ -486,6 +503,7 @@ export class CredentialManager {
    */
   public async revokeCredential(credentialId: string, userId?: string): Promise<void> {
     try {
+      await this.ensureStorageInitialized();
       const metadata = this.credentials.get(credentialId);
       if (!metadata) {
         throw new Error(`Credential ${credentialId} not found`);
@@ -495,8 +513,8 @@ export class CredentialManager {
       metadata.rotationInfo.status = 'revoked';
       metadata.rotationInfo.rotatedAt = new Date();
 
-      // Remove encrypted data
-      delete process.env[`ENCRYPTED_CREDENTIAL_${credentialId}`];
+      // Remove encrypted data from secure storage
+      await secureCredentialStorage.deleteCredential(credentialId);
 
       // Audit log
       this.logAuditEvent('revoke_credential', credentialId, userId, true, {
@@ -590,7 +608,7 @@ export class CredentialManager {
       if (metadata.rotationInfo.expiresAt && metadata.rotationInfo.expiresAt < now) {
         // Remove expired credential
         this.credentials.delete(credentialId);
-        delete process.env[`ENCRYPTED_CREDENTIAL_${credentialId}`];
+        await secureCredentialStorage.deleteCredential(credentialId);
         cleanedCount++;
 
         this.logAuditEvent('cleanup_expired', credentialId, 'system', true, {
