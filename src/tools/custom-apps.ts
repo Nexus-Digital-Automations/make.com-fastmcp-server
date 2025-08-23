@@ -3,7 +3,7 @@
  * Comprehensive tools for custom app creation, configuration, testing, and lifecycle management
  */
 
-import { FastMCP, UserError } from 'fastmcp';
+import { FastMCP, UserError, type SerializableValue } from 'fastmcp';
 import { z } from 'zod';
 import MakeApiClient from '../lib/make-api-client.js';
 import logger from '../lib/logger.js';
@@ -970,8 +970,8 @@ function addTestCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void {
         log.info('Successfully tested custom app', {
           appId,
           testType,
-          passed: summary.passed,
-          failed: summary.failed,
+          passed: summary.passed as SerializableValue,
+          failed: summary.failed as SerializableValue,
         });
 
         // Step 4: Format and return response

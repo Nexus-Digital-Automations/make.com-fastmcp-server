@@ -33,6 +33,10 @@ interface MonitoringConfig {
   };
   includeMetrics: boolean;
   includeProgress: boolean;
+  updateIntervalMs: number;
+  includeModuleDetails: boolean;
+  includePerformanceMetrics: boolean;
+  trackProgress: boolean;
 }
 
 interface AlertConfig {
@@ -143,7 +147,14 @@ async function executeMonitoringLoop(
 
       if (logsResponse.success && logsResponse.data) {
         const newLogs = logsResponse.data as MakeLogEntry[];
-        processNewLogs(newLogs, executionData, monitoring, alerts);
+        // Convert input alerts config to match expected processNewLogs type
+        const alertsConfig = {
+          enabled: alerts.enabled,
+          errorThreshold: 10,
+          performanceThreshold: 1000,
+          moduleFailureAlert: true,
+        };
+        processNewLogs(newLogs, executionData, { includePerformanceMetrics: monitoring.includePerformanceMetrics, updateIntervalMs: monitoring.updateIntervalMs }, alertsConfig);
       }
 
       // Update module status if enabled
@@ -380,11 +391,43 @@ export function createStreamLiveExecutionTool(context: ToolContext): ToolDefinit
         });
 
         // Execute monitoring loop
+        // Convert input monitoring config to MonitoringConfig interface
+        const monitoringConfig: MonitoringConfig = {
+          polling: {
+            enabled: true,
+            interval: monitoring.updateIntervalMs,
+            maxDuration: monitoring.maxDuration,
+            enableRealtime: true,
+          },
+          alertThresholds: {
+            duration: monitoring.maxDuration,
+            errorCount: 10,
+            performanceThreshold: 1000,
+          },
+          includeMetrics: monitoring.includePerformanceMetrics,
+          includeProgress: monitoring.trackProgress,
+          updateIntervalMs: monitoring.updateIntervalMs,
+          includeModuleDetails: monitoring.includeModuleDetails,
+          includePerformanceMetrics: monitoring.includePerformanceMetrics,
+          trackProgress: monitoring.trackProgress,
+        };
+
+        // Convert input alerts to match AlertConfig interface
+        const alertConfig: AlertConfig = {
+          enabled: alerts.enabled,
+          conditions: [],
+          notifications: {
+            email: false,
+            slack: false,
+            webhook: false,
+          },
+        };
+
         await executeMonitoringLoop(
           targetExecutionId,
           executionData,
-          monitoring,
-          alerts,
+          monitoringConfig,
+          alertConfig,
           apiClient,
           logger,
           log,

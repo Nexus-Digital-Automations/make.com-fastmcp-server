@@ -146,7 +146,11 @@ function buildQueryResult(logs: MakeLogEntry[], metadata: unknown, queryDuration
       pagination: {
         ...pagination,
         total: (metadata as Record<string, unknown>)?.total || logs.length,
-        hasMore: ((metadata as Record<string, unknown>)?.total || 0) > (pagination.offset + logs.length),
+        hasMore: (() => {
+          const metadataObj = metadata as Record<string, unknown>;
+          const total = metadataObj?.total;
+          return (typeof total === 'number' ? total : 0) > (pagination.offset + logs.length);
+        })(),
         nextCursor: (metadata as Record<string, unknown>)?.nextCursor as string,
       },
       endpoint: determineEndpoint(params),
