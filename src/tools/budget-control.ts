@@ -1277,11 +1277,12 @@ function addControlHighCostScenariosTool(server: FastMCP, _apiClient: MakeApiCli
  * Add budget control tools to FastMCP server
  */
 export function addBudgetControlTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const getComponentLogger = () => {
+  const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ component: 'BudgetControlTools' });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };

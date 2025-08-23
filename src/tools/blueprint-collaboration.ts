@@ -811,11 +811,12 @@ function addAnalyzeBlueprintDependenciesTool(server: FastMCP, componentLogger: t
  * Main function to add all blueprint collaboration tools
  */
 export function addBlueprintCollaborationTools(server: FastMCP, _apiClient: MakeApiClient): void {
-  const getComponentLogger = () => {
+  const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ component: 'BlueprintCollaborationTools' });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };

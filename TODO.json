@@ -2,9 +2,26 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755923385600_jqrfe7gs9",
-      "title": "Fix ESLint errors in src/lib/metrics.ts",
-      "description": "ESLint errors: missing return type annotation (line 52), unused error variable (line 55), any type usage (line 57). These linting violations need immediate resolution.",
+      "id": "task_1755924036694_798skjguj",
+      "title": "Fix remaining ESLint errors in additional tools files",
+      "description": "Systematically fix ESLint errors using proven transformation pattern: add return types, remove unused parameters, add eslint disable comments",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T04:40:36.695Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755923995525_35qlhpqwx",
+      "title": "Fix remaining ESLint errors in additional tools files",
+      "description": "ESLint errors in remaining files: ai-governance-engine/index.ts, blueprint-collaboration-fixed.ts, and other tools files. Pattern: missing return types, unused error variables, any type usage. Continuation of systematic ESLint cleanup.",
       "mode": "DEVELOPMENT",
       "category": "linter-error",
       "priority": "critical",
@@ -15,16 +32,16 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T04:29:45.600Z",
+      "created_at": "2025-08-23T04:39:55.525Z",
       "auto_research_created": false,
-      "assigned_agent": "agent_1755923650000",
-      "started_at": "2025-08-23T04:38:39.416Z",
-      "claimed_by": "agent_1755923650000",
+      "assigned_agent": "agent_1755924000000",
+      "started_at": "2025-08-23T04:40:02.036Z",
+      "claimed_by": "agent_1755924000000",
       "agent_assignment_history": [
         {
-          "agentId": "agent_1755923650000",
+          "agentId": "agent_1755924000000",
           "role": "primary",
-          "assignedAt": "2025-08-23T04:38:39.416Z",
+          "assignedAt": "2025-08-23T04:40:02.036Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
