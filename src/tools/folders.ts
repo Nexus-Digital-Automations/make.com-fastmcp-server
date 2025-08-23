@@ -308,7 +308,6 @@ export function addFolderTools(server: FastMCP, apiClient: MakeApiClient): void 
 }
 
 // ==================== ADDITIONAL HELPER FUNCTIONS ====================
-// TODO: Implement remaining helper functions for all tools
 
 /**
  * Add get folder contents tool
