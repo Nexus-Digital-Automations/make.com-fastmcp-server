@@ -2,23 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755981963768_sstrqx245",
-      "title": "Implement comprehensive test coverage for src/server.ts - main FastMCP server",
-      "description": "Create comprehensive test coverage for the main FastMCP server entry point (currently 0% coverage). Test server initialization, FastMCP protocol handling, tool registration, session management, error handling, health checks, and graceful shutdown. Target 85%+ coverage with proper mocking of dependencies.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-test",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-23T20:46:03.768Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755981919649_ugz3fe6zk",
       "title": "Implement comprehensive test coverage for make-api-client.ts",
       "description": "Critical 0% coverage component - implement authentication, rate limiting, error handling, and API method tests",
