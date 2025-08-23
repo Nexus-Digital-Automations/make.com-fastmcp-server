@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">45.45% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>45/99</span>
+                <span class='fraction'>0/99</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.75% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>11/16</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/6</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">45.45% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>45/99</span>
+                <span class='fraction'>0/99</span>
             </div>
         
             
@@ -161,57 +161,7 @@
 <a name='L96'></a><a href='#L96'>96</a>
 <a name='L97'></a><a href='#L97'>97</a>
 <a name='L98'></a><a href='#L98'>98</a>
-<a name='L99'></a><a href='#L99'>99</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">123x</span>
-<span class="cline-any cline-yes">123x</span>
-<span class="cline-any cline-yes">123x</span>
-<span class="cline-any cline-yes">123x</span>
-<span class="cline-any cline-yes">123x</span>
-<span class="cline-any cline-yes">123x</span>
-<span class="cline-any cline-yes">123x</span>
-<span class="cline-any cline-yes">123x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L99'></a><a href='#L99'>99</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -259,57 +209,107 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * Path resolution utility that works in both runtime and test environments
- */
-import * as path from 'path';
-import * as fs from 'fs';
-&nbsp;
-/**
- * Get the project root directory - works for both runtime and testing
- */
-export function getProjectRoot(): string {
-  // In test environment, use process.cwd() which Jest sets corr<span class="fstat-no" title="function not covered" >ectly</span>
-  if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {
-<span class="branch-0 cbranch-no" title="branch not covered" >    re<span class="branch-0 cbranch-no" title="branch not covered" >turn process.cwd();</span></span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >/**</span></span></span>
+<span class="cstat-no" title="statement not covered" > * Path resolution utility that works in both runtime and test environments</span>
+<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cstat-no" title="statement not covered" >import * as path from 'path';</span>
+<span class="cstat-no" title="statement not covered" >import * as fs from 'fs';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >/**</span>
+<span class="cstat-no" title="statement not covered" > * Get the project root directory - works for both runtime and testing</span>
+<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cstat-no" title="statement not covered" >export function getProjectRoot(): string {</span>
+<span class="cstat-no" title="statement not covered" >  // In test environment, use process.cwd() which Jest sets correctly</span>
+<span class="cstat-no" title="statement not covered" >  if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {</span>
+<span class="cstat-no" title="statement not covered" >    return process.cwd();</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" >  </span>
-  // CRITICAL: For MCP server runtime from Claude Desktop
-  // First check if we can resolve based on the script location
-  try {
-    
-    // Get the directory where this script is located - use process.cwd() for Jest compatibi<span class="branch-0 cbranch-no" title="branch not covered" >li<span class="fstat-no" title="function not covered" >ty</span></span>
+<span class="cstat-no" title="statement not covered" >  // CRITICAL: For MCP server runtime from Claude Desktop</span>
+<span class="cstat-no" title="statement not covered" >  // First check if we can resolve based on the script location</span>
+<span class="cstat-no" title="statement not covered" >  try {</span>
+<span class="cstat-no" title="statement not covered" >    </span>
+<span class="cstat-no" title="statement not covered" >    // Get the directory where this script is located - use process.cwd() for Jest compatibility</span>
 <span class="cstat-no" title="statement not covered" >    const scriptDir = process.cwd();</span>
-    
-    // If we're in dist/utils, go up two levels to get project root
-    if (scriptDir.includes('/dist/utils') || scriptDir.includes('\\dist\<span class="branch-0 cbranch-no" title="branch not covered" >\ut<span class="fstat-no" title="function not covered" >ils')) {</span></span>
+<span class="cstat-no" title="statement not covered" >    </span>
+<span class="cstat-no" title="statement not covered" >    // If we're in dist/utils, go up two levels to get project root</span>
+<span class="cstat-no" title="statement not covered" >    if (scriptDir.includes('/dist/utils') || scriptDir.includes('\\dist\\utils')) {</span>
 <span class="cstat-no" title="statement not covered" >      const projectRoot = path.resolve(scriptDir, '../../');</span>
 <span class="cstat-no" title="statement not covered" >      if (fs.existsSync(path.join(projectRoot, 'package.json'))) {</span>
 <span class="cstat-no" title="statement not covered" >        return projectRoot;</span>
-      }
-    }
-    
-    // If we're in dist/, go up one level
-    if (scriptDir.includes('/dist') || sc<span class="branch-0 cbranch-no" title="branch not covered" >riptDir.incl</span>udes('\\dist')) {
-      const projectRoot = path.resolve(scriptDir, '../');
-      if (fs.existsSync(path.join(projectRoot, 'package.json'))) {
-        return projectRoot;
-      }
-    }
-    
-    // Try current working directory
-    const currentDir = process.cwd();
-    if (fs.existsSync(path.join(currentDir, 'package.json'))) {
-      return currentDir;
-    }
-    
-    // If not found, try looking for package.json in parent directories
-    let searchDir = currentDir;
-    for (let i = 0; i &lt; 10; i++) { // Limit search to prevent infinite loops
-      if (fs.existsSync(path.join(searchDir, 'package.json'))) {
-        return searchDir;
-      }
-      const parentDir = path.dirname(searchDir<span class="fstat-no" title="function not covered" >);</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >    </span>
+<span class="cstat-no" title="statement not covered" >    // If we're in dist/, go up one level</span>
+<span class="cstat-no" title="statement not covered" >    if (scriptDir.includes('/dist') || scriptDir.includes('\\dist')) {</span>
+<span class="cstat-no" title="statement not covered" >      const projectRoot = path.resolve(scriptDir, '../');</span>
+<span class="cstat-no" title="statement not covered" >      if (fs.existsSync(path.join(projectRoot, 'package.json'))) {</span>
+<span class="cstat-no" title="statement not covered" >        return projectRoot;</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >    </span>
+<span class="cstat-no" title="statement not covered" >    // Try current working directory</span>
+<span class="cstat-no" title="statement not covered" >    const currentDir = process.cwd();</span>
+<span class="cstat-no" title="statement not covered" >    if (fs.existsSync(path.join(currentDir, 'package.json'))) {</span>
+<span class="cstat-no" title="statement not covered" >      return currentDir;</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >    </span>
+<span class="cstat-no" title="statement not covered" >    // If not found, try looking for package.json in parent directories</span>
+<span class="cstat-no" title="statement not covered" >    let searchDir = currentDir;</span>
+<span class="cstat-no" title="statement not covered" >    for (let i = 0; i &lt; 10; i++) { // Limit search to prevent infinite loops</span>
+<span class="cstat-no" title="statement not covered" >      if (fs.existsSync(path.join(searchDir, 'package.json'))) {</span>
+<span class="cstat-no" title="statement not covered" >        return searchDir;</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >      const parentDir = path.dirname(searchDir);</span>
 <span class="cstat-no" title="statement not covered" >      if (parentDir === searchDir) {break;} // Reached root</span>
 <span class="cstat-no" title="statement not covered" >      searchDir = parentDir;</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
@@ -364,7 +364,7 @@ export function getProjectRoot(): string {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T14:03:28.547Z
+                at 2025-08-23T14:24:59.385Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
