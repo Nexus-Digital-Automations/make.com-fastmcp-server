@@ -26,7 +26,7 @@ export interface StorageIndex {
 }
 
 export class SecureCredentialStorage {
-  private config: SecureStorageConfig;
+  private readonly config: SecureStorageConfig;
   private storageIndex: StorageIndex | null = null;
   private readonly indexLock = new Set<string>();
 
@@ -193,7 +193,7 @@ export class SecureCredentialStorage {
       const indexedFiles = new Set(Object.values(index.credentials).map(cred => cred.filePath));
       
       for (const file of files) {
-        if (file === this.config.indexFile) continue; // Skip index file
+        if (file === this.config.indexFile) {continue;} // Skip index file
         
         if (!indexedFiles.has(file)) {
           try {
@@ -231,7 +231,7 @@ export class SecureCredentialStorage {
     try {
       const indexData = await fs.readFile(indexPath, 'utf8');
       this.storageIndex = JSON.parse(indexData) as StorageIndex;
-    } catch (error) {
+    } catch {
       // Create new index if it doesn't exist
       this.storageIndex = {
         credentials: {},
@@ -246,7 +246,7 @@ export class SecureCredentialStorage {
    * Save storage index to encrypted file
    */
   private async saveStorageIndex(): Promise<void> {
-    if (!this.storageIndex) return;
+    if (!this.storageIndex) {return;}
     
     const indexPath = path.join(this.config.storageDirectory, this.config.indexFile);
     const indexData = JSON.stringify(this.storageIndex, null, 2);

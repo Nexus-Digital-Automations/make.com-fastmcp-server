@@ -294,7 +294,7 @@ export class CredentialManager {
    * Initialize secure credential storage if not already done
    */
   private async ensureStorageInitialized(): Promise<void> {
-    if (this.storageInitialized) return;
+    if (this.storageInitialized) {return;}
     
     try {
       await secureCredentialStorage.initialize();

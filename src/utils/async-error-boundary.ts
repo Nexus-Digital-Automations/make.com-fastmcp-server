@@ -31,13 +31,13 @@ export interface ErrorContext {
 }
 
 export class AsyncErrorBoundary {
-  private static globalResources = new Map<string, ResourceCleanup>();
-  private static shutdownHandlers = new Set<() => Promise<void>>();
+  private static readonly globalResources = new Map<string, ResourceCleanup>();
+  private static readonly shutdownHandlers = new Set<() => Promise<void>>();
   private static isShuttingDown = false;
   
-  private resources = new Map<string, ResourceCleanup>();
-  private options: Required<ErrorBoundaryOptions>;
-  private componentLogger: ReturnType<typeof logger.child>;
+  private readonly resources = new Map<string, ResourceCleanup>();
+  private readonly options: Required<ErrorBoundaryOptions>;
+  private readonly componentLogger: ReturnType<typeof logger.child>;
 
   constructor(options: ErrorBoundaryOptions) {
     this.options = {
@@ -116,7 +116,7 @@ export class AsyncErrorBoundary {
         }
 
         // If this is the last attempt, break to fallback
-        if (attempt > this.options.retryAttempts) break;
+        if (attempt > this.options.retryAttempts) {break;}
 
         // Wait before retry
         if (this.options.retryDelayMs > 0) {
@@ -155,7 +155,7 @@ export class AsyncErrorBoundary {
    * Register a resource for cleanup
    */
   registerResource(resource: ResourceCleanup): void {
-    if (!this.options.enableResourceTracking) return;
+    if (!this.options.enableResourceTracking) {return;}
     
     this.resources.set(resource.name, resource);
     
@@ -228,7 +228,7 @@ export class AsyncErrorBoundary {
    * Cleanup all registered resources
    */
   async cleanup(): Promise<void> {
-    if (this.resources.size === 0) return;
+    if (this.resources.size === 0) {return;}
 
     this.componentLogger.info('Starting resource cleanup', {
       resourceCount: this.resources.size
@@ -284,7 +284,7 @@ export class AsyncErrorBoundary {
    * Global shutdown handler - cleanup all boundaries and resources
    */
   static async shutdown(): Promise<void> {
-    if (AsyncErrorBoundary.isShuttingDown) return;
+    if (AsyncErrorBoundary.isShuttingDown) {return;}
     
     AsyncErrorBoundary.isShuttingDown = true;
     
@@ -374,7 +374,7 @@ export function setupGlobalErrorHandlers(): void {
   });
 
   // Handle unhandled promise rejections
-  process.on('unhandledRejection', async (reason, promise) => {
+  process.on('unhandledRejection', async (reason, _promise) => {
     logger.error('Unhandled promise rejection detected', {
       reason: reason instanceof Error ? reason.message : String(reason),
       stack: reason instanceof Error ? reason.stack : undefined
