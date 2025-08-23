@@ -43,25 +43,41 @@ class MonitoringMiddleware {
     } catch (error) {
       // Ultimate fallback for test environments
       console.warn('MonitoringMiddleware logger initialization failed, using fallback:', error);
-      this.componentLogger = {
-        info: (..._args: unknown[]) => {},
-        debug: (..._args: unknown[]) => {},
-        warn: (..._args: unknown[]) => {},
-        error: (..._args: unknown[]) => {},
-        child: () => this.componentLogger
-      } as ReturnType<typeof logger.child>;
+      this.componentLogger = this.createFallbackLogger();
     }
 
     // Additional safety check for test environments
     if (!this.componentLogger || typeof this.componentLogger.info !== 'function') {
-      this.componentLogger = {
-        info: (..._args: unknown[]) => {},
-        debug: (..._args: unknown[]) => {},
-        warn: (..._args: unknown[]) => {},
-        error: (..._args: unknown[]) => {},
-        child: () => this.componentLogger
-      } as ReturnType<typeof logger.child>;
+      this.componentLogger = this.createFallbackLogger();
     }
+  }
+
+  /**
+   * Create a fallback logger that's compatible with the Logger interface
+   */
+  private createFallbackLogger(): ReturnType<typeof logger.child> {
+    const fallbackLogger = {
+      info: (..._args: unknown[]): void => {},
+      debug: (..._args: unknown[]): void => {},
+      warn: (..._args: unknown[]): void => {},
+      error: (..._args: unknown[]): void => {},
+      child: (): typeof fallbackLogger => fallbackLogger,
+      // Add required Logger properties to match the interface
+      logLevel: 'info' as const,
+      logLevels: { debug: 0, info: 1, warn: 2, error: 3 },
+      shouldLog: (): boolean => true,
+      formatLogEntry: (): string => '',
+      log: (): void => {},
+      logWithCorrelation: (): string => 'fallback_correlation_id',
+      logDuration: (): void => {},
+      setLogLevel: (): void => {},
+      getLogLevel: (): 'info' => 'info' as const,
+      generateCorrelationId: (): string => 'fallback_correlation_id',
+      generateTraceId: (): string => 'fallback_trace_id',
+      generateSpanId: (): string => 'fallback_span_id',
+      generateRequestId: (): string => 'fallback_request_id'
+    };
+    return fallbackLogger as unknown as ReturnType<typeof logger.child>;
   }
 
   /**
