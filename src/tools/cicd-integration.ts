@@ -208,6 +208,459 @@ function runCommand(command: string, args: string[], options: Record<string, unk
   });
 }
 
+// Helper functions for test suite execution
+function buildTestCommand(category: string, specificFiles?: string[]): string[] {
+  let testCommand = ['run', `test:${category === 'all' ? '' : category}`];
+  if (category === 'all') {
+    testCommand = ['run', 'test'];
+  }
+  
+  if (specificFiles && specificFiles.length > 0) {
+    testCommand.push(...specificFiles);
+  }
+  
+  return testCommand;
+}
+
+function buildTestArgs(testCommand: string[], options: {
+  includeWatch: boolean;
+  includeVerbose: boolean;
+  parallel: boolean;
+  maxWorkers: number;
+}): string[] {
+  const testArgs = [...testCommand];
+  if (options.includeWatch) { testArgs.push('--watch'); }
+  if (options.includeVerbose) { testArgs.push('--verbose'); }
+  if (!options.parallel) { testArgs.push('--runInBand'); }
+  if (options.maxWorkers !== 4) { testArgs.push(`--maxWorkers=${options.maxWorkers}`); }
+  
+  return testArgs;
+}
+
+function parseTestResults(stdout: string, stderr: string, category: string, duration: number): TestResult {
+  const passedMatch = stdout.match(/(\d+) passing/);
+  const failedMatch = stdout.match(/(\d+) failing/);
+  const skippedMatch = stdout.match(/(\d+) pending/);
+  
+  return {
+    category,
+    passed: passedMatch ? parseInt(passedMatch[1]) : 0,
+    failed: failedMatch ? parseInt(failedMatch[1]) : 0,
+    skipped: skippedMatch ? parseInt(skippedMatch[1]) : 0,
+    duration,
+    errors: stderr ? stderr.split('\n').filter(line => line.trim().length > 0) : [],
+    warnings: stdout.split('\n').filter(line => line.includes('WARN')),
+  };
+}
+
+function extractCoverageFromOutput(stdout: string, testResult: TestResult): TestResult {
+  if (stdout.includes('% Stmts') || stdout.includes('% Lines')) {
+    const coverageMatch = stdout.match(/All files\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)/);
+    if (coverageMatch) {
+      testResult.coverage = {
+        statements: parseFloat(coverageMatch[1]),
+        branches: parseFloat(coverageMatch[2]),
+        functions: parseFloat(coverageMatch[3]),
+        lines: parseFloat(coverageMatch[4]),
+      };
+    }
+  }
+  return testResult;
+}
+
+// Helper functions for coverage reporting
+function buildCoverageCommand(testCategory: string): string[] {
+  const coverageCmd = ['run', 'test:coverage'];
+  if (testCategory !== 'all') {
+    coverageCmd[1] = `test:${testCategory}`;
+  }
+  return coverageCmd;
+}
+
+function processCoverageSummary(coverageSummaryPath: string, threshold: number): CoverageReport {
+  const coverageData: CoverageReport = {
+    overall: { lines: 0, functions: 0, branches: 0, statements: 0 },
+    files: [],
+    threshold: { met: false, required: threshold, actual: 0 },
+    uncoveredFiles: [],
+  };
+  
+  try {
+    const summaryData = JSON.parse(readFileSync(coverageSummaryPath, 'utf8'));
+    
+    if (summaryData.total) {
+      coverageData.overall = {
+        lines: summaryData.total.lines.pct || 0,
+        functions: summaryData.total.functions.pct || 0,
+        branches: summaryData.total.branches.pct || 0,
+        statements: summaryData.total.statements.pct || 0,
+      };
+      
+      coverageData.threshold.actual = coverageData.overall.lines;
+      coverageData.threshold.met = coverageData.overall.lines >= threshold;
+    }
+    
+    // Extract file-level coverage
+    for (const [filePath, fileData] of Object.entries(summaryData)) {
+      if (filePath !== 'total' && typeof fileData === 'object' && fileData !== null) {
+        const data = fileData as CoverageFileData;
+        coverageData.files.push({
+          path: filePath,
+          lines: data.lines?.pct || 0,
+          functions: data.functions?.pct || 0,
+          branches: data.branches?.pct || 0,
+          statements: data.statements?.pct || 0,
+        });
+      }
+    }
+  } catch {
+    // Handle parse error silently
+  }
+  
+  return coverageData;
+}
+
+async function findUncoveredFiles(coverageData: CoverageReport): Promise<string[]> {
+  const { stdout: findFiles } = await runCommand('find', ['src', '-name', '*.ts', '-not', '-path', '*/test*']);
+  const sourceFiles = findFiles.split('\n').filter(f => f.trim().length > 0);
+  const coveredFiles = coverageData.files.map(f => f.path);
+  return sourceFiles.filter(f => !coveredFiles.some(cf => cf.includes(f)));
+}
+
+function generateCoverageAnalysis(coverageData: CoverageReport): {
+  grade: string;
+  recommendations: string[];
+} {
+  const grade = coverageData.overall.lines >= 90 ? 'A' : 
+                coverageData.overall.lines >= 80 ? 'B' :
+                coverageData.overall.lines >= 70 ? 'C' :
+                coverageData.overall.lines >= 60 ? 'D' : 'F';
+                
+  const recommendations: string[] = [];
+  
+  if (coverageData.overall.lines < coverageData.threshold.required) {
+    recommendations.push(`Increase line coverage to meet ${coverageData.threshold.required}% threshold`);
+  }
+  if (coverageData.uncoveredFiles.length > 0) {
+    recommendations.push(`Add tests for ${coverageData.uncoveredFiles.length} uncovered files`);
+  }
+  if (coverageData.files.filter(f => f.lines < 50).length > 0) {
+    recommendations.push('Focus on files with less than 50% coverage');
+  }
+  
+  return { grade, recommendations };
+}
+
+// Helper functions for deployment readiness validation
+async function performLintingCheck(strictMode: boolean): Promise<DeploymentCheck['checks'][0]> {
+  const startTime = Date.now();
+  const lintResult = await runLintCheck();
+  const duration = Date.now() - startTime;
+  
+  return {
+    name: 'Linting',
+    status: lintResult.passed ? 'passed' : (strictMode ? 'failed' : 'warning'),
+    message: lintResult.passed ? 'All linting checks passed' : `Found ${lintResult.issues} linting issues`,
+    duration,
+    details: { score: lintResult.score, issues: lintResult.issues },
+  };
+}
+
+async function performTypeCheck(): Promise<DeploymentCheck['checks'][0]> {
+  const startTime = Date.now();
+  const typeResult = await runTypeCheck();
+  const duration = Date.now() - startTime;
+  
+  return {
+    name: 'Type Checking',
+    status: typeResult.passed ? 'passed' : 'failed',
+    message: typeResult.passed ? 'All type checks passed' : `Found ${typeResult.errors} type errors`,
+    duration,
+    details: { score: typeResult.score, errors: typeResult.errors },
+  };
+}
+
+async function performTestExecution(): Promise<DeploymentCheck['checks'][0]> {
+  const startTime = Date.now();
+  const { stdout, exitCode } = await runCommand('npm', ['run', 'test']);
+  const duration = Date.now() - startTime;
+  
+  return {
+    name: 'Test Execution',
+    status: exitCode === 0 ? 'passed' : 'failed',
+    message: exitCode === 0 ? 'All tests passed' : 'Some tests failed',
+    duration,
+    details: { exitCode, hasOutput: stdout.length > 0 },
+  };
+}
+
+async function performBuildVerification(): Promise<DeploymentCheck['checks'][0]> {
+  const startTime = Date.now();
+  const { stderr, exitCode } = await runCommand('npm', ['run', 'build']);
+  const duration = Date.now() - startTime;
+  
+  return {
+    name: 'Build Verification',
+    status: exitCode === 0 ? 'passed' : 'failed',
+    message: exitCode === 0 ? 'Build completed successfully' : 'Build failed',
+    duration,
+    details: { exitCode, hasErrors: stderr.length > 0 },
+  };
+}
+
+async function performSecurityCheck(strictMode: boolean): Promise<DeploymentCheck['checks'][0]> {
+  const startTime = Date.now();
+  const securityResult = await runSecurityScan();
+  const duration = Date.now() - startTime;
+  
+  const totalVulns = Object.values(securityResult.vulnerabilities).reduce((sum, count) => sum + count, 0);
+  const criticalIssues = securityResult.vulnerabilities.critical + securityResult.vulnerabilities.high;
+  
+  return {
+    name: 'Security Scan',
+    status: criticalIssues === 0 ? 'passed' : (strictMode ? 'failed' : 'warning'),
+    message: totalVulns === 0 ? 'No security vulnerabilities found' : `Found ${totalVulns} vulnerabilities`,
+    duration,
+    details: { vulnerabilities: securityResult.vulnerabilities, score: securityResult.score },
+  };
+}
+
+async function performDependencyCheck(): Promise<DeploymentCheck['checks'][0]> {
+  const startTime = Date.now();
+  const { stdout } = await runCommand('npm', ['outdated', '--json']);
+  const duration = Date.now() - startTime;
+  
+  let outdatedPackages = 0;
+  try {
+    const outdated = JSON.parse(stdout);
+    outdatedPackages = Object.keys(outdated).length;
+  } catch {
+    // Handle JSON parse error
+  }
+  
+  return {
+    name: 'Dependency Check',
+    status: outdatedPackages === 0 ? 'passed' : 'warning',
+    message: outdatedPackages === 0 ? 'All dependencies up to date' : `${outdatedPackages} outdated packages`,
+    duration,
+    details: { outdatedPackages },
+  };
+}
+
+function calculateDeploymentSummary(checks: DeploymentCheck['checks'], strictMode: boolean): {
+  passedChecks: number;
+  failedChecks: number;
+  warningChecks: number;
+  overallPassed: boolean;
+  overallScore: number;
+} {
+  const passedChecks = checks.filter(c => c.status === 'passed').length;
+  const failedChecks = checks.filter(c => c.status === 'failed').length;
+  const warningChecks = checks.filter(c => c.status === 'warning').length;
+  const overallPassed = failedChecks === 0 && (strictMode ? warningChecks === 0 : true);
+  const overallScore = Math.round((passedChecks / checks.length) * 100);
+  
+  return { passedChecks, failedChecks, warningChecks, overallPassed, overallScore };
+}
+
+function generateDeploymentRecommendations(summary: {
+  failedChecks: number;
+  warningChecks: number;
+}, strictMode: boolean, environment: string): string[] {
+  const recommendations: string[] = [];
+  
+  if (summary.failedChecks > 0) {
+    recommendations.push(`Fix ${summary.failedChecks} failing checks before deployment`);
+  }
+  if (summary.warningChecks > 0 && strictMode) {
+    recommendations.push(`Address ${summary.warningChecks} warnings (strict mode enabled)`);
+  }
+  if (environment === 'production') {
+    recommendations.push('Ensure backup and rollback procedures are in place');
+    recommendations.push('Verify monitoring and alerting systems are configured');
+  }
+  
+  return recommendations;
+}
+
+// Helper functions for build report generation
+async function initializeBuildReport(): Promise<BuildReport> {
+  return {
+    buildInfo: {
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0', // From package.json
+      duration: 0,
+      status: 'success',
+    },
+    metrics: {
+      buildTime: 0,
+      bundleSize: 0,
+      dependencies: 0,
+      devDependencies: 0,
+      linesOfCode: 0,
+      files: 0,
+    },
+    quality: {
+      lintScore: 0,
+      typeScore: 0,
+      testCoverage: 0,
+      complexityScore: 85, // Mock complexity score
+      maintainabilityIndex: 78, // Mock maintainability index
+    },
+    security: {
+      vulnerabilities: { critical: 0, high: 0, medium: 0, low: 0 },
+      dependencyIssues: [],
+      securityScore: 0,
+    },
+    recommendations: [],
+  };
+}
+
+async function collectBuildMetrics(buildReport: BuildReport): Promise<BuildReport> {
+  const metrics = await getProjectMetrics();
+  buildReport.metrics = { ...buildReport.metrics, ...metrics };
+  
+  // Run build and measure time
+  const buildStartTime = Date.now();
+  const { exitCode } = await runCommand('npm', ['run', 'build']);
+  const buildTime = Date.now() - buildStartTime;
+  
+  buildReport.metrics.buildTime = buildTime;
+  buildReport.buildInfo.status = exitCode === 0 ? 'success' : 'failed';
+  
+  // Analyze bundle size if dist exists
+  if (await checkFileExists('dist')) {
+    try {
+      const { stdout: sizeOutput } = await runCommand('du', ['-sh', 'dist']);
+      const sizeMatch = sizeOutput.match(/^(\d+\.?\d*)([KMGT]?)/);
+      if (sizeMatch) {
+        const size = parseFloat(sizeMatch[1]);
+        const unit = sizeMatch[2];
+        buildReport.metrics.bundleSize = unit === 'K' ? size : unit === 'M' ? size * 1024 : size;
+      }
+    } catch {
+      // Handle size calculation error
+    }
+  }
+  
+  return buildReport;
+}
+
+async function collectQualityScores(buildReport: BuildReport): Promise<BuildReport> {
+  const [lintResult, typeResult] = await Promise.all([
+    runLintCheck(),
+    runTypeCheck(),
+  ]);
+  
+  buildReport.quality.lintScore = lintResult.score;
+  buildReport.quality.typeScore = typeResult.score;
+  
+  // Get test coverage
+  try {
+    const coveragePath = resolve('coverage/coverage-summary.json');
+    if (await checkFileExists(coveragePath)) {
+      const coverageData = JSON.parse(readFileSync(coveragePath, 'utf8'));
+      buildReport.quality.testCoverage = coverageData.total?.lines?.pct || 0;
+    }
+  } catch {
+    // Handle coverage read error
+  }
+  
+  return buildReport;
+}
+
+async function collectSecurityData(buildReport: BuildReport): Promise<BuildReport> {
+  const securityResult = await runSecurityScan();
+  buildReport.security.vulnerabilities = securityResult.vulnerabilities;
+  buildReport.security.securityScore = securityResult.score;
+  
+  return buildReport;
+}
+
+async function collectDependencyAnalysis(buildReport: BuildReport): Promise<BuildReport> {
+  try {
+    const { stdout } = await runCommand('npm', ['outdated', '--json']);
+    const outdated = JSON.parse(stdout);
+    buildReport.security.dependencyIssues = Object.keys(outdated).map(pkg => 
+      `${pkg}: ${outdated[pkg].current} → ${outdated[pkg].latest}`
+    );
+  } catch {
+    // Handle outdated check error
+  }
+  
+  return buildReport;
+}
+
+function generateBuildRecommendations(buildReport: BuildReport): BuildReport['recommendations'] {
+  const recommendations: BuildReport['recommendations'] = [];
+  
+  if (buildReport.quality.lintScore < 90) {
+    recommendations.push({
+      category: 'Code Quality',
+      priority: buildReport.quality.lintScore < 70 ? 'high' : 'medium',
+      message: 'Improve code linting score',
+      action: 'Fix ESLint errors and warnings',
+    });
+  }
+  
+  if (buildReport.quality.typeScore < 90) {
+    recommendations.push({
+      category: 'Type Safety',
+      priority: buildReport.quality.typeScore < 70 ? 'high' : 'medium',
+      message: 'Address TypeScript errors',
+      action: 'Fix type checking issues',
+    });
+  }
+  
+  if (buildReport.quality.testCoverage < 80) {
+    recommendations.push({
+      category: 'Testing',
+      priority: 'medium',
+      message: 'Increase test coverage',
+      action: 'Add more unit and integration tests',
+    });
+  }
+  
+  const totalVulns = Object.values(buildReport.security.vulnerabilities).reduce((sum, count) => sum + count, 0);
+  if (totalVulns > 0) {
+    recommendations.push({
+      category: 'Security',
+      priority: buildReport.security.vulnerabilities.critical > 0 ? 'critical' : 'high',
+      message: `Address ${totalVulns} security vulnerabilities`,
+      action: 'Update dependencies and fix security issues',
+    });
+  }
+  
+  if (buildReport.metrics.bundleSize > 10240) { // > 10MB
+    recommendations.push({
+      category: 'Performance',
+      priority: 'medium',
+      message: 'Large bundle size detected',
+      action: 'Consider code splitting and dependency optimization',
+    });
+  }
+  
+  return recommendations;
+}
+
+function generateBuildSummary(buildReport: BuildReport): {
+  overallGrade: string;
+  keyMetrics: Record<string, string | number>;
+  actionItems: number;
+} {
+  const overallGrade = calculateOverallGrade(buildReport);
+  const keyMetrics = {
+    buildTime: `${Math.round(buildReport.metrics.buildTime / 1000)}s`,
+    bundleSize: `${Math.round(buildReport.metrics.bundleSize)}KB`,
+    qualityScore: Math.round((buildReport.quality.lintScore + buildReport.quality.typeScore + buildReport.quality.testCoverage) / 3),
+    securityScore: buildReport.security.securityScore,
+  };
+  const actionItems = buildReport.recommendations.filter(r => r.priority === 'critical' || r.priority === 'high').length;
+  
+  return { overallGrade, keyMetrics, actionItems };
+}
+
 async function checkFileExists(path: string): Promise<boolean> {
   try {
     return existsSync(resolve(path));
@@ -360,23 +813,9 @@ function addRunTestSuiteTool(server: FastMCP, componentLogger: typeof logger): v
 
         const startTime = Date.now();
         
-        // Build test command based on category
-        let testCommand = ['run', `test:${category === 'all' ? '' : category}`];
-        if (category === 'all') {
-          testCommand = ['run', 'test'];
-        }
-        
-        // Add specific files if provided
-        if (specificFiles && specificFiles.length > 0) {
-          testCommand.push(...specificFiles);
-        }
-        
-        // Add additional flags
-        const testArgs = [...testCommand];
-        if (includeWatch) {testArgs.push('--watch');}
-        if (includeVerbose) {testArgs.push('--verbose');}
-        if (!parallel) {testArgs.push('--runInBand');}
-        if (maxWorkers !== 4) {testArgs.push(`--maxWorkers=${maxWorkers}`);}
+        // Build test command and arguments using helper functions
+        const testCommand = buildTestCommand(category, specificFiles);
+        const testArgs = buildTestArgs(testCommand, { includeWatch, includeVerbose, parallel, maxWorkers });
         
         reportProgress({ progress: 20, total: 100 });
         
@@ -387,36 +826,12 @@ function addRunTestSuiteTool(server: FastMCP, componentLogger: typeof logger): v
         
         reportProgress({ progress: 70, total: 100 });
         
-        // Parse test results
+        // Parse test results using helper function
         const duration = Date.now() - startTime;
+        let testResult = parseTestResults(stdout, stderr, category, duration);
         
-        // Extract test statistics from output
-        const passedMatch = stdout.match(/(\d+) passing/);
-        const failedMatch = stdout.match(/(\d+) failing/);
-        const skippedMatch = stdout.match(/(\d+) pending/);
-        
-        const testResult: TestResult = {
-          category,
-          passed: passedMatch ? parseInt(passedMatch[1]) : 0,
-          failed: failedMatch ? parseInt(failedMatch[1]) : 0,
-          skipped: skippedMatch ? parseInt(skippedMatch[1]) : 0,
-          duration,
-          errors: stderr ? stderr.split('\n').filter(line => line.trim().length > 0) : [],
-          warnings: stdout.split('\n').filter(line => line.includes('WARN')),
-        };
-        
-        // Extract coverage information if available
-        if (stdout.includes('% Stmts') || stdout.includes('% Lines')) {
-          const coverageMatch = stdout.match(/All files\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)\s+\|\s+(\d+\.?\d*)/);
-          if (coverageMatch) {
-            testResult.coverage = {
-              statements: parseFloat(coverageMatch[1]),
-              branches: parseFloat(coverageMatch[2]),
-              functions: parseFloat(coverageMatch[3]),
-              lines: parseFloat(coverageMatch[4]),
-            };
-          }
-        }
+        // Extract coverage information using helper function
+        testResult = extractCoverageFromOutput(stdout, testResult);
         
         reportProgress({ progress: 100, total: 100 });
         
@@ -515,11 +930,8 @@ function addGetTestCoverageTool(server: FastMCP, componentLogger: typeof logger)
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        // Run coverage command
-        const coverageCmd = ['run', 'test:coverage'];
-        if (testCategory !== 'all') {
-          coverageCmd[1] = `test:${testCategory}`;
-        }
+        // Build and run coverage command using helper function
+        const coverageCmd = buildCoverageCommand(testCategory);
         
         reportProgress({ progress: 30, total: 100 });
         
@@ -527,55 +939,22 @@ function addGetTestCoverageTool(server: FastMCP, componentLogger: typeof logger)
         
         reportProgress({ progress: 60, total: 100 });
         
-        // Parse coverage from coverage-summary.json if exists
-        const coverageData: CoverageReport = {
+        // Process coverage summary using helper function
+        const coverageSummaryPath = resolve('coverage/coverage-summary.json');
+        let coverageData = {
           overall: { lines: 0, functions: 0, branches: 0, statements: 0 },
           files: [],
           threshold: { met: false, required: threshold, actual: 0 },
           uncoveredFiles: [],
-        };
+        } as CoverageReport;
         
-        const coverageSummaryPath = resolve('coverage/coverage-summary.json');
         if (await checkFileExists(coverageSummaryPath)) {
-          try {
-            const summaryData = JSON.parse(readFileSync(coverageSummaryPath, 'utf8'));
-            
-            if (summaryData.total) {
-              coverageData.overall = {
-                lines: summaryData.total.lines.pct || 0,
-                functions: summaryData.total.functions.pct || 0,
-                branches: summaryData.total.branches.pct || 0,
-                statements: summaryData.total.statements.pct || 0,
-              };
-              
-              coverageData.threshold.actual = coverageData.overall.lines;
-              coverageData.threshold.met = coverageData.overall.lines >= threshold;
-            }
-            
-            // Extract file-level coverage
-            for (const [filePath, fileData] of Object.entries(summaryData)) {
-              if (filePath !== 'total' && typeof fileData === 'object' && fileData !== null) {
-                const data = fileData as CoverageFileData;
-                coverageData.files.push({
-                  path: filePath,
-                  lines: data.lines?.pct || 0,
-                  functions: data.functions?.pct || 0,
-                  branches: data.branches?.pct || 0,
-                  statements: data.statements?.pct || 0,
-                });
-              }
-            }
-          } catch (parseError) {
-            componentLogger.warn('Failed to parse coverage summary', { parseError, correlationId });
-          }
+          coverageData = processCoverageSummary(coverageSummaryPath, threshold);
         }
         
-        // Find uncovered files if requested
+        // Find uncovered files if requested using helper function
         if (includeUncoveredFiles) {
-          const { stdout: findFiles } = await runCommand('find', ['src', '-name', '*.ts', '-not', '-path', '*/test*']);
-          const sourceFiles = findFiles.split('\n').filter(f => f.trim().length > 0);
-          const coveredFiles = coverageData.files.map(f => f.path);
-          coverageData.uncoveredFiles = sourceFiles.filter(f => !coveredFiles.some(cf => cf.includes(f)));
+          coverageData.uncoveredFiles = await findUncoveredFiles(coverageData);
         }
         
         reportProgress({ progress: 100, total: 100 });
@@ -587,20 +966,13 @@ function addGetTestCoverageTool(server: FastMCP, componentLogger: typeof logger)
           correlationId 
         });
         
+        // Generate analysis using helper function
+        const analysis = generateCoverageAnalysis(coverageData);
+        
         return formatSuccessResponse({
           status: coverageData.threshold.met ? 'passed' : 'failed',
           coverage: coverageData,
-          analysis: {
-            grade: coverageData.overall.lines >= 90 ? 'A' : 
-                   coverageData.overall.lines >= 80 ? 'B' :
-                   coverageData.overall.lines >= 70 ? 'C' :
-                   coverageData.overall.lines >= 60 ? 'D' : 'F',
-            recommendations: [
-              ...(coverageData.overall.lines < threshold ? [`Increase line coverage to meet ${threshold}% threshold`] : []),
-              ...(coverageData.uncoveredFiles.length > 0 ? [`Add tests for ${coverageData.uncoveredFiles.length} uncovered files`] : []),
-              ...(coverageData.files.filter(f => f.lines < 50).length > 0 ? ['Focus on files with less than 50% coverage'] : []),
-            ],
-          },
+          analysis,
           configuration: {
             testCategory,
             format,
@@ -675,154 +1047,58 @@ function addValidateDeploymentReadinessTool(server: FastMCP, componentLogger: ty
         const totalChecks = [includeLinting, includeTypeCheck, includeTests, includeBuild, includeSecurityChecks, includeDependencyCheck].filter(Boolean).length;
         const progressIncrement = 90 / totalChecks;
         
-        // Linting check
+        // Execute checks using helper functions
         if (includeLinting) {
-          const startTime = Date.now();
-          const lintResult = await runLintCheck();
-          const duration = Date.now() - startTime;
-          
-          checks.push({
-            name: 'Linting',
-            status: lintResult.passed ? 'passed' : (strictMode ? 'failed' : 'warning'),
-            message: lintResult.passed ? 'All linting checks passed' : `Found ${lintResult.issues} linting issues`,
-            duration,
-            details: { score: lintResult.score, issues: lintResult.issues },
-          });
-          
+          checks.push(await performLintingCheck(strictMode));
           currentProgress += progressIncrement;
           reportProgress({ progress: currentProgress, total: 100 });
         }
         
-        // Type checking
         if (includeTypeCheck) {
-          const startTime = Date.now();
-          const typeResult = await runTypeCheck();
-          const duration = Date.now() - startTime;
-          
-          checks.push({
-            name: 'Type Checking',
-            status: typeResult.passed ? 'passed' : 'failed',
-            message: typeResult.passed ? 'All type checks passed' : `Found ${typeResult.errors} type errors`,
-            duration,
-            details: { score: typeResult.score, errors: typeResult.errors },
-          });
-          
+          checks.push(await performTypeCheck());
           currentProgress += progressIncrement;
           reportProgress({ progress: currentProgress, total: 100 });
         }
         
-        // Test execution
         if (includeTests) {
-          const startTime = Date.now();
-          const { stdout, exitCode } = await runCommand('npm', ['run', 'test']);
-          const duration = Date.now() - startTime;
-          
-          checks.push({
-            name: 'Test Execution',
-            status: exitCode === 0 ? 'passed' : 'failed',
-            message: exitCode === 0 ? 'All tests passed' : 'Some tests failed',
-            duration,
-            details: { exitCode, hasOutput: stdout.length > 0 },
-          });
-          
+          checks.push(await performTestExecution());
           currentProgress += progressIncrement;
           reportProgress({ progress: currentProgress, total: 100 });
         }
         
-        // Build verification
         if (includeBuild) {
-          const startTime = Date.now();
-          const { stderr, exitCode } = await runCommand('npm', ['run', 'build']);
-          const duration = Date.now() - startTime;
-          
-          checks.push({
-            name: 'Build Verification',
-            status: exitCode === 0 ? 'passed' : 'failed',
-            message: exitCode === 0 ? 'Build completed successfully' : 'Build failed',
-            duration,
-            details: { exitCode, hasErrors: stderr.length > 0 },
-          });
-          
+          checks.push(await performBuildVerification());
           currentProgress += progressIncrement;
           reportProgress({ progress: currentProgress, total: 100 });
         }
         
-        // Security checks
         if (includeSecurityChecks) {
-          const startTime = Date.now();
-          const securityResult = await runSecurityScan();
-          const duration = Date.now() - startTime;
-          
-          const totalVulns = Object.values(securityResult.vulnerabilities).reduce((sum, count) => sum + count, 0);
-          const criticalIssues = securityResult.vulnerabilities.critical + securityResult.vulnerabilities.high;
-          
-          checks.push({
-            name: 'Security Scan',
-            status: criticalIssues === 0 ? 'passed' : (strictMode ? 'failed' : 'warning'),
-            message: totalVulns === 0 ? 'No security vulnerabilities found' : `Found ${totalVulns} vulnerabilities`,
-            duration,
-            details: { vulnerabilities: securityResult.vulnerabilities, score: securityResult.score },
-          });
-          
+          checks.push(await performSecurityCheck(strictMode));
           currentProgress += progressIncrement;
           reportProgress({ progress: currentProgress, total: 100 });
         }
         
-        // Dependency check
         if (includeDependencyCheck) {
-          const startTime = Date.now();
-          const { stdout } = await runCommand('npm', ['outdated', '--json']);
-          const duration = Date.now() - startTime;
-          
-          let outdatedPackages = 0;
-          try {
-            const outdated = JSON.parse(stdout);
-            outdatedPackages = Object.keys(outdated).length;
-          } catch {
-            // Handle JSON parse error
-          }
-          
-          checks.push({
-            name: 'Dependency Check',
-            status: outdatedPackages === 0 ? 'passed' : 'warning',
-            message: outdatedPackages === 0 ? 'All dependencies up to date' : `${outdatedPackages} outdated packages`,
-            duration,
-            details: { outdatedPackages },
-          });
-          
+          checks.push(await performDependencyCheck());
           currentProgress += progressIncrement;
           reportProgress({ progress: currentProgress, total: 100 });
         }
         
-        // Calculate summary
-        const passedChecks = checks.filter(c => c.status === 'passed').length;
-        const failedChecks = checks.filter(c => c.status === 'failed').length;
-        const warningChecks = checks.filter(c => c.status === 'warning').length;
-        const overallPassed = failedChecks === 0 && (strictMode ? warningChecks === 0 : true);
-        const overallScore = Math.round((passedChecks / checks.length) * 100);
+        // Calculate summary using helper function
+        const summary = calculateDeploymentSummary(checks, strictMode);
         
-        // Generate recommendations
-        const recommendations: string[] = [];
-        if (failedChecks > 0) {
-          recommendations.push(`Fix ${failedChecks} failing checks before deployment`);
-        }
-        if (warningChecks > 0 && strictMode) {
-          recommendations.push(`Address ${warningChecks} warnings (strict mode enabled)`);
-        }
-        if (environment === 'production') {
-          recommendations.push('Ensure backup and rollback procedures are in place');
-          recommendations.push('Verify monitoring and alerting systems are configured');
-        }
+        // Generate recommendations using helper function
+        const recommendations = generateDeploymentRecommendations(summary, strictMode, environment);
         
         const deploymentCheck: DeploymentCheck = {
-          passed: overallPassed,
+          passed: summary.overallPassed,
           checks,
           summary: {
             totalChecks: checks.length,
-            passedChecks,
-            failedChecks,
-            warningChecks,
-            overallScore,
+            passedChecks: summary.passedChecks,
+            failedChecks: summary.failedChecks,
+            warningChecks: summary.warningChecks,
+            overallScore: summary.overallScore,
           },
           recommendations,
         };
@@ -831,13 +1107,13 @@ function addValidateDeploymentReadinessTool(server: FastMCP, componentLogger: ty
         
         componentLogger.info('Deployment readiness validation completed', { 
           environment,
-          passed: overallPassed,
-          score: overallScore,
+          passed: summary.overallPassed,
+          score: summary.overallScore,
           correlationId 
         });
         
         return formatSuccessResponse({
-          status: overallPassed ? 'ready' : 'not_ready',
+          status: summary.overallPassed ? 'ready' : 'not_ready',
           environment,
           readiness: deploymentCheck,
           configuration: {
@@ -917,168 +1193,35 @@ function addGenerateBuildReportTool(server: FastMCP, componentLogger: typeof log
 
         const startTime = Date.now();
         
-        // Initialize build report
-        const buildReport: BuildReport = {
-          buildInfo: {
-            timestamp: new Date().toISOString(),
-            environment: process.env.NODE_ENV || 'development',
-            version: '1.0.0', // From package.json
-            duration: 0,
-            status: 'success',
-          },
-          metrics: {
-            buildTime: 0,
-            bundleSize: 0,
-            dependencies: 0,
-            devDependencies: 0,
-            linesOfCode: 0,
-            files: 0,
-          },
-          quality: {
-            lintScore: 0,
-            typeScore: 0,
-            testCoverage: 0,
-            complexityScore: 85, // Mock complexity score
-            maintainabilityIndex: 78, // Mock maintainability index
-          },
-          security: {
-            vulnerabilities: { critical: 0, high: 0, medium: 0, low: 0 },
-            dependencyIssues: [],
-            securityScore: 0,
-          },
-          recommendations: [],
-        };
+        // Initialize build report using helper function
+        let buildReport = await initializeBuildReport();
         
-        // Get project metrics
+        // Collect metrics using helper function
         if (includeMetrics) {
           reportProgress({ progress: 20, total: 100 });
-          const metrics = await getProjectMetrics();
-          buildReport.metrics = { ...buildReport.metrics, ...metrics };
+          buildReport = await collectBuildMetrics(buildReport);
         }
         
-        // Run build and measure time
-        if (includeMetrics) {
-          reportProgress({ progress: 30, total: 100 });
-          const buildStartTime = Date.now();
-          const { exitCode } = await runCommand('npm', ['run', 'build']);
-          const buildTime = Date.now() - buildStartTime;
-          
-          buildReport.metrics.buildTime = buildTime;
-          buildReport.buildInfo.status = exitCode === 0 ? 'success' : 'failed';
-          
-          // Analyze bundle size if dist exists
-          if (await checkFileExists('dist')) {
-            try {
-              const { stdout: sizeOutput } = await runCommand('du', ['-sh', 'dist']);
-              const sizeMatch = sizeOutput.match(/^(\d+\.?\d*)([KMGT]?)/);
-              if (sizeMatch) {
-                const size = parseFloat(sizeMatch[1]);
-                const unit = sizeMatch[2];
-                buildReport.metrics.bundleSize = unit === 'K' ? size : unit === 'M' ? size * 1024 : size;
-              }
-            } catch {
-              // Handle size calculation error
-            }
-          }
-        }
-        
-        // Quality scores
+        // Collect quality scores using helper function
         if (includeQualityScores) {
           reportProgress({ progress: 50, total: 100 });
-          
-          const [lintResult, typeResult] = await Promise.all([
-            runLintCheck(),
-            runTypeCheck(),
-          ]);
-          
-          buildReport.quality.lintScore = lintResult.score;
-          buildReport.quality.typeScore = typeResult.score;
-          
-          // Get test coverage
-          try {
-            const coveragePath = resolve('coverage/coverage-summary.json');
-            if (await checkFileExists(coveragePath)) {
-              const coverageData = JSON.parse(readFileSync(coveragePath, 'utf8'));
-              buildReport.quality.testCoverage = coverageData.total?.lines?.pct || 0;
-            }
-          } catch {
-            // Handle coverage read error
-          }
+          buildReport = await collectQualityScores(buildReport);
         }
         
-        // Security scan
+        // Collect security data using helper function
         if (includeSecurityScan) {
           reportProgress({ progress: 70, total: 100 });
-          const securityResult = await runSecurityScan();
-          buildReport.security.vulnerabilities = securityResult.vulnerabilities;
-          buildReport.security.securityScore = securityResult.score;
+          buildReport = await collectSecurityData(buildReport);
         }
         
-        // Dependency analysis
+        // Collect dependency analysis using helper function
         if (includeDependencyAnalysis) {
           reportProgress({ progress: 85, total: 100 });
-          
-          try {
-            const { stdout } = await runCommand('npm', ['outdated', '--json']);
-            const outdated = JSON.parse(stdout);
-            buildReport.security.dependencyIssues = Object.keys(outdated).map(pkg => 
-              `${pkg}: ${outdated[pkg].current} → ${outdated[pkg].latest}`
-            );
-          } catch {
-            // Handle outdated check error
-          }
+          buildReport = await collectDependencyAnalysis(buildReport);
         }
         
-        // Generate recommendations
-        const recommendations: BuildReport['recommendations'] = [];
-        
-        if (buildReport.quality.lintScore < 90) {
-          recommendations.push({
-            category: 'Code Quality',
-            priority: buildReport.quality.lintScore < 70 ? 'high' : 'medium',
-            message: 'Improve code linting score',
-            action: 'Fix ESLint errors and warnings',
-          });
-        }
-        
-        if (buildReport.quality.typeScore < 90) {
-          recommendations.push({
-            category: 'Type Safety',
-            priority: buildReport.quality.typeScore < 70 ? 'high' : 'medium',
-            message: 'Address TypeScript errors',
-            action: 'Fix type checking issues',
-          });
-        }
-        
-        if (buildReport.quality.testCoverage < 80) {
-          recommendations.push({
-            category: 'Testing',
-            priority: 'medium',
-            message: 'Increase test coverage',
-            action: 'Add more unit and integration tests',
-          });
-        }
-        
-        const totalVulns = Object.values(buildReport.security.vulnerabilities).reduce((sum, count) => sum + count, 0);
-        if (totalVulns > 0) {
-          recommendations.push({
-            category: 'Security',
-            priority: buildReport.security.vulnerabilities.critical > 0 ? 'critical' : 'high',
-            message: `Address ${totalVulns} security vulnerabilities`,
-            action: 'Update dependencies and fix security issues',
-          });
-        }
-        
-        if (buildReport.metrics.bundleSize > 10240) { // > 10MB
-          recommendations.push({
-            category: 'Performance',
-            priority: 'medium',
-            message: 'Large bundle size detected',
-            action: 'Consider code splitting and dependency optimization',
-          });
-        }
-        
-        buildReport.recommendations = recommendations;
+        // Generate recommendations using helper function
+        buildReport.recommendations = generateBuildRecommendations(buildReport);
         buildReport.buildInfo.duration = Date.now() - startTime;
         
         reportProgress({ progress: 100, total: 100 });
@@ -1086,22 +1229,16 @@ function addGenerateBuildReportTool(server: FastMCP, componentLogger: typeof log
         componentLogger.info('Build report generated', { 
           buildStatus: buildReport.buildInfo.status,
           duration: buildReport.buildInfo.duration,
-          recommendations: recommendations.length,
+          recommendations: buildReport.recommendations.length,
           correlationId 
         });
         
+        // Generate summary using helper function
+        const summary = generateBuildSummary(buildReport);
+        
         return formatSuccessResponse({
           report: buildReport,
-          summary: {
-            overallGrade: calculateOverallGrade(buildReport),
-            keyMetrics: {
-              buildTime: `${Math.round(buildReport.metrics.buildTime / 1000)}s`,
-              bundleSize: `${Math.round(buildReport.metrics.bundleSize)}KB`,
-              qualityScore: Math.round((buildReport.quality.lintScore + buildReport.quality.typeScore + buildReport.quality.testCoverage) / 3),
-              securityScore: buildReport.security.securityScore,
-            },
-            actionItems: recommendations.filter(r => r.priority === 'critical' || r.priority === 'high').length,
-          },
+          summary,
           configuration: {
             includeMetrics,
             includeQualityScores,
