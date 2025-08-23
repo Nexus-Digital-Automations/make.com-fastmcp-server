@@ -23057,9 +23057,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755925873634_wybqefv8a",
+      "title": "Fix failing error-response.test.ts tests",
+      "description": "Test failures in utils/error-response.test.ts: UserError formatting issue with context/details and correlation ID handling. These test failures indicate potential runtime issues with error handling.",
+      "mode": "DEVELOPMENT",
+      "category": "bug",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T05:11:13.634Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755924959086_1_general_89a67171",
+      "started_at": "2025-08-23T05:11:28.165Z",
+      "claimed_by": "development_session_1755924959086_1_general_89a67171",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755924959086_1_general_89a67171",
+          "role": "primary",
+          "assignedAt": "2025-08-23T05:11:28.165Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T05:16:54.605Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T05:16:54.606Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 531,
-  "last_completion": "2025-08-23T05:15:53.005Z",
+  "total_completed": 532,
+  "last_completion": "2025-08-23T05:16:54.606Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
