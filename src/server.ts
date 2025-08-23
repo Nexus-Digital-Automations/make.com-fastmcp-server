@@ -57,11 +57,12 @@ export class MakeServerInstance {
   private readonly componentLogger: ReturnType<typeof logger.child>;
 
   constructor() {
-    const getComponentLogger = () => {
+    const getComponentLogger = (): ReturnType<typeof logger.child> => {
       try {
         return logger.child({ component: 'MakeServer' });
-      } catch (error) {
+      } catch {
         // Fallback for test environments
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return logger as any;
       }
     };
@@ -275,15 +276,16 @@ ${configManager.isAuthEnabled() ?
       },
       execute: async ({ includeSecurity }, { log, session }) => {
         const correlationId = extractCorrelationId({ session });
-        const getComponentLogger = () => {
+        const getComponentLogger = (): ReturnType<typeof logger.child> => {
           try {
             return logger.child({ 
               component: 'HealthCheck',
               operation: 'health-check',
               correlationId 
             });
-          } catch (error) {
+          } catch {
             // Fallback for test environments
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return logger as any;
           }
         };
@@ -357,15 +359,16 @@ ${configManager.isAuthEnabled() ?
       },
       execute: async ({ includeMetrics, includeEvents }, { log, session }) => {
         const correlationId = extractCorrelationId({ session });
-        const getComponentLogger = () => {
+        const getComponentLogger = (): ReturnType<typeof logger.child> => {
           try {
             return logger.child({ 
               component: 'SecurityStatus',
               operation: 'security-status',
               correlationId 
             });
-          } catch (error) {
+          } catch {
             // Fallback for test environments
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return logger as any;
           }
         };
@@ -415,15 +418,16 @@ ${configManager.isAuthEnabled() ?
       },
       execute: async (args, { log, session }) => {
         const correlationId = extractCorrelationId({ session });
-        const getComponentLogger = () => {
+        const getComponentLogger = (): ReturnType<typeof logger.child> => {
           try {
             return logger.child({ 
               component: 'ServerInfo',
               operation: 'server-info',
               correlationId 
             });
-          } catch (error) {
+          } catch {
             // Fallback for test environments
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return logger as any;
           }
         };
@@ -608,15 +612,16 @@ ${configManager.isAuthEnabled() ?
       },
       execute: async ({ includePermissions }, { log, reportProgress, session }) => {
         const correlationId = extractCorrelationId({ session });
-        const getComponentLogger = () => {
+        const getComponentLogger = (): ReturnType<typeof logger.child> => {
           try {
             return logger.child({ 
               component: 'ConfigTest',
               operation: 'test-configuration',
               correlationId 
             });
-          } catch (error) {
+          } catch {
             // Fallback for test environments
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return logger as any;
           }
         };
