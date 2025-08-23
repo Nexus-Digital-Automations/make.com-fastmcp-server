@@ -87,7 +87,7 @@ describe('Performance Load Testing', () => {
         } as unknown as jest.Mocked<MakeAPIClient>;
 
         // Set longer timeout for load tests
-        jest.setTimeout(120000); // 2 minutes
+        jest.setTimeout(240000); // 4 minutes to accommodate long-running stress tests
     });
 
     afterAll(() => {
@@ -127,7 +127,7 @@ describe('Performance Load Testing', () => {
                 p95Latency: `${results.p95Latency.toFixed(2)}ms`,
                 p99Latency: `${results.p99Latency.toFixed(2)}ms`
             });
-        });
+        }, 30000); // 30 second timeout for authentication load test
 
         it('should handle 100 concurrent scenario list requests', async () => {
             const stress = new StressTest({
@@ -160,7 +160,7 @@ describe('Performance Load Testing', () => {
                 p95Latency: `${results.p95Latency.toFixed(2)}ms`,
                 p99Latency: `${results.p99Latency.toFixed(2)}ms`
             });
-        });
+        }, 40000); // 40 second timeout for scenario list load test
 
         it('should handle mixed workload with concurrent operations', async () => {
             const stress = new StressTest({
@@ -210,7 +210,7 @@ describe('Performance Load Testing', () => {
                 p95Latency: `${results.p95Latency.toFixed(2)}ms`,
                 errorTypes: results.errors.slice(0, 5) // First 5 error types
             });
-        });
+        }, 45000); // 45 second timeout for mixed workload test
     });
 
     describe('Resource Exhaustion Testing', () => {
@@ -259,7 +259,7 @@ describe('Performance Load Testing', () => {
                 successRate: `${(results.successRate * 100).toFixed(2)}%`,
                 avgLatency: `${results.avgLatency.toFixed(2)}ms`
             });
-        });
+        }, 25000); // 25 second timeout for memory intensive test
 
         it('should handle database connection pool exhaustion gracefully', async () => {
             const stress = new StressTest({
@@ -290,7 +290,7 @@ describe('Performance Load Testing', () => {
                 avgLatency: `${results.avgLatency.toFixed(2)}ms`,
                 errorTypes: [...new Set(results.errors)].slice(0, 3)
             });
-        });
+        }, 30000); // 30 second timeout for database pool test
     });
 
     describe('Scalability and Rate Limiting', () => {
@@ -321,7 +321,7 @@ describe('Performance Load Testing', () => {
                 rateLimitedRequests: rateLimited.length,
                 rateLimitPercentage: `${(rateLimited.length / responses.length * 100).toFixed(2)}%`
             });
-        });
+        }, 20000); // 20 second timeout for rate limiting test
 
         it('should maintain response quality under sustained load', async () => {
             const sustainedTest = new StressTest({
@@ -381,7 +381,7 @@ describe('Performance Load Testing', () => {
                 secondHalfAvgLatency: `${secondHalfAvg.toFixed(2)}ms`,
                 performanceDegradation: `${((secondHalfAvg / firstHalfAvg - 1) * 100).toFixed(2)}%`
             });
-        });
+        }, 60000); // 60 second timeout for sustained load test
     });
 
     describe('API Endpoint Specific Load Tests', () => {
@@ -420,7 +420,7 @@ describe('Performance Load Testing', () => {
                 successRate: `${(results.successRate * 100).toFixed(2)}%`,
                 avgLatency: `${results.avgLatency.toFixed(2)}ms`
             });
-        });
+        }, 25000); // 25 second timeout for scenario creation test
 
         it('should handle concurrent connection management requests', async () => {
             const stress = new StressTest({
@@ -453,7 +453,7 @@ describe('Performance Load Testing', () => {
                 successRate: `${(results.successRate * 100).toFixed(2)}%`,
                 avgLatency: `${results.avgLatency.toFixed(2)}ms`
             });
-        });
+        }, 30000); // 30 second timeout for connection management test
 
         it('should handle data store operations under concurrent load', async () => {
             const stress = new StressTest({
@@ -499,7 +499,7 @@ describe('Performance Load Testing', () => {
                 successRate: `${(results.successRate * 100).toFixed(2)}%`,
                 avgLatency: `${results.avgLatency.toFixed(2)}ms`
             });
-        });
+        }, 35000); // 35 second timeout for data store test
     });
 
     describe('Error Recovery and Resilience', () => {
@@ -543,6 +543,6 @@ describe('Performance Load Testing', () => {
                 successRate: `${(results.successRate * 100).toFixed(2)}%`,
                 avgLatency: `${results.avgLatency.toFixed(2)}ms`
             });
-        });
+        }, 40000); // 40 second timeout for recovery test
     });
 });

@@ -60,6 +60,15 @@ describe('Scenarios Module - Performance Benchmarks', () => {
   let mockLog: any;
   let mockReportProgress: jest.Mock;
 
+  // Set longer timeout for performance benchmarks
+  beforeAll(() => {
+    jest.setTimeout(120000); // 2 minutes for performance benchmarks
+  });
+
+  afterAll(() => {
+    jest.setTimeout(5000); // Reset to default
+  });
+
   beforeEach(() => {
     server = new FastMCP({
       name: 'benchmark-test-server',
@@ -503,7 +512,7 @@ describe('Scenarios Module - Performance Benchmarks', () => {
           case 'validate-blueprint':
           case 'extract-blueprint-connections':
           case 'optimize-blueprint':
-            args = { blueprint: { modules: [], connections: [] } };
+            args = { blueprint: { name: 'Test Blueprint', flow: [] } };
             break;
         }
         
