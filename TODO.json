@@ -2,23 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755923460199_4tjecr1ek",
-      "title": "Fix ESLint errors in src/tools/ directory",
-      "description": "Fix consistent ESLint patterns across 5 files: missing return type annotations, unused error variables, and any type usage",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-23T04:31:00.199Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755923400221_c66tor85m",
       "title": "Fix ESLint errors in tools directory files",
       "description": "ESLint errors across multiple files in src/tools/: ai-agents.ts, analytics.ts, billing.ts, and others. Pattern: missing return type annotations, unused error variables, any type usage. Systematic fixes needed.",
