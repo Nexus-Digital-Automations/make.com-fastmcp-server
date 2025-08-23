@@ -763,17 +763,17 @@ class ScenarioArchivalPolicyEngine {
     // This is a simplified example - in production, use a proper expression evaluator
     
     // For now, support basic conditions like checking scenario properties
-    if (functionCode.includes('scenario.status')) {
-      const statusCheck = functionCode.match(/scenario\.status\s*===?\s*['"]([^'"]+)['"]/);
+    if (functionCode.includes('scenario.isActive')) {
+      const statusCheck = functionCode.match(/scenario\.isActive\s*===?\s*(true|false)/);
       if (statusCheck) {
-        return scenario.status === statusCheck[1];
+        return scenario.isActive === (statusCheck[1] === 'true');
       }
     }
     
-    if (functionCode.includes('scenario.lastRun')) {
+    if (functionCode.includes('scenario.lastExecution')) {
       // Support date comparisons
       const now = new Date();
-      const lastRun = scenario.lastRun ? new Date(scenario.lastRun) : new Date(0);
+      const lastRun = scenario.lastExecution ? new Date(scenario.lastExecution) : new Date(0);
       const daysDiff = Math.floor((now.getTime() - lastRun.getTime()) / (1000 * 60 * 60 * 24));
       
       if (functionCode.includes('> 30')) {
@@ -970,7 +970,7 @@ function createPolicyObject(
     metadata: {
       ...input.metadata,
       conditionsCount: input.conditions.length,
-      triggersUsed: [...new Set(input.conditions.map(c => c.trigger))],
+      triggersUsed: Array.from(new Set(input.conditions.map(c => c.trigger))),
       enforcementLevel: input.enforcement.level,
       estimatedImpact: estimatedImpact.potentiallyAffected,
     },
@@ -995,7 +995,7 @@ async function storePolicyAndAudit(
   input: z.infer<typeof CreateScenarioArchivalPolicySchema>,
   estimatedImpact: Record<string, unknown>,
   apiClient: MakeApiClient
-): Promise<Record<string, unknown>> {
+): Promise<void> {
   // Store policy (in production, this would be stored in database)
   const response = await apiClient.post('/policies/scenario-archival', policy);
   
@@ -1021,7 +1021,7 @@ async function storePolicyAndAudit(
     riskLevel: input.enforcement.action === ArchivalAction.DELETE ? 'high' : 'medium',
   });
 
-  return response;
+  // Policy stored successfully
 }
 
 /**
@@ -1089,7 +1089,7 @@ function addSetScenarioArchivalPolicyTool(
           policyId,
           name: input.name,
           conditionsCount: input.conditions.length,
-          estimatedImpact: estimatedImpact.potentiallyAffected,
+          estimatedImpact: Number(estimatedImpact.potentiallyAffected) || 0,
         });
 
         return formatSuccessResponse({
@@ -1112,9 +1112,9 @@ function addSetScenarioArchivalPolicyTool(
             action: 'policy_created',
             policyId,
             conditionsValidated: input.conditions.length,
-            impactEstimated: estimatedImpact.sampleSize > 0,
+            impactEstimated: Number(estimatedImpact.sampleSize) > 0,
           },
-          message: `Scenario archival policy "${input.name}" created successfully with ${input.conditions.length} conditions. Estimated impact: ${estimatedImpact.potentiallyAffected}/${estimatedImpact.totalScenariosInScope} scenarios.`,
+          message: `Scenario archival policy "${input.name}" created successfully with ${input.conditions.length} conditions. Estimated impact: ${Number(estimatedImpact.potentiallyAffected) || 0}/${Number(estimatedImpact.totalScenariosInScope) || 0} scenarios.`,
         }).content[0].text;
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1411,6 +1411,203 @@ function addListScenarioArchivalPoliciesTools(
 }
 
 /**
+ * Get updated fields from input
+ */
+function getUpdatedFields(input: z.infer<typeof UpdateArchivalPolicySchema>): string[] {
+  return Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined);
+}
+
+/**
+ * Fetch existing policy data
+ */
+async function fetchExistingPolicy(
+  apiClient: MakeApiClient,
+  policyId: string
+): Promise<Record<string, unknown>> {
+  const existingResponse = await apiClient.get(`/policies/scenario-archival/${policyId}`);
+  
+  if (!existingResponse.success) {
+    throw new UserError(`Archival policy not found: ${policyId}`);
+  }
+
+  return existingResponse.data as Record<string, unknown>;
+}
+
+/**
+ * Validate custom conditions in input
+ */
+function validateCustomConditions(
+  conditions: z.infer<typeof ArchivalConditionSchema>[],
+  policyEngine: ScenarioArchivalPolicyEngine
+): void {
+  for (const condition of conditions) {
+    if (condition.trigger === ArchivalTrigger.CUSTOM && condition.customEvaluationFunction) {
+      try {
+        if (!policyEngine.isSafeCustomFunction(condition.customEvaluationFunction)) {
+          throw new Error('Custom function contains unsafe operations');
+        }
+        // Basic syntax validation would be done here
+      } catch (error) {
+        throw new UserError(`Invalid custom function in condition ${condition.id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+  }
+}
+
+/**
+ * Prepare update data by merging existing policy with new input
+ */
+function prepareUpdateData(
+  input: z.infer<typeof UpdateArchivalPolicySchema>,
+  existingPolicy: Record<string, unknown>,
+  timestamp: string,
+  policyEngine: ScenarioArchivalPolicyEngine
+): Record<string, unknown> {
+  const updateData: Record<string, unknown> = {
+    ...existingPolicy,
+    updatedAt: timestamp,
+  };
+
+  // Apply basic updates
+  if (input.name !== undefined) {updateData.name = input.name;}
+  if (input.description !== undefined) {updateData.description = input.description;}
+  
+  // Handle conditions validation and update
+  if (input.conditions !== undefined) {
+    validateCustomConditions(input.conditions, policyEngine);
+    updateData.conditions = input.conditions.sort((a, b) => (a.priority || 50) - (b.priority || 50));
+  }
+
+  // Handle nested object updates
+  if (input.enforcement !== undefined) {
+    updateData.enforcement = {
+      ...(existingPolicy.enforcement as Record<string, unknown> || {}),
+      ...input.enforcement,
+    };
+  }
+
+  if (input.gracePeriod !== undefined) {
+    updateData.gracePeriod = {
+      ...(existingPolicy.gracePeriod as Record<string, unknown> || {}),
+      ...input.gracePeriod,
+    };
+  }
+
+  if (input.rollback !== undefined) {
+    updateData.rollback = {
+      ...(existingPolicy.rollback as Record<string, unknown> || {}),
+      ...input.rollback,
+    };
+  }
+
+  // Handle simple field updates
+  if (input.active !== undefined) {updateData.active = input.active;}
+  if (input.effectiveFrom !== undefined) {updateData.effectiveFrom = input.effectiveFrom;}
+  if (input.effectiveUntil !== undefined) {updateData.effectiveUntil = input.effectiveUntil;}
+
+  // Handle metadata updates
+  if (input.metadata !== undefined) {
+    updateData.metadata = {
+      ...(existingPolicy.metadata as Record<string, unknown> || {}),
+      ...input.metadata,
+      lastMetadataUpdate: timestamp,
+    };
+  }
+
+  return updateData;
+}
+
+/**
+ * Execute policy update API call
+ */
+async function executePolicyUpdate(
+  apiClient: MakeApiClient,
+  policyId: string,
+  updateData: Record<string, unknown>
+): Promise<{ name: string; [key: string]: unknown }> {
+  const response = await apiClient.patch(`/policies/scenario-archival/${policyId}`, updateData);
+  
+  if (!response.success) {
+    throw new UserError(`Failed to update archival policy: ${response.error?.message || 'Unknown error'}`);
+  }
+
+  return response.data as { name: string; [key: string]: unknown };
+}
+
+/**
+ * Log policy update audit event
+ */
+async function logPolicyUpdateAudit(
+  input: z.infer<typeof UpdateArchivalPolicySchema>,
+  existingPolicy: Record<string, unknown>,
+  updatedFields: string[]
+): Promise<void> {
+  await auditLogger.logEvent({
+    level: 'info',
+    category: 'configuration',
+    action: 'scenario_archival_policy_updated',
+    resource: `policy:${input.policyId}`,
+    success: true,
+    details: {
+      policyId: input.policyId,
+      updatedFields,
+      conditionsCount: input.conditions?.length || (existingPolicy.conditions as unknown[] | undefined)?.length || 0,
+      active: input.active !== undefined ? input.active : (existingPolicy.active as boolean | undefined),
+    },
+    riskLevel: 'medium',
+  });
+}
+
+/**
+ * Log policy update failure audit event
+ */
+async function logPolicyUpdateFailure(
+  policyId: string,
+  errorMessage: string
+): Promise<void> {
+  await auditLogger.logEvent({
+    level: 'error',
+    category: 'configuration',
+    action: 'scenario_archival_policy_update_failed',
+    resource: `policy:${policyId}`,
+    success: false,
+    details: {
+      policyId,
+      error: errorMessage,
+    },
+    riskLevel: 'low',
+  });
+}
+
+/**
+ * Create success response for policy update
+ */
+function createUpdateSuccessResponse(
+  input: z.infer<typeof UpdateArchivalPolicySchema>,
+  updatedPolicy: { name: string; [key: string]: unknown },
+  existingPolicy: Record<string, unknown>,
+  updatedFields: string[],
+  timestamp: string
+): string {
+  return formatSuccessResponse({
+    success: true,
+    policy: updatedPolicy,
+    changes: {
+      updatedFields,
+      timestamp,
+      version: `${(existingPolicy.version as string | undefined) || '1.0.0'}-updated`,
+    },
+    auditTrail: {
+      updatedAt: timestamp,
+      action: 'policy_updated',
+      policyId: input.policyId,
+      fieldsChanged: updatedFields.length,
+    },
+    message: `Scenario archival policy "${updatedPolicy.name}" updated successfully`,
+  }).content[0].text;
+}
+
+/**
  * Helper function to add update scenario archival policy tool
  */
 function addUpdateScenarioArchivalPolicyTool(
@@ -1430,146 +1627,40 @@ function addUpdateScenarioArchivalPolicyTool(
       openWorldHint: true,
     },
     execute: async (input, { log }) => {
+      const updatedFields = getUpdatedFields(input);
       log.info('Updating scenario archival policy', {
         policyId: input.policyId,
-        updates: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined),
+        updates: updatedFields,
       });
 
       try {
-        // Get existing policy
-        const existingResponse = await apiClient.get(`/policies/scenario-archival/${input.policyId}`);
-        
-        if (!existingResponse.success) {
-          throw new UserError(`Archival policy not found: ${input.policyId}`);
-        }
-
-        const existingPolicy = existingResponse.data as Record<string, unknown>;
+        // Get existing policy using helper function
+        const existingPolicy = await fetchExistingPolicy(apiClient, input.policyId);
         const timestamp = new Date().toISOString();
         
-        // Prepare update data
-        const updateData: Record<string, unknown> = {
-          ...existingPolicy,
-          updatedAt: timestamp,
-        };
+        // Prepare update data using helper function
+        const updateData = prepareUpdateData(input, existingPolicy, timestamp, policyEngine);
 
-        // Apply updates
-        if (input.name !== undefined) {updateData.name = input.name;}
-        if (input.description !== undefined) {updateData.description = input.description;}
-        
-        if (input.conditions !== undefined) {
-          // Validate new conditions
-          for (const condition of input.conditions) {
-            if (condition.trigger === ArchivalTrigger.CUSTOM && condition.customEvaluationFunction) {
-              try {
-                if (!policyEngine.isSafeCustomFunction(condition.customEvaluationFunction)) {
-                  throw new Error('Custom function contains unsafe operations');
-                }
-                // Basic syntax validation would be done here
-              } catch (error) {
-                throw new UserError(`Invalid custom function in condition ${condition.id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-              }
-            }
-          }
-          updateData.conditions = input.conditions.sort((a, b) => (a.priority || 50) - (b.priority || 50));
-        }
+        // Update policy using helper function
+        const updatedPolicy = await executePolicyUpdate(apiClient, input.policyId, updateData);
 
-        if (input.enforcement !== undefined) {
-          updateData.enforcement = {
-            ...(existingPolicy.enforcement as Record<string, unknown> || {}),
-            ...input.enforcement,
-          };
-        }
-
-        if (input.gracePeriod !== undefined) {
-          updateData.gracePeriod = {
-            ...(existingPolicy.gracePeriod as Record<string, unknown> || {}),
-            ...input.gracePeriod,
-          };
-        }
-
-        if (input.rollback !== undefined) {
-          updateData.rollback = {
-            ...(existingPolicy.rollback as Record<string, unknown> || {}),
-            ...input.rollback,
-          };
-        }
-
-        if (input.active !== undefined) {updateData.active = input.active;}
-        if (input.effectiveFrom !== undefined) {updateData.effectiveFrom = input.effectiveFrom;}
-        if (input.effectiveUntil !== undefined) {updateData.effectiveUntil = input.effectiveUntil;}
-
-        if (input.metadata !== undefined) {
-          updateData.metadata = {
-            ...(existingPolicy.metadata as Record<string, unknown> || {}),
-            ...input.metadata,
-            lastMetadataUpdate: timestamp,
-          };
-        }
-
-        // Update policy
-        const response = await apiClient.patch(`/policies/scenario-archival/${input.policyId}`, updateData);
-        
-        if (!response.success) {
-          throw new UserError(`Failed to update archival policy: ${response.error?.message || 'Unknown error'}`);
-        }
-
-        const updatedPolicy = response.data as { name: string; [key: string]: unknown };
-
-        // Log policy update audit event
-        await auditLogger.logEvent({
-          level: 'info',
-          category: 'configuration',
-          action: 'scenario_archival_policy_updated',
-          resource: `policy:${input.policyId}`,
-          success: true,
-          details: {
-            policyId: input.policyId,
-            updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined),
-            conditionsCount: input.conditions?.length || (existingPolicy.conditions as unknown[] | undefined)?.length || 0,
-            active: input.active !== undefined ? input.active : (existingPolicy.active as boolean | undefined),
-          },
-          riskLevel: 'medium',
-        });
+        // Log policy update audit event using helper function
+        await logPolicyUpdateAudit(input, existingPolicy, updatedFields);
 
         log.info('Successfully updated scenario archival policy', {
           policyId: input.policyId,
           name: updatedPolicy.name,
-          updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined).length,
+          updatedFields: updatedFields.length,
         });
 
-        return formatSuccessResponse({
-          success: true,
-          policy: updatedPolicy,
-          changes: {
-            updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined),
-            timestamp,
-            version: `${(existingPolicy.version as string | undefined) || '1.0.0'}-updated`,
-          },
-          auditTrail: {
-            updatedAt: timestamp,
-            action: 'policy_updated',
-            policyId: input.policyId,
-            fieldsChanged: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined).length,
-          },
-          message: `Scenario archival policy "${updatedPolicy.name}" updated successfully`,
-        });
+        // Create success response using helper function
+        return createUpdateSuccessResponse(input, updatedPolicy, existingPolicy, updatedFields, timestamp);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating scenario archival policy', { error: errorMessage, policyId: input.policyId });
         
-        // Log failure audit event
-        await auditLogger.logEvent({
-          level: 'error',
-          category: 'configuration',
-          action: 'scenario_archival_policy_update_failed',
-          resource: `policy:${input.policyId}`,
-          success: false,
-          details: {
-            policyId: input.policyId,
-            error: errorMessage,
-          },
-          riskLevel: 'low',
-        });
+        // Log failure audit event using helper function
+        await logPolicyUpdateFailure(input.policyId, errorMessage);
         
         if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update scenario archival policy: ${errorMessage}`);
