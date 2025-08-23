@@ -92,7 +92,7 @@ export class AuditLogger {
         this._componentLogger = logger as any;
       }
     }
-    return this._componentLogger;
+    return this._componentLogger!;
   }
 
   private constructor() {

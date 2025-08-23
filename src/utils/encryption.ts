@@ -59,12 +59,13 @@ export class EncryptionService {
     if (!this._componentLogger) {
       try {
         this._componentLogger = logger.child({ component: 'EncryptionService' });
-      } catch (error) {
+      } catch {
         // Fallback for test environments where logger.child might not be available
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._componentLogger = logger as any;
       }
     }
-    return this._componentLogger;
+    return this._componentLogger!;
   }
 
   constructor() {
@@ -272,12 +273,13 @@ export class CredentialManager {
     if (!this._componentLogger) {
       try {
         this._componentLogger = logger.child({ component: 'CredentialManager' });
-      } catch (error) {
+      } catch {
         // Fallback for test environments where logger.child might not be available
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._componentLogger = logger as any;
       }
     }
-    return this._componentLogger;
+    return this._componentLogger!;
   }
 
   constructor() {
