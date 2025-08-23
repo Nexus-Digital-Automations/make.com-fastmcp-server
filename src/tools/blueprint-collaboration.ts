@@ -780,7 +780,7 @@ function addAnalyzeBlueprintDependenciesTool(server: FastMCP, componentLogger: t
       reportProgress({ progress: 35, total: 100 });
       
       try {
-        const result = await engine.analyzeDependencies(args.blueprintId, args.versionId, {
+        const result = await engine.analyzeDependencies(args.blueprintId, args.versionId || '', {
           analysisDepth: args.analysisDepth,
           includeExternal: args.includeExternal,
           includeOptimizations: args.includeOptimizations,

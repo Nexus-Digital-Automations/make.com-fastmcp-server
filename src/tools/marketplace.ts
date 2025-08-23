@@ -370,7 +370,7 @@ function addSearchPublicAppsTool(server: FastMCP, apiClient: MakeApiClient, _com
 
         // Build search parameters with comprehensive filtering
         const searchParams = buildSearchParameters(
-          query,
+          query || '',
           filters,
           sorting,
           pagination,
@@ -391,13 +391,13 @@ function addSearchPublicAppsTool(server: FastMCP, apiClient: MakeApiClient, _com
         reportProgress({ progress: 70, total: 100 });
 
         // Process and enhance results with additional metadata
-        const { apps, totalCount, facets } = processSearchResponse(searchResponse);
+        const { apps, totalCount, facets } = processSearchResponse(searchResponse as { data?: { apps?: MakePublicApp[]; total?: number; facets?: Record<string, unknown> } });
 
         log?.info('Public app search completed', {
           resultsFound: apps.length,
           totalMatched: totalCount,
-          query,
-          executionTime: (searchResponse.data as any)?.executionTime,
+          query: query || '',
+          executionTime: ((searchResponse.data as Record<string, unknown>)?.executionTime as number) ?? 0,
         });
 
         reportProgress({ progress: 100, total: 100 });
@@ -407,10 +407,10 @@ function addSearchPublicAppsTool(server: FastMCP, apiClient: MakeApiClient, _com
           apps,
           totalCount,
           facets,
-          pagination,
-          query,
-          filters,
-          sorting
+          pagination || { limit: 20, offset: 0 },
+          query || '',
+          filters || {},
+          sorting || { field: 'relevance', order: 'desc' }
         );
 
         return formatSuccessResponse(searchResults);
@@ -524,6 +524,132 @@ function addGetPublicAppDetailsTool(server: FastMCP, apiClient: MakeApiClient, _
 }
 
 /**
+ * Build parameters for popular apps query
+ */
+function buildPopularAppsParams(
+  category: string | undefined,
+  timeframe: string | undefined,
+  includeGrowthMetrics: boolean | undefined,
+  userContext: {
+    industry?: string;
+    useCase?: string;
+    teamSize?: string;
+  } | undefined,
+  limit: number | undefined,
+  publisherType: string | undefined,
+  metric: string | undefined
+): Record<string, unknown> {
+  return {
+    timeframe: timeframe || 'month',
+    limit: limit || 10,
+    publisher_type: publisherType,
+    metric: metric,
+    include_growth_metrics: includeGrowthMetrics,
+    ...(category && { category }),
+    ...(userContext && {
+      user_industry: userContext.industry,
+      user_use_case: userContext.useCase,
+      team_size: userContext.teamSize,
+    }),
+  };
+}
+
+/**
+ * Extract apps data from API response
+ */
+function extractAppsData(popularApps: { data?: Record<string, unknown> }): {
+  apps: MakePublicApp[];
+  popularAppsData: Record<string, unknown>;
+} {
+  const apps = (popularApps.data as Record<string, unknown>)?.apps as MakePublicApp[] || [];
+  const popularAppsData = popularApps.data as Record<string, unknown>;
+  return { apps, popularAppsData };
+}
+
+/**
+ * Create comprehensive market analysis
+ */
+function createMarketAnalysis(
+  popularAppsData: Record<string, unknown>,
+  includeGrowthMetrics: boolean | undefined
+): {
+  marketTrends: {
+    topCategories: Array<{ category: string; count: number }>;
+    emergingTrends: string[];
+    publisherInsights: Array<{ publisher: string; apps: number; verified: boolean }>;
+    seasonalPatterns: Array<{ period: string; growth: number }>;
+  };
+  competitiveAnalysis: {
+    marketLeaders: MakePublicApp[];
+    growthLeaders: MakePublicApp[];
+    nichePlayers: MakePublicApp[];
+    opportunityGaps: Array<{ gap: string; potential: number }>;
+  };
+} {
+  const apps = (popularAppsData?.apps as MakePublicApp[]) || [];
+  const analyticsData = popularAppsData?.analytics as Record<string, unknown> | undefined;
+  
+  return {
+    marketTrends: {
+      topCategories: identifyTopCategories(apps),
+      emergingTrends: identifyEmergingTrends(apps, includeGrowthMetrics),
+      publisherInsights: analyzePublisherTrends(apps),
+      seasonalPatterns: identifySeasonalPatterns(analyticsData?.growthTrends),
+    },
+    competitiveAnalysis: {
+      marketLeaders: identifyMarketLeaders(apps),
+      growthLeaders: identifyGrowthLeaders(apps, includeGrowthMetrics),
+      nichePlayers: identifyNichePlayers(apps),
+      opportunityGaps: identifyOpportunityGaps(apps),
+    },
+  };
+}
+
+/**
+ * Generate AI-powered recommendations
+ */
+function generateRecommendations(
+  includeRecommendations: boolean | undefined,
+  apps: MakePublicApp[],
+  userContext: unknown
+): {
+  forYourTeam: MakePublicApp[];
+  trending: MakePublicApp[];
+  undervalued: MakePublicApp[];
+  innovative: MakePublicApp[];
+} | undefined {
+  return includeRecommendations ? {
+    forYourTeam: generateTeamRecommendations(apps, userContext),
+    trending: getTopTrendingApps(apps),
+    undervalued: findUndervaluedApps(apps),
+    innovative: identifyInnovativeApps(apps),
+  } : undefined;
+}
+
+/**
+ * Format metadata for response
+ */
+function formatResponseMetadata(
+  timeframe: string | undefined,
+  appsLength: number,
+  includeGrowthMetrics: boolean | undefined
+): {
+  timeframe: string;
+  dataPoints: number;
+  analysisLevel: string;
+  lastUpdated: string;
+  regionCoverage: string;
+} {
+  return {
+    timeframe: timeframe || '30d',
+    dataPoints: appsLength,
+    analysisLevel: includeGrowthMetrics ? 'comprehensive' : 'standard',
+    lastUpdated: new Date().toISOString(),
+    regionCoverage: 'global',
+  };
+}
+
+/**
  * Add list popular apps tool
  */
 function addListPopularAppsTool(server: FastMCP, apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
@@ -554,19 +680,15 @@ function addListPopularAppsTool(server: FastMCP, apiClient: MakeApiClient, _comp
         reportProgress({ progress: 0, total: 100 });
 
         // Build comprehensive query parameters
-        const popularParams: Record<string, unknown> = {
-          timeframe: timeframe || 'month',
-          limit: limit || 10,
-          publisher_type: publisherType,
-          metric: metric,
-          include_growth_metrics: includeGrowthMetrics,
-          ...(category && { category }),
-          ...(userContext && {
-            user_industry: userContext.industry,
-            user_use_case: userContext.useCase,
-            team_size: userContext.teamSize,
-          }),
-        };
+        const popularParams = buildPopularAppsParams(
+          category,
+          timeframe,
+          includeGrowthMetrics,
+          userContext,
+          limit,
+          publisherType,
+          metric
+        );
 
         reportProgress({ progress: 30, total: 100 });
 
@@ -579,30 +701,16 @@ function addListPopularAppsTool(server: FastMCP, apiClient: MakeApiClient, _comp
 
         reportProgress({ progress: 60, total: 100 });
 
-        // Apply intelligent analysis and recommendations
-        const apps = (popularApps.data as any)?.apps || [];
-        const popularAppsData = popularApps.data as any;
+        // Extract apps data from response
+        const { apps, popularAppsData } = extractAppsData(popularApps as { data?: Record<string, unknown> });
         
         // Create comprehensive analysis
+        const marketAnalysis = createMarketAnalysis(popularAppsData, includeGrowthMetrics);
+        const recommendations = generateRecommendations(includeRecommendations, apps, userContext);
+        
         const analysis = {
-          marketTrends: {
-            topCategories: identifyTopCategories(popularAppsData?.apps || []),
-            emergingTrends: identifyEmergingTrends(popularAppsData?.apps || [], includeGrowthMetrics),
-            publisherInsights: analyzePublisherTrends(popularAppsData?.apps || []),
-            seasonalPatterns: identifySeasonalPatterns(popularAppsData?.analytics?.growthTrends),
-          },
-          competitiveAnalysis: {
-            marketLeaders: identifyMarketLeaders(popularAppsData?.apps || []),
-            growthLeaders: identifyGrowthLeaders(popularAppsData?.apps || [], includeGrowthMetrics),
-            nichePlayers: identifyNichePlayers(popularAppsData?.apps || []),
-            opportunityGaps: identifyOpportunityGaps(popularAppsData?.apps || []),
-          },
-          recommendations: includeRecommendations ? {
-            forYourTeam: generateTeamRecommendations(apps, userContext),
-            trending: getTopTrendingApps(apps),
-            undervalued: findUndervaluedApps(apps),
-            innovative: identifyInnovativeApps(apps),
-          } : undefined,
+          ...marketAnalysis,
+          recommendations,
         };
 
         log?.info('Popular apps analysis completed', {
@@ -613,16 +721,12 @@ function addListPopularAppsTool(server: FastMCP, apiClient: MakeApiClient, _comp
 
         reportProgress({ progress: 100, total: 100 });
 
+        const metadata = formatResponseMetadata(timeframe, apps.length, includeGrowthMetrics);
+
         return formatSuccessResponse({
           apps,
           analysis,
-          metadata: {
-            timeframe: timeframe || '30d',
-            dataPoints: apps.length,
-            analysisLevel: includeGrowthMetrics ? 'comprehensive' : 'standard',
-            lastUpdated: new Date().toISOString(),
-            regionCoverage: 'global',
-          },
+          metadata,
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);

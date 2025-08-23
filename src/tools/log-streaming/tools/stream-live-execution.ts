@@ -418,8 +418,8 @@ export function createStreamLiveExecutionTool(context: ToolContext): ToolDefinit
           conditions: [],
           notifications: {
             email: false,
-            slack: false,
             webhook: false,
+            inApp: false,
           },
         };
 
@@ -429,8 +429,8 @@ export function createStreamLiveExecutionTool(context: ToolContext): ToolDefinit
           monitoringConfig,
           alertConfig,
           apiClient,
-          logger,
-          log,
+          log! as import('../../../../lib/logger.js').Logger,
+          log! as import('../../../../lib/logger.js').Logger,
           startTime,
           endTime
         );
