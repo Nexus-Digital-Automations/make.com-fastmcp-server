@@ -13,6 +13,90 @@ import { formatSuccessResponse } from '../utils/response-formatter.js';
 // Import the modular tools from the refactored folders module
 import { foldersTools } from './folders/tools/index.js';
 
+// ==================== TYPE DEFINITIONS ====================
+
+/**
+ * Folder permissions structure
+ */
+interface FolderPermissions {
+  read?: string[];
+  write?: string[];
+  admin?: string[];
+}
+
+/**
+ * Folder data structure
+ */
+interface FolderData {
+  id?: string | number;
+  name?: string;
+  description?: string;
+  type?: string;
+  path?: string;
+  parentId?: string | number;
+  permissions?: FolderPermissions;
+  metadata?: {
+    lastActivity?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  };
+  itemCount?: {
+    total?: number;
+    templates?: number;
+    scenarios?: number;
+    connections?: number;
+  };
+}
+
+/**
+ * Folder list data structure
+ */
+interface FolderListData {
+  folders?: FolderData[];
+  total?: number;
+  page?: number;
+  limit?: number;
+}
+
+/**
+ * Tool result structure with proper typing
+ * Note: Not used directly in this file but maintained for interface compatibility
+ */
+ 
+interface _ToolResult {
+  success?: boolean;
+  error?: string;
+  message?: string;
+  data?: FolderData | FolderListData | Record<string, unknown>;
+  details?: unknown;
+  metadata?: unknown;
+}
+
+/**
+ * Type guard to check if data is FolderData
+ */
+function isFolderData(data: unknown): data is FolderData {
+  return data !== null && data !== undefined && typeof data === 'object' && !Array.isArray(data);
+}
+
+/**
+ * Type guard to check if data is FolderListData
+ */
+function isFolderListData(data: unknown): data is FolderListData {
+  return data !== null && data !== undefined && typeof data === 'object' && 'folders' in data;
+}
+
+/**
+ * Safe property access with fallback
+ */
+function safeGet<T>(obj: unknown, key: string, fallback: T): T {
+  if (obj !== null && obj !== undefined && typeof obj === 'object' && key in obj) {
+    const value = (obj as Record<string, unknown>)[key];
+    return value !== undefined && value !== null ? (value as T) : fallback;
+  }
+  return fallback;
+}
+
 // ==================== HELPER FUNCTIONS ====================
 
 /**
@@ -84,15 +168,16 @@ function addCreateFolderTool(server: FastMCP, apiClient: MakeApiClient, componen
       }
       
       // Format response as JSON for the test expectations
+      const folderData = isFolderData(result.data) ? result.data : {};
       const responseData = {
-        folder: result.data,
+        folder: folderData,
         message: 'Folder created successfully',
         organization: {
-          path: result.data?.path || '/',
+          path: safeGet(folderData, 'path', '/'),
           permissions: {
-            readAccess: result.data?.permissions?.read?.length || 0,
-            writeAccess: result.data?.permissions?.write?.length || 0,
-            adminAccess: result.data?.permissions?.admin?.length || 0,
+            readAccess: safeGet(safeGet(folderData, 'permissions', {}), 'read', []).length || 0,
+            writeAccess: safeGet(safeGet(folderData, 'permissions', {}), 'write', []).length || 0,
+            adminAccess: safeGet(safeGet(folderData, 'permissions', {}), 'admin', []).length || 0,
           }
         }
       };
@@ -133,33 +218,51 @@ function addListFoldersTool(server: FastMCP, apiClient: MakeApiClient, component
       }
       
       // Format response as JSON for the test expectations
+      const listData = isFolderListData(result.data) ? result.data : { folders: [] };
+      const folders = safeGet(listData, 'folders', []) as FolderData[];
+      
       const responseData = {
-        folders: result.data?.folders || [],
+        folders,
         message: result.message || 'Folders listed successfully',
         summary: {
-          totalFolders: result.data?.folders?.length || 0,
+          totalFolders: folders.length,
           typeBreakdown: {
-            template: result.data?.folders?.filter((f: any) => f.type === 'template').length || 0,
-            scenario: result.data?.folders?.filter((f: any) => f.type === 'scenario').length || 0,
-            connection: result.data?.folders?.filter((f: any) => f.type === 'connection').length || 0,
-            mixed: result.data?.folders?.filter((f: any) => f.type === 'mixed').length || 0,
+            template: folders.filter((f) => safeGet(f, 'type', null) === 'template').length,
+            scenario: folders.filter((f) => safeGet(f, 'type', null) === 'scenario').length,
+            connection: folders.filter((f) => safeGet(f, 'type', null) === 'connection').length,
+            mixed: folders.filter((f) => safeGet(f, 'type', null) === 'mixed').length,
           },
           contentSummary: {
-            totalItems: result.data?.folders?.reduce((sum: number, f: any) => sum + (f.itemCount?.total || 0), 0) || 0,
-            templates: result.data?.folders?.reduce((sum: number, f: any) => sum + (f.itemCount?.templates || 0), 0) || 0,
-            scenarios: result.data?.folders?.reduce((sum: number, f: any) => sum + (f.itemCount?.scenarios || 0), 0) || 0,
+            totalItems: folders.reduce((sum, f) => {
+              const itemCount = safeGet(f, 'itemCount', {} as FolderData['itemCount']);
+              return sum + safeGet(itemCount, 'total', 0);
+            }, 0),
+            templates: folders.reduce((sum, f) => {
+              const itemCount = safeGet(f, 'itemCount', {} as FolderData['itemCount']);
+              return sum + safeGet(itemCount, 'templates', 0);
+            }, 0),
+            scenarios: folders.reduce((sum, f) => {
+              const itemCount = safeGet(f, 'itemCount', {} as FolderData['itemCount']);
+              return sum + safeGet(itemCount, 'scenarios', 0);
+            }, 0),
           },
-          largestFolder: result.data?.folders?.reduce((largest: any, current: any) => 
-            (current.itemCount?.total || 0) > (largest?.itemCount?.total || 0) ? current : largest, null),
-          mostRecentActivity: result.data?.folders?.reduce((most: any, current: any) => 
-            new Date(current.metadata?.lastActivity || 0) > new Date(most?.metadata?.lastActivity || 0) ? current : most, null),
+          largestFolder: folders.reduce((largest: FolderData | null, current) => {
+            const currentTotal = safeGet(safeGet(current, 'itemCount', {}), 'total', 0);
+            const largestTotal = largest ? safeGet(safeGet(largest, 'itemCount', {}), 'total', 0) : 0;
+            return currentTotal > largestTotal ? current : largest;
+          }, null),
+          mostRecentActivity: folders.reduce((most: FolderData | null, current) => {
+            const currentActivity = safeGet(safeGet(current, 'metadata', {}), 'lastActivity', '1970-01-01');
+            const mostActivity = most ? safeGet(safeGet(most, 'metadata', {}), 'lastActivity', '1970-01-01') : '1970-01-01';
+            return new Date(currentActivity) > new Date(mostActivity) ? current : most;
+          }, null),
         },
-        hierarchy: result.data?.folders?.map((f: any) => ({
-          id: f.id,
-          name: f.name,
-          parentId: f.parentId,
-          path: f.path,
-        })) || [],
+        hierarchy: folders.map((f) => ({
+          id: safeGet(f, 'id', ''),
+          name: safeGet(f, 'name', ''),
+          parentId: safeGet(f, 'parentId', null),
+          path: safeGet(f, 'path', '/'),
+        })),
       };
       
       return formatSuccessResponse(responseData).content[0].text;
