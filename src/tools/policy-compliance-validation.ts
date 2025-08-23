@@ -1463,7 +1463,7 @@ async function executePolicyComplianceValidation(
   input: z.infer<typeof ValidatePolicyComplianceSchema>,
   log: { info: (message: string, meta?: unknown) => void; error: (message: string, meta?: unknown) => void },
   reportProgress: (progress: { progress: number; total: number }) => void
-): Promise<Record<string, unknown>> {
+): Promise<{ validationId: string; startTime: string; results: ComplianceValidationResult[] }> {
   log.info('Starting comprehensive policy compliance validation', {
     targetsCount: input.targets.length,
     policyTypes: input.policySelection.policyTypes,
@@ -1503,7 +1503,7 @@ async function executePolicyComplianceValidation(
  */
 function generateComplianceSummary(
   validationId: string,
-  results: Array<Record<string, unknown>>,
+  results: ComplianceValidationResult[],
   startTime: string
 ): Record<string, unknown> {
   return {
@@ -1529,7 +1529,7 @@ function generateComplianceSummary(
 /**
  * Calculate comprehensive compliance breakdown across all targets
  */
-function calculateComplianceBreakdown(results: Array<Record<string, unknown>>): Record<string, unknown> {
+function calculateComplianceBreakdown(results: ComplianceValidationResult[]): Record<string, unknown> {
   const overallComplianceBreakdown = {
     byFramework: {} as Record<string, { score: number; violations: number; targets: number }>,
     byPolicyType: {} as Record<string, { score: number; violations: number; targets: number }>,
@@ -1542,9 +1542,10 @@ function calculateComplianceBreakdown(results: Array<Record<string, unknown>>): 
       if (!overallComplianceBreakdown.byFramework[framework]) {
         overallComplianceBreakdown.byFramework[framework] = { score: 0, violations: 0, targets: 0 };
       }
-      const frameworkData = overallComplianceBreakdown.byFramework[framework] as { score: number; violations: number; targets: number };
-      frameworkData.score += data.score;
-      frameworkData.violations += data.violations;
+      const frameworkData = overallComplianceBreakdown.byFramework[framework];
+      const typedData = data as { score: number; violations: number };
+      frameworkData.score += typedData.score;
+      frameworkData.violations += typedData.violations;
       frameworkData.targets += 1;
     });
 
@@ -1553,28 +1554,31 @@ function calculateComplianceBreakdown(results: Array<Record<string, unknown>>): 
       if (!overallComplianceBreakdown.byPolicyType[policyType]) {
         overallComplianceBreakdown.byPolicyType[policyType] = { score: 0, violations: 0, targets: 0 };
       }
-      const policyTypeData = overallComplianceBreakdown.byPolicyType[policyType] as { score: number; violations: number; targets: number };
-      policyTypeData.score += data.score;
-      policyTypeData.violations += data.violations;
+      const policyTypeData = overallComplianceBreakdown.byPolicyType[policyType];
+      const typedData = data as { score: number; violations: number };
+      policyTypeData.score += typedData.score;
+      policyTypeData.violations += typedData.violations;
       policyTypeData.targets += 1;
     });
 
     // Merge severity breakdowns
     Object.entries(result.complianceBreakdown.bySeverity).forEach(([severity, count]) => {
-      overallComplianceBreakdown.bySeverity[severity] = (overallComplianceBreakdown.bySeverity[severity] || 0) + count;
+      const currentCount = overallComplianceBreakdown.bySeverity[severity] || 0;
+      const addCount = typeof count === 'number' ? count : 0;
+      overallComplianceBreakdown.bySeverity[severity] = currentCount + addCount;
     });
   });
 
   // Average scores in breakdowns
   Object.keys(overallComplianceBreakdown.byFramework).forEach(framework => {
-    const data = overallComplianceBreakdown.byFramework[framework] as { score: number; targets: number };
+    const data = overallComplianceBreakdown.byFramework[framework];
     if (data.targets > 0) {
       data.score = Math.round(data.score / data.targets);
     }
   });
 
   Object.keys(overallComplianceBreakdown.byPolicyType).forEach(policyType => {
-    const data = overallComplianceBreakdown.byPolicyType[policyType] as { score: number; targets: number };
+    const data = overallComplianceBreakdown.byPolicyType[policyType];
     if (data.targets > 0) {
       data.score = Math.round(data.score / data.targets);
     }
@@ -1593,9 +1597,12 @@ async function logComplianceAuditEvent(
   success: boolean,
   errorMessage?: string
 ): Promise<void> {
+  const criticalViolations = typeof summary.criticalViolations === 'number' ? summary.criticalViolations : 0;
+  const highViolations = typeof summary.highViolations === 'number' ? summary.highViolations : 0;
+  
   await auditLogger.logEvent({
     level: success ? 
-      (summary.criticalViolations > 0 || summary.highViolations > 0 ? 'warn' : 'info') : 
+      (criticalViolations > 0 || highViolations > 0 ? 'warn' : 'info') : 
       'error',
     category: 'authorization',
     action: success ? 'comprehensive_policy_compliance_validation' : 'policy_compliance_validation_failed',
@@ -1619,9 +1626,109 @@ async function logComplianceAuditEvent(
       frameworks: input.policySelection.frameworks,
     },
     riskLevel: success ? 
-      (summary.criticalViolations > 0 ? 'high' : summary.highViolations > 0 ? 'medium' : 'low') :
+      (criticalViolations > 0 ? 'high' : highViolations > 0 ? 'medium' : 'low') :
       'medium',
   });
+}
+
+/**
+ * Sort recommendations by priority order
+ */
+function sortRecommendationsByPriority(
+  recommendations: Array<Record<string, unknown>>
+): Array<Record<string, unknown>> {
+  return recommendations.sort((a, b) => {
+    const priorityOrder = { immediate: 0, high: 1, medium: 2, low: 3, informational: 4 };
+    return priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder];
+  }).slice(0, 20); // Top 20 recommendations
+}
+
+/**
+ * Generate audit trail object for validation result
+ */
+function generateAuditTrail(
+  validationId: string,
+  startTime: string,
+  summary: Record<string, unknown>,
+  input: z.infer<typeof ValidatePolicyComplianceSchema>
+): Record<string, unknown> {
+  return {
+    validationId,
+    startTime,
+    endTime: new Date().toISOString(),
+    duration: `${summary.validationDuration}ms`,
+    userId: input.executionContext?.userId,
+    reason: input.executionContext?.reason,
+    correlationId: input.executionContext?.correlationId,
+    validationDepth: input.validationOptions.validationDepth,
+    dryRun: input.executionContext?.dryRun || false,
+  };
+}
+
+/**
+ * Generate download URLs for export options
+ */
+function generateDownloadUrls(
+  validationId: string,
+  exportOptions?: { generatePdf?: boolean; generateExcel?: boolean; generateDashboard?: boolean }
+): Record<string, string | null> {
+  return {
+    pdf: exportOptions?.generatePdf ? `/api/compliance/reports/${validationId}.pdf` : null,
+    excel: exportOptions?.generateExcel ? `/api/compliance/reports/${validationId}.xlsx` : null,
+    dashboard: exportOptions?.generateDashboard ? `/api/compliance/dashboard/${validationId}` : null,
+  };
+}
+
+/**
+ * Generate reporting options for validation result
+ */
+function generateReportingOptions(
+  validationId: string,
+  input: z.infer<typeof ValidatePolicyComplianceSchema>
+): Record<string, unknown> {
+  const exportOptions = input.reportingOptions?.exportOptions;
+  
+  return {
+    availableFormats: ['json', 'detailed', 'summary', 'executive'],
+    currentFormat: input.reportingOptions?.format || 'detailed',
+    exportOptions: {
+      generatePdf: exportOptions?.generatePdf || false,
+      generateExcel: exportOptions?.generateExcel || false,
+      generateDashboard: exportOptions?.generateDashboard || false,
+      downloadUrls: generateDownloadUrls(validationId, exportOptions),
+    },
+    historicalTrends: input.reportingOptions?.includeHistoricalTrends ? {
+      available: true,
+      endpoint: `/api/compliance/trends/${validationId}`,
+    } : null,
+  };
+}
+
+/**
+ * Generate capabilities information for validation result
+ */
+function generateCapabilities(): Record<string, unknown> {
+  return {
+    policyTypes: ['compliance', 'naming_convention', 'scenario_archival'],
+    frameworks: ['sox', 'gdpr', 'hipaa', 'pci_dss', 'iso27001', 'enterprise', 'custom'],
+    validationDepths: ['basic', 'standard', 'comprehensive'],
+    crossValidation: true,
+    scoring: true,
+    recommendations: true,
+    auditIntegration: true,
+    historicalTracking: true,
+    automatedRemediation: true,
+  };
+}
+
+/**
+ * Generate validation completion message
+ */
+function generateValidationMessage(
+  summary: Record<string, unknown>,
+  allRecommendations: Array<Record<string, unknown>>
+): string {
+  return `Comprehensive policy compliance validation completed. ${summary.totalTargets} targets validated with ${summary.totalViolations} total violations (${summary.criticalViolations} critical, ${summary.highViolations} high). Average compliance score: ${summary.averageComplianceScore}%. ${allRecommendations.length} recommendations generated.`;
 }
 
 /**
@@ -1630,7 +1737,7 @@ async function logComplianceAuditEvent(
 function generateFinalValidationResult(
   validationId: string,
   startTime: string,
-  results: Array<Record<string, unknown>>,
+  results: ComplianceValidationResult[],
   summary: Record<string, unknown>,
   allRecommendations: Array<Record<string, unknown>>,
   allCrossValidationResults: Array<Record<string, unknown>>,
@@ -1642,53 +1749,13 @@ function generateFinalValidationResult(
     validationId,
     results: input.reportingOptions?.format === 'summary' ? undefined : results,
     summary,
-    recommendations: allRecommendations.sort((a, b) => {
-      const priorityOrder = { immediate: 0, high: 1, medium: 2, low: 3, informational: 4 };
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    }).slice(0, 20), // Top 20 recommendations
+    recommendations: sortRecommendationsByPriority(allRecommendations),
     crossValidationResults: allCrossValidationResults,
     complianceBreakdown: overallComplianceBreakdown,
-    auditTrail: {
-      validationId,
-      startTime,
-      endTime: new Date().toISOString(),
-      duration: `${summary.validationDuration}ms`,
-      userId: input.executionContext?.userId,
-      reason: input.executionContext?.reason,
-      correlationId: input.executionContext?.correlationId,
-      validationDepth: input.validationOptions.validationDepth,
-      dryRun: input.executionContext?.dryRun || false,
-    },
-    reportingOptions: {
-      availableFormats: ['json', 'detailed', 'summary', 'executive'],
-      currentFormat: input.reportingOptions?.format || 'detailed',
-      exportOptions: {
-        generatePdf: input.reportingOptions?.exportOptions?.generatePdf || false,
-        generateExcel: input.reportingOptions?.exportOptions?.generateExcel || false,
-        generateDashboard: input.reportingOptions?.exportOptions?.generateDashboard || false,
-        downloadUrls: {
-          pdf: input.reportingOptions?.exportOptions?.generatePdf ? `/api/compliance/reports/${validationId}.pdf` : null,
-          excel: input.reportingOptions?.exportOptions?.generateExcel ? `/api/compliance/reports/${validationId}.xlsx` : null,
-          dashboard: input.reportingOptions?.exportOptions?.generateDashboard ? `/api/compliance/dashboard/${validationId}` : null,
-        },
-      },
-      historicalTrends: input.reportingOptions?.includeHistoricalTrends ? {
-        available: true,
-        endpoint: `/api/compliance/trends/${validationId}`,
-      } : null,
-    },
-    capabilities: {
-      policyTypes: ['compliance', 'naming_convention', 'scenario_archival'],
-      frameworks: ['sox', 'gdpr', 'hipaa', 'pci_dss', 'iso27001', 'enterprise', 'custom'],
-      validationDepths: ['basic', 'standard', 'comprehensive'],
-      crossValidation: true,
-      scoring: true,
-      recommendations: true,
-      auditIntegration: true,
-      historicalTracking: true,
-      automatedRemediation: true,
-    },
-    message: `Comprehensive policy compliance validation completed. ${summary.totalTargets} targets validated with ${summary.totalViolations} total violations (${summary.criticalViolations} critical, ${summary.highViolations} high). Average compliance score: ${summary.averageComplianceScore}%. ${allRecommendations.length} recommendations generated.`,
+    auditTrail: generateAuditTrail(validationId, startTime, summary, input),
+    reportingOptions: generateReportingOptions(validationId, input),
+    capabilities: generateCapabilities(),
+    message: generateValidationMessage(summary, allRecommendations),
   };
 }
 

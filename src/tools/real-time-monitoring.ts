@@ -617,71 +617,122 @@ class RealTimeExecutionMonitor extends EventEmitter {
     const moduleMap = new Map<string, ModuleProgress>();
 
     for (const log of logs) {
-      const module = log.module as Record<string, unknown> || {};
-      const moduleId = module.id as string || 'unknown';
-      const moduleName = module.name as string || 'Unknown Module';
-      const moduleType = module.type as string || 'unknown';
+      const module = this.extractModuleFromLog(log);
+      const moduleId = module.id;
 
       if (!moduleMap.has(moduleId)) {
-        moduleMap.set(moduleId, {
-          moduleId,
-          moduleName,
-          moduleType,
-          position: (module.position as { x: number; y: number }) || { x: 0, y: 0 },
-          status: 'pending',
-          inputBundles: 0,
-          outputBundles: 0,
-          operations: 0,
-          dataSize: 0,
-        });
+        moduleMap.set(moduleId, this.createInitialModuleProgress(module));
       }
 
       const moduleProgress = moduleMap.get(moduleId);
-      
-      // Guard against undefined moduleProgress
       if (!moduleProgress) {
         continue;
       }
       
-      // Update based on log information
-      const metrics = log.metrics as Record<string, unknown> || {};
-      const error = log.error as Record<string, unknown> || null;
-
-      // Update status based on log level and content
-      if (error) {
-        moduleProgress.status = 'failed';
-        moduleProgress.error = {
-          code: error.code as string || 'UNKNOWN_ERROR',
-          message: error.message as string || 'Unknown error',
-          type: error.type as string || 'runtime',
-          retryable: error.retryable as boolean || false,
-        };
-      } else {
-        const timestamp = log.timestamp as string;
-        const level = log.level as string;
-        
-        if (level === 'info' && log.message) {
-          if (!moduleProgress.startTime) {
-            moduleProgress.startTime = timestamp;
-            moduleProgress.status = 'running';
-          } else if (log.message.toString().includes('completed') || level === 'info') {
-            moduleProgress.endTime = timestamp;
-            moduleProgress.status = 'completed';
-            if (moduleProgress.startTime) {
-              moduleProgress.duration = new Date(timestamp).getTime() - new Date(moduleProgress.startTime).getTime();
-            }
-          }
-        }
-      }
-
-      // Update metrics
-      moduleProgress.inputBundles += (metrics.inputBundles as number) || 0;
-      moduleProgress.outputBundles += (metrics.outputBundles as number) || 0;
-      moduleProgress.operations += (metrics.operations as number) || 0;
-      moduleProgress.dataSize += (metrics.dataSize as number) || 0;
+      this.updateModuleProgress(moduleProgress, log);
     }
 
     return Array.from(moduleMap.values());
+  }
+
+  /**
+   * Extract module information from log entry
+   */
+  private extractModuleFromLog(log: Record<string, unknown>): {
+    id: string;
+    name: string;
+    type: string;
+    position: { x: number; y: number };
+  } {
+    const module = log.module as Record<string, unknown> || {};
+    return {
+      id: module.id as string || 'unknown',
+      name: module.name as string || 'Unknown Module',
+      type: module.type as string || 'unknown',
+      position: (module.position as { x: number; y: number }) || { x: 0, y: 0 },
+    };
+  }
+
+  /**
+   * Create initial module progress entry
+   */
+  private createInitialModuleProgress(module: {
+    id: string;
+    name: string;
+    type: string;
+    position: { x: number; y: number };
+  }): ModuleProgress {
+    return {
+      moduleId: module.id,
+      moduleName: module.name,
+      moduleType: module.type,
+      position: module.position,
+      status: 'pending',
+      inputBundles: 0,
+      outputBundles: 0,
+      operations: 0,
+      dataSize: 0,
+    };
+  }
+
+  /**
+   * Update module progress based on log information
+   */
+  private updateModuleProgress(moduleProgress: ModuleProgress, log: Record<string, unknown>): void {
+    const metrics = log.metrics as Record<string, unknown> || {};
+    const error = log.error as Record<string, unknown> || null;
+
+    if (error) {
+      this.handleModuleError(moduleProgress, error);
+    } else {
+      this.updateModuleStatus(moduleProgress, log);
+    }
+
+    this.updateModuleMetrics(moduleProgress, metrics);
+  }
+
+  /**
+   * Handle module error status update
+   */
+  private handleModuleError(moduleProgress: ModuleProgress, error: Record<string, unknown>): void {
+    moduleProgress.status = 'failed';
+    moduleProgress.error = {
+      code: error.code as string || 'UNKNOWN_ERROR',
+      message: error.message as string || 'Unknown error',
+      type: error.type as string || 'runtime',
+      retryable: error.retryable as boolean || false,
+    };
+  }
+
+  /**
+   * Update module status based on log level and content
+   */
+  private updateModuleStatus(moduleProgress: ModuleProgress, log: Record<string, unknown>): void {
+    const timestamp = log.timestamp as string;
+    const level = log.level as string;
+    
+    if (level === 'info' && log.message) {
+      if (!moduleProgress.startTime) {
+        moduleProgress.startTime = timestamp;
+        moduleProgress.status = 'running';
+      } else if (log.message.toString().includes('completed') || level === 'info') {
+        moduleProgress.endTime = timestamp;
+        moduleProgress.status = 'completed';
+        if (moduleProgress.startTime) {
+          moduleProgress.duration = new Date(timestamp).getTime() - new Date(moduleProgress.startTime).getTime();
+        }
+      }
+    }
+  }
+
+  /**
+   * Update module metrics from log data
+   */
+  private updateModuleMetrics(moduleProgress: ModuleProgress, metrics: Record<string, unknown>): void {
+    moduleProgress.inputBundles += (metrics.inputBundles as number) || 0;
+    moduleProgress.outputBundles += (metrics.outputBundles as number) || 0;
+    moduleProgress.operations += (metrics.operations as number) || 0;
+    moduleProgress.dataSize += (metrics.dataSize as number) || 0;
   }
 
   /**
@@ -1060,6 +1111,88 @@ Active Alerts (${activeAlerts.length}):
 }
 
 /**
+ * Build monitoring configuration from input parameters
+ */
+function buildMonitoringConfig(
+  monitoringConfig: any,
+  alertThresholds: any,
+  visualization: any
+): RealTimeMonitoringConfig {
+  return {
+    updateInterval: monitoringConfig.updateInterval,
+    enableProgressVisualization: monitoringConfig.enableProgressVisualization,
+    enablePerformanceAlerts: monitoringConfig.enablePerformanceAlerts,
+    enableDataFlowTracking: monitoringConfig.enableDataFlowTracking,
+    enablePredictiveAnalysis: monitoringConfig.enablePredictiveAnalysis,
+    enableSSEStreaming: monitoringConfig.enableSSEStreaming,
+    alertThresholds: buildAlertThresholds(alertThresholds),
+    visualization: buildVisualizationConfig(visualization),
+  };
+}
+
+/**
+ * Build alert thresholds configuration
+ */
+function buildAlertThresholds(alertThresholds: any): AlertThresholds {
+  return {
+    performance: {
+      maxModuleDuration: alertThresholds.performance?.maxModuleDuration || 60000,
+      maxTotalDuration: alertThresholds.performance?.maxTotalDuration || 300000,
+      minThroughput: alertThresholds.performance?.minThroughput || 1.0,
+      maxErrorRate: alertThresholds.performance?.maxErrorRate || 0.1,
+    },
+    resource: {
+      maxMemoryUsage: alertThresholds.resource?.maxMemoryUsage || 0.8,
+      maxCpuUsage: alertThresholds.resource?.maxCpuUsage || 0.8,
+      maxNetworkLatency: alertThresholds.resource?.maxNetworkLatency || 2000,
+    },
+    execution: {
+      maxStuckTime: alertThresholds.execution?.maxStuckTime || 30000,
+      maxRetries: alertThresholds.execution?.maxRetries || 3,
+      minSuccessRate: alertThresholds.execution?.minSuccessRate || 0.95,
+    },
+  };
+}
+
+/**
+ * Build visualization configuration
+ */
+function buildVisualizationConfig(visualization: any) {
+  return {
+    format: visualization.format || 'structured',
+    colorEnabled: visualization.colorEnabled !== false,
+    includeMetrics: visualization.includeMetrics !== false,
+    includeDataFlow: visualization.includeDataFlow !== false,
+  };
+}
+
+/**
+ * Build start monitoring response
+ */
+function buildStartMonitoringResponse(
+  monitorId: string,
+  scenarioId: number,
+  executionId: string | undefined,
+  config: RealTimeMonitoringConfig,
+  status: Record<string, unknown>
+) {
+  return formatSuccessResponse({
+    monitorId,
+    scenarioId,
+    executionId: executionId || 'auto-detected',
+    startTime: new Date().toISOString(),
+    config,
+    initialStatus: status,
+    message: 'Real-time monitoring started successfully',
+    instructions: {
+      sse: 'Connect to /monitoring/sse endpoint for real-time updates',
+      stop: `Use stop_monitoring tool with monitorId: ${monitorId}`,
+      status: `Use get_monitoring_status tool with monitorId: ${monitorId}`,
+    },
+  });
+}
+
+/**
  * Add real-time monitoring tools to FastMCP server
  */
 export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiClient): void {
@@ -1094,60 +1227,15 @@ export function addRealTimeMonitoringTools(server: FastMCP, apiClient: MakeApiCl
       });
 
       try {
-        const config: RealTimeMonitoringConfig = {
-          updateInterval: monitoringConfig.updateInterval,
-          enableProgressVisualization: monitoringConfig.enableProgressVisualization,
-          enablePerformanceAlerts: monitoringConfig.enablePerformanceAlerts,
-          enableDataFlowTracking: monitoringConfig.enableDataFlowTracking,
-          enablePredictiveAnalysis: monitoringConfig.enablePredictiveAnalysis,
-          enableSSEStreaming: monitoringConfig.enableSSEStreaming,
-          alertThresholds: {
-            performance: {
-              maxModuleDuration: alertThresholds.performance?.maxModuleDuration || 60000,
-              maxTotalDuration: alertThresholds.performance?.maxTotalDuration || 300000,
-              minThroughput: alertThresholds.performance?.minThroughput || 1.0,
-              maxErrorRate: alertThresholds.performance?.maxErrorRate || 0.1,
-            },
-            resource: {
-              maxMemoryUsage: alertThresholds.resource?.maxMemoryUsage || 0.8,
-              maxCpuUsage: alertThresholds.resource?.maxCpuUsage || 0.8,
-              maxNetworkLatency: alertThresholds.resource?.maxNetworkLatency || 2000,
-            },
-            execution: {
-              maxStuckTime: alertThresholds.execution?.maxStuckTime || 30000,
-              maxRetries: alertThresholds.execution?.maxRetries || 3,
-              minSuccessRate: alertThresholds.execution?.minSuccessRate || 0.95,
-            },
-          },
-          visualization: {
-            format: visualization.format || 'structured',
-            colorEnabled: visualization.colorEnabled !== false,
-            includeMetrics: visualization.includeMetrics !== false,
-            includeDataFlow: visualization.includeDataFlow !== false,
-          },
-        };
-
+        const config = buildMonitoringConfig(monitoringConfig, alertThresholds, visualization);
         const monitorId = await monitor.startMonitoring(scenarioId, executionId, config);
-
+        
         // Wait for initial state update
         await new Promise(resolve => setTimeout(resolve, 2000));
-
+        
         const status = monitor.getMonitoringStatus(monitorId);
-
-        return formatSuccessResponse({
-          monitorId,
-          scenarioId,
-          executionId: executionId || 'auto-detected',
-          startTime: new Date().toISOString(),
-          config,
-          initialStatus: status,
-          message: 'Real-time monitoring started successfully',
-          instructions: {
-            sse: 'Connect to /monitoring/sse endpoint for real-time updates',
-            stop: `Use stop_monitoring tool with monitorId: ${monitorId}`,
-            status: `Use get_monitoring_status tool with monitorId: ${monitorId}`,
-          },
-        });
+        
+        return buildStartMonitoringResponse(monitorId, scenarioId, executionId, config, status);
 
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);

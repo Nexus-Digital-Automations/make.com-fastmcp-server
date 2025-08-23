@@ -2,6 +2,34 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1755909582914_uaqw3t4n2",
+      "title": "Fix ALL complexity violations in real-time-monitoring.ts",
+      "description": "Reduce ALL method complexities to below 25 by extracting helper functions while maintaining functionality",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T00:39:42.914Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:40:10.293Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        }
+      ]
+    },
+    {
       "id": "task_1755905898759_pvtkirr08",
       "title": "Fix multiple complexity violations (27-37) across codebase",
       "description": "Fix 10+ complexity violations ranging from 27-37 (above 25 limit) in multiple execute methods and processStreamingExport function. Extract helper functions to reduce cyclomatic complexity and improve maintainability.",
