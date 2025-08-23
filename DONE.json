@@ -22645,9 +22645,53 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755923393354_x44il86gv",
+      "title": "Fix ESLint errors in src/server.ts",
+      "description": "ESLint errors: multiple missing return type annotations, unused error variables, any type usage across lines 60-620. High impact core server file needs immediate attention.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T04:29:53.354Z",
+      "auto_research_created": false,
+      "assigned_agent": "agent_1755923500000",
+      "started_at": "2025-08-23T04:34:53.605Z",
+      "claimed_by": "agent_1755923500000",
+      "agent_assignment_history": [
+        {
+          "agentId": "agent_1755923500000",
+          "role": "primary",
+          "assignedAt": "2025-08-23T04:34:53.605Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T04:38:33.219Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T04:38:33.219Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 521,
-  "last_completion": "2025-08-23T04:37:53.568Z",
+  "total_completed": 522,
+  "last_completion": "2025-08-23T04:38:33.219Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
