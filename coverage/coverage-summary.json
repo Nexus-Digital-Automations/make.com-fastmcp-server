@@ -1,15 +1,15 @@
 {
   "total": {
-    "lines": { "total": 300, "covered": 281, "skipped": 0, "pct": 93.66 },
-    "statements": { "total": 300, "covered": 281, "skipped": 0, "pct": 93.66 },
-    "functions": { "total": 19, "covered": 18, "skipped": 0, "pct": 94.73 },
-    "branches": { "total": 71, "covered": 57, "skipped": 0, "pct": 80.28 },
+    "lines": { "total": 300, "covered": 126, "skipped": 0, "pct": 42 },
+    "statements": { "total": 300, "covered": 126, "skipped": 0, "pct": 42 },
+    "functions": { "total": 18, "covered": 8, "skipped": 0, "pct": 44.44 },
+    "branches": { "total": 27, "covered": 11, "skipped": 0, "pct": 40.74 },
     "branchesTrue": { "total": 0, "covered": 0, "skipped": 0, "pct": "Unknown" }
   },
   "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/lib/make-api-client.ts": {
-    "lines": { "total": 300, "covered": 281, "skipped": 0, "pct": 93.66 },
-    "functions": { "total": 19, "covered": 18, "skipped": 0, "pct": 94.73 },
-    "statements": { "total": 300, "covered": 281, "skipped": 0, "pct": 93.66 },
-    "branches": { "total": 71, "covered": 57, "skipped": 0, "pct": 80.28 }
+    "lines": { "total": 300, "covered": 126, "skipped": 0, "pct": 42 },
+    "functions": { "total": 18, "covered": 8, "skipped": 0, "pct": 44.44 },
+    "statements": { "total": 300, "covered": 126, "skipped": 0, "pct": 42 },
+    "branches": { "total": 27, "covered": 11, "skipped": 0, "pct": 40.74 }
   }
 }
