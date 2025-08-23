@@ -1032,9 +1032,9 @@ function addListNotificationsTool(server: FastMCP, apiClient: MakeApiClient, _co
         }
 
         // Create notification analytics using helper functions
-        const analytics = generateNotificationAnalytics(notifications, metadata, includeDelivery);
+        const analytics = generateNotificationAnalytics(notifications, metadata ?? {}, includeDelivery);
 
-        return formatNotificationsListResponse(notifications, analytics, metadata, limit, offset);
+        return formatNotificationsListResponse(notifications, analytics, metadata ?? {}, limit ?? 20, offset ?? 0);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log?.error) {

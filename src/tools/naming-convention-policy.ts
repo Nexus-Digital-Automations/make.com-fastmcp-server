@@ -1111,7 +1111,7 @@ class validateNamesPolicyHelper {
     policyName: string,
     validationResults: Record<string, unknown>,
     summaryStats: { totalNames: number; validNames: number; invalidNames: number; warningNames: number }
-  ): { content: Array<{ text: string }> } {
+  ): import('../utils/response-formatter.js').ToolResponse {
     return formatSuccessResponse({
       success: true,
       policyId,
@@ -1485,7 +1485,7 @@ class updatePolicyHelper {
     updatedPolicy: { name: string; [key: string]: unknown },
     existingPolicy: Record<string, unknown>,
     timestamp: string
-  ): { content: Array<{ text: string }> } {
+  ): import('../utils/response-formatter.js').ToolResponse {
     return formatSuccessResponse({
       success: true,
       policy: updatedPolicy,

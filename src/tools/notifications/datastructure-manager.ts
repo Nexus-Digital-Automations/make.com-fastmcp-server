@@ -663,7 +663,9 @@ function addUpdateDataStructureTool(server: FastMCP, apiClient: MakeApiClient): 
         }
 
         // Step 1: Validate JSON Schema
-        validateStructureSchema(structure);
+        if (structure) {
+          validateStructureSchema(structure);
+        }
 
         // Step 2: Build update data
         const updateData = buildUpdateData(name, description, structure, validation, transformation);
