@@ -22733,9 +22733,41 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755924036694_798skjguj",
+      "title": "Fix remaining ESLint errors in additional tools files",
+      "description": "Systematically fix ESLint errors using proven transformation pattern: add return types, remove unused parameters, add eslint disable comments",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T04:40:36.695Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T04:44:22.056Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T04:44:22.057Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 523,
-  "last_completion": "2025-08-23T04:39:26.323Z",
+  "total_completed": 524,
+  "last_completion": "2025-08-23T04:44:22.057Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
