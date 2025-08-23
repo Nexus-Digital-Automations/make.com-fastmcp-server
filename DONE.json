@@ -24441,9 +24441,97 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755949147262_7q5zicwlj",
+      "title": "Remove stale TODO comment in folders.ts",
+      "description": "Clean up the outdated TODO comment at line 311 in src/tools/folders.ts - all helper functions have been successfully implemented",
+      "mode": "DEVELOPMENT",
+      "category": "chore",
+      "priority": "low",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T11:39:07.263Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755948977397_1_general_a3a61a2f",
+      "started_at": "2025-08-23T11:39:13.622Z",
+      "claimed_by": "development_session_1755948977397_1_general_a3a61a2f",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755948977397_1_general_a3a61a2f",
+          "role": "primary",
+          "assignedAt": "2025-08-23T11:39:13.622Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T11:40:06.526Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T11:40:06.528Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755949465956_92yfd5qkw",
+      "title": "Fix expectInvalidZodParse warning issue in test helpers",
+      "description": "Fix the expectInvalidZodParse function in tests/utils/test-helpers.ts that silently handles non-Zod schemas, potentially masking test failures. The function should throw an error or warn when called with invalid schemas.",
+      "mode": "DEVELOPMENT",
+      "category": "bug",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./tests/utils/test-helpers.ts",
+        "./development/research-reports/test-infrastructure-quality-performance-optimization-research-2025.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T11:44:25.956Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T11:45:56.941Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T11:49:43.250Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T11:49:43.272Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 565,
-  "last_completion": "2025-08-23T11:35:48.750Z",
+  "total_completed": 567,
+  "last_completion": "2025-08-23T11:49:43.272Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
