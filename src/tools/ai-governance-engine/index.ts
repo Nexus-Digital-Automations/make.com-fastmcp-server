@@ -128,24 +128,149 @@ function addAnalyzePolicyConflictsTool(server: FastMCP, apiClient: MakeApiClient
 /**
  * Add remaining governance tool helper functions
  */
-function addAssessRiskTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addAssessRiskTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'assess-risk',
+    description: 'Conduct comprehensive AI-powered risk assessment with predictive analytics',
+    parameters: governanceTools.assessRisk.metadata.parameters,
+    annotations: {
+      title: 'AI Risk Assessment',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      context.reportProgress({ progress: 25, total: 100 });
+      
+      const result = await governanceTools.assessRisk(toolContext, args);
+      
+      context.reportProgress({ progress: 100, total: 100 });
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      return result.message || 'Risk assessment completed successfully';
+    }
+  });
 }
 
-function addConfigureAutomatedRemediationTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addConfigureAutomatedRemediationTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'configure-automated-remediation',
+    description: 'Configure intelligent automated remediation workflows with escalation paths',
+    parameters: governanceTools.configureAutomatedRemediation.metadata.parameters,
+    annotations: {
+      title: 'Automated Remediation Configuration',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      context.reportProgress({ progress: 35, total: 100 });
+      
+      const result = await governanceTools.configureAutomatedRemediation(toolContext, args);
+      
+      context.reportProgress({ progress: 100, total: 100 });
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      return result.message || 'Automated remediation configured successfully';
+    }
+  });
 }
 
-function addGenerateGovernanceInsightsTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addGenerateGovernanceInsightsTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'generate-governance-insights',
+    description: 'Generate AI-powered governance insights with predictive analytics and recommendations',
+    parameters: governanceTools.generateGovernanceInsights.metadata.parameters,
+    annotations: {
+      title: 'Governance Intelligence Dashboard',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      context.reportProgress({ progress: 40, total: 100 });
+      
+      const result = await governanceTools.generateGovernanceInsights(toolContext, args);
+      
+      context.reportProgress({ progress: 100, total: 100 });
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      return result.message || 'Governance insights generated successfully';
+    }
+  });
 }
 
-function addGenerateGovernanceDashboardTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addGenerateGovernanceDashboardTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'generate-governance-dashboard',
+    description: 'Generate real-time governance intelligence dashboard with predictive analytics',
+    parameters: governanceTools.generateGovernanceDashboard.metadata.parameters,
+    annotations: {
+      title: 'Governance Intelligence Dashboard',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      context.reportProgress({ progress: 45, total: 100 });
+      
+      const result = await governanceTools.generateGovernanceDashboard(toolContext, args);
+      
+      context.reportProgress({ progress: 100, total: 100 });
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      return result.message || 'Governance dashboard generated successfully';
+    }
+  });
 }
 
-function addOptimizePoliciesTool(_server: FastMCP, _apiClient: MakeApiClient, _componentLogger: ReturnType<typeof logger.child>): void {
-  // TODO: Implement this helper function
+function addOptimizePoliciesTool(server: FastMCP, apiClient: MakeApiClient, componentLogger: ReturnType<typeof logger.child>): void {
+  server.addTool({
+    name: 'optimize-policies',
+    description: 'AI-powered policy optimization with simulation and impact analysis',
+    parameters: governanceTools.optimizePolicies.metadata.parameters,
+    annotations: {
+      title: 'Policy Optimization Engine',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    execute: async (args, context) => {
+      const toolContext = createToolContext(componentLogger, server, apiClient, context);
+      context.reportProgress({ progress: 50, total: 100 });
+      
+      const result = await governanceTools.optimizePolicies(toolContext, args);
+      
+      context.reportProgress({ progress: 100, total: 100 });
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      return result.message || 'Policy optimization completed successfully';
+    }
+  });
 }
 
 /**

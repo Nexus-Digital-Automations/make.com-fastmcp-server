@@ -1,6 +1,52 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1755948523620_8rz6opwe6",
+      "title": "Implement missing AI governance engine tools",
+      "description": "Complete implementation of 5 missing AI governance tool functions: addAssessRiskTool, addConfigureAutomatedRemediationTool, addGenerateGovernanceInsightsTool, addGenerateGovernanceDashboardTool, addOptimizePoliciesTool",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-23T11:28:43.627Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T11:30:22.511Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        }
+      ]
+    },
+    {
+      "id": "task_1755948517666_g14ixlokr",
+      "title": "Implement missing folder management tools",
+      "description": "Complete implementation of 12 missing folder tool functions: addGetFolderContentsTool, addMoveItemsTool, addCreateDataStoreTool, addListDataStoresTool, addListDataStructuresTool, addGetDataStructureTool, addCreateDataStructureTool, addUpdateDataStructureTool, addDeleteDataStructureTool, addGetDataStoreTool, addUpdateDataStoreTool, addDeleteDataStoreTool",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T11:28:37.667Z",
+      "auto_research_created": false
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
