@@ -259,11 +259,12 @@ function addDeleteTemplateTool(server: FastMCP, _apiClient: MakeApiClient, _comp
  * Add template management tools to FastMCP server
  */
 export function addTemplateTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const getComponentLogger = () => {
+  const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ component: 'TemplateTools' });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };

@@ -208,15 +208,16 @@ export async function retryWithBackoff<T>(
     onRetry,
   } = options;
 
-  const getOperationLogger = () => {
+  const getOperationLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({
         component: 'RetryMechanism',
         correlationId: correlationId || randomUUID(),
         operation: 'retry-with-backoff',
       });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };

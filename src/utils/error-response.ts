@@ -39,14 +39,15 @@ export function formatErrorResponse(
   correlationId?: string
 ): ErrorResponse {
   const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
-  const getComponentLogger = () => {
+  const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ 
         component: 'ErrorResponseFormatter',
         correlationId: errorCorrelationId
       });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };
@@ -149,15 +150,16 @@ export function errorHandlerMiddleware() {
   return (error: Error, req: Record<string, unknown>, res: Record<string, unknown>): void => {
     const correlationId = (req.correlationId as string) || (req.headers as Record<string, string>)?.['x-correlation-id'] || randomUUID();
     
-    const getComponentLogger = () => {
+    const getComponentLogger = (): ReturnType<typeof logger.child> => {
       try {
         return logger.child({ 
           component: 'ErrorMiddleware',
           correlationId,
           operation: `${req.method as string} ${req.path as string}`,
         });
-      } catch (error) {
+      } catch {
         // Fallback for test environments
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return logger as any;
       }
     };
@@ -198,15 +200,16 @@ export function createToolErrorResponse(
   correlationId?: string
 ): string {
   const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
-  const getComponentLogger = () => {
+  const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ 
         component: 'ToolErrorHandler',
         operation,
         correlationId: errorCorrelationId
       });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };
@@ -233,15 +236,16 @@ export function createToolSuccessResponse<T>(
   operation: string,
   correlationId?: string
 ): string {
-  const getComponentLogger = () => {
+  const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ 
         component: 'ToolSuccessHandler',
         operation,
         correlationId,
       });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };

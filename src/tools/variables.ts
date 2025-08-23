@@ -227,11 +227,12 @@ function addCreateCustomVariableTool(server: FastMCP, apiClient: MakeApiClient):
  * Add custom variable management tools to FastMCP server
  */
 export function addVariableTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const getComponentLogger = () => {
+  const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ component: 'VariableTools' });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };

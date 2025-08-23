@@ -41,11 +41,12 @@ import {
  * @param apiClient - Make.com API client instance
  */
 export function addExtractedScenarioTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const getComponentLogger = () => {
+  const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ component: 'ExtractedScenarioTools' });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };

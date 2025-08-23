@@ -54,14 +54,15 @@ import { VERSION_INFO } from './constants.js';
  * @param apiClient - Make.com API client
  */
 export function addScenarioTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const getComponentLogger = () => {
+  const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
       return logger.child({ 
         component: 'ScenariosModule',
         version: VERSION_INFO.SCENARIOS_MODULE_VERSION 
       });
-    } catch (error) {
+    } catch {
       // Fallback for test environments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return logger as any;
     }
   };

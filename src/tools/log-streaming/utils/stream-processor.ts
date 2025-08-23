@@ -68,11 +68,12 @@ export class LogStreamingManager extends EventEmitter {
     callback: (logs: MakeLogEntry[]) => void
   ): Promise<string> {
     const streamId = `${scenarioId}-${executionId || 'live'}-${Date.now()}`;
-    const getComponentLogger = () => {
+    const getComponentLogger = (): ReturnType<typeof logger.child> => {
       try {
         return logger.child({ component: 'LogStreamingManager', streamId });
-      } catch (error) {
+      } catch {
         // Fallback for test environments
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return logger as any;
       }
     };

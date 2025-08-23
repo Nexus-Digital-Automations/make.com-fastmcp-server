@@ -15,11 +15,12 @@ import { auditLogger } from '../lib/audit-logger.js';
 import logger from '../lib/logger.js';
 import { formatSuccessResponse } from '../utils/response-formatter.js';
 
-const getComponentLogger = () => {
+const getComponentLogger = (): ReturnType<typeof logger.child> => {
   try {
     return logger.child({ component: 'ZeroTrustAuthTools' });
-  } catch (error) {
+  } catch {
     // Fallback for test environments
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return logger as any;
   }
 };
