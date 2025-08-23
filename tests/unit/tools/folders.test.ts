@@ -13,6 +13,12 @@ import {
   executeTool 
 } from '../../utils/test-helpers.js';
 
+// Type imports for testing
+import type { 
+  MakeFolder, 
+  MakeDataStore 
+} from '../../../src/tools/folders/types/index.js';
+
 // Advanced testing utilities
 class ChaosMonkey {
   constructor(private config: { failureRate: number; latencyMs: number; scenarios: string[] }) {}
@@ -273,7 +279,8 @@ describe('Folder Organization Tools', () => {
           data: mockFolder,
         });
 
-        const result = await executeTool(mockServer, 'create_folder', {
+        const tool = findTool(mockTool, 'create_folder');
+        const result = await executeTool(tool, {
           name: 'Marketing Templates',
           description: 'Collection of marketing automation templates',
           type: 'template',
@@ -312,13 +319,12 @@ describe('Folder Organization Tools', () => {
           data: childFolder,
         });
 
-        const result = await executeTool(mockServer, 'create_folder',
-          parameters: {
-            name: 'Email Campaigns',
-            description: 'Email marketing campaign templates',
-            parentId: 5001,
-            type: 'template',
-          },
+        const tool = findTool(mockTool, 'create_folder');
+        const result = await executeTool(tool, {
+          name: 'Email Campaigns',
+          description: 'Email marketing campaign templates',
+          parentId: 5001,
+          type: 'template',
         });
 
         expect(mockApiClient.get).toHaveBeenCalledWith('/folders/5001');
@@ -345,16 +351,15 @@ describe('Folder Organization Tools', () => {
           data: mockFolder,
         });
 
-        const result = await executeTool(mockServer, 'create_folder',
-          parameters: {
-            name: 'Restricted Templates',
-            description: 'Templates with restricted access',
-            type: 'template',
-            permissions: {
-              read: ['user_12345', 'user_67890', 'team_2001'],
-              write: ['user_12345'],
-              admin: ['user_12345'],
-            },
+        const tool = findTool(mockTool, 'create_folder');
+        const result = await executeTool(tool, {
+          name: 'Restricted Templates',
+          description: 'Templates with restricted access',
+          type: 'template',
+          permissions: {
+            read: ['user_12345', 'user_67890', 'team_2001'],
+            write: ['user_12345'],
+            admin: ['user_12345'],
           },
         });
 
@@ -376,12 +381,11 @@ describe('Folder Organization Tools', () => {
         const maliciousName = securityTestPatterns.xss[0];
         const maliciousDescription = securityTestPatterns.sqlInjection[0];
 
-        const result = await executeTool(mockServer, 'create_folder',
-          parameters: {
-            name: maliciousName,
-            description: maliciousDescription,
-            type: 'template',
-          },
+        const tool = findTool(mockTool, 'create_folder');
+        const result = await executeTool(tool, {
+          name: maliciousName,
+          description: maliciousDescription,
+          type: 'template',
         });
 
         // Folder should be created but content should be sanitized
@@ -396,13 +400,12 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder not found', status: 404 },
         });
 
-        await expect(executeTool(mockServer, 'create_folder',
-          parameters: {
-            name: 'Invalid Parent Test',
-            description: 'Testing invalid parent folder',
-            parentId: 99999,
-            type: 'template',
-          },
+        const tool = findTool(mockTool, 'create_folder');
+        await expect(executeTool(tool, {
+          name: 'Invalid Parent Test',
+          description: 'Testing invalid parent folder',
+          parentId: 99999,
+          type: 'template',
         })).rejects.toThrow('Parent folder with ID 99999 not found');
       });
     });
@@ -414,32 +417,29 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder service temporarily unavailable' },
         });
 
-        await expect(executeTool(mockServer, 'create_folder',
-          parameters: {
-            name: 'Test Folder',
-            description: 'Test description',
-            type: 'template',
-          },
+        const tool = findTool(mockTool, 'create_folder');
+        await expect(executeTool(tool, {
+          name: 'Test Folder',
+          description: 'Test description',
+          type: 'template',
         })).rejects.toThrow('Failed to create folder: Folder service temporarily unavailable');
       });
 
       test('should validate required fields', async () => {
-        await expect(executeTool(mockServer, 'create_folder',
-          parameters: {
-            // Missing required name
-            description: 'Test description',
-            type: 'template',
-          },
+        const tool = findTool(mockTool, 'create_folder');
+        await expect(executeTool(tool, {
+          // Missing required name
+          description: 'Test description',
+          type: 'template',
         })).rejects.toThrow();
       });
 
       test('should validate folder types', async () => {
-        await expect(executeTool(mockServer, 'create_folder',
-          parameters: {
-            name: 'Test Folder',
-            description: 'Test description',
-            type: 'invalid_type' as 'template' | 'scenario' | 'connection' | 'mixed',
-          },
+        const tool = findTool(mockTool, 'create_folder');
+        await expect(executeTool(tool, {
+          name: 'Test Folder',
+          description: 'Test description',
+          type: 'invalid_type' as 'template' | 'scenario' | 'connection' | 'mixed',
         })).rejects.toThrow();
       });
     });
@@ -455,13 +455,12 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 1, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_folders',
-          parameters: {
-            parentId: undefined, // Root folders
-            type: 'all',
-            limit: 50,
-            offset: 0,
-          },
+        const tool = findTool(mockTool, 'list_folders');
+        const result = await executeTool(tool, {
+          parentId: undefined, // Root folders
+          type: 'all',
+          limit: 50,
+          offset: 0,
         });
 
         expect(mockApiClient.get).toHaveBeenCalledWith('/folders', {
@@ -487,12 +486,11 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 4, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_folders',
-          parameters: {
-            includeContents: true,
-            sortBy: 'name',
-            sortOrder: 'asc',
-          },
+        const tool = findTool(mockTool, 'list_folders');
+        const result = await executeTool(tool, {
+          includeContents: true,
+          sortBy: 'name',
+          sortOrder: 'asc',
         });
 
         const response = JSON.parse(result);
@@ -513,12 +511,11 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_folders',
-          parameters: {
-            type: 'template',
-            organizationId: 1001,
-            includeEmpty: false,
-          },
+        const tool = findTool(mockTool, 'list_folders');
+        const result = await executeTool(tool, {
+          type: 'template',
+          organizationId: 1001,
+          includeEmpty: false,
         });
 
         expect(mockApiClient.get).toHaveBeenCalledWith('/folders', {
@@ -554,11 +551,10 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_folders',
-          parameters: {
-            searchQuery: 'CRM',
-            includeContents: false,
-          },
+        const tool = findTool(mockTool, 'list_folders');
+        const result = await executeTool(tool, {
+          searchQuery: 'CRM',
+          includeContents: false,
         });
 
         expect(mockApiClient.get).toHaveBeenCalledWith('/folders', {
@@ -598,11 +594,10 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_folders',
-          parameters: {
-            sortBy: 'lastActivity',
-            sortOrder: 'desc',
-          },
+        const tool = findTool(mockTool, 'list_folders');
+        const result = await executeTool(tool, {
+          sortBy: 'lastActivity',
+          sortOrder: 'desc',
         });
 
         const response = JSON.parse(result);
@@ -618,9 +613,8 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder service temporarily unavailable' },
         });
 
-        await expect(executeTool(mockServer, 'list_folders',
-          parameters: {},
-        })).rejects.toThrow('Failed to list folders: Folder service temporarily unavailable');
+        const tool = findTool(mockTool, 'list_folders');
+        await expect(executeTool(tool, {})).rejects.toThrow('Failed to list folders: Folder service temporarily unavailable');
       });
     });
   });
@@ -644,13 +638,12 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'get_folder_contents',
-          parameters: {
-            folderId: 12345,
-            contentType: 'all',
-            includeMetadata: true,
-            limit: 100,
-          },
+        const tool = findTool(mockTool, 'get_folder_contents');
+        const result = await executeTool(tool, {
+          folderId: 12345,
+          contentType: 'all',
+          includeMetadata: true,
+          limit: 100,
         });
 
         expect(mockApiClient.get).toHaveBeenCalledWith('/folders/12345/contents', {
@@ -683,12 +676,11 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'get_folder_contents',
-          parameters: {
-            folderId: 12345,
-            contentType: 'templates',
-            includeMetadata: true,
-          },
+        const tool = findTool(mockTool, 'get_folder_contents');
+        const result = await executeTool(tool, {
+          folderId: 12345,
+          contentType: 'templates',
+          includeMetadata: true,
         });
 
         const response = JSON.parse(result);
@@ -704,10 +696,9 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder not found', status: 404 },
         });
 
-        await expect(executeTool(mockServer, 'get_folder_contents',
-          parameters: {
-            folderId: 99999,
-          },
+        const tool = findTool(mockTool, 'get_folder_contents');
+        await expect(executeTool(tool, {
+          folderId: 99999,
         })).rejects.toThrow('Failed to get folder contents: Folder not found');
       });
     });
@@ -735,16 +726,15 @@ describe('Folder Organization Tools', () => {
           data: moveResult,
         });
 
-        const result = await executeTool(mockServer, 'move_items',
-          parameters: {
-            items: [
-              { type: 'template', id: 1001 },
-              { type: 'scenario', id: 2001 },
-              { type: 'connection', id: 3001 },
-            ],
-            targetFolderId: 5001,
-            copyInsteadOfMove: false,
-          },
+        const tool = findTool(mockTool, 'move_items');
+        const result = await executeTool(tool, {
+          items: [
+            { type: 'template', id: 1001 },
+            { type: 'scenario', id: 2001 },
+            { type: 'connection', id: 3001 },
+          ],
+          targetFolderId: 5001,
+          copyInsteadOfMove: false,
         });
 
         expect(mockApiClient.get).toHaveBeenCalledWith('/folders/5001');
@@ -777,15 +767,14 @@ describe('Folder Organization Tools', () => {
           data: copyResult,
         });
 
-        const result = await executeTool(mockServer, 'move_items',
-          parameters: {
-            items: [
-              { type: 'template', id: 1001 },
-              { type: 'template', id: 1002 },
-            ],
-            targetFolderId: 5001,
-            copyInsteadOfMove: true,
-          },
+        const tool = findTool(mockTool, 'move_items');
+        const result = await executeTool(tool, {
+          items: [
+            { type: 'template', id: 1001 },
+            { type: 'template', id: 1002 },
+          ],
+          targetFolderId: 5001,
+          copyInsteadOfMove: true,
         });
 
         expect(mockApiClient.post).toHaveBeenCalledWith('/folders/move-items', expect.objectContaining({
@@ -810,12 +799,11 @@ describe('Folder Organization Tools', () => {
           data: moveToRootResult,
         });
 
-        const result = await executeTool(mockServer, 'move_items',
-          parameters: {
-            items: [{ type: 'folder', id: 4001 }],
-            targetFolderId: undefined, // Move to root
-            copyInsteadOfMove: false,
-          },
+        const tool = findTool(mockTool, 'move_items');
+        const result = await executeTool(tool, {
+          items: [{ type: 'folder', id: 4001 }],
+          targetFolderId: undefined, // Move to root
+          copyInsteadOfMove: false,
         });
 
         expect(mockApiClient.post).toHaveBeenCalledWith('/folders/move-items', expect.objectContaining({
@@ -843,16 +831,15 @@ describe('Folder Organization Tools', () => {
           data: partialFailureResult,
         });
 
-        const result = await executeTool(mockServer, 'move_items',
-          parameters: {
-            items: [
-              { type: 'template', id: 1001 },
-              { type: 'template', id: 1002 },
-              { type: 'template', id: 1003 }, // This one fails
-            ],
-            targetFolderId: 5001,
-            copyInsteadOfMove: false,
-          },
+        const tool = findTool(mockTool, 'move_items');
+        const result = await executeTool(tool, {
+          items: [
+            { type: 'template', id: 1001 },
+            { type: 'template', id: 1002 },
+            { type: 'template', id: 1003 }, // This one fails
+          ],
+          targetFolderId: 5001,
+          copyInsteadOfMove: false,
         });
 
         const response = JSON.parse(result);
@@ -870,12 +857,11 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Folder not found', status: 404 },
         });
 
-        await expect(executeTool(mockServer, 'move_items',
-          parameters: {
-            items: [{ type: 'template', id: 1001 }],
-            targetFolderId: 99999,
-            copyInsteadOfMove: false,
-          },
+        const tool = findTool(mockTool, 'move_items');
+        await expect(executeTool(tool, {
+          items: [{ type: 'template', id: 1001 }],
+          targetFolderId: 99999,
+          copyInsteadOfMove: false,
         })).rejects.toThrow('Target folder with ID 99999 not found');
       });
 
@@ -885,22 +871,20 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Move operation failed' },
         });
 
-        await expect(executeTool(mockServer, 'move_items',
-          parameters: {
-            items: [{ type: 'template', id: 1001 }],
-            targetFolderId: 5001,
-            copyInsteadOfMove: false,
-          },
+        const tool = findTool(mockTool, 'move_items');
+        await expect(executeTool(tool, {
+          items: [{ type: 'template', id: 1001 }],
+          targetFolderId: 5001,
+          copyInsteadOfMove: false,
         })).rejects.toThrow('Failed to move items: Move operation failed');
       });
 
       test('should validate items array', async () => {
-        await expect(executeTool(mockServer, 'move_items',
-          parameters: {
-            items: [], // Empty array
-            targetFolderId: 5001,
-            copyInsteadOfMove: false,
-          },
+        const tool = findTool(mockTool, 'move_items');
+        await expect(executeTool(tool, {
+          items: [], // Empty array
+          targetFolderId: 5001,
+          copyInsteadOfMove: false,
         })).rejects.toThrow();
       });
     });
@@ -915,41 +899,40 @@ describe('Folder Organization Tools', () => {
           data: mockDataStore,
         });
 
-        const result = await executeTool(mockServer, 'create_data_store',
-          parameters: {
-            name: 'Customer Database',
-            description: 'Structured storage for customer information',
-            type: 'data_structure',
-            organizationId: 1001,
-            teamId: 2001,
-            structure: {
-              fields: [
-                {
-                  name: 'customerId',
-                  type: 'string',
-                  required: true,
-                  validation: { min: 1, max: 50 },
-                },
-                {
-                  name: 'email',
-                  type: 'string',
-                  required: true,
-                  validation: { pattern: '^[^@]+@[^@]+\\.[^@]+$' },
-                },
-              ],
-              indexes: [
-                {
-                  fields: ['customerId'],
-                  unique: true,
-                  name: 'idx_customer_id',
-                },
-              ],
-            },
-            settings: {
-              maxSize: 500,
-              encryption: true,
-              autoCleanup: true,
-            },
+        const tool = findTool(mockTool, 'create_data_store');
+        const result = await executeTool(tool, {
+          name: 'Customer Database',
+          description: 'Structured storage for customer information',
+          type: 'data_structure',
+          organizationId: 1001,
+          teamId: 2001,
+          structure: {
+            fields: [
+              {
+                name: 'customerId',
+                type: 'string',
+                required: true,
+                validation: { min: 1, max: 50 },
+              },
+              {
+                name: 'email',
+                type: 'string',
+                required: true,
+                validation: { pattern: '^[^@]+@[^@]+\\.[^@]+$' },
+              },
+            ],
+            indexes: [
+              {
+                fields: ['customerId'],
+                unique: true,
+                name: 'idx_customer_id',
+              },
+            ],
+          },
+          settings: {
+            maxSize: 500,
+            encryption: true,
+            autoCleanup: true,
           },
         });
 
@@ -981,17 +964,16 @@ describe('Folder Organization Tools', () => {
           data: kvDataStore,
         });
 
-        const result = await executeTool(mockServer, 'create_data_store',
-          parameters: {
-            name: 'Session Cache',
-            description: 'Key-value store for session data',
-            type: 'key_value',
-            settings: {
-              maxSize: 100,
-              ttl: 3600, // 1 hour
-              autoCleanup: true,
-              compression: true,
-            },
+        const tool = findTool(mockTool, 'create_data_store');
+        const result = await executeTool(tool, {
+          name: 'Session Cache',
+          description: 'Key-value store for session data',
+          type: 'key_value',
+          settings: {
+            maxSize: 100,
+            ttl: 3600, // 1 hour
+            autoCleanup: true,
+            compression: true,
           },
         });
 
@@ -1011,20 +993,19 @@ describe('Folder Organization Tools', () => {
           data: queueDataStore,
         });
 
-        const result = await executeTool(mockServer, 'create_data_store',
-          parameters: {
-            name: 'Task Queue',
-            description: 'Queue for background task processing',
-            type: 'queue',
-            settings: {
-              maxSize: 50,
-              autoCleanup: false,
-            },
-            permissions: {
-              read: ['user_12345', 'worker_service'],
-              write: ['user_12345', 'task_scheduler'],
-              admin: ['user_12345'],
-            },
+        const tool = findTool(mockTool, 'create_data_store');
+        const result = await executeTool(tool, {
+          name: 'Task Queue',
+          description: 'Queue for background task processing',
+          type: 'queue',
+          settings: {
+            maxSize: 50,
+            autoCleanup: false,
+          },
+          permissions: {
+            read: ['user_12345', 'worker_service'],
+            write: ['user_12345', 'task_scheduler'],
+            admin: ['user_12345'],
           },
         });
 
@@ -1037,28 +1018,26 @@ describe('Folder Organization Tools', () => {
 
     describe('Data Structure Validation', () => {
       test('should validate field definitions for data_structure type', async () => {
-        await expect(executeTool(mockServer, 'create_data_store',
-          parameters: {
-            name: 'Invalid Structure',
-            description: 'Testing invalid structure validation',
-            type: 'data_structure',
-            // Missing structure fields
-          },
+        const tool = findTool(mockTool, 'create_data_store');
+        await expect(executeTool(tool, {
+          name: 'Invalid Structure',
+          description: 'Testing invalid structure validation',
+          type: 'data_structure',
+          // Missing structure fields
         })).rejects.toThrow('Data structure type requires field definitions');
       });
 
       test('should validate unique field names', async () => {
-        await expect(executeTool(mockServer, 'create_data_store',
-          parameters: {
-            name: 'Duplicate Fields',
-            description: 'Testing duplicate field validation',
-            type: 'data_structure',
-            structure: {
-              fields: [
-                { name: 'duplicateField', type: 'string', required: true },
-                { name: 'duplicateField', type: 'number', required: false }, // Duplicate name
-              ],
-            },
+        const tool = findTool(mockTool, 'create_data_store');
+        await expect(executeTool(tool, {
+          name: 'Duplicate Fields',
+          description: 'Testing duplicate field validation',
+          type: 'data_structure',
+          structure: {
+            fields: [
+              { name: 'duplicateField', type: 'string', required: true },
+              { name: 'duplicateField', type: 'number', required: false }, // Duplicate name
+            ],
           },
         })).rejects.toThrow('Field names must be unique within the data structure');
       });
@@ -1071,21 +1050,19 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Data store service temporarily unavailable' },
         });
 
-        await expect(executeTool(mockServer, 'create_data_store',
-          parameters: {
-            name: 'Test Store',
-            description: 'Test description',
-            type: 'key_value',
-          },
+        const tool = findTool(mockTool, 'create_data_store');
+        await expect(executeTool(tool, {
+          name: 'Test Store',
+          description: 'Test description',
+          type: 'key_value',
         })).rejects.toThrow('Failed to create data store: Data store service temporarily unavailable');
       });
 
       test('should validate required fields', async () => {
-        await expect(executeTool(mockServer, 'create_data_store',
-          parameters: {
-            // Missing required name and type
-            description: 'Test description',
-          },
+        const tool = findTool(mockTool, 'create_data_store');
+        await expect(executeTool(tool, {
+          // Missing required name and type
+          description: 'Test description',
         })).rejects.toThrow();
       });
     });
@@ -1106,14 +1083,13 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 3, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_data_stores',
-          parameters: {
-            type: 'all',
-            organizationId: 1001,
-            includeUsage: true,
-            includeStructure: false,
-            limit: 50,
-          },
+        const tool = findTool(mockTool, 'list_data_stores');
+        const result = await executeTool(tool, {
+          type: 'all',
+          organizationId: 1001,
+          includeUsage: true,
+          includeStructure: false,
+          limit: 50,
         });
 
         expect(mockApiClient.get).toHaveBeenCalledWith('/data-stores', {
@@ -1147,12 +1123,11 @@ describe('Folder Organization Tools', () => {
           metadata: { total: 2, hasMore: false },
         });
 
-        const result = await executeTool(mockServer, 'list_data_stores',
-          parameters: {
-            includeUsage: true,
-            sortBy: 'recordCount',
-            sortOrder: 'desc',
-          },
+        const tool = findTool(mockTool, 'list_data_stores');
+        const result = await executeTool(tool, {
+          includeUsage: true,
+          sortBy: 'recordCount',
+          sortOrder: 'desc',
         });
 
         const response = JSON.parse(result);
@@ -1170,9 +1145,8 @@ describe('Folder Organization Tools', () => {
           error: { message: 'Data store service temporarily unavailable' },
         });
 
-        await expect(executeTool(mockServer, 'list_data_stores',
-          parameters: {},
-        })).rejects.toThrow('Failed to list data stores: Data store service temporarily unavailable');
+        const tool = findTool(mockTool, 'list_data_stores');
+        await expect(executeTool(tool, {})).rejects.toThrow('Failed to list data stores: Data store service temporarily unavailable');
       });
     });
   });
@@ -1267,7 +1241,7 @@ describe('Folder Organization Tools', () => {
             mockApiClient.setMockResponse('post', '/folders', {
               success: true,
               data: generateMockFolder(),
-            }, chaosMonkey.getRandomLatency());
+            });
           } else if (scenario === 'error') {
             // Simulate service error
             mockApiClient.setMockResponse('post', '/folders', {

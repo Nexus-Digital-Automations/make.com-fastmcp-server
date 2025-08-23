@@ -147,6 +147,66 @@ const ManageSecurityAlertsSchema = z.object({
   }).optional(),
 });
 
+// Helper functions for searchAuditEventsTool to reduce complexity
+
+const buildQueryParams = (validatedInput: z.infer<typeof SearchAuditEventsSchema>): Record<string, unknown> => {
+  const queryParams: Record<string, unknown> = {};
+  if (validatedInput.level) { queryParams.level = validatedInput.level; }
+  if (validatedInput.category) { queryParams.category = validatedInput.category; }
+  if (validatedInput.action) { queryParams.action = validatedInput.action; }
+  if (validatedInput.startDate) { queryParams.startDate = validatedInput.startDate; }
+  if (validatedInput.endDate) { queryParams.endDate = validatedInput.endDate; }
+  if (validatedInput.userId) { queryParams.userId = validatedInput.userId; }
+  if (validatedInput.actorId) { queryParams.actorId = validatedInput.actorId; }
+  if (validatedInput.resourceType) { queryParams.resourceType = validatedInput.resourceType; }
+  if (validatedInput.riskLevel) { queryParams.riskLevel = validatedInput.riskLevel; }
+  if (validatedInput.complianceFramework) { queryParams.complianceFramework = validatedInput.complianceFramework; }
+  if (validatedInput.outcome) { queryParams.outcome = validatedInput.outcome; }
+  if (validatedInput.correlationId) { queryParams.correlationId = validatedInput.correlationId; }
+  // Keep limit and offset as numbers to match test expectations
+  queryParams.limit = validatedInput.limit || 100;
+  queryParams.offset = validatedInput.offset || 0;
+  if (validatedInput.includeMetadata !== undefined) { queryParams.includeMetadata = validatedInput.includeMetadata; }
+  return queryParams;
+};
+
+const processApiResponse = (response: unknown): { eventArray: Record<string, unknown>[], metadata: Record<string, unknown> } => {
+  const events = Array.isArray(response) ? response : ((response as Record<string, unknown>)?.data || (response as Record<string, unknown>)?.events || []);
+  const eventArray = Array.isArray(events) ? events : [];
+  const metadata: Record<string, unknown> = (response as Record<string, unknown>)?.metadata as Record<string, unknown> || { total: eventArray.length, hasMore: false };
+  return { eventArray, metadata };
+};
+
+const generateEventAnalysis = (eventArray: Record<string, unknown>[], input: z.infer<typeof SearchAuditEventsSchema>): Record<string, unknown> => {
+  return {
+    securityInsights: {
+      riskLevels: eventArray.reduce((acc: Record<string, number>, event: Record<string, unknown>) => {
+        const risk = event.riskLevel as string || 'unknown';
+        acc[risk] = (acc[risk] || 0) + 1;
+        return acc;
+      }, {}),
+      categories: eventArray.reduce((acc: Record<string, number>, event: Record<string, unknown>) => {
+        const cat = event.category as string || 'unknown';
+        acc[cat] = (acc[cat] || 0) + 1;
+        return acc;
+      }, {}),
+    },
+    riskAnalysis: {
+      totalEvents: eventArray.length,
+      highRiskEvents: eventArray.filter((e: Record<string, unknown>) => ['high', 'critical'].includes(e.riskLevel as string)).length,
+      failureRate: eventArray.length ? (eventArray.filter((e: Record<string, unknown>) => !e.success).length / eventArray.length * 100).toFixed(1) : '0',
+    },
+    recommendations: eventArray.length > 10 && eventArray.filter((e: Record<string, unknown>) => !e.success).length > 5 
+      ? ['Review authentication security', 'Implement additional access controls']
+      : ['Continue monitoring'],
+    complianceAnalysis: input.complianceFramework ? {
+      frameworks: [input.complianceFramework],
+      coverage: '85%',
+      gaps: [],
+    } : undefined,
+  };
+};
+
 /**
  * Search audit events
  */
@@ -158,29 +218,24 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
     try {
       // Validate input with Zod schema
       const validatedInput = SearchAuditEventsSchema.parse(input);
+      
+      // Validate date range if both dates are provided
+      if (validatedInput.startDate && validatedInput.endDate) {
+        const startDate = new Date(validatedInput.startDate);
+        const endDate = new Date(validatedInput.endDate);
+        if (endDate < startDate) {
+          throw new Error('Invalid input: End date must be after start date');
+        }
+      }
+      
       // Handle organizational context from parameters  
       let endpoint = '/audit/events';
       if (validatedInput.organizationId) {
         endpoint = `/organizations/${validatedInput.organizationId}/audit/events`;
       }
 
-      // Build query parameters object
-      const queryParams: Record<string, string> = {};
-      if (validatedInput.level) { queryParams.level = validatedInput.level; }
-      if (validatedInput.category) { queryParams.category = validatedInput.category; }
-      if (validatedInput.action) { queryParams.action = validatedInput.action; }
-      if (validatedInput.startDate) { queryParams.startDate = validatedInput.startDate; }
-      if (validatedInput.endDate) { queryParams.endDate = validatedInput.endDate; }
-      if (validatedInput.userId) { queryParams.userId = validatedInput.userId; }
-      if (validatedInput.actorId) { queryParams.actorId = validatedInput.actorId; }
-      if (validatedInput.resourceType) { queryParams.resourceType = validatedInput.resourceType; }
-      if (validatedInput.riskLevel) { queryParams.riskLevel = validatedInput.riskLevel; }
-      if (validatedInput.complianceFramework) { queryParams.complianceFramework = validatedInput.complianceFramework; }
-      if (validatedInput.outcome) { queryParams.outcome = validatedInput.outcome; }
-      if (validatedInput.correlationId) { queryParams.correlationId = validatedInput.correlationId; }
-      queryParams.limit = validatedInput.limit?.toString() || '100';
-      queryParams.offset = validatedInput.offset?.toString() || '0';
-      if (validatedInput.includeMetadata) { queryParams.includeMetadata = validatedInput.includeMetadata.toString(); }
+      // Build query parameters using helper function
+      const queryParams = buildQueryParams(validatedInput);
 
       // Make API call to search events
       const response = await apiClient.get(endpoint, { params: queryParams });
@@ -190,11 +245,8 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
         throw new Error(`Failed to search audit events: ${response.error.message}`);
       }
       
-      const events = Array.isArray(response) ? response : (response.data || response.events || []);
-      
-      // Ensure events is always an array
-      const eventArray = Array.isArray(events) ? events : [];
-      const metadata = response.metadata || { total: eventArray.length, hasMore: false };
+      // Process API response using helper function
+      const { eventArray, metadata } = processApiResponse(response);
 
       getComponentLogger().info('Audit events searched via MCP tool', {
         totalResults: eventArray.length,
@@ -202,34 +254,8 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
         endpoint,
       });
 
-      // Generate analysis based on events
-      const analysis = {
-        securityInsights: {
-          riskLevels: eventArray.reduce((acc: Record<string, number>, event: Record<string, unknown>) => {
-            const risk = event.riskLevel as string || 'unknown';
-            acc[risk] = (acc[risk] || 0) + 1;
-            return acc;
-          }, {}),
-          categories: eventArray.reduce((acc: Record<string, number>, event: Record<string, unknown>) => {
-            const cat = event.category as string || 'unknown';
-            acc[cat] = (acc[cat] || 0) + 1;
-            return acc;
-          }, {}),
-        },
-        riskAnalysis: {
-          totalEvents: eventArray.length,
-          highRiskEvents: eventArray.filter((e: Record<string, unknown>) => ['high', 'critical'].includes(e.riskLevel as string)).length,
-          failureRate: eventArray.length ? (eventArray.filter((e: Record<string, unknown>) => !e.success).length / eventArray.length * 100).toFixed(1) : '0',
-        },
-        recommendations: eventArray.length > 10 && eventArray.filter((e: Record<string, unknown>) => !e.success).length > 5 
-          ? ['Review authentication security', 'Implement additional access controls']
-          : ['Continue monitoring'],
-        complianceAnalysis: input.complianceFramework ? {
-          frameworks: [input.complianceFramework],
-          coverage: '85%',
-          gaps: [],
-        } : undefined,
-      };
+      // Generate analysis using helper function
+      const analysis = generateEventAnalysis(eventArray, input);
 
       // Return structured response
       return formatSuccessResponse({
@@ -242,7 +268,7 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
         metadata: {
           searchTime: new Date().toISOString(),
           endpoint,
-          resultCount: events.length,
+          resultCount: eventArray.length,
           hasMore: metadata.hasMore,
         },
       }).content[0].text;
@@ -259,6 +285,11 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
       
       // Also re-throw Zod errors by checking error structure
       if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
+      
+      // Check for Zod errors that might be serialized to strings
+      if (error instanceof Error && error.message.includes('"code"') && error.message.includes('"invalid_')) {
         throw error;
       }
 
@@ -370,6 +401,11 @@ const createLogAuditEventTool = (apiClient: MakeApiClient): { name: string; desc
       
       // Also re-throw Zod errors by checking error structure
       if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
+      
+      // Check for Zod errors that might be serialized to strings
+      if (error instanceof Error && error.message.includes('"code"') && error.message.includes('"invalid_')) {
         throw error;
       }
 
@@ -509,6 +545,11 @@ export const listComplianceReportsTool = {
       if (error && typeof error === 'object' && 'code' in error) {
         throw error;
       }
+      
+      // Check for Zod errors that might be serialized to strings
+      if (error instanceof Error && error.message.includes('"code"') && error.message.includes('"invalid_')) {
+        throw error;
+      }
 
       return formatSuccessResponse({
         success: false,
@@ -521,10 +562,73 @@ export const listComplianceReportsTool = {
   },
 };
 
+// Helper functions for generateComplianceReportTool to reduce complexity
+
+const parseReportDates = (validatedInput: z.infer<typeof GenerateComplianceReportSchema>): { startDate: string; endDate: string } => {
+  const startDate = validatedInput.period?.startDate || validatedInput.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const endDate = validatedInput.period?.endDate || validatedInput.endDate || new Date().toISOString();
+  return { startDate, endDate };
+};
+
+const buildReportData = (validatedInput: z.infer<typeof GenerateComplianceReportSchema>, report: unknown, startDate: string, endDate: string): Record<string, unknown> => {
+  return {
+    success: true,
+    report: {
+      id: Math.floor(Math.random() * 100000),
+      title: validatedInput.title || `Compliance Report - ${new Date().toISOString().split('T')[0]}`,
+      framework: validatedInput.framework || 'SOX',
+      reportType: validatedInput.reportType || 'periodic',
+      period: { startDate, endDate },
+      organizationId: validatedInput.organizationId,
+      totalEvents: ((report as Record<string, unknown>)?.summary as Record<string, unknown>)?.totalEvents as number || 0,
+      criticalEvents: ((report as Record<string, unknown>)?.summary as Record<string, unknown>)?.criticalEvents as number || 0,
+      securityEvents: ((report as Record<string, unknown>)?.summary as Record<string, unknown>)?.criticalEvents as number || 0,
+      complianceScore: 85, // Default compliance score
+      recommendations: validatedInput.includeRecommendations ? ['Review security policies', 'Update access controls', 'Implement multi-factor authentication'] : [],
+      summary: 'Compliance report generated successfully',
+    },
+    summary: {
+      analysisComplete: true,
+      reportGenerated: true,
+      framework: validatedInput.framework || 'SOX',
+    },
+    incidentAnalysis: validatedInput.reportType === 'incident' ? {
+      incidentId: validatedInput.incidentId,
+      severity: validatedInput.urgency,
+      timeline: [],
+    } : undefined,
+    customAnalysis: validatedInput.customCriteria ? {
+      criteria: validatedInput.customCriteria,
+      evaluation: 'Custom criteria evaluated successfully',
+    } : undefined,
+    recommendations: validatedInput.includeRecommendations ? [
+      'Implement multi-factor authentication for all admin accounts',
+      'Enhance data encryption for sensitive customer information', 
+      'Establish automated compliance monitoring dashboard'
+    ] : undefined,
+  };
+};
+
+const buildApiPayload = (validatedInput: z.infer<typeof GenerateComplianceReportSchema>): Record<string, unknown> => {
+  return {
+    title: validatedInput.title,
+    framework: validatedInput.framework,
+    reportType: validatedInput.reportType,
+    period: validatedInput.period,
+    scope: validatedInput.scope,
+    organizationId: validatedInput.organizationId,
+    incidentId: validatedInput.incidentId,
+    urgency: validatedInput.urgency,
+    customCriteria: validatedInput.customCriteria,
+    includeRecommendations: validatedInput.includeRecommendations,
+    detailLevel: validatedInput.detailLevel,
+  };
+};
+
 /**
  * Generate compliance report
  */
-const createGenerateComplianceReportTool = (apiClient: MakeApiClient) => ({
+const createGenerateComplianceReportTool = (apiClient: MakeApiClient): { name: string; description: string; inputSchema: typeof GenerateComplianceReportSchema; handler: (input: z.infer<typeof GenerateComplianceReportSchema>) => Promise<string> } => ({
   name: 'generate-compliance-report',
   description: 'Generate a comprehensive compliance report for audit purposes',
   inputSchema: GenerateComplianceReportSchema,
@@ -532,9 +636,8 @@ const createGenerateComplianceReportTool = (apiClient: MakeApiClient) => ({
     try {
       // Validate input with Zod schema
       const validatedInput = GenerateComplianceReportSchema.parse(input);
-      // Handle both new and legacy date formats
-      const startDate = validatedInput.period?.startDate || validatedInput.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      const endDate = validatedInput.period?.endDate || validatedInput.endDate || new Date().toISOString();
+      // Parse dates using helper function
+      const { startDate, endDate } = parseReportDates(validatedInput);
       
       const report = await auditLogger.generateComplianceReport(new Date(startDate), new Date(endDate));
       
@@ -553,61 +656,17 @@ const createGenerateComplianceReportTool = (apiClient: MakeApiClient) => ({
         criticalEvents: report.summary.criticalEvents,
       });
 
-      const reportData = {
-        success: true,
-        report: {
-          id: Math.floor(Math.random() * 100000),
-          title: validatedInput.title || `Compliance Report - ${new Date().toISOString().split('T')[0]}`,
-          framework: validatedInput.framework || 'SOX',
-          reportType: validatedInput.reportType || 'periodic',
-          period: { startDate, endDate },
-          organizationId: validatedInput.organizationId,
-          totalEvents: (report.summary as Record<string, unknown>)?.totalEvents as number || 0,
-          criticalEvents: (report.summary as Record<string, unknown>)?.criticalEvents as number || 0,
-          securityEvents: (report.summary as Record<string, unknown>)?.criticalEvents as number || 0,
-          complianceScore: 85, // Default compliance score
-          recommendations: validatedInput.includeRecommendations ? ['Review security policies', 'Update access controls', 'Implement multi-factor authentication'] : [],
-          summary: 'Compliance report generated successfully',
-        },
-        summary: {
-          analysisComplete: true,
-          reportGenerated: true,
-          framework: validatedInput.framework || 'SOX',
-        },
-        incidentAnalysis: validatedInput.reportType === 'incident' ? {
-          incidentId: validatedInput.incidentId,
-          severity: validatedInput.urgency,
-          timeline: [],
-        } : undefined,
-        customAnalysis: validatedInput.customCriteria ? {
-          criteria: validatedInput.customCriteria,
-          evaluation: 'Custom criteria evaluated successfully',
-        } : undefined,
-        recommendations: validatedInput.includeRecommendations ? [
-          'Implement multi-factor authentication for all admin accounts',
-          'Enhance data encryption for sensitive customer information', 
-          'Establish automated compliance monitoring dashboard'
-        ] : undefined,
-      };
+      // Build report data using helper function
+      const reportData = buildReportData(validatedInput, report, startDate, endDate);
 
       // Make API call to create the compliance report
       const endpoint = validatedInput.organizationId 
         ? `/organizations/${validatedInput.organizationId}/compliance/reports`
         : '/compliance/reports';
         
-      const apiResponse = await apiClient.post(endpoint, {
-        title: validatedInput.title,
-        framework: validatedInput.framework,
-        reportType: validatedInput.reportType,
-        period: validatedInput.period,
-        scope: validatedInput.scope,
-        organizationId: validatedInput.organizationId,
-        incidentId: validatedInput.incidentId,
-        urgency: validatedInput.urgency,
-        customCriteria: validatedInput.customCriteria,
-        includeRecommendations: validatedInput.includeRecommendations,
-        detailLevel: validatedInput.detailLevel,
-      });
+      // Build API payload using helper function
+      const apiPayload = buildApiPayload(validatedInput);
+      const apiResponse = await apiClient.post(endpoint, apiPayload);
 
       // Check API response for errors
       if (apiResponse && !apiResponse.success && apiResponse.error) {
@@ -629,6 +688,11 @@ const createGenerateComplianceReportTool = (apiClient: MakeApiClient) => ({
       
       // Also re-throw Zod errors by checking error structure
       if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
+      
+      // Check for Zod errors that might be serialized to strings
+      if (error instanceof Error && error.message.includes('"code"') && error.message.includes('"invalid_')) {
         throw error;
       }
 
@@ -684,6 +748,11 @@ export const performAuditMaintenanceTool = {
       }
       
       if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
+      
+      // Check for Zod errors that might be serialized to strings
+      if (error instanceof Error && error.message.includes('"code"') && error.message.includes('"invalid_')) {
         throw error;
       }
 
@@ -865,6 +934,63 @@ export const securityHealthCheckTool = {
   },
 };
 
+// Helper functions for createSecurityAlertTool to reduce complexity
+const determineRiskLevel = (severity: string): 'low' | 'medium' | 'high' | 'critical' => {
+  return severity === 'critical' ? 'critical' : severity === 'high' ? 'high' : 'medium';
+};
+
+const buildAlertData = (validatedInput: z.infer<typeof CreateSecurityAlertSchema>, alertId: number, timestamp: string): Record<string, unknown> => {
+  return {
+    id: alertId,
+    title: validatedInput.title,
+    description: validatedInput.description,
+    severity: validatedInput.severity,
+    category: validatedInput.category,
+    source: validatedInput.source || 'manual',
+    affectedAssets: validatedInput.affectedAssets,
+    detectionTime: validatedInput.detectionTime || timestamp,
+    createdAt: timestamp,
+    status: validatedInput.status,
+    assignedTo: null,
+    priority: validatedInput.severity === 'critical' ? 4 : validatedInput.severity === 'high' ? 3 : validatedInput.severity === 'medium' ? 2 : 1,
+    automatedResponse: validatedInput.automatedResponse,
+    tags: [`severity:${validatedInput.severity}`, `category:${validatedInput.category}`],
+    metadata: {
+      createdBy: 'mcp-audit-system',
+      source: 'fastmcp-audit-compliance',
+      version: '1.0',
+    },
+  };
+};
+
+const buildResponseData = (validatedInput: z.infer<typeof CreateSecurityAlertSchema>, alertData: Record<string, unknown>, alertId: number): Record<string, unknown> => {
+  const isAutomatedResponseEnabled = typeof validatedInput.automatedResponse === 'boolean' 
+    ? validatedInput.automatedResponse 
+    : validatedInput.automatedResponse?.enabled;
+
+  const responseData: Record<string, unknown> = {
+    success: true,
+    alert: alertData,
+    message: `Security alert "${validatedInput.title}" created successfully with ID ${alertId}`,
+    nextSteps: isAutomatedResponseEnabled
+      ? ['Automated response triggered', 'Monitor alert status', 'Review response logs']
+      : ['Review alert details', 'Assign to security team', 'Investigate threat', 'Implement response'],
+  };
+
+  // Add automated response fields when enabled
+  if (isAutomatedResponseEnabled && typeof validatedInput.automatedResponse === 'object') {
+    responseData.automatedActions = validatedInput.automatedResponse.actions || [];
+    responseData.escalation = {
+      enabled: true,
+      level: validatedInput.severity,
+      notificationSent: true,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  return responseData;
+};
+
 /**
  * Create security alert
  */
@@ -898,31 +1024,11 @@ export const createSecurityAlertTool = {
           status: validatedInput.status,
           automatedResponse: validatedInput.automatedResponse,
         },
-        riskLevel: validatedInput.severity === 'critical' ? 'critical' : validatedInput.severity === 'high' ? 'high' : 'medium',
+        riskLevel: determineRiskLevel(validatedInput.severity),
       });
 
-      // Mock API call to create security alert
-      const alertData = {
-        id: alertId,
-        title: validatedInput.title,
-        description: validatedInput.description,
-        severity: validatedInput.severity,
-        category: validatedInput.category,
-        source: validatedInput.source || 'manual',
-        affectedAssets: validatedInput.affectedAssets,
-        detectionTime: validatedInput.detectionTime || timestamp,
-        createdAt: timestamp,
-        status: validatedInput.status,
-        assignedTo: null,
-        priority: validatedInput.severity === 'critical' ? 4 : validatedInput.severity === 'high' ? 3 : validatedInput.severity === 'medium' ? 2 : 1,
-        automatedResponse: validatedInput.automatedResponse,
-        tags: [`severity:${validatedInput.severity}`, `category:${validatedInput.category}`],
-        metadata: {
-          createdBy: 'mcp-audit-system',
-          source: 'fastmcp-audit-compliance',
-          version: '1.0',
-        },
-      };
+      // Build alert data using helper function
+      const alertData = buildAlertData(validatedInput, alertId, timestamp);
 
       getComponentLogger().info('Security alert created via MCP tool', {
         alertId,
@@ -933,29 +1039,8 @@ export const createSecurityAlertTool = {
         automatedResponse: validatedInput.automatedResponse,
       });
 
-      const isAutomatedResponseEnabled = typeof validatedInput.automatedResponse === 'boolean' 
-        ? validatedInput.automatedResponse 
-        : validatedInput.automatedResponse?.enabled;
-
-      const responseData: Record<string, unknown> = {
-        success: true,
-        alert: alertData,
-        message: `Security alert "${validatedInput.title}" created successfully with ID ${alertId}`,
-        nextSteps: isAutomatedResponseEnabled
-          ? ['Automated response triggered', 'Monitor alert status', 'Review response logs']
-          : ['Review alert details', 'Assign to security team', 'Investigate threat', 'Implement response'],
-      };
-
-      // Add automated response fields when enabled
-      if (isAutomatedResponseEnabled && typeof validatedInput.automatedResponse === 'object') {
-        responseData.automatedActions = validatedInput.automatedResponse.actions || [];
-        responseData.escalation = {
-          enabled: true,
-          level: validatedInput.severity,
-          notificationSent: true,
-          timestamp: new Date().toISOString(),
-        };
-      }
+      // Build response data using helper function
+      const responseData = buildResponseData(validatedInput, alertData, alertId);
 
       return formatSuccessResponse(responseData).content[0].text;
     } catch (error) {
@@ -974,6 +1059,11 @@ export const createSecurityAlertTool = {
       if (error && typeof error === 'object' && 'code' in error) {
         throw error;
       }
+      
+      // Check for Zod errors that might be serialized to strings
+      if (error instanceof Error && error.message.includes('"code"') && error.message.includes('"invalid_')) {
+        throw error;
+      }
 
       return formatSuccessResponse({
         success: false,
@@ -983,6 +1073,182 @@ export const createSecurityAlertTool = {
       }).content[0].text;
     }
   },
+};
+
+// Helper functions for manageSecurityAlertsTool to reduce complexity
+const handleListAction = (input: z.infer<typeof ManageSecurityAlertsSchema>): string => {
+  // Mock security alerts data
+  const mockAlerts = [
+    {
+      id: 12345,
+      title: 'Suspicious Login Activity',
+      description: 'Multiple failed login attempts from unusual location',
+      severity: 'high' as const,
+      category: 'unauthorized_access',
+      status: 'open' as const,
+      createdAt: '2024-08-23T01:00:00Z',
+      assignedTo: 'security-team',
+      priority: 3,
+    },
+    {
+      id: 12346,
+      title: 'Data Exfiltration Attempt',
+      description: 'Unusual data transfer patterns detected',
+      severity: 'critical' as const,
+      category: 'data_breach',
+      status: 'investigating' as const,
+      createdAt: '2024-08-23T02:15:00Z',
+      assignedTo: 'incident-response',
+      priority: 4,
+    },
+    {
+      id: 12347,
+      title: 'Malware Detection',
+      description: 'Suspicious file detected on endpoint',
+      severity: 'medium' as const,
+      category: 'malware',
+      status: 'resolved' as const,
+      createdAt: '2024-08-22T18:30:00Z',
+      assignedTo: 'security-analyst',
+      priority: 2,
+    },
+  ];
+
+  // Apply filters
+  let filteredAlerts = mockAlerts;
+  if (input.filters?.severity) {
+    filteredAlerts = filteredAlerts.filter(a => a.severity === input.filters!.severity);
+  }
+  if (input.filters?.status) {
+    filteredAlerts = filteredAlerts.filter(a => a.status === input.filters!.status);
+  }
+  if (input.filters?.category) {
+    filteredAlerts = filteredAlerts.filter(a => a.category === input.filters!.category);
+  }
+
+  getComponentLogger().info('Security alerts listed via MCP tool', {
+    totalResults: filteredAlerts.length,
+    filters: input.filters,
+  });
+
+  return formatSuccessResponse({
+    success: true,
+    alerts: filteredAlerts,
+    totalCount: filteredAlerts.length,
+    filters: input.filters,
+    metadata: { listTime: new Date().toISOString() },
+  }).content[0].text;
+};
+
+const handleUpdateAction = (input: z.infer<typeof ManageSecurityAlertsSchema>): string => {
+  if (!input.alertId) {
+    throw new Error('Alert ID is required for update action');
+  }
+
+  // Mock update operation
+  const updatedAlert = {
+    id: input.alertId,
+    title: 'Updated Alert',
+    status: input.updates?.status || 'open',
+    assignedTo: input.updates?.assignedTo || 'unassigned',
+    priority: input.updates?.priority || 1,
+    notes: input.updates?.notes || '',
+    updatedAt: new Date().toISOString(),
+  };
+
+  getComponentLogger().info('Security alert updated via MCP tool', {
+    alertId: input.alertId,
+    updates: input.updates,
+  });
+
+  return formatSuccessResponse({
+    success: true,
+    alert: updatedAlert,
+    message: `Alert ${input.alertId} updated successfully`,
+  }).content[0].text;
+};
+
+const handleEscalateAction = (input: z.infer<typeof ManageSecurityAlertsSchema>): string => {
+  if (!input.alertId) {
+    throw new Error('Alert ID is required for escalate action');
+  }
+
+  const escalatedAlert = {
+    id: input.alertId,
+    escalationLevel: input.escalationLevel || 'manager',
+    escalatedAt: new Date().toISOString(),
+    escalatedBy: 'mcp-audit-system',
+  };
+
+  getComponentLogger().warn('Security alert escalated via MCP tool', {
+    alertId: input.alertId,
+    escalationLevel: input.escalationLevel,
+  });
+
+  return formatSuccessResponse({
+    success: true,
+    alert: escalatedAlert,
+    message: `Alert ${input.alertId} escalated to ${input.escalationLevel}`,
+  }).content[0].text;
+};
+
+const handleBulkUpdateAction = (input: z.infer<typeof ManageSecurityAlertsSchema>): string => {
+  if (!input.alertIds || input.alertIds.length === 0) {
+    throw new Error('Alert IDs are required for bulk update action');
+  }
+
+  const bulkUpdateResults = input.alertIds.map(id => ({
+    id,
+    status: input.updates?.status || 'updated',
+    updatedAt: new Date().toISOString(),
+  }));
+
+  getComponentLogger().info('Security alerts bulk updated via MCP tool', {
+    alertIds: input.alertIds,
+    updateCount: input.alertIds.length,
+    updates: input.updates,
+  });
+
+  return formatSuccessResponse({
+    success: true,
+    updatedAlerts: bulkUpdateResults,
+    updateCount: input.alertIds.length,
+    message: `${input.alertIds.length} alerts updated successfully`,
+  }).content[0].text;
+};
+
+const handleAnalyticsAction = (input: z.infer<typeof ManageSecurityAlertsSchema>): string => {
+  const analytics = {
+    totalAlerts: 150,
+    openAlerts: 45,
+    criticalAlerts: 8,
+    resolvedToday: 12,
+    averageResponseTime: '4.2 hours',
+    topCategories: [
+      { category: 'unauthorized_access', count: 32 },
+      { category: 'malware', count: 28 },
+      { category: 'suspicious_activity', count: 25 },
+    ],
+    severityDistribution: {
+      critical: 8,
+      high: 22,
+      medium: 67,
+      low: 53,
+    },
+    timeRange: input.timeRange,
+    generatedAt: new Date().toISOString(),
+  };
+
+  getComponentLogger().info('Security alert analytics generated via MCP tool', {
+    timeRange: input.timeRange,
+    totalAlerts: analytics.totalAlerts,
+  });
+
+  return formatSuccessResponse({
+    success: true,
+    analytics,
+    message: 'Security alert analytics generated successfully',
+  }).content[0].text;
 };
 
 /**
@@ -998,181 +1264,16 @@ export const manageSecurityAlertsTool = {
       const validatedInput = ManageSecurityAlertsSchema.parse(input);
       
       switch (validatedInput.action) {
-        case 'list': {
-          // Mock security alerts data
-          const mockAlerts = [
-            {
-              id: 12345,
-              title: 'Suspicious Login Activity',
-              description: 'Multiple failed login attempts from unusual location',
-              severity: 'high' as const,
-              category: 'unauthorized_access',
-              status: 'open' as const,
-              createdAt: '2024-08-23T01:00:00Z',
-              assignedTo: 'security-team',
-              priority: 3,
-            },
-            {
-              id: 12346,
-              title: 'Data Exfiltration Attempt',
-              description: 'Unusual data transfer patterns detected',
-              severity: 'critical' as const,
-              category: 'data_breach',
-              status: 'investigating' as const,
-              createdAt: '2024-08-23T02:15:00Z',
-              assignedTo: 'incident-response',
-              priority: 4,
-            },
-            {
-              id: 12347,
-              title: 'Malware Detection',
-              description: 'Suspicious file detected on endpoint',
-              severity: 'medium' as const,
-              category: 'malware',
-              status: 'resolved' as const,
-              createdAt: '2024-08-22T18:30:00Z',
-              assignedTo: 'security-analyst',
-              priority: 2,
-            },
-          ];
-
-          // Apply filters
-          let filteredAlerts = mockAlerts;
-          if (input.filters?.severity) {
-            filteredAlerts = filteredAlerts.filter(a => a.severity === input.filters!.severity);
-          }
-          if (input.filters?.status) {
-            filteredAlerts = filteredAlerts.filter(a => a.status === input.filters!.status);
-          }
-          if (input.filters?.category) {
-            filteredAlerts = filteredAlerts.filter(a => a.category === input.filters!.category);
-          }
-
-          getComponentLogger().info('Security alerts listed via MCP tool', {
-            totalResults: filteredAlerts.length,
-            filters: input.filters,
-          });
-
-          return formatSuccessResponse({
-            success: true,
-            alerts: filteredAlerts,
-            totalCount: filteredAlerts.length,
-            filters: input.filters,
-            metadata: { listTime: new Date().toISOString() },
-          }).content[0].text;
-        }
-
-        case 'update': {
-          if (!input.alertId) {
-            throw new Error('Alert ID is required for update action');
-          }
-
-          // Mock update operation
-          const updatedAlert = {
-            id: input.alertId,
-            title: 'Updated Alert',
-            status: input.updates?.status || 'open',
-            assignedTo: input.updates?.assignedTo || 'unassigned',
-            priority: input.updates?.priority || 1,
-            notes: input.updates?.notes || '',
-            updatedAt: new Date().toISOString(),
-          };
-
-          getComponentLogger().info('Security alert updated via MCP tool', {
-            alertId: input.alertId,
-            updates: input.updates,
-          });
-
-          return formatSuccessResponse({
-            success: true,
-            alert: updatedAlert,
-            message: `Alert ${input.alertId} updated successfully`,
-          }).content[0].text;
-        }
-
-        case 'escalate': {
-          if (!input.alertId) {
-            throw new Error('Alert ID is required for escalate action');
-          }
-
-          const escalatedAlert = {
-            id: input.alertId,
-            escalationLevel: input.escalationLevel || 'manager',
-            escalatedAt: new Date().toISOString(),
-            escalatedBy: 'mcp-audit-system',
-          };
-
-          getComponentLogger().warn('Security alert escalated via MCP tool', {
-            alertId: input.alertId,
-            escalationLevel: input.escalationLevel,
-          });
-
-          return formatSuccessResponse({
-            success: true,
-            alert: escalatedAlert,
-            message: `Alert ${input.alertId} escalated to ${input.escalationLevel}`,
-          }).content[0].text;
-        }
-
-        case 'bulk_update': {
-          if (!input.alertIds || input.alertIds.length === 0) {
-            throw new Error('Alert IDs are required for bulk update action');
-          }
-
-          const bulkUpdateResults = input.alertIds.map(id => ({
-            id,
-            status: input.updates?.status || 'updated',
-            updatedAt: new Date().toISOString(),
-          }));
-
-          getComponentLogger().info('Security alerts bulk updated via MCP tool', {
-            alertIds: input.alertIds,
-            updateCount: input.alertIds.length,
-            updates: input.updates,
-          });
-
-          return formatSuccessResponse({
-            success: true,
-            updatedAlerts: bulkUpdateResults,
-            updateCount: input.alertIds.length,
-            message: `${input.alertIds.length} alerts updated successfully`,
-          }).content[0].text;
-        }
-
-        case 'analytics': {
-          const analytics = {
-            totalAlerts: 150,
-            openAlerts: 45,
-            criticalAlerts: 8,
-            resolvedToday: 12,
-            averageResponseTime: '4.2 hours',
-            topCategories: [
-              { category: 'unauthorized_access', count: 32 },
-              { category: 'malware', count: 28 },
-              { category: 'suspicious_activity', count: 25 },
-            ],
-            severityDistribution: {
-              critical: 8,
-              high: 22,
-              medium: 67,
-              low: 53,
-            },
-            timeRange: input.timeRange,
-            generatedAt: new Date().toISOString(),
-          };
-
-          getComponentLogger().info('Security alert analytics generated via MCP tool', {
-            timeRange: input.timeRange,
-            totalAlerts: analytics.totalAlerts,
-          });
-
-          return formatSuccessResponse({
-            success: true,
-            analytics,
-            message: 'Security alert analytics generated successfully',
-          }).content[0].text;
-        }
-
+        case 'list':
+          return handleListAction(validatedInput);
+        case 'update':
+          return handleUpdateAction(validatedInput);
+        case 'escalate':
+          return handleEscalateAction(validatedInput);
+        case 'bulk_update':
+          return handleBulkUpdateAction(validatedInput);
+        case 'analytics':
+          return handleAnalyticsAction(validatedInput);
         default:
           getComponentLogger().error('Invalid action provided to manage security alerts', {
             action: input.action,
@@ -1291,6 +1392,11 @@ export const createSecurityIncidentTool = {
       }
       
       if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
+      
+      // Check for Zod errors that might be serialized to strings
+      if (error instanceof Error && error.message.includes('"code"') && error.message.includes('"invalid_')) {
         throw error;
       }
 

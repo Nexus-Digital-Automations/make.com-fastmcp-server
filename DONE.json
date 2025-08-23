@@ -23227,9 +23227,287 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755926800171_e0i9omcr6",
+      "title": "Fix critical audit-compliance test failures",
+      "description": "32 failing tests in tests/unit/tools/audit-compliance.test.ts: tool registration issues (12 vs 6 expected), missing tools (manage-security-alerts, create-security-alert), logger errors (componentLogger[logLevel] not a function), API endpoint mismatches. These failures indicate serious audit compliance functionality issues.",
+      "mode": "DEVELOPMENT",
+      "category": "bug",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T05:26:40.171Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755928916959_1_general_41d322fe",
+      "started_at": "2025-08-23T06:02:18.400Z",
+      "claimed_by": "development_session_1755928916959_1_general_41d322fe",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755926733938_1_general_1b166224",
+          "role": "primary",
+          "assignedAt": "2025-08-23T05:26:47.059Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-23T05:46:24.654Z",
+          "reason": "Task stale for 20 minutes"
+        },
+        {
+          "agentId": "development_session_1755927990337_1_general_c753501a",
+          "role": "primary",
+          "assignedAt": "2025-08-23T05:46:37.301Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-23T06:01:47.533Z",
+          "reason": "Task stale for 15 minutes"
+        },
+        {
+          "agentId": "development_session_1755928916959_1_general_41d322fe",
+          "role": "primary",
+          "assignedAt": "2025-08-23T06:02:18.400Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T06:18:35.582Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T06:18:35.583Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755930033430_x6dayv8b7",
+      "title": "Fix audit-compliance.ts complexity and linting warnings",
+      "description": "Address ESLint complexity warnings in audit-compliance.ts: 3 handlers exceed max complexity (25), 1 missing return type. Improve code quality by refactoring complex methods.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T06:20:33.431Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755929935309_1_general_f846a86e",
+      "started_at": "2025-08-23T06:20:41.908Z",
+      "claimed_by": "development_session_1755929935309_1_general_f846a86e",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755929935309_1_general_f846a86e",
+          "role": "primary",
+          "assignedAt": "2025-08-23T06:20:41.908Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T06:31:05.000Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T06:31:05.001Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755930712384_nf7c47ygd",
+      "title": "Fix failing audit-compliance test - enum validation behavior mismatch",
+      "description": "Tests expect validation errors to be thrown, but the tool now returns success:false responses instead. Need to align test expectations with actual behavior or fix the tool to throw errors as expected.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T06:31:52.384Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755929935309_1_general_f846a86e",
+      "started_at": "2025-08-23T06:31:58.793Z",
+      "claimed_by": "development_session_1755929935309_1_general_f846a86e",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755929935309_1_general_f846a86e",
+          "role": "primary",
+          "assignedAt": "2025-08-23T06:31:58.793Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T06:36:35.517Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T06:36:35.518Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755931042014_gt4017coj",
+      "title": "Fix generateComplianceReportTool complexity warning",
+      "description": "ESLint reports complexity of 28 for generateComplianceReportTool handler at line 934. Maximum allowed is 25. Need to refactor by extracting helper functions to reduce complexity.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T06:37:22.014Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755931012089_1_general_cc97185b",
+      "started_at": "2025-08-23T06:37:28.886Z",
+      "claimed_by": "development_session_1755931012089_1_general_cc97185b",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755931012089_1_general_cc97185b",
+          "role": "primary",
+          "assignedAt": "2025-08-23T06:37:28.886Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T06:40:43.235Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T06:40:43.237Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755931295059_ob0iv7yxh",
+      "title": "Fix failing audit-compliance test parameter and API expectation issues",
+      "description": "Multiple audit-compliance tests are failing: 1) Parameter type issues - tests expect numeric values (limit:50) but getting strings (limit:\"50\"). 2) API call expectations not being met. 3) Validation behavior mismatches where tests expect thrown errors but get resolved promises. Need to fix parameter handling and ensure API calls match test expectations.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T06:41:35.060Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755931012089_1_general_cc97185b",
+      "started_at": "2025-08-23T06:41:41.357Z",
+      "claimed_by": "development_session_1755931012089_1_general_cc97185b",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755931012089_1_general_cc97185b",
+          "role": "primary",
+          "assignedAt": "2025-08-23T06:41:41.357Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T06:46:12.342Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T06:46:12.342Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755938077797_jbj5vr8eq",
+      "title": "Fix TypeScript syntax errors in folders.test.ts",
+      "description": "Fix incorrect executeTool function call syntax by removing parameters: label and fixing brace placement",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T08:34:37.797Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T08:42:10.993Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T08:42:10.994Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 535,
-  "last_completion": "2025-08-23T05:35:32.321Z",
+  "total_completed": 541,
+  "last_completion": "2025-08-23T08:42:10.994Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

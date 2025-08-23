@@ -2,11 +2,11 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755926800171_e0i9omcr6",
-      "title": "Fix critical audit-compliance test failures",
-      "description": "32 failing tests in tests/unit/tools/audit-compliance.test.ts: tool registration issues (12 vs 6 expected), missing tools (manage-security-alerts, create-security-alert), logger errors (componentLogger[logLevel] not a function), API endpoint mismatches. These failures indicate serious audit compliance functionality issues.",
+      "id": "task_1755931735098_r5z5eojq9",
+      "title": "Fix TypeScript syntax errors in folders.test.ts",
+      "description": "Fix all executeTool function calls that incorrectly use parameters: label syntax",
       "mode": "DEVELOPMENT",
-      "category": "bug",
+      "category": "linter-error",
       "priority": "critical",
       "status": "in_progress",
       "dependencies": [],
@@ -15,42 +15,44 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-23T05:26:40.171Z",
+      "created_at": "2025-08-23T06:48:55.099Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755928916959_1_general_41d322fe",
-      "started_at": "2025-08-23T06:02:18.400Z",
-      "claimed_by": "development_session_1755928916959_1_general_41d322fe",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T08:34:15.264Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        }
+      ]
+    },
+    {
+      "id": "task_1755931641070_aa27lr8a8",
+      "title": "Fix critical syntax errors in folders.test.ts",
+      "description": "Multiple TypeScript declaration/statement expected errors in tests/unit/tools/folders.test.ts causing test failures. Lines 1086-1178 have syntax issues that prevent compilation.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T06:47:21.070Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755931012089_1_general_cc97185b",
+      "started_at": "2025-08-23T06:47:26.644Z",
+      "claimed_by": "development_session_1755931012089_1_general_cc97185b",
       "agent_assignment_history": [
         {
-          "agentId": "development_session_1755926733938_1_general_1b166224",
+          "agentId": "development_session_1755931012089_1_general_cc97185b",
           "role": "primary",
-          "assignedAt": "2025-08-23T05:26:47.059Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-23T05:46:24.654Z",
-          "reason": "Task stale for 20 minutes"
-        },
-        {
-          "agentId": "development_session_1755927990337_1_general_c753501a",
-          "role": "primary",
-          "assignedAt": "2025-08-23T05:46:37.301Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-23T06:01:47.533Z",
-          "reason": "Task stale for 15 minutes"
-        },
-        {
-          "agentId": "development_session_1755928916959_1_general_41d322fe",
-          "role": "primary",
-          "assignedAt": "2025-08-23T06:02:18.400Z",
+          "assignedAt": "2025-08-23T06:47:26.644Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
@@ -64,13 +66,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755928916959_1_general_41d322fe": {
+    "development_session_1755931012089_1_general_cc97185b": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-23T06:01:56.959Z",
+      "lastHeartbeat": "2025-08-23T06:36:52.090Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -81,8 +83,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-23T06:01:56.959Z",
-      "sessionId": "session_1755928916959",
+      "createdAt": "2025-08-23T06:36:52.090Z",
+      "sessionId": "session_1755931012089",
       "metadata": {}
     }
   },
