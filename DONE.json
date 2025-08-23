@@ -20324,9 +20324,403 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755907092493_1yxx4r0bw",
+      "title": "Research: Split FastMCP server into two servers for performance",
+      "description": "Research and analysis required for implementing: \"Split FastMCP server into two servers for performance\"\n\n**Implementation Task Details:**\nSeparate the FastMCP server into two distinct servers to improve loading performance, then add the new JSON config to /Users/jeremyparker/Documents/File Storage/JSONS/Configs/General.json\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755907092493_hkun7vsdd\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755907092493_1yxx4r0bw.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755907092493_1yxx4r0bw.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T23:58:12.493Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755907092493_hkun7vsdd",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T23:59:53.743Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-22T23:59:53.744Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755907220373_4ac7hridi",
+      "title": "Research: Reduce zero-trust-auth.ts execute method complexity from 38 to <25",
+      "description": "Research and analysis required for implementing: \"Reduce zero-trust-auth.ts execute method complexity from 38 to <25\"\n\n**Implementation Task Details:**\nExtract helper functions from execute method around line 848 to reduce complexity while maintaining all functionality\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755907220373_g32ll2zvm\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755907220373_4ac7hridi.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755907220373_4ac7hridi.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T00:00:20.373Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755907220373_g32ll2zvm",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:01:22.656Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:02:15.646Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T00:02:15.647Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755907220373_g32ll2zvm",
+      "title": "Reduce zero-trust-auth.ts execute method complexity from 38 to <25",
+      "description": "Extract helper functions from execute method around line 848 to reduce complexity while maintaining all functionality",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-23T00:00:20.378Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:02:21.748Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:05:12.721Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T00:05:12.722Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755906930943_9a5sww3b9",
+      "title": "Fix zero-trust-auth.ts complexity violation (line 848, complexity 38)",
+      "description": "Reduce execute method complexity from 38 to below 25 by extracting helper functions",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-22T23:55:30.943Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-22T23:55:35.059Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:05:18.668Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T00:05:18.669Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755907092493_hkun7vsdd",
+      "title": "Split FastMCP server into two servers for performance",
+      "description": "Separate the FastMCP server into two distinct servers to improve loading performance, then add the new JSON config to /Users/jeremyparker/Documents/File Storage/JSONS/Configs/General.json",
+      "mode": "DEVELOPMENT",
+      "category": "enhancement",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-22T23:58:12.495Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:05:51.045Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:12:45.950Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T00:12:45.951Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755908035784_ot8pz4gzt",
+      "title": "Fix ALL cicd-integration.ts complexity violations - reduce execute methods from 34,33,31 to <25",
+      "description": "Refactor execute methods in cicd-integration.ts by extracting helper functions for configuration validation, API calls, pipeline processing, response formatting, and error handling",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [
+        "task_1755908035784_yy7iudi6e"
+      ],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-23T00:13:55.788Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:19:39.812Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T00:19:39.813Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755908434719_x8363qjew",
+      "title": "Research: Refactor compliance-policy.ts - eliminate ALL complexity violations",
+      "description": "Research and analysis required for implementing: \"Refactor compliance-policy.ts - eliminate ALL complexity violations\"\n\n**Implementation Task Details:**\nReduce ALL execute method complexities from current levels to below 25 by extracting helper functions. Focus on policy validation, compliance checking, API handling, response processing, and error handling.\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755908434719_0z8e8a3bp\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755908434719_x8363qjew.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755908434719_x8363qjew.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T00:20:34.719Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755908434719_0z8e8a3bp",
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:21:05.491Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T00:21:05.492Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755908434719_0z8e8a3bp",
+      "title": "Refactor compliance-policy.ts - eliminate ALL complexity violations",
+      "description": "Reduce ALL execute method complexities from current levels to below 25 by extracting helper functions. Focus on policy validation, compliance checking, API handling, response processing, and error handling.",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-23T00:20:34.723Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:21:10.294Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:23:32.027Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T00:23:32.027Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755908810463_iu5r6uhz",
+      "title": "Fix processStreamingExport complexity violation in export-logs-for-analysis.ts",
+      "description": "Reduce complexity from 27 to below 25 by extracting helper functions",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T00:26:50.464Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:29:16.276Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T00:29:16.277Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755908988841_ikp0txrhy",
+      "title": "Fix ALL complexity violations in naming-convention-policy.ts",
+      "description": "Reduce ALL method complexities to below 25 by extracting helper functions",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T00:29:48.841Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:34:40.712Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T00:34:40.712Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 463,
-  "last_completion": "2025-08-22T23:46:57.998Z",
+  "total_completed": 473,
+  "last_completion": "2025-08-23T00:34:40.712Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

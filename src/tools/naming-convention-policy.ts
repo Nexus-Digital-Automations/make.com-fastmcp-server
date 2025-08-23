@@ -355,72 +355,14 @@ class NamingConventionValidator {
     const warnings: string[] = [];
 
     try {
-      // Length validation
-      if (rule.minLength && name.length < rule.minLength) {
-        errors.push(`Name too short. Minimum length: ${rule.minLength}, actual: ${name.length}`);
-      }
-      if (rule.maxLength && name.length > rule.maxLength) {
-        errors.push(`Name too long. Maximum length: ${rule.maxLength}, actual: ${name.length}`);
-      }
-
-      // Pattern validation
-      if (rule.patternType === PatternType.REGEX && rule.pattern) {
-        const regex = new RegExp(rule.pattern);
-        if (!regex.test(name)) {
-          errors.push(`Name does not match required pattern: ${rule.pattern}`);
-        }
-      }
-
-      // Case validation
-      if (rule.caseType) {
-        const isValidCase = this.validateCaseFormat(name, rule.caseType);
-        if (!isValidCase) {
-          errors.push(`Name does not follow required case format: ${rule.caseType}`);
-        }
-      }
-
-      // Character set validation
-      if (rule.allowedCharacters) {
-        const allowedRegex = new RegExp(`^${rule.allowedCharacters}+$`);
-        if (!allowedRegex.test(name)) {
-          errors.push(`Name contains invalid characters. Allowed: ${rule.allowedCharacters}`);
-        }
-      }
-
-      // Forbidden words validation
-      if (rule.forbiddenWords && rule.forbiddenWords.length > 0) {
-        const lowerName = name.toLowerCase();
-        const foundForbidden = rule.forbiddenWords.filter(word => 
-          lowerName.includes(word.toLowerCase())
-        );
-        if (foundForbidden.length > 0) {
-          errors.push(`Name contains forbidden words: ${foundForbidden.join(', ')}`);
-        }
-      }
-
-      // Prefix/suffix validation
-      if (rule.requiredPrefix && !name.startsWith(rule.requiredPrefix)) {
-        errors.push(`Name must start with: ${rule.requiredPrefix}`);
-      }
-      if (rule.requiredSuffix && !name.endsWith(rule.requiredSuffix)) {
-        errors.push(`Name must end with: ${rule.requiredSuffix}`);
-      }
-
-      // Custom validation function
-      if (rule.customValidationFunction) {
-        try {
-          // Use safer evaluation approach instead of Function constructor
-          if (!NamingConventionValidator.isSafeCustomFunction(rule.customValidationFunction)) {
-            throw new Error('Custom validation function contains unsafe operations');
-          }
-          const customResult = NamingConventionValidator.evaluateCustomValidationFunction(rule.customValidationFunction, name, rule);
-          if (customResult !== true && typeof customResult === 'string') {
-            errors.push(`Custom validation failed: ${customResult}`);
-          }
-        } catch (error) {
-          warnings.push(`Custom validation function error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
-      }
+      // Perform basic validations
+      this.validateNameLength(name, rule, errors);
+      this.validateNamePattern(name, rule, errors);
+      this.validateNameCase(name, rule, errors);
+      this.validateCharacterSet(name, rule, errors);
+      this.validateForbiddenWords(name, rule, errors);
+      this.validatePrefixSuffix(name, rule, errors);
+      this.validateCustomFunction(name, rule, errors, warnings);
 
       return {
         isValid: errors.length === 0,
@@ -433,6 +375,106 @@ class NamingConventionValidator {
         errors: [`Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`],
         warnings,
       };
+    }
+  }
+
+  /**
+   * Validate name length requirements
+   */
+  private static validateNameLength(name: string, rule: z.infer<typeof NamingRuleSchema>, errors: string[]): void {
+    if (rule.minLength && name.length < rule.minLength) {
+      errors.push(`Name too short. Minimum length: ${rule.minLength}, actual: ${name.length}`);
+    }
+    if (rule.maxLength && name.length > rule.maxLength) {
+      errors.push(`Name too long. Maximum length: ${rule.maxLength}, actual: ${name.length}`);
+    }
+  }
+
+  /**
+   * Validate name against pattern requirements
+   */
+  private static validateNamePattern(name: string, rule: z.infer<typeof NamingRuleSchema>, errors: string[]): void {
+    if (rule.patternType === PatternType.REGEX && rule.pattern) {
+      const regex = new RegExp(rule.pattern);
+      if (!regex.test(name)) {
+        errors.push(`Name does not match required pattern: ${rule.pattern}`);
+      }
+    }
+  }
+
+  /**
+   * Validate name case format requirements
+   */
+  private static validateNameCase(name: string, rule: z.infer<typeof NamingRuleSchema>, errors: string[]): void {
+    if (rule.caseType) {
+      const isValidCase = this.validateCaseFormat(name, rule.caseType);
+      if (!isValidCase) {
+        errors.push(`Name does not follow required case format: ${rule.caseType}`);
+      }
+    }
+  }
+
+  /**
+   * Validate allowed character set requirements
+   */
+  private static validateCharacterSet(name: string, rule: z.infer<typeof NamingRuleSchema>, errors: string[]): void {
+    if (rule.allowedCharacters) {
+      const allowedRegex = new RegExp(`^${rule.allowedCharacters}+$`);
+      if (!allowedRegex.test(name)) {
+        errors.push(`Name contains invalid characters. Allowed: ${rule.allowedCharacters}`);
+      }
+    }
+  }
+
+  /**
+   * Validate forbidden words requirements
+   */
+  private static validateForbiddenWords(name: string, rule: z.infer<typeof NamingRuleSchema>, errors: string[]): void {
+    if (rule.forbiddenWords && rule.forbiddenWords.length > 0) {
+      const lowerName = name.toLowerCase();
+      const foundForbidden = rule.forbiddenWords.filter(word => 
+        lowerName.includes(word.toLowerCase())
+      );
+      if (foundForbidden.length > 0) {
+        errors.push(`Name contains forbidden words: ${foundForbidden.join(', ')}`);
+      }
+    }
+  }
+
+  /**
+   * Validate prefix/suffix requirements
+   */
+  private static validatePrefixSuffix(name: string, rule: z.infer<typeof NamingRuleSchema>, errors: string[]): void {
+    if (rule.requiredPrefix && !name.startsWith(rule.requiredPrefix)) {
+      errors.push(`Name must start with: ${rule.requiredPrefix}`);
+    }
+    if (rule.requiredSuffix && !name.endsWith(rule.requiredSuffix)) {
+      errors.push(`Name must end with: ${rule.requiredSuffix}`);
+    }
+  }
+
+  /**
+   * Validate custom function requirements
+   */
+  private static validateCustomFunction(
+    name: string, 
+    rule: z.infer<typeof NamingRuleSchema>, 
+    errors: string[], 
+    warnings: string[]
+  ): void {
+    if (rule.customValidationFunction) {
+      try {
+        // Use safer evaluation approach instead of Function constructor
+        if (!NamingConventionValidator.isSafeCustomFunction(rule.customValidationFunction)) {
+          throw new Error('Custom validation function contains unsafe operations');
+        }
+        const customResult = NamingConventionValidator.evaluateCustomValidationFunction(rule.customValidationFunction, name, rule);
+        if (customResult !== true && typeof customResult === 'string') {
+          errors.push(`Custom validation failed: ${customResult}`);
+        }
+      } catch (error) {
+        warnings.push(`Custom validation function error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     }
   }
 
@@ -863,6 +905,237 @@ function addCreateNamingConventionPolicyTool(server: FastMCP, apiClient: MakeApi
 }
 
 /**
+ * Helper class for validate names against policy functionality
+ */
+class validateNamesPolicyHelper {
+  static async fetchPolicy(apiClient: MakeApiClient, policyId: string): Promise<{ 
+    name: string; 
+    rules: Array<{ resourceTypes: ResourceType[]; enforcementLevel: EnforcementLevel; [key: string]: unknown }> 
+  }> {
+    const policyResponse = await apiClient.get(`/policies/naming-conventions/${policyId}`);
+    
+    if (!policyResponse.success) {
+      throw new UserError(`Policy not found: ${policyId}`);
+    }
+
+    return policyResponse.data as { 
+      name: string; 
+      rules: Array<{ resourceTypes: ResourceType[]; enforcementLevel: EnforcementLevel; [key: string]: unknown }> 
+    };
+  }
+
+  static initializeSummaryStats(totalNames: number): { totalNames: number; validNames: number; invalidNames: number; warningNames: number; skippedNames: number } {
+    return {
+      totalNames,
+      validNames: 0,
+      invalidNames: 0,
+      warningNames: 0,
+      skippedNames: 0,
+    };
+  }
+
+  static async processNameValidations(
+    names: Array<{ resourceType: ResourceType; name: string; resourceId?: string; metadata?: Record<string, unknown> }>,
+    policy: { rules: Array<{ resourceTypes: ResourceType[]; enforcementLevel: EnforcementLevel; [key: string]: unknown }> },
+    validationResults: Record<string, unknown>,
+    summaryStats: { validNames: number; invalidNames: number; warningNames: number; skippedNames: number },
+    returnDetails: boolean
+  ): Promise<void> {
+    for (const nameInput of names) {
+      const nameId = nameInput.resourceId || `${nameInput.resourceType}_${nameInput.name}`;
+      const applicableRules = policy.rules.filter((rule: { resourceTypes: ResourceType[]; }) => 
+        rule.resourceTypes.includes(nameInput.resourceType)
+      );
+
+      if (applicableRules.length === 0) {
+        this.handleSkippedName(nameId, nameInput, validationResults, summaryStats, returnDetails);
+        continue;
+      }
+
+      const { ruleResults, hasErrors, hasWarnings } = this.processRuleValidations(nameInput.name, applicableRules);
+      const suggestions = this.generateSuggestions(hasErrors, hasWarnings, nameInput.resourceType, applicableRules);
+      
+      this.createValidationResult(
+        nameId, 
+        nameInput, 
+        hasErrors, 
+        hasWarnings, 
+        suggestions, 
+        ruleResults, 
+        applicableRules, 
+        validationResults, 
+        summaryStats, 
+        returnDetails
+      );
+    }
+  }
+
+  static handleSkippedName(
+    nameId: string,
+    nameInput: { name: string; resourceType: ResourceType },
+    validationResults: Record<string, unknown>,
+    summaryStats: { skippedNames: number },
+    returnDetails: boolean
+  ): void {
+    validationResults[nameId] = {
+      name: nameInput.name,
+      resourceType: nameInput.resourceType,
+      status: 'skipped',
+      message: 'No applicable rules for this resource type',
+      details: returnDetails ? { applicableRulesCount: 0 } : undefined,
+    };
+    summaryStats.skippedNames++;
+  }
+
+  static processRuleValidations(
+    name: string, 
+    applicableRules: Array<{ enforcementLevel: EnforcementLevel; [key: string]: unknown }>
+  ): { ruleResults: unknown[]; hasErrors: boolean; hasWarnings: boolean } {
+    const ruleResults: unknown[] = [];
+    let hasErrors = false;
+    let hasWarnings = false;
+
+    for (const rule of applicableRules) {
+      const ruleResult = NamingConventionValidator.validateAgainstRule(name, rule as z.infer<typeof NamingRuleSchema>);
+      
+      ruleResults.push({
+        ruleId: rule.id,
+        ruleName: rule.name,
+        enforcementLevel: rule.enforcementLevel,
+        isValid: ruleResult.isValid,
+        errors: ruleResult.errors,
+        warnings: ruleResult.warnings,
+        priority: rule.priority || 50,
+      });
+
+      if (!ruleResult.isValid && rule.enforcementLevel === EnforcementLevel.STRICT) {
+        hasErrors = true;
+      } else if (ruleResult.errors.length > 0 || ruleResult.warnings.length > 0) {
+        hasWarnings = true;
+      }
+    }
+
+    return { ruleResults, hasErrors, hasWarnings };
+  }
+
+  static generateSuggestions(
+    hasErrors: boolean, 
+    hasWarnings: boolean, 
+    resourceType: ResourceType, 
+    applicableRules: Array<{ [key: string]: unknown }>
+  ): string[] {
+    if (hasErrors || hasWarnings) {
+      return NamingConventionValidator.generateNameSuggestions(
+        resourceType,
+        applicableRules as z.infer<typeof NamingRuleSchema>[]
+      ).slice(0, 3);
+    }
+    return [];
+  }
+
+  static createValidationResult(
+    nameId: string,
+    nameInput: { name: string; resourceType: ResourceType; metadata?: Record<string, unknown> },
+    hasErrors: boolean,
+    hasWarnings: boolean,
+    suggestions: string[],
+    ruleResults: unknown[],
+    applicableRules: Array<{ [key: string]: unknown }>,
+    validationResults: Record<string, unknown>,
+    summaryStats: { validNames: number; invalidNames: number; warningNames: number },
+    returnDetails: boolean
+  ): void {
+    const overallStatus = hasErrors ? 'invalid' : hasWarnings ? 'warning' : 'valid';
+    
+    validationResults[nameId] = {
+      name: nameInput.name,
+      resourceType: nameInput.resourceType,
+      status: overallStatus,
+      message: hasErrors 
+        ? 'Name violates strict naming rules'
+        : hasWarnings 
+        ? 'Name has warnings but is acceptable'
+        : 'Name complies with all applicable rules',
+      suggestions: suggestions.length > 0 ? suggestions : undefined,
+      details: returnDetails ? {
+        applicableRulesCount: applicableRules.length,
+        ruleResults,
+        metadata: nameInput.metadata,
+      } : undefined,
+    };
+
+    // Update summary stats
+    if (overallStatus === 'valid') {summaryStats.validNames++;}
+    else if (overallStatus === 'invalid') {summaryStats.invalidNames++;}
+    else {summaryStats.warningNames++;}
+  }
+
+  static async logValidationAudit(
+    policyId: string, 
+    summaryStats: { validNames: number; invalidNames: number; warningNames: number },
+    validatedCount: number
+  ): Promise<void> {
+    await auditLogger.logEvent({
+      level: summaryStats.invalidNames > 0 ? 'warn' : 'info',
+      category: 'data_access',
+      action: 'naming_policy_validation',
+      resource: `policy:${policyId}`,
+      success: summaryStats.invalidNames === 0,
+      details: {
+        policyId,
+        validatedCount,
+        validNames: summaryStats.validNames,
+        invalidNames: summaryStats.invalidNames,
+        warningNames: summaryStats.warningNames,
+      },
+      riskLevel: summaryStats.invalidNames > 0 ? 'medium' : 'low',
+    });
+  }
+
+  static logValidationCompletion(
+    log: { info: (message: string, data?: unknown) => void }, 
+    policyId: string, 
+    summaryStats: { totalNames: number; validNames: number; invalidNames: number; warningNames: number }
+  ): void {
+    log.info('Name validation completed', {
+      policyId,
+      totalNames: summaryStats.totalNames,
+      validNames: summaryStats.validNames,
+      invalidNames: summaryStats.invalidNames,
+      warningNames: summaryStats.warningNames,
+    });
+  }
+
+  static generateValidationResponse(
+    policyId: string,
+    policyName: string,
+    validationResults: Record<string, unknown>,
+    summaryStats: { totalNames: number; validNames: number; invalidNames: number; warningNames: number }
+  ): { content: Array<{ text: string }> } {
+    return formatSuccessResponse({
+      success: true,
+      policyId,
+      policyName,
+      validationResults,
+      summary: summaryStats,
+      compliance: {
+        overallScore: Math.round((summaryStats.validNames / summaryStats.totalNames) * 100),
+        strictCompliance: summaryStats.invalidNames === 0,
+        recommendationsCount: Object.values(validationResults).filter(
+          (r: unknown): r is { suggestions?: string[] } => 
+            typeof r === 'object' && 
+            r !== null && 
+            'suggestions' in r && 
+            Array.isArray((r as { suggestions?: unknown }).suggestions)
+        ).length,
+      },
+      timestamp: new Date().toISOString(),
+      message: `Validated ${summaryStats.totalNames} names: ${summaryStats.validNames} valid, ${summaryStats.invalidNames} invalid, ${summaryStats.warningNames} warnings`,
+    });
+  }
+}
+
+/**
  * Helper function to add the validate names against policy tool
  */
 function addValidateNamesAgainstPolicyTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -896,149 +1169,33 @@ function addValidateNamesAgainstPolicyTool(server: FastMCP, apiClient: MakeApiCl
       });
 
       try {
-        // Fetch policy (in production, from database)
-        const policyResponse = await apiClient.get(`/policies/naming-conventions/${input.policyId}`);
+        // Fetch and validate policy
+        const policy = await validateNamesPolicyHelper.fetchPolicy(apiClient, input.policyId);
         
-        if (!policyResponse.success) {
-          throw new UserError(`Policy not found: ${input.policyId}`);
-        }
-
-        const policy = policyResponse.data as { 
-          name: string; 
-          rules: Array<{ resourceTypes: ResourceType[]; enforcementLevel: EnforcementLevel; [key: string]: unknown }> 
-        };
+        // Initialize validation results and stats
         const validationResults: Record<string, unknown> = {};
-        const summaryStats = {
-          totalNames: input.names.length,
-          validNames: 0,
-          invalidNames: 0,
-          warningNames: 0,
-          skippedNames: 0,
-        };
+        const summaryStats = validateNamesPolicyHelper.initializeSummaryStats(input.names.length);
 
-        // Validate each name
-        for (const nameInput of input.names) {
-          const nameId = nameInput.resourceId || `${nameInput.resourceType}_${nameInput.name}`;
-          const applicableRules = policy.rules.filter((rule: { resourceTypes: ResourceType[]; }) => 
-            rule.resourceTypes.includes(nameInput.resourceType)
-          );
+        // Process each name validation
+        await validateNamesPolicyHelper.processNameValidations(
+          input.names, 
+          policy, 
+          validationResults, 
+          summaryStats, 
+          input.returnDetails
+        );
 
-          if (applicableRules.length === 0) {
-            validationResults[nameId] = {
-              name: nameInput.name,
-              resourceType: nameInput.resourceType,
-              status: 'skipped',
-              message: 'No applicable rules for this resource type',
-              details: input.returnDetails ? { applicableRulesCount: 0 } : undefined,
-            };
-            summaryStats.skippedNames++;
-            continue;
-          }
+        // Log audit event and completion info
+        await validateNamesPolicyHelper.logValidationAudit(input.policyId, summaryStats, input.names.length);
+        validateNamesPolicyHelper.logValidationCompletion(log, input.policyId, summaryStats);
 
-          const ruleResults: unknown[] = [];
-          let hasErrors = false;
-          let hasWarnings = false;
-
-          // Apply each applicable rule
-          for (const rule of applicableRules) {
-            const ruleResult = NamingConventionValidator.validateAgainstRule(nameInput.name, rule as z.infer<typeof NamingRuleSchema>);
-            
-            ruleResults.push({
-              ruleId: rule.id,
-              ruleName: rule.name,
-              enforcementLevel: rule.enforcementLevel,
-              isValid: ruleResult.isValid,
-              errors: ruleResult.errors,
-              warnings: ruleResult.warnings,
-              priority: rule.priority || 50,
-            });
-
-            if (!ruleResult.isValid && rule.enforcementLevel === EnforcementLevel.STRICT) {
-              hasErrors = true;
-            } else if (ruleResult.errors.length > 0 || ruleResult.warnings.length > 0) {
-              hasWarnings = true;
-            }
-          }
-
-          // Generate suggestions if name is invalid
-          let suggestions: string[] = [];
-          if (hasErrors || hasWarnings) {
-            suggestions = NamingConventionValidator.generateNameSuggestions(
-              nameInput.resourceType,
-              applicableRules as z.infer<typeof NamingRuleSchema>[]
-            ).slice(0, 3);
-          }
-
-          const overallStatus = hasErrors ? 'invalid' : hasWarnings ? 'warning' : 'valid';
-          
-          validationResults[nameId] = {
-            name: nameInput.name,
-            resourceType: nameInput.resourceType,
-            status: overallStatus,
-            message: hasErrors 
-              ? 'Name violates strict naming rules'
-              : hasWarnings 
-              ? 'Name has warnings but is acceptable'
-              : 'Name complies with all applicable rules',
-            suggestions: suggestions.length > 0 ? suggestions : undefined,
-            details: input.returnDetails ? {
-              applicableRulesCount: applicableRules.length,
-              ruleResults,
-              metadata: nameInput.metadata,
-            } : undefined,
-          };
-
-          // Update summary stats
-          if (overallStatus === 'valid') {summaryStats.validNames++;}
-          else if (overallStatus === 'invalid') {summaryStats.invalidNames++;}
-          else {summaryStats.warningNames++;}
-        }
-
-        // Log validation audit event
-        await auditLogger.logEvent({
-          level: summaryStats.invalidNames > 0 ? 'warn' : 'info',
-          category: 'data_access',
-          action: 'naming_policy_validation',
-          resource: `policy:${input.policyId}`,
-          success: summaryStats.invalidNames === 0,
-          details: {
-            policyId: input.policyId,
-            validatedCount: input.names.length,
-            validNames: summaryStats.validNames,
-            invalidNames: summaryStats.invalidNames,
-            warningNames: summaryStats.warningNames,
-          },
-          riskLevel: summaryStats.invalidNames > 0 ? 'medium' : 'low',
-        });
-
-        log.info('Name validation completed', {
-          policyId: input.policyId,
-          totalNames: summaryStats.totalNames,
-          validNames: summaryStats.validNames,
-          invalidNames: summaryStats.invalidNames,
-          warningNames: summaryStats.warningNames,
-        });
-
-        return formatSuccessResponse({
-          success: true,
-          policyId: input.policyId,
-          policyName: policy.name,
+        // Generate and return response
+        return validateNamesPolicyHelper.generateValidationResponse(
+          input.policyId,
+          policy.name,
           validationResults,
-          summary: summaryStats,
-          compliance: {
-            overallScore: Math.round((summaryStats.validNames / summaryStats.totalNames) * 100),
-            strictCompliance: summaryStats.invalidNames === 0,
-            recommendationsCount: Object.values(validationResults).filter(
-              (r: unknown): r is { suggestions?: string[] } => 
-                typeof r === 'object' && 
-                r !== null && 
-                'suggestions' in r && 
-                Array.isArray((r as { suggestions?: unknown }).suggestions)
-            ).length,
-          },
-          timestamp: new Date().toISOString(),
-          message: `Validated ${summaryStats.totalNames} names: ${summaryStats.validNames} valid, ${summaryStats.invalidNames} invalid, ${summaryStats.warningNames} warnings`,
-        });
+          summaryStats
+        );
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error validating names against policy', { error: errorMessage, policyId: input.policyId });
@@ -1170,6 +1327,200 @@ function addListNamingConventionPoliciesTool(server: FastMCP, apiClient: MakeApi
 }
 
 /**
+ * Helper class for update naming convention policy functionality
+ */
+class updatePolicyHelper {
+  static async fetchExistingPolicy(apiClient: MakeApiClient, policyId: string): Promise<{
+    existingPolicy: Record<string, unknown>;
+    timestamp: string;
+  }> {
+    const existingResponse = await apiClient.get(`/policies/naming-conventions/${policyId}`);
+    
+    if (!existingResponse.success) {
+      throw new UserError(`Policy not found: ${policyId}`);
+    }
+
+    const existingPolicy = existingResponse.data as Record<string, unknown>;
+    const timestamp = new Date().toISOString();
+    
+    return { existingPolicy, timestamp };
+  }
+
+  static prepareUpdateData(existingPolicy: Record<string, unknown>, timestamp: string): Record<string, unknown> {
+    return {
+      ...(typeof existingPolicy === 'object' && existingPolicy !== null ? existingPolicy : {}),
+      updatedAt: timestamp,
+    };
+  }
+
+  static applyUpdates(
+    input: z.infer<typeof UpdateNamingPolicySchema>,
+    updateData: Record<string, unknown>,
+    existingPolicy: Record<string, unknown>,
+    timestamp: string
+  ): void {
+    this.applyBasicUpdates(input, updateData);
+    this.applyRulesUpdate(input, updateData, timestamp);
+    this.applyNotificationUpdates(input, updateData, existingPolicy);
+    this.applyMetadataUpdates(input, updateData, existingPolicy, timestamp);
+  }
+
+  static applyBasicUpdates(input: z.infer<typeof UpdateNamingPolicySchema>, updateData: Record<string, unknown>): void {
+    if (input.name !== undefined) {updateData.name = input.name;}
+    if (input.description !== undefined) {updateData.description = input.description;}
+    if (input.enforcementLevel !== undefined) {updateData.enforcementLevel = input.enforcementLevel;}
+    if (input.active !== undefined) {updateData.active = input.active;}
+    if (input.effectiveFrom !== undefined) {updateData.effectiveFrom = input.effectiveFrom;}
+    if (input.effectiveUntil !== undefined) {updateData.effectiveUntil = input.effectiveUntil;}
+  }
+
+  static applyRulesUpdate(
+    input: z.infer<typeof UpdateNamingPolicySchema>,
+    updateData: Record<string, unknown>,
+    timestamp: string
+  ): void {
+    if (input.rules !== undefined) {
+      // Validate new rules
+      for (const rule of input.rules) {
+        if (rule.patternType === PatternType.REGEX) {
+          try {
+            new RegExp(rule.pattern);
+          } catch (error) {
+            throw new UserError(`Invalid regex pattern in rule ${rule.id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+        }
+      }
+      updateData.rules = input.rules.sort((a, b) => (a.priority || 50) - (b.priority || 50));
+      const existingMeta = (updateData.metadata as Record<string, unknown>) || {};
+      updateData.metadata = {
+        ...existingMeta,
+        rulesCount: input.rules.length,
+        resourceTypesCount: new Set(input.rules.flatMap(r => r.resourceTypes)).size,
+        averagePriority: input.rules.reduce((sum, r) => sum + (r.priority || 50), 0) / input.rules.length,
+        lastRulesUpdate: timestamp,
+      };
+    }
+  }
+
+  static applyNotificationUpdates(
+    input: z.infer<typeof UpdateNamingPolicySchema>,
+    updateData: Record<string, unknown>,
+    existingPolicy: Record<string, unknown>
+  ): void {
+    if (input.notificationSettings !== undefined) {
+      const existingNotifications = (existingPolicy.notificationSettings as Record<string, unknown>) || {};
+      updateData.notificationSettings = {
+        ...existingNotifications,
+        ...input.notificationSettings,
+      };
+    }
+  }
+
+  static applyMetadataUpdates(
+    input: z.infer<typeof UpdateNamingPolicySchema>,
+    updateData: Record<string, unknown>,
+    existingPolicy: Record<string, unknown>,
+    timestamp: string
+  ): void {
+    if (input.metadata !== undefined) {
+      const existingMetadata = (existingPolicy.metadata as Record<string, unknown>) || {};
+      updateData.metadata = {
+        ...existingMetadata,
+        ...input.metadata,
+        lastMetadataUpdate: timestamp,
+      };
+    }
+  }
+
+  static async updatePolicyViaApi(
+    apiClient: MakeApiClient,
+    policyId: string,
+    updateData: Record<string, unknown>
+  ): Promise<{ name: string; [key: string]: unknown }> {
+    const response = await apiClient.patch(`/policies/naming-conventions/${policyId}`, updateData);
+    
+    if (!response.success) {
+      throw new UserError(`Failed to update policy: ${response.error?.message || 'Unknown error'}`);
+    }
+
+    return response.data as { name: string; [key: string]: unknown };
+  }
+
+  static async logUpdateAudit(
+    input: z.infer<typeof UpdateNamingPolicySchema>,
+    existingPolicy: Record<string, unknown>
+  ): Promise<void> {
+    await auditLogger.logEvent({
+      level: 'info',
+      category: 'configuration',
+      action: 'naming_policy_updated',
+      resource: `policy:${input.policyId}`,
+      success: true,
+      details: {
+        policyId: input.policyId,
+        updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined),
+        rulesCount: input.rules?.length || (existingPolicy.rules as unknown[] | undefined)?.length || 0,
+        enforcementLevel: input.enforcementLevel || (existingPolicy.enforcementLevel as string | undefined),
+        active: input.active !== undefined ? input.active : (existingPolicy.active as boolean | undefined),
+      },
+      riskLevel: 'medium',
+    });
+  }
+
+  static logUpdateCompletion(
+    log: { info: (message: string, data?: unknown) => void },
+    policyId: string,
+    policyName: string,
+    input: z.infer<typeof UpdateNamingPolicySchema>
+  ): void {
+    log.info('Successfully updated naming convention policy', {
+      policyId,
+      name: policyName,
+      updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined).length,
+    });
+  }
+
+  static generateUpdateResponse(
+    policyId: string,
+    updatedPolicy: { name: string; [key: string]: unknown },
+    existingPolicy: Record<string, unknown>,
+    timestamp: string
+  ): { content: Array<{ text: string }> } {
+    return formatSuccessResponse({
+      success: true,
+      policy: updatedPolicy,
+      changes: {
+        updatedFields: Object.keys(updatedPolicy).filter(k => k !== 'policyId'),
+        timestamp,
+        version: `${(existingPolicy.version as string | undefined) || '1.0.0'}-updated`,
+      },
+      auditTrail: {
+        updatedAt: timestamp,
+        action: 'policy_updated',
+        policyId,
+        fieldsChanged: Object.keys(updatedPolicy).filter(k => k !== 'policyId').length,
+      },
+      message: `Naming convention policy "${updatedPolicy.name}" updated successfully`,
+    });
+  }
+
+  static async logUpdateFailureAudit(policyId: string, errorMessage: string): Promise<void> {
+    await auditLogger.logEvent({
+      level: 'error',
+      category: 'configuration',
+      action: 'naming_policy_update_failed',
+      resource: `policy:${policyId}`,
+      success: false,
+      details: {
+        policyId,
+        error: errorMessage,
+      },
+      riskLevel: 'low',
+    });
+  }
+}
+
+/**
  * Helper function to add the update naming convention policy tool
  */
 function addUpdateNamingConventionPolicyTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -1202,131 +1553,28 @@ function addUpdateNamingConventionPolicyTool(server: FastMCP, apiClient: MakeApi
       });
 
       try {
-        // Get existing policy
-        const existingResponse = await apiClient.get(`/policies/naming-conventions/${input.policyId}`);
-        
-        if (!existingResponse.success) {
-          throw new UserError(`Policy not found: ${input.policyId}`);
-        }
+        // Fetch existing policy and prepare update data
+        const { existingPolicy, timestamp } = await updatePolicyHelper.fetchExistingPolicy(apiClient, input.policyId);
+        const updateData = updatePolicyHelper.prepareUpdateData(existingPolicy, timestamp);
 
-        const existingPolicy = existingResponse.data as Record<string, unknown>;
-        const timestamp = new Date().toISOString();
-        
-        // Prepare update data
-        const updateData: Record<string, unknown> = {
-          ...(typeof existingPolicy === 'object' && existingPolicy !== null ? existingPolicy : {}),
-          updatedAt: timestamp,
-        };
+        // Apply all input updates to the data
+        updatePolicyHelper.applyUpdates(input, updateData, existingPolicy, timestamp);
 
-        // Apply updates
-        if (input.name !== undefined) {updateData.name = input.name;}
-        if (input.description !== undefined) {updateData.description = input.description;}
-        if (input.rules !== undefined) {
-          // Validate new rules
-          for (const rule of input.rules) {
-            if (rule.patternType === PatternType.REGEX) {
-              try {
-                new RegExp(rule.pattern);
-              } catch (error) {
-                throw new UserError(`Invalid regex pattern in rule ${rule.id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-              }
-            }
-          }
-          updateData.rules = input.rules.sort((a, b) => (a.priority || 50) - (b.priority || 50));
-          const existingMeta = (existingPolicy.metadata as Record<string, unknown>) || {};
-          updateData.metadata = {
-            ...existingMeta,
-            rulesCount: input.rules.length,
-            resourceTypesCount: new Set(input.rules.flatMap(r => r.resourceTypes)).size,
-            averagePriority: input.rules.reduce((sum, r) => sum + (r.priority || 50), 0) / input.rules.length,
-            lastRulesUpdate: timestamp,
-          };
-        }
-        if (input.enforcementLevel !== undefined) {updateData.enforcementLevel = input.enforcementLevel;}
-        if (input.active !== undefined) {updateData.active = input.active;}
-        if (input.effectiveFrom !== undefined) {updateData.effectiveFrom = input.effectiveFrom;}
-        if (input.effectiveUntil !== undefined) {updateData.effectiveUntil = input.effectiveUntil;}
-        if (input.notificationSettings !== undefined) {
-          const existingNotifications = (existingPolicy.notificationSettings as Record<string, unknown>) || {};
-          updateData.notificationSettings = {
-            ...existingNotifications,
-            ...input.notificationSettings,
-          };
-        }
-        if (input.metadata !== undefined) {
-          const existingMetadata = (existingPolicy.metadata as Record<string, unknown>) || {};
-          updateData.metadata = {
-            ...existingMetadata,
-            ...input.metadata,
-            lastMetadataUpdate: timestamp,
-          };
-        }
+        // Update the policy via API
+        const updatedPolicy = await updatePolicyHelper.updatePolicyViaApi(apiClient, input.policyId, updateData);
 
-        // Update policy
-        const response = await apiClient.patch(`/policies/naming-conventions/${input.policyId}`, updateData);
-        
-        if (!response.success) {
-          throw new UserError(`Failed to update policy: ${response.error?.message || 'Unknown error'}`);
-        }
+        // Log audit events and completion info
+        await updatePolicyHelper.logUpdateAudit(input, existingPolicy);
+        updatePolicyHelper.logUpdateCompletion(log, input.policyId, updatedPolicy.name, input);
 
-        const updatedPolicy = response.data as { name: string; [key: string]: unknown };
-
-        // Log policy update audit event
-        await auditLogger.logEvent({
-          level: 'info',
-          category: 'configuration',
-          action: 'naming_policy_updated',
-          resource: `policy:${input.policyId}`,
-          success: true,
-          details: {
-            policyId: input.policyId,
-            updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined),
-            rulesCount: input.rules?.length || (existingPolicy.rules as unknown[] | undefined)?.length || 0,
-            enforcementLevel: input.enforcementLevel || (existingPolicy.enforcementLevel as string | undefined),
-            active: input.active !== undefined ? input.active : (existingPolicy.active as boolean | undefined),
-          },
-          riskLevel: 'medium',
-        });
-
-        log.info('Successfully updated naming convention policy', {
-          policyId: input.policyId,
-          name: updatedPolicy.name,
-          updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined).length,
-        });
-
-        return formatSuccessResponse({
-          success: true,
-          policy: updatedPolicy,
-          changes: {
-            updatedFields: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined),
-            timestamp,
-            version: `${(existingPolicy.version as string | undefined) || '1.0.0'}-updated`,
-          },
-          auditTrail: {
-            updatedAt: timestamp,
-            action: 'policy_updated',
-            policyId: input.policyId,
-            fieldsChanged: Object.keys(input).filter(k => k !== 'policyId' && input[k as keyof typeof input] !== undefined).length,
-          },
-          message: `Naming convention policy "${updatedPolicy.name}" updated successfully`,
-        });
+        // Generate and return response
+        return updatePolicyHelper.generateUpdateResponse(input.policyId, updatedPolicy, existingPolicy, timestamp);
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error('Error updating naming convention policy', { error: errorMessage, policyId: input.policyId });
         
         // Log failure audit event
-        await auditLogger.logEvent({
-          level: 'error',
-          category: 'configuration',
-          action: 'naming_policy_update_failed',
-          resource: `policy:${input.policyId}`,
-          success: false,
-          details: {
-            policyId: input.policyId,
-            error: errorMessage,
-          },
-          riskLevel: 'low',
-        });
+        await updatePolicyHelper.logUpdateFailureAudit(input.policyId, errorMessage);
         
         if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to update naming convention policy: ${errorMessage}`);

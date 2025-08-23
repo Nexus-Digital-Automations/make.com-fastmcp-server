@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/54</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/54</span>
             </div>
         
             
@@ -116,120 +116,120 @@
 <a name='L51'></a><a href='#L51'>51</a>
 <a name='L52'></a><a href='#L52'>52</a>
 <a name='L53'></a><a href='#L53'>53</a>
-<a name='L54'></a><a href='#L54'>54</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L54'></a><a href='#L54'>54</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * @fileoverview Schema definitions for scenario CRUD operations
- */
-&nbsp;
-import { z } from 'zod';<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-export const CreateScenarioSchema = z.object({
-  name: z.string().min(1).max(100).describe('Scenario name (required)'),
-  teamId: z.string().optional().describe('Team ID to create scenario in'),
-  folderId: z.string().optional().describe('Folder ID to organize scenario'),
-  blueprint: z.any().optional().describe('Scenario blueprint/configuration JSON'),
-  scheduling: z.object({
-    type: z.enum(['immediately', 'interval', 'cron']).default('immediately'),
-    interval: z.number().positive().optional().describe('Interval in minutes for interval scheduling'),
-    cron: z.string().optional().describe('Cron expression for cron scheduling'),
-  }).optional().describe('Scheduling<span class="cstat-no" title="statement not covered" > configuration'),</span>
-}).strict();
-&nbsp;
-export const UpdateScenarioSchema = z.object({
-  scenarioId: z.string().min(1).describe('Scenario ID to update (required)'),
-  name: z.string().min(1).max(100).optional().describe('New scenario name'),
-  active: z.boolean().optional().describe('Set scenario active/inactive status'),
-  blueprint: z.any().optional().describe('Updated scenario blueprint/configuration'),
-  scheduling: z.object({
-    type: z.enum(['immediately', 'interval', 'cron']),
-    interval: z.number().positive().optional(),
-    cron: z.string().optional(),<span class="cstat-no" title="statement not covered" ></span>
-  }).optional().describe('Updated scheduling configuration'),
-}).strict();
-&nbsp;
-export const DeleteScenarioSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
-  scenarioId: z.string().min(1).describe('Scenario ID to delete (required)'),
-  force: z.boolean().default(false).describe('Force delete even if scenario is active'),
-}).strict();
-&nbsp;
-export const ScenarioDetailSchema =<span class="cstat-no" title="statement not covered" > z.object({</span>
-  scenarioId: z.string().min(1).describe('Scenario ID to retrieve details for (required)'),
-  includeBlueprint: z.boolean().default(false).describe('Include full scenario blueprint in response'),
-  includeExecutions: z.boolean().default(false).describe('Include recent execution history'),
-}).strict();
-&nbsp;
-export const CloneScenarioSchema = z.object({
-  scenarioId: z.string().min(1).d<span class="cstat-no" title="statement not covered" >escribe('Source scenario ID to clone (required)'),</span>
-  name: z.string().min(1).max(100).describe('Name for the cloned scenario (required)'),
-  teamId: z.string().optional().describe('Target team ID (defaults to source scenario team)'),
-  folderId: z.string().optional().describe('Target folder ID'),
-  active: z.boolean().default(false).describe('Whether to activate the cloned scenario'),
-}).strict();
-&nbsp;
-export const RunScenarioSchema = z.object({
-  scenarioId: z.string().min(1).describe('Scenario ID to execute (required)'),
-  wait: z.boolean().default(true).describe('Wait for execution to complete'),
-  timeout: z.number().min(1).max(300).default(60).describe('Timeout in seconds for execution'),
-}).strict();</pre></td></tr></table></pre>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >/**</span></span></span>
+<span class="cstat-no" title="statement not covered" > * @fileoverview Schema definitions for scenario CRUD operations</span>
+<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >export const CreateScenarioSchema = z.object({</span>
+<span class="cstat-no" title="statement not covered" >  name: z.string().min(1).max(100).describe('Scenario name (required)'),</span>
+<span class="cstat-no" title="statement not covered" >  teamId: z.string().optional().describe('Team ID to create scenario in'),</span>
+<span class="cstat-no" title="statement not covered" >  folderId: z.string().optional().describe('Folder ID to organize scenario'),</span>
+<span class="cstat-no" title="statement not covered" >  blueprint: z.any().optional().describe('Scenario blueprint/configuration JSON'),</span>
+<span class="cstat-no" title="statement not covered" >  scheduling: z.object({</span>
+<span class="cstat-no" title="statement not covered" >    type: z.enum(['immediately', 'interval', 'cron']).default('immediately'),</span>
+<span class="cstat-no" title="statement not covered" >    interval: z.number().positive().optional().describe('Interval in minutes for interval scheduling'),</span>
+<span class="cstat-no" title="statement not covered" >    cron: z.string().optional().describe('Cron expression for cron scheduling'),</span>
+<span class="cstat-no" title="statement not covered" >  }).optional().describe('Scheduling configuration'),</span>
+<span class="cstat-no" title="statement not covered" >}).strict();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >export const UpdateScenarioSchema = z.object({</span>
+<span class="cstat-no" title="statement not covered" >  scenarioId: z.string().min(1).describe('Scenario ID to update (required)'),</span>
+<span class="cstat-no" title="statement not covered" >  name: z.string().min(1).max(100).optional().describe('New scenario name'),</span>
+<span class="cstat-no" title="statement not covered" >  active: z.boolean().optional().describe('Set scenario active/inactive status'),</span>
+<span class="cstat-no" title="statement not covered" >  blueprint: z.any().optional().describe('Updated scenario blueprint/configuration'),</span>
+<span class="cstat-no" title="statement not covered" >  scheduling: z.object({</span>
+<span class="cstat-no" title="statement not covered" >    type: z.enum(['immediately', 'interval', 'cron']),</span>
+<span class="cstat-no" title="statement not covered" >    interval: z.number().positive().optional(),</span>
+<span class="cstat-no" title="statement not covered" >    cron: z.string().optional(),</span>
+<span class="cstat-no" title="statement not covered" >  }).optional().describe('Updated scheduling configuration'),</span>
+<span class="cstat-no" title="statement not covered" >}).strict();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >export const DeleteScenarioSchema = z.object({</span>
+<span class="cstat-no" title="statement not covered" >  scenarioId: z.string().min(1).describe('Scenario ID to delete (required)'),</span>
+<span class="cstat-no" title="statement not covered" >  force: z.boolean().default(false).describe('Force delete even if scenario is active'),</span>
+<span class="cstat-no" title="statement not covered" >}).strict();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >export const ScenarioDetailSchema = z.object({</span>
+<span class="cstat-no" title="statement not covered" >  scenarioId: z.string().min(1).describe('Scenario ID to retrieve details for (required)'),</span>
+<span class="cstat-no" title="statement not covered" >  includeBlueprint: z.boolean().default(false).describe('Include full scenario blueprint in response'),</span>
+<span class="cstat-no" title="statement not covered" >  includeExecutions: z.boolean().default(false).describe('Include recent execution history'),</span>
+<span class="cstat-no" title="statement not covered" >}).strict();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >export const CloneScenarioSchema = z.object({</span>
+<span class="cstat-no" title="statement not covered" >  scenarioId: z.string().min(1).describe('Source scenario ID to clone (required)'),</span>
+<span class="cstat-no" title="statement not covered" >  name: z.string().min(1).max(100).describe('Name for the cloned scenario (required)'),</span>
+<span class="cstat-no" title="statement not covered" >  teamId: z.string().optional().describe('Target team ID (defaults to source scenario team)'),</span>
+<span class="cstat-no" title="statement not covered" >  folderId: z.string().optional().describe('Target folder ID'),</span>
+<span class="cstat-no" title="statement not covered" >  active: z.boolean().default(false).describe('Whether to activate the cloned scenario'),</span>
+<span class="cstat-no" title="statement not covered" >}).strict();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >export const RunScenarioSchema = z.object({</span>
+<span class="cstat-no" title="statement not covered" >  scenarioId: z.string().min(1).describe('Scenario ID to execute (required)'),</span>
+<span class="cstat-no" title="statement not covered" >  wait: z.boolean().default(true).describe('Wait for execution to complete'),</span>
+<span class="cstat-no" title="statement not covered" >  timeout: z.number().min(1).max(300).default(60).describe('Timeout in seconds for execution'),</span>
+<span class="cstat-no" title="statement not covered" >}).strict();</span></pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T11:07:22.948Z
+                at 2025-08-23T00:04:21.144Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

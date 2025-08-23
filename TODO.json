@@ -17,9 +17,9 @@
       "subtasks": [],
       "created_at": "2025-08-22T23:38:18.759Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1755905534883_1_general_5f1c194a",
-      "started_at": "2025-08-22T23:38:25.928Z",
-      "claimed_by": "development_session_1755905534883_1_general_5f1c194a",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
       "agent_assignment_history": [
         {
           "agentId": "development_session_1755905534883_1_general_5f1c194a",
@@ -27,6 +27,23 @@
           "assignedAt": "2025-08-22T23:38:25.928Z",
           "reassignReason": null,
           "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-23T00:12:56.982Z",
+          "reason": "Task stale for 35 minutes"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T00:13:13.806Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
         }
       ]
     },
@@ -37,7 +54,7 @@
       "mode": "DEVELOPMENT",
       "category": "linter-error",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -46,9 +63,9 @@
       "subtasks": [],
       "created_at": "2025-08-22T22:44:01.686Z",
       "auto_research_created": false,
-      "started_at": "2025-08-22T23:24:04.433Z",
-      "claimed_by": "agent_1755905044433",
-      "assigned_agent": "agent_1755905044433",
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
       "agent_assignment_history": [
         {
           "agent": "agent_1755902661534",
@@ -76,8 +93,40 @@
           "agent": "agent_1755905044433",
           "action": "claimed",
           "timestamp": "2025-08-22T23:24:04.433Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-23T00:12:56.982Z",
+          "reason": "Task stale for 49 minutes"
         }
       ]
+    },
+    {
+      "id": "task_1755908035784_yy7iudi6e",
+      "title": "Research: Fix ALL cicd-integration.ts complexity violations - reduce execute methods from 34,33,31 to <25",
+      "description": "Research and analysis required for implementing: \"Fix ALL cicd-integration.ts complexity violations - reduce execute methods from 34,33,31 to <25\"\n\n**Implementation Task Details:**\nRefactor execute methods in cicd-integration.ts by extracting helper functions for configuration validation, API calls, pipeline processing, response formatting, and error handling\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755908035784_ot8pz4gzt\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755908035784_yy7iudi6e.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755908035784_yy7iudi6e.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T00:13:55.784Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755908035784_ot8pz4gzt"
     }
   ],
   "current_mode": "DEVELOPMENT",
@@ -87,13 +136,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1755905534883_1_general_5f1c194a": {
+    "development_session_1755907981262_1_general_f72d55a6": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-22T23:32:14.884Z",
+      "lastHeartbeat": "2025-08-23T00:13:01.263Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -104,8 +153,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-22T23:32:14.884Z",
-      "sessionId": "session_1755905534883",
+      "createdAt": "2025-08-23T00:13:01.263Z",
+      "sessionId": "session_1755907981262",
       "metadata": {}
     }
   },

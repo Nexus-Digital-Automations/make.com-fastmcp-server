@@ -22,6 +22,495 @@ function validateProcedureConfiguration(type: string, configuration: Record<stri
   }
 }
 
+/**
+ * Build device configuration with defaults
+ */
+function buildDeviceConfiguration(configuration: Record<string, unknown>): Record<string, unknown> {
+  return {
+    connection: {
+      ...((configuration.connection as Record<string, unknown>) || {}),
+      protocol: (configuration.connection as Record<string, unknown>)?.protocol ?? 'https',
+      secure: (configuration.connection as Record<string, unknown>)?.secure ?? true,
+    },
+    authentication: {
+      ...((configuration.authentication as Record<string, unknown>) || {}),
+      type: (configuration.authentication as Record<string, unknown>)?.type ?? 'none',
+    },
+    capabilities: {
+      ...((configuration.capabilities as Record<string, unknown>) || {}),
+      canReceive: (configuration.capabilities as Record<string, unknown>)?.canReceive ?? true,
+      canSend: (configuration.capabilities as Record<string, unknown>)?.canSend ?? true,
+      canExecute: (configuration.capabilities as Record<string, unknown>)?.canExecute ?? false,
+      supportedFormats: (configuration.capabilities as Record<string, unknown>)?.supportedFormats ?? ['json'],
+      maxPayloadSize: (configuration.capabilities as Record<string, unknown>)?.maxPayloadSize ?? 1048576,
+    },
+    environment: {
+      ...((configuration.environment as Record<string, unknown>) || {}),
+      customProperties: (configuration.environment as Record<string, unknown>)?.customProperties ?? {},
+    },
+  };
+}
+
+/**
+ * Determine API endpoint based on organization/team context
+ */
+function getDeviceEndpoint(organizationId?: number, teamId?: number): string {
+  if (organizationId) {
+    return `/organizations/${organizationId}/devices`;
+  } else if (teamId) {
+    return `/teams/${teamId}/devices`;
+  }
+  return '/devices';
+}
+
+/**
+ * Create device response configuration section
+ */
+function createDeviceResponseConfiguration(device: MakeDevice): Record<string, unknown> {
+  return {
+    type: device.type,
+    category: device.category,
+    connection: `${device.configuration.connection.protocol}://${device.configuration.connection.host}:${device.configuration.connection.port}`,
+    capabilities: device.configuration.capabilities,
+    environment: {
+      os: device.configuration.environment.os,
+      version: device.configuration.environment.version,
+      architecture: device.configuration.environment.architecture,
+    },
+  };
+}
+
+/**
+ * Create masked device configuration for response
+ */
+function createMaskedDeviceConfiguration(device: MakeDevice): MakeDevice {
+  return {
+    ...device,
+    configuration: {
+      ...device.configuration,
+      authentication: {
+        ...device.configuration.authentication,
+        credentials: device.configuration.authentication.credentials ? '[CREDENTIALS_STORED]' as unknown as Record<string, unknown> : undefined,
+      },
+    },
+  };
+}
+
+/**
+ * Extract and validate test result data with type guards
+ */
+function extractTestResultData(testResult: unknown): {
+  testData: Record<string, unknown>;
+  success: boolean;
+  responseTime?: number;
+  deviceStatus: string;
+  errors: unknown[];
+  warnings: unknown[];
+  recommendations: unknown[];
+} {
+  const testData = testResult && typeof testResult === 'object' ? testResult as Record<string, unknown> : {};
+  const success = typeof testData.success === 'boolean' ? testData.success : false;
+  const responseTime = typeof testData.responseTime === 'number' ? testData.responseTime : undefined;
+  const deviceStatus = typeof testData.deviceStatus === 'string' ? testData.deviceStatus : 'unknown';
+  const errors = Array.isArray(testData.errors) ? testData.errors : [];
+  const warnings = Array.isArray(testData.warnings) ? testData.warnings : [];
+  const recommendations = Array.isArray(testData.recommendations) ? testData.recommendations : [];
+  
+  return {
+    testData,
+    success,
+    responseTime,
+    deviceStatus,
+    errors,
+    warnings,
+    recommendations
+  };
+}
+
+/**
+ * Extract diagnostics data with type guards
+ */
+function extractDiagnosticsData(testData: Record<string, unknown>): {
+  connectivity: Record<string, unknown>;
+  authentication: Record<string, unknown>;
+  performance: Record<string, unknown>;
+  capabilities: Record<string, unknown>;
+} {
+  const diagnostics = testData.diagnostics && typeof testData.diagnostics === 'object' ? testData.diagnostics as Record<string, unknown> : {};
+  const connectivity = diagnostics.connectivity && typeof diagnostics.connectivity === 'object' ? diagnostics.connectivity as Record<string, unknown> : {};
+  const authentication = diagnostics.authentication && typeof diagnostics.authentication === 'object' ? diagnostics.authentication as Record<string, unknown> : {};
+  const performance = diagnostics.performance && typeof diagnostics.performance === 'object' ? diagnostics.performance as Record<string, unknown> : {};
+  const capabilities = diagnostics.capabilities && typeof diagnostics.capabilities === 'object' ? diagnostics.capabilities as Record<string, unknown> : {};
+  
+  return {
+    connectivity,
+    authentication,
+    performance,
+    capabilities
+  };
+}
+
+/**
+ * Create test connectivity response
+ */
+function createTestConnectivityResponse(
+  testResult: unknown,
+  deviceId: number,
+  testType: string,
+  success: boolean,
+  responseTime?: number,
+  deviceStatus: string = 'unknown',
+  errors: unknown[] = [],
+  warnings: unknown[] = [],
+  recommendations: unknown[] = [],
+  diagnostics: {
+    connectivity: Record<string, unknown>;
+    authentication: Record<string, unknown>;
+    performance: Record<string, unknown>;
+    capabilities: Record<string, unknown>;
+  } = { connectivity: {}, authentication: {}, performance: {}, capabilities: {} },
+  includePerformance: boolean = false
+): string {
+  return formatSuccessResponse({
+    test: testResult,
+    message: `Device ${deviceId} connectivity test completed`,
+    summary: {
+      deviceId,
+      testType,
+      success,
+      responseTime,
+      status: deviceStatus,
+      errors,
+      warnings,
+    },
+    diagnostics: {
+      connectivity: diagnostics.connectivity,
+      authentication: diagnostics.authentication,
+      performance: includePerformance ? diagnostics.performance : undefined,
+      capabilities: diagnostics.capabilities,
+    },
+    recommendations,
+  }).content[0].text;
+}
+
+/**
+ * Build query parameters for device listing
+ */
+function buildDeviceQueryParams(
+  type: string,
+  category: string,
+  status: string,
+  organizationId?: number,
+  teamId?: number,
+  limit: number = 100,
+  offset: number = 0,
+  sortBy: string = 'name',
+  sortOrder: string = 'asc',
+  includeHealth: boolean = true,
+  includeAlerts: boolean = false
+): Record<string, unknown> {
+  const params: Record<string, unknown> = {
+    limit,
+    offset,
+    sortBy,
+    sortOrder,
+    includeHealth,
+    includeAlerts,
+  };
+
+  if (type !== 'all') {params.type = type;}
+  if (category !== 'all') {params.category = category;}
+  if (status !== 'all') {params.status = status;}
+  if (organizationId) {params.organizationId = organizationId;}
+  if (teamId) {params.teamId = teamId;}
+
+  return params;
+}
+
+/**
+ * Create device breakdown analysis
+ */
+function createDeviceBreakdownAnalysis(devices: MakeDevice[]): {
+  typeBreakdown: Record<string, number>;
+  categoryBreakdown: Record<string, number>;
+  statusBreakdown: Record<string, number>;
+} {
+  const typeBreakdown = devices.reduce((acc: Record<string, number>, device) => {
+    acc[device.type] = (acc[device.type] || 0) + 1;
+    return acc;
+  }, {});
+
+  const categoryBreakdown = devices.reduce((acc: Record<string, number>, device) => {
+    acc[device.category] = (acc[device.category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const statusBreakdown = devices.reduce((acc: Record<string, number>, device) => {
+    acc[device.status] = (acc[device.status] || 0) + 1;
+    return acc;
+  }, {});
+
+  return {
+    typeBreakdown,
+    categoryBreakdown,
+    statusBreakdown
+  };
+}
+
+/**
+ * Create health summary analysis
+ */
+function createHealthSummaryAnalysis(devices: MakeDevice[], includeHealth: boolean): Record<string, unknown> | undefined {
+  if (!includeHealth) {
+    return undefined;
+  }
+
+  return {
+    onlineDevices: devices.filter(d => d.status === 'online').length,
+    offlineDevices: devices.filter(d => d.status === 'offline').length,
+    devicesWithAlerts: devices.filter(d => d.monitoring.alerts.some(a => !a.acknowledged)).length,
+    averageUptime: devices.length > 0 ? 
+      devices.reduce((sum, d) => sum + (d.monitoring.health.uptime || 0), 0) / devices.length : 0,
+    devicesWithPerformanceData: devices.filter(d => 
+      d.monitoring.health.cpuUsage !== undefined || 
+      d.monitoring.health.memoryUsage !== undefined
+    ).length,
+  };
+}
+
+/**
+ * Create connectivity summary analysis
+ */
+function createConnectivitySummaryAnalysis(devices: MakeDevice[]): Record<string, unknown> {
+  return {
+    protocolBreakdown: devices.reduce((acc: Record<string, number>, device) => {
+      acc[device.configuration.connection.protocol] = (acc[device.configuration.connection.protocol] || 0) + 1;
+      return acc;
+    }, {}),
+    secureConnections: devices.filter(d => d.configuration.connection.secure).length,
+    authenticatedDevices: devices.filter(d => d.configuration.authentication.type !== 'none').length,
+  };
+}
+
+/**
+ * Create procedure associations analysis
+ */
+function createProcedureAssociationsAnalysis(devices: MakeDevice[]): Record<string, unknown> {
+  return {
+    devicesWithProcedures: devices.filter(d => d.procedures.length > 0).length,
+    totalProcedureAssociations: devices.reduce((sum, d) => sum + d.procedures.length, 0),
+    mostConnectedDevice: devices.reduce((max, d) => 
+      d.procedures.length > (max?.procedures.length || 0) ? d : max, devices[0]),
+  };
+}
+
+/**
+ * Create comprehensive device analysis
+ */
+function createDeviceAnalysis(
+  devices: MakeDevice[],
+  metadata: unknown,
+  includeHealth: boolean
+): Record<string, unknown> {
+  const { typeBreakdown, categoryBreakdown, statusBreakdown } = createDeviceBreakdownAnalysis(devices);
+  const healthSummary = createHealthSummaryAnalysis(devices, includeHealth);
+  const connectivitySummary = createConnectivitySummaryAnalysis(devices);
+  const procedureAssociations = createProcedureAssociationsAnalysis(devices);
+
+  return {
+    totalDevices: (metadata as Record<string, unknown>)?.total || devices.length,
+    typeBreakdown,
+    categoryBreakdown,
+    statusBreakdown,
+    healthSummary,
+    connectivitySummary,
+    procedureAssociations,
+  };
+}
+
+/**
+ * Create masked device list for response
+ */
+function createMaskedDeviceList(devices: MakeDevice[]): MakeDevice[] {
+  return devices.map(device => ({
+    ...device,
+    configuration: {
+      ...device.configuration,
+      authentication: {
+        ...device.configuration.authentication,
+        credentials: '[CREDENTIALS_HIDDEN]' as unknown as Record<string, unknown>,
+      },
+    },
+  }));
+}
+
+/**
+ * Build query parameters for remote procedures listing
+ */
+function buildProcedureQueryParams(
+  type: string,
+  category: string,
+  status: string,
+  organizationId?: number,
+  teamId?: number,
+  limit: number = 100,
+  offset: number = 0,
+  sortBy: string = 'name',
+  sortOrder: string = 'asc',
+  includeStats: boolean = true,
+  includeMonitoring: boolean = false
+): Record<string, unknown> {
+  const params: Record<string, unknown> = {
+    limit,
+    offset,
+    sortBy,
+    sortOrder,
+    includeStats,
+    includeMonitoring,
+  };
+
+  if (type !== 'all') {params.type = type;}
+  if (category !== 'all') {params.category = category;}
+  if (status !== 'all') {params.status = status;}
+  if (organizationId) {params.organizationId = organizationId;}
+  if (teamId) {params.teamId = teamId;}
+
+  return params;
+}
+
+/**
+ * Create procedure breakdown analysis
+ */
+function createProcedureBreakdownAnalysis(procedures: MakeRemoteProcedure[]): {
+  typeBreakdown: Record<string, number>;
+  categoryBreakdown: Record<string, number>;
+  statusBreakdown: Record<string, number>;
+} {
+  const typeBreakdown = procedures.reduce((acc: Record<string, number>, proc) => {
+    acc[proc.type] = (acc[proc.type] || 0) + 1;
+    return acc;
+  }, {});
+
+  const categoryBreakdown = procedures.reduce((acc: Record<string, number>, proc) => {
+    acc[proc.category] = (acc[proc.category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const statusBreakdown = procedures.reduce((acc: Record<string, number>, proc) => {
+    acc[proc.status] = (acc[proc.status] || 0) + 1;
+    return acc;
+  }, {});
+
+  return {
+    typeBreakdown,
+    categoryBreakdown,
+    statusBreakdown
+  };
+}
+
+/**
+ * Create execution summary analysis
+ */
+function createExecutionSummaryAnalysis(procedures: MakeRemoteProcedure[], includeStats: boolean): Record<string, unknown> | undefined {
+  if (!includeStats) {
+    return undefined;
+  }
+
+  return {
+    totalExecutions: procedures.reduce((sum, p) => sum + p.execution.totalRuns, 0),
+    successfulExecutions: procedures.reduce((sum, p) => sum + p.execution.successfulRuns, 0),
+    failedExecutions: procedures.reduce((sum, p) => sum + p.execution.failedRuns, 0),
+    averageSuccessRate: procedures.length > 0 ? 
+      procedures.reduce((sum, p) => sum + (p.execution.successfulRuns / Math.max(p.execution.totalRuns, 1)), 0) / procedures.length * 100 : 0,
+    averageExecutionTime: procedures.length > 0 ? 
+      procedures.reduce((sum, p) => sum + p.execution.averageExecutionTime, 0) / procedures.length : 0,
+  };
+}
+
+/**
+ * Create most active procedures analysis
+ */
+function createMostActiveProceduresAnalysis(procedures: MakeRemoteProcedure[], includeStats: boolean): unknown[] | undefined {
+  if (!includeStats) {
+    return undefined;
+  }
+
+  return procedures
+    .sort((a, b) => b.execution.totalRuns - a.execution.totalRuns)
+    .slice(0, 5)
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      totalRuns: p.execution.totalRuns,
+      successRate: Math.round((p.execution.successfulRuns / Math.max(p.execution.totalRuns, 1)) * 100),
+    }));
+}
+
+/**
+ * Create monitoring summary analysis
+ */
+function createMonitoringSummaryAnalysis(procedures: MakeRemoteProcedure[], includeMonitoring: boolean): Record<string, unknown> | undefined {
+  if (!includeMonitoring) {
+    return undefined;
+  }
+
+  return {
+    healthChecksEnabled: procedures.filter(p => p.monitoring.healthCheck.enabled).length,
+    alertsConfigured: procedures.filter(p => p.monitoring.alerts.length > 0).length,
+    totalAlerts: procedures.reduce((sum, p) => sum + p.monitoring.alerts.length, 0),
+    proceduresWithRateLimit: procedures.filter(p => p.security.rateLimiting.enabled).length,
+  };
+}
+
+/**
+ * Create comprehensive procedure analysis
+ */
+function createProcedureAnalysis(
+  procedures: MakeRemoteProcedure[],
+  metadata: unknown,
+  includeStats: boolean,
+  includeMonitoring: boolean
+): Record<string, unknown> {
+  const { typeBreakdown, categoryBreakdown, statusBreakdown } = createProcedureBreakdownAnalysis(procedures);
+  const executionSummary = createExecutionSummaryAnalysis(procedures, includeStats);
+  const mostActiveProcedures = createMostActiveProceduresAnalysis(procedures, includeStats);
+  const monitoringSummary = createMonitoringSummaryAnalysis(procedures, includeMonitoring);
+
+  return {
+    totalProcedures: (metadata as Record<string, unknown>)?.total || procedures.length,
+    typeBreakdown,
+    categoryBreakdown,
+    statusBreakdown,
+    executionSummary,
+    mostActiveProcedures,
+    monitoringSummary,
+  };
+}
+
+/**
+ * Create masked procedure list for response
+ */
+function createMaskedProcedureList(procedures: MakeRemoteProcedure[]): MakeRemoteProcedure[] {
+  return procedures.map(proc => ({
+    ...proc,
+    configuration: {
+      ...proc.configuration,
+      // Mask sensitive data
+      endpoint: proc.configuration.endpoint ? {
+        ...proc.configuration.endpoint,
+        authentication: {
+          ...proc.configuration.endpoint.authentication,
+          credentials: '[CREDENTIALS_HIDDEN]' as unknown as Record<string, unknown>,
+        },
+      } : undefined,
+      script: proc.configuration.script ? {
+        ...proc.configuration.script,
+        code: '[SCRIPT_CODE_HIDDEN]',
+      } : undefined,
+    },
+  }));
+}
+
 function buildProcedureMonitoring(monitoring: Record<string, unknown>): Record<string, unknown> {
   return {
     healthCheck: { 
@@ -561,20 +1050,19 @@ function addListRemoteProceduresTool(server: FastMCP, apiClient: MakeApiClient):
       }
 
       try {
-        const params: Record<string, unknown> = {
+        const params = buildProcedureQueryParams(
+          type,
+          category,
+          status,
+          organizationId,
+          teamId,
           limit,
           offset,
           sortBy,
           sortOrder,
           includeStats,
-          includeMonitoring,
-        };
-
-        if (type !== 'all') {params.type = type;}
-        if (category !== 'all') {params.category = category;}
-        if (status !== 'all') {params.status = status;}
-        if (organizationId) {params.organizationId = organizationId;}
-        if (teamId) {params.teamId = teamId;}
+          includeMonitoring
+        );
 
         const response = await apiClient.get('/remote-procedures', { params });
 
@@ -588,76 +1076,21 @@ function addListRemoteProceduresTool(server: FastMCP, apiClient: MakeApiClient):
         if (log?.info) {
           log.info('Successfully retrieved remote procedures', {
             count: procedures.length,
-            total: metadata?.total,
+            total: Number((metadata as Record<string, unknown>)?.total || 0),
           });
         }
 
-        // Create execution and monitoring analysis
-        const analysis = {
-          totalProcedures: metadata?.total || procedures.length,
-          typeBreakdown: procedures.reduce((acc: Record<string, number>, proc) => {
-            acc[proc.type] = (acc[proc.type] || 0) + 1;
-            return acc;
-          }, {}),
-          categoryBreakdown: procedures.reduce((acc: Record<string, number>, proc) => {
-            acc[proc.category] = (acc[proc.category] || 0) + 1;
-            return acc;
-          }, {}),
-          statusBreakdown: procedures.reduce((acc: Record<string, number>, proc) => {
-            acc[proc.status] = (acc[proc.status] || 0) + 1;
-            return acc;
-          }, {}),
-          executionSummary: includeStats ? {
-            totalExecutions: procedures.reduce((sum, p) => sum + p.execution.totalRuns, 0),
-            successfulExecutions: procedures.reduce((sum, p) => sum + p.execution.successfulRuns, 0),
-            failedExecutions: procedures.reduce((sum, p) => sum + p.execution.failedRuns, 0),
-            averageSuccessRate: procedures.length > 0 ? 
-              procedures.reduce((sum, p) => sum + (p.execution.successfulRuns / Math.max(p.execution.totalRuns, 1)), 0) / procedures.length * 100 : 0,
-            averageExecutionTime: procedures.length > 0 ? 
-              procedures.reduce((sum, p) => sum + p.execution.averageExecutionTime, 0) / procedures.length : 0,
-          } : undefined,
-          mostActiveProcedures: includeStats ? procedures
-            .sort((a, b) => b.execution.totalRuns - a.execution.totalRuns)
-            .slice(0, 5)
-            .map(p => ({
-              id: p.id,
-              name: p.name,
-              totalRuns: p.execution.totalRuns,
-              successRate: Math.round((p.execution.successfulRuns / Math.max(p.execution.totalRuns, 1)) * 100),
-            })) : undefined,
-          monitoringSummary: includeMonitoring ? {
-            healthChecksEnabled: procedures.filter(p => p.monitoring.healthCheck.enabled).length,
-            alertsConfigured: procedures.filter(p => p.monitoring.alerts.length > 0).length,
-            totalAlerts: procedures.reduce((sum, p) => sum + p.monitoring.alerts.length, 0),
-            proceduresWithRateLimit: procedures.filter(p => p.security.rateLimiting.enabled).length,
-          } : undefined,
-        };
+        const analysis = createProcedureAnalysis(procedures, metadata, includeStats, includeMonitoring);
+        const maskedProcedures = createMaskedProcedureList(procedures);
 
         return formatSuccessResponse({
-          procedures: procedures.map(proc => ({
-            ...proc,
-            configuration: {
-              ...proc.configuration,
-              // Mask sensitive data
-              endpoint: proc.configuration.endpoint ? {
-                ...proc.configuration.endpoint,
-                authentication: {
-                  ...proc.configuration.endpoint.authentication,
-                  credentials: '[CREDENTIALS_HIDDEN]',
-                },
-              } : undefined,
-              script: proc.configuration.script ? {
-                ...proc.configuration.script,
-                code: '[SCRIPT_CODE_HIDDEN]',
-              } : undefined,
-            },
-          })),
+          procedures: maskedProcedures,
           analysis,
           pagination: {
-            total: metadata?.total || procedures.length,
+            total: (metadata as Record<string, unknown>)?.total || procedures.length,
             limit,
             offset,
-            hasMore: (metadata?.total || 0) > (offset + procedures.length),
+            hasMore: ((metadata as Record<string, unknown>)?.total as number || 0) > (offset + procedures.length),
           },
         });
       } catch (error: unknown) {
@@ -868,41 +1301,13 @@ function addCreateDeviceTool(server: FastMCP, apiClient: MakeApiClient): void {
           category,
           organizationId,
           teamId,
-          configuration: {
-            connection: {
-              ...configuration.connection,
-              protocol: configuration.connection?.protocol ?? 'https',
-              secure: configuration.connection?.secure ?? true,
-            },
-            authentication: {
-              ...configuration.authentication,
-              type: configuration.authentication?.type ?? 'none',
-            },
-            capabilities: {
-              ...configuration.capabilities,
-              canReceive: configuration.capabilities?.canReceive ?? true,
-              canSend: configuration.capabilities?.canSend ?? true,
-              canExecute: configuration.capabilities?.canExecute ?? false,
-              supportedFormats: configuration.capabilities?.supportedFormats ?? ['json'],
-              maxPayloadSize: configuration.capabilities?.maxPayloadSize ?? 1048576,
-            },
-            environment: {
-              ...configuration.environment,
-              customProperties: configuration.environment?.customProperties ?? {},
-            },
-          },
+          configuration: buildDeviceConfiguration(configuration),
           status: 'unknown', // Will be determined by initial health check
         };
 
         reportProgress({ progress: 50, total: 100 });
 
-        let endpoint = '/devices';
-        if (organizationId) {
-          endpoint = `/organizations/${organizationId}/devices`;
-        } else if (teamId) {
-          endpoint = `/teams/${teamId}/devices`;
-        }
-
+        const endpoint = getDeviceEndpoint(organizationId, teamId);
         const response = await apiClient.post(endpoint, deviceData);
 
         if (!response.success) {
@@ -926,28 +1331,9 @@ function addCreateDeviceTool(server: FastMCP, apiClient: MakeApiClient): void {
         }
 
         return formatSuccessResponse({
-          device: {
-            ...device,
-            configuration: {
-              ...device.configuration,
-              authentication: {
-                ...device.configuration.authentication,
-                credentials: device.configuration.authentication.credentials ? '[CREDENTIALS_STORED]' : undefined,
-              },
-            },
-          },
+          device: createMaskedDeviceConfiguration(device),
           message: `Device "${name}" created successfully`,
-          configuration: {
-            type: device.type,
-            category: device.category,
-            connection: `${device.configuration.connection.protocol}://${device.configuration.connection.host}:${device.configuration.connection.port}`,
-            capabilities: device.configuration.capabilities,
-            environment: {
-              os: device.configuration.environment.os,
-              version: device.configuration.environment.version,
-              architecture: device.configuration.environment.architecture,
-            },
-          },
+          configuration: createDeviceResponseConfiguration(device),
           nextSteps: [
             'Configure device authentication if needed',
             'Test device connectivity',
@@ -1009,20 +1395,19 @@ function addListDevicesTool(server: FastMCP, apiClient: MakeApiClient): void {
       }
 
       try {
-        const params: Record<string, unknown> = {
+        const params = buildDeviceQueryParams(
+          type,
+          category,
+          status,
+          organizationId,
+          teamId,
           limit,
           offset,
           sortBy,
           sortOrder,
           includeHealth,
-          includeAlerts,
-        };
-
-        if (type !== 'all') {params.type = type;}
-        if (category !== 'all') {params.category = category;}
-        if (status !== 'all') {params.status = status;}
-        if (organizationId) {params.organizationId = organizationId;}
-        if (teamId) {params.teamId = teamId;}
+          includeAlerts
+        );
 
         const response = await apiClient.get('/devices', { params });
 
@@ -1036,69 +1421,21 @@ function addListDevicesTool(server: FastMCP, apiClient: MakeApiClient): void {
         if (log?.info) {
           log.info('Successfully retrieved devices', {
             count: devices.length,
-            total: metadata?.total,
+            total: Number((metadata as Record<string, unknown>)?.total || 0),
           });
         }
 
-        // Create device and health analysis
-        const analysis = {
-          totalDevices: metadata?.total || devices.length,
-          typeBreakdown: devices.reduce((acc: Record<string, number>, device) => {
-            acc[device.type] = (acc[device.type] || 0) + 1;
-            return acc;
-          }, {}),
-          categoryBreakdown: devices.reduce((acc: Record<string, number>, device) => {
-            acc[device.category] = (acc[device.category] || 0) + 1;
-            return acc;
-          }, {}),
-          statusBreakdown: devices.reduce((acc: Record<string, number>, device) => {
-            acc[device.status] = (acc[device.status] || 0) + 1;
-            return acc;
-          }, {}),
-          healthSummary: includeHealth ? {
-            onlineDevices: devices.filter(d => d.status === 'online').length,
-            offlineDevices: devices.filter(d => d.status === 'offline').length,
-            devicesWithAlerts: devices.filter(d => d.monitoring.alerts.some(a => !a.acknowledged)).length,
-            averageUptime: devices.length > 0 ? 
-              devices.reduce((sum, d) => sum + (d.monitoring.health.uptime || 0), 0) / devices.length : 0,
-            devicesWithPerformanceData: devices.filter(d => 
-              d.monitoring.health.cpuUsage !== undefined || 
-              d.monitoring.health.memoryUsage !== undefined
-            ).length,
-          } : undefined,
-          connectivitySummary: {
-            protocolBreakdown: devices.reduce((acc: Record<string, number>, device) => {
-              acc[device.configuration.connection.protocol] = (acc[device.configuration.connection.protocol] || 0) + 1;
-              return acc;
-            }, {}),
-            secureConnections: devices.filter(d => d.configuration.connection.secure).length,
-            authenticatedDevices: devices.filter(d => d.configuration.authentication.type !== 'none').length,
-          },
-          procedureAssociations: {
-            devicesWithProcedures: devices.filter(d => d.procedures.length > 0).length,
-            totalProcedureAssociations: devices.reduce((sum, d) => sum + d.procedures.length, 0),
-            mostConnectedDevice: devices.reduce((max, d) => 
-              d.procedures.length > (max?.procedures.length || 0) ? d : max, devices[0]),
-          },
-        };
+        const analysis = createDeviceAnalysis(devices, metadata, includeHealth);
+        const maskedDevices = createMaskedDeviceList(devices);
 
         return formatSuccessResponse({
-          devices: devices.map(device => ({
-            ...device,
-            configuration: {
-              ...device.configuration,
-              authentication: {
-                ...device.configuration.authentication,
-                credentials: '[CREDENTIALS_HIDDEN]',
-              },
-            },
-          })),
+          devices: maskedDevices,
           analysis,
           pagination: {
-            total: metadata?.total || devices.length,
+            total: (metadata as Record<string, unknown>)?.total || devices.length,
             limit,
             offset,
-            hasMore: (metadata?.total || 0) > (offset + devices.length),
+            hasMore: ((metadata as Record<string, unknown>)?.total as number || 0) > (offset + devices.length),
           },
         });
       } catch (error: unknown) {
@@ -1152,7 +1489,7 @@ function addTestDeviceConnectivityTool(server: FastMCP, apiClient: MakeApiClient
 
         reportProgress({ progress: 25, total: 100 });
 
-        const response = await apiClient.post(`/devices/${deviceId}/test`, requestData);
+        const response = await apiClient.post(`/devices/${String(deviceId)}/test`, requestData);
 
         if (!response.success) {
           throw new UserError(`Failed to test device connectivity: ${response.error?.message || 'Unknown error'}`);
@@ -1160,58 +1497,40 @@ function addTestDeviceConnectivityTool(server: FastMCP, apiClient: MakeApiClient
 
         const testResult = response.data;
         
-        // Type guard for test result
-        const testData = testResult && typeof testResult === 'object' ? testResult as Record<string, unknown> : {};
-        const success = typeof testData.success === 'boolean' ? testData.success : false;
-        const responseTime = typeof testData.responseTime === 'number' ? testData.responseTime : undefined;
+        // Extract test result data with type guards
+        const { testData, success, responseTime, deviceStatus, errors, warnings, recommendations } = extractTestResultData(testResult);
         
         reportProgress({ progress: 100, total: 100 });
 
         if (log?.info) {
           log.info('Successfully tested device connectivity', {
-            deviceId,
+            deviceId: String(deviceId),
             testType,
-            success: success,
-            responseTime: responseTime,
+            success,
+            responseTime,
           });
         }
 
-        // Additional type guards for summary and diagnostics
-        const deviceStatus = typeof testData.deviceStatus === 'string' ? testData.deviceStatus : 'unknown';
-        const errors = Array.isArray(testData.errors) ? testData.errors : [];
-        const warnings = Array.isArray(testData.warnings) ? testData.warnings : [];
-        const recommendations = Array.isArray(testData.recommendations) ? testData.recommendations : [];
-        
-        const diagnostics = testData.diagnostics && typeof testData.diagnostics === 'object' ? testData.diagnostics as Record<string, unknown> : {};
-        const connectivity = diagnostics.connectivity && typeof diagnostics.connectivity === 'object' ? diagnostics.connectivity : {};
-        const authentication = diagnostics.authentication && typeof diagnostics.authentication === 'object' ? diagnostics.authentication : {};
-        const performance = diagnostics.performance && typeof diagnostics.performance === 'object' ? diagnostics.performance : {};
-        const capabilities = diagnostics.capabilities && typeof diagnostics.capabilities === 'object' ? diagnostics.capabilities : {};
+        // Extract diagnostics data
+        const diagnostics = extractDiagnosticsData(testData);
 
-        return formatSuccessResponse({
-          test: testResult,
-          message: `Device ${deviceId} connectivity test completed`,
-          summary: {
-            deviceId,
-            testType,
-            success: success,
-            responseTime: responseTime,
-            status: deviceStatus,
-            errors: errors,
-            warnings: warnings,
-          },
-          diagnostics: {
-            connectivity: connectivity,
-            authentication: authentication,
-            performance: includePerformance ? performance : undefined,
-            capabilities: capabilities,
-          },
-          recommendations: recommendations,
-        }).content[0].text;
+        return createTestConnectivityResponse(
+          testResult,
+          deviceId,
+          testType,
+          success,
+          responseTime,
+          deviceStatus,
+          errors,
+          warnings,
+          recommendations,
+          diagnostics,
+          includePerformance
+        );
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (log?.error) {
-          log.error('Error testing device connectivity', { deviceId, error: errorMessage });
+          log.error('Error testing device connectivity', { deviceId: String(deviceId), error: errorMessage });
         }
         if (error instanceof UserError) {throw error;}
         throw new UserError(`Failed to test device connectivity: ${errorMessage}`);

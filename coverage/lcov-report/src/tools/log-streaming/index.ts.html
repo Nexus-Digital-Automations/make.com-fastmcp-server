@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/20</span>
+                <span class='fraction'>0/72</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/20</span>
+                <span class='fraction'>0/72</span>
             </div>
         
             
@@ -134,156 +134,156 @@
 <a name='L69'></a><a href='#L69'>69</a>
 <a name='L70'></a><a href='#L70'>70</a>
 <a name='L71'></a><a href='#L71'>71</a>
-<a name='L72'></a><a href='#L72'>72</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L72'></a><a href='#L72'>72</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * @fileoverview Log Streaming Module Index
- * Main entry point for log streaming tools - modular architecture implementation
- */
-&nbsp;
-import { FastMCP } from 'fastmcp';
-import MakeApiClient from '../../lib/make-api-client.js';
-import logger from '../../lib/logger.js';
-import { ToolContext, createToolContextLogger } from '../shared/types/tool-context.js';
-&nbsp;
-// Import individual tool creators
-import { createGetScenarioRunLogsTool } from './tools/get-scenario-run-logs.js';
-import { createQueryLogsByTimeRangeTool } from './tools/query-logs-by-timerange.js';
-import { createStreamLiveExecutionTool } from './tools/stream-live-execution.js';
-import { createE<span class="fstat-no" title="function not covered" >xportLogsForAnalysisT</span>ool } from './tools/export-logs-for-analysis.js';
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >/**</span></span></span>
+<span class="cstat-no" title="statement not covered" > * @fileoverview Log Streaming Module Index</span>
+<span class="cstat-no" title="statement not covered" > * Main entry point for log streaming tools - modular architecture implementation</span>
+<span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" ></span>
-/**<span class="cstat-no" title="statement not covered" ></span>
- * Add all log streaming tools to the FastMCP server
- */<span class="cstat-no" title="statement not covered" ></span>
-export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const componentLogger = logger.child({ component: 'LogStreamingTools' });
-  
-  componentLogger.info('Initializing log streaming tools with modular architecture');
+<span class="cstat-no" title="statement not covered" >import { FastMCP } from 'fastmcp';</span>
+<span class="cstat-no" title="statement not covered" >import MakeApiClient from '../../lib/make-api-client.js';</span>
+<span class="cstat-no" title="statement not covered" >import logger from '../../lib/logger.js';</span>
+<span class="cstat-no" title="statement not covered" >import { ToolContext, createToolContextLogger } from '../shared/types/tool-context.js';</span>
 <span class="cstat-no" title="statement not covered" ></span>
-  // Create shared context for all tools
-  const context: ToolContext = {<span class="cstat-no" title="statement not covered" ></span>
-    serv<span class="cstat-no" title="statement not covered" >er,</span>
-    apiC<span class="cstat-no" title="statement not covered" >lient,</span>
-    logger: createToolContextLogger(componentLogger),
-  };<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >// Import individual tool creators</span>
+<span class="cstat-no" title="statement not covered" >import { createGetScenarioRunLogsTool } from './tools/get-scenario-run-logs.js';</span>
+<span class="cstat-no" title="statement not covered" >import { createQueryLogsByTimeRangeTool } from './tools/query-logs-by-timerange.js';</span>
+<span class="cstat-no" title="statement not covered" >import { createStreamLiveExecutionTool } from './tools/stream-live-execution.js';</span>
+<span class="cstat-no" title="statement not covered" >import { createExportLogsForAnalysisTool } from './tools/export-logs-for-analysis.js';</span>
 <span class="cstat-no" title="statement not covered" ></span>
-  try {<span class="cstat-no" title="statement not covered" ></span>
-    // 1. Get Scenario Run Logs with Real-Time Streaming
-    const getScenarioRunLogsTool = creat<span class="cstat-no" title="statement not covered" >eGetScenarioRunLogsTool(context);</span>
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(getScenarioRunLogsTool);</span>
-    comp<span class="cstat-no" title="statement not covered" >onentLogger.debug('Added get_scenario_run_logs tool');</span>
-&nbsp;
-    // 2. Query Logs by Time Range - Enhan<span class="cstat-no" title="statement not covered" >ced Historical Log Analysis</span>
-    cons<span class="cstat-no" title="statement not covered" >t queryLogsByTimeRangeTool = createQueryLog</span>sByTimeRangeTool(context);
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(queryLogsByTimeRangeTool);</span>
-    comp<span class="cstat-no" title="statement not covered" >onentLogger.debug('Added query_logs_by_timerange tool');</span>
-&nbsp;
-    // 3. Stream Live Execution
-    const streamLiveExecutionTool = createStreamLiveExecutionTool(context);
-    server.addTool(streamLiveExecutionTool);
-    componentLogger.debug('Added stream_live_execution tool');
-&nbsp;
-    // 4. Export Logs for Ana<span class="cstat-no" title="statement not covered" >lysis with External System Integration</span>
-    cons<span class="cstat-no" title="statement not covered" >t exportLogsForAnalysisTool = createExportLogsForAnalysisTool(context);</span>
-    serv<span class="cstat-no" title="statement not covered" >er.addTool(exportLogsForAnalysisTool);</span>
-    componentLogger.debug('Added export_logs_for_analysis tool');
-&nbsp;
-    componentLogger.info('Log streaming tools initialized successfully', {
-      toolsAdded: 4,
-      architecture: 'modular',
-      version: '2.0.0',
-    });
-&nbsp;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    componentLogger.error('Failed to initialize log streaming tools', { error: errorMessage });
-    throw new Error(`Log streaming tools initialization failed: ${errorMessage}`);
-  }
-}
-&nbsp;
-// Default export for compatibility
-export default addLogStreamingTools;
-&nbsp;
-// Re-export types and schemas for external use
-export * from './types/index.js';
-export * from './schemas/index.js';
-export * from './utils/stream-processor.js';</pre></td></tr></table></pre>
+<span class="cstat-no" title="statement not covered" >/**</span>
+<span class="cstat-no" title="statement not covered" > * Add all log streaming tools to the FastMCP server</span>
+<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cstat-no" title="statement not covered" >export function addLogStreamingTools(server: FastMCP, apiClient: MakeApiClient): void {</span>
+<span class="cstat-no" title="statement not covered" >  const componentLogger = logger.child({ component: 'LogStreamingTools' });</span>
+<span class="cstat-no" title="statement not covered" >  </span>
+<span class="cstat-no" title="statement not covered" >  componentLogger.info('Initializing log streaming tools with modular architecture');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Create shared context for all tools</span>
+<span class="cstat-no" title="statement not covered" >  const context: ToolContext = {</span>
+<span class="cstat-no" title="statement not covered" >    server,</span>
+<span class="cstat-no" title="statement not covered" >    apiClient,</span>
+<span class="cstat-no" title="statement not covered" >    logger: createToolContextLogger(componentLogger),</span>
+<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  try {</span>
+<span class="cstat-no" title="statement not covered" >    // 1. Get Scenario Run Logs with Real-Time Streaming</span>
+<span class="cstat-no" title="statement not covered" >    const getScenarioRunLogsTool = createGetScenarioRunLogsTool(context);</span>
+<span class="cstat-no" title="statement not covered" >    server.addTool(getScenarioRunLogsTool);</span>
+<span class="cstat-no" title="statement not covered" >    componentLogger.debug('Added get_scenario_run_logs tool');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // 2. Query Logs by Time Range - Enhanced Historical Log Analysis</span>
+<span class="cstat-no" title="statement not covered" >    const queryLogsByTimeRangeTool = createQueryLogsByTimeRangeTool(context);</span>
+<span class="cstat-no" title="statement not covered" >    server.addTool(queryLogsByTimeRangeTool);</span>
+<span class="cstat-no" title="statement not covered" >    componentLogger.debug('Added query_logs_by_timerange tool');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // 3. Stream Live Execution</span>
+<span class="cstat-no" title="statement not covered" >    const streamLiveExecutionTool = createStreamLiveExecutionTool(context);</span>
+<span class="cstat-no" title="statement not covered" >    server.addTool(streamLiveExecutionTool);</span>
+<span class="cstat-no" title="statement not covered" >    componentLogger.debug('Added stream_live_execution tool');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // 4. Export Logs for Analysis with External System Integration</span>
+<span class="cstat-no" title="statement not covered" >    const exportLogsForAnalysisTool = createExportLogsForAnalysisTool(context);</span>
+<span class="cstat-no" title="statement not covered" >    server.addTool(exportLogsForAnalysisTool);</span>
+<span class="cstat-no" title="statement not covered" >    componentLogger.debug('Added export_logs_for_analysis tool');</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    componentLogger.info('Log streaming tools initialized successfully', {</span>
+<span class="cstat-no" title="statement not covered" >      toolsAdded: 4,</span>
+<span class="cstat-no" title="statement not covered" >      architecture: 'modular',</span>
+<span class="cstat-no" title="statement not covered" >      version: '2.0.0',</span>
+<span class="cstat-no" title="statement not covered" >    });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >    const errorMessage = error instanceof Error ? error.message : String(error);</span>
+<span class="cstat-no" title="statement not covered" >    componentLogger.error('Failed to initialize log streaming tools', { error: errorMessage });</span>
+<span class="cstat-no" title="statement not covered" >    throw new Error(`Log streaming tools initialization failed: ${errorMessage}`);</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+<span class="cstat-no" title="statement not covered" >}</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >// Default export for compatibility</span>
+<span class="cstat-no" title="statement not covered" >export default addLogStreamingTools;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >// Re-export types and schemas for external use</span>
+<span class="cstat-no" title="statement not covered" >export * from './types/index.js';</span>
+<span class="cstat-no" title="statement not covered" >export * from './schemas/index.js';</span>
+<span class="cstat-no" title="statement not covered" >export * from './utils/stream-processor.js';</span></pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T11:07:22.948Z
+                at 2025-08-23T00:04:21.144Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

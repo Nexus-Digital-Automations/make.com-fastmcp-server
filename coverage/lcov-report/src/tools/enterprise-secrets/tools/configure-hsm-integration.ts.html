@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/64</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/64</span>
             </div>
         
             
@@ -126,30 +126,7 @@
 <a name='L61'></a><a href='#L61'>61</a>
 <a name='L62'></a><a href='#L62'>62</a>
 <a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L64'></a><a href='#L64'>64</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -160,106 +137,129 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * @fileoverview Configure HSM Integration Tool Implementation
- * Configure Hardware Security Module integration for enterprise-grade key protection
- */
-&nbsp;
-import { UserError } from 'fastmcp';
-import { HSMConfigSchema } from '../schemas/index.js';
-import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';
-import { HSMIntegrationManager } from '../utils/index.js';
-import { formatSuccessResponse } from '../../../utils/response-formatter.js';
-&nbsp;
-/**<span class="fstat-no" title="function not covered" ></span>
- * Configure HSM integr<span class="cstat-no" title="statement not covered" >ation to</span>ol configuration
- */<span class="cstat-no" title="statement not covered" ></span>
-export function createConfigureHSMIntegrationTool(context: ToolContext): ToolDefinition {
-  const { logger } = context;
-  
-  return {
-    name: 'configure-hsm-integration',
-    description: 'Configure Hardware Security Module integration for enterprise-grade key protection',
-    parameters: HSMConfigSchema,
-    annotations: {
-      title: 'Configure Hardware Security Module Integration',
-      readOnlyHin<span class="fstat-no" title="function not covered" >t:</span> false,
-      idempotentHint: true,<span class="cstat-no" title="statement not covered" ></span>
-      openWo<span class="cstat-no" title="statement not covered" >rldHint: true,</span>
-    },<span class="cstat-no" title="statement not covered" ></span>
-    execute:<span class="cstat-no" title="statement not covered" > async (args: unknown, execContext: ToolExecutionContext): Promise&lt;string&gt; =&gt; {</span>
-      const { log, reportProgress } = e<span class="cstat-no" title="statement not covered" >xecContext;</span>
-      <span class="cstat-no" title="statement not covered" ></span>
-      log?.info?<span class="cstat-no" title="statement not covered" >.('Configuring HSM integration', JSON.stringify(</span>args));
-      reportProgress?.({ progress:<span class="cstat-no" title="statement not covered" > 0, total: 100 });</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >/**</span></span></span>
+<span class="cstat-no" title="statement not covered" > * @fileoverview Configure HSM Integration Tool Implementation</span>
+<span class="cstat-no" title="statement not covered" > * Configure Hardware Security Module integration for enterprise-grade key protection</span>
+<span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" ></span>
-      try {<span class="cstat-no" title="statement not covered" ></span>
-        const validatedInput = HSMConfigSchema.parse(args);
-        const hsmManager = HSMIntegrationManager.getInstance();
-        
-        reportProgress?.({ progress: 25, total: 100 });
-        <span class="cstat-no" title="statement not covered" ></span>
-        const hsmStatus = await hsmManager.configureHSM(validatedInput);
-        
-        reportProgress?.({ progress: 75, total: 100 });
+<span class="cstat-no" title="statement not covered" >import { UserError } from 'fastmcp';</span>
+<span class="cstat-no" title="statement not covered" >import { HSMConfigSchema } from '../schemas/index.js';</span>
+<span class="cstat-no" title="statement not covered" >import { ToolContext, ToolDefinition, ToolExecutionContext } from '../../shared/types/tool-context.js';</span>
+<span class="cstat-no" title="statement not covered" >import { HSMIntegrationManager } from '../utils/index.js';</span>
+<span class="cstat-no" title="statement not covered" >import { formatSuccessResponse } from '../../../utils/response-formatter.js';</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        const re<span class="cstat-no" title="statement not covered" >sult = {</span>
-          success: true,
-          hsmStatus,
-          message: `HSM integration w<span class="cstat-no" title="statement not covered" >ith ${validatedInput.provider} configured successfully`</span>,
-        };<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >/**</span>
+<span class="cstat-no" title="statement not covered" > * Configure HSM integration tool configuration</span>
+<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cstat-no" title="statement not covered" >export function createConfigureHSMIntegrationTool(context: ToolContext): ToolDefinition {</span>
+<span class="cstat-no" title="statement not covered" >  const { logger } = context;</span>
+<span class="cstat-no" title="statement not covered" >  </span>
+<span class="cstat-no" title="statement not covered" >  return {</span>
+<span class="cstat-no" title="statement not covered" >    name: 'configure-hsm-integration',</span>
+<span class="cstat-no" title="statement not covered" >    description: 'Configure Hardware Security Module integration for enterprise-grade key protection',</span>
+<span class="cstat-no" title="statement not covered" >    parameters: HSMConfigSchema,</span>
+<span class="cstat-no" title="statement not covered" >    annotations: {</span>
+<span class="cstat-no" title="statement not covered" >      title: 'Configure Hardware Security Module Integration',</span>
+<span class="cstat-no" title="statement not covered" >      readOnlyHint: false,</span>
+<span class="cstat-no" title="statement not covered" >      idempotentHint: true,</span>
+<span class="cstat-no" title="statement not covered" >      openWorldHint: true,</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >    execute: async (args: unknown, execContext: ToolExecutionContext): Promise&lt;string&gt; =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      const { log, reportProgress } = execContext;</span>
+<span class="cstat-no" title="statement not covered" >      </span>
+<span class="cstat-no" title="statement not covered" >      log?.info?.('Configuring HSM integration', JSON.stringify(args));</span>
+<span class="cstat-no" title="statement not covered" >      reportProgress?.({ progress: 0, total: 100 });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-        logger.info?.('HSM integration configured successfully', {
-          provider: validatedInput.provider,
-          fipsLevel: validatedInput.compliance?.fipsLevel,
-        });
-&nbsp;
-        reportProgress?.({ progress: 100, total: 100 });
-        return formatSuccessResponse(result).content[0].text;
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error?.('HSM integration failed', { error: errorMessage });
-        throw new UserError(`Failed to configure HSM integration: ${errorMessage}`);
-      }
-    },
-  };
-}</pre></td></tr></table></pre>
+<span class="cstat-no" title="statement not covered" >      try {</span>
+<span class="cstat-no" title="statement not covered" >        const validatedInput = HSMConfigSchema.parse(args);</span>
+<span class="cstat-no" title="statement not covered" >        const hsmManager = HSMIntegrationManager.getInstance();</span>
+<span class="cstat-no" title="statement not covered" >        </span>
+<span class="cstat-no" title="statement not covered" >        reportProgress?.({ progress: 25, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" >        </span>
+<span class="cstat-no" title="statement not covered" >        const hsmStatus = await hsmManager.configureHSM(validatedInput);</span>
+<span class="cstat-no" title="statement not covered" >        </span>
+<span class="cstat-no" title="statement not covered" >        reportProgress?.({ progress: 75, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        const result = {</span>
+<span class="cstat-no" title="statement not covered" >          success: true,</span>
+<span class="cstat-no" title="statement not covered" >          hsmStatus,</span>
+<span class="cstat-no" title="statement not covered" >          message: `HSM integration with ${validatedInput.provider} configured successfully`,</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        logger.info?.('HSM integration configured successfully', {</span>
+<span class="cstat-no" title="statement not covered" >          provider: validatedInput.provider,</span>
+<span class="cstat-no" title="statement not covered" >          fipsLevel: validatedInput.compliance?.fipsLevel,</span>
+<span class="cstat-no" title="statement not covered" >        });</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        reportProgress?.({ progress: 100, total: 100 });</span>
+<span class="cstat-no" title="statement not covered" >        return formatSuccessResponse(result).content[0].text;</span>
+<span class="cstat-no" title="statement not covered" >      } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >        const errorMessage = error instanceof Error ? error.message : String(error);</span>
+<span class="cstat-no" title="statement not covered" >        logger.error?.('HSM integration failed', { error: errorMessage });</span>
+<span class="cstat-no" title="statement not covered" >        throw new UserError(`Failed to configure HSM integration: ${errorMessage}`);</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" >}</span></pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-22T11:07:22.948Z
+                at 2025-08-23T00:04:21.144Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

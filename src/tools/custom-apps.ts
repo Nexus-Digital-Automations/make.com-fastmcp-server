@@ -296,6 +296,123 @@ const CustomFunctionCreateSchema = z.object({
 }).strict();
 
 /**
+ * Build app configuration from input parameters
+ */
+function buildAppConfiguration(input: z.infer<typeof CustomAppCreateSchema>): Record<string, unknown> {
+  const { type, runtime, configuration } = input;
+  
+  return {
+    type,
+    runtime,
+    environment: {
+      ...configuration.environment,
+      variables: configuration.environment?.variables ?? {},
+      secrets: configuration.environment?.secrets ?? [],
+      dependencies: configuration.environment?.dependencies ?? {},
+    },
+    endpoints: configuration.endpoints || [],
+    authentication: {
+      ...configuration.authentication,
+      type: configuration.authentication?.type ?? 'none',
+      configuration: configuration.authentication?.configuration ?? {},
+    },
+    ui: {
+      category: 'custom',
+      ...configuration.ui,
+    },
+  };
+}
+
+/**
+ * Build app deployment configuration
+ */
+function buildAppDeployment(deployment: z.infer<typeof CustomAppCreateSchema>['deployment']): Record<string, unknown> {
+  return {
+    source: 'inline',
+    buildCommand: 'npm install',
+    startCommand: 'npm start',
+    healthCheckEndpoint: '/health',
+    ...deployment,
+  };
+}
+
+/**
+ * Build app permissions configuration
+ */
+function buildAppPermissions(permissions: z.infer<typeof CustomAppCreateSchema>['permissions']): Record<string, unknown> {
+  return {
+    ...permissions,
+    scopes: permissions?.scopes ?? [],
+    roles: permissions?.roles ?? ['developer'],
+    restrictions: permissions?.restrictions ?? {},
+  };
+}
+
+/**
+ * Determine API endpoint based on organization/team ID
+ */
+function determineApiEndpoint(organizationId?: number, teamId?: number): string {
+  if (organizationId) {
+    return `/organizations/${organizationId}/custom-apps`;
+  }
+  if (teamId) {
+    return `/teams/${teamId}/custom-apps`;
+  }
+  return '/custom-apps';
+}
+
+/**
+ * Validate API response and extract app data
+ */
+function validateAndExtractApp(response: { success: boolean; error?: { message?: string }; data?: unknown }): MakeCustomApp {
+  if (!response.success) {
+    throw new UserError(`Failed to create custom app: ${response.error?.message || 'Unknown error'}`);
+  }
+
+  const app = response.data as MakeCustomApp;
+  if (!app) {
+    throw new UserError('Custom app creation failed - no data returned');
+  }
+
+  return app;
+}
+
+/**
+ * Format app data for response (hide sensitive information)
+ */
+function formatAppForResponse(app: MakeCustomApp): Record<string, unknown> {
+  return {
+    ...app,
+    configuration: {
+      ...app.configuration,
+      environment: {
+        ...app.configuration.environment,
+        secrets: app.configuration.environment.secrets.map(() => '[SECRET_HIDDEN]'),
+      },
+    },
+  };
+}
+
+/**
+ * Build complete app data payload for API request
+ */
+function buildAppData(input: z.infer<typeof CustomAppCreateSchema>): Record<string, unknown> {
+  const { name, description, organizationId, teamId, deployment, permissions } = input;
+  
+  return {
+    name,
+    description,
+    version: '1.0.0',
+    configuration: buildAppConfiguration(input),
+    deployment: buildAppDeployment(deployment),
+    permissions: buildAppPermissions(permissions),
+    organizationId,
+    teamId,
+    status: 'draft',
+  };
+}
+
+/**
  * Add create custom app tool
  */
 function addCreateCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void {
@@ -311,12 +428,12 @@ function addCreateCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void
       openWorldHint: true,
     },
     execute: async (input, { log, reportProgress }) => {
-      const { name, description, type, runtime, organizationId, teamId, configuration, deployment, permissions } = input;
+      const { name, organizationId, teamId } = input;
 
       log.info('Creating custom app', {
         name,
-        type,
-        runtime,
+        type: input.type,
+        runtime: input.runtime,
         organizationId,
         teamId,
       });
@@ -324,67 +441,12 @@ function addCreateCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void
       try {
         reportProgress({ progress: 0, total: 100 });
 
-        const appData = {
-          name,
-          description,
-          version: '1.0.0',
-          configuration: {
-            type,
-            runtime,
-            environment: {
-              ...configuration.environment,
-              variables: configuration.environment?.variables ?? {},
-              secrets: configuration.environment?.secrets ?? [],
-              dependencies: configuration.environment?.dependencies ?? {},
-            },
-            endpoints: configuration.endpoints || [],
-            authentication: {
-              ...configuration.authentication,
-              type: configuration.authentication?.type ?? 'none',
-              configuration: configuration.authentication?.configuration ?? {},
-            },
-            ui: {
-              category: 'custom',
-              ...configuration.ui,
-            },
-          },
-          deployment: {
-            source: 'inline',
-            buildCommand: 'npm install',
-            startCommand: 'npm start',
-            healthCheckEndpoint: '/health',
-            ...deployment,
-          },
-          permissions: {
-            ...permissions,
-            scopes: permissions?.scopes ?? [],
-            roles: permissions?.roles ?? ['developer'],
-            restrictions: permissions?.restrictions ?? {},
-          },
-          organizationId,
-          teamId,
-          status: 'draft',
-        };
-
+        const appData = buildAppData(input);
         reportProgress({ progress: 50, total: 100 });
 
-        let endpoint = '/custom-apps';
-        if (organizationId) {
-          endpoint = `/organizations/${organizationId}/custom-apps`;
-        } else if (teamId) {
-          endpoint = `/teams/${teamId}/custom-apps`;
-        }
-
+        const endpoint = determineApiEndpoint(organizationId, teamId);
         const response = await apiClient.post(endpoint, appData);
-
-        if (!response.success) {
-          throw new UserError(`Failed to create custom app: ${response.error?.message || 'Unknown error'}`);
-        }
-
-        const app = response.data as MakeCustomApp;
-        if (!app) {
-          throw new UserError('Custom app creation failed - no data returned');
-        }
+        const app = validateAndExtractApp(response);
 
         reportProgress({ progress: 100, total: 100 });
 
@@ -396,16 +458,7 @@ function addCreateCustomAppTool(server: FastMCP, apiClient: MakeApiClient): void
         });
 
         return formatSuccessResponse({
-          app: {
-            ...app,
-            configuration: {
-              ...app.configuration,
-              environment: {
-                ...app.configuration.environment,
-                secrets: app.configuration.environment.secrets.map(() => '[SECRET_HIDDEN]'),
-              },
-            },
-          },
+          app: formatAppForResponse(app),
           message: `Custom app "${name}" created successfully`,
           development: {
             type: app.configuration.type,
