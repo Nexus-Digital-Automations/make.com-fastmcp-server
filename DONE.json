@@ -22295,9 +22295,251 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755920984167_b5c1se138",
+      "title": "Fix ESLint errors in src/index.ts - missing return types and unused vars",
+      "description": "Multiple ESLint errors detected in src/index.ts including missing return type annotations, unused error variables, and console statements. These are high-priority linting violations that need immediate resolution.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T03:49:44.167Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755920362471_1_general_25d64af3",
+      "started_at": "2025-08-23T03:49:51.149Z",
+      "claimed_by": "development_session_1755920362471_1_general_25d64af3",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755920362471_1_general_25d64af3",
+          "role": "primary",
+          "assignedAt": "2025-08-23T03:49:51.149Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T03:56:56.183Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T03:56:56.183Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755921461207_sac6g3jsq",
+      "title": "Fix TypeScript build errors in src/index.ts - void type issues",
+      "description": "Critical TypeScript compilation errors in src/index.ts: void types cannot be tested for truthiness, boolean not assignable to void, spread argument tuple issues. These prevent successful builds and need immediate resolution.",
+      "mode": "DEVELOPMENT",
+      "category": "build-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T03:57:41.207Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755920362471_1_general_25d64af3",
+      "started_at": "2025-08-23T03:57:47.374Z",
+      "claimed_by": "development_session_1755920362471_1_general_25d64af3",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755920362471_1_general_25d64af3",
+          "role": "primary",
+          "assignedAt": "2025-08-23T03:57:47.374Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T04:04:34.484Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T04:04:34.484Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755919324589_22071kwlx",
+      "title": "Fix remaining test failures in index-comprehensive tests",
+      "description": "Some tests still failing with API data access issues. Likely need to apply same API mock fix or check for other configuration issues. Tests show Cannot read properties of undefined reading data errors.",
+      "mode": "DEVELOPMENT",
+      "category": "test-error",
+      "priority": "low",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T03:22:04.589Z",
+      "auto_research_created": false,
+      "started_at": "2025-08-23T04:06:00.882Z",
+      "claimed_by": "development_session_1755921933515_1_general_25013e96",
+      "assigned_agent": "development_session_1755921933515_1_general_25013e96",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1755919352773",
+          "action": "claimed",
+          "timestamp": "2025-08-23T03:22:32.773Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-23T03:39:17.908Z",
+          "reason": "Task stale for 17 minutes"
+        },
+        {
+          "agent": "agent_1755920373363",
+          "action": "claimed",
+          "timestamp": "2025-08-23T03:39:33.363Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-23T04:05:28.108Z",
+          "reason": "Task stale for 26 minutes"
+        },
+        {
+          "agentId": "development_session_1755921933515_1_general_25013e96",
+          "role": "primary",
+          "assignedAt": "2025-08-23T04:06:00.882Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T04:11:12.828Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T04:11:12.829Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755922295936_pxy1od19j",
+      "title": "Fix ESLint errors in audit-logger.ts and make-api-client.ts",
+      "description": "Multiple ESLint errors detected: unused error variables, missing return type annotations, any types. Found in src/lib/audit-logger.ts and src/lib/make-api-client.ts. These are high-priority linting violations that need immediate resolution.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T04:11:35.936Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755921933515_1_general_25013e96",
+      "started_at": "2025-08-23T04:11:41.699Z",
+      "claimed_by": "development_session_1755921933515_1_general_25013e96",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755921933515_1_general_25013e96",
+          "role": "primary",
+          "assignedAt": "2025-08-23T04:11:41.699Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T04:18:19.551Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T04:18:19.552Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1755922853697_yghacztc6",
+      "title": "Fix TypeScript build errors - Logger type issues",
+      "description": "Critical TypeScript compilation errors in src/lib/audit-logger.ts and src/utils/encryption.ts: Type Logger | null is not assignable to type Logger. These prevent successful builds and need immediate resolution.",
+      "mode": "DEVELOPMENT",
+      "category": "build-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-23T04:20:53.697Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755921933515_1_general_25013e96",
+      "started_at": "2025-08-23T04:20:59.867Z",
+      "claimed_by": "development_session_1755921933515_1_general_25013e96",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755921933515_1_general_25013e96",
+          "role": "primary",
+          "assignedAt": "2025-08-23T04:20:59.867Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-23T04:27:44.217Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-23T04:27:44.218Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
     }
   ],
-  "total_completed": 513,
-  "last_completion": "2025-08-23T03:48:04.038Z",
+  "total_completed": 518,
+  "last_completion": "2025-08-23T04:27:44.218Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
