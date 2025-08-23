@@ -2,23 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755989449686_5mznlor01",
-      "title": "Fix retry logic test failures in make-api-client.test.ts",
-      "description": "Fix TypeError: Cannot read properties of null (reading retryable) and ensure proper error handling in executeWithRetry method",
-      "mode": "DEVELOPMENT",
-      "category": "test-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-23T22:50:49.686Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755983481923_m5w8j5aru",
       "title": "Fix make-api-client.test.ts mock setup failures",
       "description": "Fix TypeError: mockedLogger.child.mockReturnValue is not a function - correct mock setup for logger and Bottleneck dependencies",

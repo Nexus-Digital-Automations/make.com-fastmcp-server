@@ -171,7 +171,11 @@ export class MakeApiClient {
       makeError.retryable = true;
     } else {
       // Request configuration error
-      makeError.message = (error as Error)?.message || String(error) || 'Unknown API client error';
+      if (error === undefined) {
+        makeError.message = 'Unknown API client error';
+      } else {
+        makeError.message = (error as Error)?.message || String(error) || 'Unknown API client error';
+      }
       makeError.code = 'CLIENT_ERROR';
       makeError.retryable = false;
     }
@@ -203,19 +207,11 @@ export class MakeApiClient {
           },
         };
       } catch (error) {
-        // Handle null/undefined errors specifically for retry logic
-        if (error === null || error === undefined) {
-          lastError = {
-            name: 'MakeApiError',
-            message: 'Unknown error',
-            code: 'UNKNOWN',
-            retryable: false,
-            details: { message: 'No error details available' }
-          } as MakeApiError;
-        } else if (error && typeof error === 'object' && 'name' in error && error.name === 'MakeApiError') {
+        // Ensure error is properly processed, especially for null/undefined cases
+        if (error && typeof error === 'object' && 'name' in error && error.name === 'MakeApiError') {
           lastError = error as MakeApiError;
         } else {
-          // Process other errors through handleAxiosError
+          // Process unknown/null/undefined errors through handleAxiosError
           lastError = this.handleAxiosError(error);
         }
         
