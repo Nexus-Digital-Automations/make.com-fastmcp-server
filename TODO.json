@@ -2,23 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1755913472023_2k007hbol",
-      "title": "Fix unnecessary type assertion error in base-server.ts line 271",
-      "description": "Remove unnecessary type assertion on line 271 that does not change the type of the expression",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-23T01:44:32.023Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1755913439456_l7s26192e",
       "title": "Fix linting errors and warnings",
       "description": "Fix 27 linting issues: 15 errors (unused vars, unnecessary type assertions) and 12 warnings (no-explicit-any violations)",

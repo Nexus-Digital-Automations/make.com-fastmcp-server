@@ -36,7 +36,7 @@ import {
 import {
   BlueprintDependencyAnalyzer,
   type CircularDependency,
-  type DependencyAnalysisResult,
+  type DependencyAnalysisResult as _DependencyAnalysisResult,
   type ImpactAssessment
 } from './blueprint-collaboration/dependency-analyzer.js';
 
@@ -53,6 +53,59 @@ interface _RealTimeConfiguration {
   conflictDetection: boolean;
   cursorTracking: boolean;
   [key: string]: unknown;
+}
+
+// Dependency analysis interfaces for type safety
+interface DependencyNode {
+  moduleName: string;
+  moduleType: string;
+  version?: string;
+  complexity: number;
+  usageFrequency: number;
+  performanceImpact: number;
+  isExternal: boolean;
+  isCritical: boolean;
+}
+
+interface DependencyEdge {
+  sourceNode: string;
+  targetNode: string;
+  dependencyType: string;
+  strength: number;
+  bidirectional: boolean;
+  conditional: boolean;
+  conditions?: string[];
+}
+
+interface DependencyCluster {
+  name: string;
+  clusterType: string;
+  nodes: string[];
+  cohesion: number;
+  coupling: number;
+  isolationPotential: number;
+}
+
+interface CriticalPath {
+  pathId: string;
+  nodes: string[];
+  totalComplexity: number;
+  performanceImpact: number;
+  bottleneckNodes: string[];
+  optimizationPotential: number;
+}
+
+interface DependencyGraph {
+  nodes: DependencyNode[];
+  edges: DependencyEdge[];
+  clusters: DependencyCluster[];
+  criticalPaths: CriticalPath[];
+}
+
+interface ComplexityAnalysis {
+  overall: number;
+  mostComplex: DependencyNode;
+  leastComplex: DependencyNode;
 }
 
 // Conflict resolution interfaces moved to conflict-resolver.ts
@@ -273,12 +326,7 @@ class BlueprintCollaborationEngine {
     generateGraph: boolean;
     impactAnalysis: boolean;
   }): Promise<{
-    dependencyGraph: {
-      nodes: any[];
-      edges: any[];
-      clusters: any[];
-      criticalPaths: any[];
-    };
+    dependencyGraph: DependencyGraph;
     summary: {
       totalNodes: number;
       totalEdges: number;
@@ -286,11 +334,7 @@ class BlueprintCollaborationEngine {
       criticalPaths: number;
       circularDependencies: number;
     };
-    complexity: {
-      overall: number;
-      mostComplex: any;
-      leastComplex: any;
-    };
+    complexity: ComplexityAnalysis;
     performance: {
       bottlenecks: string[];
       optimizationPotential: number;
@@ -317,12 +361,7 @@ class BlueprintCollaborationEngine {
  * Generate dependency analysis report
  */
 function generateDependencyAnalysisReport(result: {
-  dependencyGraph: {
-    nodes: any[];
-    edges: any[];
-    clusters: any[];
-    criticalPaths: any[];
-  };
+  dependencyGraph: DependencyGraph;
   summary: {
     totalNodes: number;
     totalEdges: number;
@@ -330,11 +369,7 @@ function generateDependencyAnalysisReport(result: {
     criticalPaths: number;
     circularDependencies: number;
   };
-  complexity: {
-    overall: number;
-    mostComplex: any;
-    leastComplex: any;
-  };
+  complexity: ComplexityAnalysis;
   performance: {
     bottlenecks: string[];
     optimizationPotential: number;
