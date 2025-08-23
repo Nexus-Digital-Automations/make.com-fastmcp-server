@@ -8,7 +8,8 @@ import MakeServerInstance from './server.js';
 import CoreServer from './servers/core-server.js';
 import AnalyticsServer from './servers/analytics-server.js';
 import logger from './lib/logger.js';
-import configManager from './lib/config.js';\nimport { setupGlobalErrorHandlers, serverBoundary, AsyncErrorBoundary } from './utils/async-error-boundary.js';
+import configManager from './lib/config.js';
+import { setupGlobalErrorHandlers, serverBoundary, AsyncErrorBoundary } from './utils/async-error-boundary.js';
 
 type ServerType = 'core' | 'analytics' | 'legacy' | 'both';
 type ServerInstance = MakeServerInstance | CoreServer | AnalyticsServer;
