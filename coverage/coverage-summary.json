@@ -1,3 +1,15 @@
-{"total": {"lines":{"total":300,"covered":17,"skipped":0,"pct":5.66},"statements":{"total":300,"covered":17,"skipped":0,"pct":5.66},"functions":{"total":2,"covered":1,"skipped":0,"pct":50},"branches":{"total":5,"covered":4,"skipped":0,"pct":80},"branchesTrue":{"total":0,"covered":0,"skipped":0,"pct":"Unknown"}}
-,"/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/lib/make-api-client.ts": {"lines":{"total":300,"covered":17,"skipped":0,"pct":5.66},"functions":{"total":2,"covered":1,"skipped":0,"pct":50},"statements":{"total":300,"covered":17,"skipped":0,"pct":5.66},"branches":{"total":5,"covered":4,"skipped":0,"pct":80}}
+{
+  "total": {
+    "lines": { "total": 300, "covered": 149, "skipped": 0, "pct": 49.66 },
+    "statements": { "total": 300, "covered": 149, "skipped": 0, "pct": 49.66 },
+    "functions": { "total": 18, "covered": 10, "skipped": 0, "pct": 55.55 },
+    "branches": { "total": 29, "covered": 13, "skipped": 0, "pct": 44.82 },
+    "branchesTrue": { "total": 0, "covered": 0, "skipped": 0, "pct": "Unknown" }
+  },
+  "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/src/lib/make-api-client.ts": {
+    "lines": { "total": 300, "covered": 149, "skipped": 0, "pct": 49.66 },
+    "functions": { "total": 18, "covered": 10, "skipped": 0, "pct": 55.55 },
+    "statements": { "total": 300, "covered": 149, "skipped": 0, "pct": 49.66 },
+    "branches": { "total": 29, "covered": 13, "skipped": 0, "pct": 44.82 }
+  }
 }

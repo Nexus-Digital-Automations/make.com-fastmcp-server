@@ -71,7 +71,7 @@ export class Logger {
     return this.logLevels[level] >= this.logLevels[this.logLevel];
   }
 
-  private safeStringify(obj: any): string {
+  private safeStringify(obj: unknown): string {
     try {
       return JSON.stringify(obj, (key, value) => {
         // Handle circular references by replacing them with a placeholder
@@ -87,7 +87,7 @@ export class Logger {
         }
         return value;
       });
-    } catch (error) {
+    } catch {
       return '[Object with circular references or unstringifiable content]';
     } finally {
       // Clear the circular reference tracker after each stringify operation
