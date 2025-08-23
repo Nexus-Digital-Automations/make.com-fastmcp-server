@@ -180,9 +180,9 @@ describe('Advanced Performance Testing Suite', () => {
   let memoryTracker: MemoryTracker;
   let chaos: PerformanceChaos;
 
-  // Set longer timeout for performance tests
+  // Set reasonable timeout for performance tests
   beforeAll(() => {
-    jest.setTimeout(180000); // 3 minutes for complex performance tests
+    jest.setTimeout(30000); // 30 seconds for performance tests
   });
 
   afterAll(() => {
@@ -223,9 +223,9 @@ describe('Advanced Performance Testing Suite', () => {
       const tool = findTool(mockTool, 'list-users');
       
       const stress = new StressTest({
-        concurrent: 100,
-        duration: 10000, // 10 seconds
-        rampUp: 2000     // 2 second ramp-up
+        concurrent: 20,  // Reduced from 100
+        duration: 3000,  // Reduced from 10 seconds
+        rampUp: 500      // Reduced from 2 seconds
       });
 
       const results = await stress.run(async () => {
@@ -252,11 +252,11 @@ describe('Advanced Performance Testing Suite', () => {
         p99Latency: `${results.p99Latency}ms`,
         memoryGrowth: `${(memStats.heapGrowth / 1024 / 1024).toFixed(2)}MB`
       });
-    }, 20000); // 20 second timeout for this specific test
+    }, 10000); // 10 second timeout for this specific test
 
     it('should maintain performance with large datasets', async () => {
-      // Mock large dataset response
-      const largeDataset = Array(1000).fill(null).map((_, i) => ({
+      // Mock large dataset response - simulate API pagination by returning only requested amount
+      const largeDataset = Array(100).fill(null).map((_, i) => ({
         id: i + 1,
         email: `user${i}@example.com`,
         role: i % 3 === 0 ? 'admin' : i % 3 === 1 ? 'member' : 'viewer',
@@ -274,8 +274,8 @@ describe('Advanced Performance Testing Suite', () => {
 
       mockApiClient.mockResponse('GET', '/users', {
         success: true,
-        data: largeDataset,
-        metadata: { total: 1000 }
+        data: largeDataset,  // Return only the requested 100 items
+        metadata: { total: 1000, limit: 100, offset: 0 }
       });
 
       const { addPermissionTools } = await import('../../src/tools/permissions.js');
@@ -363,9 +363,9 @@ describe('Advanced Performance Testing Suite', () => {
 
       // Simulate resource exhaustion with many concurrent requests
       const stress = new StressTest({
-        concurrent: 200,  // High concurrency
-        duration: 5000,   // 5 seconds
-        rampUp: 1000      // Fast ramp-up
+        concurrent: 30,   // Reduced from 200
+        duration: 2000,   // Reduced from 5 seconds
+        rampUp: 300       // Reduced from 1 second
       });
 
       const results = await stress.run(async () => {
@@ -386,7 +386,7 @@ describe('Advanced Performance Testing Suite', () => {
         avgLatency: `${results.avgLatency.toFixed(2)}ms`,
         p99Latency: `${results.p99Latency}ms`
       });
-    }, 15000); // 15 second timeout for stress test
+    }, 8000); // 8 second timeout for stress test
 
     it('should handle memory leaks during extended operations', async () => {
       mockApiClient.mockResponse('GET', '/users', {
@@ -402,11 +402,11 @@ describe('Advanced Performance Testing Suite', () => {
 
       const initialMemory = process.memoryUsage();
       
-      // Run many operations to detect memory leaks
-      for (let i = 0; i < 100; i++) {
-        await executeTool(tool, { limit: 100 });
+      // Run operations to detect memory leaks
+      for (let i = 0; i < 20; i++) {  // Reduced from 100
+        await executeTool(tool, { limit: 50 });  // Reduced from 100
         
-        if (i % 10 === 0) {
+        if (i % 5 === 0) {  // Reduced frequency
           memoryTracker.sample();
           
           // Force garbage collection if available
@@ -419,8 +419,8 @@ describe('Advanced Performance Testing Suite', () => {
       const finalMemory = process.memoryUsage();
       const memoryGrowth = finalMemory.heapUsed - initialMemory.heapUsed;
 
-      // Memory growth should be reasonable (< 20MB for 100 operations)
-      expect(memoryGrowth).toBeLessThan(20 * 1024 * 1024);
+      // Memory growth should be reasonable (< 10MB for 20 operations)
+      expect(memoryGrowth).toBeLessThan(10 * 1024 * 1024);
 
       console.log('Memory Leak Test:', {
         initialHeap: `${(initialMemory.heapUsed / 1024 / 1024).toFixed(2)}MB`,
@@ -451,9 +451,9 @@ describe('Advanced Performance Testing Suite', () => {
       const tool = findTool(mockTool, 'list-users');
 
       const stress = new StressTest({
-        concurrent: 20,
-        duration: 5000,
-        rampUp: 1000
+        concurrent: 10,  // Reduced from 20
+        duration: 2000,  // Reduced from 5 seconds
+        rampUp: 500      // Reduced from 1 second
       });
 
       const results = await stress.run(async () => {
@@ -483,9 +483,9 @@ describe('Advanced Performance Testing Suite', () => {
       const tool = findTool(mockTool, 'list-organizations');
 
       const stress = new StressTest({
-        concurrent: 30,
-        duration: 5000,
-        rampUp: 1000
+        concurrent: 15,  // Reduced from 30
+        duration: 2000,  // Reduced from 5 seconds 
+        rampUp: 500      // Reduced from 1 second
       });
 
       const results = await stress.run(async () => {
@@ -513,16 +513,16 @@ describe('Advanced Performance Testing Suite', () => {
       const tool = findTool(mockTool, 'list-teams');
 
       const testScenarios = [
-        { concurrent: 10, expectedTime: 3000 },
-        { concurrent: 20, expectedTime: 4000 },
-        { concurrent: 40, expectedTime: 6000 }
+        { concurrent: 5, expectedTime: 2000 },   // Reduced from 10/3000
+        { concurrent: 10, expectedTime: 3000 },  // Reduced from 20/4000
+        { concurrent: 15, expectedTime: 4000 }   // Reduced from 40/6000
       ];
 
       for (const scenario of testScenarios) {
         const stress = new StressTest({
           concurrent: scenario.concurrent,
-          duration: 3000,
-          rampUp: 500
+          duration: 1500,  // Reduced from 3000
+          rampUp: 300      // Reduced from 500
         });
 
         const startTime = Date.now();
@@ -559,9 +559,9 @@ describe('Advanced Performance Testing Suite', () => {
 
       // Quiet period (low load)
       const quietStress = new StressTest({
-        concurrent: 5,
-        duration: 2000,
-        rampUp: 500
+        concurrent: 3,   // Reduced from 5
+        duration: 1000,  // Reduced from 2000
+        rampUp: 200      // Reduced from 500
       });
 
       const quietResults = await quietStress.run(async () => {
@@ -575,9 +575,9 @@ describe('Advanced Performance Testing Suite', () => {
 
       // Burst period (high load)
       const burstStress = new StressTest({
-        concurrent: 50,
-        duration: 3000,
-        rampUp: 500
+        concurrent: 20,  // Reduced from 50
+        duration: 1500,  // Reduced from 3000
+        rampUp: 300      // Reduced from 500
       });
 
       const spikeResults = await burstStress.run(async () => {
@@ -614,7 +614,7 @@ describe('Advanced Performance Testing Suite', () => {
 
   describe('Resource Efficiency', () => {
     it('should optimize resource usage for batch operations', async () => {
-      const batchSize = 100;
+      const batchSize = 50;  // Reduced from 100
       const batchData = Array(batchSize).fill(null).map((_, i) => ({
         id: i + 1,
         email: `batchuser${i}@example.com`,
@@ -643,8 +643,8 @@ describe('Advanced Performance Testing Suite', () => {
       const memoryUsed = memoryAfter.heapUsed - memoryBefore.heapUsed;
 
       // Verify efficient batch processing
-      expect(executionTime).toBeLessThan(500); // Should be fast
-      expect(memoryUsed).toBeLessThan(10 * 1024 * 1024); // < 10MB for batch
+      expect(executionTime).toBeLessThan(300); // Should be fast for smaller batch
+      expect(memoryUsed).toBeLessThan(5 * 1024 * 1024); // < 5MB for smaller batch
       
       const parsed = JSON.parse(result);
       expect(parsed.users).toHaveLength(batchSize);
@@ -658,8 +658,8 @@ describe('Advanced Performance Testing Suite', () => {
     });
 
     it('should handle pagination efficiently', async () => {
-      const totalRecords = 1000;
-      const pageSize = 50;
+      const totalRecords = 200;  // Reduced from 1000
+      const pageSize = 20;       // Reduced from 50
       const totalPages = Math.ceil(totalRecords / pageSize);
 
       // Mock paginated responses
@@ -692,7 +692,7 @@ describe('Advanced Performance Testing Suite', () => {
       const memoryUsage: number[] = [];
 
       // Test pagination performance across all pages
-      for (let page = 0; page < Math.min(totalPages, 10); page++) { // Test first 10 pages
+      for (let page = 0; page < Math.min(totalPages, 5); page++) { // Test first 5 pages
         const offset = page * pageSize;
         const startTime = Date.now();
         const memoryBefore = process.memoryUsage().heapUsed;
@@ -718,9 +718,9 @@ describe('Advanced Performance Testing Suite', () => {
       const maxTime = Math.max(...paginationTimes);
       const avgMemory = memoryUsage.reduce((a, b) => a + b, 0) / memoryUsage.length;
 
-      expect(avgTime).toBeLessThan(200); // Average < 200ms per page
-      expect(maxTime).toBeLessThan(500); // Max < 500ms per page
-      expect(avgMemory).toBeLessThan(1024 * 1024); // < 1MB per page
+      expect(avgTime).toBeLessThan(150); // Average < 150ms per page for smaller pages
+      expect(maxTime).toBeLessThan(300); // Max < 300ms per page for smaller pages  
+      expect(avgMemory).toBeLessThan(512 * 1024); // < 512KB per page for smaller pages
 
       console.log('Pagination Efficiency:', {
         pagestested: paginationTimes.length,

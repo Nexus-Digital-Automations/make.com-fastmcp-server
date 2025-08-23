@@ -96,7 +96,7 @@ export function validateBlueprintStructure(blueprint: unknown, strict: boolean =
  * Validate that blueprint is a valid object
  */
 function validateBlueprintObject(blueprint: unknown, result: ValidationResult): boolean {
-  if (!blueprint || typeof blueprint !== 'object') {
+  if (!blueprint || typeof blueprint !== 'object' || Array.isArray(blueprint)) {
     result.errors.push('Blueprint must be a valid JSON object');
     return false;
   }
@@ -246,7 +246,9 @@ function checkForHardcodedSecrets(paramStr: string, moduleId: number, result: Va
   const secretPatterns = ['password', 'secret', 'token', 'apikey', 'api_key', 'key'];
   
   secretPatterns.forEach(pattern => {
-    if (paramStr.includes(pattern) && paramStr.includes('=')) {
+    // Check for pattern followed by colon and value (JSON format)
+    const patternRegex = new RegExp(`"${pattern}"\\s*:\\s*"[^"]+"`);
+    if (patternRegex.test(paramStr)) {
       result.securityIssues.push({
         type: 'potential_hardcoded_secret',
         description: `Module ${moduleId} may contain hardcoded secrets in parameters`,
@@ -383,14 +385,15 @@ export function extractBlueprintConnections(blueprint: unknown, includeOptional:
                                moduleType !== 'builtin:Delay' &&
                                moduleType !== 'builtin:JSONTransformer' &&
                                moduleType !== 'builtin:Iterator' &&
+                               moduleType !== 'webhook' &&
                                !moduleType.startsWith('builtin:');
 
-      if (requiresConnection || module.connection) {
+      if (requiresConnection || (includeOptional && module.connection)) {
         const connection = {
           moduleId: module.id,
           moduleType: moduleType,
           connectionId: module.connection,
-          service: moduleType.split(':')[0] || 'unknown',
+          service: moduleType.includes(':') ? moduleType.split(':')[0] : 'unknown',
           required: requiresConnection
         };
 

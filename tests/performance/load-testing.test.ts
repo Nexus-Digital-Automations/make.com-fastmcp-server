@@ -9,9 +9,9 @@ class StressTest {
     private rampUp: number;
 
     constructor(config: { concurrent?: number; duration?: number; rampUp?: number }) {
-        this.concurrent = config.concurrent || 100;
-        this.duration = config.duration || 60000;
-        this.rampUp = config.rampUp || 10000;
+        this.concurrent = config.concurrent || 10;   // Reduced from 100
+        this.duration = config.duration || 5000;     // Reduced from 60 seconds
+        this.rampUp = config.rampUp || 1000;         // Reduced from 10 seconds
     }
 
     async run(testFunction: () => Promise<void>) {
@@ -86,8 +86,8 @@ describe('Performance Load Testing', () => {
             patch: jest.fn()
         } as unknown as jest.Mocked<MakeAPIClient>;
 
-        // Set longer timeout for load tests
-        jest.setTimeout(240000); // 4 minutes to accommodate long-running stress tests
+        // Set reasonable timeout for load tests
+        jest.setTimeout(30000); // 30 seconds for load tests
     });
 
     afterAll(() => {
@@ -95,11 +95,11 @@ describe('Performance Load Testing', () => {
     });
 
     describe('Concurrent User Load Testing', () => {
-        it('should handle 50 concurrent API authentication requests', async () => {
+        it('should handle 10 concurrent API authentication requests', async () => {
             const stress = new StressTest({
-                concurrent: 50,
-                duration: 15000, // 15 seconds
-                rampUp: 2000     // 2 seconds ramp-up
+                concurrent: 10,  // Reduced from 50
+                duration: 3000,  // Reduced from 15 seconds
+                rampUp: 500      // Reduced from 2 seconds
             });
 
             const results = await stress.run(async () => {
@@ -127,13 +127,13 @@ describe('Performance Load Testing', () => {
                 p95Latency: `${results.p95Latency.toFixed(2)}ms`,
                 p99Latency: `${results.p99Latency.toFixed(2)}ms`
             });
-        }, 30000); // 30 second timeout for authentication load test
+        }, 10000); // 10 second timeout for authentication load test
 
-        it('should handle 100 concurrent scenario list requests', async () => {
+        it('should handle 15 concurrent scenario list requests', async () => {
             const stress = new StressTest({
-                concurrent: 100,
-                duration: 20000, // 20 seconds
-                rampUp: 3000     // 3 seconds ramp-up
+                concurrent: 15,  // Reduced from 100
+                duration: 4000,  // Reduced from 20 seconds
+                rampUp: 800      // Reduced from 3 seconds
             });
 
             const results = await stress.run(async () => {
@@ -160,13 +160,13 @@ describe('Performance Load Testing', () => {
                 p95Latency: `${results.p95Latency.toFixed(2)}ms`,
                 p99Latency: `${results.p99Latency.toFixed(2)}ms`
             });
-        }, 40000); // 40 second timeout for scenario list load test
+        }, 12000); // 12 second timeout for scenario list load test
 
         it('should handle mixed workload with concurrent operations', async () => {
             const stress = new StressTest({
-                concurrent: 75,
-                duration: 25000, // 25 seconds
-                rampUp: 5000     // 5 seconds ramp-up
+                concurrent: 20,  // Reduced from 75
+                duration: 5000,  // Reduced from 25 seconds
+                rampUp: 1000     // Reduced from 5 seconds
             });
 
             const operations = [

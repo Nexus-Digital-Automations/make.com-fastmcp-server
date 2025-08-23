@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.83% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/245</span>
+                <span class='fraction'>29/245</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>2/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.83% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/245</span>
+                <span class='fraction'>29/245</span>
             </div>
         
             
@@ -307,7 +307,25 @@
 <a name='L242'></a><a href='#L242'>242</a>
 <a name='L243'></a><a href='#L243'>243</a>
 <a name='L244'></a><a href='#L244'>244</a>
-<a name='L245'></a><a href='#L245'>245</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L245'></a><a href='#L245'>245</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -524,52 +542,34 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >/**</span></span></span>
-<span class="cstat-no" title="statement not covered" > * @fileoverview Stream processing logic for log streaming tools</span>
-<span class="cstat-no" title="statement not covered" > * Real-time log streaming manager and utilities</span>
-<span class="cstat-no" title="statement not covered" > */</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >import { EventEmitter } from 'events';</span>
-<span class="cstat-no" title="statement not covered" >import MakeApiClient from '../../../lib/make-api-client.js';</span>
-<span class="cstat-no" title="statement not covered" >import logger from '../../../lib/logger.js';</span>
-<span class="cstat-no" title="statement not covered" >import { MakeLogEntry } from '../types/streaming.js';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >export interface LogStreamingConfig {</span>
-<span class="cstat-no" title="statement not covered" >  realTimeFiltering: {</span>
-<span class="cstat-no" title="statement not covered" >    logLevels: ('debug' | 'info' | 'warn' | 'error' | 'critical')[];</span>
-<span class="cstat-no" title="statement not covered" >    components: string[];</span>
-<span class="cstat-no" title="statement not covered" >    correlationIds: string[];</span>
-<span class="cstat-no" title="statement not covered" >    userSessions: string[];</span>
-<span class="cstat-no" title="statement not covered" >    timeWindows: {</span>
-<span class="cstat-no" title="statement not covered" >      start: Date;</span>
-<span class="cstat-no" title="statement not covered" >      end: Date;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * @fileoverview Stream processing logic for log streaming tools
+ * Real-time log streaming manager and utilities
+ */
+&nbsp;
+import { EventEmitter } from 'events';
+import MakeApiClient from '../../../lib/make-api-client.js';
+import logger from '../../.<span class="branch-0 cbranch-no" title="branch not covered" >./lib/logger.js';</span>
+import { MakeLogEntry } from '../types/streaming.js';
+&nbsp;
+export interface LogStreamingConfig {
+  realTimeFiltering: {
+    logLevels: ('debug' | 'info' | 'warn' | 'error' | 'critical')[];
+    components: string[];
+    correlationIds: string[];
+    userSessions: string[];
+    timeWindows: {
+      start: Date;
+      en<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >d: Date;</span></span>
 <span class="cstat-no" title="statement not covered" >      live: boolean;</span>
 <span class="cstat-no" title="statement not covered" >    };</span>
 <span class="cstat-no" title="statement not covered" >  };</span>
@@ -786,23 +786,23 @@
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  /**</span>
-<span class="cstat-no" title="statement not covered" >   * Clean up all streams</span>
-<span class="cstat-no" title="statement not covered" >   */</span>
-<span class="cstat-no" title="statement not covered" >  cleanup(): void {</span>
-<span class="cstat-no" title="statement not covered" >    const streamIds = Array.from(this.activeStreams.keys());</span>
-<span class="cstat-no" title="statement not covered" >    for (const streamId of streamIds) {</span>
-<span class="cstat-no" title="statement not covered" >      this.stopLogStreaming(streamId);</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >    logger.info('Log streaming manager cleaned up');</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
-<span class="cstat-no" title="statement not covered" >}</span></pre></td></tr></table></pre>
+   * Clean up all streams
+   */
+  cleanup(): void {
+    const streamIds = Array.from(this.activeStreams.keys());
+    for (const streamId of streamIds) {
+      this.stopLogStreaming(streamId);
+    }
+    logger.info('Log streaming manager cleaned up');
+  }
+}</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-23T12:16:50.733Z
+                at 2025-08-23T13:56:26.773Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
