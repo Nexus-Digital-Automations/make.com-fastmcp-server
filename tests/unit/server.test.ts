@@ -25,6 +25,18 @@ import {
 import { MakeServerInstance } from "../../src/server.js";
 import { UserError } from "fastmcp";
 
+// Create shared mock instances
+const mockApiClientInstance = {
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  patch: jest.fn(),
+  delete: jest.fn(),
+  healthCheck: jest.fn(),
+  getRateLimiterStatus: jest.fn(),
+  shutdown: jest.fn(),
+};
+
 // Mock external dependencies with comprehensive functionality
 jest.mock("../../src/lib/config.js", () => {
   const mockConfig = {
@@ -63,57 +75,22 @@ jest.mock("../../src/lib/config.js", () => {
 });
 
 jest.mock("../../src/lib/logger.js", () => {
-  const mockLogger = {
-    child: jest.fn(() => ({
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-    })),
+  const createMockLogger = () => ({
     info: jest.fn(),
     warn: jest.fn(),
     error: jest.fn(),
     debug: jest.fn(),
-  };
+    child: jest.fn(() => createMockLogger()),
+  });
+
+  const mockLogger = createMockLogger();
   return { __esModule: true, default: mockLogger };
 });
 
 jest.mock("../../src/lib/make-api-client.js", () => {
-  class MockMakeApiClient {
-    constructor(config: any) {}
-
-    async get(url: string, options?: any) {
-      if (url === "/users/me") {
-        return {
-          success: true,
-          data: {
-            id: "test_user_123",
-            name: "Test User",
-            email: "test@example.com",
-            role: "admin",
-          },
-        };
-      }
-      if (url.includes("/teams/")) {
-        return { success: true, data: { id: "test_team", name: "Test Team" } };
-      }
-      if (url === "/scenarios") {
-        return { success: true, data: [] };
-      }
-      return { success: true, data: {} };
-    }
-
-    async healthCheck() {
-      return true;
-    }
-
-    getRateLimiterStatus() {
-      return { running: 0, queued: 0 };
-    }
-
-    async shutdown() {}
-  }
-
+  const MockMakeApiClient = jest
+    .fn()
+    .mockImplementation(() => mockApiClientInstance);
   return { __esModule: true, default: MockMakeApiClient };
 });
 
@@ -223,6 +200,34 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
     };
 
     (FastMCP as jest.MockedClass<any>).mockImplementation(() => mockFastMCP);
+
+    // Reset API client mock responses
+    mockApiClientInstance.get.mockImplementation(async (url: string) => {
+      if (url === "/users/me") {
+        return {
+          success: true,
+          data: {
+            id: "test_user_123",
+            name: "Test User",
+            email: "test@example.com",
+            role: "admin",
+          },
+        };
+      }
+      if (url.includes("/teams/")) {
+        return { success: true, data: { id: "test_team", name: "Test Team" } };
+      }
+      if (url === "/scenarios") {
+        return { success: true, data: [] };
+      }
+      return { success: true, data: {} };
+    });
+    mockApiClientInstance.healthCheck.mockResolvedValue(true);
+    mockApiClientInstance.getRateLimiterStatus.mockReturnValue({
+      running: 0,
+      queued: 0,
+    });
+    mockApiClientInstance.shutdown.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -510,6 +515,27 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
       });
     });
 
+    it("should handle API health check failures gracefully", async () => {
+      // Mock API client to return unhealthy status
+      mockApiClientInstance.healthCheck.mockResolvedValue(false);
+
+      const addToolCalls = mockFastMCP.addTool.mock.calls;
+      const healthCheckTool = addToolCalls.find(
+        (call) => call[0].name === "health-check",
+      );
+
+      const mockContext = {
+        log: { info: jest.fn(), error: jest.fn() },
+        session: null,
+      };
+
+      const result = await healthCheckTool[0].execute({}, mockContext);
+      const parsedResult = JSON.parse(result);
+
+      expect(parsedResult.overall).toBe("degraded");
+      expect(parsedResult.makeApi.healthy).toBe(false);
+    });
+
     it("should execute server-info tool and return comprehensive information", async () => {
       const addToolCalls = mockFastMCP.addTool.mock.calls;
       const serverInfoTool = addToolCalls.find(
@@ -582,9 +608,9 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
       );
 
       // Mock API client to throw error
-      const mockApiClient = require("../../src/lib/make-api-client.js").default;
-      const mockInstance = new mockApiClient();
-      mockInstance.get.mockRejectedValue(new Error("API connection failed"));
+      mockApiClientInstance.get.mockRejectedValue(
+        new Error("API connection failed"),
+      );
 
       const mockContext = {
         log: { info: jest.fn(), error: jest.fn() },
@@ -623,10 +649,6 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
     });
 
     it("should validate Make.com API connectivity before starting", async () => {
-      const mockApiClient = require("../../src/lib/make-api-client.js").default;
-      const mockInstance = new mockApiClient();
-      const healthCheckSpy = jest.spyOn(mockInstance, "healthCheck");
-
       const mockConfig = require("../../src/lib/config.js").default;
       mockConfig.getMakeConfig.mockReturnValue({
         ...mockConfig.getMakeConfig(),
@@ -635,7 +657,7 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
 
       await serverInstance.start();
 
-      expect(healthCheckSpy).toHaveBeenCalled();
+      expect(mockApiClientInstance.healthCheck).toHaveBeenCalled();
     });
 
     it("should skip API validation in development mode", async () => {
@@ -649,9 +671,7 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
     });
 
     it("should handle API health check failure during startup", async () => {
-      const mockApiClient = require("../../src/lib/make-api-client.js").default;
-      const mockInstance = new mockApiClient();
-      mockInstance.healthCheck.mockResolvedValue(false);
+      mockApiClientInstance.healthCheck.mockResolvedValue(false);
 
       const mockConfig = require("../../src/lib/config.js").default;
       mockConfig.getMakeConfig.mockReturnValue({
@@ -667,15 +687,13 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
     it("should shutdown server gracefully", async () => {
       await expect(serverInstance.shutdown()).resolves.not.toThrow();
 
-      const mockApiClient = require("../../src/lib/make-api-client.js").default;
-      const mockInstance = new mockApiClient();
-      expect(mockInstance.shutdown).toHaveBeenCalled();
+      expect(mockApiClientInstance.shutdown).toHaveBeenCalled();
     });
 
     it("should handle shutdown errors gracefully", async () => {
-      const mockApiClient = require("../../src/lib/make-api-client.js").default;
-      const mockInstance = new mockApiClient();
-      mockInstance.shutdown.mockRejectedValue(new Error("Shutdown failed"));
+      mockApiClientInstance.shutdown.mockRejectedValue(
+        new Error("Shutdown failed"),
+      );
 
       await expect(serverInstance.shutdown()).resolves.not.toThrow();
     });
@@ -726,8 +744,9 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
 
   describe("Error Handling and Recovery", () => {
     it("should handle server initialization failures", () => {
-      const mockApiClient = require("../../src/lib/make-api-client.js").default;
-      mockApiClient.mockImplementation(() => {
+      const MockMakeApiClient =
+        require("../../src/lib/make-api-client.js").default;
+      MockMakeApiClient.mockImplementationOnce(() => {
         throw new Error("API client initialization failed");
       });
 
@@ -869,16 +888,14 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
     it("should properly initialize all critical dependencies", () => {
       serverInstance = new MakeServerInstance();
 
-      // Verify config manager usage
+      // Verify that critical dependencies were initialized
       const mockConfig = require("../../src/lib/config.js").default;
       expect(mockConfig.getMakeConfig).toHaveBeenCalled();
 
-      // Verify API client initialization
       const MockMakeApiClient =
         require("../../src/lib/make-api-client.js").default;
       expect(MockMakeApiClient).toHaveBeenCalled();
 
-      // Verify error handler setup
       const mockErrorUtils = require("../../src/utils/errors.js");
       expect(mockErrorUtils.setupGlobalErrorHandlers).toHaveBeenCalled();
     });
