@@ -107,12 +107,18 @@ const CreateSecurityAlertSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
   severity: z.enum(['low', 'medium', 'high', 'critical']),
-  category: z.enum(['data_breach', 'unauthorized_access', 'malware', 'phishing', 'suspicious_activity', 'other']),
+  category: z.enum(['data_breach', 'unauthorized_access', 'malware', 'phishing', 'suspicious_activity', 'authentication', 'other']),
   source: z.string().optional(),
   affectedAssets: z.array(z.string()).optional().default([]),
   detectionTime: z.string().optional(),
   status: z.enum(['open', 'investigating', 'resolved', 'closed']).optional().default('open'),
-  automatedResponse: z.boolean().optional().default(false),
+  automatedResponse: z.union([
+    z.boolean(),
+    z.object({
+      enabled: z.boolean(),
+      actions: z.array(z.string()).optional(),
+    })
+  ]).optional().default(false),
 });
 
 const ManageSecurityAlertsSchema = z.object({
@@ -185,10 +191,13 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
       }
       
       const events = Array.isArray(response) ? response : (response.data || response.events || []);
-      const metadata = response.metadata || { total: events.length, hasMore: false };
+      
+      // Ensure events is always an array
+      const eventArray = Array.isArray(events) ? events : [];
+      const metadata = response.metadata || { total: eventArray.length, hasMore: false };
 
       getComponentLogger().info('Audit events searched via MCP tool', {
-        totalResults: events.length,
+        totalResults: eventArray.length,
         filters: queryParams,
         endpoint,
       });
@@ -196,23 +205,23 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
       // Generate analysis based on events
       const analysis = {
         securityInsights: {
-          riskLevels: events.reduce((acc: Record<string, number>, event: Record<string, unknown>) => {
+          riskLevels: eventArray.reduce((acc: Record<string, number>, event: Record<string, unknown>) => {
             const risk = event.riskLevel as string || 'unknown';
             acc[risk] = (acc[risk] || 0) + 1;
             return acc;
           }, {}),
-          categories: events.reduce((acc: Record<string, number>, event: Record<string, unknown>) => {
+          categories: eventArray.reduce((acc: Record<string, number>, event: Record<string, unknown>) => {
             const cat = event.category as string || 'unknown';
             acc[cat] = (acc[cat] || 0) + 1;
             return acc;
           }, {}),
         },
         riskAnalysis: {
-          totalEvents: events.length,
-          highRiskEvents: events.filter((e: Record<string, unknown>) => ['high', 'critical'].includes(e.riskLevel as string)).length,
-          failureRate: events.length ? (events.filter((e: Record<string, unknown>) => !e.success).length / events.length * 100).toFixed(1) : '0',
+          totalEvents: eventArray.length,
+          highRiskEvents: eventArray.filter((e: Record<string, unknown>) => ['high', 'critical'].includes(e.riskLevel as string)).length,
+          failureRate: eventArray.length ? (eventArray.filter((e: Record<string, unknown>) => !e.success).length / eventArray.length * 100).toFixed(1) : '0',
         },
-        recommendations: events.length > 10 && events.filter((e: Record<string, unknown>) => !e.success).length > 5 
+        recommendations: eventArray.length > 10 && eventArray.filter((e: Record<string, unknown>) => !e.success).length > 5 
           ? ['Review authentication security', 'Implement additional access controls']
           : ['Continue monitoring'],
         complianceAnalysis: input.complianceFramework ? {
@@ -225,8 +234,8 @@ const createSearchAuditEventsTool = (apiClient: MakeApiClient): { name: string; 
       // Return structured response
       return formatSuccessResponse({
         success: true,
-        events,
-        totalCount: metadata.total || events.length,
+        events: eventArray,
+        totalCount: metadata.total || eventArray.length,
         filters: queryParams,
         analysis,
         timeRange: validatedInput.startDate && validatedInput.endDate ? { startDate: validatedInput.startDate, endDate: validatedInput.endDate } : undefined,
@@ -924,14 +933,31 @@ export const createSecurityAlertTool = {
         automatedResponse: validatedInput.automatedResponse,
       });
 
-      return formatSuccessResponse({
+      const isAutomatedResponseEnabled = typeof validatedInput.automatedResponse === 'boolean' 
+        ? validatedInput.automatedResponse 
+        : validatedInput.automatedResponse?.enabled;
+
+      const responseData: Record<string, unknown> = {
         success: true,
         alert: alertData,
         message: `Security alert "${validatedInput.title}" created successfully with ID ${alertId}`,
-        nextSteps: validatedInput.automatedResponse 
+        nextSteps: isAutomatedResponseEnabled
           ? ['Automated response triggered', 'Monitor alert status', 'Review response logs']
           : ['Review alert details', 'Assign to security team', 'Investigate threat', 'Implement response'],
-      }).content[0].text;
+      };
+
+      // Add automated response fields when enabled
+      if (isAutomatedResponseEnabled && typeof validatedInput.automatedResponse === 'object') {
+        responseData.automatedActions = validatedInput.automatedResponse.actions || [];
+        responseData.escalation = {
+          enabled: true,
+          level: validatedInput.severity,
+          notificationSent: true,
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      return formatSuccessResponse(responseData).content[0].text;
     } catch (error) {
       getComponentLogger().error('Failed to create security alert via MCP tool', {
         error: error instanceof Error ? error.message : 'Unknown error',
