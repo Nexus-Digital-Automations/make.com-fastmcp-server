@@ -8,7 +8,7 @@ import MakeServerInstance from './server.js';
 import CoreServer from './servers/core-server.js';
 import AnalyticsServer from './servers/analytics-server.js';
 import logger from './lib/logger.js';
-import configManager from './lib/config.js';
+import configManager from './lib/config.js';\nimport { setupGlobalErrorHandlers, serverBoundary, AsyncErrorBoundary } from './utils/async-error-boundary.js';
 
 type ServerType = 'core' | 'analytics' | 'legacy' | 'both';
 type ServerInstance = MakeServerInstance | CoreServer | AnalyticsServer;
@@ -93,16 +93,29 @@ async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promi
     // Create server instance
     const serverInstance = createServerInstance(serverType);
 
-    // Setup graceful shutdown handlers
+    // Setup graceful shutdown handlers with error boundary cleanup
     const gracefulShutdown = async (signal: string): Promise<void> => {
       componentLogger.info(`Received ${signal}, starting graceful shutdown`);
       
       try {
+        // Shutdown server instance
         await serverInstance.shutdown();
+        
+        // Cleanup all async error boundaries and resources
+        await AsyncErrorBoundary.shutdown();
+        
         componentLogger.info('Graceful shutdown completed');
         process.exit(0);
       } catch (error) {
         componentLogger.error('Error during graceful shutdown', error as Record<string, unknown>);
+        
+        // Force cleanup on error
+        try {
+          await AsyncErrorBoundary.shutdown();
+        } catch (cleanupError) {
+          componentLogger.error('Error during emergency cleanup', cleanupError as Record<string, unknown>);
+        }
+        
         process.exit(1);
       }
     };
@@ -213,13 +226,35 @@ async function startBothServers(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const serverType = getServerType();
+  // Setup global error handlers and boundaries
+  setupGlobalErrorHandlers();
   
-  if (serverType === 'both') {
-    await startBothServers();
-  } else {
-    await startSingleServer(serverType);
-  }
+  await serverBoundary.execute(
+    async () => {
+      const serverType = getServerType();
+      
+      logger.info('Starting FastMCP server with error boundaries', {
+        serverType,
+        nodeVersion: process.version,
+        platform: process.platform
+      });
+      
+      if (serverType === 'both') {
+        await startBothServers();
+      } else {
+        await startSingleServer(serverType);
+      }
+      
+      logger.info('Server startup completed successfully', { serverType });
+    },
+    {
+      operation: 'serverStartup',
+      metadata: {
+        serverType: getServerType(),
+        startTime: Date.now()
+      }
+    }
+  );
 }
 
 // Start the server only when running directly (not in test environment)
