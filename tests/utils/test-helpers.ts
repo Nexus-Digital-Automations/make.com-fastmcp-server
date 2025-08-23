@@ -3,32 +3,42 @@
  * Provides reusable functions for test setup, assertions, and mocking
  */
 
-import { jest } from '@jest/globals';
-import { FastMCP } from 'fastmcp';
-import { MockMakeApiClient } from '../mocks/make-api-client.mock.js';
+import { jest } from "@jest/globals";
+import { FastMCP } from "fastmcp";
+import { MockMakeApiClient } from "../mocks/make-api-client.mock.js";
 
 /**
  * Create a mock FastMCP server instance for testing
  */
-export const createMockServer = (): { server: any; mockTool: jest.MockedFunction<any> } => {
+export const createMockServer = (): {
+  server: any;
+  mockTool: jest.MockedFunction<any>;
+} => {
   const mockTool = jest.fn();
-  
+
   const registeredTools = new Map();
-  
+
   const server = {
-    addTool: (...args: any[]) => { 
+    addTool: (...args: any[]) => {
       mockTool(...args);
       // Store tool for executeToolCall
       if (args[0] && args[0].name) {
         registeredTools.set(args[0].name, args[0]);
       }
     },
+    getTools: () => {
+      const tools: Record<string, any> = {};
+      for (const [name, tool] of registeredTools.entries()) {
+        tools[name] = tool;
+      }
+      return tools;
+    },
     executeToolCall: async (params: { tool: string; parameters: any }) => {
       const tool = registeredTools.get(params.tool);
       if (!tool) {
         throw new Error(`Tool '${params.tool}' not found`);
       }
-      
+
       // Actually execute the tool implementation
       const mockContext = {
         log: {
@@ -40,7 +50,7 @@ export const createMockServer = (): { server: any; mockTool: jest.MockedFunction
         reportProgress: jest.fn(),
         session: { authenticated: true },
       };
-      
+
       try {
         const result = await tool.execute(params.parameters, mockContext);
         return result;
@@ -52,7 +62,7 @@ export const createMockServer = (): { server: any; mockTool: jest.MockedFunction
     start: jest.fn(),
     stop: jest.fn(),
   };
-  
+
   return { server, mockTool };
 };
 
@@ -76,27 +86,34 @@ export const findTool = (mockTool: any, toolName: string) => {
  * Automatically extracts text content from ToolResponse objects for easier testing
  */
 export const executeTool = async (
-  tool: any, 
-  input: any, 
-  context: Partial<{ log: any; reportProgress: any; session: any }> = {}
+  tool: any,
+  input: any,
+  context: Partial<{ log: any; reportProgress: any; session: any }> = {},
 ) => {
   // Zod schema validation for test inputs
-  
+
   // Perform Zod schema validation if parameters schema exists
-  if (tool.parameters && typeof tool.parameters.safeParse === 'function') {
+  if (tool.parameters && typeof tool.parameters.safeParse === "function") {
     const validationResult = tool.parameters.safeParse(input);
     if (!validationResult.success) {
-      console.debug(`[DEBUG] Validation failed for ${tool.name}:`, validationResult.error.issues);
-      const errorMessages = validationResult.error.issues.map(issue => 
-        `${issue.path.join('.')}: ${issue.message}`
-      ).join(', ');
+      console.debug(
+        `[DEBUG] Validation failed for ${tool.name}:`,
+        validationResult.error.issues,
+      );
+      const errorMessages = validationResult.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
       throw new Error(`Parameter validation failed: ${errorMessages}`);
     }
     // Use validated data
     input = validationResult.data;
     console.debug(`[DEBUG] Validation succeeded for ${tool.name}`);
   } else {
-    console.debug(`[DEBUG] No schema validation for ${tool.name} - parameters:`, !!tool.parameters, typeof tool.parameters?.safeParse);
+    console.debug(
+      `[DEBUG] No schema validation for ${tool.name} - parameters:`,
+      !!tool.parameters,
+      typeof tool.parameters?.safeParse,
+    );
   }
 
   const mockContext = {
@@ -110,18 +127,27 @@ export const executeTool = async (
     session: { authenticated: true },
     ...context,
   };
-  
+
   const result = await tool.execute(input, mockContext);
-  
+
   // Extract text content from ToolResponse format for easier testing
-  if (result && typeof result === 'object' && 'content' in result && Array.isArray(result.content)) {
+  if (
+    result &&
+    typeof result === "object" &&
+    "content" in result &&
+    Array.isArray(result.content)
+  ) {
     // This is a ToolResponse object - extract the text content
     const content = result.content[0];
-    if (content && content.type === 'text' && typeof content.text === 'string') {
+    if (
+      content &&
+      content.type === "text" &&
+      typeof content.text === "string"
+    ) {
       return content.text;
     }
   }
-  
+
   // Return result as-is if it's not a ToolResponse object
   return result;
 };
@@ -131,21 +157,21 @@ export const executeTool = async (
  */
 export const expectToolCall = (
   mockLog: any,
-  level: 'info' | 'error' | 'warn' | 'debug',
+  level: "info" | "error" | "warn" | "debug",
   messagePattern: string | RegExp,
-  data?: any
+  data?: any,
 ) => {
   const calls = mockLog[level].mock.calls;
   const matchingCall = calls.find((call: any[]) => {
     const message = call[0];
-    if (typeof messagePattern === 'string') {
+    if (typeof messagePattern === "string") {
       return message.includes(messagePattern);
     }
     return messagePattern.test(message);
   });
-  
+
   expect(matchingCall).toBeDefined();
-  
+
   if (data && matchingCall) {
     expect(matchingCall[1]).toMatchObject(data);
   }
@@ -156,15 +182,12 @@ export const expectToolCall = (
  */
 export const expectProgressReported = (
   mockReportProgress: jest.MockedFunction<any>,
-  expectedCalls: Array<{ progress: number; total: number }>
+  expectedCalls: Array<{ progress: number; total: number }>,
 ) => {
   expect(mockReportProgress).toHaveBeenCalledTimes(expectedCalls.length);
-  
+
   expectedCalls.forEach((expectedCall, index) => {
-    expect(mockReportProgress).toHaveBeenNthCalledWith(
-      index + 1,
-      expectedCall
-    );
+    expect(mockReportProgress).toHaveBeenNthCalledWith(index + 1, expectedCall);
   });
 };
 
@@ -173,89 +196,89 @@ export const expectProgressReported = (
  */
 export const createComplexTestScenario = () => ({
   id: globalThis.testUtils.generateId(),
-  name: 'Complex Integration Scenario',
+  name: "Complex Integration Scenario",
   teamId: 12345,
   folderId: 3001,
   blueprint: {
     flow: [
       {
         id: 1,
-        app: 'webhook',
-        operation: 'trigger',
+        app: "webhook",
+        operation: "trigger",
         metadata: {
-          webhook_type: 'instant',
-          url: 'https://hook.make.com/abcd1234',
-        }
+          webhook_type: "instant",
+          url: "https://hook.make.com/abcd1234",
+        },
       },
       {
         id: 2,
-        app: 'filter',
-        operation: 'condition',
+        app: "filter",
+        operation: "condition",
         metadata: {
           condition: 'data.type === "order"',
-          fallback: 'ignore'
-        }
+          fallback: "ignore",
+        },
       },
       {
         id: 3,
-        app: 'database',
-        operation: 'select',
+        app: "database",
+        operation: "select",
         metadata: {
-          table: 'customers',
-          where: 'email = {{1.email}}',
-          connectionId: 4002
-        }
+          table: "customers",
+          where: "email = {{1.email}}",
+          connectionId: 4002,
+        },
       },
       {
         id: 4,
-        app: 'router',
-        operation: 'split',
+        app: "router",
+        operation: "split",
         metadata: {
           routes: [
-            { condition: 'customer.vip === true', modules: [5, 6] },
-            { condition: 'customer.vip === false', modules: [7] }
-          ]
-        }
+            { condition: "customer.vip === true", modules: [5, 6] },
+            { condition: "customer.vip === false", modules: [7] },
+          ],
+        },
       },
       {
         id: 5,
-        app: 'email',
-        operation: 'send',
+        app: "email",
+        operation: "send",
         metadata: {
-          template: 'vip_welcome',
-          to: '{{3.email}}',
-          connectionId: 4001
-        }
+          template: "vip_welcome",
+          to: "{{3.email}}",
+          connectionId: 4001,
+        },
       },
       {
         id: 6,
-        app: 'crm',
-        operation: 'update_contact',
+        app: "crm",
+        operation: "update_contact",
         metadata: {
-          contactId: '{{3.id}}',
-          tags: ['vip', 'automated']
-        }
+          contactId: "{{3.id}}",
+          tags: ["vip", "automated"],
+        },
       },
       {
         id: 7,
-        app: 'email',
-        operation: 'send',
+        app: "email",
+        operation: "send",
         metadata: {
-          template: 'standard_welcome',
-          to: '{{3.email}}',
-          connectionId: 4001
-        }
-      }
+          template: "standard_welcome",
+          to: "{{3.email}}",
+          connectionId: 4001,
+        },
+      },
     ],
     settings: {
-      errorHandling: 'continue',
-      logging: 'full',
-      timeout: 30000
-    }
+      errorHandling: "continue",
+      logging: "full",
+      timeout: 30000,
+    },
   },
   scheduling: {
-    type: 'indefinitely' as const,
-    interval: 900
+    type: "indefinitely" as const,
+    interval: 900,
   },
   isActive: true,
   createdAt: new Date().toISOString(),
@@ -267,18 +290,23 @@ export const createComplexTestScenario = () => ({
  */
 export const expectValidZodParse = (schema: any, data: any) => {
   // Handle non-Zod schemas by throwing an error instead of silent handling
-  if (!schema || typeof schema.safeParse !== 'function') {
-    console.warn(`[TEST WARNING] expectValidZodParse called with non-Zod schema for data:`, data);
-    throw new Error('expectValidZodParse requires a Zod schema with safeParse method');
+  if (!schema || typeof schema.safeParse !== "function") {
+    console.warn(
+      `[TEST WARNING] expectValidZodParse called with non-Zod schema for data:`,
+      data,
+    );
+    throw new Error(
+      "expectValidZodParse requires a Zod schema with safeParse method",
+    );
   }
 
   const result = schema.safeParse(data);
   if (!result.success) {
-    console.error('Zod validation errors:', result.error.issues);
+    console.error("Zod validation errors:", result.error.issues);
     // Provide more helpful error message
-    const errorMessages = result.error.issues.map(issue => 
-      `${issue.path.join('.')}: ${issue.message}`
-    ).join(', ');
+    const errorMessages = result.error.issues
+      .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+      .join(", ");
     throw new Error(`Schema validation failed: ${errorMessages}`);
   }
   return result.data;
@@ -287,21 +315,34 @@ export const expectValidZodParse = (schema: any, data: any) => {
 /**
  * Expect Zod schema to reject invalid data
  */
-export const expectInvalidZodParse = (schema: any, data: any, expectedErrors?: string[]) => {
+export const expectInvalidZodParse = (
+  schema: any,
+  data: any,
+  expectedErrors?: string[],
+) => {
   // Handle non-Zod schemas by throwing an error instead of silent handling
-  if (!schema || typeof schema.safeParse !== 'function') {
-    console.warn(`[TEST WARNING] expectInvalidZodParse called with non-Zod schema for data:`, data);
-    throw new Error('expectInvalidZodParse requires a Zod schema with safeParse method');
+  if (!schema || typeof schema.safeParse !== "function") {
+    console.warn(
+      `[TEST WARNING] expectInvalidZodParse called with non-Zod schema for data:`,
+      data,
+    );
+    throw new Error(
+      "expectInvalidZodParse requires a Zod schema with safeParse method",
+    );
   }
 
   const result = schema.safeParse(data);
   expect(result.success).toBe(false);
-  
+
   if (expectedErrors && !result.success) {
-    expectedErrors.forEach(expectedError => {
-      expect(result.error.issues.some(issue => 
-        issue.message.includes(expectedError) || issue.path.join('.').includes(expectedError)
-      )).toBe(true);
+    expectedErrors.forEach((expectedError) => {
+      expect(
+        result.error.issues.some(
+          (issue) =>
+            issue.message.includes(expectedError) ||
+            issue.path.join(".").includes(expectedError),
+        ),
+      ).toBe(true);
     });
   }
 };
@@ -309,8 +350,11 @@ export const expectInvalidZodParse = (schema: any, data: any, expectedErrors?: s
 /**
  * Expect a tool execution function to throw an error (for validation testing)
  */
-export const expectToolExecutionToFail = async (executionFn: () => Promise<any>, expectedErrorMessage?: string) => {
-  await expect(executionFn()).rejects.toThrow(expectedErrorMessage || '');
+export const expectToolExecutionToFail = async (
+  executionFn: () => Promise<any>,
+  expectedErrorMessage?: string,
+) => {
+  await expect(executionFn()).rejects.toThrow(expectedErrorMessage || "");
 };
 
 /**
@@ -318,19 +362,21 @@ export const expectToolExecutionToFail = async (executionFn: () => Promise<any>,
  * Handles both direct JSON strings and extracted ToolResponse text content
  */
 export const parseTestResult = (result: any): any => {
-  if (typeof result === 'string') {
+  if (typeof result === "string") {
     try {
       return JSON.parse(result);
     } catch (error) {
-      throw new Error(`Failed to parse test result as JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to parse test result as JSON: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
-  
+
   // If result is already an object, return it as-is
-  if (typeof result === 'object' && result !== null) {
+  if (typeof result === "object" && result !== null) {
     return result;
   }
-  
+
   throw new Error(`Invalid test result type: ${typeof result}`);
 };
 
@@ -339,30 +385,30 @@ export const parseTestResult = (result: any): any => {
  */
 export const createMockApiClientWithDefaults = (): MockMakeApiClient => {
   const mockClient = new MockMakeApiClient();
-  
+
   // Add common successful responses
-  mockClient.mockResponse('GET', '/teams/12345', {
+  mockClient.mockResponse("GET", "/teams/12345", {
     success: true,
     data: {
       id: 12345,
-      name: 'Test Team',
+      name: "Test Team",
       organizationId: 67890,
       members: 5,
-      createdAt: '2024-01-01T00:00:00Z'
-    }
+      createdAt: "2024-01-01T00:00:00Z",
+    },
   });
-  
-  mockClient.mockResponse('GET', '/organizations/67890', {
+
+  mockClient.mockResponse("GET", "/organizations/67890", {
     success: true,
     data: {
       id: 67890,
-      name: 'Test Organization',
-      plan: 'professional',
+      name: "Test Organization",
+      plan: "professional",
       members: 25,
-      createdAt: '2024-01-01T00:00:00Z'
-    }
+      createdAt: "2024-01-01T00:00:00Z",
+    },
   });
-  
+
   return mockClient;
 };
 
@@ -371,40 +417,48 @@ export const createMockApiClientWithDefaults = (): MockMakeApiClient => {
  */
 export const simulateNetworkConditions = {
   slow: (mockClient: MockMakeApiClient, endpoint: string) => {
-    mockClient.mockDelay('GET', endpoint, 5000);
-    mockClient.mockDelay('POST', endpoint, 5000);
-    mockClient.mockDelay('PUT', endpoint, 5000);
-    mockClient.mockDelay('DELETE', endpoint, 5000);
+    mockClient.mockDelay("GET", endpoint, 5000);
+    mockClient.mockDelay("POST", endpoint, 5000);
+    mockClient.mockDelay("PUT", endpoint, 5000);
+    mockClient.mockDelay("DELETE", endpoint, 5000);
   },
-  
-  unreliable: (mockClient: MockMakeApiClient, endpoint: string, failureRate = 0.3) => {
+
+  unreliable: (
+    mockClient: MockMakeApiClient,
+    endpoint: string,
+    failureRate = 0.3,
+  ) => {
     // Randomly fail requests based on failure rate
     if (Math.random() < failureRate) {
-      mockClient.mockFailure('GET', endpoint, new Error('Network timeout'));
-      mockClient.mockFailure('POST', endpoint, new Error('Connection reset'));
+      mockClient.mockFailure("GET", endpoint, new Error("Network timeout"));
+      mockClient.mockFailure("POST", endpoint, new Error("Connection reset"));
     }
   },
-  
+
   rateLimited: (mockClient: MockMakeApiClient, endpoint: string) => {
-    mockClient.mockFailure('GET', endpoint, new Error('Rate limit exceeded'));
-    mockClient.mockFailure('POST', endpoint, new Error('Rate limit exceeded'));
-  }
+    mockClient.mockFailure("GET", endpoint, new Error("Rate limit exceeded"));
+    mockClient.mockFailure("POST", endpoint, new Error("Rate limit exceeded"));
+  },
 };
 
 /**
  * Assert error response format
  */
-export const expectErrorResponse = (error: any, expectedCode?: string, expectedMessage?: string | RegExp) => {
+export const expectErrorResponse = (
+  error: any,
+  expectedCode?: string,
+  expectedMessage?: string | RegExp,
+) => {
   expect(error).toBeInstanceOf(Error);
-  
+
   if (expectedMessage) {
-    if (typeof expectedMessage === 'string') {
+    if (typeof expectedMessage === "string") {
       expect(error.message).toContain(expectedMessage);
     } else {
       expect(error.message).toMatch(expectedMessage);
     }
   }
-  
+
   if (expectedCode && error.code) {
     expect(error.code).toBe(expectedCode);
   }
@@ -415,20 +469,20 @@ export const expectErrorResponse = (error: any, expectedCode?: string, expectedM
  */
 export const createTestEnvironment = () => {
   const cleanup: Array<() => void | Promise<void>> = [];
-  
+
   const env = {
     addCleanup: (fn: () => void | Promise<void>) => {
       cleanup.push(fn);
     },
-    
+
     cleanup: async () => {
       for (const fn of cleanup.reverse()) {
         await fn();
       }
       cleanup.length = 0;
-    }
+    },
   };
-  
+
   return env;
 };
 
@@ -437,18 +491,18 @@ export const createTestEnvironment = () => {
  */
 export const waitForCondition = async (
   condition: () => boolean | Promise<boolean>,
-  options: { timeout?: number; interval?: number } = {}
+  options: { timeout?: number; interval?: number } = {},
 ): Promise<void> => {
   const { timeout = 5000, interval = 100 } = options;
   const startTime = Date.now();
-  
+
   while (Date.now() - startTime < timeout) {
     if (await condition()) {
       return;
     }
     await globalThis.testUtils.delay(interval);
   }
-  
+
   throw new Error(`Condition not met within ${timeout}ms`);
 };
 
@@ -456,25 +510,28 @@ export const waitForCondition = async (
  * Performance testing utilities
  */
 export const performanceHelpers = {
-  measureExecutionTime: async <T>(fn: () => Promise<T>): Promise<{ result: T; duration: number }> => {
+  measureExecutionTime: async <T>(
+    fn: () => Promise<T>,
+  ): Promise<{ result: T; duration: number }> => {
     const start = Date.now();
     const result = await fn();
     const duration = Date.now() - start;
     return { result, duration };
   },
-  
+
   expectExecutionTime: async <T>(
-    fn: () => Promise<T>, 
+    fn: () => Promise<T>,
     maxDuration: number,
-    message?: string
+    message?: string,
   ): Promise<T> => {
-    const { result, duration } = await performanceHelpers.measureExecutionTime(fn);
+    const { result, duration } =
+      await performanceHelpers.measureExecutionTime(fn);
     expect(duration).toBeLessThan(maxDuration);
     if (message) {
       console.log(`${message}: ${duration}ms`);
     }
     return result;
-  }
+  },
 };
 
 export default {

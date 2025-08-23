@@ -21,6 +21,7 @@ import {
   expect,
   beforeEach,
   afterEach,
+  fail,
 } from "@jest/globals";
 import { MakeServerInstance } from "../../src/server.js";
 import { UserError } from "fastmcp";
@@ -113,14 +114,21 @@ jest.mock("../../src/utils/errors.js", () => ({
     code: string;
     correlationId: string;
   },
-  createAuthenticationError: jest.fn((message, context, metadata) => ({
-    message,
-    correlationId: metadata?.correlationId || "test_correlation_id",
-  })),
+  createAuthenticationError: jest.fn((message, context, metadata) => {
+    const error = new Error(message);
+    error.correlationId = metadata?.correlationId || "test_correlation_id";
+    return error;
+  }),
 }));
 
 jest.mock("../../src/utils/error-response.js", () => ({
-  extractCorrelationId: jest.fn(() => "test_correlation_id"),
+  extractCorrelationId: jest.fn((context) => {
+    // Check for session correlation ID first, then fallback to default
+    if (context?.session?.correlationId) {
+      return context.session.correlationId;
+    }
+    return "test_correlation_id";
+  }),
 }));
 
 // Mock all tool modules
@@ -1077,9 +1085,9 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
       const parsedResult = JSON.parse(result);
       expect(parsedResult.server).toBe("healthy");
 
-      // Verify correlation ID logging
+      // Verify correlation ID logging - check for actual logged messages
       expect(mockContext.log.info).toHaveBeenCalledWith(
-        expect.stringContaining("Health check"),
+        "Performing health check",
         expect.objectContaining({ correlationId: "session-correlation-id" }),
       );
     });
@@ -1127,7 +1135,8 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
       const parsedResult = JSON.parse(result);
       expect(parsedResult.apiConnectivity).toBe(true);
       expect(parsedResult.permissions).toBeDefined();
-      expect(parsedResult.permissions.hasTeamAccess).toBe(true);
+      expect(parsedResult.permissions.analyzed).toBe(true);
+      expect(parsedResult.teamAccess).toBe(true);
     });
 
     it("should handle API errors in test-configuration tool", async () => {
@@ -1153,7 +1162,7 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
       expect(mockContext.log.error).toHaveBeenCalledWith(
         "Configuration test failed",
         expect.objectContaining({
-          error: "Network connection failed",
+          error: "Configuration test failed: Network connection failed",
         }),
       );
     });
@@ -1211,9 +1220,12 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
       // Mock request without headers
       const mockRequest = {};
 
-      await expect(
-        fastMCPCall.authenticate(mockRequest),
-      ).rejects.toBeInstanceOf(Response);
+      await expect(fastMCPCall.authenticate(mockRequest)).rejects.toMatchObject(
+        {
+          status: 401,
+          statusText: "Unauthorized - Invalid API key",
+        },
+      );
     });
 
     it("should handle authentication with null/undefined headers", async () => {
@@ -1227,9 +1239,12 @@ describe("FastMCP Server Implementation - Comprehensive Test Suite", () => {
       // Mock request with null headers
       const mockRequest = { headers: null };
 
-      await expect(
-        fastMCPCall.authenticate(mockRequest),
-      ).rejects.toBeInstanceOf(Response);
+      await expect(fastMCPCall.authenticate(mockRequest)).rejects.toMatchObject(
+        {
+          status: 401,
+          statusText: "Unauthorized - Invalid API key",
+        },
+      );
     });
   });
 

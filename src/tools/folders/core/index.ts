@@ -4,7 +4,7 @@
  * Generated on 2025-08-22T09:20:06.377Z
  */
 
-import type { 
+import type {
   FoldersContext,
   FoldersResult,
   FoldersState,
@@ -12,18 +12,16 @@ import type {
   CreateFolderRequest,
   ListFoldersRequest,
   GetFolderContentsRequest,
-  MoveItemsRequest
-} from '../types/index.js';
+  MoveItemsRequest,
+} from "../types/index.js";
 
-import { 
-  validateFoldersConfig
-} from '../schemas/index.js';
+import { validateFoldersConfig } from "../schemas/index.js";
 
-import logger from '../../../lib/logger.js';
-import { MakeApiClient } from '../../../lib/make-api-client.js';
-import { FolderManager } from './folder-manager.js';
-import { DataStoreManager } from './datastore-manager.js';
-import { DataStructureManager } from './datastructure-manager.js';
+import logger from "../../../lib/logger.js";
+import { MakeApiClient } from "../../../lib/make-api-client.js";
+import { FolderManager } from "./folder-manager.js";
+import { DataStoreManager } from "./datastore-manager.js";
+import { DataStructureManager } from "./datastructure-manager.js";
 
 /**
  * Core folders module class
@@ -49,8 +47,8 @@ export class FoldersManager {
       statistics: {
         totalOperations: 0,
         successfulOperations: 0,
-        failedOperations: 0
-      }
+        failedOperations: 0,
+      },
     };
   }
 
@@ -66,34 +64,34 @@ export class FoldersManager {
       await this.setupModule();
 
       this.state.initialized = true;
-      
+
       logger.info(`Folders module initialized successfully`, {
-        module: 'folders',
-        config: this.context.config
+        module: "folders",
+        config: this.context.config,
       });
 
       return {
         success: true,
-        message: 'Folders module initialized successfully',
+        message: "Folders module initialized successfully",
         metadata: {
           operationId: this.generateOperationId(),
-          timestamp: new Date()
-        }
+          timestamp: new Date(),
+        },
       };
     } catch (error) {
       logger.error(`Failed to initialize folders module`, {
         error: error instanceof Error ? error.message : String(error),
-        module: 'folders'
+        module: "folders",
       });
 
       return {
         success: false,
-        message: 'Failed to initialize folders module',
+        message: "Failed to initialize folders module",
         errors: [error instanceof Error ? error.message : String(error)],
         metadata: {
           operationId: this.generateOperationId(),
-          timestamp: new Date()
-        }
+          timestamp: new Date(),
+        },
       };
     }
   }
@@ -110,7 +108,6 @@ export class FoldersManager {
     // - Setting up event listeners
   }
 
-
   /**
    * createFolder operation handler
    */
@@ -119,63 +116,64 @@ export class FoldersManager {
     const startTime = Date.now();
 
     try {
-      this.incrementStatistics('total');
+      this.incrementStatistics("total");
 
       // Validate request
       // const validRequest = validateCreatefolderRequest(request);
 
       logger.info(`Starting createFolder operation`, {
         operationId,
-        module: 'folders',
-        operation: 'createFolder'
+        module: "folders",
+        operation: "createFolder",
       });
 
       // Use FolderManager for folder creation
-      const result = await this.folderManager.createFolder(request as CreateFolderRequest);
+      const result = await this.folderManager.createFolder(
+        request as CreateFolderRequest,
+      );
 
-      this.incrementStatistics('successful');
+      this.incrementStatistics("successful");
 
       logger.info(`createFolder operation completed successfully`, {
         operationId,
-        module: 'folders',
-        operation: 'createFolder',
-        duration: Date.now() - startTime
+        module: "folders",
+        operation: "createFolder",
+        duration: Date.now() - startTime,
       });
 
       return {
         success: true,
         data: result,
-        message: 'createFolder completed successfully',
+        message: "createFolder completed successfully",
         metadata: {
           operationId,
           timestamp: new Date(),
-          duration: Date.now() - startTime
-        }
+          duration: Date.now() - startTime,
+        },
       };
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
 
       logger.error(`createFolder operation failed`, {
         operationId,
-        module: 'folders',
-        operation: 'createFolder',
+        module: "folders",
+        operation: "createFolder",
         error: error instanceof Error ? error.message : String(error),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       });
 
       return {
         success: false,
-        message: `createFolder operation failed`,
+        message: error instanceof Error ? error.message : String(error),
         errors: [error instanceof Error ? error.message : String(error)],
         metadata: {
           operationId,
           timestamp: new Date(),
-          duration: Date.now() - startTime
-        }
+          duration: Date.now() - startTime,
+        },
       };
     }
   }
-
 
   /**
    * listFolders operation handler
@@ -185,63 +183,64 @@ export class FoldersManager {
     const startTime = Date.now();
 
     try {
-      this.incrementStatistics('total');
+      this.incrementStatistics("total");
 
       // Validate request
       // const validRequest = validateListfoldersRequest(request);
 
       logger.info(`Starting listFolders operation`, {
         operationId,
-        module: 'folders',
-        operation: 'listFolders'
+        module: "folders",
+        operation: "listFolders",
       });
 
       // Use FolderManager for folder listing
-      const result = await this.folderManager.listFolders(request as ListFoldersRequest);
+      const result = await this.folderManager.listFolders(
+        request as ListFoldersRequest,
+      );
 
-      this.incrementStatistics('successful');
+      this.incrementStatistics("successful");
 
       logger.info(`listFolders operation completed successfully`, {
         operationId,
-        module: 'folders',
-        operation: 'listFolders',
-        duration: Date.now() - startTime
+        module: "folders",
+        operation: "listFolders",
+        duration: Date.now() - startTime,
       });
 
       return {
         success: true,
         data: result,
-        message: 'listFolders completed successfully',
+        message: "listFolders completed successfully",
         metadata: {
           operationId,
           timestamp: new Date(),
-          duration: Date.now() - startTime
-        }
+          duration: Date.now() - startTime,
+        },
       };
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
 
       logger.error(`listFolders operation failed`, {
         operationId,
-        module: 'folders',
-        operation: 'listFolders',
+        module: "folders",
+        operation: "listFolders",
         error: error instanceof Error ? error.message : String(error),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       });
 
       return {
         success: false,
-        message: `listFolders operation failed`,
+        message: error instanceof Error ? error.message : String(error),
         errors: [error instanceof Error ? error.message : String(error)],
         metadata: {
           operationId,
           timestamp: new Date(),
-          duration: Date.now() - startTime
-        }
+          duration: Date.now() - startTime,
+        },
       };
     }
   }
-
 
   /**
    * getFolderContents operation handler
@@ -251,48 +250,50 @@ export class FoldersManager {
     const startTime = Date.now();
 
     try {
-      this.incrementStatistics('total');
+      this.incrementStatistics("total");
 
       // Validate request
       // const validRequest = validateGetfoldercontentsRequest(request);
 
       logger.info(`Starting getFolderContents operation`, {
         operationId,
-        module: 'folders',
-        operation: 'getFolderContents'
+        module: "folders",
+        operation: "getFolderContents",
       });
 
       // Use FolderManager for folder contents retrieval
-      const result = await this.folderManager.getFolderContents(request as GetFolderContentsRequest);
+      const result = await this.folderManager.getFolderContents(
+        request as GetFolderContentsRequest,
+      );
 
-      this.incrementStatistics('successful');
+      this.incrementStatistics("successful");
 
       logger.info(`getFolderContents operation completed successfully`, {
         operationId,
-        module: 'folders',
-        operation: 'getFolderContents',
-        duration: Date.now() - startTime
+        module: "folders",
+        operation: "getFolderContents",
+        duration: Date.now() - startTime,
       });
 
       return {
         success: true,
         data: result,
-        message: 'getFolderContents completed successfully',
+        message: "getFolderContents completed successfully",
         metadata: {
           operationId,
           timestamp: new Date(),
-          duration: Date.now() - startTime
-        }
+          duration: Date.now() - startTime,
+        },
       };
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
 
       logger.error(`getFolderContents operation failed`, {
         operationId,
-        module: 'folders',
-        operation: 'getFolderContents',
+        module: "folders",
+        operation: "getFolderContents",
         error: error instanceof Error ? error.message : String(error),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       });
 
       return {
@@ -302,12 +303,11 @@ export class FoldersManager {
         metadata: {
           operationId,
           timestamp: new Date(),
-          duration: Date.now() - startTime
-        }
+          duration: Date.now() - startTime,
+        },
       };
     }
   }
-
 
   /**
    * moveItems operation handler
@@ -317,48 +317,50 @@ export class FoldersManager {
     const startTime = Date.now();
 
     try {
-      this.incrementStatistics('total');
+      this.incrementStatistics("total");
 
       // Validate request
       // const validRequest = validateMoveitemsRequest(request);
 
       logger.info(`Starting moveItems operation`, {
         operationId,
-        module: 'folders',
-        operation: 'moveItems'
+        module: "folders",
+        operation: "moveItems",
       });
 
       // Use FolderManager for item movement
-      const result = await this.folderManager.moveItems(request as MoveItemsRequest);
+      const result = await this.folderManager.moveItems(
+        request as MoveItemsRequest,
+      );
 
-      this.incrementStatistics('successful');
+      this.incrementStatistics("successful");
 
       logger.info(`moveItems operation completed successfully`, {
         operationId,
-        module: 'folders',
-        operation: 'moveItems',
-        duration: Date.now() - startTime
+        module: "folders",
+        operation: "moveItems",
+        duration: Date.now() - startTime,
       });
 
       return {
         success: true,
         data: result,
-        message: 'moveItems completed successfully',
+        message: "moveItems completed successfully",
         metadata: {
           operationId,
           timestamp: new Date(),
-          duration: Date.now() - startTime
-        }
+          duration: Date.now() - startTime,
+        },
       };
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
 
       logger.error(`moveItems operation failed`, {
         operationId,
-        module: 'folders',
-        operation: 'moveItems',
+        module: "folders",
+        operation: "moveItems",
         error: error instanceof Error ? error.message : String(error),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       });
 
       return {
@@ -368,77 +370,75 @@ export class FoldersManager {
         metadata: {
           operationId,
           timestamp: new Date(),
-          duration: Date.now() - startTime
-        }
+          duration: Date.now() - startTime,
+        },
       };
     }
   }
-
 
   /**
    * createDataStore operation handler
    */
   async createdatastore(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
+      this.incrementStatistics("total");
+
       const result = await this.dataStoreManager.createDataStore(request);
-      
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
-
 
   /**
    * listDataStores operation handler
    */
   async listdatastores(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
+      this.incrementStatistics("total");
+
       const result = await this.dataStoreManager.listDataStores(request);
-      
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
-
 
   /**
    * listDataStructures operation handler
    */
   async listdatastructures(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
-      const result = await this.dataStructureManager.listDataStructures(request);
-      
+      this.incrementStatistics("total");
+
+      const result =
+        await this.dataStructureManager.listDataStructures(request);
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
@@ -448,19 +448,19 @@ export class FoldersManager {
    */
   async getdatastructure(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
+      this.incrementStatistics("total");
+
       const result = await this.dataStructureManager.getDataStructure(request);
-      
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
@@ -470,19 +470,20 @@ export class FoldersManager {
    */
   async createdatastructure(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
-      const result = await this.dataStructureManager.createDataStructure(request);
-      
+      this.incrementStatistics("total");
+
+      const result =
+        await this.dataStructureManager.createDataStructure(request);
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
@@ -492,19 +493,20 @@ export class FoldersManager {
    */
   async updatedatastructure(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
-      const result = await this.dataStructureManager.updateDataStructure(request);
-      
+      this.incrementStatistics("total");
+
+      const result =
+        await this.dataStructureManager.updateDataStructure(request);
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
@@ -514,19 +516,20 @@ export class FoldersManager {
    */
   async deletedatastructure(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
-      const result = await this.dataStructureManager.deleteDataStructure(request);
-      
+      this.incrementStatistics("total");
+
+      const result =
+        await this.dataStructureManager.deleteDataStructure(request);
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
@@ -536,70 +539,66 @@ export class FoldersManager {
    */
   async getdatastore(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
+      this.incrementStatistics("total");
+
       const result = await this.dataStoreManager.getDataStore(request);
-      
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
-
 
   /**
    * updateDataStore operation handler
    */
   async updatedatastore(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
+      this.incrementStatistics("total");
+
       const result = await this.dataStoreManager.updateDataStore(request);
-      
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
-
 
   /**
    * deleteDataStore operation handler
    */
   async deletedatastore(request: unknown): Promise<FoldersResult> {
     try {
-      this.incrementStatistics('total');
-      
+      this.incrementStatistics("total");
+
       const result = await this.dataStoreManager.deleteDataStore(request);
-      
+
       if (result.success) {
-        this.incrementStatistics('successful');
+        this.incrementStatistics("successful");
       } else {
-        this.incrementStatistics('failed');
+        this.incrementStatistics("failed");
       }
-      
+
       return result;
     } catch (error) {
-      this.incrementStatistics('failed');
+      this.incrementStatistics("failed");
       throw error;
     }
   }
-
-
 
   /**
    * Get current module state
@@ -621,69 +620,71 @@ export class FoldersManager {
   async handleEvent(event: FoldersEvent): Promise<FoldersResult> {
     try {
       switch (event.type) {
-        case 'create_folder':
+        case "create_folder":
           return await this.createfolder(event.payload);
-        case 'list_folders':
+        case "list_folders":
           return await this.listfolders(event.payload);
-        case 'get_folder_contents':
+        case "get_folder_contents":
           return await this.getfoldercontents(event.payload);
-        case 'move_items':
+        case "move_items":
           return await this.moveitems(event.payload);
-        case 'create_data_store':
+        case "create_data_store":
           return await this.createdatastore(event.payload);
-        case 'list_data_stores':
+        case "list_data_stores":
           return await this.listdatastores(event.payload);
-        case 'list_data_structures':
+        case "list_data_structures":
           return await this.listdatastructures(event.payload);
-        case 'get_data_structure':
+        case "get_data_structure":
           return await this.getdatastructure(event.payload);
-        case 'create_data_structure':
+        case "create_data_structure":
           return await this.createdatastructure(event.payload);
-        case 'update_data_structure':
+        case "update_data_structure":
           return await this.updatedatastructure(event.payload);
-        case 'delete_data_structure':
+        case "delete_data_structure":
           return await this.deletedatastructure(event.payload);
-        case 'get_data_store':
+        case "get_data_store":
           return await this.getdatastore(event.payload);
-        case 'update_data_store':
+        case "update_data_store":
           return await this.updatedatastore(event.payload);
-        case 'delete_data_store':
+        case "delete_data_store":
           return await this.deletedatastore(event.payload);
-        
-        case 'module_error':
-          logger.error('Module error event received', {
-            module: 'folders',
+
+        case "module_error":
+          logger.error("Module error event received", {
+            module: "folders",
             error: event.payload.error,
-            context: event.payload.context
+            context: event.payload.context,
           });
           return {
             success: false,
-            message: 'Module error handled',
+            message: "Module error handled",
             errors: [event.payload.error],
             metadata: {
               operationId: this.generateOperationId(),
-              timestamp: new Date()
-            }
+              timestamp: new Date(),
+            },
           };
 
         default:
-          throw new Error(`Unknown event type: ${(event as { type: unknown }).type}`);
+          throw new Error(
+            `Unknown event type: ${(event as { type: unknown }).type}`,
+          );
       }
     } catch (error) {
-      logger.error('Failed to handle event', {
-        module: 'folders',
+      logger.error("Failed to handle event", {
+        module: "folders",
         event: event.type,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
 
       return {
         success: false,
-        message: 'Failed to handle event',
+        message: "Failed to handle event",
         errors: [error instanceof Error ? error.message : String(error)],
         metadata: {
           operationId: this.generateOperationId(),
-          timestamp: new Date()
-        }
+          timestamp: new Date(),
+        },
       };
     }
   }
@@ -693,8 +694,8 @@ export class FoldersManager {
    */
   async shutdown(): Promise<void> {
     logger.info(`Shutting down folders module`, {
-      module: 'folders',
-      statistics: this.state.statistics
+      module: "folders",
+      statistics: this.state.statistics,
     });
 
     // Implement cleanup logic here
@@ -715,16 +716,16 @@ export class FoldersManager {
   /**
    * Increment operation statistics
    */
-  private incrementStatistics(type: 'total' | 'successful' | 'failed'): void {
+  private incrementStatistics(type: "total" | "successful" | "failed"): void {
     switch (type) {
-      case 'total':
+      case "total":
         this.state.statistics.totalOperations++;
         this.state.statistics.lastOperation = new Date();
         break;
-      case 'successful':
+      case "successful":
         this.state.statistics.successfulOperations++;
         break;
-      case 'failed':
+      case "failed":
         this.state.statistics.failedOperations++;
         break;
     }
