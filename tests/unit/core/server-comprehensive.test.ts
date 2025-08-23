@@ -10,71 +10,11 @@ import { MakeServerInstance } from '../../../src/server.js';
 import { FastMCP } from 'fastmcp';
 
 // Mock all external dependencies
-jest.mock('../../../src/lib/config.js', () => ({
-  default: {
-    getConfig: jest.fn(() => ({
-      name: 'Test Make.com FastMCP Server',
-      version: '1.0.0',
-      logLevel: 'info',
-      port: 3000,
-      authentication: { enabled: false },
-      rateLimit: { maxRequests: 100, windowMs: 60000 },
-      make: {
-        baseUrl: 'https://api.make.com',
-        timeout: 30000,
-        retries: 3,
-        teamId: 'test_team',
-        organizationId: 'test_org',
-        apiKey: 'test_key_for_development'
-      }
-    })),
-    getMakeConfig: jest.fn(() => ({
-      baseUrl: 'https://api.make.com',
-      timeout: 30000,
-      retries: 3,
-      teamId: 'test_team',
-      organizationId: 'test_org',
-      apiKey: 'test_key_for_development'
-    })),
-    isAuthEnabled: jest.fn(() => false),
-    getAuthSecret: jest.fn(() => 'test_secret'),
-    getLogLevel: jest.fn(() => 'info'),
-    getRateLimitConfig: jest.fn(() => ({ maxRequests: 100, windowMs: 60000 }))
-  }
-}));
+// Note: config.js is already globally mocked via jest.config.js moduleNameMapper
 
-jest.mock('../../../src/lib/logger.js', () => ({
-  default: {
-    child: jest.fn(() => ({
-      info: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn()
-    })),
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn()
-  }
-}));
+// Note: logger.js is already globally mocked via jest.config.js moduleNameMapper
 
-jest.mock('../../../src/lib/make-api-client.js', () => {
-  return {
-    default: jest.fn().mockImplementation(() => ({
-      healthCheck: jest.fn().mockResolvedValue(true),
-      getRateLimiterStatus: jest.fn().mockReturnValue({
-        remaining: 95,
-        total: 100,
-        resetTime: new Date().toISOString()
-      }),
-      get: jest.fn().mockResolvedValue({
-        success: true,
-        data: { id: 'test_user', name: 'Test User' }
-      }),
-      shutdown: jest.fn().mockResolvedValue(undefined)
-    }))
-  };
-});
+// Note: make-api-client.js is already globally mocked via jest.config.js moduleNameMapper
 
 jest.mock('../../../src/utils/errors.js', () => ({
   setupGlobalErrorHandlers: jest.fn(),
