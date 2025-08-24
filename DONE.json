@@ -27786,9 +27786,55 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1756018655594_6isluc7ne",
+      "title": "Fix TypeScript compilation errors in config manager usage",
+      "description": "Multiple files still use the old pattern configManager.getConfig() instead of configManager().getConfig() which is causing TypeScript compilation errors. Apply systematic fixes similar to the test files.",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/index.ts",
+        "src/lib/health-monitor.ts",
+        "src/lib/secure-config.ts",
+        "src/lib/sse-transport-enhancer.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T06:57:35.594Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T06:57:56.970Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T07:00:23.826Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T07:00:23.827Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 641,
-  "last_completion": "2025-08-24T06:52:41.205Z",
+  "total_completed": 642,
+  "last_completion": "2025-08-24T07:00:23.827Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

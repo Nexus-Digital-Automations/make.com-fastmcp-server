@@ -109,7 +109,7 @@ async function startSingleServer(
     const transportType = process.argv.includes("--http")
       ? "httpStream"
       : "stdio";
-    let port = configManager.getConfig().port || 3000;
+    let port = configManager().getConfig().port || 3000;
 
     // Adjust port based on server type
     if (serverType === "analytics") {

@@ -273,7 +273,7 @@ export class SecureConfigManager {
    */
   public async getSecureMakeConfig(userId?: string): Promise<MakeApiConfig> {
     try {
-      const baseConfig = configManager.getMakeConfig();
+      const baseConfig = configManager().getMakeConfig();
       
       // Check if API key is stored as credential ID
       const apiKeyCredentialId = process.env.MAKE_API_KEY_CREDENTIAL_ID;
@@ -311,7 +311,7 @@ export class SecureConfigManager {
 
     try {
       // Migrate Make.com API key
-      const makeConfig = configManager.getMakeConfig();
+      const makeConfig = configManager().getMakeConfig();
       if (makeConfig.apiKey && !process.env.MAKE_API_KEY_CREDENTIAL_ID) {
         try {
           const credentialId = await this.storeCredential(
@@ -339,7 +339,7 @@ export class SecureConfigManager {
       }
 
       // Migrate auth secret
-      const authSecret = configManager.getAuthSecret();
+      const authSecret = configManager().getAuthSecret();
       if (authSecret && !process.env.AUTH_SECRET_CREDENTIAL_ID) {
         try {
           const credentialId = await this.storeCredential(
