@@ -11,7 +11,13 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "typecheck": "tsc --noEmit",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest --testPathPatterns=integration",
+    "test:unit": "jest --testPathIgnorePatterns=integration",
+    "test:error-scenarios": "jest --testPathPatterns=error-scenarios"
   },
   "keywords": [
     "mcp",
@@ -31,11 +37,20 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
+    "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.40.0",
     "@typescript-eslint/parser": "^8.40.0",
+    "axios-mock-adapter": "^2.1.0",
     "eslint": "^9.33.0",
+    "jest": "^30.0.5",
+    "jest-environment-node": "^30.0.5",
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
     "tsx": "^4.6.0",
     "typescript": "^5.9.2"
   },
