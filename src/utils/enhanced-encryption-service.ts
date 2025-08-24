@@ -16,36 +16,19 @@ import { HSMIntegrationManager } from "./hsm-integration.js";
 import {
   EncryptionJobRequest,
   BatchEncryptionRequest,
-  ConcurrentWorkerConfig,
-  HSMIntegrationConfig,
   CryptographicPerformanceMetrics,
   EncryptionPoolStatus,
   SecurityValidationResult,
 } from "../types/encryption-types.js";
 import logger from "../lib/logger.js";
+import {
+  EnhancedEncryptionConfigFactory,
+  EnhancedEncryptionConfig as ImportedEnhancedEncryptionConfig,
+} from "./enhanced-encryption-config-factory.js";
+import { EnhancedEncryptionServiceFactory } from "./enhanced-encryption-service-factory.js";
 
-export interface EnhancedEncryptionConfig {
-  concurrentProcessing: {
-    enabled: boolean;
-    maxWorkers: number;
-    queueSize: number;
-    timeout: number;
-  };
-  hsmIntegration: {
-    enabled: boolean;
-    config?: HSMIntegrationConfig;
-  };
-  performanceMonitoring: {
-    enabled: boolean;
-    metricsRetention: number; // days
-    alertThresholds: {
-      avgResponseTime: number; // milliseconds
-      errorRate: number; // percentage
-      throughput: number; // operations per second
-    };
-  };
-  fallbackToSoftware: boolean;
-}
+// Use imported configuration type from factory
+export type EnhancedEncryptionConfig = ImportedEnhancedEncryptionConfig;
 
 export interface EncryptionPerformanceReport {
   timeRange: { start: Date; end: Date };
@@ -75,12 +58,12 @@ export interface EncryptionPerformanceReport {
  * Provides unified interface for software and HSM-based cryptographic operations
  */
 export class EnhancedEncryptionService extends EventEmitter {
-  private readonly baseEncryptionService: EncryptionService;
-  private readonly credentialManager: CredentialManager;
-  private readonly concurrentAgent?: ConcurrentEncryptionAgent;
-  private readonly hsmManager?: HSMIntegrationManager;
+  private baseEncryptionService: EncryptionService;
+  private credentialManager: CredentialManager;
+  private concurrentAgent?: ConcurrentEncryptionAgent;
+  private hsmManager?: HSMIntegrationManager;
   private readonly config: EnhancedEncryptionConfig;
-  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private componentLogger: ReturnType<typeof logger.child>;
 
   private performanceMetrics: CryptographicPerformanceMetrics[] = [];
   private isInitialized = false;
@@ -93,69 +76,44 @@ export class EnhancedEncryptionService extends EventEmitter {
   ) {
     super();
 
-    this.config = {
-      concurrentProcessing: {
-        enabled: config.concurrentProcessing?.enabled ?? true,
-        maxWorkers: config.concurrentProcessing?.maxWorkers ?? 4,
-        queueSize: config.concurrentProcessing?.queueSize ?? 1000,
-        timeout: config.concurrentProcessing?.timeout ?? 30000,
-      },
-      hsmIntegration: {
-        enabled: config.hsmIntegration?.enabled ?? false,
-        config: config.hsmIntegration?.config,
-      },
-      performanceMonitoring: {
-        enabled: config.performanceMonitoring?.enabled ?? true,
-        metricsRetention: config.performanceMonitoring?.metricsRetention ?? 30,
-        alertThresholds: {
-          avgResponseTime:
-            config.performanceMonitoring?.alertThresholds?.avgResponseTime ??
-            1000,
-          errorRate:
-            config.performanceMonitoring?.alertThresholds?.errorRate ?? 5,
-          throughput:
-            config.performanceMonitoring?.alertThresholds?.throughput ?? 10,
-          ...config.performanceMonitoring?.alertThresholds,
-        },
-      },
-      fallbackToSoftware: config.fallbackToSoftware ?? true,
-    };
+    // Phase 1: Configuration building (Complexity: 2 points)
+    this.config = EnhancedEncryptionConfigFactory.buildConfiguration(config);
+    
+    // Phase 2: Base service initialization (Complexity: 3 points)
+    this.initializeBaseServices(baseEncryptionService, credentialManager);
+    
+    // Phase 3: Advanced service creation (Complexity: 3 points)  
+    this.initializeAdvancedServices();
+  }
 
-    this.baseEncryptionService =
-      baseEncryptionService || new EncryptionService();
+  /**
+   * Initialize base encryption services and logger
+   * Complexity: 3 points (extracted from constructor)
+   */
+  private initializeBaseServices(
+    baseEncryptionService?: EncryptionService,
+    credentialManager?: CredentialManager
+  ): void {
+    this.baseEncryptionService = baseEncryptionService || new EncryptionService();
     this.credentialManager = credentialManager || new CredentialManager();
     this.componentLogger = logger.child({
       component: "EnhancedEncryptionService",
     });
+  }
 
-    // Initialize concurrent processing if enabled
-    if (this.config.concurrentProcessing.enabled) {
-      const workerConfig: ConcurrentWorkerConfig = {
-        maxWorkers: this.config.concurrentProcessing.maxWorkers,
-        queueSize: this.config.concurrentProcessing.queueSize,
-        workerTimeout: this.config.concurrentProcessing.timeout,
-        resourceLimits: {
-          maxOldGenerationSizeMb: 128,
-          maxYoungGenerationSizeMb: 64,
-        },
-        isolatedContext: true,
-      };
-
-      this.concurrentAgent = new ConcurrentEncryptionAgent(
-        workerConfig,
-        this.config.hsmIntegration.config,
-      );
-    }
-
-    // Initialize HSM integration if enabled
-    if (
-      this.config.hsmIntegration.enabled &&
-      this.config.hsmIntegration.config
-    ) {
-      this.hsmManager = new HSMIntegrationManager(
-        this.config.hsmIntegration.config,
-      );
-    }
+  /**
+   * Initialize advanced services using factory
+   * Complexity: 3 points (extracted from constructor)
+   */
+  private initializeAdvancedServices(): void {
+    // Validate service dependencies first
+    EnhancedEncryptionServiceFactory.validateServiceDependencies(this.config);
+    
+    // Create concurrent agent if enabled
+    this.concurrentAgent = EnhancedEncryptionServiceFactory.createConcurrentAgent(this.config);
+    
+    // Create HSM manager if enabled  
+    this.hsmManager = EnhancedEncryptionServiceFactory.createHSMManager(this.config);
   }
 
   /**
