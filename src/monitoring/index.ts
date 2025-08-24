@@ -8,12 +8,12 @@ export {
   VulnerabilityAlert,
   OutdatedPackage,
   DependencyScanResult,
-} from "./dependency-monitor";
+} from "./dependency-monitor.js";
 export {
   MaintenanceReportGenerator,
   MaintenanceReport,
   ReportExportOptions,
-} from "./maintenance-report-generator";
+} from "./maintenance-report-generator.js";
 export {
   LogPatternAnalyzer,
   LogEntry,
@@ -21,17 +21,17 @@ export {
   PatternMatch,
   LogAnalyticsSummary,
   PatternStatistics,
-} from "./log-pattern-analyzer";
+} from "./log-pattern-analyzer.js";
 export {
   AlertManager,
   PatternAlert,
   AlertNotificationPayload,
-} from "./alert-manager";
+} from "./alert-manager.js";
 export {
   PatternAnalysisTransport,
   createPatternAnalysisTransport,
   addPatternAnalysisToLogger,
-} from "./pattern-analysis-transport";
+} from "./pattern-analysis-transport.js";
 export {
   ALL_PATTERNS,
   CRITICAL_PATTERNS,
@@ -44,4 +44,4 @@ export {
   getPatternsByCategory,
   getPatternsBySeverity,
   validatePattern,
-} from "./pattern-library";
+} from "./pattern-library.js";

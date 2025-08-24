@@ -11,7 +11,7 @@ import {
   DependencyMonitor,
   VulnerabilityAlert,
   OutdatedPackage,
-} from "./dependency-monitor";
+} from "./dependency-monitor.js";
 
 // Report interfaces based on research specifications
 export interface MaintenanceReport {

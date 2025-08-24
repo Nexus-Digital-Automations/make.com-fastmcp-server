@@ -2,8 +2,8 @@ import { promises as fs } from "fs";
 import * as path from "path";
 import * as readline from "readline";
 // Logger will be injected via import to avoid circular dependency
-import { LogPatternAnalyzer } from "./log-pattern-analyzer";
-import type { LogEntry } from "./log-pattern-analyzer";
+import { LogPatternAnalyzer } from "./log-pattern-analyzer.js";
+import type { LogEntry } from "./log-pattern-analyzer.js";
 
 export interface LogAnalysisReport {
   timestamp: Date;

@@ -1,7 +1,7 @@
 import winston from "winston";
 import TransportStream from "winston-transport";
-import { LogPatternAnalyzer } from "./log-pattern-analyzer";
-import type { LogEntry } from "./log-pattern-analyzer";
+import { LogPatternAnalyzer } from "./log-pattern-analyzer.js";
+import type { LogEntry } from "./log-pattern-analyzer.js";
 
 export class PatternAnalysisTransport extends TransportStream {
   private enabled: boolean;

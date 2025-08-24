@@ -1,4 +1,4 @@
-import type { LogPattern } from "./log-pattern-analyzer";
+import type { LogPattern } from "./log-pattern-analyzer.js";
 
 // Critical Error Patterns - High priority patterns for immediate attention
 export const CRITICAL_PATTERNS: LogPattern[] = [
@@ -11,7 +11,8 @@ export const CRITICAL_PATTERNS: LogPattern[] = [
     threshold: 5,
     timeWindowMs: 300000, // 5 minutes
     suppressionMs: 900000, // 15 minutes
-    description: "Multiple authentication failures detected - possible credential issue",
+    description:
+      "Multiple authentication failures detected - possible credential issue",
   },
   {
     id: "rate-limit-hit",
@@ -33,7 +34,8 @@ export const CRITICAL_PATTERNS: LogPattern[] = [
     threshold: 3,
     timeWindowMs: 180000, // 3 minutes
     suppressionMs: 600000, // 10 minutes
-    description: "Multiple server errors indicate potential service degradation",
+    description:
+      "Multiple server errors indicate potential service degradation",
   },
   {
     id: "slow-operation-trend",
@@ -77,14 +79,16 @@ export const CRITICAL_PATTERNS: LogPattern[] = [
     threshold: 5,
     timeWindowMs: 300000, // 5 minutes
     suppressionMs: 900000, // 15 minutes
-    description: "Multiple connection failures indicate network or service issues",
+    description:
+      "Multiple connection failures indicate network or service issues",
   },
   {
     id: "webhook-failure-cluster",
     name: "Webhook Delivery Failures",
     pattern: /Webhook.*failed|Failed to deliver webhook/,
     severity: "warning",
-    action: "Investigate webhook endpoint availability and implement retry logic",
+    action:
+      "Investigate webhook endpoint availability and implement retry logic",
     threshold: 10,
     timeWindowMs: 900000, // 15 minutes
     suppressionMs: 1800000, // 30 minutes
@@ -169,7 +173,8 @@ export const MAKE_API_PATTERNS: LogPattern[] = [
     name: "Make.com API Quota Exceeded",
     pattern: /Make\.com.*quota.*exceeded|Quota limit reached/i,
     severity: "critical",
-    action: "Review Make.com usage and consider upgrading plan or throttling requests",
+    action:
+      "Review Make.com usage and consider upgrading plan or throttling requests",
     threshold: 1,
     timeWindowMs: 300000, // 5 minutes
     suppressionMs: 1800000, // 30 minutes
@@ -217,7 +222,8 @@ export const SECURITY_PATTERNS: LogPattern[] = [
     name: "Multiple Failed Authentication Attempts",
     pattern: /Authentication.*failed|Unauthorized.*access.*attempt/i,
     severity: "warning",
-    action: "Review authentication logs and consider implementing rate limiting",
+    action:
+      "Review authentication logs and consider implementing rate limiting",
     threshold: 10,
     timeWindowMs: 600000, // 10 minutes
     suppressionMs: 1800000, // 30 minutes
@@ -228,7 +234,8 @@ export const SECURITY_PATTERNS: LogPattern[] = [
     name: "Suspicious Request Pattern",
     pattern: /SQL injection|XSS attempt|Path traversal|Malicious payload/i,
     severity: "critical",
-    action: "Investigate potential security attack and review request filtering",
+    action:
+      "Investigate potential security attack and review request filtering",
     threshold: 1,
     timeWindowMs: 60000, // 1 minute
     suppressionMs: 300000, // 5 minutes
@@ -239,7 +246,8 @@ export const SECURITY_PATTERNS: LogPattern[] = [
     name: "Unusual Traffic Pattern",
     pattern: /Unusual.*traffic|Traffic.*anomaly|Suspicious.*requests/i,
     severity: "warning",
-    action: "Analyze traffic patterns and consider implementing traffic filtering",
+    action:
+      "Analyze traffic patterns and consider implementing traffic filtering",
     threshold: 5,
     timeWindowMs: 900000, // 15 minutes
     suppressionMs: 1800000, // 30 minutes
@@ -321,48 +329,53 @@ export function getPatternsByCategory(category: PatternCategory): LogPattern[] {
 }
 
 // Helper function to get patterns by severity
-export function getPatternsBySeverity(severity: "info" | "warning" | "critical"): LogPattern[] {
-  return ALL_PATTERNS.filter(pattern => pattern.severity === severity);
+export function getPatternsBySeverity(
+  severity: "info" | "warning" | "critical",
+): LogPattern[] {
+  return ALL_PATTERNS.filter((pattern) => pattern.severity === severity);
 }
 
 // Helper function to validate pattern configuration
-export function validatePattern(pattern: LogPattern): { valid: boolean; errors: string[] } {
+export function validatePattern(pattern: LogPattern): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
-  if (!pattern.id || pattern.id.trim() === '') {
-    errors.push('Pattern ID is required');
+  if (!pattern.id || pattern.id.trim() === "") {
+    errors.push("Pattern ID is required");
   }
 
-  if (!pattern.name || pattern.name.trim() === '') {
-    errors.push('Pattern name is required');
+  if (!pattern.name || pattern.name.trim() === "") {
+    errors.push("Pattern name is required");
   }
 
   if (!pattern.pattern) {
-    errors.push('Pattern RegExp is required');
+    errors.push("Pattern RegExp is required");
   }
 
-  if (!['info', 'warning', 'critical'].includes(pattern.severity)) {
-    errors.push('Pattern severity must be info, warning, or critical');
+  if (!["info", "warning", "critical"].includes(pattern.severity)) {
+    errors.push("Pattern severity must be info, warning, or critical");
   }
 
-  if (!pattern.action || pattern.action.trim() === '') {
-    errors.push('Pattern action is required');
+  if (!pattern.action || pattern.action.trim() === "") {
+    errors.push("Pattern action is required");
   }
 
-  if (!pattern.description || pattern.description.trim() === '') {
-    errors.push('Pattern description is required');
+  if (!pattern.description || pattern.description.trim() === "") {
+    errors.push("Pattern description is required");
   }
 
   if (pattern.threshold !== undefined && pattern.threshold < 1) {
-    errors.push('Pattern threshold must be at least 1');
+    errors.push("Pattern threshold must be at least 1");
   }
 
   if (pattern.timeWindowMs !== undefined && pattern.timeWindowMs < 1000) {
-    errors.push('Pattern time window must be at least 1000ms');
+    errors.push("Pattern time window must be at least 1000ms");
   }
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }

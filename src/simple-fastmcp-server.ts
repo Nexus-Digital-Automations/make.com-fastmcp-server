@@ -78,7 +78,7 @@ const logger = winston.createLogger({
 
 // Add pattern analysis transport if enabled
 if (process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false") {
-  import("./monitoring/pattern-analysis-transport")
+  import("./monitoring/pattern-analysis-transport.js")
     .then(({ addPatternAnalysisToLogger }) => {
       addPatternAnalysisToLogger(logger);
     })
@@ -90,9 +90,9 @@ if (process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false") {
     });
 
   // Initialize pattern library
-  import("./monitoring/log-pattern-analyzer")
+  import("./monitoring/log-pattern-analyzer.js")
     .then(async ({ LogPatternAnalyzer }) => {
-      const { ALL_PATTERNS } = await import("./monitoring/pattern-library");
+      const { ALL_PATTERNS } = await import("./monitoring/pattern-library.js");
       LogPatternAnalyzer.registerPatterns(ALL_PATTERNS);
     })
     .catch((error) => {
@@ -2048,9 +2048,9 @@ server.addTool({
     try {
       // Import log analysis components
       const { LogFileAnalyzer } = await import(
-        "./monitoring/log-file-analyzer"
+        "./monitoring/log-file-analyzer.js"
       );
-      const { AlertManager } = await import("./monitoring/alert-manager");
+      const { AlertManager } = await import("./monitoring/alert-manager.js");
 
       const hours = args.hours || 24;
 
@@ -2205,9 +2205,9 @@ server.addTool({
     try {
       // Import log analysis components
       const { LogPatternAnalyzer } = await import(
-        "./monitoring/log-pattern-analyzer"
+        "./monitoring/log-pattern-analyzer.js"
       );
-      const { AlertManager } = await import("./monitoring/alert-manager");
+      const { AlertManager } = await import("./monitoring/alert-manager.js");
 
       logger.info("Getting log analytics summary", { correlationId });
 

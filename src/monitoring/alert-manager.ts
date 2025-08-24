@@ -1,5 +1,5 @@
 // Logger will be injected via import to avoid circular dependency
-import type { PatternMatch } from "./log-pattern-analyzer";
+import type { PatternMatch } from "./log-pattern-analyzer.js";
 
 export interface PatternAlert {
   id: string;
