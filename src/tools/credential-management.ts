@@ -1003,7 +1003,7 @@ export function addCredentialManagementTools(
   server: { addTool: (tool: unknown) => void },
   apiClient: unknown,
 ): void {
-  // eslint-disable-line @typescript-eslint/no-unused-vars
+   
   componentLogger.info("Adding credential management tools");
 
   // Store credential
