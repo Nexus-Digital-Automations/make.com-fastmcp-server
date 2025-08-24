@@ -11,7 +11,7 @@ import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { v4 as uuidv4 } from "uuid";
 import { performance } from "perf_hooks";
-import { DependencyMonitor, MaintenanceReportGenerator } from "./monitoring";
+// Dependency monitoring is handled by local DependencyMonitor class
 
 // Load environment variables
 dotenv.config();
@@ -452,15 +452,11 @@ class HealthMonitor {
     }
 
     try {
-      const scanResult = await dependencyMonitor.performComprehensiveScan();
+      const scanResult = await DependencyMonitor.scanForVulnerabilities();
 
-      const criticalVulns = scanResult.vulnerabilities.filter(
-        (v) => v.severity === "critical",
-      ).length;
-      const highVulns = scanResult.vulnerabilities.filter(
-        (v) => v.severity === "high",
-      ).length;
-      const totalVulns = scanResult.vulnerabilities.length;
+      const criticalVulns = scanResult.criticalCount;
+      const highVulns = scanResult.highCount;
+      const totalVulns = scanResult.totalVulnerabilities;
 
       if (criticalVulns > 0) {
         return {
@@ -498,6 +494,309 @@ class HealthMonitor {
   }
 }
 
+// Dependency vulnerability severity mapping
+enum VulnerabilitySeverity {
+  CRITICAL = "CRITICAL",
+  HIGH = "HIGH", 
+  MODERATE = "MODERATE",
+  LOW = "LOW",
+  INFO = "INFO"
+}
+
+interface VulnerabilityReport {
+  packageName: string;
+  currentVersion: string;
+  vulnerableVersions: string;
+  severity: VulnerabilitySeverity;
+  title: string;
+  url?: string;
+  cwe?: string[];
+  cvss?: number;
+}
+
+interface DependencyStatus {
+  vulnerabilities: VulnerabilityReport[];
+  outdatedPackages: Array<{
+    package: string;
+    current: string;
+    wanted: string;
+    latest: string;
+  }>;
+  totalVulnerabilities: number;
+  criticalCount: number;
+  highCount: number;
+  moderateCount: number;
+  lowCount: number;
+  scanTimestamp: Date;
+}
+
+class DependencyMonitor {
+  private static lastScan: DependencyStatus | null = null;
+  
+  static async scanForVulnerabilities(): Promise<DependencyStatus> {
+    const { exec } = await import('child_process');
+    const { promisify } = await import('util');
+    const execAsync = promisify(exec);
+    
+    const correlationId = uuidv4();
+    const startTime = performance.now();
+    
+    logger.info('Starting dependency vulnerability scan', {
+      correlationId,
+      operation: 'dependency-scan'
+    });
+    
+    try {
+      // Run npm audit to get vulnerability data
+      const { stdout: auditOutput } = await execAsync('npm audit --json', {
+        cwd: process.cwd(),
+        timeout: 30000
+      });
+      
+      const auditData = JSON.parse(auditOutput);
+      const vulnerabilities: VulnerabilityReport[] = [];
+      
+      // Parse npm audit results
+      if (auditData.vulnerabilities) {
+        Object.entries(auditData.vulnerabilities).forEach(([packageName, vulnData]: [string, any]) => {
+          vulnerabilities.push({
+            packageName,
+            currentVersion: vulnData.via?.[0]?.range || 'unknown',
+            vulnerableVersions: vulnData.range || 'unknown',
+            severity: this.mapNpmSeverity(vulnData.severity),
+            title: vulnData.via?.[0]?.title || `Vulnerability in ${packageName}`,
+            url: vulnData.via?.[0]?.url,
+            cwe: vulnData.via?.[0]?.cwe,
+            cvss: vulnData.via?.[0]?.cvss
+          });
+        });
+      }
+      
+      // Check for outdated packages
+      let outdatedPackages: any[] = [];
+      try {
+        const { stdout: outdatedOutput } = await execAsync('npm outdated --json', {
+          cwd: process.cwd(),
+          timeout: 15000
+        });
+        
+        if (outdatedOutput.trim()) {
+          const outdatedData = JSON.parse(outdatedOutput);
+          outdatedPackages = Object.entries(outdatedData).map(([pkg, data]: [string, any]) => ({
+            package: pkg,
+            current: data.current,
+            wanted: data.wanted,
+            latest: data.latest
+          }));
+        }
+      } catch (error) {
+        // npm outdated returns non-zero exit code when packages are outdated
+        // Try to parse stdout anyway if it contains JSON
+        const outdatedError = error as { stdout?: string };
+        if (outdatedError.stdout?.trim()) {
+          try {
+            const outdatedData = JSON.parse(outdatedError.stdout);
+            outdatedPackages = Object.entries(outdatedData).map(([pkg, data]: [string, any]) => ({
+              package: pkg,
+              current: data.current,
+              wanted: data.wanted,
+              latest: data.latest
+            }));
+          } catch {
+            // Ignore parsing errors for outdated packages
+          }
+        }
+      }
+      
+      // Calculate vulnerability counts
+      const criticalCount = vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.CRITICAL).length;
+      const highCount = vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.HIGH).length;
+      const moderateCount = vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.MODERATE).length;
+      const lowCount = vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.LOW).length;
+      
+      const status: DependencyStatus = {
+        vulnerabilities,
+        outdatedPackages,
+        totalVulnerabilities: vulnerabilities.length,
+        criticalCount,
+        highCount,
+        moderateCount,
+        lowCount,
+        scanTimestamp: new Date()
+      };
+      
+      this.lastScan = status;
+      
+      const duration = performance.now() - startTime;
+      
+      // Log scan results
+      const logLevel = criticalCount > 0 || highCount > 0 ? 'warn' : 'info';
+      logger[logLevel]('Dependency vulnerability scan completed', {
+        correlationId,
+        operation: 'dependency-scan',
+        duration,
+        totalVulnerabilities: vulnerabilities.length,
+        criticalCount,
+        highCount,
+        moderateCount,
+        lowCount,
+        outdatedPackages: outdatedPackages.length
+      });
+      
+      // Alert on critical vulnerabilities
+      if (criticalCount > 0) {
+        logger.error('CRITICAL vulnerabilities detected', {
+          correlationId,
+          operation: 'security-alert',
+          criticalVulnerabilities: vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.CRITICAL).map(v => ({
+            package: v.packageName,
+            title: v.title,
+            cvss: v.cvss
+          }))
+        });
+      }
+      
+      return status;
+      
+    } catch (error: unknown) {
+      const scanError = error as { message?: string };
+      const duration = performance.now() - startTime;
+      
+      logger.error('Dependency vulnerability scan failed', {
+        correlationId,
+        operation: 'dependency-scan',
+        duration,
+        error: scanError.message || 'Unknown error'
+      });
+      
+      throw new MCPServerError(
+        `Dependency vulnerability scan failed: ${scanError.message || 'Unknown error'}`,
+        ErrorCategory.INTERNAL_ERROR,
+        ErrorSeverity.MEDIUM,
+        correlationId,
+        'dependency-scan',
+        error as Error
+      );
+    }
+  }
+  
+  private static mapNpmSeverity(npmSeverity: string): VulnerabilitySeverity {
+    switch (npmSeverity?.toLowerCase()) {
+      case 'critical':
+        return VulnerabilitySeverity.CRITICAL;
+      case 'high':
+        return VulnerabilitySeverity.HIGH;
+      case 'moderate':
+        return VulnerabilitySeverity.MODERATE;
+      case 'low':
+        return VulnerabilitySeverity.LOW;
+      default:
+        return VulnerabilitySeverity.INFO;
+    }
+  }
+  
+  static async generateMaintenanceReport(): Promise<string> {
+    const scanResults = this.lastScan || await this.scanForVulnerabilities();
+    const health = await HealthMonitor.performHealthCheck();
+    const performanceReport = PerformanceMonitor.getMetricsReport();
+    
+    let report = '# FastMCP Server Maintenance Report\n\n';
+    report += `Generated: ${new Date().toISOString()}\n`;
+    report += `Scan Timestamp: ${scanResults.scanTimestamp.toISOString()}\n\n`;
+    
+    // System Health Summary
+    const healthEmoji = health.status === 'healthy' ? '✅' : health.status === 'degraded' ? '⚠️' : '❌';
+    report += `## System Health: ${healthEmoji} ${health.status.toUpperCase()}\n\n`;
+    
+    // Security Status
+    const securityEmoji = scanResults.criticalCount === 0 && scanResults.highCount === 0 ? '✅' : '🔒';
+    report += `## Security Status: ${securityEmoji}\n\n`;
+    report += `- **Total Vulnerabilities:** ${scanResults.totalVulnerabilities}\n`;
+    report += `- **Critical:** ${scanResults.criticalCount}\n`;
+    report += `- **High:** ${scanResults.highCount}\n`;
+    report += `- **Moderate:** ${scanResults.moderateCount}\n`;
+    report += `- **Low:** ${scanResults.lowCount}\n\n`;
+    
+    if (scanResults.vulnerabilities.length > 0) {
+      report += '### Vulnerability Details\n\n';
+      scanResults.vulnerabilities.forEach(vuln => {
+        const severity = vuln.severity === VulnerabilitySeverity.CRITICAL ? '🔴' :
+                        vuln.severity === VulnerabilitySeverity.HIGH ? '🟠' :
+                        vuln.severity === VulnerabilitySeverity.MODERATE ? '🟡' : '🔵';
+        report += `${severity} **${vuln.packageName}** (${vuln.severity})\n`;
+        report += `  - ${vuln.title}\n`;
+        if (vuln.cvss) {
+          report += `  - CVSS Score: ${vuln.cvss}\n`;
+        }
+        if (vuln.url) {
+          report += `  - More info: ${vuln.url}\n`;
+        }
+        report += '\n';
+      });
+    }
+    
+    // Outdated Packages
+    report += `## Package Updates: ${scanResults.outdatedPackages.length > 0 ? '📦' : '✅'}\n\n`;
+    if (scanResults.outdatedPackages.length > 0) {
+      report += `Found ${scanResults.outdatedPackages.length} outdated packages:\n\n`;
+      scanResults.outdatedPackages.forEach(pkg => {
+        report += `- **${pkg.package}**: ${pkg.current} → ${pkg.latest}\n`;
+      });
+      report += '\n';
+    } else {
+      report += 'All packages are up to date.\n\n';
+    }
+    
+    // Performance Summary
+    report += '## Performance Summary\n\n';
+    report += `- **Total Operations:** ${performanceReport.summary.totalOperations}\n`;
+    report += `- **Average Duration:** ${performanceReport.summary.averageDuration.toFixed(2)}ms\n`;
+    report += `- **Memory Usage:** ${(performanceReport.summary.currentMemoryUsage / 1024 / 1024).toFixed(2)}MB\n\n`;
+    
+    // Maintenance Recommendations
+    report += '## Maintenance Recommendations\n\n';
+    
+    const recommendations = [];
+    
+    if (scanResults.criticalCount > 0) {
+      recommendations.push('🔥 **URGENT**: Address critical security vulnerabilities immediately');
+    }
+    
+    if (scanResults.highCount > 0) {
+      recommendations.push('⚠️ **HIGH PRIORITY**: Review and fix high-severity vulnerabilities');
+    }
+    
+    if (scanResults.outdatedPackages.length > 5) {
+      recommendations.push('📦 **RECOMMENDED**: Update outdated packages to latest versions');
+    }
+    
+    if (health.status !== 'healthy') {
+      recommendations.push('🏥 **ATTENTION**: Address health check failures');
+    }
+    
+    if (performanceReport.summary.averageDuration > 1000) {
+      recommendations.push('⚡ **PERFORMANCE**: Investigate slow operations');
+    }
+    
+    if (recommendations.length === 0) {
+      recommendations.push('✅ System is in excellent condition - continue monitoring');
+    }
+    
+    recommendations.forEach(rec => {
+      report += `- ${rec}\n`;
+    });
+    
+    report += '\n---\n';
+    report += '*Report generated by FastMCP Server automated maintenance system*\n';
+    
+    return report;
+  }
+  
+  static getLastScanResults(): DependencyStatus | null {
+    return this.lastScan;
+  }
+}
+
 // Simple configuration from environment
 const config = {
   makeApiKey: process.env.MAKE_API_KEY,
@@ -514,6 +813,8 @@ const config = {
     process.env.DEPENDENCY_MONITORING_ENABLED !== "false",
   maintenanceReportsEnabled:
     process.env.MAINTENANCE_REPORTS_ENABLED !== "false",
+  vulnerabilityThreshold: (process.env.VULNERABILITY_THRESHOLD || "moderate").toLowerCase(),
+  dependencyScanInterval: parseInt(process.env.DEPENDENCY_SCAN_INTERVAL_HOURS || "24") * 60 * 60 * 1000,
 };
 
 // Simple Make.com API client
@@ -754,12 +1055,7 @@ const server = new FastMCP({
 // Initialize Make.com API client
 const makeClient = new SimpleMakeClient();
 
-// Initialize dependency monitoring system
-const dependencyMonitor = new DependencyMonitor(logger);
-const maintenanceReportGenerator = new MaintenanceReportGenerator(
-  dependencyMonitor,
-  logger,
-);
+// Dependency monitoring is handled by static DependencyMonitor class
 
 // SCENARIO TOOLS
 server.addTool({
@@ -1397,16 +1693,18 @@ if (config.dependencyMonitoringEnabled) {
         .describe("Filter results by minimum severity level (default: all)"),
     }),
     execute: async (args) => {
-      const vulnerabilities =
-        await dependencyMonitor.performVulnerabilityScan();
+      const scanResults = await DependencyMonitor.scanForVulnerabilities();
+      const vulnerabilities = scanResults.vulnerabilities;
       let filtered = vulnerabilities;
 
       if (args.severity_filter && args.severity_filter !== "all") {
-        const severityLevels = { low: 1, moderate: 2, high: 3, critical: 4 };
-        const minLevel = severityLevels[args.severity_filter];
-        filtered = vulnerabilities.filter(
-          (v) => severityLevels[v.severity] >= minLevel,
-        );
+        const severityLevels: Record<string, number> = { LOW: 1, MODERATE: 2, HIGH: 3, CRITICAL: 4 };
+        const minLevel = severityLevels[args.severity_filter.toUpperCase()];
+        if (minLevel !== undefined) {
+          filtered = vulnerabilities.filter(
+            (v) => (severityLevels[v.severity] || 0) >= minLevel,
+          );
+        }
       }
 
       const severityBreakdown = filtered.reduce(
@@ -1428,32 +1726,35 @@ if (config.dependencyMonitoringEnabled) {
       report += `Severity Breakdown:\n`;
       Object.entries(severityBreakdown).forEach(([severity, count]) => {
         const emoji =
-          severity === "critical"
+          severity === "CRITICAL"
             ? "🚨"
-            : severity === "high"
+            : severity === "HIGH"
               ? "⚠️"
-              : severity === "moderate"
+              : severity === "MODERATE"
                 ? "📢"
                 : "💡";
-        report += `${emoji} ${severity.toUpperCase()}: ${count}\n`;
+        report += `${emoji} ${severity}: ${count}\n`;
       });
 
       if (filtered.length > 0) {
         report += `\nVulnerability Details:\n`;
         filtered.forEach((vuln) => {
           const severityEmoji =
-            vuln.severity === "critical"
+            vuln.severity === "CRITICAL"
               ? "🚨"
-              : vuln.severity === "high"
+              : vuln.severity === "HIGH"
                 ? "⚠️"
-                : vuln.severity === "moderate"
+                : vuln.severity === "MODERATE"
                   ? "📢"
                   : "💡";
           report += `\n${severityEmoji} ${vuln.packageName} (${vuln.currentVersion})\n`;
-          report += `   CVE: ${vuln.cve}\n`;
-          report += `   Severity: ${vuln.severity.toUpperCase()}\n`;
-          report += `   Description: ${vuln.description}\n`;
-          report += `   Fix Available: ${vuln.fixAvailable ? "Yes (npm audit fix)" : "Manual update required"}\n`;
+          report += `   Title: ${vuln.title}\n`;
+          if (vuln.cvss) {
+            report += `   CVSS Score: ${vuln.cvss}\n`;
+          }
+          if (vuln.url) {
+            report += `   More Info: ${vuln.url}\n`;
+          }
         });
       } else {
         report += `\n✅ No vulnerabilities found at the specified severity level.`;
@@ -1475,19 +1776,20 @@ if (config.dependencyMonitoringEnabled) {
         .describe("Filter by update type (default: all)"),
     }),
     execute: async (args) => {
-      const outdatedPackages = await dependencyMonitor.checkOutdatedPackages();
+      const scanResults = await DependencyMonitor.scanForVulnerabilities();
+      const outdatedPackages = scanResults.outdatedPackages;
 
       let filtered = outdatedPackages;
       if (args.update_type && args.update_type !== "all") {
         filtered = outdatedPackages.filter((pkg) => {
           const currentMajor =
-            parseInt(pkg.currentVersion.split(".")[0], 10) || 0;
+            parseInt(pkg.current.split(".")[0], 10) || 0;
           const latestMajor =
-            parseInt(pkg.latestVersion.split(".")[0], 10) || 0;
+            parseInt(pkg.latest.split(".")[0], 10) || 0;
           const currentMinor =
-            parseInt(pkg.currentVersion.split(".")[1], 10) || 0;
+            parseInt(pkg.current.split(".")[1], 10) || 0;
           const latestMinor =
-            parseInt(pkg.latestVersion.split(".")[1], 10) || 0;
+            parseInt(pkg.latest.split(".")[1], 10) || 0;
 
           if (args.update_type === "major") {
             return latestMajor > currentMajor;
@@ -1513,13 +1815,13 @@ if (config.dependencyMonitoringEnabled) {
         const updateTypes = filtered.reduce(
           (counts, pkg) => {
             const currentMajor =
-              parseInt(pkg.currentVersion.split(".")[0], 10) || 0;
+              parseInt(pkg.current.split(".")[0], 10) || 0;
             const latestMajor =
-              parseInt(pkg.latestVersion.split(".")[0], 10) || 0;
+              parseInt(pkg.latest.split(".")[0], 10) || 0;
             const currentMinor =
-              parseInt(pkg.currentVersion.split(".")[1], 10) || 0;
+              parseInt(pkg.current.split(".")[1], 10) || 0;
             const latestMinor =
-              parseInt(pkg.latestVersion.split(".")[1], 10) || 0;
+              parseInt(pkg.latest.split(".")[1], 10) || 0;
 
             if (latestMajor > currentMajor) {
               counts.major = (counts.major || 0) + 1;
@@ -1547,15 +1849,14 @@ if (config.dependencyMonitoringEnabled) {
         report += `\nPackage Details:\n`;
         filtered.forEach((pkg) => {
           const currentMajor =
-            parseInt(pkg.currentVersion.split(".")[0], 10) || 0;
+            parseInt(pkg.current.split(".")[0], 10) || 0;
           const latestMajor =
-            parseInt(pkg.latestVersion.split(".")[0], 10) || 0;
+            parseInt(pkg.latest.split(".")[0], 10) || 0;
           const updateEmoji = latestMajor > currentMajor ? "🔴" : "🟡";
 
-          report += `\n${updateEmoji} ${pkg.packageName}\n`;
-          report += `   Current: ${pkg.currentVersion}\n`;
-          report += `   Latest: ${pkg.latestVersion}\n`;
-          report += `   Type: ${pkg.type}\n`;
+          report += `\n${updateEmoji} ${pkg.package}\n`;
+          report += `   Current: ${pkg.current}\n`;
+          report += `   Latest: ${pkg.latest}\n`;
         });
       } else {
         report += `\n✅ All packages are up to date.`;
@@ -1589,24 +1890,13 @@ if (config.maintenanceReportsEnabled) {
         .optional()
         .describe("Filter vulnerabilities by minimum severity level"),
     }),
-    execute: async (args) => {
-      const report = await maintenanceReportGenerator.generateReport();
-      const format = args.format || "text";
-      const includeDetails = args.include_details !== false;
+    execute: async (_args) => {
+      const report = await DependencyMonitor.generateMaintenanceReport();
 
-      const exportOptions = {
-        format,
-        includeDetails,
-        filterSeverity: args.filter_severity,
-      };
-
-      const exportedReport = await maintenanceReportGenerator.exportReport(
-        report,
-        exportOptions,
-      );
-
+      // For now, return the report as-is in markdown format
+      // In the future, could add format conversion logic using args.format
       return {
-        content: [{ type: "text", text: exportedReport }],
+        content: [{ type: "text", text: report }],
       };
     },
   });
@@ -1616,17 +1906,13 @@ if (config.maintenanceReportsEnabled) {
     description: "Get current dependency health status and summary",
     parameters: z.object({}),
     execute: async () => {
-      const scanResult = await dependencyMonitor.performComprehensiveScan();
+      const scanResult = await DependencyMonitor.scanForVulnerabilities();
 
-      const criticalVulns = scanResult.vulnerabilities.filter(
-        (v) => v.severity === "critical",
-      ).length;
-      const highVulns = scanResult.vulnerabilities.filter(
-        (v) => v.severity === "high",
-      ).length;
+      const criticalVulns = scanResult.criticalCount;
+      const highVulns = scanResult.highCount;
       const majorUpdates = scanResult.outdatedPackages.filter((p) => {
-        const currentMajor = parseInt(p.currentVersion.split(".")[0], 10) || 0;
-        const latestMajor = parseInt(p.latestVersion.split(".")[0], 10) || 0;
+        const currentMajor = parseInt(p.current.split(".")[0], 10) || 0;
+        const latestMajor = parseInt(p.latest.split(".")[0], 10) || 0;
         return latestMajor > currentMajor;
       }).length;
 
@@ -1634,8 +1920,7 @@ if (config.maintenanceReportsEnabled) {
       if (criticalVulns > 0 || highVulns > 0) {
         healthStatus = "critical";
       } else if (
-        scanResult.vulnerabilities.filter((v) => v.severity === "moderate")
-          .length > 0 ||
+        scanResult.moderateCount > 0 ||
         majorUpdates > 5
       ) {
         healthStatus = "warning";
@@ -1650,16 +1935,14 @@ if (config.maintenanceReportsEnabled) {
 
       let status = `${statusEmoji} Dependency Health Status: ${healthStatus.toUpperCase()}\n\n`;
       status += `📊 Summary:\n`;
-      status += `• Total Dependencies: ${scanResult.totalDependencies}\n`;
-      status += `• Security Vulnerabilities: ${scanResult.vulnerabilities.length}\n`;
+      status += `• Security Vulnerabilities: ${scanResult.totalVulnerabilities}\n`;
       status += `  - Critical: ${criticalVulns}\n`;
       status += `  - High: ${highVulns}\n`;
-      status += `  - Moderate: ${scanResult.vulnerabilities.filter((v) => v.severity === "moderate").length}\n`;
-      status += `  - Low: ${scanResult.vulnerabilities.filter((v) => v.severity === "low").length}\n`;
+      status += `  - Moderate: ${scanResult.moderateCount}\n`;
+      status += `  - Low: ${scanResult.lowCount}\n`;
       status += `• Outdated Packages: ${scanResult.outdatedPackages.length}\n`;
       status += `  - Major Updates Available: ${majorUpdates}\n`;
-      status += `• Scan Duration: ${scanResult.scanDuration}ms\n`;
-      status += `• Scan Timestamp: ${scanResult.scanTimestamp.toISOString()}\n`;
+      status += `• Last Scan: ${scanResult.scanTimestamp.toISOString()}\n`;
 
       if (criticalVulns > 0 || highVulns > 0) {
         status += `\n🚨 URGENT: Address ${criticalVulns + highVulns} critical/high severity vulnerabilities immediately!\n`;
