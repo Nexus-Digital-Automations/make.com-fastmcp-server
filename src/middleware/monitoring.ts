@@ -64,7 +64,7 @@ class MonitoringMiddleware {
    * Create a fallback logger that's compatible with the Logger interface
    */
   private createFallbackLogger(): ReturnType<typeof logger.child> {
-    const fallbackLogger: any = {
+    const fallbackLogger: Record<string, unknown> = {
       info: (..._args: unknown[]): void => {},
       debug: (..._args: unknown[]): void => {},
       warn: (..._args: unknown[]): void => {},
@@ -128,6 +128,7 @@ class MonitoringMiddleware {
 
   /**
    * Create a monitoring wrapper for tool execution
+   * SUBAGENT 1-2: Refactored using Extract Method pattern (68→≤50 lines)
    */
   public wrapToolExecution<T>(
     toolName: string,
@@ -138,74 +139,39 @@ class MonitoringMiddleware {
     return async (): Promise<T> => {
       const executionId = `${toolName}_${Date.now()}_${Math.random()}`;
       const timer = metrics.createTimer();
-
-      const toolMetrics: ToolMetrics = {
-        startTime: Date.now(),
-      };
-
-      this.toolExecutions.set(executionId, toolMetrics);
-
-      const contextLogger = this.componentLogger.child({
-        tool: toolName,
+      const toolMetrics = this.initializeToolMetrics(executionId);
+      const contextLogger = this.createContextLogger(
+        toolName,
         operation,
         executionId,
-        ...context,
-      });
+        context,
+      );
 
-      contextLogger.info("Tool execution started", {
-        tool: toolName,
-        operation,
-      });
+      this.logExecutionStart(contextLogger, toolName, operation);
 
       try {
         const result = await execution();
-
-        const duration = timer();
-        toolMetrics.endTime = Date.now();
-        toolMetrics.duration = duration;
-        toolMetrics.status = "success";
-
-        metrics.recordToolExecution(
+        this.handleExecutionSuccess({
+          toolMetrics,
+          timer,
           toolName,
-          "success",
-          duration,
-          context.userId,
-        );
-
-        contextLogger.info("Tool execution completed successfully", {
-          duration: `${duration.toFixed(3)}s`,
-          tool: toolName,
           operation,
+          context,
+          contextLogger,
+          executionId,
         });
-
-        this.toolExecutions.delete(executionId);
         return result;
       } catch (error) {
-        const duration = timer();
-        const errorType = this.classifyError(error);
-
-        toolMetrics.endTime = Date.now();
-        toolMetrics.duration = duration;
-        toolMetrics.status = "error";
-        toolMetrics.errorType = errorType;
-
-        metrics.recordToolExecution(
+        this.handleExecutionError({
+          toolMetrics,
+          timer,
+          error,
           toolName,
-          "error",
-          duration,
-          context.userId,
-        );
-        metrics.recordError(errorType, operation, toolName);
-
-        contextLogger.error("Tool execution failed", {
-          duration: `${duration.toFixed(3)}s`,
-          error: error instanceof Error ? error.message : String(error),
-          errorType,
-          tool: toolName,
           operation,
+          context,
+          contextLogger,
+          executionId,
         });
-
-        this.toolExecutions.delete(executionId);
         throw error;
       }
     };
@@ -449,6 +415,135 @@ class MonitoringMiddleware {
     }
 
     return null;
+  }
+
+  /**
+   * Initialize tool execution metrics tracking
+   * SUBAGENT 1: Extract Method - Tool metrics initialization
+   */
+  private initializeToolMetrics(executionId: string): ToolMetrics {
+    const toolMetrics: ToolMetrics = {
+      startTime: Date.now(),
+    };
+    this.toolExecutions.set(executionId, toolMetrics);
+    return toolMetrics;
+  }
+
+  /**
+   * Create context logger for tool execution
+   * SUBAGENT 1: Extract Method - Logger setup
+   */
+  private createContextLogger(
+    toolName: string,
+    operation: string,
+    executionId: string,
+    context: MonitoringContext,
+  ): ReturnType<typeof logger.child> {
+    return this.componentLogger.child({
+      tool: toolName,
+      operation,
+      executionId,
+      ...context,
+    });
+  }
+
+  /**
+   * Log tool execution start
+   * SUBAGENT 1: Extract Method - Start logging
+   */
+  private logExecutionStart(
+    contextLogger: ReturnType<typeof logger.child>,
+    toolName: string,
+    operation: string,
+  ): void {
+    contextLogger.info("Tool execution started", {
+      tool: toolName,
+      operation,
+    });
+  }
+
+  /**
+   * Handle successful tool execution
+   * SUBAGENT 2: Extract Method - Success handling and metrics (reduced parameters)
+   */
+  private handleExecutionSuccess(params: {
+    toolMetrics: ToolMetrics;
+    timer: () => number;
+    toolName: string;
+    operation: string;
+    context: MonitoringContext;
+    contextLogger: ReturnType<typeof logger.child>;
+    executionId: string;
+  }): void {
+    const {
+      toolMetrics,
+      timer,
+      toolName,
+      operation,
+      context,
+      contextLogger,
+      executionId,
+    } = params;
+    const duration = timer();
+    toolMetrics.endTime = Date.now();
+    toolMetrics.duration = duration;
+    toolMetrics.status = "success";
+
+    metrics.recordToolExecution(toolName, "success", duration, context.userId);
+
+    contextLogger.info("Tool execution completed successfully", {
+      duration: `${duration.toFixed(3)}s`,
+      tool: toolName,
+      operation,
+    });
+
+    this.toolExecutions.delete(executionId);
+  }
+
+  /**
+   * Handle tool execution error
+   * SUBAGENT 2: Extract Method - Error handling and metrics (reduced parameters)
+   */
+  private handleExecutionError(params: {
+    toolMetrics: ToolMetrics;
+    timer: () => number;
+    error: unknown;
+    toolName: string;
+    operation: string;
+    context: MonitoringContext;
+    contextLogger: ReturnType<typeof logger.child>;
+    executionId: string;
+  }): void {
+    const {
+      toolMetrics,
+      timer,
+      error,
+      toolName,
+      operation,
+      context,
+      contextLogger,
+      executionId,
+    } = params;
+    const duration = timer();
+    const errorType = this.classifyError(error);
+
+    toolMetrics.endTime = Date.now();
+    toolMetrics.duration = duration;
+    toolMetrics.status = "error";
+    toolMetrics.errorType = errorType;
+
+    metrics.recordToolExecution(toolName, "error", duration, context.userId);
+    metrics.recordError(errorType, operation, toolName);
+
+    contextLogger.error("Tool execution failed", {
+      duration: `${duration.toFixed(3)}s`,
+      error: error instanceof Error ? error.message : String(error),
+      errorType,
+      tool: toolName,
+      operation,
+    });
+
+    this.toolExecutions.delete(executionId);
   }
 
   /**

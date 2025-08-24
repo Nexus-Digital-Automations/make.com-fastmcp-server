@@ -2,6 +2,34 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1756066314347_3psb9xyq2",
+      "title": "Fix max-lines violations in wrapper-tool files using Extract Method pattern",
+      "description": "Fix wrapToolExecution method: 68→≤50 lines, setupRateLimiters method: 59→≤50 lines, and async arrow function with 61→≤50 lines using systematic Extract Method pattern",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T20:11:54.347Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T20:12:47.685Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        }
+      ]
+    },
+    {
       "id": "task_1756065735085_n9wuyetpu",
       "title": "Fix max-lines violation in cache.ts constructor (109→≤50)",
       "description": "Apply Extract Method pattern to break down complex constructor into focused helper methods with single responsibility",
