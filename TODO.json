@@ -102,35 +102,6 @@
       ]
     },
     {
-      "id": "task_1756071487838_8tcs20h6e",
-      "title": "Complete FastMCP server project validation and documentation",
-      "description": "Final validation of the completed FastMCP TypeScript server project, ensuring all functionality works correctly and project is properly documented",
-      "mode": "DEVELOPMENT",
-      "category": "chore",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-24T21:38:07.838Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1756071434582_1_general_2422fdcf",
-      "started_at": "2025-08-24T21:38:13.219Z",
-      "claimed_by": "development_session_1756071434582_1_general_2422fdcf",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1756071434582_1_general_2422fdcf",
-          "role": "primary",
-          "assignedAt": "2025-08-24T21:38:13.219Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1756071326191_7vvwg1vbr",
       "title": "Clean up obsolete linting tasks after project simplification",
       "description": "Remove or complete obsolete linting tasks that reference files no longer in the simplified FastMCP server project. The project has been converted to a single simple-fastmcp-server.ts file with no linting violations.",
