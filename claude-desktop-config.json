@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "make-fastmcp": {
+      "command": "node",
+      "args": [
+        "/path/to/your/make.com-fastmcp-server/dist/simple-fastmcp-server.js"
+      ],
+      "env": {
+        "MAKE_API_KEY": "your_actual_make_api_key_here",
+        "MAKE_BASE_URL": "https://us1.make.com/api/v2"
+      }
+    }
+  }
+}
