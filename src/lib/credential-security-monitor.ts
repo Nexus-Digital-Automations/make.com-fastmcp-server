@@ -4,7 +4,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { credentialSecurityValidator } from './credential-security-validator.js';
+import { credentialSecurityValidator, type CredentialValidationResult } from './credential-security-validator.js';
 import { secureConfigManager } from './secure-config.js';
 import logger from './logger.js';
 
@@ -366,7 +366,7 @@ export class CredentialSecurityMonitor extends EventEmitter {
   /**
    * Perform credential validation based on type
    */
-  private performCredentialValidation(value: string, type: 'api_key' | 'secret') {
+  private performCredentialValidation(value: string, type: 'api_key' | 'secret'): CredentialValidationResult {
     if (type === 'api_key') {
       return credentialSecurityValidator().validateMakeApiKey(value);
     } else {
@@ -385,7 +385,7 @@ export class CredentialSecurityMonitor extends EventEmitter {
   /**
    * Handle invalid credential validation
    */
-  private handleInvalidCredential(key: string, validation: any): void {
+  private handleInvalidCredential(key: string, validation: CredentialValidationResult): void {
     this.createAlert({
       severity: 'high',
       type: 'validation_failure',
@@ -402,7 +402,7 @@ export class CredentialSecurityMonitor extends EventEmitter {
   /**
    * Handle weak credential detection
    */
-  private handleWeakCredential(key: string, validation: any): void {
+  private handleWeakCredential(key: string, validation: CredentialValidationResult): void {
     this.metrics.weakCredentials++;
     this.createAlert({
       severity: 'medium',

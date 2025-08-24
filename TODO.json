@@ -2,6 +2,52 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1756067563541_y7ps4vjmg",
+      "title": "Fix all TypeScript linting warnings - 10 violations across 3 files",
+      "description": "Fix @typescript-eslint/no-explicit-any and @typescript-eslint/explicit-function-return-type violations in credential-security-monitor.ts, diagnostic-rules.ts, and llm-sampling.ts",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T20:32:43.541Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1756067508955_tquugwsm3",
+      "title": "Fix TypeScript linting warnings (any types, return types)",
+      "description": "Fix @typescript-eslint/no-explicit-any and @typescript-eslint/explicit-function-return-type warnings across codebase",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T20:31:48.955Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1756067391607_1_general_fcdc6c62",
+      "started_at": "2025-08-24T20:31:54.326Z",
+      "claimed_by": "development_session_1756067391607_1_general_fcdc6c62",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1756067391607_1_general_fcdc6c62",
+          "role": "primary",
+          "assignedAt": "2025-08-24T20:31:54.326Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
       "id": "task_1756065735085_n9wuyetpu",
       "title": "Fix max-lines violation in cache.ts constructor (109→≤50)",
       "description": "Apply Extract Method pattern to break down complex constructor into focused helper methods with single responsibility",
@@ -26,35 +72,6 @@
             "oldStatus": "pending",
             "newStatus": "in_progress"
           }
-        }
-      ]
-    },
-    {
-      "id": "task_1756065426385_096eeb3ze",
-      "title": "Fix remaining 10+ max-lines violations across codebase",
-      "description": "Fix additional max-lines violations discovered: security-integration.ts (initialize: 91→≤50, verifyWebhook: 67→≤50), cache.ts constructor (109→≤50), multi-tier-cache.ts (addCacheManagementTools: 158→≤50, wrapWithCache: 63→≤50), oauth-flow.ts (initiateOAuthFlow: 53→≤50, handleOAuthCallback: 91→≤50), and other method violations. Apply systematic Extract Method pattern.",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-24T19:57:06.385Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1756065159838_1_general_e2598657",
-      "started_at": "2025-08-24T19:57:13.982Z",
-      "claimed_by": "development_session_1756065159838_1_general_e2598657",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1756065159838_1_general_e2598657",
-          "role": "primary",
-          "assignedAt": "2025-08-24T19:57:13.982Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
         }
       ]
     },
@@ -103,13 +120,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1756065159838_1_general_e2598657": {
+    "development_session_1756067391607_1_general_fcdc6c62": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-24T19:52:39.839Z",
+      "lastHeartbeat": "2025-08-24T20:29:51.608Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -120,8 +137,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-24T19:52:39.839Z",
-      "sessionId": "session_1756065159838",
+      "createdAt": "2025-08-24T20:29:51.608Z",
+      "sessionId": "session_1756067391607",
       "metadata": {}
     }
   },

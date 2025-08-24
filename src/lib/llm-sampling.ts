@@ -8,6 +8,14 @@ import * as crypto from 'crypto';
 import logger from './logger.js';
 // import { extractCorrelationId } from '../utils/error-response.js'; // Not used in current implementation
 
+// Logger interface for type safety
+interface ComponentLogger {
+  info(message: string, data?: Record<string, unknown>): void;
+  error(message: string, data?: Record<string, unknown>): void;
+  warn(message: string, data?: Record<string, unknown>): void;
+  debug(message: string, data?: Record<string, unknown>): void;
+}
+
 // LLM Sampling Message Schema
 const SamplingMessageSchema = z.object({
   role: z.enum(['user', 'assistant', 'system']),
@@ -130,7 +138,7 @@ export class LLMSamplingManager {
     }
   }
 
-  private logRequestStart(componentLogger: any, samplingRequest: SamplingRequest): void {
+  private logRequestStart(componentLogger: ComponentLogger, samplingRequest: SamplingRequest): void {
     componentLogger.info('Initiating LLM sampling request', {
       messageCount: samplingRequest.messages.length,
       maxTokens: samplingRequest.maxTokens,
@@ -139,7 +147,7 @@ export class LLMSamplingManager {
     });
   }
 
-  private checkCache(samplingRequest: SamplingRequest, componentLogger: any): SamplingResponse | null {
+  private checkCache(samplingRequest: SamplingRequest, componentLogger: ComponentLogger): SamplingResponse | null {
     if (!this.options.enableCaching) {
       return null;
     }
@@ -164,7 +172,7 @@ export class LLMSamplingManager {
   private handleSuccessfulResponse(
     samplingRequest: SamplingRequest, 
     validatedResponse: SamplingResponse, 
-    componentLogger: any
+    componentLogger: ComponentLogger
   ): void {
     // Cache successful response
     if (this.options.enableCaching) {
@@ -181,7 +189,7 @@ export class LLMSamplingManager {
     });
   }
 
-  private handleError(error: unknown, componentLogger: any): SamplingResponse {
+  private handleError(error: unknown, componentLogger: ComponentLogger): SamplingResponse {
     componentLogger.error('LLM sampling failed', { error });
     
     return {
