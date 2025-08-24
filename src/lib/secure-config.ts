@@ -868,7 +868,7 @@ export class SecureConfigManager {
         status: 'pending',
         requests: [request],
         concurrency: 1,
-        priority: request.priority === 'emergency' ? 'critical' : (request.priority || 'normal') as 'low' | 'normal' | 'high' | 'critical',
+        priority: request.priority === 'emergency' ? 'critical' : (request.priority || 'normal'),
         processedCount: 0,
         successCount: 0,
         failedCount: 0
@@ -966,7 +966,7 @@ export class SecureConfigManager {
       status: 'pending',
       requests,
       concurrency: Math.min(options.concurrency || 2, requests.length),
-      priority: (options.priority === 'emergency' ? 'critical' : (options.priority || 'normal')) as 'low' | 'normal' | 'high' | 'critical',
+      priority: (options.priority === 'emergency' ? 'critical' : (options.priority || 'normal')),
       processedCount: 0,
       successCount: 0,
       failedCount: 0
