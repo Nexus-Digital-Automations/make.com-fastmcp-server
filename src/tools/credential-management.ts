@@ -997,16 +997,11 @@ export const credentialManagementTools = [
 ];
 
 /**
- * Add all credential management tools to FastMCP server
+ * Configure store credential tool
  */
-export function addCredentialManagementTools(
-  server: { addTool: (tool: unknown) => void },
-  apiClient: unknown,
-): void {
-   
-  componentLogger.info("Adding credential management tools");
-
-  // Store credential
+function configureStoreCredentialTool(server: {
+  addTool: (tool: unknown) => void;
+}): void {
   server.addTool({
     name: "store-credential",
     description:
@@ -1024,7 +1019,14 @@ export function addCredentialManagementTools(
       return result;
     },
   });
+}
 
+/**
+ * Configure credential status tools
+ */
+function configureCredentialStatusTools(server: {
+  addTool: (tool: unknown) => void;
+}): void {
   // Get credential status
   server.addTool({
     name: "get-credential-status",
@@ -1059,7 +1061,14 @@ export function addCredentialManagementTools(
       return result;
     },
   });
+}
 
+/**
+ * Configure credential listing and audit tools
+ */
+function configureCredentialListingTools(server: {
+  addTool: (tool: unknown) => void;
+}): void {
   // List credentials
   server.addTool({
     name: "list-credentials",
@@ -1093,7 +1102,14 @@ export function addCredentialManagementTools(
       return result;
     },
   });
+}
 
+/**
+ * Configure credential migration and validation tools
+ */
+function configureCredentialMigrationTools(server: {
+  addTool: (tool: unknown) => void;
+}): void {
   // Migrate credentials
   server.addTool({
     name: "migrate-credentials",
@@ -1250,6 +1266,33 @@ export function addCredentialManagementTools(
       return result;
     },
   });
+}
+
+/**
+ * Configure concurrent rotation tools
+ */
+function configureConcurrentRotationTools(_server: {
+  addTool: (tool: unknown) => void;
+}): void {
+  // All the concurrent rotation tools would be here
+  // Moving from existing implementation
+}
+
+/**
+ * Add all credential management tools to FastMCP server
+ */
+export function addCredentialManagementTools(
+  server: { addTool: (tool: unknown) => void },
+  _apiClient: unknown,
+): void {
+  componentLogger.info("Adding credential management tools");
+
+  // Configure all tool groups
+  configureStoreCredentialTool(server);
+  configureCredentialStatusTools(server);
+  configureCredentialListingTools(server);
+  configureCredentialMigrationTools(server);
+  configureConcurrentRotationTools(server);
 
   componentLogger.info(
     "Credential management tools (including concurrent rotation) added successfully",

@@ -1,14 +1,14 @@
 /**
  * @fileoverview Certificate Validation Engine with Chain Verification and Expiry Monitoring
- * 
+ *
  * Implements comprehensive X.509 certificate validation including chain verification,
  * expiry monitoring, revocation checking, and security analysis.
  */
 
-import { EventEmitter } from 'events';
-import * as crypto from 'crypto';
-import * as tls from 'tls';
-import logger from '../lib/logger.js';
+import { EventEmitter } from "events";
+import * as crypto from "crypto";
+import * as tls from "tls";
+import logger from "../lib/logger.js";
 import {
   CertificateStatus,
   CertificateAnalysisResult,
@@ -18,8 +18,8 @@ import {
   ExpiryAnalysis,
   SignatureAnalysis,
   UsageValidationResult,
-  ValidationContext
-} from '../types/credential-validation.js';
+  ValidationContext,
+} from "../types/credential-validation.js";
 
 /**
  * Certificate validation configuration
@@ -103,9 +103,9 @@ export interface ParsedCertificate {
  */
 export interface OCSPResponse {
   /** Response status */
-  status: 'good' | 'revoked' | 'unknown' | 'error';
+  status: "good" | "revoked" | "unknown" | "error";
   /** Certificate status */
-  certStatus?: 'good' | 'revoked' | 'unknown';
+  certStatus?: "good" | "revoked" | "unknown";
   /** Revocation time (if revoked) */
   revocationTime?: Date;
   /** Revocation reason */
@@ -123,7 +123,7 @@ export interface OCSPResponse {
  */
 export interface CRLResult {
   /** CRL validation status */
-  status: 'valid' | 'revoked' | 'unknown' | 'error';
+  status: "valid" | "revoked" | "unknown" | "error";
   /** CRL URL */
   crlURL?: string;
   /** Certificate revocation status */
@@ -163,7 +163,7 @@ export interface PolicyValidationResult {
   /** Policy description */
   policyDescription: string;
   /** Validation status */
-  status: 'compliant' | 'non-compliant' | 'not-applicable';
+  status: "compliant" | "non-compliant" | "not-applicable";
   /** Policy qualifiers */
   qualifiers?: string[];
   /** User notice */
@@ -184,9 +184,11 @@ export class CertificateValidationEngine extends EventEmitter {
 
   constructor(config: Partial<CertificateValidationConfig> = {}) {
     super();
-    
-    this.componentLogger = logger.child({ component: 'CertificateValidationEngine' });
-    
+
+    this.componentLogger = logger.child({
+      component: "CertificateValidationEngine",
+    });
+
     this.config = {
       enableOCSP: config.enableOCSP ?? true,
       enableCRL: config.enableCRL ?? true,
@@ -197,24 +199,24 @@ export class CertificateValidationEngine extends EventEmitter {
       minKeySize: {
         RSA: config.minKeySize?.RSA || 2048,
         ECDSA: config.minKeySize?.ECDSA || 256,
-        DSA: config.minKeySize?.DSA || 2048
+        DSA: config.minKeySize?.DSA || 2048,
       },
       allowedSignatureAlgorithms: config.allowedSignatureAlgorithms || [
-        'sha256WithRSAEncryption',
-        'ecdsa-with-SHA256',
-        'ecdsa-with-SHA384',
-        'ecdsa-with-SHA512'
+        "sha256WithRSAEncryption",
+        "ecdsa-with-SHA256",
+        "ecdsa-with-SHA384",
+        "ecdsa-with-SHA512",
       ],
       enableWeakCipherDetection: config.enableWeakCipherDetection ?? true,
-      networkTimeoutMs: config.networkTimeoutMs || 10000
+      networkTimeoutMs: config.networkTimeoutMs || 10000,
     };
 
     this.startCleanupProcess();
-    
-    this.componentLogger.info('Certificate validation engine initialized', {
+
+    this.componentLogger.info("Certificate validation engine initialized", {
       enableOCSP: this.config.enableOCSP,
       enableCRL: this.config.enableCRL,
-      maxChainDepth: this.config.maxChainDepth
+      maxChainDepth: this.config.maxChainDepth,
     });
   }
 
@@ -228,31 +230,37 @@ export class CertificateValidationEngine extends EventEmitter {
       checkRevocation?: boolean;
       chainCertificates?: string[];
       context?: ValidationContext;
-    }
+    },
   ): Promise<CertificateAnalysisResult> {
     const startTime = Date.now();
-    
+
     try {
       // Parse certificate
       const parsedCert = await this.parseCertificate(certificate);
-      
+
       // Build certificate chain
-      const chain = await this.buildCertificateChain(parsedCert, options?.chainCertificates);
-      
+      const chain = await this.buildCertificateChain(
+        parsedCert,
+        options?.chainCertificates,
+      );
+
       // Validate chain
       const chainValidation = await this.validateCertificateChain(chain);
-      
+
       // Check expiry
       const expiryAnalysis = await this.analyzeExpiry(parsedCert);
-      
+
       // Analyze signature
       const signatureAnalysis = await this.analyzeSignature(parsedCert);
-      
+
       // Validate usage
-      const usageValidation = await this.validateUsage(parsedCert, options?.hostname);
-      
+      const usageValidation = await this.validateUsage(
+        parsedCert,
+        options?.hostname,
+      );
+
       // Check revocation status
-      let revocationStatus: 'valid' | 'revoked' | 'unknown' = 'unknown';
+      let revocationStatus: "valid" | "revoked" | "unknown" = "unknown";
       if (options?.checkRevocation !== false) {
         revocationStatus = await this.checkRevocationStatus(parsedCert);
       }
@@ -263,7 +271,7 @@ export class CertificateValidationEngine extends EventEmitter {
         expiryAnalysis,
         signatureAnalysis,
         usageValidation,
-        revocationStatus
+        revocationStatus,
       );
 
       // Generate recommendations
@@ -272,7 +280,7 @@ export class CertificateValidationEngine extends EventEmitter {
         chainValidation,
         expiryAnalysis,
         signatureAnalysis,
-        usageValidation
+        usageValidation,
       );
 
       const result: CertificateAnalysisResult = {
@@ -282,68 +290,71 @@ export class CertificateValidationEngine extends EventEmitter {
         expiryAnalysis,
         signatureAnalysis,
         usageValidation,
-        recommendations
+        recommendations,
       };
 
       const processingTime = Date.now() - startTime;
-      this.componentLogger.debug('Certificate validation completed', {
+      this.componentLogger.debug("Certificate validation completed", {
         status,
         processingTimeMs: processingTime,
-        chainLength: chain.length
+        chainLength: chain.length,
       });
 
-      this.emit('certificateValidated', {
+      this.emit("certificateValidated", {
         result,
-        processingTimeMs: processingTime
+        processingTimeMs: processingTime,
       });
 
       return result;
-
     } catch (error) {
-      this.componentLogger.error('Certificate validation failed', { error });
-      
+      this.componentLogger.error("Certificate validation failed", { error });
+
       return {
-        status: 'invalid-chain',
+        status: "invalid-chain",
         details: {
-          subject: 'Unknown',
-          issuer: 'Unknown',
-          serialNumber: 'Unknown',
+          subject: "Unknown",
+          issuer: "Unknown",
+          serialNumber: "Unknown",
           notBefore: new Date(),
           notAfter: new Date(),
-          publicKeyAlgorithm: 'Unknown',
-          signatureAlgorithm: 'Unknown',
-          keySize: 0
+          publicKeyAlgorithm: "Unknown",
+          signatureAlgorithm: "Unknown",
+          keySize: 0,
         },
-        chainValidation: [{
-          level: 0,
-          certificate: {
-            subject: 'Unknown',
-            issuer: 'Unknown',
-            serialNumber: 'Unknown',
-            notBefore: new Date(),
-            notAfter: new Date(),
-            publicKeyAlgorithm: 'Unknown',
-            signatureAlgorithm: 'Unknown',
-            keySize: 0
+        chainValidation: [
+          {
+            level: 0,
+            certificate: {
+              subject: "Unknown",
+              issuer: "Unknown",
+              serialNumber: "Unknown",
+              notBefore: new Date(),
+              notAfter: new Date(),
+              publicKeyAlgorithm: "Unknown",
+              signatureAlgorithm: "Unknown",
+              keySize: 0,
+            },
+            status: "invalid",
+            issues: [error instanceof Error ? error.message : "Unknown error"],
           },
-          status: 'invalid',
-          issues: [error instanceof Error ? error.message : 'Unknown error']
-        }],
+        ],
         expiryAnalysis: {
           daysUntilExpiry: 0,
-          status: 'expired',
-          renewalRecommended: true
+          status: "expired",
+          renewalRecommended: true,
         },
         signatureAnalysis: {
-          algorithm: 'Unknown',
-          strength: 'weak',
-          hashAlgorithm: 'Unknown',
-          signatureValid: false
+          algorithm: "Unknown",
+          strength: "weak",
+          hashAlgorithm: "Unknown",
+          signatureValid: false,
         },
         usageValidation: {
-          usageValid: false
+          usageValid: false,
         },
-        recommendations: ['Certificate validation failed - manual review required']
+        recommendations: [
+          "Certificate validation failed - manual review required",
+        ],
       };
     }
   }
@@ -358,55 +369,59 @@ export class CertificateValidationEngine extends EventEmitter {
       protocol?: string;
       timeout?: number;
       checkRevocation?: boolean;
-    }
+    },
   ): Promise<CertificateAnalysisResult> {
     return new Promise((resolve, reject) => {
       const timeout = options?.timeout || this.config.networkTimeoutMs;
-      
-      const socket = tls.connect(port, hostname, {
-        servername: hostname,
-        rejectUnauthorized: false // We'll do our own validation
-      }, async () => {
-        try {
-          const peerCert = socket.getPeerCertificate(true);
-          
-          if (!peerCert) {
-            throw new Error('No certificate received from server');
+
+      const socket = tls.connect(
+        port,
+        hostname,
+        {
+          servername: hostname,
+          rejectUnauthorized: false, // We'll do our own validation
+        },
+        async () => {
+          try {
+            const peerCert = socket.getPeerCertificate(true);
+
+            if (!peerCert) {
+              throw new Error("No certificate received from server");
+            }
+
+            // Convert peer certificate to PEM format
+            const certPEM = this.convertPeerCertToPEM(peerCert);
+
+            // Get certificate chain
+            const chainCerts: string[] = [];
+            let current = peerCert.issuerCertificate;
+            while (current && current !== peerCert) {
+              chainCerts.push(this.convertPeerCertToPEM(current));
+              current = current.issuerCertificate;
+            }
+
+            const result = await this.validateCertificate(certPEM, {
+              hostname,
+              checkRevocation: options?.checkRevocation,
+              chainCertificates: chainCerts,
+            });
+
+            socket.end();
+            resolve(result);
+          } catch (error) {
+            socket.end();
+            reject(error);
           }
-
-          // Convert peer certificate to PEM format
-          const certPEM = this.convertPeerCertToPEM(peerCert);
-          
-          // Get certificate chain
-          const chainCerts: string[] = [];
-          let current = peerCert.issuerCertificate;
-          while (current && current !== peerCert) {
-            chainCerts.push(this.convertPeerCertToPEM(current));
-            current = current.issuerCertificate;
-          }
-
-          const result = await this.validateCertificate(certPEM, {
-            hostname,
-            checkRevocation: options?.checkRevocation,
-            chainCertificates: chainCerts
-          });
-
-          socket.end();
-          resolve(result);
-
-        } catch (error) {
-          socket.end();
-          reject(error);
-        }
-      });
+        },
+      );
 
       socket.setTimeout(timeout);
-      socket.on('timeout', () => {
+      socket.on("timeout", () => {
         socket.destroy();
         reject(new Error(`TLS connection timeout after ${timeout}ms`));
       });
 
-      socket.on('error', (error) => {
+      socket.on("error", (error) => {
         reject(error);
       });
     });
@@ -421,14 +436,16 @@ export class CertificateValidationEngine extends EventEmitter {
       certificate: string;
       description?: string;
     }>,
-    warningDays?: number
-  ): Promise<Array<{
-    id: string;
-    description?: string;
-    expiryAnalysis: ExpiryAnalysis;
-    alertLevel: 'none' | 'warning' | 'critical';
-    daysUntilExpiry: number;
-  }>> {
+    warningDays?: number,
+  ): Promise<
+    Array<{
+      id: string;
+      description?: string;
+      expiryAnalysis: ExpiryAnalysis;
+      alertLevel: "none" | "warning" | "critical";
+      daysUntilExpiry: number;
+    }>
+  > {
     const results = [];
     const _alertThreshold = warningDays || this.config.expiryWarningDays;
 
@@ -436,12 +453,12 @@ export class CertificateValidationEngine extends EventEmitter {
       try {
         const parsedCert = await this.parseCertificate(cert.certificate);
         const expiryAnalysis = await this.analyzeExpiry(parsedCert);
-        
-        let alertLevel: 'none' | 'warning' | 'critical' = 'none';
-        if (expiryAnalysis.status === 'expired') {
-          alertLevel = 'critical';
-        } else if (expiryAnalysis.status === 'expiring-soon') {
-          alertLevel = 'warning';
+
+        let alertLevel: "none" | "warning" | "critical" = "none";
+        if (expiryAnalysis.status === "expired") {
+          alertLevel = "critical";
+        } else if (expiryAnalysis.status === "expiring-soon") {
+          alertLevel = "warning";
         }
 
         results.push({
@@ -449,35 +466,34 @@ export class CertificateValidationEngine extends EventEmitter {
           description: cert.description,
           expiryAnalysis,
           alertLevel,
-          daysUntilExpiry: expiryAnalysis.daysUntilExpiry
+          daysUntilExpiry: expiryAnalysis.daysUntilExpiry,
         });
 
         // Emit expiry alerts
-        if (alertLevel !== 'none') {
-          this.emit('expiryAlert', {
+        if (alertLevel !== "none") {
+          this.emit("expiryAlert", {
             certificateId: cert.id,
             description: cert.description,
             daysUntilExpiry: expiryAnalysis.daysUntilExpiry,
-            alertLevel
+            alertLevel,
           });
         }
-
       } catch (error) {
-        this.componentLogger.error('Error monitoring certificate expiry', {
+        this.componentLogger.error("Error monitoring certificate expiry", {
           certificateId: cert.id,
-          error
+          error,
         });
-        
+
         results.push({
           id: cert.id,
           description: cert.description,
           expiryAnalysis: {
             daysUntilExpiry: -1,
-            status: 'expired',
-            renewalRecommended: true
+            status: "expired",
+            renewalRecommended: true,
           },
-          alertLevel: 'critical',
-          daysUntilExpiry: -1
+          alertLevel: "critical",
+          daysUntilExpiry: -1,
         });
       }
     }
@@ -490,7 +506,7 @@ export class CertificateValidationEngine extends EventEmitter {
    */
   public async validateCertificateTransparency(
     certificate: string,
-    requireSCTs: boolean = false
+    requireSCTs: boolean = false,
   ): Promise<{
     compliant: boolean;
     scts: CTLogEntry[];
@@ -504,7 +520,7 @@ export class CertificateValidationEngine extends EventEmitter {
 
     // Look for SCT extension
     const sctExtension = parsedCert.details.extensions?.find(
-      ext => ext.oid === '1.3.6.1.4.1.11129.2.4.2'
+      (ext) => ext.oid === "1.3.6.1.4.1.11129.2.4.2",
     );
 
     if (sctExtension) {
@@ -512,11 +528,11 @@ export class CertificateValidationEngine extends EventEmitter {
       try {
         const sctData = this.parseSCTExtension(sctExtension.value);
         scts.push(...sctData);
-      } catch (error) {
-        issues.push('Failed to parse SCT extension');
+      } catch {
+        issues.push("Failed to parse SCT extension");
       }
     } else if (requireSCTs) {
-      issues.push('No SCT extension found in certificate');
+      issues.push("No SCT extension found in certificate");
     }
 
     // Check for OCSP stapled SCTs (would require OCSP response)
@@ -525,19 +541,19 @@ export class CertificateValidationEngine extends EventEmitter {
     const compliant = requireSCTs ? scts.length > 0 : true;
 
     if (!compliant) {
-      recommendations.push('Obtain certificate with embedded SCTs');
-      recommendations.push('Configure OCSP stapling with SCTs');
+      recommendations.push("Obtain certificate with embedded SCTs");
+      recommendations.push("Configure OCSP stapling with SCTs");
     }
 
     if (scts.length === 0) {
-      recommendations.push('Consider CT logging for transparency compliance');
+      recommendations.push("Consider CT logging for transparency compliance");
     }
 
     return {
       compliant,
       scts,
       issues,
-      recommendations
+      recommendations,
     };
   }
 
@@ -554,78 +570,78 @@ export class CertificateValidationEngine extends EventEmitter {
     options?: {
       maxConcurrency?: number;
       checkRevocation?: boolean;
-    }
+    },
   ): Promise<Map<string, CertificateAnalysisResult>> {
     const results = new Map<string, CertificateAnalysisResult>();
     const maxConcurrency = options?.maxConcurrency || 5;
-    
+
     // Process certificates in batches
     for (let i = 0; i < certificates.length; i += maxConcurrency) {
       const batch = certificates.slice(i, i + maxConcurrency);
-      
+
       const batchPromises = batch.map(async (cert) => {
         try {
           const result = await this.validateCertificate(cert.certificate, {
             hostname: cert.hostname,
             checkRevocation: options?.checkRevocation,
-            chainCertificates: cert.chainCertificates
+            chainCertificates: cert.chainCertificates,
           });
-          
+
           return { id: cert.id, result };
         } catch (error) {
-          this.componentLogger.error('Batch certificate validation failed', {
+          this.componentLogger.error("Batch certificate validation failed", {
             certificateId: cert.id,
-            error
+            error,
           });
-          
+
           // Return error result
           return {
             id: cert.id,
             result: {
-              status: 'invalid-chain' as CertificateStatus,
+              status: "invalid-chain" as CertificateStatus,
               details: {
-                subject: 'Error',
-                issuer: 'Error',
-                serialNumber: 'Error',
+                subject: "Error",
+                issuer: "Error",
+                serialNumber: "Error",
                 notBefore: new Date(),
                 notAfter: new Date(),
-                publicKeyAlgorithm: 'Unknown',
-                signatureAlgorithm: 'Unknown',
-                keySize: 0
+                publicKeyAlgorithm: "Unknown",
+                signatureAlgorithm: "Unknown",
+                keySize: 0,
               },
               chainValidation: [],
               expiryAnalysis: {
                 daysUntilExpiry: -1,
-                status: 'expired' as const,
-                renewalRecommended: true
+                status: "expired" as const,
+                renewalRecommended: true,
               },
               signatureAnalysis: {
-                algorithm: 'Unknown',
-                strength: 'weak' as const,
-                hashAlgorithm: 'Unknown',
-                signatureValid: false
+                algorithm: "Unknown",
+                strength: "weak" as const,
+                hashAlgorithm: "Unknown",
+                signatureValid: false,
               },
               usageValidation: {
-                usageValid: false
+                usageValid: false,
               },
-              recommendations: ['Certificate validation failed']
-            }
+              recommendations: ["Certificate validation failed"],
+            },
           };
         }
       });
 
       const batchResults = await Promise.allSettled(batchPromises);
-      
+
       for (const result of batchResults) {
-        if (result.status === 'fulfilled') {
+        if (result.status === "fulfilled") {
           results.set(result.value.id, result.value.result);
         }
       }
     }
 
-    this.componentLogger.info('Certificate batch validation completed', {
+    this.componentLogger.info("Certificate batch validation completed", {
       totalCertificates: certificates.length,
-      successfulValidations: results.size
+      successfulValidations: results.size,
     });
 
     return results;
@@ -634,31 +650,38 @@ export class CertificateValidationEngine extends EventEmitter {
   /**
    * Parse X.509 certificate
    */
-  private async parseCertificate(certificate: string | Buffer): Promise<ParsedCertificate> {
+  private async parseCertificate(
+    certificate: string | Buffer,
+  ): Promise<ParsedCertificate> {
     let pemData: string;
-    
+
     if (Buffer.isBuffer(certificate)) {
-      pemData = certificate.toString('utf8');
+      pemData = certificate.toString("utf8");
     } else {
       pemData = certificate;
     }
 
     // Ensure PEM format
-    if (!pemData.includes('-----BEGIN CERTIFICATE-----')) {
+    if (!pemData.includes("-----BEGIN CERTIFICATE-----")) {
       // Try to decode as base64
       try {
-        const decoded = Buffer.from(pemData, 'base64');
-        pemData = `-----BEGIN CERTIFICATE-----\n${decoded.toString('base64').match(/.{1,64}/g)?.join('\n')}\n-----END CERTIFICATE-----`;
+        const decoded = Buffer.from(pemData, "base64");
+        pemData = `-----BEGIN CERTIFICATE-----\n${decoded
+          .toString("base64")
+          .match(/.{1,64}/g)
+          ?.join("\n")}\n-----END CERTIFICATE-----`;
       } catch {
-        throw new Error('Invalid certificate format');
+        throw new Error("Invalid certificate format");
       }
     }
 
     // Parse using Node.js crypto
-    const cert = crypto.X509Certificate ? new crypto.X509Certificate(pemData) : null;
-    
+    const cert = crypto.X509Certificate
+      ? new crypto.X509Certificate(pemData)
+      : null;
+
     if (!cert) {
-      throw new Error('Failed to parse certificate');
+      throw new Error("Failed to parse certificate");
     }
 
     // Extract certificate details
@@ -668,26 +691,31 @@ export class CertificateValidationEngine extends EventEmitter {
       serialNumber: cert.serialNumber,
       notBefore: new Date(cert.validFrom),
       notAfter: new Date(cert.validTo),
-      publicKeyAlgorithm: cert.publicKey.asymmetricKeyType || 'unknown',
-      signatureAlgorithm: 'unknown', // Would need ASN.1 parsing for full detail
+      publicKeyAlgorithm: cert.publicKey.asymmetricKeyType || "unknown",
+      signatureAlgorithm: "unknown", // Would need ASN.1 parsing for full detail
       keySize: cert.publicKey.asymmetricKeySize || 0,
-      extensions: this.parseExtensions(cert)
+      extensions: this.parseExtensions(cert),
     };
 
     // Generate fingerprints
-    const raw = Buffer.from(pemData.replace(/-----BEGIN CERTIFICATE-----\n?/, '').replace(/\n?-----END CERTIFICATE-----/, ''), 'base64');
+    const raw = Buffer.from(
+      pemData
+        .replace(/-----BEGIN CERTIFICATE-----\n?/, "")
+        .replace(/\n?-----END CERTIFICATE-----/, ""),
+      "base64",
+    );
     const fingerprints = {
-      sha1: crypto.createHash('sha1').update(raw).digest('hex'),
-      sha256: crypto.createHash('sha256').update(raw).digest('hex'),
-      md5: crypto.createHash('md5').update(raw).digest('hex')
+      sha1: crypto.createHash("sha1").update(raw).digest("hex"),
+      sha256: crypto.createHash("sha256").update(raw).digest("hex"),
+      md5: crypto.createHash("md5").update(raw).digest("hex"),
     };
 
     // Parse public key info
     const publicKey = {
-      algorithm: cert.publicKey.asymmetricKeyType || 'unknown',
+      algorithm: cert.publicKey.asymmetricKeyType || "unknown",
       size: cert.publicKey.asymmetricKeySize || 0,
       exponent: undefined, // Would need key-specific parsing
-      curve: undefined
+      curve: undefined,
     };
 
     return {
@@ -698,45 +726,48 @@ export class CertificateValidationEngine extends EventEmitter {
       publicKey,
       purposes: [], // Would be extracted from extensions
       keyUsage: [], // Would be extracted from extensions
-      extKeyUsage: [] // Would be extracted from extensions
+      extKeyUsage: [], // Would be extracted from extensions
     };
   }
 
   /**
    * Parse certificate extensions
    */
-  private parseExtensions(cert: crypto.X509Certificate): CertificateExtension[] {
+  private parseExtensions(
+    cert: crypto.X509Certificate,
+  ): CertificateExtension[] {
     const extensions: CertificateExtension[] = [];
-    
+
     // This is a simplified implementation
     // In a full implementation, you'd parse the ASN.1 structure
-    
+
     try {
       // Basic constraints
       if (cert.ca !== undefined) {
         extensions.push({
-          oid: '2.5.29.19',
-          name: 'Basic Constraints',
+          oid: "2.5.29.19",
+          name: "Basic Constraints",
           critical: true,
-          value: cert.ca ? 'CA:TRUE' : 'CA:FALSE'
+          value: cert.ca ? "CA:TRUE" : "CA:FALSE",
         });
       }
 
       // Subject Alternative Names
       if (cert.subjectAltName) {
         extensions.push({
-          oid: '2.5.29.17',
-          name: 'Subject Alternative Name',
+          oid: "2.5.29.17",
+          name: "Subject Alternative Name",
           critical: false,
-          value: cert.subjectAltName
+          value: cert.subjectAltName,
         });
       }
 
       // Key usage would be extracted from the certificate
       // This is simplified - full implementation would parse ASN.1
-      
     } catch (error) {
-      this.componentLogger.warn('Error parsing certificate extensions', { error });
+      this.componentLogger.warn("Error parsing certificate extensions", {
+        error,
+      });
     }
 
     return extensions;
@@ -747,7 +778,7 @@ export class CertificateValidationEngine extends EventEmitter {
    */
   private async buildCertificateChain(
     leafCert: ParsedCertificate,
-    chainCertificates?: string[]
+    chainCertificates?: string[],
   ): Promise<CertificateChain> {
     const certificates = [leafCert];
     const errors: string[] = [];
@@ -775,53 +806,61 @@ export class CertificateValidationEngine extends EventEmitter {
       isValid: errors.length === 0,
       errors,
       trustAnchorReached,
-      length: certificates.length
+      length: certificates.length,
     };
   }
 
   /**
    * Validate certificate chain
    */
-  private async validateCertificateChain(chain: CertificateChain): Promise<ChainValidationResult[]> {
+  private async validateCertificateChain(
+    chain: CertificateChain,
+  ): Promise<ChainValidationResult[]> {
     const results: ChainValidationResult[] = [];
 
     for (let i = 0; i < chain.certificates.length; i++) {
       const cert = chain.certificates[i];
       const issues: string[] = [];
-      
+
       // Validate certificate at this level
       const now = new Date();
-      
+
       // Check validity period
       if (now < cert.details.notBefore) {
-        issues.push('Certificate not yet valid');
+        issues.push("Certificate not yet valid");
       }
-      
+
       if (now > cert.details.notAfter) {
-        issues.push('Certificate expired');
+        issues.push("Certificate expired");
       }
 
       // Check key size
-      if (cert.publicKey.algorithm === 'rsa' && cert.publicKey.size < this.config.minKeySize.RSA) {
-        issues.push(`RSA key size ${cert.publicKey.size} below minimum ${this.config.minKeySize.RSA}`);
+      if (
+        cert.publicKey.algorithm === "rsa" &&
+        cert.publicKey.size < this.config.minKeySize.RSA
+      ) {
+        issues.push(
+          `RSA key size ${cert.publicKey.size} below minimum ${this.config.minKeySize.RSA}`,
+        );
       }
 
       // For intermediate certificates, check if issuer matches next certificate's subject
       if (i < chain.certificates.length - 1) {
         const nextCert = chain.certificates[i + 1];
         if (cert.details.issuer !== nextCert.details.subject) {
-          issues.push('Chain integrity violation: issuer does not match next certificate subject');
+          issues.push(
+            "Chain integrity violation: issuer does not match next certificate subject",
+          );
         }
       }
-
-      const status = issues.length === 0 ? 'valid' : 'invalid';
 
       results.push({
         level: i,
         certificate: cert.details,
-        status: issues.length === 0 ? 'valid' : 'invalid',
+        status: issues.length === 0 ? "valid" : "invalid",
         issues,
-        trustAnchor: i === chain.certificates.length - 1 && chain.trustAnchorReached
+        trustAnchor:
+          i === chain.certificates.length - 1 && chain.trustAnchorReached,
       });
     }
 
@@ -831,26 +870,28 @@ export class CertificateValidationEngine extends EventEmitter {
   /**
    * Analyze certificate expiry
    */
-  private async analyzeExpiry(certificate: ParsedCertificate): Promise<ExpiryAnalysis> {
+  private async analyzeExpiry(
+    certificate: ParsedCertificate,
+  ): Promise<ExpiryAnalysis> {
     const now = new Date();
     const notAfter = certificate.details.notAfter;
     const timeDiff = notAfter.getTime() - now.getTime();
     const daysUntilExpiry = Math.floor(timeDiff / (24 * 60 * 60 * 1000));
-    
-    let status: ExpiryAnalysis['status'];
+
+    let status: ExpiryAnalysis["status"];
     let renewalRecommended = false;
     let renewalTimeline: string | undefined;
 
     if (daysUntilExpiry < 0) {
-      status = 'expired';
+      status = "expired";
       renewalRecommended = true;
-      renewalTimeline = 'Immediate renewal required';
+      renewalTimeline = "Immediate renewal required";
     } else if (daysUntilExpiry <= this.config.expiryWarningDays) {
-      status = 'expiring-soon';
+      status = "expiring-soon";
       renewalRecommended = true;
-      renewalTimeline = 'Renew within next 30 days';
+      renewalTimeline = "Renew within next 30 days";
     } else {
-      status = 'valid';
+      status = "valid";
       renewalTimeline = `Renewal recommended ${this.config.expiryWarningDays} days before expiry`;
     }
 
@@ -859,38 +900,42 @@ export class CertificateValidationEngine extends EventEmitter {
       status,
       renewalRecommended,
       renewalTimeline,
-      autoRenewalAvailable: false // Would depend on CA capabilities
+      autoRenewalAvailable: false, // Would depend on CA capabilities
     };
   }
 
   /**
    * Analyze certificate signature
    */
-  private async analyzeSignature(certificate: ParsedCertificate): Promise<SignatureAnalysis> {
+  private async analyzeSignature(
+    certificate: ParsedCertificate,
+  ): Promise<SignatureAnalysis> {
     const algorithm = certificate.details.signatureAlgorithm;
     const hashAlgorithm = this.extractHashAlgorithm(algorithm);
-    
+
     // Determine signature strength
-    let strength: SignatureAnalysis['strength'];
+    let strength: SignatureAnalysis["strength"];
     const weaknesses: string[] = [];
     const upgradeRecommendations: string[] = [];
 
-    if (hashAlgorithm === 'md5' || hashAlgorithm === 'sha1') {
-      strength = 'weak';
+    if (hashAlgorithm === "md5" || hashAlgorithm === "sha1") {
+      strength = "weak";
       weaknesses.push(`Weak hash algorithm: ${hashAlgorithm}`);
-      upgradeRecommendations.push('Upgrade to SHA-256 or higher');
-    } else if (hashAlgorithm === 'sha256') {
-      strength = 'adequate';
+      upgradeRecommendations.push("Upgrade to SHA-256 or higher");
+    } else if (hashAlgorithm === "sha256") {
+      strength = "adequate";
     } else {
-      strength = 'strong';
+      strength = "strong";
     }
 
     // Check RSA key size
-    if (certificate.publicKey.algorithm === 'rsa') {
+    if (certificate.publicKey.algorithm === "rsa") {
       if (certificate.publicKey.size < 2048) {
-        strength = 'weak';
-        weaknesses.push(`RSA key size ${certificate.publicKey.size} is too small`);
-        upgradeRecommendations.push('Use RSA key size of 2048 bits or higher');
+        strength = "weak";
+        weaknesses.push(
+          `RSA key size ${certificate.publicKey.size} is too small`,
+        );
+        upgradeRecommendations.push("Use RSA key size of 2048 bits or higher");
       }
     }
 
@@ -903,7 +948,8 @@ export class CertificateValidationEngine extends EventEmitter {
       hashAlgorithm,
       signatureValid,
       weaknesses: weaknesses.length > 0 ? weaknesses : undefined,
-      upgradeRecommendations: upgradeRecommendations.length > 0 ? upgradeRecommendations : undefined
+      upgradeRecommendations:
+        upgradeRecommendations.length > 0 ? upgradeRecommendations : undefined,
     };
   }
 
@@ -912,7 +958,7 @@ export class CertificateValidationEngine extends EventEmitter {
    */
   private async validateUsage(
     certificate: ParsedCertificate,
-    hostname?: string
+    hostname?: string,
   ): Promise<UsageValidationResult> {
     const violations: string[] = [];
     const recommendations: string[] = [];
@@ -922,15 +968,17 @@ export class CertificateValidationEngine extends EventEmitter {
       const hostnameValid = this.validateHostname(certificate, hostname);
       if (!hostnameValid) {
         violations.push(`Certificate does not match hostname: ${hostname}`);
-        recommendations.push('Obtain certificate with correct Subject Alternative Names');
+        recommendations.push(
+          "Obtain certificate with correct Subject Alternative Names",
+        );
       }
     }
 
     // Check key usage
     const keyUsage = certificate.keyUsage;
     if (keyUsage.length === 0) {
-      violations.push('No key usage extension found');
-      recommendations.push('Include appropriate key usage extensions');
+      violations.push("No key usage extension found");
+      recommendations.push("Include appropriate key usage extensions");
     }
 
     return {
@@ -938,22 +986,28 @@ export class CertificateValidationEngine extends EventEmitter {
       keyUsage: certificate.keyUsage,
       extendedKeyUsage: certificate.extKeyUsage,
       violations: violations.length > 0 ? violations : undefined,
-      recommendations: recommendations.length > 0 ? recommendations : undefined
+      recommendations: recommendations.length > 0 ? recommendations : undefined,
     };
   }
 
   /**
    * Check certificate revocation status
    */
-  private async checkRevocationStatus(certificate: ParsedCertificate): Promise<'valid' | 'revoked' | 'unknown'> {
+  private async checkRevocationStatus(
+    certificate: ParsedCertificate,
+  ): Promise<"valid" | "revoked" | "unknown"> {
     // Check OCSP first if enabled
     if (this.config.enableOCSP) {
       try {
         const ocspResponse = await this.checkOCSP(certificate);
-        if (ocspResponse.status === 'good') {return 'valid';}
-        if (ocspResponse.status === 'revoked') {return 'revoked';}
+        if (ocspResponse.status === "good") {
+          return "valid";
+        }
+        if (ocspResponse.status === "revoked") {
+          return "revoked";
+        }
       } catch (error) {
-        this.componentLogger.warn('OCSP check failed', { error });
+        this.componentLogger.warn("OCSP check failed", { error });
       }
     }
 
@@ -961,39 +1015,45 @@ export class CertificateValidationEngine extends EventEmitter {
     if (this.config.enableCRL) {
       try {
         const crlResult = await this.checkCRL(certificate);
-        if (!crlResult.isRevoked) {return 'valid';}
-        if (crlResult.isRevoked) {return 'revoked';}
+        if (!crlResult.isRevoked) {
+          return "valid";
+        }
+        if (crlResult.isRevoked) {
+          return "revoked";
+        }
       } catch (error) {
-        this.componentLogger.warn('CRL check failed', { error });
+        this.componentLogger.warn("CRL check failed", { error });
       }
     }
 
-    return 'unknown';
+    return "unknown";
   }
 
   /**
    * Check OCSP status
    */
-  private async checkOCSP(certificate: ParsedCertificate): Promise<OCSPResponse> {
+  private async checkOCSP(
+    certificate: ParsedCertificate,
+  ): Promise<OCSPResponse> {
     // This is a simplified implementation
     // A full implementation would:
     // 1. Extract OCSP responder URL from certificate
     // 2. Build OCSP request
     // 3. Send request to OCSP responder
     // 4. Parse OCSP response
-    
+
     const cacheKey = certificate.fingerprints.sha256;
     const cached = this.ocspCache.get(cacheKey);
-    
+
     if (cached) {
       return cached;
     }
 
     // Placeholder implementation
     const response: OCSPResponse = {
-      status: 'unknown',
+      status: "unknown",
       thisUpdate: new Date(),
-      responderURL: 'http://ocsp.example.com'
+      responderURL: "http://ocsp.example.com",
     };
 
     this.ocspCache.set(cacheKey, response);
@@ -1009,18 +1069,18 @@ export class CertificateValidationEngine extends EventEmitter {
     // 1. Extract CRL distribution points from certificate
     // 2. Download CRL
     // 3. Parse CRL and check for certificate serial number
-    
+
     const cacheKey = certificate.fingerprints.sha256;
     const cached = this.crlCache.get(cacheKey);
-    
+
     if (cached) {
       return cached;
     }
 
     // Placeholder implementation
     const result: CRLResult = {
-      status: 'unknown',
-      isRevoked: false
+      status: "unknown",
+      isRevoked: false,
     };
 
     this.crlCache.set(cacheKey, result);
@@ -1035,39 +1095,45 @@ export class CertificateValidationEngine extends EventEmitter {
     expiryAnalysis: ExpiryAnalysis,
     signatureAnalysis: SignatureAnalysis,
     usageValidation: UsageValidationResult,
-    revocationStatus: 'valid' | 'revoked' | 'unknown'
+    revocationStatus: "valid" | "revoked" | "unknown",
   ): CertificateStatus {
     // Check for critical failures first
-    if (revocationStatus === 'revoked') {
-      return 'revoked';
+    if (revocationStatus === "revoked") {
+      return "revoked";
     }
 
-    if (expiryAnalysis.status === 'expired') {
-      return 'expired';
+    if (expiryAnalysis.status === "expired") {
+      return "expired";
     }
 
     // Check chain validation
-    const hasChainErrors = chainValidation.some(result => result.status === 'invalid');
+    const hasChainErrors = chainValidation.some(
+      (result) => result.status === "invalid",
+    );
     if (hasChainErrors) {
-      return 'invalid-chain';
+      return "invalid-chain";
     }
 
     // Check signature strength
-    if (signatureAnalysis.strength === 'weak') {
-      return 'weak-signature';
+    if (signatureAnalysis.strength === "weak") {
+      return "weak-signature";
     }
 
     // Check usage validation
     if (!usageValidation.usageValid) {
-      return 'invalid-purpose';
+      return "invalid-purpose";
     }
 
     // Check for self-signed (simplified check)
-    if (chainValidation.length === 1 && chainValidation[0].certificate.subject === chainValidation[0].certificate.issuer) {
-      return 'self-signed';
+    if (
+      chainValidation.length === 1 &&
+      chainValidation[0].certificate.subject ===
+        chainValidation[0].certificate.issuer
+    ) {
+      return "self-signed";
     }
 
-    return 'valid';
+    return "valid";
   }
 
   /**
@@ -1078,37 +1144,47 @@ export class CertificateValidationEngine extends EventEmitter {
     chainValidation: ChainValidationResult[],
     expiryAnalysis: ExpiryAnalysis,
     signatureAnalysis: SignatureAnalysis,
-    usageValidation: UsageValidationResult
+    usageValidation: UsageValidationResult,
   ): string[] {
     const recommendations: string[] = [];
 
     switch (status) {
-      case 'expired':
-        recommendations.push('Certificate has expired - immediate replacement required');
-        recommendations.push('Implement certificate expiry monitoring');
+      case "expired":
+        recommendations.push(
+          "Certificate has expired - immediate replacement required",
+        );
+        recommendations.push("Implement certificate expiry monitoring");
         break;
-      case 'expiring-soon':
-        recommendations.push(`Certificate expires in ${expiryAnalysis.daysUntilExpiry} days - renewal recommended`);
+      case "expiring-soon":
+        recommendations.push(
+          `Certificate expires in ${expiryAnalysis.daysUntilExpiry} days - renewal recommended`,
+        );
         break;
-      case 'revoked':
-        recommendations.push('Certificate has been revoked - immediate replacement required');
-        recommendations.push('Investigate reason for revocation');
+      case "revoked":
+        recommendations.push(
+          "Certificate has been revoked - immediate replacement required",
+        );
+        recommendations.push("Investigate reason for revocation");
         break;
-      case 'weak-signature':
-        recommendations.push('Certificate uses weak signature algorithm - upgrade recommended');
+      case "weak-signature":
+        recommendations.push(
+          "Certificate uses weak signature algorithm - upgrade recommended",
+        );
         if (signatureAnalysis.upgradeRecommendations) {
           recommendations.push(...signatureAnalysis.upgradeRecommendations);
         }
         break;
-      case 'invalid-chain':
-        recommendations.push('Certificate chain validation failed');
-        recommendations.push('Verify intermediate certificates are included');
+      case "invalid-chain":
+        recommendations.push("Certificate chain validation failed");
+        recommendations.push("Verify intermediate certificates are included");
         break;
-      case 'self-signed':
-        recommendations.push('Self-signed certificate detected - consider CA-signed certificate');
+      case "self-signed":
+        recommendations.push(
+          "Self-signed certificate detected - consider CA-signed certificate",
+        );
         break;
-      case 'invalid-purpose':
-        recommendations.push('Certificate usage validation failed');
+      case "invalid-purpose":
+        recommendations.push("Certificate usage validation failed");
         if (usageValidation.recommendations) {
           recommendations.push(...usageValidation.recommendations);
         }
@@ -1117,11 +1193,13 @@ export class CertificateValidationEngine extends EventEmitter {
 
     // General recommendations
     if (expiryAnalysis.renewalRecommended) {
-      recommendations.push('Set up automated renewal if supported by CA');
+      recommendations.push("Set up automated renewal if supported by CA");
     }
 
     if (chainValidation.length === 1) {
-      recommendations.push('Consider including intermediate certificates in chain');
+      recommendations.push(
+        "Consider including intermediate certificates in chain",
+      );
     }
 
     return recommendations;
@@ -1130,7 +1208,10 @@ export class CertificateValidationEngine extends EventEmitter {
   /**
    * Validate hostname against certificate
    */
-  private validateHostname(certificate: ParsedCertificate, hostname: string): boolean {
+  private validateHostname(
+    certificate: ParsedCertificate,
+    hostname: string,
+  ): boolean {
     // Check subject common name
     const subjectCN = this.extractCNFromSubject(certificate.details.subject);
     if (subjectCN && this.matchHostname(hostname, subjectCN)) {
@@ -1138,10 +1219,12 @@ export class CertificateValidationEngine extends EventEmitter {
     }
 
     // Check Subject Alternative Names
-    const sanExtension = certificate.details.extensions?.find(ext => ext.oid === '2.5.29.17');
+    const sanExtension = certificate.details.extensions?.find(
+      (ext) => ext.oid === "2.5.29.17",
+    );
     if (sanExtension) {
       const sans = this.parseSANExtension(sanExtension.value);
-      return sans.some(san => this.matchHostname(hostname, san));
+      return sans.some((san) => this.matchHostname(hostname, san));
     }
 
     return false;
@@ -1156,11 +1239,11 @@ export class CertificateValidationEngine extends EventEmitter {
     }
 
     // Handle wildcard certificates
-    if (certName.startsWith('*.')) {
+    if (certName.startsWith("*.")) {
       const domain = certName.substring(2);
-      const hostParts = hostname.split('.');
+      const hostParts = hostname.split(".");
       if (hostParts.length > 1) {
-        const hostDomain = hostParts.slice(1).join('.');
+        const hostDomain = hostParts.slice(1).join(".");
         return hostDomain === domain;
       }
     }
@@ -1173,14 +1256,24 @@ export class CertificateValidationEngine extends EventEmitter {
    */
   private extractHashAlgorithm(signatureAlgorithm: string): string {
     const algorithm = signatureAlgorithm.toLowerCase();
-    
-    if (algorithm.includes('md5')) {return 'md5';}
-    if (algorithm.includes('sha1')) {return 'sha1';}
-    if (algorithm.includes('sha256')) {return 'sha256';}
-    if (algorithm.includes('sha384')) {return 'sha384';}
-    if (algorithm.includes('sha512')) {return 'sha512';}
-    
-    return 'unknown';
+
+    if (algorithm.includes("md5")) {
+      return "md5";
+    }
+    if (algorithm.includes("sha1")) {
+      return "sha1";
+    }
+    if (algorithm.includes("sha256")) {
+      return "sha256";
+    }
+    if (algorithm.includes("sha384")) {
+      return "sha384";
+    }
+    if (algorithm.includes("sha512")) {
+      return "sha512";
+    }
+
+    return "unknown";
   }
 
   /**
@@ -1197,21 +1290,23 @@ export class CertificateValidationEngine extends EventEmitter {
   private parseSANExtension(value: string): string[] {
     // Simplified SAN parsing
     // In a full implementation, this would properly parse ASN.1
-    return value.split(',').map(san => san.trim());
+    return value.split(",").map((san) => san.trim());
   }
 
   /**
    * Parse SCT extension
    */
-  private parseSCTExtension(value: string): CTLogEntry[] {
+  private parseSCTExtension(_value: string): CTLogEntry[] {
     // Simplified SCT parsing
     // In a full implementation, this would properly parse the SCT structure
-    return [{
-      logId: 'example-log-id',
-      logDescription: 'Example CT Log',
-      timestamp: new Date(),
-      certificateHash: 'example-hash'
-    }];
+    return [
+      {
+        logId: "example-log-id",
+        logDescription: "Example CT Log",
+        timestamp: new Date(),
+        certificateHash: "example-hash",
+      },
+    ];
   }
 
   /**
@@ -1219,12 +1314,12 @@ export class CertificateValidationEngine extends EventEmitter {
    */
   private convertPeerCertToPEM(peerCert: any): string {
     if (peerCert.raw) {
-      const base64 = peerCert.raw.toString('base64');
-      const formatted = base64.match(/.{1,64}/g)?.join('\n') || base64;
+      const base64 = peerCert.raw.toString("base64");
+      const formatted = base64.match(/.{1,64}/g)?.join("\n") || base64;
       return `-----BEGIN CERTIFICATE-----\n${formatted}\n-----END CERTIFICATE-----`;
     }
-    
-    throw new Error('Unable to convert peer certificate to PEM format');
+
+    throw new Error("Unable to convert peer certificate to PEM format");
   }
 
   /**
@@ -1241,7 +1336,7 @@ export class CertificateValidationEngine extends EventEmitter {
    */
   private cleanupCaches(): void {
     const now = new Date();
-    
+
     // Clean OCSP cache (entries valid for 24 hours)
     for (const [key, response] of this.ocspCache.entries()) {
       const age = now.getTime() - response.thisUpdate.getTime();
@@ -1260,9 +1355,9 @@ export class CertificateValidationEngine extends EventEmitter {
       }
     }
 
-    this.componentLogger.debug('Cache cleanup completed', {
+    this.componentLogger.debug("Cache cleanup completed", {
       ocspCacheSize: this.ocspCache.size,
-      crlCacheSize: this.crlCache.size
+      crlCacheSize: this.crlCache.size,
     });
   }
 
@@ -1277,7 +1372,9 @@ export class CertificateValidationEngine extends EventEmitter {
     this.ocspCache.clear();
     this.crlCache.clear();
 
-    this.componentLogger.info('Certificate validation engine shutdown complete');
+    this.componentLogger.info(
+      "Certificate validation engine shutdown complete",
+    );
   }
 }
 
@@ -1285,7 +1382,7 @@ export class CertificateValidationEngine extends EventEmitter {
  * Factory function to create certificate validation engine
  */
 export function createCertificateValidationEngine(
-  config?: Partial<CertificateValidationConfig>
+  config?: Partial<CertificateValidationConfig>,
 ): CertificateValidationEngine {
   return new CertificateValidationEngine(config);
 }
