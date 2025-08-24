@@ -1,29 +1,45 @@
-# Make.com FastMCP Server
+# Make.com Simple FastMCP Server
 
-A comprehensive FastMCP server that provides full Make.com API access beyond the capabilities of the official MCP server. This server enables complete platform management, including scenario CRUD operations, user management, analytics access, and advanced development features.
+A clean, simple FastMCP TypeScript server that provides essential Make.com API access through the Model Context Protocol (MCP). This server offers a minimal, production-ready implementation with 14 comprehensive tools, 3 resources, and 3 prompts for Make.com automation management.
 
 ## Features
 
-### 🚀 Platform Management
-- **Scenario Management**: Create, modify, delete, and configure scenarios
-- **Connection Management**: Manage app connections and webhooks
-- **User & Permissions**: Role-based access control and team administration
+### 🚀 Make.com API Tools (14 total)
 
-### 📊 Analytics & Monitoring
-- **Execution Analytics**: Access detailed execution logs and performance metrics
-- **Audit Logs**: Comprehensive audit trail for all operations
-- **Real-time Monitoring**: Server health checks and API status monitoring
+**Scenario Management:**
 
-### 🛠️ Resource Management
-- **Template Management**: Create and manage scenario templates
-- **Folder Organization**: Organize scenarios and resources
-- **Data Store Operations**: Manage Make.com data stores
+- `list-scenarios` - List Make.com scenarios with optional limits
+- `get-scenario` - Get details of specific scenarios
+- `create-scenario` - Create new scenarios with blueprints
+- `update-scenario` - Update existing scenario configurations
+- `delete-scenario` - Delete scenarios
+- `run-scenario` - Execute scenarios manually
 
-### ⚙️ Advanced Features
-- **Custom Variables**: Manage global, team, and scenario variables
-- **AI Agent Configuration**: Configure AI agents and LLM providers
-- **Custom App Development**: SDK management and custom function creation
-- **Billing Access**: Access billing information and usage metrics
+**Connection Management:**
+
+- `list-connections` - List Make.com connections with optional limits
+- `get-connection` - Get connection details and status
+- `create-connection` - Create new app connections
+- `delete-connection` - Remove connections
+
+**User & Organization Management:**
+
+- `list-users` - List users with optional limits
+- `get-user` - Get user details and permissions
+- `list-organizations` - List available organizations
+- `list-teams` - List teams within organizations
+
+### 📊 Resources (3 total)
+
+- **make://scenarios** - Dynamic access to scenario data
+- **make://connections** - Dynamic access to connection data
+- **make://users** - Dynamic access to user data
+
+### 🤖 Prompts (3 total)
+
+- **create-automation-scenario** - AI-guided scenario creation with best practices
+- **optimize-scenario** - Intelligent scenario optimization suggestions
+- **troubleshoot-connection** - Connection troubleshooting guidance
 
 ## Installation
 
@@ -32,7 +48,7 @@ A comprehensive FastMCP server that provides full Make.com API access beyond the
 git clone <repository-url>
 cd make.com-fastmcp-server
 
-# Install dependencies
+# Install dependencies (only 4 core dependencies!)
 npm install
 
 # Copy environment configuration
@@ -40,41 +56,35 @@ cp .env.example .env
 
 # Edit .env file with your Make.com API credentials
 # Required: MAKE_API_KEY
-# Optional: MAKE_TEAM_ID, MAKE_ORGANIZATION_ID
+# Optional: MAKE_BASE_URL, MAKE_TEAM_ID, MAKE_ORGANIZATION_ID
 ```
 
 ## Configuration
 
-### Quick Start Configuration
+### Essential Configuration
 
 For a minimal setup, you only need a Make.com API key:
 
 ```bash
-# Copy the example environment file
-cp .env.example .env
-
-# Edit with your Make.com credentials
-MAKE_API_KEY=your_make_api_key_here
-```
-
-### Complete Environment Variables Reference
-
-#### 🔑 Make.com API Configuration (Required)
-
-```bash
-# Your Make.com API key - REQUIRED
+# Required - Your Make.com API key
 MAKE_API_KEY=your_make_api_key_here
 
-# Make.com API base URL - defaults to EU region
-MAKE_BASE_URL=https://eu1.make.com/api/v2
+# Optional - API base URL (defaults to US region)
+MAKE_BASE_URL=https://us1.make.com/api/v2
 
-# Optional: Scope access to specific team/organization
+# Optional - Scope to specific team/organization
 MAKE_TEAM_ID=your_team_id_here
 MAKE_ORGANIZATION_ID=your_organization_id_here
+```
 
-# API client timeouts and retries
-MAKE_TIMEOUT=30000          # Request timeout in milliseconds (default: 30s)
-MAKE_RETRIES=3              # Number of retry attempts (default: 3)
+### All Configuration Options
+
+```bash
+# Make.com API Configuration
+MAKE_API_KEY=your_make_api_key_here              # REQUIRED
+MAKE_BASE_URL=https://us1.make.com/api/v2        # API endpoint
+MAKE_TEAM_ID=your_team_id_here                   # Optional team scope
+MAKE_ORGANIZATION_ID=your_organization_id_here   # Optional org scope
 ```
 
 #### 🌐 Server Configuration
@@ -203,14 +213,11 @@ NODE_ENV=production         # Enable production optimizations
 ### Development Mode
 
 ```bash
-# Run with TypeScript directly
+# Run with TypeScript directly (recommended)
 npm run dev
 
-# Run with MCP CLI for testing
-npx fastmcp dev src/index.ts
-
-# Run with MCP Inspector (Web UI)
-npx fastmcp inspect src/index.ts
+# Test with FastMCP development environment
+npx fastmcp dev src/simple-fastmcp-server.ts
 ```
 
 ### Production Mode
@@ -219,8 +226,32 @@ npx fastmcp inspect src/index.ts
 # Build the project
 npm run build
 
-# Start the server
+# Start the compiled server
 npm start
+```
+
+### Claude Desktop Integration
+
+Add this to your Claude Desktop configuration file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "make-fastmcp": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/make.com-fastmcp-server/dist/simple-fastmcp-server.js"
+      ],
+      "env": {
+        "MAKE_API_KEY": "your_actual_make_api_key_here",
+        "MAKE_BASE_URL": "https://us1.make.com/api/v2"
+      }
+    }
+  }
+}
 ```
 
 ### Available Scripts
@@ -229,77 +260,132 @@ npm start
 npm run build        # Compile TypeScript to JavaScript
 npm run dev          # Run in development mode with tsx
 npm run start        # Run compiled JavaScript
-npm run test         # Run test suite
-npm run test:watch   # Run tests in watch mode
-npm run test:coverage # Run tests with coverage report
-npm run lint         # Run ESLint
+npm run lint         # Run ESLint on source code
 npm run lint:fix     # Fix ESLint issues automatically
-npm run typecheck    # Run TypeScript type checking
-npm run inspect      # Run with MCP Inspector
+npm run typecheck    # Run TypeScript type checking without emitting
 npm run clean        # Clean build directory
 ```
 
-## 🚀 Deployment Guide
+## Quick Start Guide
 
-### Local Development Deployment
+### 1. Get Your Make.com API Key
 
-For local development with Claude Desktop integration:
+1. Login to [Make.com](https://make.com)
+2. Go to **Settings** → **API**
+3. Click **"Generate API Key"**
+4. Copy the generated key
 
-#### Claude Desktop Configuration
+### 2. Set Up the Server
 
-Add this configuration to your Claude Desktop config file:
-
-**Configuration File Locations:**
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-
-**Development Configuration:**
-```json
-{
-  "mcpServers": {
-    "make-fastmcp": {
-      "command": "npx",
-      "args": ["tsx", "/path/to/make.com-fastmcp-server/src/index.ts"],
-      "env": {
-        "MAKE_API_KEY": "your_api_key_here",
-        "MAKE_TEAM_ID": "your_team_id",
-        "MAKE_ORGANIZATION_ID": "your_organization_id",
-        "MAKE_BASE_URL": "https://eu1.make.com/api/v2",
-        "LOG_LEVEL": "info",
-        "NODE_ENV": "development"
-      }
-    }
-  }
-}
+```bash
+git clone <repository-url>
+cd make.com-fastmcp-server
+npm install
+cp .env.example .env
+# Edit .env and add your MAKE_API_KEY
+npm run build
 ```
 
-**Production Configuration:**
+### 3. Test the Server
+
+```bash
+# Test server startup
+npm start
+# Should show: "Make.com Simple FastMCP Server started successfully"
+```
+
+### 4. Connect to Claude Desktop
+
+Add this to your Claude Desktop config file:
+
 ```json
 {
   "mcpServers": {
     "make-fastmcp": {
       "command": "node",
-      "args": ["/path/to/make.com-fastmcp-server/dist/index.js"],
+      "args": [
+        "/full/path/to/make.com-fastmcp-server/dist/simple-fastmcp-server.js"
+      ],
       "env": {
-        "MAKE_API_KEY": "your_api_key_here",
-        "MAKE_TEAM_ID": "your_team_id",
-        "MAKE_ORGANIZATION_ID": "your_organization_id",
-        "MAKE_BASE_URL": "https://eu1.make.com/api/v2",
-        "LOG_LEVEL": "warn",
-        "NODE_ENV": "production",
-        "AUTH_ENABLED": "true",
-        "AUTH_SECRET": "your_production_secret"
+        "MAKE_API_KEY": "your_actual_make_api_key_here",
+        "MAKE_BASE_URL": "https://us1.make.com/api/v2"
       }
     }
   }
 }
 ```
 
-### Production Deployment Options
+**Config file location:**
 
-#### Option 1: Direct Server Deployment
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+## Simple Architecture
+
+This is a minimal, single-file FastMCP TypeScript server:
+
+```
+├── src/simple-fastmcp-server.ts  # Complete server implementation
+├── dist/simple-fastmcp-server.js # Compiled JavaScript
+├── package.json                  # 4 core dependencies only
+├── .env.example                 # Configuration template
+├── .env                         # Your configuration
+├── claude-desktop-config.json   # Claude Desktop template
+└── README.md                    # This guide
+```
+
+### Dependencies (4 total)
+
+- **fastmcp** - FastMCP framework
+- **axios** - HTTP client for Make.com API
+- **zod** - Runtime type validation
+- **dotenv** - Environment variable loading
+
+### Key Features
+
+- **Zero configuration complexity** - Just add your API key
+- **Type safety** - Full TypeScript with Zod validation
+- **Production ready** - Proper error handling and logging
+- **MCP compliant** - Works with any MCP client (Claude Desktop, etc.)
+- **Simple deployment** - Single compiled JavaScript file
+
+## Troubleshooting
+
+### Common Issues
+
+**Server won't start:**
+
+```bash
+npm run build  # Ensure TypeScript compiles
+node dist/simple-fastmcp-server.js  # Test direct execution
+```
+
+**API key invalid:**
+
+- Verify your MAKE_API_KEY in .env
+- Check the key has required permissions in Make.com
+- Ensure you're using the correct MAKE_BASE_URL region
+
+**Claude Desktop not connecting:**
+
+- Use absolute paths in configuration
+- Restart Claude Desktop after config changes
+- Check console for error messages
+
+## What's Different?
+
+This is a **simplified version** of a Make.com FastMCP server focused on:
+
+- ✅ Essential Make.com API operations (14 tools)
+- ✅ Clean TypeScript implementation
+- ✅ Zero configuration complexity
+- ✅ Production-ready error handling
+- ❌ No middleware/authentication complexity
+- ❌ No web frontend or complex deployment
+- ❌ No advanced monitoring/logging systems
 
 **1. Prepare the Server**
+
 ```bash
 # Clone and build the project
 git clone <repository-url>
@@ -319,12 +405,13 @@ pm2 startup
 ```
 
 **2. Nginx Reverse Proxy (Optional)**
+
 ```nginx
 # /etc/nginx/sites-available/make-fastmcp
 server {
     listen 80;
     server_name your-domain.com;
-    
+
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
@@ -344,6 +431,7 @@ server {
 The project includes a comprehensive Docker setup with multi-stage builds, production optimization, comprehensive monitoring stack, and container orchestration support including Kubernetes.
 
 **Prerequisites**
+
 - Docker Engine 20.10+ and Docker Compose 2.0+
 - At least 1GB free disk space for image builds
 - 512MB RAM for production container
@@ -384,7 +472,7 @@ The project includes optimized Docker configuration:
 The latest production configuration includes:
 
 - **Comprehensive Monitoring Stack**: Prometheus metrics collection, performance monitoring, and alerting
-- **Health Check System**: Production-ready health endpoints (`/health`, `/health/live`, `/health/ready`) 
+- **Health Check System**: Production-ready health endpoints (`/health`, `/health/live`, `/health/ready`)
 - **Resource Optimization**: CPU/memory limits, auto-scaling configurations, and performance monitoring
 - **Security Hardening**: Enhanced container security, network policies, and production-grade configurations
 - **Kubernetes Support**: Complete K8s manifests with high availability, auto-scaling, and ingress configuration
@@ -392,6 +480,7 @@ The latest production configuration includes:
 **🚀 Production Deployment**
 
 **1. Production Configuration**
+
 ```bash
 # Create production environment file
 cat > .env.production << EOF
@@ -428,7 +517,7 @@ Use the new `docker-compose.prod.yml` for the latest production features:
 # Start enhanced production stack with monitoring
 docker-compose -f docker-compose.prod.yml up -d
 
-# Scale application instances for high availability  
+# Scale application instances for high availability
 docker-compose -f docker-compose.prod.yml up -d --scale make-fastmcp-server=3
 
 # Monitor deployment health
@@ -454,6 +543,7 @@ The full production stack includes:
 **🔧 Development Environment**
 
 **1. Development Setup**
+
 ```bash
 # Start development environment with hot reloading
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
@@ -466,6 +556,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml --profile develop
 ```
 
 **2. Development Features**
+
 - **Hot Reloading**: Source code changes trigger automatic restarts
 - **Debug Port**: Node.js inspector on port 9229 for IDE debugging
 - **Development Tools**:
@@ -476,6 +567,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml --profile develop
 - **Enhanced Logging**: Debug-level logging with detailed traces
 
 **3. Development Workflow**
+
 ```bash
 # Live development with mounted volumes
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
@@ -506,7 +598,7 @@ FROM node:18-alpine AS dependencies
 # Installs production dependencies with npm ci
 
 # Stage 2: Builder (includes dev dependencies for TypeScript compilation)
-FROM node:18-alpine AS builder  
+FROM node:18-alpine AS builder
 # Compiles TypeScript, then removes dev dependencies
 
 # Stage 3: Runtime (minimal production image)
@@ -519,6 +611,7 @@ FROM node:18-alpine AS development
 ```
 
 **Build Commands**
+
 ```bash
 # Build production image (runtime stage)
 docker build --target runtime -t make-fastmcp-server:latest .
@@ -539,6 +632,7 @@ docker inspect make-fastmcp-server:latest
 **🔐 Container Security Features**
 
 **Security Hardening**
+
 - **Non-root User**: Containers run as `fastmcp:nodejs` (UID 1001)
 - **Minimal Attack Surface**: Alpine Linux base (5MB) with essential packages only
 - **Read-only Filesystem**: Application files mounted read-only where possible
@@ -547,6 +641,7 @@ docker inspect make-fastmcp-server:latest
 - **Health Checks**: Comprehensive health monitoring for early failure detection
 
 **Network Security**
+
 ```yaml
 # Isolated network with custom subnet
 networks:
@@ -555,7 +650,6 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
-
 # Service communication over private network
 # External access only through defined ports
 ```
@@ -563,10 +657,11 @@ networks:
 **📊 Monitoring and Health Checks**
 
 **Application Health Check**
+
 ```bash
 # Comprehensive health check tests:
 # 1. HTTP server responsiveness
-# 2. Make.com API connectivity  
+# 2. Make.com API connectivity
 # 3. Authentication system status
 # 4. Rate limiter health
 # 5. Memory and resource usage
@@ -580,6 +675,7 @@ docker inspect --format='{{.State.Health.Status}}' make-fastmcp-server
 ```
 
 **Log Management**
+
 ```bash
 # View logs with timestamps
 docker-compose logs -t make-fastmcp-server
@@ -601,6 +697,7 @@ logging:
 **🔄 Container Management Operations**
 
 **Deployment Operations**
+
 ```bash
 # Rolling update with zero downtime
 docker-compose pull make-fastmcp-server
@@ -616,6 +713,7 @@ docker-compose up -d --scale make-fastmcp-server=3
 ```
 
 **Troubleshooting Commands**
+
 ```bash
 # Container resource usage
 docker stats make-fastmcp-server
@@ -636,6 +734,7 @@ docker-compose exec make-fastmcp-server wget -qO- http://redis:6379 || echo "Red
 **🌐 Advanced Deployment Scenarios**
 
 **Load Balancing with Multiple Instances**
+
 ```yaml
 # docker-compose.prod.yml
 services:
@@ -644,7 +743,7 @@ services:
       replicas: 3
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 512M
       restart_policy:
         condition: on-failure
@@ -653,6 +752,7 @@ services:
 ```
 
 **SSL/TLS with Nginx Proxy**
+
 ```bash
 # 1. Generate SSL certificates (example with Let's Encrypt)
 mkdir -p nginx/ssl
@@ -664,6 +764,7 @@ docker-compose -f docker-compose.yml -f docker-compose.ssl.yml up -d
 ```
 
 **Container Registry Deployment**
+
 ```bash
 # Tag and push to container registry
 docker tag make-fastmcp-server:latest your-registry.com/make-fastmcp-server:v1.0.0
@@ -677,18 +778,21 @@ docker-compose up -d
 **💡 Docker Best Practices**
 
 **Performance Optimization**
+
 - **Layer Caching**: Dockerfile optimized for maximum cache hit ratio
 - **Multi-stage Builds**: Separate build and runtime environments
 - **Minimal Base Images**: Alpine Linux for smallest possible attack surface
 - **Dependency Optimization**: Production builds exclude development dependencies
 
 **Reliability Features**
+
 - **Health Checks**: All services include comprehensive health monitoring
 - **Restart Policies**: Automatic restart on failure with backoff
 - **Resource Limits**: Prevent any single container from consuming all resources
 - **Graceful Shutdown**: Proper signal handling with dumb-init
 
 **Development Experience**
+
 - **Hot Reloading**: Source code changes reflected immediately
 - **Debug Support**: Node.js inspector integration for IDE debugging
 - **Development Tools**: Redis Commander, pgAdmin, MailHog for testing
@@ -747,7 +851,7 @@ Use the included deployment script for automated production deployment:
 # Docker Compose deployment
 ./scripts/deploy-production.sh compose
 
-# Kubernetes deployment  
+# Kubernetes deployment
 ./scripts/deploy-production.sh kubernetes
 
 # Custom configuration
@@ -755,6 +859,7 @@ Use the included deployment script for automated production deployment:
 ```
 
 The deployment script includes:
+
 - **Prerequisite validation**: Checks Docker, kubectl, environment variables
 - **Application building**: TypeScript compilation and Docker image creation
 - **Health verification**: Post-deployment health checks and monitoring
@@ -763,6 +868,7 @@ The deployment script includes:
 #### Option 4: Cloud Platform Deployment
 
 **Heroku Deployment**
+
 ```bash
 # Install Heroku CLI and login
 heroku login
@@ -783,6 +889,7 @@ git push heroku main
 ```
 
 **Railway Deployment**
+
 ```bash
 # Install Railway CLI
 npm install -g @railway/cli
@@ -800,30 +907,31 @@ railway up
 ```
 
 **DigitalOcean App Platform**
+
 ```yaml
 # .do/app.yaml
 name: make-fastmcp-server
 services:
-- name: web
-  source_dir: /
-  github:
-    repo: your-username/make.com-fastmcp-server
-    branch: main
-  run_command: npm start
-  environment_slug: node-js
-  instance_count: 1
-  instance_size_slug: basic-xxs
-  envs:
-  - key: MAKE_API_KEY
-    scope: RUN_AND_BUILD_TIME
-    value: your_api_key_here
-  - key: NODE_ENV
-    scope: RUN_AND_BUILD_TIME
-    value: production
-  - key: LOG_LEVEL
-    scope: RUN_AND_BUILD_TIME
-    value: warn
-  http_port: 3000
+  - name: web
+    source_dir: /
+    github:
+      repo: your-username/make.com-fastmcp-server
+      branch: main
+    run_command: npm start
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    envs:
+      - key: MAKE_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        value: your_api_key_here
+      - key: NODE_ENV
+        scope: RUN_AND_BUILD_TIME
+        value: production
+      - key: LOG_LEVEL
+        scope: RUN_AND_BUILD_TIME
+        value: warn
+    http_port: 3000
 ```
 
 ### Production Environment Checklist
@@ -845,6 +953,7 @@ Before deploying to production, ensure you have:
 ### Environment-Specific Configurations
 
 #### Development Environment
+
 ```bash
 NODE_ENV=development
 LOG_LEVEL=debug
@@ -853,6 +962,7 @@ RATE_LIMIT_MAX_REQUESTS=200    # Higher limits for testing
 ```
 
 #### Staging Environment
+
 ```bash
 NODE_ENV=staging
 LOG_LEVEL=info
@@ -862,6 +972,7 @@ RATE_LIMIT_MAX_REQUESTS=100
 ```
 
 #### Production Environment
+
 ```bash
 NODE_ENV=production
 LOG_LEVEL=warn
@@ -890,26 +1001,30 @@ const transport = new SSEClientTransport(new URL("http://localhost:3000/sse"));
 ## Available Tools
 
 ### Basic Tools
+
 - `health-check`: Check server and Make.com API connectivity
 - `server-info`: Get detailed server configuration and capabilities
 - `test-configuration`: Test Make.com API configuration and permissions
 
-### Platform Management Tools *(Coming Soon)*
+### Platform Management Tools _(Coming Soon)_
+
 - `create-scenario`: Create new Make.com scenarios
-- `update-scenario`: Modify existing scenarios  
+- `update-scenario`: Modify existing scenarios
 - `delete-scenario`: Remove scenarios
 - `list-scenarios`: Get scenarios with filtering and pagination
 - `manage-connections`: Create and manage app connections
 - `configure-webhooks`: Set up webhook endpoints
 - `manage-users`: User and permission management
 
-### Analytics Tools *(Coming Soon)*
+### Analytics Tools _(Coming Soon)_
+
 - `get-execution-logs`: Access detailed execution logs
-- `get-analytics`: Retrieve performance metrics and analytics  
+- `get-analytics`: Retrieve performance metrics and analytics
 - `export-audit-logs`: Export audit trail data
 - `monitor-performance`: Real-time performance monitoring
 
-### Resource Management Tools *(Coming Soon)*
+### Resource Management Tools _(Coming Soon)_
+
 - `manage-templates`: Create and manage scenario templates
 - `organize-folders`: Folder and organization management
 - `manage-data-stores`: Data store operations
@@ -943,6 +1058,7 @@ LOG_LEVEL=debug  # debug, info, warn, error
 ```
 
 Log entries include:
+
 - Timestamp and log level
 - Component and operation context
 - Session and user information
@@ -967,6 +1083,7 @@ AUTH_SECRET=your_strong_secret_key_here
 ```
 
 **Generate a Secure Secret Key:**
+
 ```bash
 # Using OpenSSL (recommended)
 openssl rand -base64 32
@@ -988,6 +1105,7 @@ x-api-key: your_server_api_key
 ```
 
 **Example with curl:**
+
 ```bash
 curl -H "x-api-key: your_server_api_key" \
      -H "Content-Type: application/json" \
@@ -1000,6 +1118,7 @@ curl -H "x-api-key: your_server_api_key" \
 #### API Key Management
 
 **Best Practices:**
+
 - Use dedicated API keys for different environments (development, staging, production)
 - Rotate API keys regularly (every 90 days recommended)
 - Use minimal required permissions for API keys
@@ -1008,8 +1127,9 @@ curl -H "x-api-key: your_server_api_key" \
 
 **API Key Permissions:**
 Ensure your Make.com API key has only the minimum required permissions:
+
 - **Scenarios**: Read, create, update (if needed)
-- **Connections**: Read, create, update (if needed) 
+- **Connections**: Read, create, update (if needed)
 - **Analytics**: Read (if using analytics features)
 - **Teams/Organizations**: Read (for scoped access)
 
@@ -1039,6 +1159,7 @@ RATE_LIMIT_SKIP_SUCCESS=true    # Only count failed requests
 ```
 
 **Rate Limiting Features:**
+
 - Automatic exponential backoff for Make.com API calls
 - Request queuing to prevent simultaneous overload
 - Circuit breaker pattern for API resilience
@@ -1047,27 +1168,29 @@ RATE_LIMIT_SKIP_SUCCESS=true    # Only count failed requests
 #### HTTPS and Transport Security
 
 **For Production Deployments:**
+
 - Always use HTTPS in production environments
 - Configure proper SSL/TLS certificates
 - Use secure headers (HSTS, CSP, etc.)
 - Implement proper CORS policies if needed
 
 **Nginx SSL Configuration Example:**
+
 ```nginx
 server {
     listen 443 ssl http2;
     server_name your-domain.com;
-    
+
     ssl_certificate /path/to/your/certificate.pem;
     ssl_certificate_key /path/to/your/private.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384;
-    
+
     # Security headers
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     add_header X-Frame-Options DENY always;
     add_header X-Content-Type-Options nosniff always;
-    
+
     location / {
         proxy_pass http://localhost:3000;
         proxy_set_header X-Forwarded-Proto $scheme;
@@ -1088,16 +1211,19 @@ const createScenarioSchema = z.object({
   name: z.string().min(1).max(255),
   teamId: z.number().int().positive(),
   blueprint: z.object({}).optional(),
-  scheduling: z.object({
-    type: z.enum(['immediate', 'indefinitely', 'on-demand']),
-    interval: z.number().int().positive().optional()
-  }).optional()
+  scheduling: z
+    .object({
+      type: z.enum(["immediate", "indefinitely", "on-demand"]),
+      interval: z.number().int().positive().optional(),
+    })
+    .optional(),
 });
 ```
 
 #### Error Message Sanitization
 
 Error messages are sanitized to prevent information leakage:
+
 - Internal error details are logged but not exposed to clients
 - API keys and sensitive data are redacted from logs
 - Stack traces are only shown in development mode
@@ -1107,12 +1233,14 @@ Error messages are sanitized to prevent information leakage:
 #### Security Event Logging
 
 The server logs security-relevant events:
+
 - Authentication attempts (success/failure)
 - Rate limiting violations
 - API key validation failures
 - Unusual request patterns
 
 **Log Format Example:**
+
 ```json
 {
   "timestamp": "2024-01-15T10:30:00.000Z",
@@ -1127,6 +1255,7 @@ The server logs security-relevant events:
 #### Audit Trail
 
 For compliance and security monitoring:
+
 - All API calls are logged with request/response metadata
 - User actions are tracked with timestamps and source IPs
 - Critical operations (scenario creation/deletion) are specially logged
@@ -1136,6 +1265,7 @@ For compliance and security monitoring:
 #### Development vs Production
 
 **Development Environment:**
+
 ```bash
 NODE_ENV=development
 AUTH_ENABLED=false          # Optional authentication
@@ -1144,6 +1274,7 @@ RATE_LIMIT_MAX_REQUESTS=200 # Higher limits for testing
 ```
 
 **Production Environment:**
+
 ```bash
 NODE_ENV=production
 AUTH_ENABLED=true           # Required authentication
@@ -1170,6 +1301,7 @@ USER make-fastmcp
 Before deploying to production:
 
 #### Server Security
+
 - [ ] Authentication enabled (`AUTH_ENABLED=true`)
 - [ ] Strong auth secret generated and configured
 - [ ] Production logging level set (`LOG_LEVEL=warn`)
@@ -1180,6 +1312,7 @@ Before deploying to production:
 - [ ] Regular security updates applied
 
 #### API Security
+
 - [ ] Make.com API key uses minimal required permissions
 - [ ] API key rotation schedule established
 - [ ] Team/organization scoping configured if needed
@@ -1188,6 +1321,7 @@ Before deploying to production:
 - [ ] Environment variables properly secured
 
 #### Monitoring & Compliance
+
 - [ ] Security event logging enabled
 - [ ] Audit trail configured for compliance needs
 - [ ] Monitoring/alerting set up for security events
@@ -1197,22 +1331,28 @@ Before deploying to production:
 ### Common Security Issues and Solutions
 
 #### Issue: Exposed API Keys
+
 **Problem:** API keys visible in logs or error messages
-**Solution:** 
+**Solution:**
+
 - Use proper log sanitization
 - Redact sensitive data in error responses
 - Implement structured logging with field filtering
 
 #### Issue: Rate Limit Bypass
+
 **Problem:** Clients bypassing rate limiting
 **Solution:**
+
 - Implement rate limiting at multiple layers (application + proxy)
 - Use distributed rate limiting for multiple server instances
 - Monitor for unusual request patterns
 
 #### Issue: Unauthorized Access
+
 **Problem:** Access to server without proper authentication
 **Solution:**
+
 - Enable authentication in production
 - Use strong, randomly generated secrets
 - Implement proper session management
@@ -1221,12 +1361,14 @@ Before deploying to production:
 ### Advanced Security Features
 
 #### IP Allowlisting (Future Enhancement)
+
 ```bash
 # Restrict access to specific IPs
 ALLOWED_IPS=192.168.1.0/24,10.0.0.0/8
 ```
 
 #### Request Signing (Future Enhancement)
+
 ```bash
 # Require request signing for additional security
 REQUEST_SIGNING_ENABLED=true
@@ -1285,6 +1427,7 @@ MIT License - see LICENSE file for details
 ## Support
 
 For issues and questions:
+
 - Check the troubleshooting section below
 - Review Make.com API documentation
 - Open an issue on GitHub
@@ -1294,33 +1437,41 @@ For issues and questions:
 ### Common Issues
 
 **Invalid API Key**
+
 ```
 Error: Make.com API is not accessible. Please check your configuration.
 ```
+
 - Verify your MAKE_API_KEY in the .env file
 - Ensure the API key has necessary permissions
 - Check if your Make.com account is active
 
 **Rate Limiting**
+
 ```
 Error: Rate limit exceeded
 ```
+
 - The server automatically handles rate limiting
 - Consider reducing concurrent operations
 - Monitor rate limiter status with health-check tool
 
 **Connection Issues**
+
 ```
 Error: Network error - no response received
 ```
+
 - Check your internet connection
 - Verify MAKE_BASE_URL is correct
 - Check if Make.com services are operational
 
 **Permission Denied**
+
 ```
 Error: Insufficient permissions
 ```
+
 - Verify your API key has required permissions
 - Check team/organization access rights
 - Ensure you're targeting the correct team/org IDs
@@ -1334,6 +1485,7 @@ LOG_LEVEL=debug npm run dev
 ```
 
 This will show:
+
 - Detailed API request/response logs
 - Rate limiter status updates
 - Internal operation traces
