@@ -1,34 +1,34 @@
-import { BaseServer } from './base-server.js';
-import { 
-  essentialToolCategories, 
-  essentialToolRegistrations, 
-  essentialServerDescription, 
-  essentialCapabilityDescription 
-} from '../config/essential-tools.js';
+import { BaseServer, ToolRegistration } from "./base-server.js";
+import {
+  essentialToolCategories,
+  essentialToolRegistrations,
+  essentialServerDescription,
+  essentialCapabilityDescription,
+} from "../config/essential-tools.js";
 
 export class EssentialServer extends BaseServer {
   constructor() {
     const config = {
-      name: 'make-essential-server',
-      version: '1.0.0', 
+      name: "make-essential-server",
+      version: "1.0.0",
       port: 3000,
       toolCategories: essentialToolCategories,
-      description: essentialServerDescription
+      description: essentialServerDescription,
     };
-    
+
     super(config);
-    
-    this.componentLogger.info('Essential Server initialized', {
+
+    this.componentLogger.info("Essential Server initialized", {
       toolCategories: essentialToolCategories.length,
-      categories: essentialToolCategories
+      categories: essentialToolCategories,
     });
   }
 
   getServerType(): string {
-    return 'Essential Operations';
+    return "Essential Operations";
   }
 
-  getToolRegistrations() {
+  getToolRegistrations(): ToolRegistration[] {
     return essentialToolRegistrations;
   }
 
@@ -37,34 +37,34 @@ export class EssentialServer extends BaseServer {
   }
 
   async performCleanup(): Promise<void> {
-    this.componentLogger.info('Performing essential server cleanup');
+    this.componentLogger.info("Performing essential server cleanup");
     await this.cleanupActiveOperations();
-    this.componentLogger.info('Essential server cleanup completed');
+    this.componentLogger.info("Essential server cleanup completed");
   }
 
   private async cleanupActiveOperations(): Promise<void> {
-    this.componentLogger.debug('Cleaning up active essential operations');
+    this.componentLogger.debug("Cleaning up active essential operations");
     // Add specific cleanup logic for essential operations
   }
 
-  getHealthMetrics() {
+  getHealthMetrics(): Record<string, unknown> {
     return {
-      serverType: 'essential',
+      serverType: "essential",
       activeConnections: 0,
       memoryUsage: process.memoryUsage(),
       uptime: process.uptime(),
       toolCategories: this.config.toolCategories.length,
-      lastActivity: new Date().toISOString()
+      lastActivity: new Date().toISOString(),
     };
   }
 
-  getPerformanceMetrics() {
+  getPerformanceMetrics(): Record<string, number> {
     return {
       averageResponseTime: 0,
       requestsPerSecond: 0,
       errorRate: 0,
       activeScenarios: 0,
-      activeConnections: 0
+      activeConnections: 0,
     };
   }
 }

@@ -318,18 +318,34 @@ function processRetryError(
 }
 
 /**
+ * Configuration for retry delay execution
+ */
+interface RetryDelayConfig {
+  attempt: number;
+  baseDelay: number;
+  maxDelay: number;
+  exponentialBase: number;
+  jitter: boolean;
+  onRetry: ((error: Error, attempt: number) => void) | undefined;
+  error: Error;
+  operationLogger: ComponentLogger;
+}
+
+/**
  * Executes retry delay with logging and callback handling
  */
-async function executeRetryDelay(
-  attempt: number,
-  baseDelay: number,
-  maxDelay: number,
-  exponentialBase: number,
-  jitter: boolean,
-  onRetry: ((error: Error, attempt: number) => void) | undefined,
-  error: Error,
-  operationLogger: ComponentLogger,
-): Promise<void> {
+async function executeRetryDelay(config: RetryDelayConfig): Promise<void> {
+  const {
+    attempt,
+    baseDelay,
+    maxDelay,
+    exponentialBase,
+    jitter,
+    onRetry,
+    error,
+    operationLogger,
+  } = config;
+
   const finalDelay = calculateRetryDelay(
     attempt,
     baseDelay,

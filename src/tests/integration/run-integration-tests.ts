@@ -105,12 +105,12 @@ class IntegrationTestRunner {
       "security",
       "integration",
     ];
-    const agents = startedStatus.agents as Record<string, any>;
+    const agents = startedStatus.agents as Record<
+      string,
+      { status: string; [key: string]: unknown }
+    >;
     for (const agentName of agentNames) {
-      if (
-        !agents[agentName] ||
-        agents[agentName].status !== "ready"
-      ) {
+      if (!agents[agentName] || agents[agentName].status !== "ready") {
         throw new Error(`${agentName} agent is not ready`);
       }
     }
@@ -124,7 +124,7 @@ class IntegrationTestRunner {
   }
 
   async testSecureConfigIntegration(): Promise<void> {
-    const rotationConfig: Partial<RotationManagerConfig> = {
+    const _rotationConfig: Partial<RotationManagerConfig> = {
       maxWorkerThreads: 2,
       maxBatchSize: 10,
     };
@@ -141,13 +141,13 @@ class IntegrationTestRunner {
 
     // For testing purposes, we'll just verify the rotation system is working
     // The actual credential management would be handled through the secure credential methods
-    const testCredentialId = "integration-test-key";
+    const _testCredentialId = "integration-test-key";
 
     await secureConfig.shutdown();
   }
 
   async testBatchRotation(): Promise<void> {
-    const rotationConfig: Partial<RotationManagerConfig> = {
+    const _rotationConfig: Partial<RotationManagerConfig> = {
       maxWorkerThreads: 2,
       maxBatchSize: 5,
     };
@@ -159,7 +159,7 @@ class IntegrationTestRunner {
     // Define test credentials for the batch test
     const testCredentials = [
       "batch-test-key-1",
-      "batch-test-key-2", 
+      "batch-test-key-2",
       "batch-test-key-3",
     ];
 
@@ -174,7 +174,7 @@ class IntegrationTestRunner {
     );
 
     // Execute batch rotation (extract just the credential IDs)
-    const credentialIds = rotationRequests.map(req => req.credentialId);
+    const credentialIds = rotationRequests.map((req) => req.credentialId);
     const result = await secureConfig.rotateBatch(credentialIds, {
       priority: "normal",
       concurrency: 2,
@@ -235,7 +235,7 @@ class IntegrationTestRunner {
 
     // Verify processing occurred
     const status = agent.getStatus();
-    const rotationStats = status.rotationStats as any;
+    const rotationStats = status.rotationStats as Record<string, unknown>;
     if (rotationStats.totalRotations === 0) {
       throw new Error("No rotations were processed");
     }
@@ -269,7 +269,7 @@ class IntegrationTestRunner {
       "security",
       "integration",
     ];
-    const agents = metrics.agents as any;
+    const agents = metrics.agents as Record<string, unknown>;
     for (const agentName of expectedAgents) {
       if (!agents[agentName]) {
         throw new Error(`Missing agent metrics: ${agentName}`);
