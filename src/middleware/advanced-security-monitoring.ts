@@ -101,141 +101,9 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
 
   private async loadDefaultAlertRules(): Promise<void> {
     const defaultRules: AlertRule[] = [
-      {
-        id: "high-risk-authentication-failure",
-        name: "High Risk Authentication Failure",
-        description: "Multiple authentication failures from high-risk sources",
-        query: "event.type:authentication_failure AND risk_score:>70",
-        conditions: [
-          {
-            field: "event.type",
-            operator: "eq",
-            value: "authentication_failure",
-          },
-          {
-            field: "risk_score",
-            operator: "gt",
-            value: 70,
-            threshold: 5,
-            timeWindow: 5,
-          },
-        ],
-        severity: "high",
-        enabled: true,
-        throttle: 15,
-        actions: [
-          {
-            type: "webhook",
-            config: {
-              url: process.env.SECURITY_WEBHOOK_URL || "",
-              method: "POST",
-            },
-          },
-          {
-            type: "email",
-            config: {
-              recipients: process.env.SECURITY_ALERT_EMAILS?.split(",") || [],
-            },
-          },
-        ],
-        tags: ["authentication", "brute-force", "high-risk"],
-        metadata: {
-          author: "system",
-          created: new Date(),
-          modified: new Date(),
-          category: "authentication",
-        },
-        statistics: {
-          triggered: 0,
-          averageTriggersPerDay: 0,
-          falsePositiveRate: 0,
-        },
-      },
-      {
-        id: "anomalous-user-behavior",
-        name: "Anomalous User Behavior Detected",
-        description: "ML-detected anomalous behavior patterns",
-        query: "anomaly_score:>80",
-        conditions: [
-          {
-            field: "anomaly_score",
-            operator: "gt",
-            value: 80,
-          },
-        ],
-        severity: "medium",
-        enabled: true,
-        throttle: 30,
-        actions: [
-          {
-            type: "webhook",
-            config: {
-              url: process.env.SECURITY_WEBHOOK_URL || "",
-            },
-          },
-        ],
-        tags: ["anomaly", "behavior", "ml"],
-        metadata: {
-          author: "system",
-          created: new Date(),
-          modified: new Date(),
-          category: "behavior",
-        },
-        statistics: {
-          triggered: 0,
-          averageTriggersPerDay: 0,
-          falsePositiveRate: 0,
-        },
-      },
-      {
-        id: "data-exfiltration-pattern",
-        name: "Potential Data Exfiltration",
-        description: "Suspicious data access and transfer patterns",
-        query: "event.type:data_access AND data_size:>1000000",
-        conditions: [
-          {
-            field: "data_size",
-            operator: "gt",
-            value: 1000000,
-            timeWindow: 10,
-          },
-          {
-            field: "request_frequency",
-            operator: "gt",
-            value: 50,
-            timeWindow: 5,
-          },
-        ],
-        severity: "critical",
-        enabled: true,
-        throttle: 5,
-        actions: [
-          {
-            type: "webhook",
-            config: {
-              url: process.env.INCIDENT_WEBHOOK_URL || "",
-            },
-          },
-          {
-            type: "email",
-            config: {
-              recipients: process.env.SECURITY_SOC_EMAILS?.split(",") || [],
-            },
-          },
-        ],
-        tags: ["data-exfiltration", "critical", "data-protection"],
-        metadata: {
-          author: "system",
-          created: new Date(),
-          modified: new Date(),
-          category: "data-protection",
-        },
-        statistics: {
-          triggered: 0,
-          averageTriggersPerDay: 0,
-          falsePositiveRate: 0,
-        },
-      },
+      this.createHighRiskAuthFailureRule(),
+      this.createAnomalousUserBehaviorRule(),
+      this.createDataExfiltrationRule(),
     ];
 
     defaultRules.forEach((rule) => {
@@ -243,6 +111,165 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     });
 
     logger.info("Default alert rules loaded", { count: defaultRules.length });
+  }
+
+  private createHighRiskAuthFailureRule(): AlertRule {
+    return {
+      id: "high-risk-authentication-failure",
+      name: "High Risk Authentication Failure",
+      description: "Multiple authentication failures from high-risk sources",
+      query: "event.type:authentication_failure AND risk_score:>70",
+      conditions: this.createAuthFailureConditions(),
+      severity: "high",
+      enabled: true,
+      throttle: 15,
+      actions: this.createSecurityAlertActions(),
+      tags: ["authentication", "brute-force", "high-risk"],
+      metadata: this.createRuleMetadata("authentication"),
+      statistics: this.createInitialStatistics(),
+    };
+  }
+
+  private createAuthFailureConditions(): any[] {
+    return [
+      {
+        field: "event.type",
+        operator: "eq",
+        value: "authentication_failure",
+      },
+      {
+        field: "risk_score",
+        operator: "gt",
+        value: 70,
+        threshold: 5,
+        timeWindow: 5,
+      },
+    ];
+  }
+
+  private createSecurityAlertActions(): any[] {
+    return [
+      {
+        type: "webhook",
+        config: {
+          url: process.env.SECURITY_WEBHOOK_URL || "",
+          method: "POST",
+        },
+      },
+      {
+        type: "email",
+        config: {
+          recipients: process.env.SECURITY_ALERT_EMAILS?.split(",") || [],
+        },
+      },
+    ];
+  }
+
+  private createRuleMetadata(category: string): any {
+    return {
+      author: "system",
+      created: new Date(),
+      modified: new Date(),
+      category,
+    };
+  }
+
+  private createInitialStatistics(): any {
+    return {
+      triggered: 0,
+      averageTriggersPerDay: 0,
+      falsePositiveRate: 0,
+    };
+  }
+
+  private createAnomalousUserBehaviorRule(): AlertRule {
+    return {
+      id: "anomalous-user-behavior",
+      name: "Anomalous User Behavior Detected",
+      description: "ML-detected anomalous behavior patterns",
+      query: "anomaly_score:>80",
+      conditions: [
+        {
+          field: "anomaly_score",
+          operator: "gt",
+          value: 80,
+        },
+      ],
+      severity: "medium",
+      enabled: true,
+      throttle: 30,
+      actions: [
+        {
+          type: "webhook",
+          config: {
+            url: process.env.SECURITY_WEBHOOK_URL || "",
+          },
+        },
+      ],
+      tags: ["anomaly", "behavior", "ml"],
+      metadata: {
+        author: "system",
+        created: new Date(),
+        modified: new Date(),
+        category: "behavior",
+      },
+      statistics: {
+        triggered: 0,
+        averageTriggersPerDay: 0,
+        falsePositiveRate: 0,
+      },
+    };
+  }
+
+  private createDataExfiltrationRule(): AlertRule {
+    return {
+      id: "data-exfiltration-pattern",
+      name: "Potential Data Exfiltration",
+      description: "Suspicious data access and transfer patterns",
+      query: "event.type:data_access AND data_size:>1000000",
+      conditions: this.createDataExfiltrationConditions(),
+      severity: "critical",
+      enabled: true,
+      throttle: 5,
+      actions: this.createIncidentAlertActions(),
+      tags: ["data-exfiltration", "critical", "data-protection"],
+      metadata: this.createRuleMetadata("data-protection"),
+      statistics: this.createInitialStatistics(),
+    };
+  }
+
+  private createDataExfiltrationConditions(): any[] {
+    return [
+      {
+        field: "data_size",
+        operator: "gt",
+        value: 1000000,
+        timeWindow: 10,
+      },
+      {
+        field: "request_frequency",
+        operator: "gt",
+        value: 50,
+        timeWindow: 5,
+      },
+    ];
+  }
+
+  private createIncidentAlertActions(): any[] {
+    return [
+      {
+        type: "webhook",
+        config: {
+          url: process.env.INCIDENT_WEBHOOK_URL || "",
+        },
+      },
+      {
+        type: "email",
+        config: {
+          recipients: process.env.SECURITY_SOC_EMAILS?.split(",") || [],
+        },
+      },
+    ];
   }
 
   private setupSecurityAgentIntegration(): void {
@@ -567,6 +594,23 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     const factors: string[] = [];
 
     // Check for sensitive endpoints
+    const endpointRisk = this.assessSensitiveEndpointRisk(req.path);
+    score += endpointRisk.score;
+    factors.push(...endpointRisk.factors);
+
+    // Check for injection attacks
+    const queryString = req.url || "";
+    const injectionRisk = this.assessInjectionRisk(queryString);
+    score += injectionRisk.score;
+    factors.push(...injectionRisk.factors);
+
+    return { score, anomalyScore, factors };
+  }
+
+  private assessSensitiveEndpointRisk(path: string): {
+    score: number;
+    factors: string[];
+  } {
     const sensitiveEndpoints = [
       "/admin",
       "/api/keys",
@@ -577,11 +621,20 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
       "/auth",
     ];
 
-    if (sensitiveEndpoints.some((endpoint) => req.path.includes(endpoint))) {
-      score += 15;
-      factors.push("Accessing sensitive endpoint");
+    if (sensitiveEndpoints.some((endpoint) => path.includes(endpoint))) {
+      return {
+        score: 15,
+        factors: ["Accessing sensitive endpoint"],
+      };
     }
 
+    return { score: 0, factors: [] };
+  }
+
+  private assessInjectionRisk(queryString: string): {
+    score: number;
+    factors: string[];
+  } {
     // Check for SQL injection patterns
     const sqlPatterns = [
       /union.*select/i,
@@ -592,12 +645,12 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
       /;.*--/i,
     ];
 
-    const queryString = req.url || "";
     for (const pattern of sqlPatterns) {
       if (pattern.test(queryString)) {
-        score += 50;
-        factors.push("SQL injection pattern detected");
-        break;
+        return {
+          score: 50,
+          factors: ["SQL injection pattern detected"],
+        };
       }
     }
 
@@ -613,13 +666,14 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
 
     for (const pattern of xssPatterns) {
       if (pattern.test(queryString)) {
-        score += 40;
-        factors.push("XSS pattern detected");
-        break;
+        return {
+          score: 40,
+          factors: ["XSS pattern detected"],
+        };
       }
     }
 
-    return { score, anomalyScore, factors };
+    return { score: 0, factors: [] };
   }
 
   private async assessAuthenticationRisk(
@@ -899,60 +953,98 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
       return;
     }
 
-    const siemEvent: SIEMEvent = {
+    const siemEvent = this.buildSIEMEvent(req, res, responseTime);
+    await this.deliverSIEMEvent(siemEvent, req.securityContext.correlationId);
+  }
+
+  private buildSIEMEvent(
+    req: SecurityEnhancedRequest,
+    res: Response,
+    responseTime: number,
+  ): SIEMEvent {
+    return {
       timestamp: new Date().toISOString(),
-      source: {
-        ip: req.ip,
-        hostname: req.hostname,
-        service: "make-fastmcp-server",
-        component: "advanced-security-middleware",
-      },
-      user: req.securityContext.userId
-        ? {
-            id: req.securityContext.userId,
-          }
-        : undefined,
-      event: {
-        category: "web",
-        type: "request",
-        action: req.method.toLowerCase(),
-        outcome: res.statusCode < 400 ? "success" : "failure",
-        severity:
-          this.mapThreatLevelToSeverity(req.securityContext.threatLevel) ===
-          SecuritySeverity.CRITICAL
-            ? 10
-            : req.securityContext.threatLevel === "high"
-              ? 8
-              : req.securityContext.threatLevel === "medium"
-                ? 5
-                : 2,
-        riskScore: req.securityContext.riskScore,
-      },
+      source: this.buildSIEMSource(req),
+      user: this.buildSIEMUser(req),
+      event: this.buildSIEMEventDetails(req, res),
       message: `${req.method} ${req.path} - ${res.statusCode}`,
-      fields: {
-        http: {
-          request: {
-            method: req.method,
-            path: req.path,
-            headers: this.sanitizeHeaders(req.headers),
-          },
-          response: {
-            statusCode: res.statusCode,
-            responseTime,
-          },
-        },
-        security: {
-          riskScore: req.securityContext.riskScore,
-          threatLevel: req.securityContext.threatLevel,
-          anomalyScore: req.securityContext.anomalyScore,
-          deviceFingerprint: req.securityContext.deviceFingerprint?.hash,
-          geoLocation: req.securityContext.geoLocation,
-        },
-      },
+      fields: this.buildSIEMFields(req, res, responseTime),
       tags: ["make-fastmcp", "security", req.securityContext.threatLevel],
       correlationId: req.securityContext.correlationId,
     };
+  }
 
+  private buildSIEMSource(req: SecurityEnhancedRequest): any {
+    return {
+      ip: req.ip,
+      hostname: req.hostname,
+      service: "make-fastmcp-server",
+      component: "advanced-security-middleware",
+    };
+  }
+
+  private buildSIEMUser(req: SecurityEnhancedRequest): any {
+    return req.securityContext.userId
+      ? { id: req.securityContext.userId }
+      : undefined;
+  }
+
+  private buildSIEMEventDetails(
+    req: SecurityEnhancedRequest,
+    res: Response,
+  ): any {
+    return {
+      category: "web",
+      type: "request",
+      action: req.method.toLowerCase(),
+      outcome: res.statusCode < 400 ? "success" : "failure",
+      severity: this.calculateSIEMSeverity(req.securityContext.threatLevel),
+      riskScore: req.securityContext.riskScore,
+    };
+  }
+
+  private buildSIEMFields(
+    req: SecurityEnhancedRequest,
+    res: Response,
+    responseTime: number,
+  ): any {
+    return {
+      http: {
+        request: {
+          method: req.method,
+          path: req.path,
+          headers: this.sanitizeHeaders(req.headers),
+        },
+        response: {
+          statusCode: res.statusCode,
+          responseTime,
+        },
+      },
+      security: {
+        riskScore: req.securityContext.riskScore,
+        threatLevel: req.securityContext.threatLevel,
+        anomalyScore: req.securityContext.anomalyScore,
+        deviceFingerprint: req.securityContext.deviceFingerprint?.hash,
+        geoLocation: req.securityContext.geoLocation,
+      },
+    };
+  }
+
+  private calculateSIEMSeverity(threatLevel: string): number {
+    const severityMapping = {
+      critical: 10,
+      high: 8,
+      medium: 5,
+      low: 2,
+    } as const;
+
+    return severityMapping[threatLevel as keyof typeof severityMapping] || 2;
+  }
+
+  private async deliverSIEMEvent(
+    siemEvent: SIEMEvent,
+    correlationId: string,
+  ): Promise<void> {
     // Send to all configured SIEM connectors
     for (const [siemType, connector] of Array.from(this.siemConnectors)) {
       try {
@@ -960,7 +1052,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
       } catch (error) {
         logger.error(`Failed to send event to ${siemType} SIEM`, {
           error: error instanceof Error ? error.message : String(error),
-          correlationId: req.securityContext.correlationId,
+          correlationId,
         });
       }
     }

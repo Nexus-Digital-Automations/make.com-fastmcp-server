@@ -4,36 +4,38 @@
  * governance policies, data leakage prevention, and compliance boundaries
  */
 
-import { FastMCP } from 'fastmcp';
-import { z } from 'zod';
-import * as crypto from 'crypto';
-import { promisify } from 'util';
-import MakeApiClient from '../lib/make-api-client.js';
-import { encryptionService } from '../utils/encryption.js';
-import { auditLogger } from '../lib/audit-logger.js';
-import logger from '../lib/logger.js';
-import { formatSuccessResponse } from '../utils/response-formatter.js';
+import { FastMCP } from "fastmcp";
+import { z } from "zod";
+import * as crypto from "crypto";
+import { promisify } from "util";
+import MakeApiClient from "../lib/make-api-client.js";
+import { encryptionService } from "../utils/encryption.js";
+import { auditLogger } from "../lib/audit-logger.js";
+import logger from "../lib/logger.js";
+import { formatSuccessResponse } from "../utils/response-formatter.js";
 
 const getComponentLogger = (): ReturnType<typeof logger.child> => {
-    try {
-      return logger.child({ component: 'MultiTenantSecurityTools' });
-    } catch {
-      // Fallback for test environments
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return logger as any;
-    }
-  };
-  const componentLogger = getComponentLogger();
+  try {
+    return logger.child({ component: "MultiTenantSecurityTools" });
+  } catch {
+    // Fallback for test environments
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return logger as any;
+  }
+};
+const componentLogger = getComponentLogger();
 const randomBytes = promisify(crypto.randomBytes);
 
 // ===== CORE SCHEMAS =====
 
 // Tenant Provisioning Schema
 const TenantProvisioningSchema = z.object({
-  tenantId: z.string().min(1, 'Tenant ID is required'),
-  tenantName: z.string().min(1, 'Tenant name is required'),
-  subscriptionTier: z.enum(['basic', 'standard', 'premium', 'enterprise']),
-  complianceFrameworks: z.array(z.enum(['SOC2', 'GDPR', 'HIPAA', 'PCI_DSS', 'ISO27001'])),
+  tenantId: z.string().min(1, "Tenant ID is required"),
+  tenantName: z.string().min(1, "Tenant name is required"),
+  subscriptionTier: z.enum(["basic", "standard", "premium", "enterprise"]),
+  complianceFrameworks: z.array(
+    z.enum(["SOC2", "GDPR", "HIPAA", "PCI_DSS", "ISO27001"]),
+  ),
   organizationInfo: z.object({
     name: z.string(),
     domain: z.string().optional(),
@@ -66,66 +68,105 @@ const TenantProvisioningSchema = z.object({
 
 // Cryptographic Isolation Schema
 const CryptographicIsolationSchema = z.object({
-  tenantId: z.string().min(1, 'Tenant ID is required'),
-  operation: z.enum(['generate_keys', 'rotate_keys', 'encrypt_data', 'decrypt_data', 'verify_isolation']),
-  keyType: z.enum(['master', 'data_encryption', 'signing', 'transit']).optional(),
+  tenantId: z.string().min(1, "Tenant ID is required"),
+  operation: z.enum([
+    "generate_keys",
+    "rotate_keys",
+    "encrypt_data",
+    "decrypt_data",
+    "verify_isolation",
+  ]),
+  keyType: z
+    .enum(["master", "data_encryption", "signing", "transit"])
+    .optional(),
   data: z.string().optional(),
   encryptedData: z.string().optional(),
-  keyRotationPolicy: z.object({
-    automaticRotation: z.boolean().default(true),
-    rotationIntervalDays: z.number().min(30).max(365).default(90),
-    retainOldKeys: z.boolean().default(true),
-    retentionDays: z.number().min(7).max(2555).default(30),
-  }).optional(),
-  hsmConfiguration: z.object({
-    enabled: z.boolean().default(false),
-    partition: z.string().optional(),
-    keyLabel: z.string().optional(),
-  }).optional(),
+  keyRotationPolicy: z
+    .object({
+      automaticRotation: z.boolean().default(true),
+      rotationIntervalDays: z.number().min(30).max(365).default(90),
+      retainOldKeys: z.boolean().default(true),
+      retentionDays: z.number().min(7).max(2555).default(30),
+    })
+    .optional(),
+  hsmConfiguration: z
+    .object({
+      enabled: z.boolean().default(false),
+      partition: z.string().optional(),
+      keyLabel: z.string().optional(),
+    })
+    .optional(),
 });
 
 // Network Segmentation Schema
 const NetworkSegmentationSchema = z.object({
-  tenantId: z.string().min(1, 'Tenant ID is required'),
-  operation: z.enum(['create_vpc', 'configure_segmentation', 'update_policies', 'monitor_traffic']),
+  tenantId: z.string().min(1, "Tenant ID is required"),
+  operation: z.enum([
+    "create_vpc",
+    "configure_segmentation",
+    "update_policies",
+    "monitor_traffic",
+  ]),
   networkConfig: z.object({
     vpcCidr: z.string().optional(),
-    subnetConfiguration: z.array(z.object({
-      name: z.string(),
-      cidr: z.string(),
-      type: z.enum(['public', 'private', 'database']),
-      availability_zone: z.string().optional(),
-    })).optional(),
-    microsegmentation: z.object({
-      enabled: z.boolean().default(true),
-      segmentationPolicy: z.enum(['strict', 'moderate', 'permissive']).default('strict'),
-      allowedProtocols: z.array(z.string()).default(['HTTPS', 'TLS']),
-      blockedPorts: z.array(z.number()).default([]),
-    }).optional(),
+    subnetConfiguration: z
+      .array(
+        z.object({
+          name: z.string(),
+          cidr: z.string(),
+          type: z.enum(["public", "private", "database"]),
+          availability_zone: z.string().optional(),
+        }),
+      )
+      .optional(),
+    microsegmentation: z
+      .object({
+        enabled: z.boolean().default(true),
+        segmentationPolicy: z
+          .enum(["strict", "moderate", "permissive"])
+          .default("strict"),
+        allowedProtocols: z.array(z.string()).default(["HTTPS", "TLS"]),
+        blockedPorts: z.array(z.number()).default([]),
+      })
+      .optional(),
   }),
   securityPolicies: z.object({
-    ingressRules: z.array(z.object({
-      source: z.string(),
-      destination: z.string(),
-      protocol: z.string(),
-      port: z.number(),
-      action: z.enum(['allow', 'deny']),
-    })).optional(),
-    egressRules: z.array(z.object({
-      source: z.string(),
-      destination: z.string(),
-      protocol: z.string(),
-      port: z.number(),
-      action: z.enum(['allow', 'deny']),
-    })).optional(),
+    ingressRules: z
+      .array(
+        z.object({
+          source: z.string(),
+          destination: z.string(),
+          protocol: z.string(),
+          port: z.number(),
+          action: z.enum(["allow", "deny"]),
+        }),
+      )
+      .optional(),
+    egressRules: z
+      .array(
+        z.object({
+          source: z.string(),
+          destination: z.string(),
+          protocol: z.string(),
+          port: z.number(),
+          action: z.enum(["allow", "deny"]),
+        }),
+      )
+      .optional(),
     crossTenantPrevention: z.boolean().default(true),
   }),
 });
 
 // Resource Quota Management Schema
 const ResourceQuotaManagementSchema = z.object({
-  tenantId: z.string().min(1, 'Tenant ID is required'),
-  operation: z.enum(['set_quotas', 'enforce_limits', 'monitor_usage', 'scale_resources', 'optimize_allocation']),
+  tenantId: z.string().min(1, "Tenant ID is required"),
+  operation: z.enum([
+    "set_quotas",
+    "enforce_limits",
+    "monitor_usage",
+    "scale_resources",
+    "optimize_allocation",
+  ]),
   resourceQuotas: z.object({
     compute: z.object({
       cpuCores: z.number().min(0.1),
@@ -147,37 +188,57 @@ const ResourceQuotaManagementSchema = z.object({
       retentionDays: z.number().min(7),
     }),
   }),
-  scalingPolicies: z.object({
-    autoScaling: z.boolean().default(true),
-    scaleUpThreshold: z.number().min(50).max(100).default(80),
-    scaleDownThreshold: z.number().min(10).max(50).default(20),
-    cooldownMinutes: z.number().min(1).max(60).default(5),
-    maxScaleMultiplier: z.number().min(1).max(10).default(3),
-  }).optional(),
+  scalingPolicies: z
+    .object({
+      autoScaling: z.boolean().default(true),
+      scaleUpThreshold: z.number().min(50).max(100).default(80),
+      scaleDownThreshold: z.number().min(10).max(50).default(20),
+      cooldownMinutes: z.number().min(1).max(60).default(5),
+      maxScaleMultiplier: z.number().min(1).max(10).default(3),
+    })
+    .optional(),
 });
 
 // Governance Policy Schema
 const GovernancePolicySchema = z.object({
-  tenantId: z.string().min(1, 'Tenant ID is required'),
-  operation: z.enum(['create_policy', 'update_policy', 'enforce_policy', 'validate_compliance']),
+  tenantId: z.string().min(1, "Tenant ID is required"),
+  operation: z.enum([
+    "create_policy",
+    "update_policy",
+    "enforce_policy",
+    "validate_compliance",
+  ]),
   policyConfig: z.object({
     policyName: z.string().min(1),
-    policyType: z.enum(['access_control', 'data_governance', 'compliance_rule', 'security_policy']),
+    policyType: z.enum([
+      "access_control",
+      "data_governance",
+      "compliance_rule",
+      "security_policy",
+    ]),
     priority: z.number().min(1).max(100).default(50),
     enabled: z.boolean().default(true),
-    rules: z.array(z.object({
-      ruleId: z.string(),
-      condition: z.string(),
-      action: z.string(),
-      parameters: z.record(z.string(), z.unknown()).optional(),
-    })),
+    rules: z.array(
+      z.object({
+        ruleId: z.string(),
+        condition: z.string(),
+        action: z.string(),
+        parameters: z.record(z.string(), z.unknown()).optional(),
+      }),
+    ),
   }),
-  complianceMapping: z.object({
-    frameworks: z.array(z.enum(['SOC2', 'GDPR', 'HIPAA', 'PCI_DSS', 'ISO27001'])),
-    controlObjectives: z.array(z.string()),
-    evidenceCollection: z.boolean().default(true),
-    reportingFrequency: z.enum(['daily', 'weekly', 'monthly', 'quarterly']).default('monthly'),
-  }).optional(),
+  complianceMapping: z
+    .object({
+      frameworks: z.array(
+        z.enum(["SOC2", "GDPR", "HIPAA", "PCI_DSS", "ISO27001"]),
+      ),
+      controlObjectives: z.array(z.string()),
+      evidenceCollection: z.boolean().default(true),
+      reportingFrequency: z
+        .enum(["daily", "weekly", "monthly", "quarterly"])
+        .default("monthly"),
+    })
+    .optional(),
   auditSettings: z.object({
     logAllAccess: z.boolean().default(true),
     retainAuditLogs: z.boolean().default(true),
@@ -188,17 +249,39 @@ const GovernancePolicySchema = z.object({
 
 // Data Leakage Prevention Schema
 const DataLeakagePreventionSchema = z.object({
-  tenantId: z.string().min(1, 'Tenant ID is required'),
-  operation: z.enum(['scan_data', 'classify_data', 'prevent_leakage', 'monitor_access', 'investigate_incident']),
+  tenantId: z.string().min(1, "Tenant ID is required"),
+  operation: z.enum([
+    "scan_data",
+    "classify_data",
+    "prevent_leakage",
+    "monitor_access",
+    "investigate_incident",
+  ]),
   dataClassification: z.object({
-    classificationLevel: z.enum(['public', 'internal', 'confidential', 'restricted']),
-    dataTypes: z.array(z.enum(['PII', 'PHI', 'PCI', 'financial', 'intellectual_property', 'system_data'])),
+    classificationLevel: z.enum([
+      "public",
+      "internal",
+      "confidential",
+      "restricted",
+    ]),
+    dataTypes: z.array(
+      z.enum([
+        "PII",
+        "PHI",
+        "PCI",
+        "financial",
+        "intellectual_property",
+        "system_data",
+      ]),
+    ),
     sensitivityScore: z.number().min(1).max(10),
     retentionPeriod: z.number().min(0), // days, 0 = indefinite
   }),
   protectionMechanisms: z.object({
     encryption: z.object({
-      algorithm: z.enum(['AES-256-GCM', 'ChaCha20-Poly1305']).default('AES-256-GCM'),
+      algorithm: z
+        .enum(["AES-256-GCM", "ChaCha20-Poly1305"])
+        .default("AES-256-GCM"),
       keyRotation: z.boolean().default(true),
       fieldLevelEncryption: z.boolean().default(false),
     }),
@@ -219,9 +302,14 @@ const DataLeakagePreventionSchema = z.object({
 
 // Compliance Boundary Schema
 const ComplianceBoundarySchema = z.object({
-  tenantId: z.string().min(1, 'Tenant ID is required'),
-  operation: z.enum(['establish_boundaries', 'validate_compliance', 'generate_report', 'audit_controls']),
-  complianceFramework: z.enum(['SOC2', 'GDPR', 'HIPAA', 'PCI_DSS', 'ISO27001']),
+  tenantId: z.string().min(1, "Tenant ID is required"),
+  operation: z.enum([
+    "establish_boundaries",
+    "validate_compliance",
+    "generate_report",
+    "audit_controls",
+  ]),
+  complianceFramework: z.enum(["SOC2", "GDPR", "HIPAA", "PCI_DSS", "ISO27001"]),
   boundaryConfig: z.object({
     dataResidency: z.object({
       allowedRegions: z.array(z.string()),
@@ -345,12 +433,15 @@ interface GovernancePolicyResult {
     violationsDetected: number;
     complianceScore: number; // percentage
   };
-  complianceStatus: Record<string, {
-    status: 'compliant' | 'non_compliant' | 'partially_compliant';
-    lastAssessment: string;
-    nextAssessment: string;
-    violations: string[];
-  }>;
+  complianceStatus: Record<
+    string,
+    {
+      status: "compliant" | "non_compliant" | "partially_compliant";
+      lastAssessment: string;
+      nextAssessment: string;
+      violations: string[];
+    }
+  >;
   auditTrail: {
     lastAudit: string;
     auditFrequency: string;
@@ -413,7 +504,8 @@ interface ComplianceBoundaryResult {
 class MultiTenantSecurityEngine {
   private static instance: MultiTenantSecurityEngine;
   private readonly tenants: Map<string, TenantConfiguration> = new Map();
-  private readonly cryptographicVaults: Map<string, TenantCryptographicVault> = new Map();
+  private readonly cryptographicVaults: Map<string, TenantCryptographicVault> =
+    new Map();
   private readonly networkSegments: Map<string, NetworkSegment> = new Map();
   private readonly resourceQuotas: Map<string, ResourceQuota> = new Map();
   private readonly policies: Map<string, PolicyConfiguration> = new Map();
@@ -428,94 +520,127 @@ class MultiTenantSecurityEngine {
   /**
    * Provision a new tenant with complete security isolation
    */
-  public async provisionTenant(config: z.infer<typeof TenantProvisioningSchema>): Promise<TenantProvisioningResult> {
+  public async provisionTenant(
+    config: z.infer<typeof TenantProvisioningSchema>,
+  ): Promise<TenantProvisioningResult> {
     try {
       const tenantId = config.tenantId;
-      
-      // 1. Generate tenant-specific cryptographic keys
-      const cryptographicKeys = await this.generateTenantKeys(tenantId);
-      
-      // 2. Configure network segmentation
-      const networkConfig = await this.setupNetworkSegmentation(tenantId, config.securitySettings.networkIsolation);
-      
-      // 3. Establish resource quotas
-      const resourceAllocation = await this.configureResourceQuotas(tenantId, config.resourceQuotas);
-      
-      // 4. Create governance policies
-      const policies = await this.establishGovernancePolicies(tenantId, config.complianceFrameworks);
-      
-      // 5. Setup compliance boundaries
-      const complianceStatus = await this.establishComplianceBoundaries(tenantId, config.complianceFrameworks);
-      
-      // Store tenant configuration
-      const tenantConfig: TenantConfiguration = {
+      const provisioningDetails = await this.executeProvisioningSteps(
         tenantId,
-        name: config.tenantName,
-        subscriptionTier: config.subscriptionTier,
-        organizationInfo: config.organizationInfo,
-        securitySettings: config.securitySettings,
-        provisioningDate: new Date(),
-        status: 'active',
-        complianceFrameworks: config.complianceFrameworks,
-      };
-      
+        config,
+      );
+      const tenantConfig = this.createTenantConfiguration(config);
+
       this.tenants.set(tenantId, tenantConfig);
-      
-      // Log provisioning event
-      await auditLogger.logEvent({
-        level: 'info',
-        category: 'system',
-        action: 'tenant_provisioned',
-        userId: tenantId,
-        success: true,
-        details: {
-          tenantName: config.tenantName,
-          subscriptionTier: config.subscriptionTier,
-          complianceFrameworks: config.complianceFrameworks,
-          networkIsolation: config.securitySettings.networkIsolation,
-        },
-        riskLevel: 'low',
-      });
+      await this.logProvisioningSuccess(config);
 
       return {
         success: true,
         tenantId,
-        provisioningDetails: {
-          cryptographicKeys,
-          networkConfiguration: networkConfig,
-          resourceAllocation,
-          policies,
-          complianceStatus,
-        },
+        provisioningDetails,
       };
     } catch (error) {
-      componentLogger.error('Tenant provisioning failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        tenantId: config.tenantId,
-      });
-
-      return {
-        success: false,
-        tenantId: config.tenantId,
-        provisioningDetails: {
-          cryptographicKeys: {},
-          networkConfiguration: {},
-          resourceAllocation: {},
-          policies: [],
-          complianceStatus: {},
-        },
-        errors: [error instanceof Error ? error.message : 'Unknown error'],
-      };
+      return this.handleProvisioningError(error, config.tenantId);
     }
+  }
+
+  private async executeProvisioningSteps(
+    tenantId: string,
+    config: z.infer<typeof TenantProvisioningSchema>,
+  ): Promise<any> {
+    const cryptographicKeys = await this.generateTenantKeys(tenantId);
+    const networkConfig = await this.setupNetworkSegmentation(
+      tenantId,
+      config.securitySettings.networkIsolation,
+    );
+    const resourceAllocation = await this.configureResourceQuotas(
+      tenantId,
+      config.resourceQuotas,
+    );
+    const policies = await this.establishGovernancePolicies(
+      tenantId,
+      config.complianceFrameworks,
+    );
+    const complianceStatus = await this.establishComplianceBoundaries(
+      tenantId,
+      config.complianceFrameworks,
+    );
+
+    return {
+      cryptographicKeys,
+      networkConfiguration: networkConfig,
+      resourceAllocation,
+      policies,
+      complianceStatus,
+    };
+  }
+
+  private createTenantConfiguration(
+    config: z.infer<typeof TenantProvisioningSchema>,
+  ): TenantConfiguration {
+    return {
+      tenantId: config.tenantId,
+      name: config.tenantName,
+      subscriptionTier: config.subscriptionTier,
+      organizationInfo: config.organizationInfo,
+      securitySettings: config.securitySettings,
+      provisioningDate: new Date(),
+      status: "active",
+      complianceFrameworks: config.complianceFrameworks,
+    };
+  }
+
+  private async logProvisioningSuccess(
+    config: z.infer<typeof TenantProvisioningSchema>,
+  ): Promise<void> {
+    await auditLogger.logEvent({
+      level: "info",
+      category: "system",
+      action: "tenant_provisioned",
+      userId: config.tenantId,
+      success: true,
+      details: {
+        tenantName: config.tenantName,
+        subscriptionTier: config.subscriptionTier,
+        complianceFrameworks: config.complianceFrameworks,
+        networkIsolation: config.securitySettings.networkIsolation,
+      },
+      riskLevel: "low",
+    });
+  }
+
+  private handleProvisioningError(
+    error: unknown,
+    tenantId: string,
+  ): TenantProvisioningResult {
+    componentLogger.error("Tenant provisioning failed", {
+      error: error instanceof Error ? error.message : "Unknown error",
+      tenantId,
+    });
+
+    return {
+      success: false,
+      tenantId,
+      provisioningDetails: {
+        cryptographicKeys: {},
+        networkConfiguration: {},
+        resourceAllocation: {},
+        policies: [],
+        complianceStatus: {},
+      },
+      errors: [error instanceof Error ? error.message : "Unknown error"],
+    };
   }
 
   /**
    * Manage cryptographic isolation for tenant
    */
-  public async manageCryptographicIsolation(config: z.infer<typeof CryptographicIsolationSchema>): Promise<CryptographicIsolationResult> {
+  public async manageCryptographicIsolation(
+    config: z.infer<typeof CryptographicIsolationSchema>,
+  ): Promise<CryptographicIsolationResult> {
     try {
       const { tenantId, operation } = config;
-      
+
       const result: CryptographicIsolationResult = {
         success: true,
         operation,
@@ -524,17 +649,22 @@ class MultiTenantSecurityEngine {
       };
 
       switch (operation) {
-        case 'generate_keys': {
+        case "generate_keys": {
           const keys = await this.generateTenantKeys(tenantId);
           result.keyManagement = {
             masterKeyId: keys.masterKey,
-            dataEncryptionKeys: Object.values(keys).filter(k => k !== keys.masterKey),
-            keyRotationSchedule: await this.setupKeyRotation(tenantId, config.keyRotationPolicy),
+            dataEncryptionKeys: Object.values(keys).filter(
+              (k) => k !== keys.masterKey,
+            ),
+            keyRotationSchedule: await this.setupKeyRotation(
+              tenantId,
+              config.keyRotationPolicy,
+            ),
           };
           break;
         }
 
-        case 'rotate_keys': {
+        case "rotate_keys": {
           await this.rotateTenantKeys(tenantId);
           result.keyManagement = {
             keyRotationSchedule: { lastRotation: new Date().toISOString() },
@@ -542,26 +672,36 @@ class MultiTenantSecurityEngine {
           break;
         }
 
-        case 'encrypt_data': {
-          if (!config.data) {throw new Error('Data required for encryption');}
-          const encryptedData = await this.encryptTenantData(tenantId, config.data);
+        case "encrypt_data": {
+          if (!config.data) {
+            throw new Error("Data required for encryption");
+          }
+          const encryptedData = await this.encryptTenantData(
+            tenantId,
+            config.data,
+          );
           result.encryptionResult = {
             encryptedData,
-            encryptionMetadata: { algorithm: 'AES-256-GCM', tenantId },
+            encryptionMetadata: { algorithm: "AES-256-GCM", tenantId },
           };
           break;
         }
 
-        case 'decrypt_data': {
-          if (!config.encryptedData) {throw new Error('Encrypted data required for decryption');}
-          const decryptedData = await this.decryptTenantData(tenantId, config.encryptedData);
+        case "decrypt_data": {
+          if (!config.encryptedData) {
+            throw new Error("Encrypted data required for decryption");
+          }
+          const decryptedData = await this.decryptTenantData(
+            tenantId,
+            config.encryptedData,
+          );
           result.encryptionResult = {
             decryptedData,
           };
           break;
         }
 
-        case 'verify_isolation': {
+        case "verify_isolation": {
           const verification = await this.verifyTenantIsolation(tenantId);
           result.isolationVerification = verification;
           break;
@@ -575,7 +715,7 @@ class MultiTenantSecurityEngine {
         operation: config.operation,
         tenantId: config.tenantId,
         keyManagement: {},
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -583,10 +723,12 @@ class MultiTenantSecurityEngine {
   /**
    * Configure network segmentation for tenant
    */
-  public async configureNetworkSegmentation(config: z.infer<typeof NetworkSegmentationSchema>): Promise<NetworkSegmentationResult> {
+  public async configureNetworkSegmentation(
+    config: z.infer<typeof NetworkSegmentationSchema>,
+  ): Promise<NetworkSegmentationResult> {
     try {
       const { tenantId, operation } = config;
-      
+
       let networkConfiguration: Record<string, unknown> = {};
       let isolationMetrics = {
         crossTenantBlocking: true,
@@ -595,26 +737,29 @@ class MultiTenantSecurityEngine {
       };
 
       switch (operation) {
-        case 'create_vpc': {
-          networkConfiguration = await this.createTenantVPC(tenantId, config.networkConfig);
+        case "create_vpc": {
+          networkConfiguration = await this.createTenantVPC(
+            tenantId,
+            config.networkConfig,
+          );
           break;
         }
 
-        case 'configure_segmentation': {
+        case "configure_segmentation": {
           await this.setupMicrosegmentation(tenantId, config.networkConfig);
-          networkConfiguration = { microsegmentation: 'configured' };
+          networkConfiguration = { microsegmentation: "configured" };
           break;
         }
 
-        case 'update_policies': {
+        case "update_policies": {
           await this.updateNetworkPolicies(tenantId, config.securityPolicies);
-          networkConfiguration = { policies: 'updated' };
+          networkConfiguration = { policies: "updated" };
           break;
         }
 
-        case 'monitor_traffic': {
+        case "monitor_traffic": {
           isolationMetrics = await this.monitorTenantTraffic(tenantId);
-          networkConfiguration = { monitoring: 'active' };
+          networkConfiguration = { monitoring: "active" };
           break;
         }
       }
@@ -645,13 +790,15 @@ class MultiTenantSecurityEngine {
           alertsConfigured: false,
           anomalyDetection: false,
         },
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
 
   // Helper methods for tenant operations
-  private async generateTenantKeys(tenantId: string): Promise<Record<string, string>> {
+  private async generateTenantKeys(
+    tenantId: string,
+  ): Promise<Record<string, string>> {
     const keys = {
       masterKey: await this.generateSecureKey(`${tenantId}_master`),
       dataEncryptionKey: await this.generateSecureKey(`${tenantId}_data`),
@@ -669,41 +816,52 @@ class MultiTenantSecurityEngine {
 
   private async generateSecureKey(keyId: string): Promise<string> {
     const key = await randomBytes(32);
-    return `${keyId}_${key.toString('base64url')}`;
+    return `${keyId}_${key.toString("base64url")}`;
   }
 
-  private async setupNetworkSegmentation(tenantId: string, enabled: boolean): Promise<Record<string, unknown>> {
-    if (!enabled) {return { networkIsolation: 'disabled' };}
-    
+  private async setupNetworkSegmentation(
+    tenantId: string,
+    enabled: boolean,
+  ): Promise<Record<string, unknown>> {
+    if (!enabled) {
+      return { networkIsolation: "disabled" };
+    }
+
     const segment = new NetworkSegment(tenantId);
     await segment.configure();
     this.networkSegments.set(tenantId, segment);
-    
+
     return {
       vpcId: `vpc-${tenantId}`,
-      segmentation: 'configured',
-      isolation: 'enabled',
+      segmentation: "configured",
+      isolation: "enabled",
     };
   }
 
-  private async configureResourceQuotas(tenantId: string, quotas: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async configureResourceQuotas(
+    tenantId: string,
+    quotas: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
     const resourceQuota = new ResourceQuota(tenantId, quotas);
     await resourceQuota.enforce();
     this.resourceQuotas.set(tenantId, resourceQuota);
-    
+
     return {
       quotasSet: Object.keys(quotas).length,
-      enforcement: 'active',
+      enforcement: "active",
     };
   }
 
-  private async establishGovernancePolicies(tenantId: string, frameworks: string[]): Promise<string[]> {
+  private async establishGovernancePolicies(
+    tenantId: string,
+    frameworks: string[],
+  ): Promise<string[]> {
     const policies: string[] = [];
-    
+
     for (const framework of frameworks) {
       const policyId = `${tenantId}_${framework}_policy`;
       policies.push(policyId);
-      
+
       // Store policy configuration
       this.policies.set(policyId, {
         tenantId,
@@ -713,26 +871,39 @@ class MultiTenantSecurityEngine {
         createdAt: new Date(),
       });
     }
-    
+
     return policies;
   }
 
-  private async establishComplianceBoundaries(tenantId: string, frameworks: string[]): Promise<Record<string, string>> {
+  private async establishComplianceBoundaries(
+    tenantId: string,
+    frameworks: string[],
+  ): Promise<Record<string, string>> {
     const status: Record<string, string> = {};
-    
+
     for (const framework of frameworks) {
-      status[framework] = 'configured';
+      status[framework] = "configured";
     }
-    
+
     return status;
   }
 
-  private async setupKeyRotation(_tenantId: string, policy?: Record<string, unknown>): Promise<Record<string, string>> {
+  private async setupKeyRotation(
+    _tenantId: string,
+    policy?: Record<string, unknown>,
+  ): Promise<Record<string, string>> {
     const schedule = {
-      nextRotation: new Date(Date.now() + ((policy?.rotationIntervalDays as number) || 90) * 24 * 60 * 60 * 1000).toISOString(),
-      automaticRotation: policy?.automaticRotation ? 'enabled' : 'disabled',
+      nextRotation: new Date(
+        Date.now() +
+          ((policy?.rotationIntervalDays as number) || 90) *
+            24 *
+            60 *
+            60 *
+            1000,
+      ).toISOString(),
+      automaticRotation: policy?.automaticRotation ? "enabled" : "disabled",
     };
-    
+
     return schedule;
   }
 
@@ -743,17 +914,27 @@ class MultiTenantSecurityEngine {
     }
   }
 
-  private async encryptTenantData(tenantId: string, data: string): Promise<string> {
+  private async encryptTenantData(
+    tenantId: string,
+    data: string,
+  ): Promise<string> {
     const vault = this.cryptographicVaults.get(tenantId);
-    if (!vault) {throw new Error('Tenant vault not found');}
-    
+    if (!vault) {
+      throw new Error("Tenant vault not found");
+    }
+
     return vault.encrypt(data);
   }
 
-  private async decryptTenantData(tenantId: string, encryptedData: string): Promise<string> {
+  private async decryptTenantData(
+    tenantId: string,
+    encryptedData: string,
+  ): Promise<string> {
     const vault = this.cryptographicVaults.get(tenantId);
-    if (!vault) {throw new Error('Tenant vault not found');}
-    
+    if (!vault) {
+      throw new Error("Tenant vault not found");
+    }
+
     return vault.decrypt(encryptedData);
   }
 
@@ -769,19 +950,28 @@ class MultiTenantSecurityEngine {
     };
   }
 
-  private async createTenantVPC(tenantId: string, config: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async createTenantVPC(
+    tenantId: string,
+    config: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
     return {
       vpcId: `vpc-${tenantId}`,
-      cidr: config.vpcCidr || '10.0.0.0/16',
+      cidr: config.vpcCidr || "10.0.0.0/16",
       subnets: [],
     };
   }
 
-  private async setupMicrosegmentation(_tenantId: string, _config: Record<string, unknown>): Promise<void> {
+  private async setupMicrosegmentation(
+    _tenantId: string,
+    _config: Record<string, unknown>,
+  ): Promise<void> {
     // Configure microsegmentation policies
   }
 
-  private async updateNetworkPolicies(_tenantId: string, _policies: Record<string, unknown>): Promise<void> {
+  private async updateNetworkPolicies(
+    _tenantId: string,
+    _policies: Record<string, unknown>,
+  ): Promise<void> {
     // Update network security policies
   }
 
@@ -845,11 +1035,11 @@ class TenantCryptographicVault {
   }
 
   async encrypt(_data: string): Promise<string> {
-    return encryptionService.generateToken(32) + '_encrypted';
+    return encryptionService.generateToken(32) + "_encrypted";
   }
 
   async decrypt(_encryptedData: string): Promise<string> {
-    return 'decrypted_data';
+    return "decrypted_data";
   }
 }
 
@@ -862,7 +1052,10 @@ class NetworkSegment {
 }
 
 class ResourceQuota {
-  constructor(private readonly tenantId: string, private readonly quotas: Record<string, unknown>) {}
+  constructor(
+    private readonly tenantId: string,
+    private readonly quotas: Record<string, unknown>,
+  ) {}
 
   async enforce(): Promise<void> {
     // Enforce resource quotas for tenant
@@ -884,27 +1077,30 @@ interface PolicyConfiguration {
  */
 function addProvisionTenantTool(server: FastMCP): void {
   server.addTool({
-    name: 'provision_tenant',
-    description: 'Provision a new tenant with comprehensive security isolation, cryptographic keys, network segmentation, and compliance boundaries',
+    name: "provision_tenant",
+    description:
+      "Provision a new tenant with comprehensive security isolation, cryptographic keys, network segmentation, and compliance boundaries",
     parameters: TenantProvisioningSchema,
     annotations: {
-      title: 'Provision Multi-Tenant Security Environment with Full Isolation',
+      title: "Provision Multi-Tenant Security Environment with Full Isolation",
       readOnlyHint: false,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: false,
     },
-    execute: async (input: z.infer<typeof TenantProvisioningSchema>): Promise<string> => {
+    execute: async (
+      input: z.infer<typeof TenantProvisioningSchema>,
+    ): Promise<string> => {
       const securityEngine = MultiTenantSecurityEngine.getInstance();
-      
+
       try {
         const result = await securityEngine.provisionTenant(input);
 
         // Log provisioning event
         await auditLogger.logEvent({
-          level: 'info',
-          category: 'system',
-          action: 'tenant_provisioning',
+          level: "info",
+          category: "system",
+          action: "tenant_provisioning",
           userId: input.tenantId,
           success: result.success,
           details: {
@@ -913,10 +1109,10 @@ function addProvisionTenantTool(server: FastMCP): void {
             complianceFrameworks: input.complianceFrameworks,
             resourceQuotas: input.resourceQuotas,
           },
-          riskLevel: 'low',
+          riskLevel: "low",
         });
 
-        componentLogger.info('Tenant provisioning completed', {
+        componentLogger.info("Tenant provisioning completed", {
           tenantId: input.tenantId,
           success: result.success,
           frameworks: input.complianceFrameworks,
@@ -924,15 +1120,15 @@ function addProvisionTenantTool(server: FastMCP): void {
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
-        componentLogger.error('Tenant provisioning failed', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+        componentLogger.error("Tenant provisioning failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
           tenantId: input.tenantId,
         });
 
         return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
-          error: 'Tenant provisioning service error',
+          error: "Tenant provisioning service error",
           provisioningDetails: {
             cryptographicKeys: {},
             networkConfiguration: {},
@@ -951,26 +1147,29 @@ function addProvisionTenantTool(server: FastMCP): void {
  */
 function addCryptographicIsolationTool(server: FastMCP): void {
   server.addTool({
-    name: 'manage_cryptographic_isolation',
-    description: 'Manage tenant-specific cryptographic isolation including key generation, rotation, encryption, and verification',
+    name: "manage_cryptographic_isolation",
+    description:
+      "Manage tenant-specific cryptographic isolation including key generation, rotation, encryption, and verification",
     parameters: CryptographicIsolationSchema,
     annotations: {
-      title: 'Manage Tenant Cryptographic Keys and Data Isolation',
+      title: "Manage Tenant Cryptographic Keys and Data Isolation",
       readOnlyHint: false,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input: z.infer<typeof CryptographicIsolationSchema>): Promise<string> => {
+    execute: async (
+      input: z.infer<typeof CryptographicIsolationSchema>,
+    ): Promise<string> => {
       const securityEngine = MultiTenantSecurityEngine.getInstance();
-      
+
       try {
         const result = await securityEngine.manageCryptographicIsolation(input);
 
         // Log cryptographic operation
         await auditLogger.logEvent({
-          level: 'info',
-          category: 'security',
+          level: "info",
+          category: "security",
           action: `cryptographic_${input.operation}`,
           userId: input.tenantId,
           success: result.success,
@@ -979,10 +1178,10 @@ function addCryptographicIsolationTool(server: FastMCP): void {
             keyType: input.keyType,
             hsmEnabled: input.hsmConfiguration?.enabled,
           },
-          riskLevel: 'medium',
+          riskLevel: "medium",
         });
 
-        componentLogger.info('Cryptographic isolation operation completed', {
+        componentLogger.info("Cryptographic isolation operation completed", {
           tenantId: input.tenantId,
           operation: input.operation,
           success: result.success,
@@ -990,8 +1189,8 @@ function addCryptographicIsolationTool(server: FastMCP): void {
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
-        componentLogger.error('Cryptographic isolation operation failed', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+        componentLogger.error("Cryptographic isolation operation failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
           tenantId: input.tenantId,
           operation: input.operation,
         });
@@ -1001,7 +1200,7 @@ function addCryptographicIsolationTool(server: FastMCP): void {
           operation: input.operation,
           tenantId: input.tenantId,
           keyManagement: {},
-          error: 'Cryptographic isolation service error',
+          error: "Cryptographic isolation service error",
         }).content[0].text;
       }
     },
@@ -1013,26 +1212,29 @@ function addCryptographicIsolationTool(server: FastMCP): void {
  */
 function addNetworkSegmentationTool(server: FastMCP): void {
   server.addTool({
-    name: 'configure_network_segmentation',
-    description: 'Configure tenant network segmentation with virtual isolation, microsegmentation, and traffic monitoring',
+    name: "configure_network_segmentation",
+    description:
+      "Configure tenant network segmentation with virtual isolation, microsegmentation, and traffic monitoring",
     parameters: NetworkSegmentationSchema,
     annotations: {
-      title: 'Configure Network Isolation and Traffic Segmentation',
+      title: "Configure Network Isolation and Traffic Segmentation",
       readOnlyHint: false,
       destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input: z.infer<typeof NetworkSegmentationSchema>): Promise<string> => {
+    execute: async (
+      input: z.infer<typeof NetworkSegmentationSchema>,
+    ): Promise<string> => {
       const securityEngine = MultiTenantSecurityEngine.getInstance();
-      
+
       try {
         const result = await securityEngine.configureNetworkSegmentation(input);
 
         // Log network configuration
         await auditLogger.logEvent({
-          level: 'info',
-          category: 'security',
+          level: "info",
+          category: "security",
           action: `network_${input.operation}`,
           userId: input.tenantId,
           success: result.success,
@@ -1041,10 +1243,10 @@ function addNetworkSegmentationTool(server: FastMCP): void {
             microsegmentation: input.networkConfig.microsegmentation?.enabled,
             crossTenantPrevention: input.securityPolicies.crossTenantPrevention,
           },
-          riskLevel: 'medium',
+          riskLevel: "medium",
         });
 
-        componentLogger.info('Network segmentation operation completed', {
+        componentLogger.info("Network segmentation operation completed", {
           tenantId: input.tenantId,
           operation: input.operation,
           success: result.success,
@@ -1053,8 +1255,8 @@ function addNetworkSegmentationTool(server: FastMCP): void {
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
-        componentLogger.error('Network segmentation operation failed', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+        componentLogger.error("Network segmentation operation failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
           tenantId: input.tenantId,
           operation: input.operation,
         });
@@ -1073,7 +1275,7 @@ function addNetworkSegmentationTool(server: FastMCP): void {
             alertsConfigured: false,
             anomalyDetection: false,
           },
-          error: 'Network segmentation service error',
+          error: "Network segmentation service error",
         }).content[0].text;
       }
     },
@@ -1085,17 +1287,20 @@ function addNetworkSegmentationTool(server: FastMCP): void {
  */
 function addResourceQuotaManagementTool(server: FastMCP): void {
   server.addTool({
-    name: 'manage_resource_quotas',
-    description: 'Manage tenant resource quotas, scaling policies, and resource optimization with real-time monitoring',
+    name: "manage_resource_quotas",
+    description:
+      "Manage tenant resource quotas, scaling policies, and resource optimization with real-time monitoring",
     parameters: ResourceQuotaManagementSchema,
     annotations: {
-      title: 'Manage Tenant Resource Quotas and Enforcement Policies',
+      title: "Manage Tenant Resource Quotas and Enforcement Policies",
       readOnlyHint: false,
       destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input: z.infer<typeof ResourceQuotaManagementSchema>): Promise<string> => {
+    execute: async (
+      input: z.infer<typeof ResourceQuotaManagementSchema>,
+    ): Promise<string> => {
       try {
         // Simulate resource quota management
         const result: ResourceQuotaResult = {
@@ -1108,9 +1313,12 @@ function addResourceQuotaManagementTool(server: FastMCP): void {
               storageGB: input.resourceQuotas.compute.storageGB,
             },
             application: {
-              maxConcurrentUsers: input.resourceQuotas.application.maxConcurrentUsers,
-              maxActiveConnections: input.resourceQuotas.application.maxActiveConnections,
-              apiRequestsPerMinute: input.resourceQuotas.application.apiRequestsPerMinute,
+              maxConcurrentUsers:
+                input.resourceQuotas.application.maxConcurrentUsers,
+              maxActiveConnections:
+                input.resourceQuotas.application.maxActiveConnections,
+              apiRequestsPerMinute:
+                input.resourceQuotas.application.apiRequestsPerMinute,
             },
             data: {
               maxDatabaseSize: input.resourceQuotas.data.maxDatabaseSize,
@@ -1125,14 +1333,26 @@ function addResourceQuotaManagementTool(server: FastMCP): void {
               storageGB: input.resourceQuotas.compute.storageGB * 0.4,
             },
             application: {
-              concurrentUsers: Math.floor(input.resourceQuotas.application.maxConcurrentUsers * 0.5),
-              activeConnections: Math.floor(input.resourceQuotas.application.maxActiveConnections * 0.3),
-              apiRequests: Math.floor(input.resourceQuotas.application.apiRequestsPerMinute * 0.8),
+              concurrentUsers: Math.floor(
+                input.resourceQuotas.application.maxConcurrentUsers * 0.5,
+              ),
+              activeConnections: Math.floor(
+                input.resourceQuotas.application.maxActiveConnections * 0.3,
+              ),
+              apiRequests: Math.floor(
+                input.resourceQuotas.application.apiRequestsPerMinute * 0.8,
+              ),
             },
             data: {
-              databaseSize: Math.floor(input.resourceQuotas.data.maxDatabaseSize * 0.6),
-              fileUploads: Math.floor(input.resourceQuotas.data.maxFileUploads * 0.4),
-              dataAge: Math.floor(input.resourceQuotas.data.retentionDays * 0.2),
+              databaseSize: Math.floor(
+                input.resourceQuotas.data.maxDatabaseSize * 0.6,
+              ),
+              fileUploads: Math.floor(
+                input.resourceQuotas.data.maxFileUploads * 0.4,
+              ),
+              dataAge: Math.floor(
+                input.resourceQuotas.data.retentionDays * 0.2,
+              ),
             },
           },
           utilizationMetrics: {
@@ -1143,15 +1363,19 @@ function addResourceQuotaManagementTool(server: FastMCP): void {
           },
           scalingStatus: {
             autoScalingEnabled: input.scalingPolicies?.autoScaling || false,
-            lastScalingEvent: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-            nextScalingCheck: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+            lastScalingEvent: new Date(
+              Date.now() - 2 * 60 * 60 * 1000,
+            ).toISOString(),
+            nextScalingCheck: new Date(
+              Date.now() + 5 * 60 * 1000,
+            ).toISOString(),
           },
         };
 
         // Log resource quota operation
         await auditLogger.logEvent({
-          level: 'info',
-          category: 'system',
+          level: "info",
+          category: "system",
           action: `resource_quota_${input.operation}`,
           userId: input.tenantId,
           success: result.success,
@@ -1160,10 +1384,10 @@ function addResourceQuotaManagementTool(server: FastMCP): void {
             quotaConfiguration: result.quotaConfiguration,
             utilizationMetrics: result.utilizationMetrics,
           },
-          riskLevel: 'low',
+          riskLevel: "low",
         });
 
-        componentLogger.info('Resource quota management completed', {
+        componentLogger.info("Resource quota management completed", {
           tenantId: input.tenantId,
           operation: input.operation,
           success: result.success,
@@ -1172,8 +1396,8 @@ function addResourceQuotaManagementTool(server: FastMCP): void {
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
-        componentLogger.error('Resource quota management failed', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+        componentLogger.error("Resource quota management failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
           tenantId: input.tenantId,
           operation: input.operation,
         });
@@ -1181,7 +1405,7 @@ function addResourceQuotaManagementTool(server: FastMCP): void {
         return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
-          error: 'Resource quota management service error',
+          error: "Resource quota management service error",
           quotaConfiguration: {},
           currentUsage: {},
           utilizationMetrics: {},
@@ -1197,17 +1421,20 @@ function addResourceQuotaManagementTool(server: FastMCP): void {
  */
 function addGovernancePoliciesManagementTool(server: FastMCP): void {
   server.addTool({
-    name: 'manage_governance_policies',
-    description: 'Manage tenant-specific governance policies, compliance frameworks, and automated policy enforcement',
+    name: "manage_governance_policies",
+    description:
+      "Manage tenant-specific governance policies, compliance frameworks, and automated policy enforcement",
     parameters: GovernancePolicySchema,
     annotations: {
-      title: 'Manage Security Governance Policies and Compliance Enforcement',
+      title: "Manage Security Governance Policies and Compliance Enforcement",
       readOnlyHint: false,
       destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input: z.infer<typeof GovernancePolicySchema>): Promise<string> => {
+    execute: async (
+      input: z.infer<typeof GovernancePolicySchema>,
+    ): Promise<string> => {
       try {
         // Simulate governance policy management
         const result: GovernancePolicyResult = {
@@ -1215,14 +1442,17 @@ function addGovernancePoliciesManagementTool(server: FastMCP): void {
           tenantId: input.tenantId,
           policyManagement: {
             policiesActive: input.policyConfig.rules.length,
-            policiesEnforced: input.policyConfig.enabled ? input.policyConfig.rules.length : 0,
+            policiesEnforced: input.policyConfig.enabled
+              ? input.policyConfig.rules.length
+              : 0,
             violationsDetected: 0,
             complianceScore: 95,
           },
           complianceStatus: {},
           auditTrail: {
             lastAudit: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-            auditFrequency: input.complianceMapping?.reportingFrequency || 'monthly',
+            auditFrequency:
+              input.complianceMapping?.reportingFrequency || "monthly",
             auditCoverage: 100,
           },
         };
@@ -1231,9 +1461,11 @@ function addGovernancePoliciesManagementTool(server: FastMCP): void {
         if (input.complianceMapping) {
           for (const framework of input.complianceMapping.frameworks) {
             result.complianceStatus[framework] = {
-              status: 'compliant',
+              status: "compliant",
               lastAssessment: new Date().toISOString(),
-              nextAssessment: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              nextAssessment: new Date(
+                Date.now() + 30 * 24 * 60 * 60 * 1000,
+              ).toISOString(),
               violations: [],
             };
           }
@@ -1241,8 +1473,8 @@ function addGovernancePoliciesManagementTool(server: FastMCP): void {
 
         // Log governance policy operation
         await auditLogger.logEvent({
-          level: 'info',
-          category: 'security',
+          level: "info",
+          category: "security",
           action: `governance_${input.operation}`,
           userId: input.tenantId,
           success: result.success,
@@ -1252,10 +1484,10 @@ function addGovernancePoliciesManagementTool(server: FastMCP): void {
             rulesCount: input.policyConfig.rules.length,
             complianceFrameworks: input.complianceMapping?.frameworks,
           },
-          riskLevel: 'medium',
+          riskLevel: "medium",
         });
 
-        componentLogger.info('Governance policy management completed', {
+        componentLogger.info("Governance policy management completed", {
           tenantId: input.tenantId,
           operation: input.operation,
           success: result.success,
@@ -1264,8 +1496,8 @@ function addGovernancePoliciesManagementTool(server: FastMCP): void {
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
-        componentLogger.error('Governance policy management failed', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+        componentLogger.error("Governance policy management failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
           tenantId: input.tenantId,
           operation: input.operation,
         });
@@ -1273,7 +1505,7 @@ function addGovernancePoliciesManagementTool(server: FastMCP): void {
         return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
-          error: 'Governance policy management service error',
+          error: "Governance policy management service error",
           policyManagement: {},
           complianceStatus: {},
           auditTrail: {},
@@ -1288,17 +1520,20 @@ function addGovernancePoliciesManagementTool(server: FastMCP): void {
  */
 function addDataLeakagePreventionTool(server: FastMCP): void {
   server.addTool({
-    name: 'prevent_data_leakage',
-    description: 'Implement comprehensive data leakage prevention with classification, monitoring, and threat detection',
+    name: "prevent_data_leakage",
+    description:
+      "Implement comprehensive data leakage prevention with classification, monitoring, and threat detection",
     parameters: DataLeakagePreventionSchema,
     annotations: {
-      title: 'Prevent Data Leakage with Security Classification and Monitoring',
+      title: "Prevent Data Leakage with Security Classification and Monitoring",
       readOnlyHint: false,
       destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input: z.infer<typeof DataLeakagePreventionSchema>): Promise<string> => {
+    execute: async (
+      input: z.infer<typeof DataLeakagePreventionSchema>,
+    ): Promise<string> => {
       try {
         // Simulate data leakage prevention
         const result: DataLeakagePreventionResult = {
@@ -1311,23 +1546,26 @@ function addDataLeakagePreventionTool(server: FastMCP): void {
             monitoredAccess: 1200,
           },
           threatDetection: {
-            activeMonitoring: input.protectionMechanisms.monitoring.realTimeAlerts,
+            activeMonitoring:
+              input.protectionMechanisms.monitoring.realTimeAlerts,
             anomaliesDetected: 0,
             incidentsInvestigated: 0,
             riskScore: input.dataClassification.sensitivityScore,
           },
           complianceStatus: {
             dataGovernance: true,
-            accessControls: input.protectionMechanisms.accessControls.requireAuthorization,
+            accessControls:
+              input.protectionMechanisms.accessControls.requireAuthorization,
             auditTrails: input.protectionMechanisms.monitoring.logAccess,
-            incidentResponse: input.protectionMechanisms.monitoring.forensicsCapability,
+            incidentResponse:
+              input.protectionMechanisms.monitoring.forensicsCapability,
           },
         };
 
         // Log data leakage prevention operation
         await auditLogger.logEvent({
-          level: 'info',
-          category: 'data_access',
+          level: "info",
+          category: "data_access",
           action: `dlp_${input.operation}`,
           userId: input.tenantId,
           success: result.success,
@@ -1337,10 +1575,11 @@ function addDataLeakagePreventionTool(server: FastMCP): void {
             dataTypes: input.dataClassification.dataTypes,
             sensitivityScore: input.dataClassification.sensitivityScore,
           },
-          riskLevel: input.dataClassification.sensitivityScore > 7 ? 'high' : 'medium',
+          riskLevel:
+            input.dataClassification.sensitivityScore > 7 ? "high" : "medium",
         });
 
-        componentLogger.info('Data leakage prevention completed', {
+        componentLogger.info("Data leakage prevention completed", {
           tenantId: input.tenantId,
           operation: input.operation,
           success: result.success,
@@ -1349,8 +1588,8 @@ function addDataLeakagePreventionTool(server: FastMCP): void {
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
-        componentLogger.error('Data leakage prevention failed', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+        componentLogger.error("Data leakage prevention failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
           tenantId: input.tenantId,
           operation: input.operation,
         });
@@ -1358,7 +1597,7 @@ function addDataLeakagePreventionTool(server: FastMCP): void {
         return formatSuccessResponse({
           success: false,
           tenantId: input.tenantId,
-          error: 'Data leakage prevention service error',
+          error: "Data leakage prevention service error",
           dataProtection: {},
           threatDetection: {},
           complianceStatus: {},
@@ -1373,17 +1612,20 @@ function addDataLeakagePreventionTool(server: FastMCP): void {
  */
 function addComplianceBoundariesManagementTool(server: FastMCP): void {
   server.addTool({
-    name: 'manage_compliance_boundaries',
-    description: 'Establish and manage tenant-specific compliance boundaries for multiple regulatory frameworks',
+    name: "manage_compliance_boundaries",
+    description:
+      "Establish and manage tenant-specific compliance boundaries for multiple regulatory frameworks",
     parameters: ComplianceBoundarySchema,
     annotations: {
-      title: 'Manage Regulatory Compliance Boundaries and Framework Auditing',
+      title: "Manage Regulatory Compliance Boundaries and Framework Auditing",
       readOnlyHint: false,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: true,
     },
-    execute: async (input: z.infer<typeof ComplianceBoundarySchema>): Promise<string> => {
+    execute: async (
+      input: z.infer<typeof ComplianceBoundarySchema>,
+    ): Promise<string> => {
       try {
         // Simulate compliance boundary management
         const result: ComplianceBoundaryResult = {
@@ -1392,28 +1634,36 @@ function addComplianceBoundariesManagementTool(server: FastMCP): void {
           complianceFramework: input.complianceFramework,
           boundaryStatus: {
             dataResidency: input.boundaryConfig.dataResidency.dataLocalization,
-            processingCompliance: input.boundaryConfig.processingLimitations.purposeLimitation,
-            accessControlCompliance: input.boundaryConfig.accessControls.roleBased,
+            processingCompliance:
+              input.boundaryConfig.processingLimitations.purposeLimitation,
+            accessControlCompliance:
+              input.boundaryConfig.accessControls.roleBased,
             auditCompliance: input.auditRequirements.continuousMonitoring,
           },
           complianceMetrics: {
             overallScore: 98,
             controlsImplemented: 45,
             controlsTotal: 47,
-            lastAssessment: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            nextAssessment: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            lastAssessment: new Date(
+              Date.now() - 7 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
+            nextAssessment: new Date(
+              Date.now() + 30 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
           },
           certificateStatus: {
             certified: true,
-            expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+            expirationDate: new Date(
+              Date.now() + 365 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
             renewalRequired: false,
           },
         };
 
         // Log compliance boundary operation
         await auditLogger.logEvent({
-          level: 'info',
-          category: 'security',
+          level: "info",
+          category: "security",
           action: `compliance_${input.operation}`,
           userId: input.tenantId,
           success: result.success,
@@ -1423,10 +1673,10 @@ function addComplianceBoundariesManagementTool(server: FastMCP): void {
             overallScore: result.complianceMetrics.overallScore,
             dataResidency: input.boundaryConfig.dataResidency,
           },
-          riskLevel: 'low',
+          riskLevel: "low",
         });
 
-        componentLogger.info('Compliance boundary management completed', {
+        componentLogger.info("Compliance boundary management completed", {
           tenantId: input.tenantId,
           operation: input.operation,
           framework: input.complianceFramework,
@@ -1436,8 +1686,8 @@ function addComplianceBoundariesManagementTool(server: FastMCP): void {
 
         return formatSuccessResponse(result).content[0].text;
       } catch (error) {
-        componentLogger.error('Compliance boundary management failed', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+        componentLogger.error("Compliance boundary management failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
           tenantId: input.tenantId,
           operation: input.operation,
         });
@@ -1446,7 +1696,7 @@ function addComplianceBoundariesManagementTool(server: FastMCP): void {
           success: false,
           tenantId: input.tenantId,
           complianceFramework: input.complianceFramework,
-          error: 'Compliance boundary management service error',
+          error: "Compliance boundary management service error",
           boundaryStatus: {},
           complianceMetrics: {},
           certificateStatus: {},
@@ -1462,38 +1712,41 @@ function addComplianceBoundariesManagementTool(server: FastMCP): void {
 /**
  * Add all Multi-Tenant Security tools to FastMCP server
  */
-export function addMultiTenantSecurityTools(server: FastMCP, _apiClient: MakeApiClient): void {
+export function addMultiTenantSecurityTools(
+  server: FastMCP,
+  _apiClient: MakeApiClient,
+): void {
   // Add provision tenant tool
   addProvisionTenantTool(server);
-  
+
   // Add cryptographic isolation tool
   addCryptographicIsolationTool(server);
-  
+
   // Add network segmentation tool
   addNetworkSegmentationTool(server);
-  
+
   // Add resource quota management tool
   addResourceQuotaManagementTool(server);
-  
+
   // Add governance policies management tool
   addGovernancePoliciesManagementTool(server);
-  
+
   // Add data leakage prevention tool
   addDataLeakagePreventionTool(server);
-  
+
   // Add compliance boundaries management tool
   addComplianceBoundariesManagementTool(server);
 
-  componentLogger.info('Multi-Tenant Security tools registered', {
+  componentLogger.info("Multi-Tenant Security tools registered", {
     toolCount: 7,
     tools: [
-      'provision_tenant', 
-      'manage_cryptographic_isolation', 
-      'configure_network_segmentation', 
-      'manage_resource_quotas', 
-      'manage_governance_policies',
-      'prevent_data_leakage',
-      'manage_compliance_boundaries'
+      "provision_tenant",
+      "manage_cryptographic_isolation",
+      "configure_network_segmentation",
+      "manage_resource_quotas",
+      "manage_governance_policies",
+      "prevent_data_leakage",
+      "manage_compliance_boundaries",
     ],
   });
 }
