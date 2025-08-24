@@ -78,11 +78,11 @@ export class EnhancedEncryptionService extends EventEmitter {
 
     // Phase 1: Configuration building (Complexity: 2 points)
     this.config = EnhancedEncryptionConfigFactory.buildConfiguration(config);
-    
+
     // Phase 2: Base service initialization (Complexity: 3 points)
     this.initializeBaseServices(baseEncryptionService, credentialManager);
-    
-    // Phase 3: Advanced service creation (Complexity: 3 points)  
+
+    // Phase 3: Advanced service creation (Complexity: 3 points)
     this.initializeAdvancedServices();
   }
 
@@ -92,9 +92,10 @@ export class EnhancedEncryptionService extends EventEmitter {
    */
   private initializeBaseServices(
     baseEncryptionService?: EncryptionService,
-    credentialManager?: CredentialManager
+    credentialManager?: CredentialManager,
   ): void {
-    this.baseEncryptionService = baseEncryptionService || new EncryptionService();
+    this.baseEncryptionService =
+      baseEncryptionService || new EncryptionService();
     this.credentialManager = credentialManager || new CredentialManager();
     this.componentLogger = logger.child({
       component: "EnhancedEncryptionService",
@@ -108,12 +109,15 @@ export class EnhancedEncryptionService extends EventEmitter {
   private initializeAdvancedServices(): void {
     // Validate service dependencies first
     EnhancedEncryptionServiceFactory.validateServiceDependencies(this.config);
-    
+
     // Create concurrent agent if enabled
-    this.concurrentAgent = EnhancedEncryptionServiceFactory.createConcurrentAgent(this.config);
-    
-    // Create HSM manager if enabled  
-    this.hsmManager = EnhancedEncryptionServiceFactory.createHSMManager(this.config);
+    this.concurrentAgent =
+      EnhancedEncryptionServiceFactory.createConcurrentAgent(this.config);
+
+    // Create HSM manager if enabled
+    this.hsmManager = EnhancedEncryptionServiceFactory.createHSMManager(
+      this.config,
+    );
   }
 
   /**
@@ -216,67 +220,28 @@ export class EnhancedEncryptionService extends EventEmitter {
     const startTime = Date.now();
 
     try {
-      // Determine processing method
-      const useHSM = options.useHSM && !!this.hsmManager;
-      const useConcurrent =
-        options.useConcurrent && !!this.concurrentAgent && !useHSM;
+      const processingMethod = this.determineEncryptionMethod(options);
+      const result = await this.executeEncryptionByMethod(
+        processingMethod,
+        plaintext,
+        masterPassword,
+        options,
+      );
 
-      let result: EncryptedData;
-
-      if (useHSM) {
-        // Use HSM for encryption
-        result = await this.encryptWithHSM(
-          plaintext,
-          masterPassword,
-          options.algorithm,
-        );
-      } else if (useConcurrent) {
-        // Use concurrent agent for encryption
-        result = await this.encryptWithConcurrentAgent(
-          plaintext,
-          masterPassword,
-          options,
-        );
-      } else {
-        // Use base encryption service
-        result = await this.baseEncryptionService.encrypt(
-          plaintext,
-          masterPassword,
-        );
-      }
-
-      // Record performance metrics
-      this.recordPerformanceMetric({
-        operationType: "encrypt",
-        algorithm: result.algorithm,
-        dataSize: plaintext.length,
-        processingTime: Date.now() - startTime,
-        throughput: plaintext.length / ((Date.now() - startTime) / 1000),
-        cpuUsage: process.cpuUsage().user / 1000000,
-        memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024,
-        workerId: useHSM ? "hsm" : useConcurrent ? "concurrent" : "software",
-        timestamp: new Date(),
-        hsm: useHSM,
-      });
-
+      this.recordEncryptionMetrics(
+        result,
+        plaintext,
+        startTime,
+        processingMethod,
+      );
       return result;
     } catch (error) {
-      // Fallback to software implementation if configured
-      if (
-        this.config.fallbackToSoftware &&
-        (options.useHSM || options.useConcurrent)
-      ) {
-        this.componentLogger.warn("Falling back to software encryption", {
-          originalError:
-            error instanceof Error ? error.message : "Unknown error",
-        });
-        return await this.baseEncryptionService.encrypt(
-          plaintext,
-          masterPassword,
-        );
-      }
-
-      throw error;
+      return await this.handleEncryptionError(
+        error,
+        plaintext,
+        masterPassword,
+        options,
+      );
     }
   }
 
@@ -299,63 +264,28 @@ export class EnhancedEncryptionService extends EventEmitter {
     const startTime = Date.now();
 
     try {
-      // Determine processing method
-      const useHSM = options.useHSM && !!this.hsmManager;
-      const useConcurrent =
-        options.useConcurrent && !!this.concurrentAgent && !useHSM;
+      const processingMethod = this.determineDecryptionMethod(options);
+      const result = await this.executeDecryptionByMethod(
+        processingMethod,
+        encryptedData,
+        masterPassword,
+        options,
+      );
 
-      let result: string;
-
-      if (useHSM) {
-        // Use HSM for decryption
-        result = await this.decryptWithHSM(encryptedData, masterPassword);
-      } else if (useConcurrent) {
-        // Use concurrent agent for decryption
-        result = await this.decryptWithConcurrentAgent(
-          encryptedData,
-          masterPassword,
-          options,
-        );
-      } else {
-        // Use base encryption service
-        result = await this.baseEncryptionService.decrypt(
-          encryptedData,
-          masterPassword,
-        );
-      }
-
-      // Record performance metrics
-      this.recordPerformanceMetric({
-        operationType: "decrypt",
-        algorithm: encryptedData.algorithm,
-        dataSize: encryptedData.data.length,
-        processingTime: Date.now() - startTime,
-        throughput: result.length / ((Date.now() - startTime) / 1000),
-        cpuUsage: process.cpuUsage().user / 1000000,
-        memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024,
-        workerId: useHSM ? "hsm" : useConcurrent ? "concurrent" : "software",
-        timestamp: new Date(),
-        hsm: useHSM,
-      });
-
+      this.recordDecryptionMetrics(
+        result,
+        encryptedData,
+        startTime,
+        processingMethod,
+      );
       return result;
     } catch (error) {
-      // Fallback to software implementation if configured
-      if (
-        this.config.fallbackToSoftware &&
-        (options.useHSM || options.useConcurrent)
-      ) {
-        this.componentLogger.warn("Falling back to software decryption", {
-          originalError:
-            error instanceof Error ? error.message : "Unknown error",
-        });
-        return await this.baseEncryptionService.decrypt(
-          encryptedData,
-          masterPassword,
-        );
-      }
-
-      throw error;
+      return await this.handleDecryptionError(
+        error,
+        encryptedData,
+        masterPassword,
+        options,
+      );
     }
   }
 
@@ -443,77 +373,11 @@ export class EnhancedEncryptionService extends EventEmitter {
     hsmBacked: boolean;
   }> {
     if (options.useHSM && this.hsmManager) {
-      // Use HSM for key generation
-      const keySpec = {
-        keyId: crypto.randomUUID(),
-        keyType: "asymmetric" as const,
-        algorithm,
-        keyLength: this.getKeyLength(algorithm),
-        extractable: options.extractable ?? false,
-        usage: options.usage || ["encrypt", "decrypt", "sign", "verify"],
-      };
-
-      const result = await this.hsmManager.generateKey(keySpec);
-
-      if (result.success && result.keyId) {
-        return {
-          publicKey: result.result as string,
-          keyId: result.keyId,
-          hsmBacked: true,
-        };
-      } else {
-        throw new CryptographicError(
-          result.error?.message || "HSM key generation failed",
-          "generateKeyPair",
-        );
-      }
+      return await this.generateKeyPairWithHSM(algorithm, options);
     } else if (this.concurrentAgent) {
-      // Use concurrent agent for key generation
-      const result = await this.concurrentAgent.generateKeyPair(
-        algorithm,
-        options,
-      );
-
-      return {
-        publicKey: result.publicKey,
-        privateKey: result.privateKey,
-        keyId: result.keyId,
-        hsmBacked: false,
-      };
+      return await this.generateKeyPairWithConcurrentAgent(algorithm, options);
     } else {
-      // Fallback to Node.js crypto
-      const keyPair = (crypto as any).generateKeyPairSync(
-        algorithm === "rsa-4096"
-          ? "rsa"
-          : algorithm === "ecdsa-p384"
-            ? "ec"
-            : "ed25519",
-        algorithm === "rsa-4096"
-          ? {
-              modulusLength: 4096,
-              publicKeyEncoding: { type: "spki", format: "pem" },
-              privateKeyEncoding: { type: "pkcs8", format: "pem" },
-            }
-          : algorithm === "ecdsa-p384"
-            ? {
-                namedCurve: "secp384r1",
-                publicKeyEncoding: { type: "spki", format: "pem" },
-                privateKeyEncoding: { type: "pkcs8", format: "pem" },
-              }
-            : {
-                publicKeyEncoding: { type: "spki", format: "pem" },
-                privateKeyEncoding: { type: "pkcs8", format: "pem" },
-              },
-      );
-
-      return {
-        publicKey: keyPair.publicKey as string,
-        privateKey: (options.extractable ?? true)
-          ? (keyPair.privateKey as string)
-          : undefined,
-        keyId: crypto.randomUUID(),
-        hsmBacked: false,
-      };
+      return this.generateKeyPairWithNodeCrypto(algorithm, options);
     }
   }
 
@@ -524,105 +388,29 @@ export class EnhancedEncryptionService extends EventEmitter {
     start: Date;
     end: Date;
   }): EncryptionPerformanceReport {
-    const now = new Date();
-    const start =
-      timeRange?.start || new Date(now.getTime() - 24 * 60 * 60 * 1000); // Last 24 hours
-    const end = timeRange?.end || now;
-
-    const relevantMetrics = this.performanceMetrics.filter(
-      (metric) => metric.timestamp >= start && metric.timestamp <= end,
-    );
+    const { start, end } = this.calculateReportTimeRange(timeRange);
+    const relevantMetrics = this.filterMetricsByTimeRange(start, end);
 
     if (relevantMetrics.length === 0) {
-      return {
-        timeRange: { start, end },
-        totalOperations: 0,
-        successRate: 100,
-        avgResponseTime: 0,
-        peakThroughput: 0,
-        algorithmBreakdown: {},
-        hsmUsage: {
-          enabled: !!this.hsmManager,
-          operations: 0,
-          avgTime: 0,
-          availability: 0,
-        },
-        recommendations: ["No operations recorded in the specified time range"],
-      };
+      return this.buildEmptyPerformanceReport(start, end);
     }
 
-    const totalOperations = relevantMetrics.length;
-    const avgResponseTime =
-      relevantMetrics.reduce((sum, m) => sum + m.processingTime, 0) /
-      totalOperations;
-    const peakThroughput = Math.max(
-      ...relevantMetrics.map((m) => m.throughput),
+    const basicStats = this.calculateBasicPerformanceStats(relevantMetrics);
+    const algorithmBreakdown = this.buildAlgorithmBreakdown(relevantMetrics);
+    const hsmUsage = this.calculateHsmUsage(relevantMetrics);
+    const recommendations = this.generatePerformanceRecommendations(
+      basicStats.avgResponseTime,
+      basicStats.peakThroughput,
+      hsmUsage,
+      basicStats.totalOperations,
     );
-
-    // Algorithm breakdown
-    const algorithmBreakdown: Record<string, any> = {};
-    for (const metric of relevantMetrics) {
-      if (!algorithmBreakdown[metric.algorithm]) {
-        algorithmBreakdown[metric.algorithm] = {
-          operations: 0,
-          totalTime: 0,
-          avgTime: 0,
-          errorRate: 0,
-        };
-      }
-      algorithmBreakdown[metric.algorithm].operations++;
-      algorithmBreakdown[metric.algorithm].totalTime += metric.processingTime;
-    }
-
-    for (const alg in algorithmBreakdown) {
-      const data = algorithmBreakdown[alg];
-      data.avgTime = data.totalTime / data.operations;
-      delete data.totalTime;
-    }
-
-    // HSM usage
-    const hsmMetrics = relevantMetrics.filter((m) => m.hsm);
-    const hsmUsage = {
-      enabled: !!this.hsmManager,
-      operations: hsmMetrics.length,
-      avgTime:
-        hsmMetrics.length > 0
-          ? hsmMetrics.reduce((sum, m) => sum + m.processingTime, 0) /
-            hsmMetrics.length
-          : 0,
-      availability: this.hsmManager ? 100 : 0, // Simplified - would need actual health checks
-    };
-
-    // Generate recommendations
-    const recommendations: string[] = [];
-    if (
-      avgResponseTime >
-      this.config.performanceMonitoring.alertThresholds.avgResponseTime
-    ) {
-      recommendations.push(
-        "Average response time is above threshold. Consider enabling concurrent processing or HSM acceleration.",
-      );
-    }
-    if (
-      peakThroughput <
-      this.config.performanceMonitoring.alertThresholds.throughput
-    ) {
-      recommendations.push(
-        "Throughput is below optimal levels. Consider increasing worker count or optimizing key derivation parameters.",
-      );
-    }
-    if (hsmUsage.enabled && hsmUsage.operations / totalOperations < 0.5) {
-      recommendations.push(
-        "HSM is available but underutilized. Consider routing more operations through HSM for enhanced security.",
-      );
-    }
 
     return {
       timeRange: { start, end },
-      totalOperations,
+      totalOperations: basicStats.totalOperations,
       successRate: 100, // Simplified - would need actual error tracking
-      avgResponseTime,
-      peakThroughput,
+      avgResponseTime: basicStats.avgResponseTime,
+      peakThroughput: basicStats.peakThroughput,
       algorithmBreakdown,
       hsmUsage,
       recommendations,
@@ -712,6 +500,495 @@ export class EnhancedEncryptionService extends EventEmitter {
         error: error instanceof Error ? error.message : "Unknown error",
       });
       throw error;
+    }
+  }
+
+  // Private helper methods for encryption/decryption method selection
+
+  /**
+   * Determine encryption processing method
+   * Complexity: 3 (extracted from encrypt method)
+   */
+  private determineEncryptionMethod(options: {
+    useHSM?: boolean;
+    useConcurrent?: boolean;
+  }): { useHSM: boolean; useConcurrent: boolean } {
+    const useHSM = options.useHSM && !!this.hsmManager;
+    const useConcurrent =
+      options.useConcurrent && !!this.concurrentAgent && !useHSM;
+    return { useHSM, useConcurrent };
+  }
+
+  /**
+   * Determine decryption processing method
+   * Complexity: 3 (extracted from decrypt method)
+   */
+  private determineDecryptionMethod(options: {
+    useHSM?: boolean;
+    useConcurrent?: boolean;
+  }): { useHSM: boolean; useConcurrent: boolean } {
+    const useHSM = options.useHSM && !!this.hsmManager;
+    const useConcurrent =
+      options.useConcurrent && !!this.concurrentAgent && !useHSM;
+    return { useHSM, useConcurrent };
+  }
+
+  /**
+   * Execute encryption using selected method
+   * Complexity: 4 (extracted from encrypt method)
+   */
+  private async executeEncryptionByMethod(
+    method: { useHSM: boolean; useConcurrent: boolean },
+    plaintext: string,
+    masterPassword: string,
+    options: {
+      algorithm?: string;
+      priority?: "low" | "medium" | "high" | "critical";
+    },
+  ): Promise<EncryptedData> {
+    if (method.useHSM) {
+      return await this.encryptWithHSM(
+        plaintext,
+        masterPassword,
+        options.algorithm,
+      );
+    } else if (method.useConcurrent) {
+      return await this.encryptWithConcurrentAgent(
+        plaintext,
+        masterPassword,
+        options,
+      );
+    } else {
+      return await this.baseEncryptionService.encrypt(
+        plaintext,
+        masterPassword,
+      );
+    }
+  }
+
+  /**
+   * Execute decryption using selected method
+   * Complexity: 4 (extracted from decrypt method)
+   */
+  private async executeDecryptionByMethod(
+    method: { useHSM: boolean; useConcurrent: boolean },
+    encryptedData: EncryptedData,
+    masterPassword: string,
+    options: { priority?: "low" | "medium" | "high" | "critical" },
+  ): Promise<string> {
+    if (method.useHSM) {
+      return await this.decryptWithHSM(encryptedData, masterPassword);
+    } else if (method.useConcurrent) {
+      return await this.decryptWithConcurrentAgent(
+        encryptedData,
+        masterPassword,
+        options,
+      );
+    } else {
+      return await this.baseEncryptionService.decrypt(
+        encryptedData,
+        masterPassword,
+      );
+    }
+  }
+
+  /**
+   * Record encryption performance metrics
+   * Complexity: 3 (extracted from encrypt method)
+   */
+  private recordEncryptionMetrics(
+    result: EncryptedData,
+    plaintext: string,
+    startTime: number,
+    method: { useHSM: boolean; useConcurrent: boolean },
+  ): void {
+    this.recordPerformanceMetric({
+      operationType: "encrypt",
+      algorithm: result.algorithm,
+      dataSize: plaintext.length,
+      processingTime: Date.now() - startTime,
+      throughput: plaintext.length / ((Date.now() - startTime) / 1000),
+      cpuUsage: process.cpuUsage().user / 1000000,
+      memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024,
+      workerId: method.useHSM
+        ? "hsm"
+        : method.useConcurrent
+          ? "concurrent"
+          : "software",
+      timestamp: new Date(),
+      hsm: method.useHSM,
+    });
+  }
+
+  /**
+   * Record decryption performance metrics
+   * Complexity: 3 (extracted from decrypt method)
+   */
+  private recordDecryptionMetrics(
+    result: string,
+    encryptedData: EncryptedData,
+    startTime: number,
+    method: { useHSM: boolean; useConcurrent: boolean },
+  ): void {
+    this.recordPerformanceMetric({
+      operationType: "decrypt",
+      algorithm: encryptedData.algorithm,
+      dataSize: encryptedData.data.length,
+      processingTime: Date.now() - startTime,
+      throughput: result.length / ((Date.now() - startTime) / 1000),
+      cpuUsage: process.cpuUsage().user / 1000000,
+      memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024,
+      workerId: method.useHSM
+        ? "hsm"
+        : method.useConcurrent
+          ? "concurrent"
+          : "software",
+      timestamp: new Date(),
+      hsm: method.useHSM,
+    });
+  }
+
+  /**
+   * Handle encryption error with fallback
+   * Complexity: 4 (extracted from encrypt method)
+   */
+  private async handleEncryptionError(
+    error: unknown,
+    plaintext: string,
+    masterPassword: string,
+    options: { useHSM?: boolean; useConcurrent?: boolean },
+  ): Promise<EncryptedData> {
+    if (
+      this.config.fallbackToSoftware &&
+      (options.useHSM || options.useConcurrent)
+    ) {
+      this.componentLogger.warn("Falling back to software encryption", {
+        originalError: error instanceof Error ? error.message : "Unknown error",
+      });
+      return await this.baseEncryptionService.encrypt(
+        plaintext,
+        masterPassword,
+      );
+    }
+    throw error;
+  }
+
+  /**
+   * Handle decryption error with fallback
+   * Complexity: 4 (extracted from decrypt method)
+   */
+  private async handleDecryptionError(
+    error: unknown,
+    encryptedData: EncryptedData,
+    masterPassword: string,
+    options: { useHSM?: boolean; useConcurrent?: boolean },
+  ): Promise<string> {
+    if (
+      this.config.fallbackToSoftware &&
+      (options.useHSM || options.useConcurrent)
+    ) {
+      this.componentLogger.warn("Falling back to software decryption", {
+        originalError: error instanceof Error ? error.message : "Unknown error",
+      });
+      return await this.baseEncryptionService.decrypt(
+        encryptedData,
+        masterPassword,
+      );
+    }
+    throw error;
+  }
+
+  // Private helper methods for performance reporting
+
+  /**
+   * Calculate time range for performance report
+   * Complexity: 2 (extracted from getPerformanceReport)
+   */
+  private calculateReportTimeRange(timeRange?: { start: Date; end: Date }): {
+    start: Date;
+    end: Date;
+  } {
+    const now = new Date();
+    const start =
+      timeRange?.start || new Date(now.getTime() - 24 * 60 * 60 * 1000); // Last 24 hours
+    const end = timeRange?.end || now;
+    return { start, end };
+  }
+
+  /**
+   * Filter metrics by time range
+   * Complexity: 2 (extracted from getPerformanceReport)
+   */
+  private filterMetricsByTimeRange(start: Date, end: Date) {
+    return this.performanceMetrics.filter(
+      (metric) => metric.timestamp >= start && metric.timestamp <= end,
+    );
+  }
+
+  /**
+   * Build empty performance report for no metrics case
+   * Complexity: 2 (extracted from getPerformanceReport)
+   */
+  private buildEmptyPerformanceReport(
+    start: Date,
+    end: Date,
+  ): EncryptionPerformanceReport {
+    return {
+      timeRange: { start, end },
+      totalOperations: 0,
+      successRate: 100,
+      avgResponseTime: 0,
+      peakThroughput: 0,
+      algorithmBreakdown: {},
+      hsmUsage: {
+        enabled: !!this.hsmManager,
+        operations: 0,
+        avgTime: 0,
+        availability: 0,
+      },
+      recommendations: ["No operations recorded in the specified time range"],
+    };
+  }
+
+  /**
+   * Calculate basic performance statistics
+   * Complexity: 4 (extracted from getPerformanceReport)
+   */
+  private calculateBasicPerformanceStats(relevantMetrics: any[]) {
+    const totalOperations = relevantMetrics.length;
+    const avgResponseTime =
+      relevantMetrics.reduce((sum, m) => sum + m.processingTime, 0) /
+      totalOperations;
+    const peakThroughput = Math.max(
+      ...relevantMetrics.map((m) => m.throughput),
+    );
+    return { totalOperations, avgResponseTime, peakThroughput };
+  }
+
+  /**
+   * Build algorithm breakdown statistics
+   * Complexity: 6 (extracted from getPerformanceReport)
+   */
+  private buildAlgorithmBreakdown(relevantMetrics: any[]): Record<string, any> {
+    const algorithmBreakdown: Record<string, any> = {};
+
+    for (const metric of relevantMetrics) {
+      if (!algorithmBreakdown[metric.algorithm]) {
+        algorithmBreakdown[metric.algorithm] = {
+          operations: 0,
+          totalTime: 0,
+          avgTime: 0,
+          errorRate: 0,
+        };
+      }
+      algorithmBreakdown[metric.algorithm].operations++;
+      algorithmBreakdown[metric.algorithm].totalTime += metric.processingTime;
+    }
+
+    for (const alg in algorithmBreakdown) {
+      const data = algorithmBreakdown[alg];
+      data.avgTime = data.totalTime / data.operations;
+      delete data.totalTime;
+    }
+
+    return algorithmBreakdown;
+  }
+
+  /**
+   * Calculate HSM usage statistics
+   * Complexity: 4 (extracted from getPerformanceReport)
+   */
+  private calculateHsmUsage(relevantMetrics: any[]) {
+    const hsmMetrics = relevantMetrics.filter((m) => m.hsm);
+    return {
+      enabled: !!this.hsmManager,
+      operations: hsmMetrics.length,
+      avgTime:
+        hsmMetrics.length > 0
+          ? hsmMetrics.reduce((sum, m) => sum + m.processingTime, 0) /
+            hsmMetrics.length
+          : 0,
+      availability: this.hsmManager ? 100 : 0, // Simplified - would need actual health checks
+    };
+  }
+
+  /**
+   * Generate performance recommendations
+   * Complexity: 6 (extracted from getPerformanceReport)
+   */
+  private generatePerformanceRecommendations(
+    avgResponseTime: number,
+    peakThroughput: number,
+    hsmUsage: any,
+    totalOperations: number,
+  ): string[] {
+    const recommendations: string[] = [];
+
+    if (
+      avgResponseTime >
+      this.config.performanceMonitoring.alertThresholds.avgResponseTime
+    ) {
+      recommendations.push(
+        "Average response time is above threshold. Consider enabling concurrent processing or HSM acceleration.",
+      );
+    }
+
+    if (
+      peakThroughput <
+      this.config.performanceMonitoring.alertThresholds.throughput
+    ) {
+      recommendations.push(
+        "Throughput is below optimal levels. Consider increasing worker count or optimizing key derivation parameters.",
+      );
+    }
+
+    if (hsmUsage.enabled && hsmUsage.operations / totalOperations < 0.5) {
+      recommendations.push(
+        "HSM is available but underutilized. Consider routing more operations through HSM for enhanced security.",
+      );
+    }
+
+    return recommendations;
+  }
+
+  // Private helper methods for key generation
+
+  /**
+   * Generate key pair using HSM
+   * Complexity: 6 (extracted from generateKeyPair method)
+   */
+  private async generateKeyPairWithHSM(
+    algorithm: "rsa-4096" | "ecdsa-p384" | "ed25519",
+    options: { extractable?: boolean; usage?: string[] },
+  ): Promise<{
+    publicKey: string;
+    privateKey?: string;
+    keyId: string;
+    hsmBacked: boolean;
+  }> {
+    const keySpec = {
+      keyId: crypto.randomUUID(),
+      keyType: "asymmetric" as const,
+      algorithm,
+      keyLength: this.getKeyLength(algorithm),
+      extractable: options.extractable ?? false,
+      usage: options.usage || ["encrypt", "decrypt", "sign", "verify"],
+    };
+
+    const result = await this.hsmManager!.generateKey(keySpec);
+
+    if (result.success && result.keyId) {
+      return {
+        publicKey: result.result as string,
+        keyId: result.keyId,
+        hsmBacked: true,
+      };
+    } else {
+      throw new CryptographicError(
+        result.error?.message || "HSM key generation failed",
+        "generateKeyPair",
+      );
+    }
+  }
+
+  /**
+   * Generate key pair using concurrent agent
+   * Complexity: 3 (extracted from generateKeyPair method)
+   */
+  private async generateKeyPairWithConcurrentAgent(
+    algorithm: "rsa-4096" | "ecdsa-p384" | "ed25519",
+    options: { extractable?: boolean; usage?: string[] },
+  ): Promise<{
+    publicKey: string;
+    privateKey?: string;
+    keyId: string;
+    hsmBacked: boolean;
+  }> {
+    const result = await this.concurrentAgent!.generateKeyPair(
+      algorithm,
+      options,
+    );
+
+    return {
+      publicKey: result.publicKey,
+      privateKey: result.privateKey,
+      keyId: result.keyId,
+      hsmBacked: false,
+    };
+  }
+
+  /**
+   * Generate key pair using Node.js crypto
+   * Complexity: 8 (extracted from generateKeyPair method)
+   */
+  private generateKeyPairWithNodeCrypto(
+    algorithm: "rsa-4096" | "ecdsa-p384" | "ed25519",
+    options: { extractable?: boolean },
+  ): {
+    publicKey: string;
+    privateKey?: string;
+    keyId: string;
+    hsmBacked: boolean;
+  } {
+    const cryptoAlgorithm = this.getCryptoAlgorithmName(algorithm);
+    const keyOptions = this.buildCryptoKeyOptions(algorithm);
+
+    const keyPair = (crypto as any).generateKeyPairSync(
+      cryptoAlgorithm,
+      keyOptions,
+    );
+
+    return {
+      publicKey: keyPair.publicKey as string,
+      privateKey:
+        (options.extractable ?? true)
+          ? (keyPair.privateKey as string)
+          : undefined,
+      keyId: crypto.randomUUID(),
+      hsmBacked: false,
+    };
+  }
+
+  /**
+   * Get Node.js crypto algorithm name from our algorithm identifier
+   * Complexity: 3 (extracted from generateKeyPairWithNodeCrypto)
+   */
+  private getCryptoAlgorithmName(
+    algorithm: "rsa-4096" | "ecdsa-p384" | "ed25519",
+  ): string {
+    if (algorithm === "rsa-4096") {
+      return "rsa";
+    }
+    if (algorithm === "ecdsa-p384") {
+      return "ec";
+    }
+    return "ed25519";
+  }
+
+  /**
+   * Build crypto key options for Node.js generateKeyPairSync
+   * Complexity: 6 (extracted from generateKeyPairWithNodeCrypto)
+   */
+  private buildCryptoKeyOptions(
+    algorithm: "rsa-4096" | "ecdsa-p384" | "ed25519",
+  ): any {
+    if (algorithm === "rsa-4096") {
+      return {
+        modulusLength: 4096,
+        publicKeyEncoding: { type: "spki", format: "pem" },
+        privateKeyEncoding: { type: "pkcs8", format: "pem" },
+      };
+    } else if (algorithm === "ecdsa-p384") {
+      return {
+        namedCurve: "secp384r1",
+        publicKeyEncoding: { type: "spki", format: "pem" },
+        privateKeyEncoding: { type: "pkcs8", format: "pem" },
+      };
+    } else {
+      return {
+        publicKeyEncoding: { type: "spki", format: "pem" },
+        privateKeyEncoding: { type: "pkcs8", format: "pem" },
+      };
     }
   }
 
@@ -818,7 +1095,7 @@ export class EnhancedEncryptionService extends EventEmitter {
     if (!this.isEncryptedData(result.result)) {
       throw new CryptographicError(
         "Invalid result type from concurrent agent",
-        "encryptWithConcurrentAgent"
+        "encryptWithConcurrentAgent",
       );
     }
     return result.result;
