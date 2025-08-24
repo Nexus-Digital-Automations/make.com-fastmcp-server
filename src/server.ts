@@ -79,17 +79,17 @@ export class MakeServerInstance {
     setupGlobalErrorHandlers();
 
     // Initialize API client
-    this.apiClient = new MakeApiClient(configManager.getMakeConfig());
+    this.apiClient = new MakeApiClient(configManager().getMakeConfig());
 
     // Initialize security systems
     this.initializeSecurity();
 
     // Initialize FastMCP server with proper type annotations
     this.server = new FastMCP<MakeSessionAuth>({
-      name: configManager.getConfig().name,
+      name: configManager().getConfig().name,
       version: "1.0.0",
       instructions: this.getServerInstructions(),
-      authenticate: configManager.isAuthEnabled()
+      authenticate: configManager().isAuthEnabled()
         ? this.authenticate.bind(this)
         : undefined,
     });
@@ -157,14 +157,14 @@ This server provides comprehensive Make.com API access beyond the official MCP s
 
 ## Authentication:
 ${
-  configManager.isAuthEnabled()
+  configManager().isAuthEnabled()
     ? "- Server requires API key authentication via x-api-key header"
     : "- Server runs in open mode (no authentication required)"
 }
 
 ## Rate Limiting:
 - API calls are rate-limited to prevent abuse of Make.com API
-- Current limits: ${configManager.getRateLimitConfig()?.maxRequests || "unlimited"} requests per ${(configManager.getRateLimitConfig()?.windowMs || 60000) / 1000} seconds
+- Current limits: ${configManager().getRateLimitConfig()?.maxRequests || "unlimited"} requests per ${(configManager().getRateLimitConfig()?.windowMs || 60000) / 1000} seconds
 
 ## Usage Notes:
 - All operations require valid Make.com API credentials
@@ -188,7 +188,7 @@ ${
     });
 
     const apiKey = headers["x-api-key"];
-    const expectedSecret = configManager.getAuthSecret();
+    const expectedSecret = configManager().getAuthSecret();
 
     if (!apiKey || apiKey !== expectedSecret) {
       const authError = createAuthenticationError(
@@ -344,8 +344,8 @@ ${
           uptime: process.uptime(),
           memory: process.memoryUsage(),
           config: {
-            logLevel: configManager.getLogLevel(),
-            authEnabled: configManager.isAuthEnabled(),
+            logLevel: configManager().getLogLevel(),
+            authEnabled: configManager().isAuthEnabled(),
             environment: process.env.NODE_ENV || "development",
           },
         };
@@ -479,7 +479,7 @@ ${
         componentLogger.info("Retrieving server information");
         log.info("Retrieving server information", { correlationId });
 
-        const config = configManager.getConfig();
+        const config = configManager().getConfig();
         const serverInfo = {
           name: config.name,
           version: config.version,
@@ -694,9 +694,9 @@ ${
 
           // Test team access if configured
           let teamAccess: boolean | null = null;
-          if (configManager.getMakeConfig().teamId) {
+          if (configManager().getMakeConfig().teamId) {
             const teamResponse = await this.apiClient.get(
-              `/teams/${configManager.getMakeConfig().teamId}`,
+              `/teams/${configManager().getMakeConfig().teamId}`,
             );
             teamAccess = teamResponse.success;
             reportProgress({ progress: 50, total: 100 });
@@ -716,9 +716,9 @@ ${
             teamAccess,
             scenarioAccess,
             configuration: {
-              baseUrl: configManager.getMakeConfig().baseUrl,
-              hasTeamId: !!configManager.getMakeConfig().teamId,
-              hasOrgId: !!configManager.getMakeConfig().organizationId,
+              baseUrl: configManager().getMakeConfig().baseUrl,
+              hasTeamId: !!configManager().getMakeConfig().teamId,
+              hasOrgId: !!configManager().getMakeConfig().organizationId,
             },
           };
 
@@ -909,14 +909,14 @@ ${
 
   public async start(options?: Record<string, unknown>): Promise<void> {
     this.componentLogger.info("Starting Make.com FastMCP Server", {
-      version: configManager.getConfig().version,
+      version: configManager().getConfig().version,
       environment: process.env.NODE_ENV || "development",
-      authEnabled: configManager.isAuthEnabled(),
+      authEnabled: configManager().isAuthEnabled(),
     });
 
     try {
       // Validate configuration before starting (skip in development with test key)
-      if (!configManager.getMakeConfig().apiKey.includes("test_key")) {
+      if (!configManager().getMakeConfig().apiKey.includes("test_key")) {
         const isHealthy = await this.apiClient.healthCheck();
         if (!isHealthy) {
           throw new Error(
