@@ -1,0 +1,59 @@
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds
+  evaluation_interval: 15s # Evaluate rules every 15 seconds
+
+# Scrape configuration for load testing monitoring
+scrape_configs:
+  # FastMCP Server metrics
+  - job_name: 'fastmcp-server'
+    static_configs:
+      - targets: ['fastmcp-server:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 5s # More frequent during load testing
+    scrape_timeout: 10s
+
+  # Redis metrics (if Redis exporter is available)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # k6 metrics (via remote write)
+  - job_name: 'k6'
+    static_configs:
+      - targets: ['k6:6565'] # k6 metrics server if enabled
+    metrics_path: '/metrics'
+    scrape_interval: 1s # High frequency for load test metrics
+    scrape_timeout: 5s
+
+# Remote write configuration for k6 integration
+remote_write:
+  - url: "http://localhost:9090/api/v1/write"
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 2500
+
+# Rule files for alerting during load tests
+rule_files:
+  - "alert_rules.yml"
+
+# Alerting configuration for load test monitoring
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Global settings for data retention during load testing
+storage:
+  tsdb:
+    retention.time: 7d # Keep 7 days of load test data
+    retention.size: 2GB # Limit storage to 2GB

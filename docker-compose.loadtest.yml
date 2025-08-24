@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # k6 Load Testing Service
+  k6:
+    image: grafana/k6:latest
+    environment:
+      - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write
+      - K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true
+    volumes:
+      - ./loadtest:/scripts
+      - ./loadtest/results:/results
+    command: run --out prometheus-rw /scripts/oauth-load-test.js
+    depends_on:
+      - prometheus
+      - fastmcp-server
+    networks:
+      - loadtest
+
+  # FastMCP Server for Load Testing
+  fastmcp-server:
+    build: .
+    environment:
+      - NODE_ENV=loadtest
+      - MAKE_API_KEY=test-load-testing-key
+      - REDIS_URL=redis://redis:6379
+      - OAUTH_SESSION_ENCRYPTION_KEY=test-key-for-load-testing-only-64-chars-long-secure-string
+      - PORT=8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+      - prometheus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - loadtest
+
+  # Redis for OAuth Session Storage
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - loadtest
+
+  # Prometheus for Metrics Collection
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./loadtest/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-remote-write-receiver'
+    networks:
+      - loadtest
+
+  # Grafana for Real-time Load Test Monitoring
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./loadtest/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./loadtest/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - loadtest
+
+networks:
+  loadtest:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
