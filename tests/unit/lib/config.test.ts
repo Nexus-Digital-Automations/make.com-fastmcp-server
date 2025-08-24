@@ -993,8 +993,10 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           // Force fresh import by clearing module cache
           jest.resetModules();
           
-          // This should throw an error due to invalid PORT
-          await expect(import('../../../src/lib/config.js')).rejects.toThrow('Invalid number value: not-a-number');
+          // Import the module and try to access the config manager
+          // This should throw an error when the lazy singleton initializes
+          const configModule = await import('../../../src/lib/config.js');
+          expect(() => configModule.configManager()).toThrow('Invalid number value: not-a-number');
           
         } finally {
           // Cleanup will be handled by afterEach
