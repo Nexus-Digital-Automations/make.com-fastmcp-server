@@ -281,52 +281,15 @@ export abstract class BaseServer {
     httpStream?: { endpoint?: string; port?: number };
   }): Promise<void> {
     try {
-      this.componentLogger.info(`Starting ${this.getServerType()} server`, {
-        transport: options?.transportType || "stdio",
-        port: options?.httpStream?.port,
-      });
-
-      // Register all tools before starting
+      this.logServerStartAttempt(options);
       this.registerTools();
 
-      // Start the server with proper type conversion
-      let fastMcpOptions: Parameters<typeof this.server.start>[0] | undefined;
-
-      if (options?.transportType === "httpStream" && options.httpStream) {
-        fastMcpOptions = {
-          transportType: "httpStream",
-          httpStream: {
-            port: options.httpStream.port || 3000,
-            ...(options.httpStream.endpoint && {
-              endpoint: options.httpStream.endpoint.startsWith("/")
-                ? (options.httpStream.endpoint as `/${string}`)
-                : `/${options.httpStream.endpoint}`,
-            }),
-          },
-        };
-      } else if (options?.transportType) {
-        fastMcpOptions = {
-          transportType: options.transportType,
-        };
-      }
-
+      const fastMcpOptions = this.buildFastMcpOptions(options);
       await this.server.start(fastMcpOptions);
 
-      this.componentLogger.info(
-        `${this.getServerType()} server started successfully`,
-        {
-          name: this.config.name,
-          toolCategories: this.config.toolCategories.length,
-          transport: options?.transportType || "stdio",
-        },
-      );
+      this.logServerStartSuccess(options);
     } catch (error) {
-      this.componentLogger.error(
-        `Failed to start ${this.getServerType()} server`,
-        {
-          error: error instanceof Error ? error.message : String(error),
-        },
-      );
+      this.logServerStartError(error);
       throw new MakeServerError(
         `Failed to start ${this.getServerType()} server`,
         "SERVER_START",
@@ -335,6 +298,75 @@ export abstract class BaseServer {
         { originalError: error },
       );
     }
+  }
+
+  /**
+   * Log server start attempt
+   */
+  private logServerStartAttempt(options?: {
+    transportType?: "stdio" | "httpStream";
+    httpStream?: { endpoint?: string; port?: number };
+  }): void {
+    this.componentLogger.info(`Starting ${this.getServerType()} server`, {
+      transport: options?.transportType || "stdio",
+      port: options?.httpStream?.port,
+    });
+  }
+
+  /**
+   * Build FastMCP options from start options
+   */
+  private buildFastMcpOptions(options?: {
+    transportType?: "stdio" | "httpStream";
+    httpStream?: { endpoint?: string; port?: number };
+  }): Parameters<typeof this.server.start>[0] | undefined {
+    if (options?.transportType === "httpStream" && options.httpStream) {
+      return {
+        transportType: "httpStream",
+        httpStream: {
+          port: options.httpStream.port || 3000,
+          ...(options.httpStream.endpoint && {
+            endpoint: options.httpStream.endpoint.startsWith("/")
+              ? (options.httpStream.endpoint as `/${string}`)
+              : `/${options.httpStream.endpoint}`,
+          }),
+        },
+      };
+    } else if (options?.transportType) {
+      return {
+        transportType: options.transportType,
+      };
+    }
+    return undefined;
+  }
+
+  /**
+   * Log successful server start
+   */
+  private logServerStartSuccess(options?: {
+    transportType?: "stdio" | "httpStream";
+    httpStream?: { endpoint?: string; port?: number };
+  }): void {
+    this.componentLogger.info(
+      `${this.getServerType()} server started successfully`,
+      {
+        name: this.config.name,
+        toolCategories: this.config.toolCategories.length,
+        transport: options?.transportType || "stdio",
+      },
+    );
+  }
+
+  /**
+   * Log server start error
+   */
+  private logServerStartError(error: unknown): void {
+    this.componentLogger.error(
+      `Failed to start ${this.getServerType()} server`,
+      {
+        error: error instanceof Error ? error.message : String(error),
+      },
+    );
   }
 
   public async shutdown(): Promise<void> {

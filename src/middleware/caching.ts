@@ -191,7 +191,9 @@ export class CachingMiddleware {
     this.initializeMetrics();
   }
 
-  private buildConfiguration(config?: Partial<CachingMiddlewareConfig>): CachingMiddlewareConfig {
+  private buildConfiguration(
+    config?: Partial<CachingMiddlewareConfig>,
+  ): CachingMiddlewareConfig {
     return {
       cache: defaultCacheConfig,
       strategies: this.buildCachingStrategies(),
@@ -271,7 +273,11 @@ export class CachingMiddleware {
         enabled: true,
         ttl: 1800, // 30 minutes
         tags: ["connections"],
-        invalidateOn: ["connection:create", "connection:update", "connection:delete"],
+        invalidateOn: [
+          "connection:create",
+          "connection:update",
+          "connection:delete",
+        ],
       },
       get_connection: {
         enabled: true,
@@ -786,14 +792,18 @@ export class CachingMiddleware {
   /**
    * Attempt cache operation with hit/miss logic
    */
-  private async attemptCacheOperation<T extends CacheableApiResponse>(
-    operation: string,
-    params: Record<string, unknown>,
-    executor: () => Promise<T>,
-    strategy: CacheStrategy,
-    cacheKey: string,
-    startTime: number,
-  ): Promise<T> {
+  private async attemptCacheOperation<
+    T extends CacheableApiResponse,
+  >(operationParams: {
+    operation: string;
+    params: Record<string, unknown>;
+    executor: () => Promise<T>;
+    strategy: CacheStrategy;
+    cacheKey: string;
+    startTime: number;
+  }): Promise<T> {
+    const { operation, params, executor, strategy, cacheKey, startTime } =
+      operationParams;
     // Try to get from cache
     const cached = await this.cache.get<CachedResponse<T>>(cacheKey);
 
@@ -838,14 +848,16 @@ export class CachingMiddleware {
   /**
    * Handle cache miss scenario
    */
-  private async handleCacheMiss<T extends CacheableApiResponse>(
-    operation: string,
-    params: Record<string, unknown>,
-    result: T,
-    strategy: CacheStrategy,
-    cacheKey: string,
-    startTime: number,
-  ): Promise<void> {
+  private async handleCacheMiss<T extends CacheableApiResponse>(missParams: {
+    operation: string;
+    params: Record<string, unknown>;
+    result: T;
+    strategy: CacheStrategy;
+    cacheKey: string;
+    startTime: number;
+  }): Promise<void> {
+    const { operation, params, result, strategy, cacheKey, startTime } =
+      missParams;
     // Check if response should be cached
     if (this.shouldCacheResponse(operation, params, result, strategy)) {
       await this.storeInCache(result, operation, params, strategy, cacheKey);

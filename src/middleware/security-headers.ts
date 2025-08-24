@@ -297,9 +297,41 @@ export class SecurityHeadersManager {
     req: HttpRequest,
     res: HttpResponse,
   ): void {
+    this.setApiVersionHeaders(res);
+    this.setSecurityPolicyHeaders(res);
+    this.setRateLimitHeaders(req, res);
+    this.setCorsHeaders(req, res);
+    this.setAuditHeaders(res);
+    this.setCacheControlHeaders(req, res);
+  }
+
+  /**
+   * Set API version headers
+   */
+  private setApiVersionHeaders(res: HttpResponse): void {
+    const response = res as {
+      setHeader(name: string, value: string | number): void;
+    };
+    response.setHeader("X-API-Version", "1.0");
+  }
+
+  /**
+   * Set security policy headers
+   */
+  private setSecurityPolicyHeaders(res: HttpResponse): void {
+    const response = res as {
+      setHeader(name: string, value: string | number): void;
+    };
+    response.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+    response.setHeader("X-Download-Options", "noopen");
+    response.setHeader("X-Content-Type-Options", "nosniff");
+  }
+
+  /**
+   * Set rate limiting headers
+   */
+  private setRateLimitHeaders(req: HttpRequest, res: HttpResponse): void {
     const request = req as {
-      headers: Record<string, string | string[] | undefined>;
-      path?: string;
       rateLimit?: {
         limit?: string | number;
         remaining?: string | number;
@@ -310,15 +342,6 @@ export class SecurityHeadersManager {
       setHeader(name: string, value: string | number): void;
     };
 
-    // API versioning header
-    response.setHeader("X-API-Version", "1.0");
-
-    // Security policy enforcement
-    response.setHeader("X-Permitted-Cross-Domain-Policies", "none");
-    response.setHeader("X-Download-Options", "noopen");
-    response.setHeader("X-Content-Type-Options", "nosniff");
-
-    // Rate limiting information (will be set by rate limiting middleware)
     if (request.rateLimit) {
       response.setHeader(
         "X-RateLimit-Limit",
@@ -333,41 +356,206 @@ export class SecurityHeadersManager {
         request.rateLimit.reset || "unknown",
       );
     }
+  }
 
-    // CORS security for production
+  /**
+   * Set CORS headers based on environment
+   */
+  private setCorsHeaders(req: HttpRequest, res: HttpResponse): void {
+    const request = req as {
+      headers: Record<string, string | string[] | undefined>;
+    };
+    const response = res as {
+      setHeader(name: string, value: string | number): void;
+    };
+
     if (this.config.environment === "production") {
-      const origin = request.headers.origin;
-      const originString = Array.isArray(origin) ? origin[0] : origin;
-      if (originString && this.config.allowedOrigins.includes(originString)) {
-        response.setHeader("Access-Control-Allow-Origin", originString);
-      } else {
-        response.setHeader("Access-Control-Allow-Origin", "null");
-      }
-
-      response.setHeader("Access-Control-Allow-Credentials", "true");
-      response.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET,HEAD,PUT,PATCH,POST,DELETE",
-      );
-      response.setHeader(
-        "Access-Control-Allow-Headers",
-        "Origin,X-Requested-With,Content-Type,Accept,Authorization,X-API-Key,X-CSRF-Token",
-      );
+      this.setProductionCorsHeaders(request, response);
     } else {
-      // More permissive CORS for development
-      response.setHeader("Access-Control-Allow-Origin", "*");
-      response.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-      );
-      response.setHeader("Access-Control-Allow-Headers", "*");
+      this.setDevelopmentCorsHeaders(response);
+    }
+  }
+
+  /**
+   * Set production CORS headers
+   */
+  private setProductionCorsHeaders(
+    request: { headers: Record<string, string | string[] | undefined> },
+    response: { setHeader(name: string, value: string | number): void },
+  ): void {
+    const origin = request.headers.origin;
+    const originString = Array.isArray(origin) ? origin[0] : origin;
+    if (originString && this.config.allowedOrigins.includes(originString)) {
+      response.setHeader("Access-Control-Allow-Origin", originString);
+    } else {
+      response.setHeader("Access-Control-Allow-Origin", "null");
     }
 
-    // Security audit headers
+    response.setHeader("Access-Control-Allow-Credentials", "true");
+    response.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,HEAD,PUT,PATCH,POST,DELETE",
+    );
+    response.setHeader(
+      "Access-Control-Allow-Headers",
+      "Origin,X-Requested-With,Content-Type,Accept,Authorization,X-API-Key,X-CSRF-Token",
+    );
+  }
+
+  /**
+   * Set development CORS headers
+   */
+  private setDevelopmentCorsHeaders(response: {
+    setHeader(name: string, value: string | number): void;
+  }): void {
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    );
+    response.setHeader("Access-Control-Allow-Headers", "*");
+  }
+
+  /**
+   * Set security audit headers
+   */
+  private setAuditHeaders(res: HttpResponse): void {
+    const response = res as {
+      setHeader(name: string, value: string | number): void;
+    };
     response.setHeader("X-Security-Enhanced", "true");
     response.setHeader("X-Security-Version", "2.0");
+  }
 
-    // Cache control for sensitive endpoints
+  /**
+   * Set cache control headers for sensitive endpoints
+   */
+  private setCacheControlHeaders(req: HttpRequest, res: HttpResponse): void {
+    const request = req as { path?: string };
+    const response = res as {
+      setHeader(name: string, value: string | number): void;
+    };
+
+    if (request.path && this.isSensitiveEndpoint(request.path)) {
+      response.setHeader(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, private",
+      );
+      response.setHeader("Pragma", "no-cache");
+      response.setHeader("Expires", "0");
+    }
+  }
+
+  /**
+   * Legacy method maintained for backward compatibility - now delegates to extracted methods
+   */
+  private applyCustomSecurityHeadersLegacy(
+    req: HttpRequest,
+    res: HttpResponse,
+  ): void {
+    const request = this.parseSecurityRequest(req);
+    const response = this.parseSecurityResponse(res);
+
+    this.setBasicSecurityHeaders(response);
+    this.setRateLimitingHeaders(request, response);
+
+    this.setCorsHeaders(req, res);
+    this.setSecurityAuditHeaders(response);
+    this.setSensitiveEndpointCacheHeaders(request, response);
+  }
+
+  /**
+   * Parse security request object
+   */
+  private parseSecurityRequest(req: HttpRequest): {
+    headers: Record<string, string | string[] | undefined>;
+    path?: string;
+    rateLimit?: {
+      limit?: string | number;
+      remaining?: string | number;
+      reset?: string | number;
+    };
+  } {
+    return req as {
+      headers: Record<string, string | string[] | undefined>;
+      path?: string;
+      rateLimit?: {
+        limit?: string | number;
+        remaining?: string | number;
+        reset?: string | number;
+      };
+    };
+  }
+
+  /**
+   * Parse security response object
+   */
+  private parseSecurityResponse(res: HttpResponse): {
+    setHeader(name: string, value: string | number): void;
+  } {
+    return res as {
+      setHeader(name: string, value: string | number): void;
+    };
+  }
+
+  /**
+   * Set basic security headers
+   */
+  private setBasicSecurityHeaders(response: {
+    setHeader(name: string, value: string | number): void;
+  }): void {
+    response.setHeader("X-API-Version", "1.0");
+    response.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+    response.setHeader("X-Download-Options", "noopen");
+    response.setHeader("X-Content-Type-Options", "nosniff");
+  }
+
+  /**
+   * Set rate limiting headers
+   */
+  private setRateLimitingHeaders(
+    request: {
+      rateLimit?: {
+        limit?: string | number;
+        remaining?: string | number;
+        reset?: string | number;
+      };
+    },
+    response: { setHeader(name: string, value: string | number): void },
+  ): void {
+    if (request.rateLimit) {
+      response.setHeader(
+        "X-RateLimit-Limit",
+        request.rateLimit.limit || "unknown",
+      );
+      response.setHeader(
+        "X-RateLimit-Remaining",
+        request.rateLimit.remaining || "unknown",
+      );
+      response.setHeader(
+        "X-RateLimit-Reset",
+        request.rateLimit.reset || "unknown",
+      );
+    }
+  }
+
+  /**
+   * Set security audit headers
+   */
+  private setSecurityAuditHeaders(response: {
+    setHeader(name: string, value: string | number): void;
+  }): void {
+    response.setHeader("X-Security-Enhanced", "true");
+    response.setHeader("X-Security-Version", "2.0");
+  }
+
+  /**
+   * Set cache headers for sensitive endpoints
+   */
+  private setSensitiveEndpointCacheHeaders(
+    request: { path?: string },
+    response: { setHeader(name: string, value: string | number): void },
+  ): void {
     if (request.path && this.isSensitiveEndpoint(request.path)) {
       response.setHeader(
         "Cache-Control",

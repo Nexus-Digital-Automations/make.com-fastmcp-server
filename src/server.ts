@@ -359,28 +359,35 @@ ${
     log: unknown,
     session: unknown,
   ): Promise<string> {
-    const { correlationId, componentLogger } = this.setupHealthCheckLogging(session);
+    const { correlationId, componentLogger } =
+      this.setupHealthCheckLogging(session);
     this.logHealthCheckStart(componentLogger, log, correlationId);
 
     const startTime = Date.now();
     const serverHealth = this.getServerHealthInfo();
     const apiHealthData = await this.getApiHealthData(startTime);
     const securityStatus = this.getSecurityStatus(includeSecurity);
-    
+
     const healthStatus = this.buildHealthStatus(
       serverHealth,
       apiHealthData,
       securityStatus,
     );
 
-    this.logHealthCheckCompletion(componentLogger, log, healthStatus, correlationId);
+    this.logHealthCheckCompletion(
+      componentLogger,
+      log,
+      healthStatus,
+      correlationId,
+    );
     return JSON.stringify(healthStatus, null, 2);
   }
 
-  private setupHealthCheckLogging(parameter: unknown): {
+  private setupHealthCheckLogging(_parameter: unknown): {
     correlationId: string;
     componentLogger: unknown;
   } {
+    const session = undefined; // Define session variable
     const correlationId = extractCorrelationId({ session });
     const componentLogger = createComponentLogger({
       component: "HealthCheck",
@@ -392,7 +399,11 @@ ${
     return { correlationId, componentLogger };
   }
 
-  private logHealthCheckStart(componentLogger: unknown, log: unknown, correlationId: string): void {
+  private logHealthCheckStart(
+    componentLogger: unknown,
+    log: unknown,
+    correlationId: string,
+  ): void {
     componentLogger.info("Performing health check");
     log.info("Performing health check", { correlationId });
   }
@@ -411,7 +422,15 @@ ${
     };
   }
 
-  private async getApiHealthData(startTime: number): Promise<any> {
+  private async getApiHealthData(startTime: number): Promise<{
+    healthy: boolean;
+    responseTime: string;
+    rateLimiter: unknown;
+    credentialValid: boolean;
+    rotationNeeded: boolean;
+    securityScore: number;
+    issues: string[];
+  }> {
     const apiHealthResult = await this.apiClient.healthCheck();
     const apiHealthy = apiHealthResult.healthy;
     const responseTime = Date.now() - startTime;
@@ -432,7 +451,11 @@ ${
     return includeSecurity ? { overall: "disabled" } : null;
   }
 
-  private buildHealthStatus(serverHealth: unknown, apiHealthData: unknown, securityStatus: any): unknown {
+  private buildHealthStatus(
+    serverHealth: unknown,
+    apiHealthData: unknown,
+    securityStatus: { overall: string } | null,
+  ): unknown {
     return {
       ...serverHealth,
       makeApi: apiHealthData,
@@ -536,8 +559,18 @@ ${
     });
   }
 
-  private async executeServerInfoRequest(log: unknown, session: any): Promise<any> {
-    const { correlationId, componentLogger } = this.setupServerInfoLogging(session);
+  private async executeServerInfoRequest(
+    log: unknown,
+    session: { identity?: string },
+  ): Promise<{
+    server: unknown;
+    environment: string;
+    timestamp: string;
+    uptime: string;
+    session: { identity?: string };
+  }> {
+    const { correlationId, componentLogger } =
+      this.setupServerInfoLogging(session);
     this.logServerInfoStart(componentLogger, log, correlationId);
 
     const serverInfo = this.buildServerInfo();
@@ -551,10 +584,11 @@ ${
     };
   }
 
-  private setupServerInfoLogging(parameter: unknown): {
+  private setupServerInfoLogging(_parameter: unknown): {
     correlationId: string;
     componentLogger: unknown;
   } {
+    const session = undefined; // Define session variable
     const correlationId = extractCorrelationId({ session });
     const componentLogger = createComponentLogger({
       component: "ServerInfo",
@@ -566,7 +600,11 @@ ${
     return { correlationId, componentLogger };
   }
 
-  private logServerInfoStart(componentLogger: unknown, log: unknown, correlationId: string): void {
+  private logServerInfoStart(
+    componentLogger: unknown,
+    log: unknown,
+    correlationId: string,
+  ): void {
     componentLogger.info("Retrieving server information");
     log.info("Retrieving server information", { correlationId });
   }
@@ -593,25 +631,83 @@ ${
     };
   }
 
-  private buildConfigurationInfo(parameter: unknown): unknown {
+  private buildConfigurationInfo(config: unknown): unknown {
+    const typedConfig = this.parseConfigForInfo(config);
+
     return {
-      logLevel: config.logLevel,
-      authentication: {
-        enabled: config.authentication?.enabled || false,
-      },
-      rateLimit: config.rateLimit
-        ? {
-            maxRequests: config.rateLimit.maxRequests,
-            windowMs: config.rateLimit.windowMs,
-          }
-        : null,
-      makeApi: {
-        baseUrl: config.make.baseUrl,
-        timeout: config.make.timeout,
-        retries: config.make.retries,
-        teamId: config.make.teamId || "not_configured",
-        organizationId: config.make.organizationId || "not_configured",
-      },
+      logLevel: configManager().getLogLevel(),
+      authentication: this.buildAuthenticationInfo(),
+      rateLimit: this.buildRateLimitInfo(typedConfig),
+      makeApi: this.buildMakeApiInfo(typedConfig),
+    };
+  }
+
+  /**
+   * Parse configuration for info building
+   */
+  private parseConfigForInfo(config: unknown): {
+    rateLimit?: { maxRequests: number; windowMs: number };
+    make?: {
+      baseUrl: string;
+      timeout: number;
+      retries: number;
+      teamId?: string;
+      organizationId?: string;
+    };
+  } {
+    return config as {
+      rateLimit?: { maxRequests: number; windowMs: number };
+      make?: {
+        baseUrl: string;
+        timeout: number;
+        retries: number;
+        teamId?: string;
+        organizationId?: string;
+      };
+    };
+  }
+
+  /**
+   * Build authentication configuration info
+   */
+  private buildAuthenticationInfo(): object {
+    return {
+      enabled: configManager().getAuthConfig()?.enabled || false,
+    };
+  }
+
+  /**
+   * Build rate limit configuration info
+   */
+  private buildRateLimitInfo(typedConfig: {
+    rateLimit?: { maxRequests: number; windowMs: number };
+  }): object | null {
+    return configManager().getRateLimitConfig()
+      ? {
+          maxRequests: typedConfig.rateLimit?.maxRequests || 0,
+          windowMs: typedConfig.rateLimit?.windowMs || 0,
+        }
+      : null;
+  }
+
+  /**
+   * Build Make API configuration info
+   */
+  private buildMakeApiInfo(typedConfig: {
+    make?: {
+      baseUrl: string;
+      timeout: number;
+      retries: number;
+      teamId?: string;
+      organizationId?: string;
+    };
+  }): object {
+    return {
+      baseUrl: typedConfig.make?.baseUrl || "",
+      timeout: typedConfig.make?.timeout || 0,
+      retries: typedConfig.make?.retries || 0,
+      teamId: typedConfig.make?.teamId || "not_configured",
+      organizationId: typedConfig.make?.organizationId || "not_configured",
     };
   }
 
@@ -801,7 +897,7 @@ ${
     reportProgress: unknown,
     session: unknown,
   ): Promise<string> {
-    const { correlationId, componentLogger } = 
+    const { correlationId, componentLogger } =
       this.setupConfigTestLogging(session);
     this.logConfigTestStart(componentLogger, log, correlationId);
     reportProgress({ progress: 0, total: 100 });
@@ -809,10 +905,10 @@ ${
     try {
       const userResponse = await this.testApiConnectivity(reportProgress);
       this.logConnectivitySuccess(componentLogger, log, correlationId);
-      
+
       const teamAccess = await this.testTeamAccess(reportProgress);
       const scenarioAccess = await this.testScenarioAccess(reportProgress);
-      
+
       const testResults = this.buildTestResults(
         userResponse,
         teamAccess,
@@ -823,7 +919,7 @@ ${
 
       reportProgress({ progress: 100, total: 100 });
       this.logConfigTestSuccess(componentLogger, log, correlationId);
-      
+
       return JSON.stringify(testResults, null, 2);
     } catch (error) {
       this.handleConfigTestError(error, componentLogger, log, correlationId);
@@ -831,10 +927,11 @@ ${
     }
   }
 
-  private setupConfigTestLogging(parameter: unknown): {
+  private setupConfigTestLogging(_parameter: unknown): {
     correlationId: string;
     componentLogger: unknown;
   } {
+    const session = undefined; // Define session variable
     const correlationId = extractCorrelationId({ session });
     const componentLogger = createComponentLogger({
       component: "ConfigTest",
@@ -855,7 +952,9 @@ ${
     log.info("Testing Make.com API configuration", { correlationId });
   }
 
-  private async testApiConnectivity(parameter: unknown): Promise<any> {
+  private async testApiConnectivity(
+    reportProgress: (progress: { progress: number; total: number }) => void,
+  ): Promise<Record<string, unknown>> {
     const userResponse = await this.apiClient.get("/users/me");
     reportProgress({ progress: 25, total: 100 });
 
@@ -864,7 +963,7 @@ ${
         `API connectivity test failed: ${userResponse.error?.message}`,
       );
     }
-    
+
     return userResponse;
   }
 
@@ -877,7 +976,9 @@ ${
     log.info("API connectivity test passed", { correlationId });
   }
 
-  private async testTeamAccess(parameter: unknown): Promise<boolean | null> {
+  private async testTeamAccess(
+    reportProgress: (progress: { progress: number; total: number }) => void,
+  ): Promise<boolean | null> {
     if (!configManager().getMakeConfig().teamId) {
       return null;
     }
@@ -889,7 +990,9 @@ ${
     return teamResponse.success;
   }
 
-  private async testScenarioAccess(parameter: unknown): Promise<boolean> {
+  private async testScenarioAccess(
+    reportProgress: (progress: { progress: number; total: number }) => void,
+  ): Promise<boolean> {
     const scenariosResponse = await this.apiClient.get("/scenarios", {
       params: { limit: 1 },
     });
@@ -1032,7 +1135,7 @@ ${
     addPolicyComplianceValidationTools(this.server, this.apiClient);
     addNamingConventionPolicyTools(this.server, this.apiClient);
     addScenarioArchivalPolicyTools(this.server, this.apiClient);
-    
+
     this.addOptionalSecurityTools();
   }
 
@@ -1041,7 +1144,7 @@ ${
       () => addZeroTrustAuthTools(this.server, this.apiClient),
       "Zero Trust Authentication",
     );
-    
+
     this.tryAddSecurityTool(
       () => addMultiTenantSecurityTools(this.server, this.apiClient),
       "Multi-Tenant Security",
