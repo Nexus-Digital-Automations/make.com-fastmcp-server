@@ -896,11 +896,11 @@ export class SecureConfigManager {
           }
         };
         
-        this.concurrentRotationAgent.on('rotation_completed', onCompleted);
-        this.concurrentRotationAgent.on('rotation_failed', onFailed);
+        this.concurrentRotationAgent?.on('rotation_completed', onCompleted);
+        this.concurrentRotationAgent?.on('rotation_failed', onFailed);
         
         // Enqueue the rotation
-        this.concurrentRotationAgent.enqueueBatch(batch);
+        this.concurrentRotationAgent?.enqueueBatch(batch);
         
         // Set timeout
         setTimeout(() => {
@@ -1006,11 +1006,11 @@ export class SecureConfigManager {
         }
       };
       
-      this.concurrentRotationAgent.on('rotation_completed', onCompleted);
-      this.concurrentRotationAgent.on('rotation_failed', onFailed);
+      this.concurrentRotationAgent?.on('rotation_completed', onCompleted);
+      this.concurrentRotationAgent?.on('rotation_failed', onFailed);
       
       // Enqueue the batch
-      this.concurrentRotationAgent.enqueueBatch(batch);
+      this.concurrentRotationAgent?.enqueueBatch(batch);
       
       // Set timeout
       setTimeout(() => {
