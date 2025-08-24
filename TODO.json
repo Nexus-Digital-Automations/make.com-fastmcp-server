@@ -2,52 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1756067563541_y7ps4vjmg",
-      "title": "Fix all TypeScript linting warnings - 10 violations across 3 files",
-      "description": "Fix @typescript-eslint/no-explicit-any and @typescript-eslint/explicit-function-return-type violations in credential-security-monitor.ts, diagnostic-rules.ts, and llm-sampling.ts",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-24T20:32:43.541Z",
-      "auto_research_created": false
-    },
-    {
-      "id": "task_1756067508955_tquugwsm3",
-      "title": "Fix TypeScript linting warnings (any types, return types)",
-      "description": "Fix @typescript-eslint/no-explicit-any and @typescript-eslint/explicit-function-return-type warnings across codebase",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-24T20:31:48.955Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1756067391607_1_general_fcdc6c62",
-      "started_at": "2025-08-24T20:31:54.326Z",
-      "claimed_by": "development_session_1756067391607_1_general_fcdc6c62",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1756067391607_1_general_fcdc6c62",
-          "role": "primary",
-          "assignedAt": "2025-08-24T20:31:54.326Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1756065735085_n9wuyetpu",
       "title": "Fix max-lines violation in cache.ts constructor (109→≤50)",
       "description": "Apply Extract Method pattern to break down complex constructor into focused helper methods with single responsibility",

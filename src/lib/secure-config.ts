@@ -19,6 +19,43 @@ import type {
   ExternalServiceConfig
 } from '../types/rotation-types.js';
 
+// Interface for wrapped rotation agent
+interface WrappedRotationAgent {
+  initialize: () => Promise<void>;
+  start: () => Promise<void>;
+  stop: () => Promise<void>;
+  enqueueBatch: (batch: RotationBatch) => Promise<void>;
+  on: (event: string, handler: (...args: unknown[]) => void) => void;
+  off: (event: string, handler: (...args: unknown[]) => void) => void;
+  getStatus: () => { enabled: boolean; [key: string]: unknown };
+  getQueueStatus: () => unknown;
+  getPerformanceMetrics: () => unknown;
+}
+
+// Interface for rotation request options
+interface RotationRequestOptions {
+  priority?: string;
+  newValue?: string;
+  gracePeriod?: number;
+  userId?: string;
+  externalServices?: Array<{
+    serviceId: string;
+    serviceName: string;
+    type: ExternalServiceConfig['type'];
+    endpoint?: string;
+    credentials?: Record<string, string>;
+  }>;
+}
+
+// Interface for external service parameters
+interface ExternalServiceParams {
+  serviceId: string;
+  serviceName: string;
+  type: ExternalServiceConfig['type'];
+  endpoint?: string;
+  credentials?: Record<string, string>;
+}
+
 export interface SecureCredentialConfig {
   credentialId: string;
   encrypted: boolean;
@@ -880,17 +917,17 @@ export class SecureConfigManager {
    * Create agent wrapper with required interface
    * Complexity: 2 (extracted from enableConcurrentRotation)
    */
-  private createAgentWrapper(agent: any) {
+  private createAgentWrapper(agent: unknown): WrappedRotationAgent {
     return {
-      initialize: () => agent.initialize(),
-      start: () => agent.start(),
-      stop: () => agent.stop(),
-      enqueueBatch: (batch: RotationBatch) => agent.enqueueBatch(batch),
-      on: (event: string, handler: (...args: unknown[]) => void) => agent.on(event, handler),
-      off: (event: string, handler: (...args: unknown[]) => void) => agent.off(event, handler),
-      getStatus: () => ({ enabled: true, ...agent.getStatus() }),
-      getQueueStatus: () => agent.getQueueStatus(),
-      getPerformanceMetrics: () => agent.getPerformanceMetrics()
+      initialize: (): Promise<void> => agent.initialize(),
+      start: (): Promise<void> => agent.start(),
+      stop: (): Promise<void> => agent.stop(),
+      enqueueBatch: (batch: RotationBatch): Promise<void> => agent.enqueueBatch(batch),
+      on: (event: string, handler: (...args: unknown[]) => void): void => agent.on(event, handler),
+      off: (event: string, handler: (...args: unknown[]) => void): void => agent.off(event, handler),
+      getStatus: (): { enabled: boolean; [key: string]: unknown } => ({ enabled: true, ...agent.getStatus() }),
+      getQueueStatus: (): unknown => agent.getQueueStatus(),
+      getPerformanceMetrics: (): unknown => agent.getPerformanceMetrics()
     };
   }
 
@@ -915,7 +952,7 @@ export class SecureConfigManager {
    */
   private buildConcurrentRotationRequest(
     credentialId: string,
-    options: any,
+    options: RotationRequestOptions,
     policy: RotationPolicy
   ): CredentialRotationRequest {
     return {
@@ -925,10 +962,10 @@ export class SecureConfigManager {
       newValue: options.newValue,
       gracePeriod: options.gracePeriod || policy.gracePeriod,
       userId: options.userId,
-      externalServices: options.externalServices?.map((service: any) => ({
+      externalServices: options.externalServices?.map((service: ExternalServiceParams) => ({
         serviceId: service.serviceId,
         serviceName: service.serviceName,
-        type: service.type as ExternalServiceConfig['type'],
+        type: service.type,
         endpoint: service.endpoint,
         authMethod: service.authMethod as ExternalServiceConfig['authMethod'],
         updateMethod: service.updateMethod as ExternalServiceConfig['updateMethod'],
@@ -1026,7 +1063,7 @@ export class SecureConfigManager {
   private async handleConcurrentRotationError(
     credentialId: string,
     error: unknown,
-    options: any
+    options: RotationRequestOptions
   ): Promise<string> {
     this.componentLogger.error('Concurrent rotation failed, falling back to standard rotation', {
       credentialId,
