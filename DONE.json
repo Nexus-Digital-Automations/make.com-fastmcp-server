@@ -2822,7 +2822,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/lib/logger.js", "development/research-reports/"],
+      "important_files": [
+        "src/lib/logger.js",
+        "development/research-reports/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": true,
@@ -3165,7 +3168,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/permissions.ts", "src/lib/"],
+      "important_files": [
+        "src/tools/permissions.ts",
+        "src/lib/"
+      ],
       "success_criteria": [],
       "estimate": "8-10 hours",
       "requires_research": false,
@@ -3349,7 +3355,9 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/notifications.ts"],
+      "important_files": [
+        "src/tools/notifications.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -3546,7 +3554,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/research-reports/"],
+      "important_files": [
+        "development/research-reports/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -3782,7 +3792,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/scenarios.ts", "src/lib/"],
+      "important_files": [
+        "src/tools/scenarios.ts",
+        "src/lib/"
+      ],
       "success_criteria": [],
       "estimate": "6-8 hours",
       "requires_research": true,
@@ -3837,7 +3850,11 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/", "scripts/", "src/tools/"],
+      "important_files": [
+        "tests/",
+        "scripts/",
+        "src/tools/"
+      ],
       "success_criteria": [],
       "estimate": "4-6 hours",
       "requires_research": true,
@@ -4314,7 +4331,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/", "development/research-reports/"],
+      "important_files": [
+        "src/tools/",
+        "development/research-reports/"
+      ],
       "success_criteria": [],
       "estimate": "40-60 hours",
       "requires_research": true,
@@ -4478,7 +4498,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755727617693_dtof63i21"],
+      "dependencies": [
+        "task_1755727617693_dtof63i21"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -4871,7 +4893,12 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/", "cypress/", "playwright/", "package.json"],
+      "important_files": [
+        "tests/",
+        "cypress/",
+        "playwright/",
+        "package.json"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -4912,7 +4939,11 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/helpers/", "tests/utils/", "src/test/utils/"],
+      "important_files": [
+        "tests/helpers/",
+        "tests/utils/",
+        "src/test/utils/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -5054,7 +5085,10 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/utils/", "tests/unit/utils/"],
+      "important_files": [
+        "src/utils/",
+        "tests/unit/utils/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -5095,7 +5129,10 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/lib/", "tests/unit/lib/"],
+      "important_files": [
+        "src/lib/",
+        "tests/unit/lib/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -5272,7 +5309,11 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/integration/", "src/", "tests/e2e/"],
+      "important_files": [
+        "tests/integration/",
+        "src/",
+        "tests/e2e/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -5400,7 +5441,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/", "tests/unit/tools/"],
+      "important_files": [
+        "src/tools/",
+        "tests/unit/tools/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -6043,7 +6087,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755758304908_dw9bly3da"],
+      "dependencies": [
+        "task_1755758304908_dw9bly3da"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -6661,7 +6707,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755763416973_7m5fdcdoj"],
+      "dependencies": [
+        "task_1755763416973_7m5fdcdoj"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -7888,7 +7936,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755766032834_0og3cdxc5"],
+      "dependencies": [
+        "task_1755766032834_0og3cdxc5"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -7920,7 +7970,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755766029241_7r21y615c"],
+      "dependencies": [
+        "task_1755766029241_7r21y615c"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -7952,7 +8004,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755766056125_ri7qrpgr3"],
+      "dependencies": [
+        "task_1755766056125_ri7qrpgr3"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -7984,7 +8038,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755766064319_kahjhx1au"],
+      "dependencies": [
+        "task_1755766064319_kahjhx1au"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -9567,7 +9623,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755794136264_u6mjeced7"],
+      "dependencies": [
+        "task_1755794136264_u6mjeced7"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -9640,7 +9698,9 @@
       "category": "missing-feature",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755794138881_zv7sw22oe"],
+      "dependencies": [
+        "task_1755794138881_zv7sw22oe"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -10729,7 +10789,9 @@
       "category": "missing-feature",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755800104901_f3zdg63d9"],
+      "dependencies": [
+        "task_1755800104901_f3zdg63d9"
+      ],
       "important_files": [
         "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/development/research-reports/research-report-task_1755799747752_0idc3ajpu.md"
       ],
@@ -14108,7 +14170,9 @@
       "category": "missing-feature",
       "priority": "critical",
       "status": "completed",
-      "dependencies": ["task_1755842383714_9holql3rn"],
+      "dependencies": [
+        "task_1755842383714_9holql3rn"
+      ],
       "important_files": [
         "./development/research-reports/research-report-task_1755841050540_eigopqxdb.md",
         "./src/server.ts",
@@ -15500,7 +15564,9 @@
       "category": "missing-feature",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755856703617_ypaht1u93"],
+      "dependencies": [
+        "task_1755856703617_ypaht1u93"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -20481,7 +20547,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755908035784_yy7iudi6e"],
+      "dependencies": [
+        "task_1755908035784_yy7iudi6e"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -25179,7 +25247,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755983861122_dslt80t7s"],
+      "dependencies": [
+        "task_1755983861122_dslt80t7s"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -26240,7 +26310,11 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": [".", "development/", "docs/"],
+      "important_files": [
+        ".",
+        "development/",
+        "docs/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -26284,7 +26358,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/utils/async-error-boundary.ts"],
+      "important_files": [
+        "src/utils/async-error-boundary.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -26381,7 +26457,9 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/middleware/caching.ts"],
+      "important_files": [
+        "src/middleware/caching.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": true,
@@ -26425,7 +26503,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/utils/async-error-boundary.ts"],
+      "important_files": [
+        "src/utils/async-error-boundary.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -26516,7 +26596,9 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/scenarios/tools/delete-scenario.ts"],
+      "important_files": [
+        "src/tools/scenarios/tools/delete-scenario.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -26731,7 +26813,9 @@
       "category": "missing-feature",
       "priority": "critical",
       "status": "completed",
-      "dependencies": ["task_1755997624871_qtszh4cfe"],
+      "dependencies": [
+        "task_1755997624871_qtszh4cfe"
+      ],
       "important_files": [
         "src/lib/config.ts",
         "src/lib/make-api-client.ts",
@@ -26769,7 +26853,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/lib/config.ts", "src/lib/make-api-client.ts"],
+      "important_files": [
+        "src/lib/config.ts",
+        "src/lib/make-api-client.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -27017,7 +27104,9 @@
       "category": "missing-feature",
       "priority": "critical",
       "status": "completed",
-      "dependencies": ["task_1756004037567_qktr71hab"],
+      "dependencies": [
+        "task_1756004037567_qktr71hab"
+      ],
       "important_files": [
         "src/middleware/security-monitoring.ts",
         "src/middleware/security.ts",
@@ -27842,7 +27931,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/unit/lib/config.test.ts", "src/lib/config.ts"],
+      "important_files": [
+        "tests/unit/lib/config.test.ts",
+        "src/lib/config.ts"
+      ],
       "success_criteria": [
         "All config tests pass",
         "Test coverage maintained",
@@ -28629,7 +28721,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756033713230_saon2zlqi"],
+      "dependencies": [
+        "task_1756033713230_saon2zlqi"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -28857,7 +28951,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756036085305_wg4ypzhnh"],
+      "dependencies": [
+        "task_1756036085305_wg4ypzhnh"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -29397,7 +29493,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756054439058_xd5aw5xgf"],
+      "dependencies": [
+        "task_1756054439058_xd5aw5xgf"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -29477,7 +29575,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756054862503_961a2z10r"],
+      "dependencies": [
+        "task_1756054862503_961a2z10r"
+      ],
       "important_files": [
         "src/middleware/circuit-breaker.ts",
         "development/research-reports/ddos-protection-research.md"
@@ -29512,7 +29612,9 @@
       "category": "refactor",
       "priority": "critical",
       "status": "completed",
-      "dependencies": ["task_1756054796768_tvvemdw2i"],
+      "dependencies": [
+        "task_1756054796768_tvvemdw2i"
+      ],
       "important_files": [
         "./src/middleware/circuit-breaker.ts",
         "./development/research-reports/research-report-task_1756036085305_wg4ypzhnh.md"
@@ -29572,9 +29674,182 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1756054991792_2qaqk5bde",
+      "title": "Fix 736 ESLint violations (207 errors, 529 warnings)",
+      "description": "Critical linting errors must be resolved immediately before Phase 4F completion validation",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T17:03:11.792Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1756054759849_1_general_42f10dbb",
+      "started_at": "2025-08-24T17:05:29.269Z",
+      "claimed_by": "development_session_1756054759849_1_general_42f10dbb",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1756054759849_1_general_42f10dbb",
+          "role": "primary",
+          "assignedAt": "2025-08-24T17:05:29.269Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T17:10:14.379Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T17:10:14.380Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1756055531387_tinpotxpr",
+      "title": "Deploy 10 concurrent research subagents for security assessment pattern research",
+      "description": "Research security assessment methodologies and patterns for connection diagnostic security functions, focusing on maintaining security integrity while achieving complexity reduction goals",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1756055531387_tinpotxpr.md"
+      ],
+      "success_criteria": [
+        "Research report created: ./development/research-reports/research-report-task_1756055531387_tinpotxpr.md"
+      ],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T17:12:11.387Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T17:12:17.080Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "in_progress"
+          }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T17:17:05.499Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T17:17:05.500Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1756051327623_tilpphoyi",
+      "title": "Research security assessment patterns for connection diagnostics",
+      "description": "Research security assessment methodologies and patterns specifically for connection diagnostic security functions, focusing on maintaining security integrity while achieving complexity reduction goals.\n\n**RESEARCH FOCUS:**\n1. Security-First Refactoring Patterns: Industry best practices for refactoring security-critical code\n2. Assessment Architecture: Patterns for modular security assessment systems\n3. Credential Analysis Patterns: Methods for secure credential validation and assessment\n4. Risk Scoring Architectures: Patterns for maintainable risk scoring systems\n\n**SPECIFIC INVESTIGATION AREAS:**\n- OAuth security validation best practices and modular approaches\n- Credential weakness detection patterns and extraction strategies\n- Connection age-based security assessment methodologies\n- Security scoring algorithms and their decomposition patterns\n- Testing strategies for security assessment refactoring\n\n**SECURITY COMPLIANCE REQUIREMENTS:**\n- Zero regression in security effectiveness\n- Maintained threat detection capabilities\n- Preserved audit trail and logging functionality\n- Consistent security policy enforcement",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/",
+        "./development/reports/"
+      ],
+      "success_criteria": [
+        "Security assessment architecture recommendations documented",
+        "Credential validation pattern analysis completed",
+        "Risk scoring system design principles identified",
+        "Security testing validation frameworks researched",
+        "Implementation safety guidelines established"
+      ],
+      "estimate": "2-3 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T16:02:07.623Z",
+      "created_by": "RESEARCH_AGENT_2",
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
+      "agent_assignment_history": [
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-24T16:59:13.117Z",
+          "reason": "Task stale for 57 minutes"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T17:18:46.128Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T17:18:46.130Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1756056031225_m98hrsbh8",
+      "title": "Phase 4G: Eliminate All Complexity 17 Violations → ≤12",
+      "description": "Deploy 10 concurrent refactoring subagents to systematically resolve 4 identified complexity 17 violations: arrow function, categorizeError, safeParseJSON, loadProductionConfig. Apply Extract Method pattern for 60%+ complexity reduction while maintaining production quality.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T17:20:31.225Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T17:29:27.085Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T17:29:27.086Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 684,
-  "last_completion": "2025-08-24T17:08:53.670Z",
+  "total_completed": 688,
+  "last_completion": "2025-08-24T17:29:27.086Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

@@ -2,9 +2,9 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1756054991792_2qaqk5bde",
-      "title": "Fix 736 ESLint violations (207 errors, 529 warnings)",
-      "description": "Critical linting errors must be resolved immediately before Phase 4F completion validation",
+      "id": "task_1756055970726_tbwkrfsc9",
+      "title": "Phase 4G: Fix remaining complexity violations 17→≤12 (highest priority)",
+      "description": "Systematic complexity reduction Phase 4G: Apply Extract Method pattern to resolve remaining complexity 17 violations found in linting scan: Arrow function complexity 17, categorizeError function complexity 17, safeParseJSON method complexity 17, loadProductionConfig method complexity 17. These are the highest remaining violations after Phase 4E-4F completion.",
       "mode": "DEVELOPMENT",
       "category": "linter-error",
       "priority": "critical",
@@ -15,16 +15,16 @@
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-24T17:03:11.792Z",
+      "created_at": "2025-08-24T17:19:30.726Z",
       "auto_research_created": false,
       "assigned_agent": "development_session_1756054759849_1_general_42f10dbb",
-      "started_at": "2025-08-24T17:05:29.269Z",
+      "started_at": "2025-08-24T17:19:38.463Z",
       "claimed_by": "development_session_1756054759849_1_general_42f10dbb",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1756054759849_1_general_42f10dbb",
           "role": "primary",
-          "assignedAt": "2025-08-24T17:05:29.269Z",
+          "assignedAt": "2025-08-24T17:19:38.463Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
@@ -37,7 +37,7 @@
       "mode": "DEVELOPMENT",
       "category": "error",
       "priority": "critical",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [],
       "success_criteria": [],
@@ -45,7 +45,17 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-24T17:03:29.849Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "started_at": "2025-08-24T17:11:04.127Z",
+      "claimed_by": "agent_1756055464127",
+      "assigned_agent": "agent_1756055464127",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1756055464127",
+          "action": "claimed",
+          "timestamp": "2025-08-24T17:11:04.127Z"
+        }
+      ]
     },
     {
       "id": "task_1756034288610_puw5mxlnh",
@@ -91,7 +101,7 @@
       "mode": "RESEARCH",
       "category": "research",
       "priority": "critical",
-      "status": "pending",
+      "status": "in_progress",
       "dependencies": [],
       "important_files": [
         "./development/research-reports/research-report-task_1756054796768_tvvemdw2i.md"
@@ -108,7 +118,17 @@
       "subtasks": [],
       "created_at": "2025-08-24T16:59:56.768Z",
       "created_by": "auto-research-system",
-      "auto_created_for": "task_1756054796768_x11nmbjsv"
+      "auto_created_for": "task_1756054796768_x11nmbjsv",
+      "started_at": "2025-08-24T17:18:55.641Z",
+      "claimed_by": "agent_1756055935641",
+      "assigned_agent": "agent_1756055935641",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1756055935641",
+          "action": "claimed",
+          "timestamp": "2025-08-24T17:18:55.641Z"
+        }
+      ]
     },
     {
       "id": "task_1756054862503_961a2z10r",
@@ -182,43 +202,6 @@
       "subtasks": [],
       "created_at": "2025-08-24T16:44:07.791Z",
       "auto_research_created": false
-    },
-    {
-      "id": "task_1756051327623_tilpphoyi",
-      "title": "Research security assessment patterns for connection diagnostics",
-      "description": "Research security assessment methodologies and patterns specifically for connection diagnostic security functions, focusing on maintaining security integrity while achieving complexity reduction goals.\n\n**RESEARCH FOCUS:**\n1. Security-First Refactoring Patterns: Industry best practices for refactoring security-critical code\n2. Assessment Architecture: Patterns for modular security assessment systems\n3. Credential Analysis Patterns: Methods for secure credential validation and assessment\n4. Risk Scoring Architectures: Patterns for maintainable risk scoring systems\n\n**SPECIFIC INVESTIGATION AREAS:**\n- OAuth security validation best practices and modular approaches\n- Credential weakness detection patterns and extraction strategies\n- Connection age-based security assessment methodologies\n- Security scoring algorithms and their decomposition patterns\n- Testing strategies for security assessment refactoring\n\n**SECURITY COMPLIANCE REQUIREMENTS:**\n- Zero regression in security effectiveness\n- Maintained threat detection capabilities\n- Preserved audit trail and logging functionality\n- Consistent security policy enforcement",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "./development/research-reports/",
-        "./development/reports/"
-      ],
-      "success_criteria": [
-        "Security assessment architecture recommendations documented",
-        "Credential validation pattern analysis completed",
-        "Risk scoring system design principles identified",
-        "Security testing validation frameworks researched",
-        "Implementation safety guidelines established"
-      ],
-      "estimate": "2-3 hours",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-24T16:02:07.623Z",
-      "created_by": "RESEARCH_AGENT_2",
-      "assigned_agent": null,
-      "started_at": null,
-      "claimed_by": null,
-      "agent_assignment_history": [
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-24T16:59:13.117Z",
-          "reason": "Task stale for 57 minutes"
-        }
-      ]
     }
   ],
   "current_mode": "DEVELOPMENT",

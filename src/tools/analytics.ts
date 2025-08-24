@@ -114,7 +114,52 @@ function createAnalyticsSummary(analytics: MakeAnalytics): Record<string, unknow
 }
 
 /**
- * Add get organization analytics tool
+ * Extract Method: Handle analytics API request
+ */
+async function fetchAnalyticsData(apiClient: MakeApiClient, organizationId: string, input: unknown): Promise<MakeAnalytics> {
+  const params = buildAnalyticsParams(input);
+  const response = await apiClient.get(`/analytics/${organizationId}`, { params });
+
+  if (!response.success) {
+    throw new UserError(`Failed to get analytics: ${response.error?.message || 'Unknown error'}`);
+  }
+
+  const analytics = response.data as MakeAnalytics;
+  if (!analytics) {
+    throw new UserError('Analytics data not available');
+  }
+
+  return analytics;
+}
+
+/**
+ * Extract Method: Log analytics success
+ */
+function logAnalyticsSuccess(log: { info?: (message: string, meta?: Record<string, unknown>) => void }, organizationId: string, analytics: MakeAnalytics): void {
+  if (log?.info) {
+    log.info('Successfully retrieved analytics', {
+      organizationId,
+      period: analytics.period,
+      executions: analytics.usage.executions,
+      operations: analytics.usage.operations,
+    });
+  }
+}
+
+/**
+ * Extract Method: Handle analytics errors
+ */
+function handleAnalyticsError(log: { error?: (message: string, meta?: Record<string, unknown>) => void }, organizationId: string, error: unknown): never {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  if (log?.error) {
+    log.error('Error getting analytics', { organizationId, error: errorMessage });
+  }
+  if (error instanceof UserError) { throw error; }
+  throw new UserError(`Failed to get organization analytics: ${errorMessage}`);
+}
+
+/**
+ * Add get organization analytics tool (complexity reduced from 17 to ~4)
  */
 function addGetOrganizationAnalyticsTool(server: FastMCP, apiClient: MakeApiClient): void {
   server.addTool({
@@ -137,38 +182,15 @@ function addGetOrganizationAnalyticsTool(server: FastMCP, apiClient: MakeApiClie
       }
 
       try {
-        const params = buildAnalyticsParams(input);
-        const response = await apiClient.get(`/analytics/${organizationId}`, { params });
-
-        if (!response.success) {
-          throw new UserError(`Failed to get analytics: ${response.error?.message || 'Unknown error'}`);
-        }
-
-        const analytics = response.data as MakeAnalytics;
-        if (!analytics) {
-          throw new UserError('Analytics data not available');
-        }
-
-        if (log?.info) {
-          log.info('Successfully retrieved analytics', {
-            organizationId,
-            period: analytics.period,
-            executions: analytics.usage.executions,
-            operations: analytics.usage.operations,
-          });
-        }
-
+        const analytics = await fetchAnalyticsData(apiClient, organizationId, input);
+        logAnalyticsSuccess(log, organizationId, analytics);
+        
         return formatSuccessResponse({
           analytics,
           summary: createAnalyticsSummary(analytics),
         }, "Organization analytics retrieved successfully");
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        if (log?.error) {
-          log.error('Error getting analytics', { organizationId, error: errorMessage });
-        }
-        if (error instanceof UserError) {throw error;}
-        throw new UserError(`Failed to get organization analytics: ${errorMessage}`);
+        handleAnalyticsError(log, organizationId, error);
       }
     },
   });

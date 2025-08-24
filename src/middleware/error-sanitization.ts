@@ -339,35 +339,45 @@ export class LogSanitizer {
   }
 }
 
-// Secure error handling middleware
+// Extract Method: Build request context from Express request
+function buildRequestContext(req: ExpressRequest): RequestContext {
+  return {
+    correlationId: (Array.isArray(req.headers['x-correlation-id']) ? req.headers['x-correlation-id'][0] : req.headers['x-correlation-id']) || req.correlationId,
+    endpoint: req.path || req.url || 'unknown',
+    method: req.method || 'unknown',
+    userId: req.user?.id,
+    ip: req.ip || req.connection?.remoteAddress || 'unknown',
+    userAgent: Array.isArray(req.headers['user-agent']) ? req.headers['user-agent'][0] : req.headers['user-agent'],
+    sessionId: req.sessionID
+  };
+}
+
+// Extract Method: Determine HTTP status code from error type
+function determineStatusCode(error: Error): number {
+  if (error instanceof ValidationError) return 400;
+  if (error instanceof AuthenticationError) return 401;
+  if (error instanceof AuthorizationError) return 403;
+  if (error instanceof RateLimitError) return 429;
+  if (error.message.includes('not found')) return 404;
+  if (error.message.includes('conflict')) return 409;
+  return 500;
+}
+
+// Extract Method: Add security headers to response
+function addSecurityHeaders(res: ExpressResponse): void {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+}
+
+// Secure error handling middleware (complexity reduced from 17 to ~4)
 export function errorSanitizationMiddleware() {
   return (error: Error, req: ExpressRequest, res: ExpressResponse, _next: NextFunction): void => {
-    const context: RequestContext = {
-      correlationId: (Array.isArray(req.headers['x-correlation-id']) ? req.headers['x-correlation-id'][0] : req.headers['x-correlation-id']) || req.correlationId,
-      endpoint: req.path || req.url || 'unknown',
-      method: req.method || 'unknown',
-      userId: req.user?.id,
-      ip: req.ip || req.connection?.remoteAddress || 'unknown',
-      userAgent: Array.isArray(req.headers['user-agent']) ? req.headers['user-agent'][0] : req.headers['user-agent'],
-      sessionId: req.sessionID
-    };
-    
+    const context = buildRequestContext(req);
     const sanitizedError = ErrorSanitizer.sanitizeError(error, context);
+    const statusCode = determineStatusCode(error);
     
-    // Determine appropriate HTTP status code
-    let statusCode = 500;
-    if (error instanceof ValidationError) {statusCode = 400;}
-    if (error instanceof AuthenticationError) {statusCode = 401;}
-    if (error instanceof AuthorizationError) {statusCode = 403;}
-    if (error instanceof RateLimitError) {statusCode = 429;}
-    if (error.message.includes('not found')) {statusCode = 404;}
-    if (error.message.includes('conflict')) {statusCode = 409;}
-    
-    // Add security headers
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    
+    addSecurityHeaders(res);
     res.status(statusCode).json(sanitizedError);
   };
 }
@@ -397,36 +407,28 @@ export function createSafeError(
   }
 }
 
-// Development mode error handler with enhanced security
+// Extract Method: Build development debug information
+function buildDebugInfo(error: Error, sanitizedError: unknown, context: RequestContext): unknown {
+  return {
+    ...sanitizedError,
+    debug: {
+      errorType: error.constructor.name,
+      sanitizedStack: error.stack ? LogSanitizer.sanitizeForLogging(error.stack) : undefined,
+      context: LogSanitizer.sanitizeObject(context),
+      timestamp: new Date().toISOString()
+    }
+  };
+}
+
+// Development mode error handler with enhanced security (complexity reduced from 13 to ~4)
 export function developmentErrorHandler() {
   return (error: Error, req: ExpressRequest, res: ExpressResponse, _next: NextFunction): void => {
     const isDevelopment = process.env.NODE_ENV === 'development';
-    
-    const context: RequestContext = {
-      correlationId: (Array.isArray(req.headers['x-correlation-id']) ? req.headers['x-correlation-id'][0] : req.headers['x-correlation-id']) || req.correlationId,
-      endpoint: req.path || req.url || 'unknown',
-      method: req.method || 'unknown',
-      userId: req.user?.id,
-      ip: req.ip || req.connection?.remoteAddress || 'unknown',
-      userAgent: Array.isArray(req.headers['user-agent']) ? req.headers['user-agent'][0] : req.headers['user-agent'],
-      sessionId: req.sessionID
-    };
-    
-    // Always sanitize for production
+    const context = buildRequestContext(req);
     const sanitizedError = ErrorSanitizer.sanitizeError(error, context);
     
-    // In development, add additional debug info but still sanitized
     if (isDevelopment) {
-      const debugInfo = {
-        ...sanitizedError,
-        debug: {
-          errorType: error.constructor.name,
-          sanitizedStack: error.stack ? LogSanitizer.sanitizeForLogging(error.stack) : undefined,
-          context: LogSanitizer.sanitizeObject(context),
-          timestamp: new Date().toISOString()
-        }
-      };
-      
+      const debugInfo = buildDebugInfo(error, sanitizedError, context);
       res.status(500).json(debugInfo);
     } else {
       res.status(500).json(sanitizedError);
