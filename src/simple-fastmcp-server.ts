@@ -11,6 +11,7 @@ import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { v4 as uuidv4 } from "uuid";
 import { performance } from "perf_hooks";
+import { DependencyMonitor, MaintenanceReportGenerator } from "./monitoring";
 
 // Load environment variables
 dotenv.config();
@@ -87,11 +88,11 @@ interface PerformanceMetrics {
 }
 
 interface HealthStatus {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: "healthy" | "degraded" | "unhealthy";
   timestamp: Date;
   checks: {
     [checkName: string]: {
-      status: 'pass' | 'fail';
+      status: "pass" | "fail";
       duration: number;
       message?: string;
     };
@@ -110,24 +111,24 @@ class PerformanceMonitor {
   private static metrics: PerformanceMetrics[] = [];
   private static concurrentOperations = 0;
   private static readonly MAX_METRICS_HISTORY = 1000;
-  
+
   static async trackOperation<T>(
     operation: string,
     correlationId: string,
-    fn: () => Promise<T>
+    fn: () => Promise<T>,
   ): Promise<{ result: T; metrics: PerformanceMetrics }> {
     const startTime = performance.now();
     const startMemory = process.memoryUsage().heapUsed;
     const startCpu = process.cpuUsage();
-    
+
     this.concurrentOperations++;
-    
+
     try {
       const result = await fn();
       const endTime = performance.now();
       const endMemory = process.memoryUsage().heapUsed;
       const endCpu = process.cpuUsage(startCpu);
-      
+
       const metrics: PerformanceMetrics = {
         timestamp: new Date(),
         operation,
@@ -135,57 +136,61 @@ class PerformanceMonitor {
         memoryDelta: endMemory - startMemory,
         cpuUsage: endCpu,
         concurrentRequests: this.concurrentOperations,
-        correlationId
+        correlationId,
       };
-      
+
       this.recordMetrics(metrics);
-      
+
       // Log performance warnings for slow operations
       if (metrics.duration > 5000) {
-        logger.warn('Slow operation detected', {
+        logger.warn("Slow operation detected", {
           operation: metrics.operation,
           duration: metrics.duration,
           correlationId: metrics.correlationId,
           memoryDelta: metrics.memoryDelta,
-          concurrentRequests: metrics.concurrentRequests
+          concurrentRequests: metrics.concurrentRequests,
         });
       }
-      
+
       return { result, metrics };
     } finally {
       this.concurrentOperations--;
     }
   }
-  
+
   private static recordMetrics(metrics: PerformanceMetrics) {
     this.metrics.push(metrics);
-    
+
     // Keep metrics history under control
     if (this.metrics.length > this.MAX_METRICS_HISTORY) {
       this.metrics = this.metrics.slice(-this.MAX_METRICS_HISTORY);
     }
-    
+
     // Log periodic performance summaries every 100 operations
     if (this.metrics.length % 100 === 0) {
       this.logPerformanceSummary();
     }
   }
-  
+
   private static logPerformanceSummary() {
     const recentMetrics = this.metrics.slice(-100);
-    const avgDuration = recentMetrics.reduce((sum, m) => sum + m.duration, 0) / recentMetrics.length;
-    const maxDuration = Math.max(...recentMetrics.map(m => m.duration));
-    const avgMemoryDelta = recentMetrics.reduce((sum, m) => sum + m.memoryDelta, 0) / recentMetrics.length;
-    
-    logger.info('Performance summary (last 100 operations)', {
+    const avgDuration =
+      recentMetrics.reduce((sum, m) => sum + m.duration, 0) /
+      recentMetrics.length;
+    const maxDuration = Math.max(...recentMetrics.map((m) => m.duration));
+    const avgMemoryDelta =
+      recentMetrics.reduce((sum, m) => sum + m.memoryDelta, 0) /
+      recentMetrics.length;
+
+    logger.info("Performance summary (last 100 operations)", {
       averageDuration: Math.round(avgDuration),
       maxDuration: Math.round(maxDuration),
       averageMemoryDelta: Math.round(avgMemoryDelta / 1024), // KB
       totalOperations: this.metrics.length,
-      correlationId: 'perf-summary'
+      correlationId: "perf-summary",
     });
   }
-  
+
   static getMetricsReport(): {
     summary: {
       totalOperations: number;
@@ -200,22 +205,25 @@ class PerformanceMonitor {
       p99: number;
     };
   } {
-    const durations = this.metrics.map(m => m.duration);
+    const durations = this.metrics.map((m) => m.duration);
     const sortedDurations = durations.sort((a, b) => a - b);
-    
+
     return {
       summary: {
         totalOperations: this.metrics.length,
-        averageDuration: durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0,
+        averageDuration:
+          durations.length > 0
+            ? durations.reduce((sum, d) => sum + d, 0) / durations.length
+            : 0,
         maxDuration: durations.length > 0 ? Math.max(...durations) : 0,
         currentMemoryUsage: process.memoryUsage().heapUsed,
-        concurrentOperations: this.concurrentOperations
+        concurrentOperations: this.concurrentOperations,
       },
       percentiles: {
         p50: sortedDurations[Math.floor(sortedDurations.length * 0.5)] || 0,
         p95: sortedDurations[Math.floor(sortedDurations.length * 0.95)] || 0,
-        p99: sortedDurations[Math.floor(sortedDurations.length * 0.99)] || 0
-      }
+        p99: sortedDurations[Math.floor(sortedDurations.length * 0.99)] || 0,
+      },
     };
   }
 }
@@ -226,198 +234,267 @@ class MetricsCollector {
     httpRequestCount: new Map(),
     errorCount: new Map(),
     memoryUsage: 0,
-    timestamp: new Date()
+    timestamp: new Date(),
   };
-  
+
   static recordRequest(operation: string, duration: number, success: boolean) {
     // Update request duration histogram
     if (!this.snapshot.httpRequestDuration.has(operation)) {
       this.snapshot.httpRequestDuration.set(operation, []);
     }
     this.snapshot.httpRequestDuration.get(operation)!.push(duration);
-    
+
     // Update request count
     const currentCount = this.snapshot.httpRequestCount.get(operation) || 0;
     this.snapshot.httpRequestCount.set(operation, currentCount + 1);
-    
+
     // Update error count
     if (!success) {
       const currentErrorCount = this.snapshot.errorCount.get(operation) || 0;
       this.snapshot.errorCount.set(operation, currentErrorCount + 1);
     }
-    
+
     // Update memory usage
     this.snapshot.memoryUsage = process.memoryUsage().heapUsed;
     this.snapshot.timestamp = new Date();
   }
-  
+
   static getMetricsReport(): string {
-    let report = 'FastMCP Server Metrics Report\n';
+    let report = "FastMCP Server Metrics Report\n";
     report += `Timestamp: ${this.snapshot.timestamp.toISOString()}\n`;
     report += `Memory Usage: ${(this.snapshot.memoryUsage / 1024 / 1024).toFixed(2)} MB\n\n`;
-    
+
     // Request duration analysis
     this.snapshot.httpRequestDuration.forEach((durations, operation) => {
       if (durations.length === 0) {
         return;
       }
-      
+
       const sorted = durations.sort((a, b) => a - b);
       const p50 = sorted[Math.floor(sorted.length * 0.5)];
       const p95 = sorted[Math.floor(sorted.length * 0.95)];
       const p99 = sorted[Math.floor(sorted.length * 0.99)];
-      
+
       report += `${operation}:\n`;
       report += `  Requests: ${durations.length}\n`;
       report += `  P50: ${p50?.toFixed(2) || 0}ms\n`;
       report += `  P95: ${p95?.toFixed(2) || 0}ms\n`;
       report += `  P99: ${p99?.toFixed(2) || 0}ms\n`;
-      
+
       const errorCount = this.snapshot.errorCount.get(operation) || 0;
-      const errorRate = (errorCount / durations.length * 100).toFixed(2);
+      const errorRate = ((errorCount / durations.length) * 100).toFixed(2);
       report += `  Error Rate: ${errorRate}%\n\n`;
     });
-    
+
     return report;
   }
 }
 
 class HealthMonitor {
   static async performHealthCheck(): Promise<HealthStatus> {
-    const checks: HealthStatus['checks'] = {};
-    
+    const checks: HealthStatus["checks"] = {};
+
     // Check Make.com API connectivity
     checks.makeApiConnectivity = await this.checkMakeApiConnectivity();
-    
+
     // Check memory usage
     checks.memoryUsage = this.checkMemoryUsage();
-    
+
     // Check log file system
     checks.logFileSystem = await this.checkLogFileSystem();
-    
+
     // Check error rates
     checks.errorRates = this.checkErrorRates();
-    
+
+    // Check dependency health (if dependency monitoring enabled)
+    checks.dependencyHealth = await this.checkDependencyHealth();
+
     // Determine overall status
-    const failedChecks = Object.values(checks).filter(check => check.status === 'fail');
-    let status: HealthStatus['status'];
-    
+    const failedChecks = Object.values(checks).filter(
+      (check) => check.status === "fail",
+    );
+    let status: HealthStatus["status"];
+
     if (failedChecks.length === 0) {
-      status = 'healthy';
+      status = "healthy";
     } else if (failedChecks.length <= 1) {
-      status = 'degraded';
+      status = "degraded";
     } else {
-      status = 'unhealthy';
+      status = "unhealthy";
     }
-    
+
     const healthStatus: HealthStatus = {
       status,
       timestamp: new Date(),
-      checks
+      checks,
     };
-    
+
     // Log health status if degraded or unhealthy
-    if (status !== 'healthy') {
-      logger.warn('Health check failed', {
+    if (status !== "healthy") {
+      logger.warn("Health check failed", {
         status,
         failedChecks: failedChecks.length,
         details: checks,
-        correlationId: 'health-check'
+        correlationId: "health-check",
       });
     } else {
-      logger.info('Health check passed', {
+      logger.info("Health check passed", {
         status,
-        correlationId: 'health-check'
+        correlationId: "health-check",
       });
     }
-    
+
     return healthStatus;
   }
-  
-  private static async checkMakeApiConnectivity(): Promise<HealthStatus['checks'][string]> {
+
+  private static async checkMakeApiConnectivity(): Promise<
+    HealthStatus["checks"][string]
+  > {
     const startTime = performance.now();
     try {
       // Attempt lightweight API call to test connectivity
       await axios.get(`${config.makeBaseUrl}/users?limit=1`, {
         headers: { Authorization: `Token ${config.makeApiKey}` },
-        timeout: 5000
+        timeout: 5000,
       });
-      
+
       return {
-        status: 'pass',
-        duration: performance.now() - startTime
+        status: "pass",
+        duration: performance.now() - startTime,
       };
     } catch (error: unknown) {
       const axiosError = error as { message?: string };
       return {
-        status: 'fail',
+        status: "fail",
         duration: performance.now() - startTime,
-        message: `Make.com API connectivity failed: ${axiosError.message || 'Unknown error'}`
+        message: `Make.com API connectivity failed: ${axiosError.message || "Unknown error"}`,
       };
     }
   }
-  
-  private static checkMemoryUsage(): HealthStatus['checks'][string] {
+
+  private static checkMemoryUsage(): HealthStatus["checks"][string] {
     const startTime = performance.now();
     const memUsage = process.memoryUsage();
     const memoryUsageMB = memUsage.heapUsed / 1024 / 1024;
-    
+
     // Use configured memory threshold
     const threshold = config.memoryThresholdMB;
-    const status = memoryUsageMB > threshold ? 'fail' : 'pass';
-    
+    const status = memoryUsageMB > threshold ? "fail" : "pass";
+
     return {
       status,
       duration: performance.now() - startTime,
-      message: status === 'fail' ? 
-        `Memory usage ${memoryUsageMB.toFixed(2)}MB exceeds threshold ${threshold}MB` : 
-        `Memory usage: ${memoryUsageMB.toFixed(2)}MB`
+      message:
+        status === "fail"
+          ? `Memory usage ${memoryUsageMB.toFixed(2)}MB exceeds threshold ${threshold}MB`
+          : `Memory usage: ${memoryUsageMB.toFixed(2)}MB`,
     };
   }
-  
-  private static async checkLogFileSystem(): Promise<HealthStatus['checks'][string]> {
+
+  private static async checkLogFileSystem(): Promise<
+    HealthStatus["checks"][string]
+  > {
     const startTime = performance.now();
-    const fs = await import('fs');
-    const path = await import('path');
-    
+    const fs = await import("fs");
+    const path = await import("path");
+
     try {
-      const logsDir = path.join(process.cwd(), 'logs');
+      const logsDir = path.join(process.cwd(), "logs");
       await fs.promises.access(logsDir, fs.constants.R_OK | fs.constants.W_OK);
-      
+
       return {
-        status: 'pass',
+        status: "pass",
         duration: performance.now() - startTime,
-        message: 'Log directory accessible'
+        message: "Log directory accessible",
       };
     } catch (error: unknown) {
       const fsError = error as { message?: string };
       return {
-        status: 'fail',
+        status: "fail",
         duration: performance.now() - startTime,
-        message: `Log file system check failed: ${fsError.message || 'Unknown error'}`
+        message: `Log file system check failed: ${fsError.message || "Unknown error"}`,
       };
     }
   }
-  
-  private static checkErrorRates(): HealthStatus['checks'][string] {
+
+  private static checkErrorRates(): HealthStatus["checks"][string] {
     const startTime = performance.now();
     const metricsReport = PerformanceMonitor.getMetricsReport();
-    
+
     // Simple error rate check based on recent operations
     const errorThreshold = 0.05; // 5% error rate threshold
     const _totalOperations = metricsReport.summary.totalOperations;
-    
+
     // For simplicity, we'll use a basic check - in production this would
     // analyze actual error counts from metrics
     const estimatedErrorRate = 0; // Would be calculated from actual error metrics
-    
-    const status = estimatedErrorRate > errorThreshold ? 'fail' : 'pass';
-    
+
+    const status = estimatedErrorRate > errorThreshold ? "fail" : "pass";
+
     return {
       status,
       duration: performance.now() - startTime,
-      message: `Current error rate: ${(estimatedErrorRate * 100).toFixed(2)}%`
+      message: `Current error rate: ${(estimatedErrorRate * 100).toFixed(2)}%`,
     };
+  }
+
+  private static async checkDependencyHealth(): Promise<
+    HealthStatus["checks"][string]
+  > {
+    const startTime = performance.now();
+
+    if (!config.dependencyMonitoringEnabled) {
+      return {
+        status: "pass",
+        duration: performance.now() - startTime,
+        message: "Dependency monitoring disabled",
+      };
+    }
+
+    try {
+      const scanResult = await dependencyMonitor.performComprehensiveScan();
+
+      const criticalVulns = scanResult.vulnerabilities.filter(
+        (v) => v.severity === "critical",
+      ).length;
+      const highVulns = scanResult.vulnerabilities.filter(
+        (v) => v.severity === "high",
+      ).length;
+      const totalVulns = scanResult.vulnerabilities.length;
+
+      if (criticalVulns > 0) {
+        return {
+          status: "fail",
+          duration: performance.now() - startTime,
+          message: `${criticalVulns} critical vulnerabilities require immediate attention`,
+        };
+      }
+
+      if (highVulns > 0) {
+        return {
+          status: "fail",
+          duration: performance.now() - startTime,
+          message: `${highVulns} high-severity vulnerabilities require urgent fixes`,
+        };
+      }
+
+      return {
+        status: "pass",
+        duration: performance.now() - startTime,
+        message:
+          totalVulns === 0
+            ? "No vulnerabilities detected in dependencies"
+            : `${totalVulns} low/moderate vulnerabilities detected`,
+      };
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      return {
+        status: "fail",
+        duration: performance.now() - startTime,
+        message: `Dependency health check failed: ${errorMessage}`,
+      };
+    }
   }
 }
 
@@ -427,10 +504,16 @@ const config = {
   makeBaseUrl: process.env.MAKE_BASE_URL || "https://us1.make.com/api/v2",
   timeout: 30000,
   // Performance monitoring configuration
-  performanceMonitoringEnabled: process.env.PERFORMANCE_MONITORING_ENABLED !== "false",
+  performanceMonitoringEnabled:
+    process.env.PERFORMANCE_MONITORING_ENABLED !== "false",
   memoryThresholdMB: parseInt(process.env.MEMORY_THRESHOLD_MB || "512"),
   metricsCollectionEnabled: process.env.METRICS_COLLECTION_ENABLED !== "false",
   healthCheckEnabled: process.env.HEALTH_CHECK_ENABLED !== "false",
+  // Dependency monitoring configuration
+  dependencyMonitoringEnabled:
+    process.env.DEPENDENCY_MONITORING_ENABLED !== "false",
+  maintenanceReportsEnabled:
+    process.env.MAINTENANCE_REPORTS_ENABLED !== "false",
 };
 
 // Simple Make.com API client
@@ -464,19 +547,31 @@ class SimpleMakeClient {
         operation,
         requestId,
         async () => {
-          return await this.executeRequest(method, endpoint, data, requestId, operation);
-        }
+          return await this.executeRequest(
+            method,
+            endpoint,
+            data,
+            requestId,
+            operation,
+          );
+        },
       );
 
       // Record metrics if enabled
       if (config.metricsCollectionEnabled) {
-        const success = !result || typeof result === 'object';
+        const success = !result || typeof result === "object";
         MetricsCollector.recordRequest(operation, metrics.duration, success);
       }
 
       return result;
     } else {
-      return await this.executeRequest(method, endpoint, data, requestId, operation);
+      return await this.executeRequest(
+        method,
+        endpoint,
+        data,
+        requestId,
+        operation,
+      );
     }
   }
 
@@ -658,6 +753,13 @@ const server = new FastMCP({
 
 // Initialize Make.com API client
 const makeClient = new SimpleMakeClient();
+
+// Initialize dependency monitoring system
+const dependencyMonitor = new DependencyMonitor(logger);
+const maintenanceReportGenerator = new MaintenanceReportGenerator(
+  dependencyMonitor,
+  logger,
+);
 
 // SCENARIO TOOLS
 server.addTool({
@@ -1251,21 +1353,25 @@ if (config.healthCheckEnabled) {
     parameters: z.object({}),
     execute: async () => {
       const health = await HealthMonitor.performHealthCheck();
-      const statusEmoji = health.status === 'healthy' ? '✅' : 
-                        health.status === 'degraded' ? '⚠️' : '❌';
-      
+      const statusEmoji =
+        health.status === "healthy"
+          ? "✅"
+          : health.status === "degraded"
+            ? "⚠️"
+            : "❌";
+
       let report = `${statusEmoji} System Health Status: ${health.status.toUpperCase()}\n`;
       report += `Timestamp: ${health.timestamp.toISOString()}\n\n`;
-      
+
       report += "Health Checks:\n";
       Object.entries(health.checks).forEach(([checkName, result]) => {
-        const checkEmoji = result.status === 'pass' ? '✅' : '❌';
+        const checkEmoji = result.status === "pass" ? "✅" : "❌";
         report += `${checkEmoji} ${checkName}: ${result.status} (${result.duration.toFixed(2)}ms)\n`;
         if (result.message) {
           report += `   ${result.message}\n`;
         }
       });
-      
+
       return {
         content: [
           {
@@ -1278,6 +1384,298 @@ if (config.healthCheckEnabled) {
   });
 }
 
+// DEPENDENCY MONITORING TOOLS (conditionally enabled)
+if (config.dependencyMonitoringEnabled) {
+  server.addTool({
+    name: "scan-vulnerabilities",
+    description:
+      "Scan dependencies for security vulnerabilities using npm audit",
+    parameters: z.object({
+      severity_filter: z
+        .enum(["all", "critical", "high", "moderate", "low"])
+        .optional()
+        .describe("Filter results by minimum severity level (default: all)"),
+    }),
+    execute: async (args) => {
+      const vulnerabilities =
+        await dependencyMonitor.performVulnerabilityScan();
+      let filtered = vulnerabilities;
+
+      if (args.severity_filter && args.severity_filter !== "all") {
+        const severityLevels = { low: 1, moderate: 2, high: 3, critical: 4 };
+        const minLevel = severityLevels[args.severity_filter];
+        filtered = vulnerabilities.filter(
+          (v) => severityLevels[v.severity] >= minLevel,
+        );
+      }
+
+      const severityBreakdown = filtered.reduce(
+        (counts, vuln) => {
+          counts[vuln.severity] = (counts[vuln.severity] || 0) + 1;
+          return counts;
+        },
+        {} as Record<string, number>,
+      );
+
+      let report = `Security Vulnerability Scan Results:\n\n`;
+      report += `Found ${filtered.length} vulnerabilities`;
+      if (args.severity_filter && args.severity_filter !== "all") {
+        report += ` (${args.severity_filter}+ severity)`;
+      }
+      report += `:\n\n`;
+
+      // Severity breakdown
+      report += `Severity Breakdown:\n`;
+      Object.entries(severityBreakdown).forEach(([severity, count]) => {
+        const emoji =
+          severity === "critical"
+            ? "🚨"
+            : severity === "high"
+              ? "⚠️"
+              : severity === "moderate"
+                ? "📢"
+                : "💡";
+        report += `${emoji} ${severity.toUpperCase()}: ${count}\n`;
+      });
+
+      if (filtered.length > 0) {
+        report += `\nVulnerability Details:\n`;
+        filtered.forEach((vuln) => {
+          const severityEmoji =
+            vuln.severity === "critical"
+              ? "🚨"
+              : vuln.severity === "high"
+                ? "⚠️"
+                : vuln.severity === "moderate"
+                  ? "📢"
+                  : "💡";
+          report += `\n${severityEmoji} ${vuln.packageName} (${vuln.currentVersion})\n`;
+          report += `   CVE: ${vuln.cve}\n`;
+          report += `   Severity: ${vuln.severity.toUpperCase()}\n`;
+          report += `   Description: ${vuln.description}\n`;
+          report += `   Fix Available: ${vuln.fixAvailable ? "Yes (npm audit fix)" : "Manual update required"}\n`;
+        });
+      } else {
+        report += `\n✅ No vulnerabilities found at the specified severity level.`;
+      }
+
+      return {
+        content: [{ type: "text", text: report }],
+      };
+    },
+  });
+
+  server.addTool({
+    name: "check-outdated-packages",
+    description: "Check for outdated package dependencies using npm outdated",
+    parameters: z.object({
+      update_type: z
+        .enum(["all", "major", "minor", "patch"])
+        .optional()
+        .describe("Filter by update type (default: all)"),
+    }),
+    execute: async (args) => {
+      const outdatedPackages = await dependencyMonitor.checkOutdatedPackages();
+
+      let filtered = outdatedPackages;
+      if (args.update_type && args.update_type !== "all") {
+        filtered = outdatedPackages.filter((pkg) => {
+          const currentMajor =
+            parseInt(pkg.currentVersion.split(".")[0], 10) || 0;
+          const latestMajor =
+            parseInt(pkg.latestVersion.split(".")[0], 10) || 0;
+          const currentMinor =
+            parseInt(pkg.currentVersion.split(".")[1], 10) || 0;
+          const latestMinor =
+            parseInt(pkg.latestVersion.split(".")[1], 10) || 0;
+
+          if (args.update_type === "major") {
+            return latestMajor > currentMajor;
+          }
+          if (args.update_type === "minor") {
+            return latestMajor === currentMajor && latestMinor > currentMinor;
+          }
+          if (args.update_type === "patch") {
+            return latestMajor === currentMajor && latestMinor === currentMinor;
+          }
+          return true;
+        });
+      }
+
+      let report = `Outdated Package Dependencies:\n\n`;
+      report += `Found ${filtered.length} outdated packages`;
+      if (args.update_type && args.update_type !== "all") {
+        report += ` (${args.update_type} updates)`;
+      }
+      report += `:\n\n`;
+
+      if (filtered.length > 0) {
+        const updateTypes = filtered.reduce(
+          (counts, pkg) => {
+            const currentMajor =
+              parseInt(pkg.currentVersion.split(".")[0], 10) || 0;
+            const latestMajor =
+              parseInt(pkg.latestVersion.split(".")[0], 10) || 0;
+            const currentMinor =
+              parseInt(pkg.currentVersion.split(".")[1], 10) || 0;
+            const latestMinor =
+              parseInt(pkg.latestVersion.split(".")[1], 10) || 0;
+
+            if (latestMajor > currentMajor) {
+              counts.major = (counts.major || 0) + 1;
+            } else if (latestMinor > currentMinor) {
+              counts.minor = (counts.minor || 0) + 1;
+            } else {
+              counts.patch = (counts.patch || 0) + 1;
+            }
+            return counts;
+          },
+          {} as Record<string, number>,
+        );
+
+        report += `Update Type Breakdown:\n`;
+        if (updateTypes.major) {
+          report += `🔴 Major Updates: ${updateTypes.major} (breaking changes possible)\n`;
+        }
+        if (updateTypes.minor) {
+          report += `🟡 Minor Updates: ${updateTypes.minor} (new features)\n`;
+        }
+        if (updateTypes.patch) {
+          report += `🟢 Patch Updates: ${updateTypes.patch} (bug fixes)\n`;
+        }
+
+        report += `\nPackage Details:\n`;
+        filtered.forEach((pkg) => {
+          const currentMajor =
+            parseInt(pkg.currentVersion.split(".")[0], 10) || 0;
+          const latestMajor =
+            parseInt(pkg.latestVersion.split(".")[0], 10) || 0;
+          const updateEmoji = latestMajor > currentMajor ? "🔴" : "🟡";
+
+          report += `\n${updateEmoji} ${pkg.packageName}\n`;
+          report += `   Current: ${pkg.currentVersion}\n`;
+          report += `   Latest: ${pkg.latestVersion}\n`;
+          report += `   Type: ${pkg.type}\n`;
+        });
+      } else {
+        report += `\n✅ All packages are up to date.`;
+      }
+
+      return {
+        content: [{ type: "text", text: report }],
+      };
+    },
+  });
+}
+
+if (config.maintenanceReportsEnabled) {
+  server.addTool({
+    name: "generate-maintenance-report",
+    description:
+      "Generate comprehensive dependency maintenance report with security analysis",
+    parameters: z.object({
+      format: z
+        .enum(["json", "text", "markdown"])
+        .optional()
+        .describe("Report format (default: text)"),
+      include_details: z
+        .boolean()
+        .optional()
+        .describe(
+          "Include detailed vulnerability and package information (default: true)",
+        ),
+      filter_severity: z
+        .enum(["low", "moderate", "high", "critical"])
+        .optional()
+        .describe("Filter vulnerabilities by minimum severity level"),
+    }),
+    execute: async (args) => {
+      const report = await maintenanceReportGenerator.generateReport();
+      const format = args.format || "text";
+      const includeDetails = args.include_details !== false;
+
+      const exportOptions = {
+        format,
+        includeDetails,
+        filterSeverity: args.filter_severity,
+      };
+
+      const exportedReport = await maintenanceReportGenerator.exportReport(
+        report,
+        exportOptions,
+      );
+
+      return {
+        content: [{ type: "text", text: exportedReport }],
+      };
+    },
+  });
+
+  server.addTool({
+    name: "get-dependency-health-status",
+    description: "Get current dependency health status and summary",
+    parameters: z.object({}),
+    execute: async () => {
+      const scanResult = await dependencyMonitor.performComprehensiveScan();
+
+      const criticalVulns = scanResult.vulnerabilities.filter(
+        (v) => v.severity === "critical",
+      ).length;
+      const highVulns = scanResult.vulnerabilities.filter(
+        (v) => v.severity === "high",
+      ).length;
+      const majorUpdates = scanResult.outdatedPackages.filter((p) => {
+        const currentMajor = parseInt(p.currentVersion.split(".")[0], 10) || 0;
+        const latestMajor = parseInt(p.latestVersion.split(".")[0], 10) || 0;
+        return latestMajor > currentMajor;
+      }).length;
+
+      let healthStatus: "healthy" | "warning" | "critical" = "healthy";
+      if (criticalVulns > 0 || highVulns > 0) {
+        healthStatus = "critical";
+      } else if (
+        scanResult.vulnerabilities.filter((v) => v.severity === "moderate")
+          .length > 0 ||
+        majorUpdates > 5
+      ) {
+        healthStatus = "warning";
+      }
+
+      const statusEmoji =
+        healthStatus === "healthy"
+          ? "✅"
+          : healthStatus === "warning"
+            ? "⚠️"
+            : "❌";
+
+      let status = `${statusEmoji} Dependency Health Status: ${healthStatus.toUpperCase()}\n\n`;
+      status += `📊 Summary:\n`;
+      status += `• Total Dependencies: ${scanResult.totalDependencies}\n`;
+      status += `• Security Vulnerabilities: ${scanResult.vulnerabilities.length}\n`;
+      status += `  - Critical: ${criticalVulns}\n`;
+      status += `  - High: ${highVulns}\n`;
+      status += `  - Moderate: ${scanResult.vulnerabilities.filter((v) => v.severity === "moderate").length}\n`;
+      status += `  - Low: ${scanResult.vulnerabilities.filter((v) => v.severity === "low").length}\n`;
+      status += `• Outdated Packages: ${scanResult.outdatedPackages.length}\n`;
+      status += `  - Major Updates Available: ${majorUpdates}\n`;
+      status += `• Scan Duration: ${scanResult.scanDuration}ms\n`;
+      status += `• Scan Timestamp: ${scanResult.scanTimestamp.toISOString()}\n`;
+
+      if (criticalVulns > 0 || highVulns > 0) {
+        status += `\n🚨 URGENT: Address ${criticalVulns + highVulns} critical/high severity vulnerabilities immediately!\n`;
+      } else if (healthStatus === "warning") {
+        status += `\n⚠️ WARNING: Review moderate vulnerabilities and major package updates.\n`;
+      } else {
+        status += `\n✅ All dependencies are secure and up to date.\n`;
+      }
+
+      return {
+        content: [{ type: "text", text: status }],
+      };
+    },
+  });
+}
+
 // Start the server
 server.start({
   transportType: "stdio",
@@ -1285,10 +1683,12 @@ server.start({
 
 const startupMessage = [
   "Make.com Simple FastMCP Server started successfully",
-  `Performance Monitoring: ${config.performanceMonitoringEnabled ? 'ENABLED' : 'DISABLED'}`,
-  `Metrics Collection: ${config.metricsCollectionEnabled ? 'ENABLED' : 'DISABLED'}`,
-  `Health Checks: ${config.healthCheckEnabled ? 'ENABLED' : 'DISABLED'}`,
-  `Memory Threshold: ${config.memoryThresholdMB}MB`
+  `Performance Monitoring: ${config.performanceMonitoringEnabled ? "ENABLED" : "DISABLED"}`,
+  `Metrics Collection: ${config.metricsCollectionEnabled ? "ENABLED" : "DISABLED"}`,
+  `Health Checks: ${config.healthCheckEnabled ? "ENABLED" : "DISABLED"}`,
+  `Dependency Monitoring: ${config.dependencyMonitoringEnabled ? "ENABLED" : "DISABLED"}`,
+  `Maintenance Reports: ${config.maintenanceReportsEnabled ? "ENABLED" : "DISABLED"}`,
+  `Memory Threshold: ${config.memoryThresholdMB}MB`,
 ].join(" | ");
 
 console.error(startupMessage);
@@ -1298,6 +1698,8 @@ logger.info("FastMCP Server started", {
   performanceMonitoring: config.performanceMonitoringEnabled,
   metricsCollection: config.metricsCollectionEnabled,
   healthCheck: config.healthCheckEnabled,
+  dependencyMonitoring: config.dependencyMonitoringEnabled,
+  maintenanceReports: config.maintenanceReportsEnabled,
   memoryThreshold: config.memoryThresholdMB,
-  correlationId: 'server-startup'
+  correlationId: "server-startup",
 });
