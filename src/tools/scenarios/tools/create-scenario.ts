@@ -4,6 +4,7 @@
  */
 
 import { UserError } from "fastmcp";
+import { z } from "zod";
 import { CreateScenarioSchema } from "../schemas/blueprint-update.js";
 import {
   ToolContext,
@@ -15,7 +16,9 @@ import type MakeApiClient from "../../../lib/make-api-client.js";
 /**
  * Validate and parse create scenario arguments
  */
-function validateAndParseArgs(args: unknown) {
+function validateAndParseArgs(
+  args: unknown,
+): z.infer<typeof CreateScenarioSchema> {
   try {
     return CreateScenarioSchema.parse(args);
   } catch (error) {
@@ -34,7 +37,7 @@ function buildScenarioData(typedArgs: {
   folderId?: string;
   blueprint?: unknown;
   scheduling?: unknown;
-}) {
+}): Record<string, unknown> {
   const scenarioData: Record<string, unknown> = { name: typedArgs.name };
 
   if (typedArgs.teamId) {
@@ -60,7 +63,7 @@ async function createScenarioViaApi(
   apiClient: MakeApiClient,
   scenarioData: Record<string, unknown>,
   reportProgress?: (progress: { progress: number; total: number }) => void,
-) {
+): Promise<unknown> {
   reportProgress?.({ progress: 25, total: 100 });
 
   const response = await apiClient.post("/scenarios", scenarioData);
@@ -82,7 +85,11 @@ async function createScenarioViaApi(
 function formatCreationResult(
   typedArgs: { name: string },
   createdScenario: unknown,
-) {
+): {
+  scenario: unknown;
+  message: string;
+  timestamp: string;
+} {
   return {
     scenario: createdScenario,
     message: `Scenario "${typedArgs.name}" created successfully`,
@@ -97,7 +104,7 @@ function logCreationSuccess(
   log: { info?: (message: string, meta?: unknown) => void },
   typedArgs: { name: string },
   createdScenario: unknown,
-) {
+): void {
   const scenarioObj = createdScenario as { id?: unknown } | null | undefined;
   log?.info?.("Scenario created successfully", {
     scenarioId: String(scenarioObj?.id ?? "unknown"),

@@ -4,6 +4,7 @@
  */
 
 import { UserError } from "fastmcp";
+import { z } from "zod";
 import { CloneScenarioSchema } from "../schemas/blueprint-update.js";
 import {
   ToolContext,
@@ -15,7 +16,9 @@ import type MakeApiClient from "../../../lib/make-api-client.js";
 /**
  * Validate and parse clone scenario arguments
  */
-function validateAndParseArgs(args: unknown) {
+function validateAndParseArgs(
+  args: unknown,
+): z.infer<typeof CloneScenarioSchema> {
   try {
     return CloneScenarioSchema.parse(args);
   } catch (error) {
@@ -32,7 +35,7 @@ async function fetchSourceBlueprint(
   apiClient: MakeApiClient,
   scenarioId: string,
   reportProgress?: (progress: { progress: number; total: number }) => void,
-) {
+): Promise<unknown> {
   const blueprintResponse = await apiClient.get(
     `/scenarios/${scenarioId}/blueprint`,
   );
@@ -57,7 +60,7 @@ function buildCloneData(
     active?: boolean;
   },
   blueprint: unknown,
-) {
+): Record<string, unknown> {
   const cloneData: Record<string, unknown> = {
     name: typedArgs.name,
     blueprint,
@@ -81,7 +84,7 @@ async function createClonedScenario(
   apiClient: MakeApiClient,
   cloneData: Record<string, unknown>,
   reportProgress?: (progress: { progress: number; total: number }) => void,
-) {
+): Promise<unknown> {
   reportProgress?.({ progress: 50, total: 100 });
 
   const response = await apiClient.post("/scenarios", cloneData);
@@ -100,7 +103,12 @@ async function createClonedScenario(
 function formatCloneResult(
   typedArgs: { scenarioId: string; name: string },
   clonedScenario: unknown,
-) {
+): {
+  originalScenarioId: string;
+  clonedScenario: unknown;
+  message: string;
+  timestamp: string;
+} {
   return {
     originalScenarioId: typedArgs.scenarioId,
     clonedScenario,
@@ -116,7 +124,7 @@ function logCloneSuccess(
   log: { info?: (message: string, meta?: unknown) => void },
   typedArgs: { scenarioId: string; name: string },
   clonedScenario: unknown,
-) {
+): void {
   const clonedScenarioObj = clonedScenario as
     | { id?: unknown }
     | null

@@ -46,8 +46,8 @@ export class AsyncErrorBoundary {
 
   constructor(options: ErrorBoundaryOptions) {
     this.options = {
-      fallback: () => null,
-      onError: () => {},
+      fallback: (): null => null,
+      onError: (): void => {},
       retryAttempts: 0,
       retryDelayMs: 1000,
       timeout: 30000, // 30 seconds default
@@ -399,11 +399,11 @@ export function WithErrorBoundary(
     target: unknown,
     propertyName: string,
     descriptor: PropertyDescriptor,
-  ) {
+  ): PropertyDescriptor {
     const method = descriptor.value as (...args: unknown[]) => Promise<unknown>;
     const boundary = new AsyncErrorBoundary({ name: boundaryName, ...options });
 
-    descriptor.value = async function (...args: unknown[]) {
+    descriptor.value = async function (...args: unknown[]): Promise<unknown> {
       return boundary.execute(() => method.apply(this, args), {
         operation: `${(target as { constructor: { name: string } }).constructor.name}.${propertyName}`,
       });

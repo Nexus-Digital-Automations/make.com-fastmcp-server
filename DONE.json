@@ -26415,9 +26415,144 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755995670652_5ilveo4j4",
+      "title": "Fix missing return type annotations in async-error-boundary",
+      "description": "Add explicit return types to functions in async-error-boundary.ts to resolve ESLint warnings and improve type safety",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": ["src/utils/async-error-boundary.ts"],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T00:34:30.652Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755995607153_1_general_142fad6d",
+      "started_at": "2025-08-24T00:34:50.280Z",
+      "claimed_by": "development_session_1755995607153_1_general_142fad6d",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755995607153_1_general_142fad6d",
+          "role": "primary",
+          "assignedAt": "2025-08-24T00:34:50.280Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T00:37:25.879Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T00:37:25.880Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755995652604_d2hdpxrle",
+      "title": "Fix missing return type annotations in scenarios tools",
+      "description": "Add explicit return types to functions in clone-scenario.ts and create-scenario.ts to resolve ESLint warnings",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "src/tools/scenarios/tools/clone-scenario.ts",
+        "src/tools/scenarios/tools/create-scenario.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T00:34:12.605Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755995607153_1_general_142fad6d",
+      "started_at": "2025-08-24T00:37:40.694Z",
+      "claimed_by": "development_session_1755995607153_1_general_142fad6d",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755995607153_1_general_142fad6d",
+          "role": "primary",
+          "assignedAt": "2025-08-24T00:37:40.694Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T00:42:51.834Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T00:42:51.836Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755995662588_fnqc8ieex",
+      "title": "Reduce complexity in delete-scenario execute method",
+      "description": "Refactor the execute method in delete-scenario.ts to reduce complexity from 27 to under 25 by extracting helper methods",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "medium",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": ["src/tools/scenarios/tools/delete-scenario.ts"],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T00:34:22.590Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755995607153_1_general_142fad6d",
+      "started_at": "2025-08-24T00:43:02.965Z",
+      "claimed_by": "development_session_1755995607153_1_general_142fad6d",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755995607153_1_general_142fad6d",
+          "role": "primary",
+          "assignedAt": "2025-08-24T00:43:02.965Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T00:46:42.639Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T00:46:42.639Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 612,
-  "last_completion": "2025-08-24T00:32:39.801Z",
+  "total_completed": 615,
+  "last_completion": "2025-08-24T00:46:42.639Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
