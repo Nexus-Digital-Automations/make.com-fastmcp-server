@@ -72,7 +72,7 @@ export class SecureConfigManager {
     enqueueBatch(batch: RotationBatch): void;
     on(event: string, handler: (...args: unknown[]) => void): void;
     off(event: string, handler: (...args: unknown[]) => void): void;
-    getStatus(): { enabled: boolean; [key: string]: unknown };
+    getStatus(): { enabled?: boolean; [key: string]: unknown };
     getQueueStatus(): { [key: string]: unknown };
     getPerformanceMetrics(): { [key: string]: unknown };
   } | null = null; // Lazy loaded to avoid circular dependencies
@@ -706,9 +706,22 @@ export class SecureConfigManager {
       
       const finalConfig = { ...defaultConfig, ...config };
       
-      this.concurrentRotationAgent = new ConcurrentRotationAgent(finalConfig);
-      await this.concurrentRotationAgent.initialize();
-      await this.concurrentRotationAgent.start();
+      const agent = new ConcurrentRotationAgent(finalConfig);
+      await agent.initialize();
+      await agent.start();
+      
+      // Create wrapper to match expected interface
+      this.concurrentRotationAgent = {
+        initialize: () => agent.initialize(),
+        start: () => agent.start(),
+        stop: () => agent.stop(),
+        enqueueBatch: (batch: RotationBatch) => agent.enqueueBatch(batch),
+        on: (event: string, handler: (...args: unknown[]) => void) => agent.on(event, handler),
+        off: (event: string, handler: (...args: unknown[]) => void) => agent.off(event, handler),
+        getStatus: () => ({ enabled: true, ...agent.getStatus() }),
+        getQueueStatus: () => agent.getQueueStatus(),
+        getPerformanceMetrics: () => agent.getPerformanceMetrics()
+      };
       
       this.batchRotationEnabled = true;
       this.setupEnhancedRotationPolicies();
@@ -855,7 +868,7 @@ export class SecureConfigManager {
         status: 'pending',
         requests: [request],
         concurrency: 1,
-        priority: request.priority,
+        priority: request.priority === 'emergency' ? 'critical' : (request.priority || 'normal') as 'low' | 'normal' | 'high' | 'critical',
         processedCount: 0,
         successCount: 0,
         failedCount: 0
@@ -865,16 +878,20 @@ export class SecureConfigManager {
         // Set up event listeners
         const onCompleted = (result: RotationResult): void => {
           if (result.credentialId === credentialId || result.oldCredentialId === credentialId) {
-            this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-            this.concurrentRotationAgent.off('rotation_failed', onFailed);
+            if (this.concurrentRotationAgent) {
+              this.concurrentRotationAgent.off('rotation_completed', onCompleted);
+              this.concurrentRotationAgent.off('rotation_failed', onFailed);
+            }
             resolve(result.newCredentialId);
           }
         };
         
         const onFailed = (error: RotationError): void => {
           if (error.credentialId === credentialId) {
-            this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-            this.concurrentRotationAgent.off('rotation_failed', onFailed);
+            if (this.concurrentRotationAgent) {
+              this.concurrentRotationAgent.off('rotation_completed', onCompleted);
+              this.concurrentRotationAgent.off('rotation_failed', onFailed);
+            }
             reject(new Error(error.errorMessage));
           }
         };
@@ -887,8 +904,10 @@ export class SecureConfigManager {
         
         // Set timeout
         setTimeout(() => {
-          this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-          this.concurrentRotationAgent.off('rotation_failed', onFailed);
+          if (this.concurrentRotationAgent) {
+            this.concurrentRotationAgent.off('rotation_completed', onCompleted);
+            this.concurrentRotationAgent.off('rotation_failed', onFailed);
+          }
           reject(new Error('Concurrent rotation timeout'));
         }, policy.gracePeriod || 60000);
       });
@@ -947,7 +966,7 @@ export class SecureConfigManager {
       status: 'pending',
       requests,
       concurrency: Math.min(options.concurrency || 2, requests.length),
-      priority: options.priority || 'normal',
+      priority: (options.priority === 'emergency' ? 'critical' : (options.priority || 'normal')) as 'low' | 'normal' | 'high' | 'critical',
       processedCount: 0,
       successCount: 0,
       failedCount: 0
@@ -960,8 +979,10 @@ export class SecureConfigManager {
       
       const checkCompletion = (): void => {
         if (completedCount === requests.length) {
-          this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-          this.concurrentRotationAgent.off('rotation_failed', onFailed);
+          if (this.concurrentRotationAgent) {
+            this.concurrentRotationAgent.off('rotation_completed', onCompleted);
+            this.concurrentRotationAgent.off('rotation_failed', onFailed);
+          }
           resolve({ batchId, successful, failed });
         }
       };
@@ -993,8 +1014,10 @@ export class SecureConfigManager {
       
       // Set timeout
       setTimeout(() => {
-        this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-        this.concurrentRotationAgent.off('rotation_failed', onFailed);
+        if (this.concurrentRotationAgent) {
+          this.concurrentRotationAgent.off('rotation_completed', onCompleted);
+          this.concurrentRotationAgent.off('rotation_failed', onFailed);
+        }
         reject(new Error('Batch rotation timeout'));
       }, 300000); // 5 minutes timeout
     });
@@ -1041,9 +1064,9 @@ export class SecureConfigManager {
     }
     
     // Clear existing timers
-    for (const timer of this.rotationTimers.values()) {
+    Array.from(this.rotationTimers.values()).forEach(timer => {
       clearTimeout(timer);
-    }
+    });
     this.rotationTimers.clear();
     
     this.componentLogger.info('SecureConfigManager shutdown completed');

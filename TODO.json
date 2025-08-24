@@ -1,24 +1,6 @@
 {
   "project": "root_files",
-  "tasks": [
-    {
-      "id": "task_1756029201347_drvczihvp",
-      "title": "Fix TypeScript compilation errors in telemetry.ts",
-      "description": "Fix OpenTelemetry module imports, Resource usage, HTTP headers type issues, re-export syntax, and duplicate exports",
-      "mode": "DEVELOPMENT",
-      "category": "error",
-      "priority": "critical",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-24T09:53:21.347Z",
-      "auto_research_created": false
-    }
-  ],
+  "tasks": [],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
@@ -45,6 +27,27 @@
       "maxConcurrentTasks": 5,
       "createdAt": "2025-08-24T08:29:27.436Z",
       "sessionId": "session_1756024167435",
+      "metadata": {}
+    },
+    "development_session_1756029999927_1_general_0416e8a9": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-24T10:06:39.928Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-24T10:06:39.928Z",
+      "sessionId": "session_1756029999927",
       "metadata": {}
     }
   },

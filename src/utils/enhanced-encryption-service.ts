@@ -4,6 +4,7 @@
  */
 
 import { EventEmitter } from "events";
+import * as crypto from "crypto";
 import {
   EncryptionService,
   CredentialManager,
@@ -450,7 +451,7 @@ export class EnhancedEncryptionService extends EventEmitter {
         maxConcurrency:
           options.maxConcurrency || this.config.concurrentProcessing.maxWorkers,
         timeout: options.timeout || this.config.concurrentProcessing.timeout,
-        failFast: options.failFast || false,
+        failFast: options.failFast ?? false,
       },
     };
 
@@ -460,8 +461,8 @@ export class EnhancedEncryptionService extends EventEmitter {
       id: result.id,
       success: result.success,
       result:
-        result.success && result.result
-          ? (result.result as EncryptedData)
+        result.success && result.result && this.isEncryptedData(result.result)
+          ? result.result
           : undefined,
       error: result.error?.message,
     }));
@@ -490,7 +491,7 @@ export class EnhancedEncryptionService extends EventEmitter {
         keyType: "asymmetric" as const,
         algorithm,
         keyLength: this.getKeyLength(algorithm),
-        extractable: options.extractable || false,
+        extractable: options.extractable ?? false,
         usage: options.usage || ["encrypt", "decrypt", "sign", "verify"],
       };
 
@@ -549,7 +550,7 @@ export class EnhancedEncryptionService extends EventEmitter {
 
       return {
         publicKey: keyPair.publicKey as string,
-        privateKey: options.extractable
+        privateKey: (options.extractable ?? true)
           ? (keyPair.privateKey as string)
           : undefined,
         keyId: crypto.randomUUID(),
@@ -855,7 +856,14 @@ export class EnhancedEncryptionService extends EventEmitter {
       );
     }
 
-    return result.result as EncryptedData;
+    // Type guard to ensure result is EncryptedData
+    if (!this.isEncryptedData(result.result)) {
+      throw new CryptographicError(
+        "Invalid result type from concurrent agent",
+        "encryptWithConcurrentAgent"
+      );
+    }
+    return result.result;
   }
 
   private async decryptWithConcurrentAgent(
@@ -874,7 +882,7 @@ export class EnhancedEncryptionService extends EventEmitter {
         algorithm: encryptedData.algorithm as any,
         keyLength: encryptedData.keyLength,
       },
-      data: encryptedData,
+      data: encryptedData.data,
       key: masterPassword,
       metadata: {
         priority: options.priority || "medium",
@@ -955,6 +963,21 @@ export class EnhancedEncryptionService extends EventEmitter {
       ed25519: 256,
     };
     return keyLengths[algorithm] || 256;
+  }
+
+  /**
+   * Type guard to check if a value is EncryptedData
+   */
+  private isEncryptedData(value: unknown): value is EncryptedData {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      typeof (value as EncryptedData).data === "string" &&
+      typeof (value as EncryptedData).iv === "string" &&
+      typeof (value as EncryptedData).salt === "string" &&
+      typeof (value as EncryptedData).algorithm === "string" &&
+      typeof (value as EncryptedData).keyLength === "number"
+    );
   }
 }
 
