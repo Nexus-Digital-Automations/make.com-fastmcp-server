@@ -174,53 +174,19 @@ export class SecureConfigManager {
     } = {}
   ): Promise<string> {
     try {
-      // Store encrypted credential
-      const credentialId = await credentialManager.storeCredential(
+      const credentialId = await this.createEncryptedCredential(
         value,
         type,
         service,
-        this.masterPassword,
-        {
-          userId: options.userId,
-          expiresIn: options.rotationInterval
-        }
+        options
       );
-
-      // Setup rotation if enabled
-      if (options.autoRotate && options.rotationInterval) {
-        this.scheduleRotation(credentialId, options.rotationInterval);
-      }
-
-      // Log security event
-      this.logSecurityEvent({
-        timestamp: new Date(),
-        event: 'credential_accessed',
-        credentialId,
-        userId: options.userId,
-        source: 'SecureConfigManager.storeCredential',
-        success: true,
-        metadata: { type, service, autoRotate: options.autoRotate }
-      });
-
-      this.componentLogger.info('Credential stored securely', {
-        credentialId,
-        type,
-        service,
-        encrypted: true,
-        autoRotate: options.autoRotate
-      });
-
+      
+      this.setupCredentialRotation(credentialId, options);
+      this.logCredentialStored(credentialId, type, service, options);
+      
       return credentialId;
     } catch (error) {
-      this.logSecurityEvent({
-        timestamp: new Date(),
-        event: 'credential_accessed',
-        credentialId: 'unknown',
-        userId: options.userId,
-        source: 'SecureConfigManager.storeCredential',
-        success: false,
-        metadata: { error: error instanceof Error ? error.message : 'Unknown error' }
-      });
+      this.logCredentialStorageError(error, options.userId);
       throw error;
     }
   }
@@ -310,62 +276,9 @@ export class SecureConfigManager {
     const errors: Array<{ credential: string; error: string }> = [];
 
     try {
-      // Migrate Make.com API key
-      const makeConfig = configManager().getMakeConfig();
-      if (makeConfig.apiKey && !process.env.MAKE_API_KEY_CREDENTIAL_ID) {
-        try {
-          const credentialId = await this.storeCredential(
-            'api_key',
-            'make.com',
-            makeConfig.apiKey,
-            {
-              autoRotate: true,
-              rotationInterval: this.rotationPolicies.get('api_key')?.interval,
-              userId
-            }
-          );
-          
-          // Store credential ID for future use
-          process.env.MAKE_API_KEY_CREDENTIAL_ID = credentialId;
-          migrated.push('make_api_key');
-          
-          this.componentLogger.info('Migrated Make.com API key to secure storage', { credentialId });
-        } catch (error) {
-          errors.push({
-            credential: 'make_api_key',
-            error: error instanceof Error ? error.message : 'Unknown error'
-          });
-        }
-      }
-
-      // Migrate auth secret
-      const authSecret = configManager().getAuthSecret();
-      if (authSecret && !process.env.AUTH_SECRET_CREDENTIAL_ID) {
-        try {
-          const credentialId = await this.storeCredential(
-            'secret',
-            'auth',
-            authSecret,
-            {
-              autoRotate: true,
-              rotationInterval: this.rotationPolicies.get('auth_secret')?.interval,
-              userId
-            }
-          );
-          
-          // Store credential ID for future use
-          process.env.AUTH_SECRET_CREDENTIAL_ID = credentialId;
-          migrated.push('auth_secret');
-          
-          this.componentLogger.info('Migrated auth secret to secure storage', { credentialId });
-        } catch (error) {
-          errors.push({
-            credential: 'auth_secret',
-            error: error instanceof Error ? error.message : 'Unknown error'
-          });
-        }
-      }
-
+      await this.migrateMakeApiKey(userId, migrated, errors);
+      await this.migrateAuthSecret(userId, migrated, errors);
+      
       return { migrated, errors };
     } catch (error) {
       this.componentLogger.error('Migration to secure storage failed', {
@@ -387,80 +300,23 @@ export class SecureConfigManager {
     } = {}
   ): Promise<string> {
     try {
-      const metadata = credentialManager.getCredentialMetadata(credentialId);
-      if (!metadata) {
-        throw new Error(`Credential ${credentialId} not found`);
-      }
-
-      // Get rotation policy
-      const policy = this.rotationPolicies.get(metadata.type);
-      const gracePeriod = options.gracePeriod || policy?.gracePeriod || 24 * 60 * 60 * 1000; // 24 hours default
-
-      // Generate new credential if not provided
-      let newValue = options.newValue;
-      if (!newValue) {
-        newValue = metadata.type === 'api_key' 
-          ? encryptionService.generateApiKey('mcp', 32)
-          : encryptionService.generateSecureSecret();
-      }
-
-      // Rotate the credential
-      const newCredentialId = await credentialManager.rotateCredential(
+      const metadata = this.validateCredentialExists(credentialId);
+      const { gracePeriod, newValue } = this.prepareRotationParams(metadata, options);
+      
+      const newCredentialId = await this.executeCredentialRotation(
         credentialId,
-        this.masterPassword,
-        {
-          newCredential: newValue,
-          gracePeriod,
-          userId: options.userId
-        }
+        newValue,
+        gracePeriod,
+        options.userId
       );
-
-      // Update environment variable if this is a system credential
-      if (process.env.MAKE_API_KEY_CREDENTIAL_ID === credentialId) {
-        process.env.MAKE_API_KEY_CREDENTIAL_ID = newCredentialId;
-      }
-      if (process.env.AUTH_SECRET_CREDENTIAL_ID === credentialId) {
-        process.env.AUTH_SECRET_CREDENTIAL_ID = newCredentialId;
-      }
-
-      // Schedule next rotation
-      if (policy?.enabled && policy.interval) {
-        this.scheduleRotation(newCredentialId, policy.interval);
-      }
-
-      // Log rotation event
-      this.logSecurityEvent({
-        timestamp: new Date(),
-        event: 'credential_rotated',
-        credentialId: newCredentialId,
-        userId: options.userId,
-        source: 'SecureConfigManager.rotateCredential',
-        success: true,
-        metadata: {
-          oldCredentialId: credentialId,
-          gracePeriod,
-          service: metadata.service
-        }
-      });
-
-      this.componentLogger.info('Credential rotated successfully', {
-        oldCredentialId: credentialId,
-        newCredentialId,
-        service: metadata.service,
-        gracePeriod
-      });
-
+      
+      this.updateSystemEnvironmentCredentials(credentialId, newCredentialId);
+      this.scheduleNextRotation(metadata, newCredentialId);
+      this.logSuccessfulRotation(credentialId, newCredentialId, metadata, gracePeriod, options.userId);
+      
       return newCredentialId;
     } catch (error) {
-      this.logSecurityEvent({
-        timestamp: new Date(),
-        event: 'credential_rotated',
-        credentialId,
-        userId: options.userId,
-        source: 'SecureConfigManager.rotateCredential',
-        success: false,
-        metadata: { error: error instanceof Error ? error.message : 'Unknown error' }
-      });
+      this.logRotationError(credentialId, error, options.userId);
       throw error;
     }
   }
@@ -665,6 +521,293 @@ export class SecureConfigManager {
   }
 
   /**
+   * Create encrypted credential using credential manager
+   * Complexity: 2 (extracted from storeCredential)
+   */
+  private async createEncryptedCredential(
+    value: string,
+    type: CredentialMetadata['type'],
+    service: string,
+    options: { userId?: string; rotationInterval?: number }
+  ): Promise<string> {
+    return await credentialManager.storeCredential(
+      value,
+      type,
+      service,
+      this.masterPassword,
+      {
+        userId: options.userId,
+        expiresIn: options.rotationInterval
+      }
+    );
+  }
+
+  /**
+   * Setup rotation if auto-rotate is enabled
+   * Complexity: 2 (extracted from storeCredential)
+   */
+  private setupCredentialRotation(
+    credentialId: string,
+    options: { autoRotate?: boolean; rotationInterval?: number }
+  ): void {
+    if (options.autoRotate && options.rotationInterval) {
+      this.scheduleRotation(credentialId, options.rotationInterval);
+    }
+  }
+
+  /**
+   * Log successful credential storage
+   * Complexity: 2 (extracted from storeCredential)
+   */
+  private logCredentialStored(
+    credentialId: string,
+    type: CredentialMetadata['type'],
+    service: string,
+    options: { autoRotate?: boolean; userId?: string }
+  ): void {
+    this.logSecurityEvent({
+      timestamp: new Date(),
+      event: 'credential_accessed',
+      credentialId,
+      userId: options.userId,
+      source: 'SecureConfigManager.storeCredential',
+      success: true,
+      metadata: { type, service, autoRotate: options.autoRotate }
+    });
+
+    this.componentLogger.info('Credential stored securely', {
+      credentialId,
+      type,
+      service,
+      encrypted: true,
+      autoRotate: options.autoRotate
+    });
+  }
+
+  /**
+   * Log credential storage error
+   * Complexity: 2 (extracted from storeCredential)
+   */
+  private logCredentialStorageError(error: unknown, userId?: string): void {
+    this.logSecurityEvent({
+      timestamp: new Date(),
+      event: 'credential_accessed',
+      credentialId: 'unknown',
+      userId,
+      source: 'SecureConfigManager.storeCredential',
+      success: false,
+      metadata: { error: error instanceof Error ? error.message : 'Unknown error' }
+    });
+  }
+
+  /**
+   * Migrate Make.com API key to secure storage
+   * Complexity: 4 (extracted from migrateToSecureStorage)
+   */
+  private async migrateMakeApiKey(
+    userId: string | undefined,
+    migrated: string[],
+    errors: Array<{ credential: string; error: string }>
+  ): Promise<void> {
+    const makeConfig = configManager().getMakeConfig();
+    if (makeConfig.apiKey && !process.env.MAKE_API_KEY_CREDENTIAL_ID) {
+      try {
+        const credentialId = await this.storeCredential(
+          'api_key',
+          'make.com',
+          makeConfig.apiKey,
+          {
+            autoRotate: true,
+            rotationInterval: this.rotationPolicies.get('api_key')?.interval,
+            userId
+          }
+        );
+        
+        process.env.MAKE_API_KEY_CREDENTIAL_ID = credentialId;
+        migrated.push('make_api_key');
+        
+        this.componentLogger.info('Migrated Make.com API key to secure storage', { credentialId });
+      } catch (error) {
+        errors.push({
+          credential: 'make_api_key',
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  }
+
+  /**
+   * Migrate auth secret to secure storage
+   * Complexity: 4 (extracted from migrateToSecureStorage)
+   */
+  private async migrateAuthSecret(
+    userId: string | undefined,
+    migrated: string[],
+    errors: Array<{ credential: string; error: string }>
+  ): Promise<void> {
+    const authSecret = configManager().getAuthSecret();
+    if (authSecret && !process.env.AUTH_SECRET_CREDENTIAL_ID) {
+      try {
+        const credentialId = await this.storeCredential(
+          'secret',
+          'auth',
+          authSecret,
+          {
+            autoRotate: true,
+            rotationInterval: this.rotationPolicies.get('auth_secret')?.interval,
+            userId
+          }
+        );
+        
+        process.env.AUTH_SECRET_CREDENTIAL_ID = credentialId;
+        migrated.push('auth_secret');
+        
+        this.componentLogger.info('Migrated auth secret to secure storage', { credentialId });
+      } catch (error) {
+        errors.push({
+          credential: 'auth_secret',
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  }
+
+  /**
+   * Validate credential exists and return metadata
+   * Complexity: 2 (extracted from rotateCredential)
+   */
+  private validateCredentialExists(credentialId: string): CredentialMetadata {
+    const metadata = credentialManager.getCredentialMetadata(credentialId);
+    if (!metadata) {
+      throw new Error(`Credential ${credentialId} not found`);
+    }
+    return metadata;
+  }
+
+  /**
+   * Prepare rotation parameters
+   * Complexity: 3 (extracted from rotateCredential)
+   */
+  private prepareRotationParams(
+    metadata: CredentialMetadata,
+    options: { newValue?: string; gracePeriod?: number }
+  ): { gracePeriod: number; newValue: string } {
+    const policy = this.rotationPolicies.get(metadata.type);
+    const gracePeriod = options.gracePeriod || policy?.gracePeriod || 24 * 60 * 60 * 1000;
+    
+    const newValue = options.newValue ||
+      (metadata.type === 'api_key' 
+        ? encryptionService.generateApiKey('mcp', 32)
+        : encryptionService.generateSecureSecret());
+        
+    return { gracePeriod, newValue };
+  }
+
+  /**
+   * Execute credential rotation
+   * Complexity: 2 (extracted from rotateCredential)
+   */
+  private async executeCredentialRotation(
+    credentialId: string,
+    newValue: string,
+    gracePeriod: number,
+    userId?: string
+  ): Promise<string> {
+    return await credentialManager.rotateCredential(
+      credentialId,
+      this.masterPassword,
+      {
+        newCredential: newValue,
+        gracePeriod,
+        userId
+      }
+    );
+  }
+
+  /**
+   * Update system environment credentials
+   * Complexity: 3 (extracted from rotateCredential)
+   */
+  private updateSystemEnvironmentCredentials(
+    oldCredentialId: string,
+    newCredentialId: string
+  ): void {
+    if (process.env.MAKE_API_KEY_CREDENTIAL_ID === oldCredentialId) {
+      process.env.MAKE_API_KEY_CREDENTIAL_ID = newCredentialId;
+    }
+    if (process.env.AUTH_SECRET_CREDENTIAL_ID === oldCredentialId) {
+      process.env.AUTH_SECRET_CREDENTIAL_ID = newCredentialId;
+    }
+  }
+
+  /**
+   * Schedule next rotation if policy enabled
+   * Complexity: 2 (extracted from rotateCredential)
+   */
+  private scheduleNextRotation(
+    metadata: CredentialMetadata,
+    newCredentialId: string
+  ): void {
+    const policy = this.rotationPolicies.get(metadata.type);
+    if (policy?.enabled && policy.interval) {
+      this.scheduleRotation(newCredentialId, policy.interval);
+    }
+  }
+
+  /**
+   * Log successful rotation
+   * Complexity: 2 (extracted from rotateCredential)
+   */
+  private logSuccessfulRotation(
+    oldCredentialId: string,
+    newCredentialId: string,
+    metadata: CredentialMetadata,
+    gracePeriod: number,
+    userId?: string
+  ): void {
+    this.logSecurityEvent({
+      timestamp: new Date(),
+      event: 'credential_rotated',
+      credentialId: newCredentialId,
+      userId,
+      source: 'SecureConfigManager.rotateCredential',
+      success: true,
+      metadata: {
+        oldCredentialId,
+        gracePeriod,
+        service: metadata.service
+      }
+    });
+
+    this.componentLogger.info('Credential rotated successfully', {
+      oldCredentialId,
+      newCredentialId,
+      service: metadata.service,
+      gracePeriod
+    });
+  }
+
+  /**
+   * Log rotation error
+   * Complexity: 2 (extracted from rotateCredential)
+   */
+  private logRotationError(
+    credentialId: string,
+    error: unknown,
+    userId?: string
+  ): void {
+    this.logSecurityEvent({
+      timestamp: new Date(),
+      event: 'credential_rotated',
+      credentialId,
+      userId,
+      source: 'SecureConfigManager.rotateCredential',
+      success: false,
+      metadata: { error: error instanceof Error ? error.message : 'Unknown error' }
+    });
+  }
+
+  /**
    * Enable concurrent rotation with advanced policies
    */
   public async enableConcurrentRotation(config?: RotationManagerConfig): Promise<void> {
@@ -674,55 +817,14 @@ export class SecureConfigManager {
     }
     
     try {
-      // Lazy load ConcurrentRotationAgent to avoid circular dependencies
       const { ConcurrentRotationAgent } = await import('../utils/concurrent-rotation-agent.js');
-      
-      const defaultConfig: RotationManagerConfig = {
-        maxWorkerThreads: Math.min(4, os.cpus().length),
-        workerTimeoutMs: 30000,
-        workerHealthCheckIntervalMs: 5000,
-        defaultConcurrency: 2,
-        maxQueueSize: 1000,
-        priorityLevels: 5,
-        defaultBatchSize: 10,
-        maxBatchSize: 50,
-        batchTimeoutMs: 300000,
-        externalServiceTimeoutMs: 15000,
-        maxExternalServiceRetries: 3,
-        externalServiceHealthCheckIntervalMs: 30000,
-        auditRetentionDays: 90,
-        logLevel: 'info',
-        metricsCollectionIntervalMs: 5000,
-        performanceThresholds: {
-          maxRotationTimeMs: 30000,
-          maxMemoryUsageMB: 512,
-          maxCpuUsagePercent: 80,
-          maxErrorRate: 0.05
-        },
-        encryptionKeyRotationIntervalMs: 86400000, // 24 hours
-        auditLogEncryption: true,
-        secureMemoryWipe: true
-      };
-      
-      const finalConfig = { ...defaultConfig, ...config };
+      const finalConfig = this.buildConcurrentRotationConfig(config);
       
       const agent = new ConcurrentRotationAgent(finalConfig);
       await agent.initialize();
       await agent.start();
       
-      // Create wrapper to match expected interface
-      this.concurrentRotationAgent = {
-        initialize: () => agent.initialize(),
-        start: () => agent.start(),
-        stop: () => agent.stop(),
-        enqueueBatch: (batch: RotationBatch) => agent.enqueueBatch(batch),
-        on: (event: string, handler: (...args: unknown[]) => void) => agent.on(event, handler),
-        off: (event: string, handler: (...args: unknown[]) => void) => agent.off(event, handler),
-        getStatus: () => ({ enabled: true, ...agent.getStatus() }),
-        getQueueStatus: () => agent.getQueueStatus(),
-        getPerformanceMetrics: () => agent.getPerformanceMetrics()
-      };
-      
+      this.concurrentRotationAgent = this.createAgentWrapper(agent);
       this.batchRotationEnabled = true;
       this.setupEnhancedRotationPolicies();
       
@@ -739,6 +841,201 @@ export class SecureConfigManager {
     }
   }
   
+  /**
+   * Build concurrent rotation configuration with defaults
+   * Complexity: 2 (extracted from enableConcurrentRotation)
+   */
+  private buildConcurrentRotationConfig(config?: RotationManagerConfig): RotationManagerConfig {
+    const defaultConfig: RotationManagerConfig = {
+      maxWorkerThreads: Math.min(4, os.cpus().length),
+      workerTimeoutMs: 30000,
+      workerHealthCheckIntervalMs: 5000,
+      defaultConcurrency: 2,
+      maxQueueSize: 1000,
+      priorityLevels: 5,
+      defaultBatchSize: 10,
+      maxBatchSize: 50,
+      batchTimeoutMs: 300000,
+      externalServiceTimeoutMs: 15000,
+      maxExternalServiceRetries: 3,
+      externalServiceHealthCheckIntervalMs: 30000,
+      auditRetentionDays: 90,
+      logLevel: 'info',
+      metricsCollectionIntervalMs: 5000,
+      performanceThresholds: {
+        maxRotationTimeMs: 30000,
+        maxMemoryUsageMB: 512,
+        maxCpuUsagePercent: 80,
+        maxErrorRate: 0.05
+      },
+      encryptionKeyRotationIntervalMs: 86400000, // 24 hours
+      auditLogEncryption: true,
+      secureMemoryWipe: true
+    };
+    
+    return { ...defaultConfig, ...config };
+  }
+
+  /**
+   * Create agent wrapper with required interface
+   * Complexity: 2 (extracted from enableConcurrentRotation)
+   */
+  private createAgentWrapper(agent: any) {
+    return {
+      initialize: () => agent.initialize(),
+      start: () => agent.start(),
+      stop: () => agent.stop(),
+      enqueueBatch: (batch: RotationBatch) => agent.enqueueBatch(batch),
+      on: (event: string, handler: (...args: unknown[]) => void) => agent.on(event, handler),
+      off: (event: string, handler: (...args: unknown[]) => void) => agent.off(event, handler),
+      getStatus: () => ({ enabled: true, ...agent.getStatus() }),
+      getQueueStatus: () => agent.getQueueStatus(),
+      getPerformanceMetrics: () => agent.getPerformanceMetrics()
+    };
+  }
+
+  /**
+   * Validate concurrent rotation policy
+   * Complexity: 2 (extracted from rotateCredentialConcurrent)
+   */
+  private validateConcurrentRotationPolicy(policyId?: string): RotationPolicy {
+    const finalPolicyId = policyId || 'api_key_enhanced';
+    const policy = this.enhancedRotationPolicies.get(finalPolicyId);
+    
+    if (!policy) {
+      throw new Error(`Rotation policy not found: ${finalPolicyId}`);
+    }
+    
+    return policy;
+  }
+
+  /**
+   * Build concurrent rotation request
+   * Complexity: 3 (extracted from rotateCredentialConcurrent)
+   */
+  private buildConcurrentRotationRequest(
+    credentialId: string,
+    options: any,
+    policy: RotationPolicy
+  ): CredentialRotationRequest {
+    return {
+      credentialId,
+      policyId: policy.id,
+      priority: options.priority || 'normal',
+      newValue: options.newValue,
+      gracePeriod: options.gracePeriod || policy.gracePeriod,
+      userId: options.userId,
+      externalServices: options.externalServices?.map((service: any) => ({
+        serviceId: service.serviceId,
+        serviceName: service.serviceName,
+        type: service.type as ExternalServiceConfig['type'],
+        endpoint: service.endpoint,
+        authMethod: service.authMethod as ExternalServiceConfig['authMethod'],
+        updateMethod: service.updateMethod as ExternalServiceConfig['updateMethod'],
+        validationTimeout: service.validationTimeout,
+        rollbackSupported: service.rollbackSupported
+      }))
+    };
+  }
+
+  /**
+   * Create micro-batch for single credential rotation
+   * Complexity: 2 (extracted from rotateCredentialConcurrent)
+   */
+  private createMicroBatch(credentialId: string, request: CredentialRotationRequest): RotationBatch {
+    return {
+      batchId: `single_${credentialId}_${Date.now()}`,
+      createdAt: new Date(),
+      status: 'pending',
+      requests: [request],
+      concurrency: 1,
+      priority: request.priority === 'emergency' ? 'critical' : (request.priority || 'normal'),
+      processedCount: 0,
+      successCount: 0,
+      failedCount: 0
+    };
+  }
+
+  /**
+   * Execute concurrent rotation with promise-based handling
+   * Complexity: 4 (extracted from rotateCredentialConcurrent)
+   */
+  private async executeConcurrentRotation(
+    credentialId: string,
+    batch: RotationBatch,
+    policy: RotationPolicy
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const onCompleted = (result: RotationResult): void => {
+        if (result.credentialId === credentialId || result.oldCredentialId === credentialId) {
+          this.cleanupConcurrentRotationListeners(onCompleted, onFailed);
+          resolve(result.newCredentialId);
+        }
+      };
+      
+      const onFailed = (error: RotationError): void => {
+        if (error.credentialId === credentialId) {
+          this.cleanupConcurrentRotationListeners(onCompleted, onFailed);
+          reject(new Error(error.errorMessage));
+        }
+      };
+      
+      this.setupConcurrentRotationListeners(onCompleted, onFailed, batch, policy, reject);
+    });
+  }
+
+  /**
+   * Setup concurrent rotation event listeners and timeout
+   * Complexity: 3 (extracted from executeConcurrentRotation)
+   */
+  private setupConcurrentRotationListeners(
+    onCompleted: (result: RotationResult) => void,
+    onFailed: (error: RotationError) => void,
+    batch: RotationBatch,
+    policy: RotationPolicy,
+    reject: (error: Error) => void
+  ): void {
+    this.concurrentRotationAgent?.on('rotation_completed', onCompleted);
+    this.concurrentRotationAgent?.on('rotation_failed', onFailed);
+    this.concurrentRotationAgent?.enqueueBatch(batch);
+    
+    setTimeout(() => {
+      this.cleanupConcurrentRotationListeners(onCompleted, onFailed);
+      reject(new Error('Concurrent rotation timeout'));
+    }, policy.gracePeriod || 60000);
+  }
+
+  /**
+   * Cleanup concurrent rotation event listeners
+   * Complexity: 2 (extracted from executeConcurrentRotation)
+   */
+  private cleanupConcurrentRotationListeners(
+    onCompleted: (result: RotationResult) => void,
+    onFailed: (error: RotationError) => void
+  ): void {
+    if (this.concurrentRotationAgent) {
+      this.concurrentRotationAgent.off('rotation_completed', onCompleted);
+      this.concurrentRotationAgent.off('rotation_failed', onFailed);
+    }
+  }
+
+  /**
+   * Handle concurrent rotation error with fallback
+   * Complexity: 3 (extracted from rotateCredentialConcurrent)
+   */
+  private async handleConcurrentRotationError(
+    credentialId: string,
+    error: unknown,
+    options: any
+  ): Promise<string> {
+    this.componentLogger.error('Concurrent rotation failed, falling back to standard rotation', {
+      credentialId,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+    
+    return this.rotateCredential(credentialId, options);
+  }
+
   /**
    * Disable concurrent rotation and fall back to simple rotation
    */
@@ -830,96 +1127,17 @@ export class SecureConfigManager {
     } = {}
   ): Promise<string> {
     if (!this.batchRotationEnabled || !this.concurrentRotationAgent) {
-      // Fall back to standard rotation
       return this.rotateCredential(credentialId, options);
     }
     
     try {
-      const policyId = options.policyId || 'api_key_enhanced';
-      const policy = this.enhancedRotationPolicies.get(policyId);
+      const policy = this.validateConcurrentRotationPolicy(options.policyId);
+      const request = this.buildConcurrentRotationRequest(credentialId, options, policy);
+      const batch = this.createMicroBatch(credentialId, request);
       
-      if (!policy) {
-        throw new Error(`Rotation policy not found: ${policyId}`);
-      }
-      
-      const request: CredentialRotationRequest = {
-        credentialId,
-        policyId,
-        priority: options.priority || 'normal',
-        newValue: options.newValue,
-        gracePeriod: options.gracePeriod || policy.gracePeriod,
-        userId: options.userId,
-        externalServices: options.externalServices?.map(service => ({
-          serviceId: service.serviceId,
-          serviceName: service.serviceName,
-          type: service.type as ExternalServiceConfig['type'],
-          endpoint: service.endpoint,
-          authMethod: service.authMethod as ExternalServiceConfig['authMethod'],
-          updateMethod: service.updateMethod as ExternalServiceConfig['updateMethod'],
-          validationTimeout: service.validationTimeout,
-          rollbackSupported: service.rollbackSupported
-        }))
-      };
-      
-      // For single credential rotation, create a micro-batch
-      const batch: RotationBatch = {
-        batchId: `single_${credentialId}_${Date.now()}`,
-        createdAt: new Date(),
-        status: 'pending',
-        requests: [request],
-        concurrency: 1,
-        priority: request.priority === 'emergency' ? 'critical' : (request.priority || 'normal'),
-        processedCount: 0,
-        successCount: 0,
-        failedCount: 0
-      };
-      
-      return new Promise((resolve, reject) => {
-        // Set up event listeners
-        const onCompleted = (result: RotationResult): void => {
-          if (result.credentialId === credentialId || result.oldCredentialId === credentialId) {
-            if (this.concurrentRotationAgent) {
-              this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-              this.concurrentRotationAgent.off('rotation_failed', onFailed);
-            }
-            resolve(result.newCredentialId);
-          }
-        };
-        
-        const onFailed = (error: RotationError): void => {
-          if (error.credentialId === credentialId) {
-            if (this.concurrentRotationAgent) {
-              this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-              this.concurrentRotationAgent.off('rotation_failed', onFailed);
-            }
-            reject(new Error(error.errorMessage));
-          }
-        };
-        
-        this.concurrentRotationAgent?.on('rotation_completed', onCompleted);
-        this.concurrentRotationAgent?.on('rotation_failed', onFailed);
-        
-        // Enqueue the rotation
-        this.concurrentRotationAgent?.enqueueBatch(batch);
-        
-        // Set timeout
-        setTimeout(() => {
-          if (this.concurrentRotationAgent) {
-            this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-            this.concurrentRotationAgent.off('rotation_failed', onFailed);
-          }
-          reject(new Error('Concurrent rotation timeout'));
-        }, policy.gracePeriod || 60000);
-      });
-      
+      return await this.executeConcurrentRotation(credentialId, batch, policy);
     } catch (error) {
-      this.componentLogger.error('Concurrent rotation failed, falling back to standard rotation', {
-        credentialId,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-      
-      // Fall back to standard rotation
-      return this.rotateCredential(credentialId, options);
+      return this.handleConcurrentRotationError(credentialId, error, options);
     }
   }
   
@@ -943,16 +1161,39 @@ export class SecureConfigManager {
       throw new ConfigurationError('Concurrent rotation not enabled');
     }
     
-    const policyId = options.policyId || 'api_key_enhanced';
-    const policy = this.enhancedRotationPolicies.get(policyId);
+    const policy = this.validateBatchRotationPolicy(options.policyId);
+    const batch = this.createBatchRotationRequest(credentialIds, options, policy);
+    
+    return await this.executeBatchRotation(credentialIds, batch);
+  }
+  
+  /**
+   * Validate batch rotation policy
+   * Complexity: 3 (extracted from rotateBatch)
+   */
+  private validateBatchRotationPolicy(policyId?: string): RotationPolicy {
+    const finalPolicyId = policyId || 'api_key_enhanced';
+    const policy = this.enhancedRotationPolicies.get(finalPolicyId);
     
     if (!policy) {
-      throw new Error(`Rotation policy not found: ${policyId}`);
+      throw new Error(`Rotation policy not found: ${finalPolicyId}`);
     }
     
+    return policy;
+  }
+
+  /**
+   * Create batch rotation request
+   * Complexity: 3 (extracted from rotateBatch)
+   */
+  private createBatchRotationRequest(
+    credentialIds: string[],
+    options: any,
+    policy: RotationPolicy
+  ): RotationBatch {
     const requests: CredentialRotationRequest[] = credentialIds.map(credentialId => ({
       credentialId,
-      policyId,
+      policyId: policy.id,
       priority: options.priority || 'normal',
       gracePeriod: policy.gracePeriod,
       userId: options.userId
@@ -960,7 +1201,7 @@ export class SecureConfigManager {
     
     const batchId = `batch_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`;
     
-    const batch: RotationBatch = {
+    return {
       batchId,
       createdAt: new Date(),
       status: 'pending',
@@ -971,19 +1212,29 @@ export class SecureConfigManager {
       successCount: 0,
       failedCount: 0
     };
-    
+  }
+
+  /**
+   * Execute batch rotation with promise-based handling
+   * Complexity: 4 (extracted from rotateBatch)
+   */
+  private async executeBatchRotation(
+    credentialIds: string[],
+    batch: RotationBatch
+  ): Promise<{
+    batchId: string;
+    successful: string[];
+    failed: Array<{ credentialId: string; error: string }>;
+  }> {
     return new Promise((resolve, reject) => {
       const successful: string[] = [];
       const failed: Array<{ credentialId: string; error: string }> = [];
       let completedCount = 0;
       
       const checkCompletion = (): void => {
-        if (completedCount === requests.length) {
-          if (this.concurrentRotationAgent) {
-            this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-            this.concurrentRotationAgent.off('rotation_failed', onFailed);
-          }
-          resolve({ batchId, successful, failed });
+        if (completedCount === batch.requests.length) {
+          this.cleanupBatchRotationListeners(onCompleted, onFailed);
+          resolve({ batchId: batch.batchId, successful, failed });
         }
       };
       
@@ -1006,21 +1257,42 @@ export class SecureConfigManager {
         }
       };
       
-      this.concurrentRotationAgent?.on('rotation_completed', onCompleted);
-      this.concurrentRotationAgent?.on('rotation_failed', onFailed);
-      
-      // Enqueue the batch
-      this.concurrentRotationAgent?.enqueueBatch(batch);
-      
-      // Set timeout
-      setTimeout(() => {
-        if (this.concurrentRotationAgent) {
-          this.concurrentRotationAgent.off('rotation_completed', onCompleted);
-          this.concurrentRotationAgent.off('rotation_failed', onFailed);
-        }
-        reject(new Error('Batch rotation timeout'));
-      }, 300000); // 5 minutes timeout
+      this.setupBatchRotationExecution(onCompleted, onFailed, batch, reject);
     });
+  }
+
+  /**
+   * Setup batch rotation execution with listeners and timeout
+   * Complexity: 3 (extracted from executeBatchRotation)
+   */
+  private setupBatchRotationExecution(
+    onCompleted: (result: RotationResult) => void,
+    onFailed: (error: RotationError) => void,
+    batch: RotationBatch,
+    reject: (error: Error) => void
+  ): void {
+    this.concurrentRotationAgent?.on('rotation_completed', onCompleted);
+    this.concurrentRotationAgent?.on('rotation_failed', onFailed);
+    this.concurrentRotationAgent?.enqueueBatch(batch);
+    
+    setTimeout(() => {
+      this.cleanupBatchRotationListeners(onCompleted, onFailed);
+      reject(new Error('Batch rotation timeout'));
+    }, 300000); // 5 minutes timeout
+  }
+
+  /**
+   * Cleanup batch rotation event listeners
+   * Complexity: 2 (extracted from executeBatchRotation)
+   */
+  private cleanupBatchRotationListeners(
+    onCompleted: (result: RotationResult) => void,
+    onFailed: (error: RotationError) => void
+  ): void {
+    if (this.concurrentRotationAgent) {
+      this.concurrentRotationAgent.off('rotation_completed', onCompleted);
+      this.concurrentRotationAgent.off('rotation_failed', onFailed);
+    }
   }
   
   /**
