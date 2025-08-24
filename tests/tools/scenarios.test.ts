@@ -979,7 +979,7 @@ describe("Scenario Management Tools", () => {
             { scenarioId: "invalid" },
             { log: mockLog, reportProgress: mockReportProgress },
           ),
-        ).rejects.toThrow("Scenario not found: invalid");
+        ).rejects.toThrow("Cannot verify scenario status: Not found");
       });
     });
   });
@@ -1159,15 +1159,17 @@ describe("Scenario Management Tools", () => {
     };
 
     const mockExecution = {
-      id: "exec_123",
+      executionId: "exec_123",
       status: "started",
-      scenarioId: "scn_123",
+      startedAt: "2024-01-15T10:00:00Z",
+      scenario: { id: "scn_123", name: "Test Scenario" },
     };
 
     const mockCompletedExecution = {
-      id: "exec_123",
-      status: "success",
-      scenarioId: "scn_123",
+      executionId: "exec_123",
+      status: "completed",
+      startedAt: "2024-01-15T10:00:00Z",
+      scenario: { id: "scn_123", name: "Test Scenario" },
       duration: 5000,
     };
 
@@ -1228,10 +1230,21 @@ describe("Scenario Management Tools", () => {
         const tool = (server as any).tools.get("run-scenario");
 
         // Mock fast completion to avoid timeout in test
-        const fastExecution = { ...mockCompletedExecution, status: "success" };
-        mockApiClient.get.mockResolvedValue({
-          success: true,
-          data: fastExecution,
+        const fastExecution = {
+          ...mockCompletedExecution,
+          status: "completed",
+        };
+        mockApiClient.get.mockImplementation((url) => {
+          if (url === "/scenarios/scn_123") {
+            return Promise.resolve({
+              success: true,
+              data: { id: "scn_123", name: "Test Scenario", active: true },
+            });
+          }
+          return Promise.resolve({
+            success: true,
+            data: fastExecution,
+          });
         });
 
         const result = await tool.execute(
@@ -1240,7 +1253,7 @@ describe("Scenario Management Tools", () => {
         );
 
         const parsedResult = JSON.parse(result);
-        expect(parsedResult.status).toBe("success");
+        expect(parsedResult.execution.status).toBe("completed");
       });
     });
 
@@ -1254,6 +1267,7 @@ describe("Scenario Management Tools", () => {
 
         expect(mockApiClient.post).toHaveBeenCalledWith(
           "/scenarios/scn_123/run",
+          { wait: false },
         );
       });
 
@@ -1265,12 +1279,13 @@ describe("Scenario Management Tools", () => {
         );
 
         const parsedResult = JSON.parse(result);
-        expect(parsedResult.executionId).toBe("exec_123");
-        expect(parsedResult.status).toBe("started");
-        expect(parsedResult.message).toContain("started");
+        expect(parsedResult.execution.id).toBe("exec_123");
+        expect(parsedResult.execution.status).toBe("started");
+        expect(parsedResult.metadata.waitForCompletion).toBe(false);
 
-        // Should not poll for status
-        expect(mockApiClient.get).not.toHaveBeenCalled();
+        // Should only validate scenario, not poll for execution status
+        expect(mockApiClient.get).toHaveBeenCalledTimes(1);
+        expect(mockApiClient.get).toHaveBeenCalledWith("/scenarios/scn_123");
       });
 
       test("should poll for completion when wait=true", async () => {
@@ -1285,15 +1300,24 @@ describe("Scenario Management Tools", () => {
         );
 
         const parsedResult = JSON.parse(result);
-        expect(parsedResult.status).toBe("success");
-        expect(parsedResult.execution).toEqual(mockCompletedExecution);
+        expect(parsedResult.execution.status).toBe("completed");
+        expect(parsedResult.metadata.waitForCompletion).toBe(true);
       });
 
       test("should handle timeout during execution", async () => {
         // Mock execution that never completes
-        mockApiClient.get.mockResolvedValue({
-          success: true,
-          data: { ...mockExecution, status: "running" },
+        mockApiClient.get.mockImplementation((url) => {
+          if (url === "/scenarios/scn_123") {
+            return Promise.resolve({
+              success: true,
+              data: { id: "scn_123", name: "Test Scenario", active: true },
+            });
+          }
+          // For execution status, return running status
+          return Promise.resolve({
+            success: true,
+            data: { ...mockExecution, status: "running" },
+          });
         });
 
         const tool = (server as any).tools.get("run-scenario");
@@ -1307,15 +1331,24 @@ describe("Scenario Management Tools", () => {
         );
 
         const parsedResult = JSON.parse(result);
-        expect(parsedResult.timeout).toBe(true);
-        expect(parsedResult.message).toContain("timeout");
+        expect(parsedResult.execution.status).toBe("timeout");
+        expect(parsedResult.metadata.waitForCompletion).toBe(true);
+        expect(parsedResult.metadata.timeoutSeconds).toBe(1);
       }, 10000); // Increase test timeout
 
       test("should handle execution failure", async () => {
         const failedExecution = { ...mockExecution, status: "error" };
-        mockApiClient.get.mockResolvedValue({
-          success: true,
-          data: failedExecution,
+        mockApiClient.get.mockImplementation((url) => {
+          if (url === "/scenarios/scn_123") {
+            return Promise.resolve({
+              success: true,
+              data: { id: "scn_123", name: "Test Scenario", active: true },
+            });
+          }
+          return Promise.resolve({
+            success: true,
+            data: failedExecution,
+          });
         });
 
         const tool = (server as any).tools.get("run-scenario");
@@ -1325,8 +1358,8 @@ describe("Scenario Management Tools", () => {
         });
 
         const parsedResult = JSON.parse(result);
-        expect(parsedResult.status).toBe("error");
-        expect(parsedResult.execution).toEqual(failedExecution);
+        expect(parsedResult.execution.status).toBe("error");
+        expect(parsedResult.execution.id).toBe("exec_123");
       });
     });
 
@@ -1353,9 +1386,18 @@ describe("Scenario Management Tools", () => {
       });
 
       test("should handle status polling failure gracefully", async () => {
-        mockApiClient.get.mockResolvedValue({
-          success: false,
-          error: { message: "Execution not found", code: "NOT_FOUND" },
+        mockApiClient.get.mockImplementation((url) => {
+          if (url === "/scenarios/scn_123") {
+            return Promise.resolve({
+              success: true,
+              data: { id: "scn_123", name: "Test Scenario", active: true },
+            });
+          }
+          // For execution status polling, return error
+          return Promise.resolve({
+            success: false,
+            error: { message: "Execution not found", code: "NOT_FOUND" },
+          });
         });
 
         const tool = (server as any).tools.get("run-scenario");
@@ -1370,7 +1412,7 @@ describe("Scenario Management Tools", () => {
 
         // Should still return result even if polling fails
         const parsedResult = JSON.parse(result);
-        expect(parsedResult.executionId).toBe("exec_123");
+        expect(parsedResult.execution.id).toBe("exec_123");
       });
     });
 
@@ -1387,7 +1429,11 @@ describe("Scenario Management Tools", () => {
           total: 100,
         });
         expect(mockReportProgress).toHaveBeenCalledWith({
-          progress: 25,
+          progress: 20,
+          total: 100,
+        });
+        expect(mockReportProgress).toHaveBeenCalledWith({
+          progress: 50,
           total: 100,
         });
         expect(mockReportProgress).toHaveBeenCalledWith({
@@ -1595,7 +1641,7 @@ describe("Scenario Management Tools", () => {
       ).rejects.toThrow();
 
       expect(mockLog.error).toHaveBeenCalledWith(
-        "Failed to get scenario",
+        "Failed to get scenario details",
         expect.objectContaining({
           scenarioId: "scn_error",
           error: "Network failure",

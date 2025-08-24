@@ -64,7 +64,13 @@ export function createDeleteScenarioTool(context: ToolContext): ToolDefinition {
             `/scenarios/${typedArgs.scenarioId}`,
           );
 
-          if (statusResponse.success && statusResponse.data) {
+          if (!statusResponse.success) {
+            throw new UserError(
+              `Cannot verify scenario status: ${statusResponse.error?.message || "Scenario not found"}`,
+            );
+          }
+
+          if (statusResponse.data) {
             const scenario = statusResponse.data as { active?: boolean };
             if (scenario.active) {
               throw new UserError(
