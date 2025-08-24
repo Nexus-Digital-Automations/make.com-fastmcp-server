@@ -503,7 +503,14 @@ export function createCredentialValidator(): CredentialSecurityValidator {
   return new CredentialSecurityValidator();
 }
 
-// Export singleton instance
-export const credentialSecurityValidator = new CredentialSecurityValidator();
+// Export lazy-initialized singleton instance
+let _credentialSecurityValidator: CredentialSecurityValidator | null = null;
+
+export const credentialSecurityValidator = (): CredentialSecurityValidator => {
+  if (!_credentialSecurityValidator) {
+    _credentialSecurityValidator = new CredentialSecurityValidator();
+  }
+  return _credentialSecurityValidator;
+};
 
 export default credentialSecurityValidator;

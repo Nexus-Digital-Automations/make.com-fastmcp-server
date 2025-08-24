@@ -103,7 +103,7 @@ export class MakeApiClient {
    */
   private validateCredentialSecurity(apiKey: string): void {
     try {
-      const validation = credentialSecurityValidator.validateMakeApiKey(apiKey);
+      const validation = credentialSecurityValidator().validateMakeApiKey(apiKey);
       
       if (!validation.isValid) {
         this.componentLogger.error('API key validation failed', {
@@ -396,7 +396,7 @@ export class MakeApiClient {
     
     try {
       // Check credential security first
-      const validation = credentialSecurityValidator.validateMakeApiKey(this.config.apiKey);
+      const validation = credentialSecurityValidator().validateMakeApiKey(this.config.apiKey);
       credentialValid = validation.isValid;
       securityScore = validation.score;
       

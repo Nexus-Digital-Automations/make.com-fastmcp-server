@@ -345,7 +345,7 @@ export class CredentialSecurityMonitor extends EventEmitter {
       let validation;
       
       if (type === 'api_key') {
-        validation = credentialSecurityValidator.validateMakeApiKey(value);
+        validation = credentialSecurityValidator().validateMakeApiKey(value);
       } else {
         // For other types, create a basic validation
         validation = {

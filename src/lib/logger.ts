@@ -5,7 +5,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import configManager from './config.js';
+// Removed circular dependency - will initialize log level differently
 import { getLogsDirectory } from '../utils/path-resolver.js';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -57,7 +57,11 @@ export class Logger {
   };
 
   private constructor() {
-    this.logLevel = configManager.getLogLevel() as LogLevel;
+    // Initialize with environment variable or default to avoid circular dependency
+    const envLogLevel = process.env.LOG_LEVEL?.toLowerCase() as LogLevel;
+    this.logLevel = envLogLevel && ['debug', 'info', 'warn', 'error'].includes(envLogLevel) 
+      ? envLogLevel 
+      : 'info';
   }
 
   public static getInstance(): Logger {
