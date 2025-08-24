@@ -931,8 +931,8 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           expect(instance1).toBe(defaultInstance);
           
           // Test that we can access config methods
-          expect(instance1.getConfig()).toBeDefined();
-          expect(instance1.getMakeConfig()).toBeDefined();
+          expect(instance1().getConfig()).toBeDefined();
+          expect(instance1().getMakeConfig()).toBeDefined();
         } finally {
           // Clean up
           delete process.env.MAKE_API_KEY;
@@ -970,7 +970,7 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           jest.resetModules();
           const { configManager } = await import('../../../src/lib/config.js');
           
-          const config = configManager.getConfig();
+          const config = configManager().getConfig();
           
           // SERVER_NAME should fall back to default when empty
           expect(config.name).toBe('Make.com FastMCP Server');
@@ -1012,7 +1012,7 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           jest.resetModules();
           const { configManager } = await import('../../../src/lib/config.js');
           
-          const config = configManager.getConfig();
+          const config = configManager().getConfig();
           expect(config.port).toBe(3000); // Should use default fallback
           
         } finally {
@@ -1049,7 +1049,7 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           jest.resetModules();
           const { configManager } = await import('../../../src/lib/config.js');
           
-          const config = configManager.getConfig();
+          const config = configManager().getConfig();
           expect(config.authentication?.enabled).toBe(false); // Should use default fallback
           
         } finally {
@@ -1086,7 +1086,7 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           jest.resetModules();
           const { configManager } = await import('../../../src/lib/config.js');
           
-          const config = configManager.getConfig();
+          const config = configManager().getConfig();
           expect(config.make.baseUrl).toBe('https://eu1.make.com/api/v2'); // Should use default fallback
           
         } finally {
@@ -1605,7 +1605,7 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           jest.resetModules();
           const { configManager } = await import('../../../src/lib/config.js');
           
-          const config = configManager.getConfig();
+          const config = configManager().getConfig();
           
           // Verify all configuration is loaded correctly
           expect(config.name).toBe('Comprehensive Test Server');
@@ -1643,7 +1643,7 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           const { configManager } = await import('../../../src/lib/config.js');
           
           // Test all getter methods
-          const config = configManager.getConfig();
+          const config = configManager().getConfig();
           expect(config).toBeDefined();
           
           const makeConfig = configManager.getMakeConfig();
@@ -1682,7 +1682,7 @@ describe('Configuration Management System - Comprehensive Test Suite', () => {
           jest.resetModules();
           const { configManager } = await import('../../../src/lib/config.js');
           
-          const report = configManager.getConfigurationReport();
+          const report = configManager().getConfigurationReport();
           expect(report).toBeDefined();
           
           const parsedReport = JSON.parse(report);
