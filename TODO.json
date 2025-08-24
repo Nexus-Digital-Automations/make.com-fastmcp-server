@@ -2,39 +2,46 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1756061846438_ipuxwdacw",
-      "title": "Fix complexity violation in error-analytics.ts recordError method (13→≤12)",
-      "description": "Fix complexity violation in recordError method in error-analytics.ts - reduce from 13 to ≤12 complexity points using Extract Method pattern",
+      "id": "task_1756065460052_4vmheb5ho",
+      "title": "Fix max-lines violations in security-integration.ts using Extract Method pattern",
+      "description": "Apply Extract Method pattern to reduce initialize method from 91→≤50 lines and verifyWebhook method from 67→≤50 lines",
+      "mode": "DEVELOPMENT",
       "category": "linter-error",
-      "priority": "high",
-      "status": "in_progress",
+      "priority": "critical",
+      "status": "pending",
       "dependencies": [],
-      "important_files": ["./src/utils/error-analytics.ts"],
+      "important_files": [],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-24T18:57:26.438Z",
+      "created_at": "2025-08-24T19:57:40.052Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1756065426385_096eeb3ze",
+      "title": "Fix remaining 10+ max-lines violations across codebase",
+      "description": "Fix additional max-lines violations discovered: security-integration.ts (initialize: 91→≤50, verifyWebhook: 67→≤50), cache.ts constructor (109→≤50), multi-tier-cache.ts (addCacheManagementTools: 158→≤50, wrapWithCache: 63→≤50), oauth-flow.ts (initiateOAuthFlow: 53→≤50, handleOAuthCallback: 91→≤50), and other method violations. Apply systematic Extract Method pattern.",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T19:57:06.385Z",
       "auto_research_created": false,
-      "started_at": "2025-08-24T19:55:07.014Z",
-      "claimed_by": "development_session_1756065159838_1_general_e2598657",
       "assigned_agent": "development_session_1756065159838_1_general_e2598657",
+      "started_at": "2025-08-24T19:57:13.982Z",
+      "claimed_by": "development_session_1756065159838_1_general_e2598657",
       "agent_assignment_history": [
-        {
-          "agent": "agent_1756061867140",
-          "action": "claimed",
-          "timestamp": "2025-08-24T18:57:47.140Z"
-        },
-        {
-          "agent": "system",
-          "action": "auto_reset_stale",
-          "timestamp": "2025-08-24T19:52:34.390Z",
-          "reason": "Task stale for 55 minutes"
-        },
         {
           "agentId": "development_session_1756065159838_1_general_e2598657",
           "role": "primary",
-          "assignedAt": "2025-08-24T19:55:07.014Z",
+          "assignedAt": "2025-08-24T19:57:13.982Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
