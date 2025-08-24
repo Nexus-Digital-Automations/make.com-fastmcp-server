@@ -269,27 +269,41 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     const siemConfig = {
       splunk: {
         enabled: !!process.env.SPLUNK_HEC_URL,
-        endpoint: process.env.SPLUNK_HEC_URL,
+        endpoint: process.env.SPLUNK_HEC_URL || "",
         token: process.env.SPLUNK_HEC_TOKEN,
         index: process.env.SPLUNK_INDEX || "security",
         sourcetype: process.env.SPLUNK_SOURCETYPE || "make_fastmcp_security",
       },
       elastic: {
         enabled: !!process.env.ELASTICSEARCH_URL,
-        endpoint: process.env.ELASTICSEARCH_URL,
+        endpoint: process.env.ELASTICSEARCH_URL || "",
         apiKey: process.env.ELASTICSEARCH_API_KEY,
         index: process.env.ELASTICSEARCH_INDEX || "security-events",
       },
     };
 
-    // Set up SIEM connectors
-    if (siemConfig.splunk.enabled) {
-      this.siemConnectors.set("splunk", siemConfig.splunk);
+    // Set up SIEM connectors with validation
+    if (
+      siemConfig.splunk.enabled &&
+      siemConfig.splunk.endpoint &&
+      siemConfig.splunk.token
+    ) {
+      this.siemConnectors.set(
+        "splunk",
+        siemConfig.splunk as SIEMConnectorConfig,
+      );
       logger.info("Splunk SIEM connector initialized");
     }
 
-    if (siemConfig.elastic.enabled) {
-      this.siemConnectors.set("elastic", siemConfig.elastic);
+    if (
+      siemConfig.elastic.enabled &&
+      siemConfig.elastic.endpoint &&
+      siemConfig.elastic.apiKey
+    ) {
+      this.siemConnectors.set(
+        "elastic",
+        siemConfig.elastic as SIEMConnectorConfig,
+      );
       logger.info("Elasticsearch SIEM connector initialized");
     }
   }
@@ -376,9 +390,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     };
   }
 
-  private async buildSecurityContext(
-    req: SecurityEnhancedRequest,
-  ): Promise<
+  private async buildSecurityContext(req: SecurityEnhancedRequest): Promise<
     SecurityEventContext & {
       riskScore: number;
       threatLevel: "low" | "medium" | "high" | "critical";
@@ -942,7 +954,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     };
 
     // Send to all configured SIEM connectors
-    for (const [siemType, connector] of this.siemConnectors) {
+    for (const [siemType, connector] of Array.from(this.siemConnectors)) {
       try {
         await this.sendEventToSIEM(siemType, connector, siemEvent);
       } catch (error) {
@@ -999,7 +1011,18 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
 
   private processMetricsUpdate(metrics: Record<string, unknown>): void {
     // Process metrics updates from security agent
-    this.metricsBuffer.push(metrics);
+    // Convert Record<string, unknown> to SecurityMetricsSnapshot with proper defaults
+    const securityMetrics: SecurityMetricsSnapshot = {
+      timestamp: new Date(),
+      period: "1m",
+      events: this.extractEventMetrics(metrics),
+      threats: this.extractThreatMetrics(metrics),
+      incidents: this.extractIncidentMetrics(metrics),
+      system: this.extractSystemMetrics(metrics),
+      risk: this.extractRiskMetrics(metrics),
+    };
+
+    this.metricsBuffer.push(securityMetrics);
 
     // Keep only last hour of metrics
     if (this.metricsBuffer.length > 60) {
@@ -1007,9 +1030,129 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     }
   }
 
+  private extractEventMetrics(
+    metrics: Record<string, unknown>,
+  ): SecurityMetricsSnapshot["events"] {
+    return {
+      total: typeof metrics.eventTotal === "number" ? metrics.eventTotal : 0,
+      byType: this.safeExtractObjectAsRecord(metrics.eventsByType),
+      bySeverity: this.safeExtractObjectAsRecord(metrics.eventsBySeverity),
+      bySource: this.safeExtractObjectAsRecord(metrics.eventsBySource),
+    };
+  }
+
+  private extractThreatMetrics(
+    metrics: Record<string, unknown>,
+  ): SecurityMetricsSnapshot["threats"] {
+    return {
+      detected:
+        typeof metrics.threatsDetected === "number"
+          ? metrics.threatsDetected
+          : 0,
+      blocked:
+        typeof metrics.threatsBlocked === "number" ? metrics.threatsBlocked : 0,
+      investigated:
+        typeof metrics.threatsInvestigated === "number"
+          ? metrics.threatsInvestigated
+          : 0,
+      falsePositives:
+        typeof metrics.threatsFalsePositives === "number"
+          ? metrics.threatsFalsePositives
+          : 0,
+      truePositives:
+        typeof metrics.threatsRuePositives === "number"
+          ? metrics.threatsRuePositives
+          : 0,
+    };
+  }
+
+  private extractIncidentMetrics(
+    metrics: Record<string, unknown>,
+  ): SecurityMetricsSnapshot["incidents"] {
+    return {
+      created:
+        typeof metrics.incidentsCreated === "number"
+          ? metrics.incidentsCreated
+          : 0,
+      resolved:
+        typeof metrics.incidentsResolved === "number"
+          ? metrics.incidentsResolved
+          : 0,
+      escalated:
+        typeof metrics.incidentsEscalated === "number"
+          ? metrics.incidentsEscalated
+          : 0,
+      meanTimeToDetection:
+        typeof metrics.incidentsMTTD === "number" ? metrics.incidentsMTTD : 0,
+      meanTimeToResponse:
+        typeof metrics.incidentsMTTR === "number" ? metrics.incidentsMTTR : 0,
+      meanTimeToContainment:
+        typeof metrics.incidentsMTTC === "number" ? metrics.incidentsMTTC : 0,
+      meanTimeToResolution:
+        typeof metrics.incidentsMTTResolution === "number"
+          ? metrics.incidentsMTTResolution
+          : 0,
+    };
+  }
+
+  private extractSystemMetrics(
+    metrics: Record<string, unknown>,
+  ): SecurityMetricsSnapshot["system"] {
+    return {
+      cpu: typeof metrics.systemCpu === "number" ? metrics.systemCpu : 0,
+      memory:
+        typeof metrics.systemMemory === "number" ? metrics.systemMemory : 0,
+      disk: typeof metrics.systemDisk === "number" ? metrics.systemDisk : 0,
+      network:
+        typeof metrics.systemNetwork === "number" ? metrics.systemNetwork : 0,
+      throughput:
+        typeof metrics.systemThroughput === "number"
+          ? metrics.systemThroughput
+          : 0,
+      latency:
+        typeof metrics.systemLatency === "number" ? metrics.systemLatency : 0,
+    };
+  }
+
+  private extractRiskMetrics(
+    metrics: Record<string, unknown>,
+  ): SecurityMetricsSnapshot["risk"] {
+    const trend =
+      typeof metrics.riskTrend === "string" &&
+      ["increasing", "decreasing", "stable"].includes(metrics.riskTrend)
+        ? (metrics.riskTrend as "increasing" | "decreasing" | "stable")
+        : "stable";
+
+    const topRisks = Array.isArray(metrics.riskTop)
+      ? metrics.riskTop.map((risk: any) => ({
+          category:
+            typeof risk?.category === "string" ? risk.category : "unknown",
+          score: typeof risk?.score === "number" ? risk.score : 0,
+          description:
+            typeof risk?.description === "string"
+              ? risk.description
+              : "No description",
+        }))
+      : [];
+
+    return {
+      overallScore:
+        typeof metrics.riskOverall === "number" ? metrics.riskOverall : 0,
+      byCategory: this.safeExtractObjectAsRecord(metrics.riskByCategory),
+      trend,
+      topRisks,
+    };
+  }
+
+  private safeExtractObjectAsRecord(value: unknown): Record<string, number> {
+    return typeof value === "object" && value !== null
+      ? (value as Record<string, number>)
+      : {};
+  }
+
   private async evaluateAlertRules(): Promise<void> {
     // Evaluate all active alert rules against recent events
-    for (const rule of this.alertRules.values()) {
+    for (const rule of Array.from(this.alertRules.values())) {
       if (!rule.enabled) {
         continue;
       }
@@ -1033,7 +1176,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
   private async evaluateEventAgainstAlertRules(
     event: Record<string, unknown>,
   ): Promise<void> {
-    for (const rule of this.alertRules.values()) {
+    for (const rule of Array.from(this.alertRules.values())) {
       if (!rule.enabled) {
         continue;
       }
@@ -1117,7 +1260,9 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
       status: "open",
       createdAt: now,
       updatedAt: now,
-      events: [event.id],
+      events: [
+        typeof event.id === "string" ? event.id : String(event.id || "unknown"),
+      ],
       context: { triggeredBy: event },
       tags: rule.tags,
       comments: [],
@@ -1187,7 +1332,11 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     config: Record<string, unknown>,
     alert: Alert,
   ): Promise<void> {
-    if (!config.recipients || config.recipients.length === 0) {
+    if (
+      !config.recipients ||
+      !Array.isArray(config.recipients) ||
+      config.recipients.length === 0
+    ) {
       return;
     }
 
@@ -1203,13 +1352,15 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     const oneHourAgo = now - 60 * 60 * 1000;
 
     // Cleanup old geo location cache entries
-    for (const [ip, _geo] of this.geoLocationCache.entries()) {
+    for (const [ip, _geo] of Array.from(this.geoLocationCache.entries())) {
       // Remove entries older than 1 hour (simplified cleanup for all entries)
       this.geoLocationCache.delete(ip);
     }
 
     // Cleanup old device fingerprints
-    for (const [hash, fingerprint] of this.deviceFingerprints.entries()) {
+    for (const [hash, fingerprint] of Array.from(
+      this.deviceFingerprints.entries(),
+    )) {
       if (fingerprint.lastSeen.getTime() < oneHourAgo) {
         this.deviceFingerprints.delete(hash);
       }
@@ -1373,5 +1524,20 @@ export function createAdvancedSecurityMiddleware(): (
   res: unknown,
   next: unknown,
 ) => Promise<void> {
-  return advancedSecurityMonitoring.createAdvancedSecurityMiddleware();
+  const middleware =
+    advancedSecurityMonitoring.createAdvancedSecurityMiddleware();
+  return async (req: unknown, res: unknown, next: unknown): Promise<void> => {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        middleware(
+          req as SecurityEnhancedRequest,
+          res as Response,
+          next as NextFunction,
+        );
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
 }
