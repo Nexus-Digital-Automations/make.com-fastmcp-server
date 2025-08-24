@@ -22,6 +22,11 @@ export interface ErrorBoundaryOptions {
   enableResourceTracking?: boolean;
 }
 
+export interface ErrorBoundaryExecuteOptions<T> {
+  fallback?: () => Promise<T> | T;
+  onError?: (error: Error, context: ErrorContext) => Promise<void> | void;
+}
+
 export interface ErrorContext {
   boundaryName: string;
   operation: string;
@@ -69,6 +74,7 @@ export class AsyncErrorBoundary {
     context: { operation: string; metadata?: Record<string, unknown> } = {
       operation: "unknown",
     },
+    executeOptions?: ErrorBoundaryExecuteOptions<T>,
   ): Promise<T> {
     const startTime = Date.now();
     let lastError: Error | undefined;
@@ -115,15 +121,18 @@ export class AsyncErrorBoundary {
         });
 
         // Call custom error handler
-        try {
-          await this.options.onError(lastError, errorContext);
-        } catch (handlerError) {
-          this.componentLogger.error("Error handler threw exception", {
-            handlerError:
-              handlerError instanceof Error
-                ? handlerError.message
-                : String(handlerError),
-          });
+        const errorHandler = executeOptions?.onError || this.options.onError;
+        if (errorHandler) {
+          try {
+            await errorHandler(lastError, errorContext);
+          } catch (handlerError) {
+            this.componentLogger.error("Error handler threw exception", {
+              handlerError:
+                handlerError instanceof Error
+                  ? handlerError.message
+                  : String(handlerError),
+            });
+          }
         }
 
         // If this is the last attempt, break to fallback
@@ -139,34 +148,50 @@ export class AsyncErrorBoundary {
     }
 
     // All retries failed, try fallback
-    try {
-      this.componentLogger.warn(
-        "All retry attempts exhausted, executing fallback",
-        {
+    const fallbackFn = executeOptions?.fallback || this.options.fallback;
+    if (fallbackFn) {
+      try {
+        this.componentLogger.warn(
+          "All retry attempts exhausted, executing fallback",
+          {
+            operation: context.operation,
+            totalAttempts: this.options.retryAttempts + 1,
+            finalError: lastError?.message,
+          },
+        );
+
+        const fallbackResult = await fallbackFn();
+        return fallbackResult as T;
+      } catch (fallbackError) {
+        const finalError = new Error(
+          `Operation failed after ${this.options.retryAttempts + 1} attempts, and fallback also failed. Original error: ${lastError?.message}. Fallback error: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`,
+        );
+
+        this.componentLogger.error("Fallback execution failed", {
           operation: context.operation,
-          totalAttempts: this.options.retryAttempts + 1,
-          finalError: lastError?.message,
-        },
-      );
+          originalError: lastError?.message,
+          fallbackError:
+            fallbackError instanceof Error
+              ? fallbackError.message
+              : String(fallbackError),
+        });
 
-      const fallbackResult = await this.options.fallback();
-      return fallbackResult;
-    } catch (fallbackError) {
-      const finalError = new Error(
-        `Operation failed after ${this.options.retryAttempts + 1} attempts, and fallback also failed. Original error: ${lastError?.message}. Fallback error: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`,
-      );
-
-      this.componentLogger.error("Fallback execution failed", {
-        operation: context.operation,
-        originalError: lastError?.message,
-        fallbackError:
-          fallbackError instanceof Error
-            ? fallbackError.message
-            : String(fallbackError),
-      });
-
-      throw finalError;
+        throw finalError;
+      }
     }
+
+    // No fallback available, throw the original error
+    const finalError = new Error(
+      `Operation failed after ${this.options.retryAttempts + 1} attempts. Original error: ${lastError?.message}`,
+    );
+
+    this.componentLogger.error("Operation failed with no fallback", {
+      operation: context.operation,
+      originalError: lastError?.message,
+      totalAttempts: this.options.retryAttempts + 1,
+    });
+
+    throw finalError;
   }
 
   /**
