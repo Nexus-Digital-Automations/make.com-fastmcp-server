@@ -74,7 +74,32 @@ export class CredentialSecurityValidator {
    * Validate Make.com API key with comprehensive checks
    */
   public validateMakeApiKey(apiKey: string): CredentialValidationResult {
-    const result: CredentialValidationResult = {
+    const result = this.initializeValidationResult();
+
+    // Basic format validation
+    if (!this.isValidApiKeyFormat(apiKey)) {
+      return this.createInvalidKeyResult();
+    }
+
+    const trimmedKey = apiKey.trim();
+
+    // Perform comprehensive security checks
+    this.validateApiKeyLength(trimmedKey, result);
+    this.analyzeKeyComposition(trimmedKey, result);
+    this.checkKeyPatterns(trimmedKey, result);
+    this.checkKeyVulnerabilities(trimmedKey, result);
+    this.validateKeyFormat(trimmedKey, result);
+    this.assessExposureRisks(trimmedKey, result);
+
+    // Finalize validation result
+    return this.finalizeValidationResult(result);
+  }
+
+  /**
+   * Initialize validation result with default values
+   */
+  private initializeValidationResult(): CredentialValidationResult {
+    return {
       isValid: true,
       score: 100,
       errors: [],
@@ -83,64 +108,105 @@ export class CredentialSecurityValidator {
       weaknesses: [],
       recommendations: []
     };
+  }
 
-    // Basic format validation
-    if (!apiKey || typeof apiKey !== 'string') {
-      result.errors.push('API key must be a non-empty string');
-      result.isValid = false;
-      result.score = 0;
-      return result;
-    }
+  /**
+   * Check if API key has basic valid format
+   */
+  private isValidApiKeyFormat(apiKey: string): boolean {
+    return apiKey && typeof apiKey === 'string';
+  }
 
-    const trimmedKey = apiKey.trim();
+  /**
+   * Create result for invalid API key format
+   */
+  private createInvalidKeyResult(): CredentialValidationResult {
+    return {
+      isValid: false,
+      score: 0,
+      errors: ['API key must be a non-empty string'],
+      warnings: [],
+      strengths: [],
+      weaknesses: [],
+      recommendations: []
+    };
+  }
 
-    // Length validation
-    if (trimmedKey.length < 10) {
+  /**
+   * Validate API key length requirements
+   */
+  private validateApiKeyLength(key: string, result: CredentialValidationResult): void {
+    if (key.length < 10) {
       result.errors.push('API key is too short (minimum 10 characters)');
       result.score -= 40;
-    } else if (trimmedKey.length < CredentialSecurityValidator.MIN_API_KEY_LENGTH) {
+    } else if (key.length < CredentialSecurityValidator.MIN_API_KEY_LENGTH) {
       result.warnings.push(`API key shorter than recommended (${CredentialSecurityValidator.MIN_API_KEY_LENGTH} characters)`);
       result.score -= 15;
     } else {
       result.strengths.push('Adequate key length');
     }
+  }
 
-    // Character composition analysis
-    const composition = this.analyzeCharacterComposition(trimmedKey);
+  /**
+   * Analyze character composition and entropy
+   */
+  private analyzeKeyComposition(key: string, result: CredentialValidationResult): void {
+    const composition = this.analyzeCharacterComposition(key);
     if (composition.entropy < 3.0) {
       result.weaknesses.push('Low entropy - predictable character patterns');
       result.score -= 20;
     } else if (composition.entropy >= 4.0) {
       result.strengths.push('High entropy - good character diversity');
     }
+  }
 
-    // Check for weak patterns
-    const weakPatterns = this.checkWeakPatterns(trimmedKey);
+  /**
+   * Check for weak patterns in the key
+   */
+  private checkKeyPatterns(key: string, result: CredentialValidationResult): void {
+    const weakPatterns = this.checkWeakPatterns(key);
     if (weakPatterns.length > 0) {
       result.warnings.push(`Contains potentially weak patterns: ${weakPatterns.join(', ')}`);
       result.score -= (weakPatterns.length * 10);
     }
+  }
 
-    // Check for common vulnerabilities
-    const vulnerabilities = this.checkCommonVulnerabilities(trimmedKey);
+  /**
+   * Check for common vulnerabilities
+   */
+  private checkKeyVulnerabilities(key: string, result: CredentialValidationResult): void {
+    const vulnerabilities = this.checkCommonVulnerabilities(key);
     if (vulnerabilities.length > 0) {
       result.weaknesses.push(...vulnerabilities);
       result.score -= (vulnerabilities.length * 15);
     }
+  }
 
-    // Format validation (Make.com API keys typically have specific patterns)
-    if (!this.validateMakeApiKeyFormat(trimmedKey)) {
+  /**
+   * Validate Make.com specific format patterns
+   */
+  private validateKeyFormat(key: string, result: CredentialValidationResult): void {
+    if (!this.validateMakeApiKeyFormat(key)) {
       result.warnings.push('API key format may not match expected Make.com patterns');
       result.score -= 5;
     }
+  }
 
-    // Check for credential exposure risks
-    const exposureRisks = this.checkCredentialExposure(trimmedKey);
+  /**
+   * Assess credential exposure risks
+   */
+  private assessExposureRisks(key: string, result: CredentialValidationResult): void {
+    const exposureRisks = this.checkCredentialExposure(key);
     if (exposureRisks.length > 0) {
       result.warnings.push(`Potential exposure risks: ${exposureRisks.join(', ')}`);
       result.score -= (exposureRisks.length * 8);
     }
+  }
 
+  /**
+   * Finalize validation result with scoring and recommendations
+   */
+  private finalizeValidationResult(result: CredentialValidationResult): CredentialValidationResult {
     // Ensure score doesn't go below 0
     result.score = Math.max(0, result.score);
     

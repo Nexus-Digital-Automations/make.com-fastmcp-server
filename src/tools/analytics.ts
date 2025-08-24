@@ -117,7 +117,7 @@ function createAnalyticsSummary(analytics: MakeAnalytics): Record<string, unknow
  * Extract Method: Handle analytics API request
  */
 async function fetchAnalyticsData(apiClient: MakeApiClient, organizationId: string, input: unknown): Promise<MakeAnalytics> {
-  const params = buildAnalyticsParams(input);
+  const params = buildAnalyticsParams(input as { startDate?: string; endDate?: string; period: string; includeUsage: boolean; includePerformance: boolean; includeBilling: boolean });
   const response = await apiClient.get(`/analytics/${organizationId}`, { params });
 
   if (!response.success) {
@@ -135,7 +135,7 @@ async function fetchAnalyticsData(apiClient: MakeApiClient, organizationId: stri
 /**
  * Extract Method: Log analytics success
  */
-function logAnalyticsSuccess(log: { info?: (message: string, meta?: Record<string, unknown>) => void }, organizationId: string, analytics: MakeAnalytics): void {
+function logAnalyticsSuccess(log: any, organizationId: string, analytics: MakeAnalytics): void {
   if (log?.info) {
     log.info('Successfully retrieved analytics', {
       organizationId,
@@ -149,7 +149,7 @@ function logAnalyticsSuccess(log: { info?: (message: string, meta?: Record<strin
 /**
  * Extract Method: Handle analytics errors
  */
-function handleAnalyticsError(log: { error?: (message: string, meta?: Record<string, unknown>) => void }, organizationId: string, error: unknown): never {
+function handleAnalyticsError(log: any, organizationId: string, error: unknown): never {
   const errorMessage = error instanceof Error ? error.message : String(error);
   if (log?.error) {
     log.error('Error getting analytics', { organizationId, error: errorMessage });
@@ -182,15 +182,15 @@ function addGetOrganizationAnalyticsTool(server: FastMCP, apiClient: MakeApiClie
       }
 
       try {
-        const analytics = await fetchAnalyticsData(apiClient, organizationId, input);
-        logAnalyticsSuccess(log, organizationId, analytics);
+        const analytics = await fetchAnalyticsData(apiClient, String(organizationId), input);
+        logAnalyticsSuccess(log, String(organizationId), analytics);
         
         return formatSuccessResponse({
           analytics,
           summary: createAnalyticsSummary(analytics),
         }, "Organization analytics retrieved successfully");
       } catch (error: unknown) {
-        handleAnalyticsError(log, organizationId, error);
+        handleAnalyticsError(log, String(organizationId), error);
       }
     },
   });

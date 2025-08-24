@@ -77,6 +77,87 @@ function createServerInstance(
   }
 }
 
+/**
+ * Extract Method: Setup graceful shutdown handlers
+ * Complexity reduction: ~35 lines → single method call
+ */
+function setupGracefulShutdownHandlers(
+  serverInstance: ServerInstance,
+  componentLogger: ReturnType<typeof createComponentLogger>,
+): void {
+  const gracefulShutdown = async (signal: string): Promise<void> => {
+    componentLogger.info(`Received ${signal}, starting graceful shutdown`);
+
+    try {
+      await serverInstance.shutdown();
+      await AsyncErrorBoundary.shutdown();
+      componentLogger.info("Graceful shutdown completed");
+      process.exit(0);
+    } catch (error) {
+      componentLogger.error(
+        "Error during graceful shutdown",
+        error as Record<string, unknown>,
+      );
+
+      try {
+        await AsyncErrorBoundary.shutdown();
+      } catch (cleanupError) {
+        componentLogger.error(
+          "Error during emergency cleanup",
+          cleanupError as Record<string, unknown>,
+        );
+      }
+
+      process.exit(1);
+    }
+  };
+
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+  process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+}
+
+/**
+ * Extract Method: Determine server port based on server type
+ * Complexity reduction: ~20 lines → single method call
+ */
+function determineServerPort(serverType: Exclude<ServerType, "both">): number {
+  switch (serverType) {
+    case "essential":
+      return 3000;
+    case "development":
+      return 3001;
+    case "governance":
+      return 3002;
+    case "enterprise":
+      return 3003;
+    case "analytics":
+      return 3001;
+    default:
+      return configManager().getConfig().port || 3000;
+  }
+}
+
+/**
+ * Extract Method: Configure server transport and HTTP options
+ * Complexity reduction: ~10 lines → single method call
+ */
+function configureServerTransport(port: number): {
+  transportType: "stdio" | "httpStream";
+  httpOptions?: { endpoint: string; port: number };
+} {
+  const transportType: "stdio" | "httpStream" = process.argv.includes("--http") ? "httpStream" : "stdio";
+  const httpOptions =
+    transportType === "httpStream"
+      ? { endpoint: "/", port }
+      : undefined;
+
+  return { transportType, httpOptions };
+}
+
+/**
+ * Refactored startSingleServer - Extract Method pattern applied
+ * Complexity reduced: 105 lines → 45 lines (57% reduction)
+ */
 async function startSingleServer(
   serverType: Exclude<ServerType, "both">,
 ): Promise<void> {
@@ -92,78 +173,14 @@ async function startSingleServer(
     // Create server instance
     const serverInstance = createServerInstance(serverType);
 
-    // Setup graceful shutdown handlers with error boundary cleanup
-    const gracefulShutdown = async (signal: string): Promise<void> => {
-      componentLogger.info(`Received ${signal}, starting graceful shutdown`);
+    // Setup graceful shutdown handlers
+    setupGracefulShutdownHandlers(serverInstance, componentLogger);
 
-      try {
-        // Shutdown server instance
-        await serverInstance.shutdown();
-
-        // Cleanup all async error boundaries and resources
-        await AsyncErrorBoundary.shutdown();
-
-        componentLogger.info("Graceful shutdown completed");
-        process.exit(0);
-      } catch (error) {
-        componentLogger.error(
-          "Error during graceful shutdown",
-          error as Record<string, unknown>,
-        );
-
-        // Force cleanup on error
-        try {
-          await AsyncErrorBoundary.shutdown();
-        } catch (cleanupError) {
-          componentLogger.error(
-            "Error during emergency cleanup",
-            cleanupError as Record<string, unknown>,
-          );
-        }
-
-        process.exit(1);
-      }
-    };
-
-    // Register shutdown handlers
-    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+    // Configure server transport and port
+    const port = determineServerPort(serverType);
+    const { transportType, httpOptions } = configureServerTransport(port);
 
     // Start the server
-    const transportType = process.argv.includes("--http")
-      ? "httpStream"
-      : "stdio";
-    let port = configManager().getConfig().port || 3000;
-
-    // Adjust port based on server type
-    switch (serverType) {
-      case "essential":
-        port = 3000;
-        break;
-      case "development":
-        port = 3001;
-        break;
-      case "governance":
-        port = 3002;
-        break;
-      case "enterprise":
-        port = 3003;
-        break;
-      case "analytics":
-        port = 3001;
-        break;
-      default:
-        port = configManager().getConfig().port || 3000;
-    }
-
-    const httpOptions =
-      transportType === "httpStream"
-        ? {
-            endpoint: "/",
-            port: port,
-          }
-        : undefined;
-
     await serverInstance.start({
       transportType,
       httpStream: httpOptions,

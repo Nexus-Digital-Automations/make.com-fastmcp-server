@@ -354,12 +354,12 @@ function buildRequestContext(req: ExpressRequest): RequestContext {
 
 // Extract Method: Determine HTTP status code from error type
 function determineStatusCode(error: Error): number {
-  if (error instanceof ValidationError) return 400;
-  if (error instanceof AuthenticationError) return 401;
-  if (error instanceof AuthorizationError) return 403;
-  if (error instanceof RateLimitError) return 429;
-  if (error.message.includes('not found')) return 404;
-  if (error.message.includes('conflict')) return 409;
+  if (error instanceof ValidationError) {return 400;}
+  if (error instanceof AuthenticationError) {return 401;}
+  if (error instanceof AuthorizationError) {return 403;}
+  if (error instanceof RateLimitError) {return 429;}
+  if (error.message.includes('not found')) {return 404;}
+  if (error.message.includes('conflict')) {return 409;}
   return 500;
 }
 
@@ -408,7 +408,7 @@ export function createSafeError(
 }
 
 // Extract Method: Build development debug information
-function buildDebugInfo(error: Error, sanitizedError: unknown, context: RequestContext): unknown {
+function buildDebugInfo(error: Error, sanitizedError: SecureErrorResponse, context: RequestContext): unknown {
   return {
     ...sanitizedError,
     debug: {

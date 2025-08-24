@@ -342,64 +342,18 @@ export class CredentialSecurityMonitor extends EventEmitter {
    */
   private async validateEnvironmentCredential(key: string, value: string, type: 'api_key' | 'secret'): Promise<void> {
     try {
-      let validation;
+      const validation = this.performCredentialValidation(value, type);
       
-      if (type === 'api_key') {
-        validation = credentialSecurityValidator().validateMakeApiKey(value);
-      } else {
-        // For other types, create a basic validation
-        validation = {
-          isValid: value.length >= 32,
-          score: value.length >= 64 ? 80 : 50,
-          errors: value.length < 32 ? ['Secret too short'] : [],
-          warnings: value.length < 64 ? ['Consider longer secret'] : [],
-          strengths: [],
-          weaknesses: [],
-          recommendations: []
-        };
-      }
-
       if (!validation.isValid) {
-        this.createAlert({
-          severity: 'high',
-          type: 'validation_failure',
-          message: `Environment credential validation failed: ${key}`,
-          details: { 
-            key, 
-            errors: validation.errors,
-            score: validation.score 
-          },
-          remediation: ['Update credential with stronger value', 'Migrate to secure credential storage']
-        });
+        this.handleInvalidCredential(key, validation);
       } else if (validation.score < this.policy.securityScoreThreshold) {
-        this.metrics.weakCredentials++;
-        this.createAlert({
-          severity: 'medium',
-          type: 'weak_credential',
-          message: `Weak credential detected: ${key} (score: ${validation.score}/100)`,
-          details: { 
-            key, 
-            score: validation.score,
-            warnings: validation.warnings,
-            recommendations: validation.recommendations
-          },
-          remediation: validation.recommendations.length > 0 ? validation.recommendations : ['Strengthen credential', 'Use secure generation']
-        });
+        this.handleWeakCredential(key, validation);
       } else {
         this.metrics.healthyCredentials++;
       }
 
-      // Update average score
-      this.metrics.averageSecurityScore = (this.metrics.averageSecurityScore + validation.score) / 2;
-      
-      // Check for unsecured storage (environment variables should migrate to secure storage)
-      this.createAlert({
-        severity: 'low',
-        type: 'exposure_risk',
-        message: `Credential stored in environment variable: ${key}`,
-        details: { key },
-        remediation: ['Migrate to secure credential storage', 'Remove from environment variables', 'Update configuration']
-      });
+      this.updateCredentialMetrics(validation.score);
+      this.createExposureRiskAlert(key);
       
     } catch (error) {
       this.componentLogger.error('Failed to validate environment credential', {
@@ -407,6 +361,81 @@ export class CredentialSecurityMonitor extends EventEmitter {
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
+  }
+
+  /**
+   * Perform credential validation based on type
+   */
+  private performCredentialValidation(value: string, type: 'api_key' | 'secret') {
+    if (type === 'api_key') {
+      return credentialSecurityValidator().validateMakeApiKey(value);
+    } else {
+      return {
+        isValid: value.length >= 32,
+        score: value.length >= 64 ? 80 : 50,
+        errors: value.length < 32 ? ['Secret too short'] : [],
+        warnings: value.length < 64 ? ['Consider longer secret'] : [],
+        strengths: [],
+        weaknesses: [],
+        recommendations: []
+      };
+    }
+  }
+
+  /**
+   * Handle invalid credential validation
+   */
+  private handleInvalidCredential(key: string, validation: any): void {
+    this.createAlert({
+      severity: 'high',
+      type: 'validation_failure',
+      message: `Environment credential validation failed: ${key}`,
+      details: { 
+        key, 
+        errors: validation.errors,
+        score: validation.score 
+      },
+      remediation: ['Update credential with stronger value', 'Migrate to secure credential storage']
+    });
+  }
+
+  /**
+   * Handle weak credential detection
+   */
+  private handleWeakCredential(key: string, validation: any): void {
+    this.metrics.weakCredentials++;
+    this.createAlert({
+      severity: 'medium',
+      type: 'weak_credential',
+      message: `Weak credential detected: ${key} (score: ${validation.score}/100)`,
+      details: { 
+        key, 
+        score: validation.score,
+        warnings: validation.warnings,
+        recommendations: validation.recommendations
+      },
+      remediation: validation.recommendations.length > 0 ? validation.recommendations : ['Strengthen credential', 'Use secure generation']
+    });
+  }
+
+  /**
+   * Update credential security metrics
+   */
+  private updateCredentialMetrics(score: number): void {
+    this.metrics.averageSecurityScore = (this.metrics.averageSecurityScore + score) / 2;
+  }
+
+  /**
+   * Create alert for credential exposure risk
+   */
+  private createExposureRiskAlert(key: string): void {
+    this.createAlert({
+      severity: 'low',
+      type: 'exposure_risk',
+      message: `Credential stored in environment variable: ${key}`,
+      details: { key },
+      remediation: ['Migrate to secure credential storage', 'Remove from environment variables', 'Update configuration']
+    });
   }
 
   /**

@@ -4,16 +4,46 @@
  */
 
 import { z } from 'zod';
-import { apiClient } from '../lib/make-api-client.js';
-import { formatSuccessResponse } from '../lib/response-formatter.js';
-import { UserError } from '../lib/errors.js';
-import type { 
-  RemoteProcedureCreateSchema, 
-  MakeRemoteProcedure,
-  ToolContext,
-  ProgressReporter,
-  Logger
-} from './types.js';
+import MakeApiClient from '../lib/make-api-client.js';
+import { formatSuccessResponse } from '../utils/response-formatter.js';
+import { UserError } from '../utils/errors.js';
+// Basic type definitions for this file
+type ProgressReporter = (progress: number) => void;
+type Logger = {
+  info: (message: string, data?: unknown) => void;
+  error: (message: string, data?: unknown) => void;
+  warn: (message: string, data?: unknown) => void;
+  debug: (message: string, data?: unknown) => void;
+};
+type ToolContext = {
+  log?: Logger;
+  reportProgress?: ProgressReporter;
+};
+
+// Define types locally since they don't exist in a shared location
+interface RemoteProcedureCreateSchema {
+  name: string;
+  type: string;
+  configuration: Record<string, unknown>;
+  organizationId?: number;
+  teamId?: number;
+}
+
+interface MakeRemoteProcedure {
+  id: string;
+  name: string;
+  type: string;
+  category?: string;
+  configuration?: Record<string, unknown>;
+  monitoring?: {
+    enabled: boolean;
+    metrics: boolean;
+  };
+  security?: {
+    enabled: boolean;
+    validation: boolean;
+  };
+}
 
 /**
  * Procedure creation context - extracted for type safety
@@ -141,6 +171,7 @@ function logError(log: Logger, message: string, data?: any): void {
  * API call executor - extracted method (Complexity: 5)
  */
 async function createProcedureViaAPI(
+  apiClient: MakeApiClient,
   endpoint: string, 
   procedureData: any, 
   context: ProcedureCreationContext
@@ -163,6 +194,7 @@ async function createProcedureViaAPI(
  * Refactored execute method - Complexity: 8 (reduced from 25)
  */
 export async function createRemoteProcedure(
+  apiClient: MakeApiClient,
   input: ProcedureCreationParams,
   context: ToolContext
 ): Promise<string> {
@@ -191,7 +223,7 @@ export async function createRemoteProcedure(
     const endpoint = resolveEndpoint(input.organizationId, input.teamId);
     
     // Create procedure via API
-    const procedure = await createProcedureViaAPI(endpoint, procedureData, { log, reportProgress });
+    const procedure = await createProcedureViaAPI(apiClient, endpoint, procedureData, { log, reportProgress });
     reportStageProgress(reportProgress, 100);
 
     logInfo(log, 'Successfully created remote procedure', {

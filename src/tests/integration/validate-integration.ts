@@ -55,8 +55,9 @@ async function validateIntegration(): Promise<void> {
       "integration",
     ];
 
+    const agents = startStatus.agents as any;
     for (const agentName of agentNames) {
-      const agentStatus = startStatus.agents[agentName];
+      const agentStatus = agents[agentName];
       if (!agentStatus || agentStatus.status !== "ready") {
         throw new Error(
           `Agent ${agentName} is not ready: ${agentStatus?.status || "undefined"}`,
@@ -76,8 +77,9 @@ async function validateIntegration(): Promise<void> {
       }
     }
 
+    const metricsAgents = metrics.agents as any;
     for (const agentName of agentNames) {
-      if (!metrics.agents[agentName]) {
+      if (!metricsAgents[agentName]) {
         throw new Error(`Missing agent metrics: ${agentName}`);
       }
     }
@@ -114,9 +116,14 @@ async function validateIntegration(): Promise<void> {
           scheduledFor: new Date(),
         },
       ],
+      concurrency: 1,
       priority: "normal" as const,
-      scheduledAt: new Date(),
-      context: { test: "validation" },
+      scheduledFor: new Date(),
+      createdAt: new Date(),
+      status: "pending" as const,
+      processedCount: 0,
+      successCount: 0,
+      failedCount: 0,
     };
 
     // This should not throw an error (batch enqueueing interface)
