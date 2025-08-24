@@ -102,35 +102,6 @@
       ]
     },
     {
-      "id": "task_1756071408614_27rw7sduw",
-      "title": "Push simplified FastMCP server changes to remote repository",
-      "description": "Push the completed project simplification changes to the remote git repository to ensure the work is backed up and available. The project has been successfully converted to a simple FastMCP server.",
-      "mode": "DEVELOPMENT",
-      "category": "chore",
-      "priority": "medium",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-24T21:36:48.614Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1756071225094_1_general_a9f93945",
-      "started_at": "2025-08-24T21:36:59.187Z",
-      "claimed_by": "development_session_1756071225094_1_general_a9f93945",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1756071225094_1_general_a9f93945",
-          "role": "primary",
-          "assignedAt": "2025-08-24T21:36:59.187Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1756069383930_wywgaoxf2",
       "title": "Add comprehensive error logging and monitoring system",
       "description": "Implement structured logging with error categorization, performance metrics, and request tracking for the MCP server",
