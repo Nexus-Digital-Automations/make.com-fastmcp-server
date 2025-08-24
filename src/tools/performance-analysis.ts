@@ -3,62 +3,158 @@
  * Comprehensive performance monitoring, bottleneck detection, and optimization recommendations
  */
 
-import { FastMCP, UserError } from 'fastmcp';
-import { z } from 'zod';
-import MakeApiClient from '../lib/make-api-client.js';
-import logger from '../lib/logger.js';
-import metrics from '../lib/metrics.js';
-import PerformanceMonitor from '../lib/performance-monitor.js';
-import { formatSuccessResponse } from '../utils/response-formatter.js';
-import { 
-  type SystemMemoryMetrics, 
+import { FastMCP, UserError } from "fastmcp";
+import { z } from "zod";
+import MakeApiClient from "../lib/make-api-client.js";
+import logger from "../lib/logger.js";
+import metrics from "../lib/metrics.js";
+import PerformanceMonitor from "../lib/performance-monitor.js";
+import { formatSuccessResponse } from "../utils/response-formatter.js";
+import {
+  type SystemMemoryMetrics,
   type CpuMetrics,
   type PerformanceAnalysisOptions,
   type PerformanceAnalysisFilters,
-  type AlertThresholds
-} from '../types/index.js';
+  type AlertThresholds,
+} from "../types/index.js";
 
 // Performance analysis schemas
-const PerformanceAnalysisSchema = z.object({
-  targetType: z.enum(['scenario', 'organization', 'webhook', 'api', 'system']).describe('Type of target to analyze'),
-  targetId: z.string().optional().describe('ID of specific target (scenario ID, organization ID, etc.)'),
-  analysisOptions: z.object({
-    timeRangeHours: z.number().min(1).max(168).default(24).describe('Time range to analyze in hours (max 7 days)'),
-    includeBottleneckDetection: z.boolean().default(true).describe('Include bottleneck detection analysis'),
-    includePerformanceMetrics: z.boolean().default(true).describe('Include performance metrics collection'),
-    includeTrendAnalysis: z.boolean().default(true).describe('Include trend analysis over time'),
-    includeOptimizationRecommendations: z.boolean().default(true).describe('Include optimization recommendations'),
-    includeCostAnalysis: z.boolean().default(false).describe('Include cost impact analysis'),
-    performanceBenchmarking: z.boolean().default(true).describe('Compare against industry benchmarks'),
-    detailedBreakdown: z.boolean().default(false).describe('Include detailed component-level breakdown')
-  }).optional(),
-  filters: z.object({
-    minExecutionTime: z.number().optional().describe('Minimum execution time to consider (ms)'),
-    errorThreshold: z.number().min(0).max(1).default(0.05).describe('Error rate threshold for concern'),
-    severityFilter: z.enum(['all', 'warning', 'error', 'critical']).default('all').describe('Minimum severity to include')
-  }).optional()
-}).strict();
+const PerformanceAnalysisSchema = z
+  .object({
+    targetType: z
+      .enum(["scenario", "organization", "webhook", "api", "system"])
+      .describe("Type of target to analyze"),
+    targetId: z
+      .string()
+      .optional()
+      .describe("ID of specific target (scenario ID, organization ID, etc.)"),
+    analysisOptions: z
+      .object({
+        timeRangeHours: z
+          .number()
+          .min(1)
+          .max(168)
+          .default(24)
+          .describe("Time range to analyze in hours (max 7 days)"),
+        includeBottleneckDetection: z
+          .boolean()
+          .default(true)
+          .describe("Include bottleneck detection analysis"),
+        includePerformanceMetrics: z
+          .boolean()
+          .default(true)
+          .describe("Include performance metrics collection"),
+        includeTrendAnalysis: z
+          .boolean()
+          .default(true)
+          .describe("Include trend analysis over time"),
+        includeOptimizationRecommendations: z
+          .boolean()
+          .default(true)
+          .describe("Include optimization recommendations"),
+        includeCostAnalysis: z
+          .boolean()
+          .default(false)
+          .describe("Include cost impact analysis"),
+        performanceBenchmarking: z
+          .boolean()
+          .default(true)
+          .describe("Compare against industry benchmarks"),
+        detailedBreakdown: z
+          .boolean()
+          .default(false)
+          .describe("Include detailed component-level breakdown"),
+      })
+      .optional(),
+    filters: z
+      .object({
+        minExecutionTime: z
+          .number()
+          .optional()
+          .describe("Minimum execution time to consider (ms)"),
+        errorThreshold: z
+          .number()
+          .min(0)
+          .max(1)
+          .default(0.05)
+          .describe("Error rate threshold for concern"),
+        severityFilter: z
+          .enum(["all", "warning", "error", "critical"])
+          .default("all")
+          .describe("Minimum severity to include"),
+      })
+      .optional(),
+  })
+  .strict();
 
-const ComprehensiveAnalysisSchema = z.object({
-  includeSystemMetrics: z.boolean().default(true).describe('Include system-wide performance metrics'),
-  includeApiMetrics: z.boolean().default(true).describe('Include API performance metrics'),
-  includeWebhookMetrics: z.boolean().default(true).describe('Include webhook performance metrics'),
-  includeScenarioMetrics: z.boolean().default(true).describe('Include scenario execution metrics'),
-  timeRangeHours: z.number().min(1).max(168).default(24).describe('Time range to analyze in hours'),
-  generateRecommendations: z.boolean().default(true).describe('Generate optimization recommendations'),
-  benchmarkComparison: z.boolean().default(true).describe('Compare against industry benchmarks')
-}).strict();
+const ComprehensiveAnalysisSchema = z
+  .object({
+    includeSystemMetrics: z
+      .boolean()
+      .default(true)
+      .describe("Include system-wide performance metrics"),
+    includeApiMetrics: z
+      .boolean()
+      .default(true)
+      .describe("Include API performance metrics"),
+    includeWebhookMetrics: z
+      .boolean()
+      .default(true)
+      .describe("Include webhook performance metrics"),
+    includeScenarioMetrics: z
+      .boolean()
+      .default(true)
+      .describe("Include scenario execution metrics"),
+    timeRangeHours: z
+      .number()
+      .min(1)
+      .max(168)
+      .default(24)
+      .describe("Time range to analyze in hours"),
+    generateRecommendations: z
+      .boolean()
+      .default(true)
+      .describe("Generate optimization recommendations"),
+    benchmarkComparison: z
+      .boolean()
+      .default(true)
+      .describe("Compare against industry benchmarks"),
+  })
+  .strict();
 
-const LiveAnalysisSchema = z.object({
-  durationMinutes: z.number().min(1).max(60).default(5).describe('Duration to monitor in minutes'),
-  samplingIntervalSeconds: z.number().min(1).max(60).default(10).describe('Sampling interval in seconds'),
-  alertThresholds: z.object({
-    responseTime: z.number().default(1000).describe('Response time threshold in ms'),
-    errorRate: z.number().default(0.05).describe('Error rate threshold (0-1)'),
-    cpuUsage: z.number().default(0.8).describe('CPU usage threshold (0-1)'),
-    memoryUsage: z.number().default(0.85).describe('Memory usage threshold (0-1)')
-  }).optional()
-}).strict();
+const LiveAnalysisSchema = z
+  .object({
+    durationMinutes: z
+      .number()
+      .min(1)
+      .max(60)
+      .default(5)
+      .describe("Duration to monitor in minutes"),
+    samplingIntervalSeconds: z
+      .number()
+      .min(1)
+      .max(60)
+      .default(10)
+      .describe("Sampling interval in seconds"),
+    alertThresholds: z
+      .object({
+        responseTime: z
+          .number()
+          .default(1000)
+          .describe("Response time threshold in ms"),
+        errorRate: z
+          .number()
+          .default(0.05)
+          .describe("Error rate threshold (0-1)"),
+        cpuUsage: z.number().default(0.8).describe("CPU usage threshold (0-1)"),
+        memoryUsage: z
+          .number()
+          .default(0.85)
+          .describe("Memory usage threshold (0-1)"),
+      })
+      .optional(),
+  })
+  .strict();
 
 // Performance analysis interfaces
 
@@ -128,53 +224,55 @@ interface MetricsFormattingResult {
     p50: number;
     p95: number;
     p99: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
   throughput: {
     requestsPerSecond: number;
     requestsPerMinute: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
   reliability: {
     uptime: number;
     errorRate: number;
     successRate: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
   resources: {
     cpuUsage: number;
     memoryUsage: number;
     networkUtilization: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
 }
 
 // Options and Filters interfaces imported from types/index.ts
 
 interface PerformanceMetrics {
-  responseTime?: {
-    average: number;
-    p50: number;
-    p95: number;
-    p99: number;
-    trend: 'improving' | 'stable' | 'degrading';
-  } | number;
+  responseTime?:
+    | {
+        average: number;
+        p50: number;
+        p95: number;
+        p99: number;
+        trend: "improving" | "stable" | "degrading";
+      }
+    | number;
   throughput?: {
     requestsPerSecond: number;
     requestsPerMinute: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
   reliability?: {
     uptime: number;
     errorRate: number;
     successRate: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
   resources?: {
     cpuUsage: number;
     memoryUsage: number;
     networkUtilization: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
   memory?: number | SystemMemoryMetrics;
   cpu?: SystemCpuMetrics;
@@ -190,7 +288,7 @@ interface PerformanceMetrics {
 }
 
 interface TrendAnalysis {
-  performanceDirection: 'improving' | 'stable' | 'degrading';
+  performanceDirection: "improving" | "stable" | "degrading";
   predictionConfidence: number;
   projectedIssues: string[];
 }
@@ -199,7 +297,7 @@ interface BenchmarkComparison {
   industryStandard: string;
   currentPerformance: string;
   gap: string;
-  ranking: 'below_average' | 'average' | 'above_average' | 'excellent';
+  ranking: "below_average" | "average" | "above_average" | "excellent";
 }
 
 interface OptimizationRecommendations {
@@ -215,10 +313,15 @@ interface CostAnalysis {
   recommendedActions: string[];
 }
 
-
 interface PerformanceBottleneck {
-  type: 'response_time' | 'throughput' | 'error_rate' | 'resource_usage' | 'rate_limiting' | 'webhook_queue';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type:
+    | "response_time"
+    | "throughput"
+    | "error_rate"
+    | "resource_usage"
+    | "rate_limiting"
+    | "webhook_queue";
+  severity: "low" | "medium" | "high" | "critical";
   description: string;
   impact: string;
   affectedComponents: string[];
@@ -226,14 +329,14 @@ interface PerformanceBottleneck {
     currentValue: number;
     expectedValue: number;
     unit: string;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
   rootCause: string;
   recommendations: string[];
   estimatedImpact: {
     performanceImprovement: number; // percentage
     costSavings: number; // percentage
-    implementationEffort: 'low' | 'medium' | 'high';
+    implementationEffort: "low" | "medium" | "high";
   };
 }
 
@@ -247,7 +350,7 @@ interface PerformanceAnalysisResult {
     durationHours: number;
   };
   overallHealthScore: number; // 0-100
-  performanceGrade: 'A' | 'B' | 'C' | 'D' | 'F';
+  performanceGrade: "A" | "B" | "C" | "D" | "F";
   bottlenecks: PerformanceBottleneck[];
   metrics: {
     responseTime: {
@@ -255,28 +358,28 @@ interface PerformanceAnalysisResult {
       p50: number;
       p95: number;
       p99: number;
-      trend: 'improving' | 'stable' | 'degrading';
+      trend: "improving" | "stable" | "degrading";
     };
     throughput: {
       requestsPerSecond: number;
       requestsPerMinute: number;
-      trend: 'improving' | 'stable' | 'degrading';
+      trend: "improving" | "stable" | "degrading";
     };
     reliability: {
       uptime: number;
       errorRate: number;
       successRate: number;
-      trend: 'improving' | 'stable' | 'degrading';
+      trend: "improving" | "stable" | "degrading";
     };
     resources: {
       cpuUsage: number;
       memoryUsage: number;
       networkUtilization: number;
-      trend: 'improving' | 'stable' | 'degrading';
+      trend: "improving" | "stable" | "degrading";
     };
   };
   trends: {
-    performanceDirection: 'improving' | 'stable' | 'degrading';
+    performanceDirection: "improving" | "stable" | "degrading";
     predictionConfidence: number;
     projectedIssues: string[];
   };
@@ -284,7 +387,7 @@ interface PerformanceAnalysisResult {
     industryStandard: string;
     currentPerformance: string;
     gap: string;
-    ranking: 'below_average' | 'average' | 'above_average' | 'excellent';
+    ranking: "below_average" | "average" | "above_average" | "excellent";
   };
   recommendations: {
     immediate: string[];
@@ -310,12 +413,12 @@ interface LivePerformanceUpdate {
   };
   alerts: Array<{
     type: string;
-    severity: 'warning' | 'error' | 'critical';
+    severity: "warning" | "error" | "critical";
     message: string;
     threshold: number;
     currentValue: number;
   }>;
-  status: 'healthy' | 'warning' | 'critical';
+  status: "healthy" | "warning" | "critical";
 }
 
 /**
@@ -329,24 +432,26 @@ class PerformanceAnalysisEngine {
       excellent: 100,
       good: 500,
       acceptable: 1000,
-      poor: 2000
+      poor: 2000,
     },
     errorRate: {
       excellent: 0.001,
       good: 0.01,
       acceptable: 0.05,
-      poor: 0.1
+      poor: 0.1,
     },
     uptime: {
       excellent: 99.99,
       good: 99.95,
       acceptable: 99.9,
-      poor: 99.5
-    }
+      poor: 99.5,
+    },
   };
 
   constructor() {
-    this.componentLogger = logger.child({ component: 'PerformanceAnalysisEngine' });
+    this.componentLogger = logger.child({
+      component: "PerformanceAnalysisEngine",
+    });
     this.performanceMonitor = new PerformanceMonitor();
   }
 
@@ -358,24 +463,28 @@ class PerformanceAnalysisEngine {
     targetId: string | undefined,
     options: PerformanceAnalysisOptions,
     filters: PerformanceAnalysisFilters,
-    apiClient: MakeApiClient
+    apiClient: MakeApiClient,
   ): Promise<PerformanceAnalysisResult> {
     const startTime = Date.now();
-    const endTime = startTime - (options.timeRangeHours * 60 * 60 * 1000);
+    const endTime = startTime - options.timeRangeHours * 60 * 60 * 1000;
 
-    this.componentLogger.info('Starting performance bottleneck analysis', {
+    this.componentLogger.info("Starting performance bottleneck analysis", {
       targetType,
       targetId,
-      timeRangeHours: options.timeRangeHours
+      timeRangeHours: options.timeRangeHours,
     });
 
     try {
       // Collect performance metrics
-      const metrics = await this.collectPerformanceMetrics(targetType, targetId, {
-        startTime: endTime,
-        endTime: startTime,
-        apiClient
-      });
+      const metrics = await this.collectPerformanceMetrics(
+        targetType,
+        targetId,
+        {
+          startTime: endTime,
+          endTime: startTime,
+          apiClient,
+        },
+      );
 
       // Detect bottlenecks
       const bottlenecks = await this.detectBottlenecks(metrics, filters);
@@ -387,15 +496,25 @@ class PerformanceAnalysisEngine {
       const benchmarkComparison = this.compareToBenchmarks(metrics);
 
       // Calculate overall health score
-      const overallHealthScore = this.calculateHealthScore(metrics, bottlenecks);
+      const overallHealthScore = this.calculateHealthScore(
+        metrics,
+        bottlenecks,
+      );
 
       // Generate recommendations
-      const recommendations = await this.generateRecommendations(bottlenecks, metrics);
+      const recommendations = await this.generateRecommendations(
+        bottlenecks,
+        metrics,
+      );
 
       // Optional cost analysis
       let costAnalysis;
       if (options.includeCostAnalysis) {
-        costAnalysis = await this.analyzeCostImpact(metrics, bottlenecks, apiClient);
+        costAnalysis = await this.analyzeCostImpact(
+          metrics,
+          bottlenecks,
+          apiClient,
+        );
       }
 
       const result: PerformanceAnalysisResult = {
@@ -405,7 +524,7 @@ class PerformanceAnalysisEngine {
         timeRange: {
           startTime: new Date(endTime).toISOString(),
           endTime: new Date(startTime).toISOString(),
-          durationHours: options.timeRangeHours
+          durationHours: options.timeRangeHours,
         },
         overallHealthScore,
         performanceGrade: this.calculatePerformanceGrade(overallHealthScore),
@@ -414,23 +533,22 @@ class PerformanceAnalysisEngine {
         trends,
         benchmarkComparison,
         recommendations,
-        costAnalysis
+        costAnalysis,
       };
 
-      this.componentLogger.info('Performance analysis completed', {
+      this.componentLogger.info("Performance analysis completed", {
         targetType,
         healthScore: overallHealthScore,
         bottleneckCount: bottlenecks.length,
-        executionTime: Date.now() - startTime
+        executionTime: Date.now() - startTime,
       });
 
       return result;
-
     } catch (error) {
-      this.componentLogger.error('Performance analysis failed', {
+      this.componentLogger.error("Performance analysis failed", {
         targetType,
         targetId,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -441,9 +559,9 @@ class PerformanceAnalysisEngine {
    */
   async performComprehensiveAnalysis(
     options: PerformanceAnalysisOptions,
-    apiClient: MakeApiClient
+    apiClient: MakeApiClient,
   ): Promise<PerformanceAnalysisResult> {
-    this.componentLogger.info('Starting comprehensive performance analysis');
+    this.componentLogger.info("Starting comprehensive performance analysis");
 
     try {
       const analyses: PerformanceAnalysisResult[] = [];
@@ -451,11 +569,17 @@ class PerformanceAnalysisEngine {
       // System-wide analysis
       if (options.includeSystemMetrics) {
         const systemAnalysis = await this.analyzePerformanceBottlenecks(
-          'system',
+          "system",
           undefined,
-          { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true } as PerformanceAnalysisOptions,
-          { errorThreshold: 5, severityFilter: 'all' } as PerformanceAnalysisFilters,
-          apiClient
+          {
+            timeRangeHours: options.timeRangeHours,
+            includeBottleneckDetection: true,
+          } as PerformanceAnalysisOptions,
+          {
+            errorThreshold: 5,
+            severityFilter: "all",
+          } as PerformanceAnalysisFilters,
+          apiClient,
         );
         analyses.push(systemAnalysis);
       }
@@ -463,11 +587,17 @@ class PerformanceAnalysisEngine {
       // API performance analysis
       if (options.includeApiMetrics) {
         const apiAnalysis = await this.analyzePerformanceBottlenecks(
-          'api',
+          "api",
           undefined,
-          { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true } as PerformanceAnalysisOptions,
-          { errorThreshold: 5, severityFilter: 'all' } as PerformanceAnalysisFilters,
-          apiClient
+          {
+            timeRangeHours: options.timeRangeHours,
+            includeBottleneckDetection: true,
+          } as PerformanceAnalysisOptions,
+          {
+            errorThreshold: 5,
+            severityFilter: "all",
+          } as PerformanceAnalysisFilters,
+          apiClient,
         );
         analyses.push(apiAnalysis);
       }
@@ -475,11 +605,17 @@ class PerformanceAnalysisEngine {
       // Webhook performance analysis
       if (options.includeWebhookMetrics) {
         const webhookAnalysis = await this.analyzePerformanceBottlenecks(
-          'webhook',
+          "webhook",
           undefined,
-          { timeRangeHours: options.timeRangeHours, includeBottleneckDetection: true } as PerformanceAnalysisOptions,
-          { errorThreshold: 5, severityFilter: 'all' } as PerformanceAnalysisFilters,
-          apiClient
+          {
+            timeRangeHours: options.timeRangeHours,
+            includeBottleneckDetection: true,
+          } as PerformanceAnalysisOptions,
+          {
+            errorThreshold: 5,
+            severityFilter: "all",
+          } as PerformanceAnalysisFilters,
+          apiClient,
         );
         analyses.push(webhookAnalysis);
       }
@@ -487,16 +623,15 @@ class PerformanceAnalysisEngine {
       // Aggregate results
       const aggregatedResult = this.aggregateAnalysisResults(analyses);
 
-      this.componentLogger.info('Comprehensive analysis completed', {
+      this.componentLogger.info("Comprehensive analysis completed", {
         analysesPerformed: analyses.length,
-        overallScore: aggregatedResult.overallHealthScore
+        overallScore: aggregatedResult.overallHealthScore,
       });
 
       return aggregatedResult;
-
     } catch (error) {
-      this.componentLogger.error('Comprehensive analysis failed', {
-        error: error instanceof Error ? error.message : String(error)
+      this.componentLogger.error("Comprehensive analysis failed", {
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -507,21 +642,28 @@ class PerformanceAnalysisEngine {
    */
   async performLiveAnalysis(
     options: PerformanceAnalysisOptions,
-    progressCallback?: (update: LivePerformanceUpdate) => void
+    progressCallback?: (update: LivePerformanceUpdate) => void,
   ): Promise<LivePerformanceUpdate[]> {
     const durationMs = (options.durationMinutes || 5) * 60 * 1000;
     const intervalMs = (options.samplingIntervalSeconds || 10) * 1000;
     const updates: LivePerformanceUpdate[] = [];
     const startTime = Date.now();
 
-    this.componentLogger.info('Starting live performance monitoring', {
+    this.componentLogger.info("Starting live performance monitoring", {
       durationMinutes: options.durationMinutes,
-      samplingIntervalSeconds: options.samplingIntervalSeconds
+      samplingIntervalSeconds: options.samplingIntervalSeconds,
     });
 
     const monitoringInterval = setInterval(async () => {
       try {
-        const update = await this.collectLiveMetrics(options.alertThresholds || { errorRate: 5, responseTime: 1000, cpuUsage: 80, memoryUsage: 85 });
+        const update = await this.collectLiveMetrics(
+          options.alertThresholds || {
+            errorRate: 5,
+            responseTime: 1000,
+            cpuUsage: 80,
+            memoryUsage: 85,
+          },
+        );
         updates.push(update);
 
         if (progressCallback) {
@@ -531,14 +673,14 @@ class PerformanceAnalysisEngine {
         // Check if monitoring duration is complete
         if (Date.now() - startTime >= durationMs) {
           clearInterval(monitoringInterval);
-          this.componentLogger.info('Live monitoring completed', {
+          this.componentLogger.info("Live monitoring completed", {
             totalUpdates: updates.length,
-            duration: Date.now() - startTime
+            duration: Date.now() - startTime,
           });
         }
       } catch (error) {
-        this.componentLogger.error('Live monitoring update failed', {
-          error: error instanceof Error ? error.message : String(error)
+        this.componentLogger.error("Live monitoring update failed", {
+          error: error instanceof Error ? error.message : String(error),
         });
       }
     }, intervalMs);
@@ -558,20 +700,20 @@ class PerformanceAnalysisEngine {
   private async collectPerformanceMetrics(
     targetType: string,
     targetId: string | undefined,
-    timeRange: { startTime: number; endTime: number; apiClient: MakeApiClient }
+    timeRange: { startTime: number; endTime: number; apiClient: MakeApiClient },
   ): Promise<PerformanceMetrics> {
     const { apiClient } = timeRange;
 
     switch (targetType) {
-      case 'system':
+      case "system":
         return this.collectSystemMetrics();
-      case 'api':
+      case "api":
         return this.collectApiMetrics(apiClient);
-      case 'webhook':
+      case "webhook":
         return this.collectWebhookMetrics(apiClient);
-      case 'scenario':
+      case "scenario":
         return this.collectScenarioMetrics(targetId, apiClient);
-      case 'organization':
+      case "organization":
         return this.collectOrganizationMetrics(targetId, apiClient);
       default:
         throw new Error(`Unsupported target type: ${targetType}`);
@@ -595,15 +737,15 @@ class PerformanceAnalysisEngine {
       memory: {
         used: memUsage.heapUsed,
         total: memUsage.heapTotal,
-        utilization: memUsage.heapUsed / memUsage.heapTotal
+        utilization: memUsage.heapUsed / memUsage.heapTotal,
       },
       cpu: {
         user: cpuUsage.user,
         system: cpuUsage.system,
-        utilization: (cpuUsage.user + cpuUsage.system) / 1000000 / uptime
+        utilization: (cpuUsage.user + cpuUsage.system) / 1000000 / uptime,
       },
       uptime,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -623,24 +765,24 @@ class PerformanceAnalysisEngine {
     try {
       // Get rate limiter status
       const rateLimiterStatus = apiClient.getRateLimiterStatus();
-      
+
       // Perform health check to measure response time
       const startTime = Date.now();
-      const isHealthy = await apiClient.healthCheck();
+      const healthResult = await apiClient.healthCheck();
       const responseTime = Date.now() - startTime;
 
       return {
         responseTime,
-        healthy: isHealthy,
+        healthy: healthResult.healthy,
         rateLimiter: rateLimiterStatus,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       return {
         responseTime: -1,
         healthy: false,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
   }
@@ -662,14 +804,17 @@ class PerformanceAnalysisEngine {
       queueSize: 50, // maximum queue size
       processingTime: 5000, // 5 seconds timeout
       currentLoad: 0, // would need actual webhook monitoring
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
   /**
    * Collect scenario-specific metrics
    */
-  private async collectScenarioMetrics(scenarioId: string | undefined, apiClient: MakeApiClient): Promise<{
+  private async collectScenarioMetrics(
+    scenarioId: string | undefined,
+    apiClient: MakeApiClient,
+  ): Promise<{
     scenario?: Record<string, unknown>;
     executionMetrics?: {
       averageExecutionTime: number;
@@ -680,15 +825,17 @@ class PerformanceAnalysisEngine {
     timestamp: number;
   }> {
     if (!scenarioId) {
-      throw new Error('Scenario ID required for scenario analysis');
+      throw new Error("Scenario ID required for scenario analysis");
     }
 
     try {
       // Get scenario details
       const scenarioResponse = await apiClient.get(`/scenarios/${scenarioId}`);
-      
+
       if (!scenarioResponse.success) {
-        throw new Error(`Failed to fetch scenario: ${scenarioResponse.error?.message}`);
+        throw new Error(
+          `Failed to fetch scenario: ${scenarioResponse.error?.message}`,
+        );
       }
 
       return {
@@ -697,14 +844,14 @@ class PerformanceAnalysisEngine {
           // These would come from actual execution logs
           averageExecutionTime: 5000,
           successRate: 0.95,
-          errorRate: 0.05
+          errorRate: 0.05,
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       return {
         error: error instanceof Error ? error.message : String(error),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
   }
@@ -712,7 +859,10 @@ class PerformanceAnalysisEngine {
   /**
    * Collect organization-level metrics
    */
-  private async collectOrganizationMetrics(orgId: string | undefined, apiClient: MakeApiClient): Promise<{
+  private async collectOrganizationMetrics(
+    orgId: string | undefined,
+    apiClient: MakeApiClient,
+  ): Promise<{
     organization?: Record<string, unknown>;
     usage?: {
       operationsUsed: number;
@@ -723,14 +873,16 @@ class PerformanceAnalysisEngine {
     timestamp: number;
   }> {
     if (!orgId) {
-      throw new Error('Organization ID required for organization analysis');
+      throw new Error("Organization ID required for organization analysis");
     }
 
     try {
       const orgResponse = await apiClient.get(`/organizations/${orgId}`);
-      
+
       if (!orgResponse.success) {
-        throw new Error(`Failed to fetch organization: ${orgResponse.error?.message}`);
+        throw new Error(
+          `Failed to fetch organization: ${orgResponse.error?.message}`,
+        );
       }
 
       return {
@@ -739,14 +891,14 @@ class PerformanceAnalysisEngine {
           // These would come from actual usage analytics
           operationsUsed: 10000,
           operationsLimit: 50000,
-          utilizationRate: 0.2
+          utilizationRate: 0.2,
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       return {
         error: error instanceof Error ? error.message : String(error),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
   }
@@ -754,186 +906,236 @@ class PerformanceAnalysisEngine {
   /**
    * Detect performance bottlenecks
    */
-  private async detectBottlenecks(metrics: PerformanceMetrics, filters: PerformanceAnalysisFilters): Promise<PerformanceBottleneck[]> {
+  private async detectBottlenecks(
+    metrics: PerformanceMetrics,
+    filters: PerformanceAnalysisFilters,
+  ): Promise<PerformanceBottleneck[]> {
     const bottlenecks: PerformanceBottleneck[] = [];
 
     // Response time bottleneck detection
-    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
-                             (typeof metrics.responseTime === 'object' && metrics.responseTime ? metrics.responseTime.average : 0);
-    
+    const responseTimeValue =
+      typeof metrics.responseTime === "number"
+        ? metrics.responseTime
+        : typeof metrics.responseTime === "object" && metrics.responseTime
+          ? metrics.responseTime.average
+          : 0;
+
     if (responseTimeValue && responseTimeValue > 1000) {
       bottlenecks.push({
-        type: 'response_time',
-        severity: responseTimeValue > 5000 ? 'critical' : responseTimeValue > 2000 ? 'high' : 'medium',
-        description: 'High API response time detected',
-        impact: 'Reduced user experience and workflow efficiency',
-        affectedComponents: ['api', 'user_interface'],
+        type: "response_time",
+        severity:
+          responseTimeValue > 5000
+            ? "critical"
+            : responseTimeValue > 2000
+              ? "high"
+              : "medium",
+        description: "High API response time detected",
+        impact: "Reduced user experience and workflow efficiency",
+        affectedComponents: ["api", "user_interface"],
         metrics: {
           currentValue: responseTimeValue,
           expectedValue: 500,
-          unit: 'ms',
-          trend: 'degrading'
+          unit: "ms",
+          trend: "degrading",
         },
-        rootCause: 'API server overload or network latency',
+        rootCause: "API server overload or network latency",
         recommendations: [
-          'Implement request caching',
-          'Optimize API endpoint performance',
-          'Add connection pooling',
-          'Consider using regional endpoints'
+          "Implement request caching",
+          "Optimize API endpoint performance",
+          "Add connection pooling",
+          "Consider using regional endpoints",
         ],
         estimatedImpact: {
           performanceImprovement: 40,
           costSavings: 15,
-          implementationEffort: 'medium'
-        }
+          implementationEffort: "medium",
+        },
       });
     }
 
     // Memory usage bottleneck detection
-    const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory).utilization : 0);
-    
+    const memoryUtilization =
+      typeof metrics.memory === "number"
+        ? metrics.memory
+        : typeof metrics.memory === "object" && metrics.memory
+          ? metrics.memory.utilization
+          : 0;
+
     if (memoryUtilization && memoryUtilization > 0.85) {
       bottlenecks.push({
-        type: 'resource_usage',
-        severity: memoryUtilization > 0.95 ? 'critical' : 'high',
-        description: 'High memory utilization detected',
-        impact: 'Potential system instability and performance degradation',
-        affectedComponents: ['system', 'memory'],
+        type: "resource_usage",
+        severity: memoryUtilization > 0.95 ? "critical" : "high",
+        description: "High memory utilization detected",
+        impact: "Potential system instability and performance degradation",
+        affectedComponents: ["system", "memory"],
         metrics: {
           currentValue: memoryUtilization,
           expectedValue: 0.7,
-          unit: 'ratio',
-          trend: 'degrading'
+          unit: "ratio",
+          trend: "degrading",
         },
-        rootCause: 'Memory leaks or insufficient memory allocation',
+        rootCause: "Memory leaks or insufficient memory allocation",
         recommendations: [
-          'Implement memory monitoring',
-          'Add garbage collection optimization',
-          'Increase memory allocation',
-          'Fix potential memory leaks'
+          "Implement memory monitoring",
+          "Add garbage collection optimization",
+          "Increase memory allocation",
+          "Fix potential memory leaks",
         ],
         estimatedImpact: {
           performanceImprovement: 30,
           costSavings: 10,
-          implementationEffort: 'high'
-        }
+          implementationEffort: "high",
+        },
       });
     }
 
     // Rate limiting bottleneck detection
     if (metrics.rateLimiter?.queued && metrics.rateLimiter.queued > 5) {
       bottlenecks.push({
-        type: 'rate_limiting',
-        severity: 'high',
-        description: 'Approaching rate limit threshold',
-        impact: 'Request throttling and potential service interruption',
-        affectedComponents: ['api', 'rate_limiter'],
+        type: "rate_limiting",
+        severity: "high",
+        description: "Approaching rate limit threshold",
+        impact: "Request throttling and potential service interruption",
+        affectedComponents: ["api", "rate_limiter"],
         metrics: {
           currentValue: metrics.rateLimiter.queued,
           expectedValue: 0,
-          unit: 'queued requests',
-          trend: 'degrading'
+          unit: "queued requests",
+          trend: "degrading",
         },
-        rootCause: 'High request volume or inefficient request patterns',
+        rootCause: "High request volume or inefficient request patterns",
         recommendations: [
-          'Implement request batching',
-          'Add intelligent caching',
-          'Optimize request patterns',
-          'Consider upgrading API plan'
+          "Implement request batching",
+          "Add intelligent caching",
+          "Optimize request patterns",
+          "Consider upgrading API plan",
         ],
         estimatedImpact: {
           performanceImprovement: 50,
           costSavings: 25,
-          implementationEffort: 'medium'
-        }
+          implementationEffort: "medium",
+        },
       });
     }
 
-    return bottlenecks.filter(b => this.matchesSeverityFilter(b.severity, filters.severityFilter));
+    return bottlenecks.filter((b) =>
+      this.matchesSeverityFilter(b.severity, filters.severityFilter),
+    );
   }
 
   /**
    * Analyze performance trends
    */
-  private async analyzeTrends(_metrics: PerformanceMetrics, _timeRangeHours: number): Promise<TrendAnalysis> {
+  private async analyzeTrends(
+    _metrics: PerformanceMetrics,
+    _timeRangeHours: number,
+  ): Promise<TrendAnalysis> {
     // In a real implementation, this would analyze historical data
     // For now, we'll simulate trend analysis based on current metrics
-    
+
     return {
-      performanceDirection: 'stable' as const,
+      performanceDirection: "stable" as const,
       predictionConfidence: 0.8,
       projectedIssues: [
-        'Memory usage trending upward - monitor for potential issues',
-        'Response time variability suggests optimization opportunities'
-      ]
+        "Memory usage trending upward - monitor for potential issues",
+        "Response time variability suggests optimization opportunities",
+      ],
     };
   }
 
   /**
    * Compare performance to industry benchmarks
    */
-  private compareToBenchmarks(metrics: PerformanceMetrics): BenchmarkComparison {
-    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
-                             (typeof metrics.responseTime === 'object' && metrics.responseTime ? metrics.responseTime.average : 0);
-    
-    let responseTimeRanking: 'below_average' | 'average' | 'above_average' | 'excellent' = 'average';
+  private compareToBenchmarks(
+    metrics: PerformanceMetrics,
+  ): BenchmarkComparison {
+    const responseTimeValue =
+      typeof metrics.responseTime === "number"
+        ? metrics.responseTime
+        : typeof metrics.responseTime === "object" && metrics.responseTime
+          ? metrics.responseTime.average
+          : 0;
+
+    let responseTimeRanking:
+      | "below_average"
+      | "average"
+      | "above_average"
+      | "excellent" = "average";
     if (responseTimeValue) {
       if (responseTimeValue <= this.industryBenchmarks.responseTime.excellent) {
-        responseTimeRanking = 'excellent';
-      } else if (responseTimeValue <= this.industryBenchmarks.responseTime.good) {
-        responseTimeRanking = 'above_average';
-      } else if (responseTimeValue <= this.industryBenchmarks.responseTime.acceptable) {
-        responseTimeRanking = 'average';
+        responseTimeRanking = "excellent";
+      } else if (
+        responseTimeValue <= this.industryBenchmarks.responseTime.good
+      ) {
+        responseTimeRanking = "above_average";
+      } else if (
+        responseTimeValue <= this.industryBenchmarks.responseTime.acceptable
+      ) {
+        responseTimeRanking = "average";
       } else {
-        responseTimeRanking = 'below_average';
+        responseTimeRanking = "below_average";
       }
     }
 
     return {
-      industryStandard: '< 500ms response time, > 99.95% uptime, < 0.1% error rate',
-      currentPerformance: `${responseTimeValue || 'N/A'}ms response time`,
-      gap: responseTimeValue && responseTimeValue > 500 ? `${responseTimeValue - 500}ms above target` : 'Within target',
-      ranking: responseTimeRanking
+      industryStandard:
+        "< 500ms response time, > 99.95% uptime, < 0.1% error rate",
+      currentPerformance: `${responseTimeValue || "N/A"}ms response time`,
+      gap:
+        responseTimeValue && responseTimeValue > 500
+          ? `${responseTimeValue - 500}ms above target`
+          : "Within target",
+      ranking: responseTimeRanking,
     };
   }
 
   /**
    * Calculate overall health score
    */
-  private calculateHealthScore(metrics: PerformanceMetrics, bottlenecks: PerformanceBottleneck[]): number {
+  private calculateHealthScore(
+    metrics: PerformanceMetrics,
+    bottlenecks: PerformanceBottleneck[],
+  ): number {
     let score = 100;
 
     // Deduct points for bottlenecks
     for (const bottleneck of bottlenecks) {
       switch (bottleneck.severity) {
-        case 'critical':
+        case "critical":
           score -= 25;
           break;
-        case 'high':
+        case "high":
           score -= 15;
           break;
-        case 'medium':
+        case "medium":
           score -= 10;
           break;
-        case 'low':
+        case "low":
           score -= 5;
           break;
       }
     }
 
     // Deduct points for poor response time
-    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
-                             (typeof metrics.responseTime === 'object' && metrics.responseTime ? metrics.responseTime.average : 0);
-    
+    const responseTimeValue =
+      typeof metrics.responseTime === "number"
+        ? metrics.responseTime
+        : typeof metrics.responseTime === "object" && metrics.responseTime
+          ? metrics.responseTime.average
+          : 0;
+
     if (responseTimeValue && responseTimeValue > 1000) {
       score -= Math.min(20, (responseTimeValue - 1000) / 100);
     }
 
     // Deduct points for high resource usage
-    const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory).utilization : 0);
-    
+    const memoryUtilization =
+      typeof metrics.memory === "number"
+        ? metrics.memory
+        : typeof metrics.memory === "object" && metrics.memory
+          ? metrics.memory.utilization
+          : 0;
+
     if (memoryUtilization && memoryUtilization > 0.8) {
       score -= (memoryUtilization - 0.8) * 50;
     }
@@ -944,27 +1146,40 @@ class PerformanceAnalysisEngine {
   /**
    * Calculate performance grade
    */
-  private calculatePerformanceGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
-    if (score >= 90) {return 'A';}
-    if (score >= 80) {return 'B';}
-    if (score >= 70) {return 'C';}
-    if (score >= 60) {return 'D';}
-    return 'F';
+  private calculatePerformanceGrade(
+    score: number,
+  ): "A" | "B" | "C" | "D" | "F" {
+    if (score >= 90) {
+      return "A";
+    }
+    if (score >= 80) {
+      return "B";
+    }
+    if (score >= 70) {
+      return "C";
+    }
+    if (score >= 60) {
+      return "D";
+    }
+    return "F";
   }
 
   /**
    * Generate optimization recommendations
    */
-  private async generateRecommendations(bottlenecks: PerformanceBottleneck[], metrics: PerformanceMetrics): Promise<OptimizationRecommendations> {
+  private async generateRecommendations(
+    bottlenecks: PerformanceBottleneck[],
+    metrics: PerformanceMetrics,
+  ): Promise<OptimizationRecommendations> {
     const immediate: string[] = [];
     const shortTerm: string[] = [];
     const longTerm: string[] = [];
 
     // Generate recommendations based on bottlenecks
     for (const bottleneck of bottlenecks) {
-      if (bottleneck.severity === 'critical') {
+      if (bottleneck.severity === "critical") {
         immediate.push(...bottleneck.recommendations.slice(0, 2));
-      } else if (bottleneck.severity === 'high') {
+      } else if (bottleneck.severity === "high") {
         shortTerm.push(...bottleneck.recommendations.slice(0, 2));
       } else {
         longTerm.push(...bottleneck.recommendations.slice(0, 1));
@@ -972,44 +1187,62 @@ class PerformanceAnalysisEngine {
     }
 
     // Add general recommendations based on metrics
-    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
-                             (typeof metrics.responseTime === 'object' && metrics.responseTime ? metrics.responseTime.average : 0);
-    
+    const responseTimeValue =
+      typeof metrics.responseTime === "number"
+        ? metrics.responseTime
+        : typeof metrics.responseTime === "object" && metrics.responseTime
+          ? metrics.responseTime.average
+          : 0;
+
     if (responseTimeValue && responseTimeValue > 500) {
-      shortTerm.push('Implement response caching strategy');
+      shortTerm.push("Implement response caching strategy");
     }
 
-    const memoryUtilization = typeof metrics.memory === 'number' ? metrics.memory : 
-                             (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory).utilization : 0);
-    
+    const memoryUtilization =
+      typeof metrics.memory === "number"
+        ? metrics.memory
+        : typeof metrics.memory === "object" && metrics.memory
+          ? metrics.memory.utilization
+          : 0;
+
     if (memoryUtilization && memoryUtilization > 0.7) {
-      longTerm.push('Consider memory optimization and monitoring');
+      longTerm.push("Consider memory optimization and monitoring");
     }
 
-    const estimatedImpact = bottlenecks.reduce((sum, b) => sum + b.estimatedImpact.performanceImprovement, 0) / bottlenecks.length || 0;
+    const estimatedImpact =
+      bottlenecks.reduce(
+        (sum, b) => sum + b.estimatedImpact.performanceImprovement,
+        0,
+      ) / bottlenecks.length || 0;
 
     return {
       immediate: Array.from(new Set(immediate)),
       shortTerm: Array.from(new Set(shortTerm)),
       longTerm: Array.from(new Set(longTerm)),
-      estimatedImpact
+      estimatedImpact,
     };
   }
 
   /**
    * Analyze cost impact of performance issues
    */
-  private async analyzeCostImpact(metrics: PerformanceMetrics, bottlenecks: PerformanceBottleneck[], _apiClient: MakeApiClient): Promise<CostAnalysis> {
-    const costSavings = bottlenecks.reduce((sum, b) => sum + b.estimatedImpact.costSavings, 0) / bottlenecks.length || 0;
+  private async analyzeCostImpact(
+    metrics: PerformanceMetrics,
+    bottlenecks: PerformanceBottleneck[],
+    _apiClient: MakeApiClient,
+  ): Promise<CostAnalysis> {
+    const costSavings =
+      bottlenecks.reduce((sum, b) => sum + b.estimatedImpact.costSavings, 0) /
+        bottlenecks.length || 0;
 
     return {
       currentCost: 1000, // Placeholder - would calculate from actual usage
       optimizationPotential: costSavings,
       recommendedActions: [
-        'Implement request caching to reduce API calls',
-        'Optimize workflow patterns to reduce operation count',
-        'Use batch operations where possible'
-      ]
+        "Implement request caching to reduce API calls",
+        "Optimize workflow patterns to reduce operation count",
+        "Use batch operations where possible",
+      ],
     };
   }
 
@@ -1017,125 +1250,155 @@ class PerformanceAnalysisEngine {
    * Format metrics for output
    */
   private formatMetrics(metrics: PerformanceMetrics): MetricsFormattingResult {
-    const responseTimeValue = typeof metrics.responseTime === 'number' ? metrics.responseTime : 
-                             (typeof metrics.responseTime === 'object' ? metrics.responseTime.average : 0);
-    
+    const responseTimeValue =
+      typeof metrics.responseTime === "number"
+        ? metrics.responseTime
+        : typeof metrics.responseTime === "object"
+          ? metrics.responseTime.average
+          : 0;
+
     return {
       responseTime: {
         average: responseTimeValue,
         p50: responseTimeValue,
         p95: responseTimeValue * 1.5,
         p99: responseTimeValue * 2,
-        trend: 'stable' as const
+        trend: "stable" as const,
       },
       throughput: {
         requestsPerSecond: 10,
         requestsPerMinute: 600,
-        trend: 'stable' as const
+        trend: "stable" as const,
       },
       reliability: {
         uptime: 99.9,
         errorRate: 0.01,
         successRate: 0.99,
-        trend: 'stable' as const
+        trend: "stable" as const,
       },
       resources: {
-        cpuUsage: (typeof metrics.cpu === 'object' && metrics.cpu ? (metrics.cpu as CpuMetrics).utilization : 0) || 0.3,
-        memoryUsage: (typeof metrics.memory === 'object' && metrics.memory ? (metrics.memory).utilization : (typeof metrics.memory === 'number' ? metrics.memory : 0)) || 0.6,
+        cpuUsage:
+          (typeof metrics.cpu === "object" && metrics.cpu
+            ? (metrics.cpu as CpuMetrics).utilization
+            : 0) || 0.3,
+        memoryUsage:
+          (typeof metrics.memory === "object" && metrics.memory
+            ? metrics.memory.utilization
+            : typeof metrics.memory === "number"
+              ? metrics.memory
+              : 0) || 0.6,
         networkUtilization: 0.4,
-        trend: 'stable' as const
-      }
+        trend: "stable" as const,
+      },
     };
   }
 
   /**
    * Aggregate analysis results
    */
-  private aggregateAnalysisResults(analyses: PerformanceAnalysisResult[]): PerformanceAnalysisResult {
-    const avgHealthScore = analyses.reduce((sum, a) => sum + a.overallHealthScore, 0) / analyses.length;
-    const allBottlenecks = analyses.flatMap(a => a.bottlenecks);
-    
+  private aggregateAnalysisResults(
+    analyses: PerformanceAnalysisResult[],
+  ): PerformanceAnalysisResult {
+    const avgHealthScore =
+      analyses.reduce((sum, a) => sum + a.overallHealthScore, 0) /
+      analyses.length;
+    const allBottlenecks = analyses.flatMap((a) => a.bottlenecks);
+
     // Use the first analysis as a template and merge data
     const template = analyses[0];
-    
+
     return {
       ...template,
-      targetType: 'comprehensive',
+      targetType: "comprehensive",
       overallHealthScore: Math.round(avgHealthScore),
       performanceGrade: this.calculatePerformanceGrade(avgHealthScore),
       bottlenecks: allBottlenecks,
       recommendations: {
-        immediate: Array.from(new Set(analyses.flatMap(a => a.recommendations.immediate))),
-        shortTerm: Array.from(new Set(analyses.flatMap(a => a.recommendations.shortTerm))),
-        longTerm: Array.from(new Set(analyses.flatMap(a => a.recommendations.longTerm))),
-        estimatedImpact: analyses.reduce((sum, a) => sum + a.recommendations.estimatedImpact, 0) / analyses.length
-      }
+        immediate: Array.from(
+          new Set(analyses.flatMap((a) => a.recommendations.immediate)),
+        ),
+        shortTerm: Array.from(
+          new Set(analyses.flatMap((a) => a.recommendations.shortTerm)),
+        ),
+        longTerm: Array.from(
+          new Set(analyses.flatMap((a) => a.recommendations.longTerm)),
+        ),
+        estimatedImpact:
+          analyses.reduce(
+            (sum, a) => sum + a.recommendations.estimatedImpact,
+            0,
+          ) / analyses.length,
+      },
     };
   }
 
   /**
    * Collect live performance metrics
    */
-  private async collectLiveMetrics(alertThresholds: AlertThresholds): Promise<LivePerformanceUpdate> {
+  private async collectLiveMetrics(
+    alertThresholds: AlertThresholds,
+  ): Promise<LivePerformanceUpdate> {
     const memUsage = process.memoryUsage();
     const cpuUsage = process.cpuUsage();
-    
+
     const metrics = {
       responseTime: 500, // Simulated
-      requestRate: 10,   // Simulated
-      errorRate: 0.01,   // Simulated
+      requestRate: 10, // Simulated
+      errorRate: 0.01, // Simulated
       cpuUsage: (cpuUsage.user + cpuUsage.system) / 1000000 / process.uptime(),
-      memoryUsage: memUsage.heapUsed / memUsage.heapTotal
+      memoryUsage: memUsage.heapUsed / memUsage.heapTotal,
     };
 
     const alerts: Array<{
       type: string;
-      severity: 'warning' | 'error' | 'critical';
+      severity: "warning" | "error" | "critical";
       message: string;
       threshold: number;
       currentValue: number;
     }> = [];
-    let status: 'healthy' | 'warning' | 'critical' = 'healthy';
+    let status: "healthy" | "warning" | "critical" = "healthy";
 
     // Check alert thresholds
     if (metrics.responseTime > alertThresholds.responseTime) {
       alerts.push({
-        type: 'response_time',
-        severity: 'warning' as const,
+        type: "response_time",
+        severity: "warning" as const,
         message: `Response time ${metrics.responseTime}ms exceeds threshold`,
         threshold: alertThresholds.responseTime,
-        currentValue: metrics.responseTime
+        currentValue: metrics.responseTime,
       });
-      status = 'warning';
+      status = "warning";
     }
 
     if (metrics.errorRate > alertThresholds.errorRate) {
       alerts.push({
-        type: 'error_rate',
-        severity: 'error' as const,
+        type: "error_rate",
+        severity: "error" as const,
         message: `Error rate ${(metrics.errorRate * 100).toFixed(2)}% exceeds threshold`,
         threshold: alertThresholds.errorRate,
-        currentValue: metrics.errorRate
+        currentValue: metrics.errorRate,
       });
-      status = 'critical';
+      status = "critical";
     }
 
     if (metrics.memoryUsage > alertThresholds.memoryUsage) {
       alerts.push({
-        type: 'memory_usage',
-        severity: 'warning' as const,
+        type: "memory_usage",
+        severity: "warning" as const,
         message: `Memory usage ${(metrics.memoryUsage * 100).toFixed(1)}% exceeds threshold`,
         threshold: alertThresholds.memoryUsage,
-        currentValue: metrics.memoryUsage
+        currentValue: metrics.memoryUsage,
       });
-      if (status === 'healthy') {status = 'warning';}
+      if (status === "healthy") {
+        status = "warning";
+      }
     }
 
     return {
       timestamp: new Date().toISOString(),
       metrics,
       alerts,
-      status
+      status,
     };
   }
 
@@ -1143,12 +1406,14 @@ class PerformanceAnalysisEngine {
    * Check if bottleneck matches severity filter
    */
   private matchesSeverityFilter(severity: string, filter: string): boolean {
-    if (filter === 'all') {return true;}
-    
-    const severityLevels = ['low', 'medium', 'high', 'critical'];
+    if (filter === "all") {
+      return true;
+    }
+
+    const severityLevels = ["low", "medium", "high", "critical"];
     const severityIndex = severityLevels.indexOf(severity);
     const filterIndex = severityLevels.indexOf(filter);
-    
+
     return severityIndex >= filterIndex;
   }
 }
@@ -1159,24 +1424,25 @@ class PerformanceAnalysisEngine {
 function addPerformanceBottleneckAnalysisTool(
   server: FastMCP,
   apiClient: MakeApiClient,
-  analysisEngine: PerformanceAnalysisEngine
+  analysisEngine: PerformanceAnalysisEngine,
 ): void {
   server.addTool({
-    name: 'analyze-performance-bottlenecks',
-    description: 'Comprehensive performance analysis with bottleneck detection, trend analysis, and optimization recommendations',
+    name: "analyze-performance-bottlenecks",
+    description:
+      "Comprehensive performance analysis with bottleneck detection, trend analysis, and optimization recommendations",
     parameters: PerformanceAnalysisSchema,
     annotations: {
-      title: 'Performance Bottleneck Analysis',
+      title: "Performance Bottleneck Analysis",
       readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (args, { log, reportProgress }) => {
-      const { 
-        targetType, 
-        targetId, 
-        analysisOptions = { 
+      const {
+        targetType,
+        targetId,
+        analysisOptions = {
           timeRangeHours: 24,
           includeBottleneckDetection: true,
           includePerformanceMetrics: true,
@@ -1184,44 +1450,47 @@ function addPerformanceBottleneckAnalysisTool(
           includeOptimizationRecommendations: true,
           includeCostAnalysis: false,
           performanceBenchmarking: true,
-          detailedBreakdown: false
-        }, 
+          detailedBreakdown: false,
+        },
         filters = {
           errorThreshold: 0.05,
-          severityFilter: 'all' as const
-        } as PerformanceAnalysisFilters
+          severityFilter: "all" as const,
+        } as PerformanceAnalysisFilters,
       } = args;
 
-      log?.info('Starting performance bottleneck analysis', {
+      log?.info("Starting performance bottleneck analysis", {
         targetType,
         targetId,
-        timeRangeHours: analysisOptions.timeRangeHours
+        timeRangeHours: analysisOptions.timeRangeHours,
       });
 
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
         reportProgress?.({ progress: 20, total: 100 });
-        
+
         const result = await analysisEngine.analyzePerformanceBottlenecks(
           targetType,
           targetId,
           {
             timeRangeHours: analysisOptions.timeRangeHours,
-            includeBottleneckDetection: analysisOptions.includeBottleneckDetection,
-            includePerformanceMetrics: analysisOptions.includePerformanceMetrics,
+            includeBottleneckDetection:
+              analysisOptions.includeBottleneckDetection,
+            includePerformanceMetrics:
+              analysisOptions.includePerformanceMetrics,
             includeTrendAnalysis: analysisOptions.includeTrendAnalysis,
-            includeOptimizationRecommendations: analysisOptions.includeOptimizationRecommendations,
+            includeOptimizationRecommendations:
+              analysisOptions.includeOptimizationRecommendations,
             includeCostAnalysis: analysisOptions.includeCostAnalysis,
             performanceBenchmarking: analysisOptions.performanceBenchmarking,
-            detailedBreakdown: analysisOptions.detailedBreakdown
+            detailedBreakdown: analysisOptions.detailedBreakdown,
           } as PerformanceAnalysisOptions,
-          { 
+          {
             errorThreshold: filters.errorThreshold || 0.05,
-            severityFilter: filters.severityFilter || 'all',
-            minExecutionTime: filters.minExecutionTime
+            severityFilter: filters.severityFilter || "all",
+            minExecutionTime: filters.minExecutionTime,
           } as PerformanceAnalysisFilters,
-          apiClient
+          apiClient,
         );
 
         reportProgress?.({ progress: 100, total: 100 });
@@ -1231,33 +1500,43 @@ function addPerformanceBottleneckAnalysisTool(
           summary: {
             overallHealth: `${result.overallHealthScore}/100 (Grade: ${result.performanceGrade})`,
             bottlenecksFound: result.bottlenecks.length,
-            criticalIssues: result.bottlenecks.filter(b => b.severity === 'critical').length,
+            criticalIssues: result.bottlenecks.filter(
+              (b) => b.severity === "critical",
+            ).length,
             immediateActions: result.recommendations.immediate.length,
             estimatedImprovement: `${result.recommendations.estimatedImpact}%`,
-            benchmarkRanking: result.benchmarkComparison.ranking
+            benchmarkRanking: result.benchmarkComparison.ranking,
           },
-          nextSteps: result.recommendations.immediate.length > 0 
-            ? result.recommendations.immediate.slice(0, 3)
-            : ['No immediate actions required - system performing well']
+          nextSteps:
+            result.recommendations.immediate.length > 0
+              ? result.recommendations.immediate.slice(0, 3)
+              : ["No immediate actions required - system performing well"],
         };
 
-        log?.info('Performance analysis completed', {
+        log?.info("Performance analysis completed", {
           targetType,
           healthScore: result.overallHealthScore,
           bottleneckCount: result.bottlenecks.length,
-          grade: result.performanceGrade
+          grade: result.performanceGrade,
         });
 
         // Record metrics
-        metrics.recordToolExecution('analyze-performance-bottlenecks', 'success', Date.now() - Date.now());
+        metrics.recordToolExecution(
+          "analyze-performance-bottlenecks",
+          "success",
+          Date.now() - Date.now(),
+        );
 
         return formatSuccessResponse(response).content[0].text;
-
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error('Performance analysis failed', { error: errorMessage });
-        
-        metrics.recordError('performance_analysis_failed', 'analyze-performance-bottlenecks');
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        log?.error("Performance analysis failed", { error: errorMessage });
+
+        metrics.recordError(
+          "performance_analysis_failed",
+          "analyze-performance-bottlenecks",
+        );
         throw new UserError(`Performance analysis failed: ${errorMessage}`);
       }
     },
@@ -1270,58 +1549,69 @@ function addPerformanceBottleneckAnalysisTool(
 function addComprehensivePerformanceAnalysisTool(
   server: FastMCP,
   apiClient: MakeApiClient,
-  analysisEngine: PerformanceAnalysisEngine
+  analysisEngine: PerformanceAnalysisEngine,
 ): void {
   server.addTool({
-    name: 'comprehensive-performance-analysis',
-    description: 'System-wide performance analysis covering all components (API, webhooks, scenarios, system metrics)',
+    name: "comprehensive-performance-analysis",
+    description:
+      "System-wide performance analysis covering all components (API, webhooks, scenarios, system metrics)",
     parameters: ComprehensiveAnalysisSchema,
     annotations: {
-      title: 'Comprehensive Performance Analysis',
+      title: "Comprehensive Performance Analysis",
       readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (args, { log, reportProgress }) => {
-      log?.info('Starting comprehensive performance analysis');
+      log?.info("Starting comprehensive performance analysis");
       reportProgress?.({ progress: 0, total: 100 });
 
       try {
-        const result = await analysisEngine.performComprehensiveAnalysis({
-          timeRangeHours: args.timeRangeHours,
-          includeSystemMetrics: args.includeSystemMetrics,
-          includeApiMetrics: args.includeApiMetrics,
-          includeWebhookMetrics: args.includeWebhookMetrics,
-          includeScenarioMetrics: args.includeScenarioMetrics,
-          generateRecommendations: args.generateRecommendations,
-          benchmarkComparison: args.benchmarkComparison
-        } as PerformanceAnalysisOptions, apiClient);
+        const result = await analysisEngine.performComprehensiveAnalysis(
+          {
+            timeRangeHours: args.timeRangeHours,
+            includeSystemMetrics: args.includeSystemMetrics,
+            includeApiMetrics: args.includeApiMetrics,
+            includeWebhookMetrics: args.includeWebhookMetrics,
+            includeScenarioMetrics: args.includeScenarioMetrics,
+            generateRecommendations: args.generateRecommendations,
+            benchmarkComparison: args.benchmarkComparison,
+          } as PerformanceAnalysisOptions,
+          apiClient,
+        );
         reportProgress?.({ progress: 100, total: 100 });
 
         const response = {
           analysis: result,
           executiveSummary: {
             overallHealth: `${result.overallHealthScore}/100 (Grade: ${result.performanceGrade})`,
-            systemStatus: result.overallHealthScore > 80 ? 'Healthy' : result.overallHealthScore > 60 ? 'Needs Attention' : 'Critical',
+            systemStatus:
+              result.overallHealthScore > 80
+                ? "Healthy"
+                : result.overallHealthScore > 60
+                  ? "Needs Attention"
+                  : "Critical",
             totalBottlenecks: result.bottlenecks.length,
-            criticalIssues: result.bottlenecks.filter(b => b.severity === 'critical').length,
+            criticalIssues: result.bottlenecks.filter(
+              (b) => b.severity === "critical",
+            ).length,
             topRecommendations: result.recommendations.immediate.slice(0, 5),
-            benchmarkComparison: result.benchmarkComparison.ranking
-          }
+            benchmarkComparison: result.benchmarkComparison.ranking,
+          },
         };
 
-        log?.info('Comprehensive analysis completed', {
+        log?.info("Comprehensive analysis completed", {
           healthScore: result.overallHealthScore,
-          bottleneckCount: result.bottlenecks.length
+          bottleneckCount: result.bottlenecks.length,
         });
 
         return formatSuccessResponse(response).content[0].text;
-
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error('Comprehensive analysis failed', { error: errorMessage });
-        
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        log?.error("Comprehensive analysis failed", { error: errorMessage });
+
         throw new UserError(`Comprehensive analysis failed: ${errorMessage}`);
       }
     },
@@ -1334,91 +1624,111 @@ function addComprehensivePerformanceAnalysisTool(
 function addLivePerformanceMonitoringTool(
   server: FastMCP,
   _apiClient: MakeApiClient,
-  analysisEngine: PerformanceAnalysisEngine
+  analysisEngine: PerformanceAnalysisEngine,
 ): void {
   server.addTool({
-    name: 'live-performance-monitoring',
-    description: 'Real-time performance monitoring with configurable alerting and sampling intervals',
+    name: "live-performance-monitoring",
+    description:
+      "Real-time performance monitoring with configurable alerting and sampling intervals",
     parameters: LiveAnalysisSchema,
     annotations: {
-      title: 'Live Performance Monitoring',
+      title: "Live Performance Monitoring",
       readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: true,
     },
     execute: async (args, { log, reportProgress }) => {
-      log?.info('Starting live performance monitoring', {
+      log?.info("Starting live performance monitoring", {
         durationMinutes: args.durationMinutes,
-        samplingInterval: args.samplingIntervalSeconds
+        samplingInterval: args.samplingIntervalSeconds,
       });
 
       try {
         const updates: LivePerformanceUpdate[] = [];
         let progress = 0;
-        const totalUpdates = (args.durationMinutes * 60) / args.samplingIntervalSeconds;
+        const totalUpdates =
+          (args.durationMinutes * 60) / args.samplingIntervalSeconds;
 
-        const monitoringResults = await analysisEngine.performLiveAnalysis({
-          timeRangeHours: args.durationMinutes / 60,
-          durationMinutes: args.durationMinutes,
-          samplingIntervalSeconds: args.samplingIntervalSeconds,
-          alertThresholds: args.alertThresholds ? {
-            responseTime: args.alertThresholds.responseTime || 1000,
-            errorRate: args.alertThresholds.errorRate || 0.05,
-            cpuUsage: args.alertThresholds.cpuUsage || 0.8,
-            memoryUsage: args.alertThresholds.memoryUsage || 0.85
-          } as AlertThresholds : {
-            responseTime: 1000,
-            errorRate: 0.05,
-            cpuUsage: 0.8,
-            memoryUsage: 0.85
-          } as AlertThresholds
-        } as PerformanceAnalysisOptions, (update) => {
-          updates.push(update);
-          progress = Math.round((updates.length / totalUpdates) * 100);
-          reportProgress?.({ progress, total: 100 });
-          
-          // Log any alerts
-          if (update.alerts.length > 0) {
-            log?.warn('Performance alerts detected', {
-              status: update.status,
-              alertCount: update.alerts.length,
-              alerts: update.alerts.map(a => a.message)
-            });
-          }
-        });
+        const monitoringResults = await analysisEngine.performLiveAnalysis(
+          {
+            timeRangeHours: args.durationMinutes / 60,
+            durationMinutes: args.durationMinutes,
+            samplingIntervalSeconds: args.samplingIntervalSeconds,
+            alertThresholds: args.alertThresholds
+              ? ({
+                  responseTime: args.alertThresholds.responseTime || 1000,
+                  errorRate: args.alertThresholds.errorRate || 0.05,
+                  cpuUsage: args.alertThresholds.cpuUsage || 0.8,
+                  memoryUsage: args.alertThresholds.memoryUsage || 0.85,
+                } as AlertThresholds)
+              : ({
+                  responseTime: 1000,
+                  errorRate: 0.05,
+                  cpuUsage: 0.8,
+                  memoryUsage: 0.85,
+                } as AlertThresholds),
+          } as PerformanceAnalysisOptions,
+          (update) => {
+            updates.push(update);
+            progress = Math.round((updates.length / totalUpdates) * 100);
+            reportProgress?.({ progress, total: 100 });
+
+            // Log any alerts
+            if (update.alerts.length > 0) {
+              log?.warn("Performance alerts detected", {
+                status: update.status,
+                alertCount: update.alerts.length,
+                alerts: update.alerts.map((a) => a.message),
+              });
+            }
+          },
+        );
 
         const summary = {
           monitoringDuration: `${args.durationMinutes} minutes`,
           totalSamples: monitoringResults.length,
-          alertsGenerated: monitoringResults.reduce((sum, u) => sum + u.alerts.length, 0),
-          averageResponseTime: monitoringResults.reduce((sum, u) => sum + u.metrics.responseTime, 0) / monitoringResults.length,
-          maxResponseTime: Math.max(...monitoringResults.map(u => u.metrics.responseTime)),
+          alertsGenerated: monitoringResults.reduce(
+            (sum, u) => sum + u.alerts.length,
+            0,
+          ),
+          averageResponseTime:
+            monitoringResults.reduce(
+              (sum, u) => sum + u.metrics.responseTime,
+              0,
+            ) / monitoringResults.length,
+          maxResponseTime: Math.max(
+            ...monitoringResults.map((u) => u.metrics.responseTime),
+          ),
           statusBreakdown: {
-            healthy: monitoringResults.filter(u => u.status === 'healthy').length,
-            warning: monitoringResults.filter(u => u.status === 'warning').length,
-            critical: monitoringResults.filter(u => u.status === 'critical').length
-          }
+            healthy: monitoringResults.filter((u) => u.status === "healthy")
+              .length,
+            warning: monitoringResults.filter((u) => u.status === "warning")
+              .length,
+            critical: monitoringResults.filter((u) => u.status === "critical")
+              .length,
+          },
         };
 
         const response = {
           summary,
           liveUpdates: monitoringResults,
-          recommendations: generateLiveMonitoringRecommendations(monitoringResults)
+          recommendations:
+            generateLiveMonitoringRecommendations(monitoringResults),
         };
 
-        log?.info('Live monitoring completed', {
+        log?.info("Live monitoring completed", {
           samples: monitoringResults.length,
           alerts: summary.alertsGenerated,
-          avgResponseTime: summary.averageResponseTime
+          avgResponseTime: summary.averageResponseTime,
         });
 
         return formatSuccessResponse(response).content[0].text;
-
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log?.error('Live monitoring failed', { error: errorMessage });
-        
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        log?.error("Live monitoring failed", { error: errorMessage });
+
         throw new UserError(`Live monitoring failed: ${errorMessage}`);
       }
     },
@@ -1428,10 +1738,13 @@ function addLivePerformanceMonitoringTool(
 /**
  * Add performance analysis tools to FastMCP server
  */
-export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiClient): void {
+export function addPerformanceAnalysisTools(
+  server: FastMCP,
+  apiClient: MakeApiClient,
+): void {
   const getComponentLogger = (): ReturnType<typeof logger.child> => {
     try {
-      return logger.child({ component: 'PerformanceAnalysisTools' });
+      return logger.child({ component: "PerformanceAnalysisTools" });
     } catch {
       // Fallback for test environments
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1440,43 +1753,55 @@ export function addPerformanceAnalysisTools(server: FastMCP, apiClient: MakeApiC
   };
   const componentLogger = getComponentLogger();
   const analysisEngine = new PerformanceAnalysisEngine();
-  
-  componentLogger.info('Adding performance analysis tools');
+
+  componentLogger.info("Adding performance analysis tools");
 
   // Add core performance analysis tools
   addPerformanceBottleneckAnalysisTool(server, apiClient, analysisEngine);
   addComprehensivePerformanceAnalysisTool(server, apiClient, analysisEngine);
   addLivePerformanceMonitoringTool(server, apiClient, analysisEngine);
 
-  componentLogger.info('Performance analysis tools added successfully');
+  componentLogger.info("Performance analysis tools added successfully");
 }
 
 /**
  * Generate recommendations based on live monitoring results
  */
-function generateLiveMonitoringRecommendations(updates: LivePerformanceUpdate[]): string[] {
+function generateLiveMonitoringRecommendations(
+  updates: LivePerformanceUpdate[],
+): string[] {
   const recommendations: string[] = [];
-  
-  const criticalCount = updates.filter(u => u.status === 'critical').length;
-  const warningCount = updates.filter(u => u.status === 'warning').length;
-  
+
+  const criticalCount = updates.filter((u) => u.status === "critical").length;
+  const warningCount = updates.filter((u) => u.status === "warning").length;
+
   if (criticalCount > 0) {
-    recommendations.push(`${criticalCount} critical alerts detected - immediate investigation required`);
+    recommendations.push(
+      `${criticalCount} critical alerts detected - immediate investigation required`,
+    );
   }
-  
+
   if (warningCount > updates.length * 0.3) {
-    recommendations.push('High warning rate indicates potential performance degradation');
+    recommendations.push(
+      "High warning rate indicates potential performance degradation",
+    );
   }
-  
-  const avgResponseTime = updates.reduce((sum, u) => sum + u.metrics.responseTime, 0) / updates.length;
+
+  const avgResponseTime =
+    updates.reduce((sum, u) => sum + u.metrics.responseTime, 0) /
+    updates.length;
   if (avgResponseTime > 1000) {
-    recommendations.push('Average response time exceeds 1 second - consider optimization');
+    recommendations.push(
+      "Average response time exceeds 1 second - consider optimization",
+    );
   }
-  
+
   if (recommendations.length === 0) {
-    recommendations.push('System performance appears stable during monitoring period');
+    recommendations.push(
+      "System performance appears stable during monitoring period",
+    );
   }
-  
+
   return recommendations;
 }
 

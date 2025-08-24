@@ -8,6 +8,7 @@ import Bottleneck from 'bottleneck';
 import { MakeApiConfig, ApiResponse, MakeApiError } from '../types/index.js';
 import logger from './logger.js';
 import { secureConfigManager } from './secure-config.js';
+import { credentialSecurityValidator } from './credential-security-validator.js';
 
 export class MakeApiClient {
   private readonly axiosInstance: AxiosInstance;
@@ -29,6 +30,9 @@ export class MakeApiClient {
       }
     };
     this.componentLogger = getComponentLogger();
+    
+    // Validate API key security on initialization
+    this.validateCredentialSecurity(config.apiKey);
     
     this.axiosInstance = axios.create({
       baseURL: config.baseUrl,
@@ -85,12 +89,16 @@ export class MakeApiClient {
     try {
       const secureConfig = await secureConfigManager.getSecureMakeConfig(this.userId);
       
+      // Validate new credentials before using them
+      this.validateCredentialSecurity(secureConfig.apiKey);
+      
       // Update the authorization header
       this.axiosInstance.defaults.headers.Authorization = `Token ${secureConfig.apiKey}`;
       this.config = secureConfig;
       
       this.componentLogger.info('API credentials refreshed successfully', {
-        userId: this.userId
+        userId: this.userId,
+        credentialValidated: true
       });
     } catch (error) {
       this.componentLogger.error('Failed to refresh API credentials', {
@@ -98,6 +106,113 @@ export class MakeApiClient {
         userId: this.userId
       });
       throw error;
+    }
+  }
+
+  /**
+   * Validate credential security and log warnings
+   */
+  private validateCredentialSecurity(apiKey: string): void {
+    try {
+      const validation = credentialSecurityValidator.validateMakeApiKey(apiKey);
+      
+      if (!validation.isValid) {
+        this.componentLogger.error('API key validation failed', {
+          errors: validation.errors,
+          score: validation.score
+        });
+        throw new Error(`API key validation failed: ${validation.errors.join(', ')}`);
+      }
+      
+      if (validation.score < 70) {
+        this.componentLogger.warn('API key security score below recommended threshold', {
+          score: validation.score,
+          warnings: validation.warnings,
+          recommendations: validation.recommendations
+        });
+      }
+      
+      if (validation.warnings.length > 0) {
+        this.componentLogger.warn('API key security warnings detected', {
+          warnings: validation.warnings,
+          score: validation.score
+        });
+      }
+      
+      this.componentLogger.debug('API key validation completed', {
+        isValid: validation.isValid,
+        score: validation.score,
+        strengths: validation.strengths
+      });
+    } catch (error) {
+      this.componentLogger.error('Failed to validate API key security', {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Check if credentials need rotation based on age and security policy
+   */
+  public async checkCredentialRotation(): Promise<{
+    needsRotation: boolean;
+    recommendation: string;
+    daysUntilExpiry?: number;
+  }> {
+    try {
+      // Get credential metadata if available
+      const credentialId = process.env.MAKE_API_KEY_CREDENTIAL_ID;
+      if (!credentialId) {
+        return {
+          needsRotation: false,
+          recommendation: 'Using non-managed credential - consider migrating to secure storage'
+        };
+      }
+      
+      const status = secureConfigManager.getCredentialStatus(credentialId);
+      
+      if (status.status === 'not_found') {
+        return {
+          needsRotation: true,
+          recommendation: 'Credential not found in secure storage - immediate rotation required'
+        };
+      }
+      
+      const needsRotation = ['rotation_due', 'expired'].includes(status.status);
+      
+      return {
+        needsRotation,
+        recommendation: this.getRotationRecommendation(status.status, status.daysUntilRotation),
+        daysUntilExpiry: status.daysUntilRotation
+      };
+    } catch (error) {
+      this.componentLogger.error('Failed to check credential rotation status', {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      return {
+        needsRotation: true,
+        recommendation: 'Unable to verify credential status - rotation recommended'
+      };
+    }
+  }
+
+  /**
+   * Get rotation recommendation based on credential status
+   */
+  private getRotationRecommendation(status: string, daysUntilRotation?: number): string {
+    switch (status) {
+      case 'expired':
+        return 'Credential has expired - immediate rotation required';
+      case 'rotation_due':
+        return 'Credential rotation is due - rotate as soon as possible';
+      case 'healthy':
+        if (daysUntilRotation && daysUntilRotation <= 14) {
+          return `Credential rotation due in ${daysUntilRotation} days - plan rotation soon`;
+        }
+        return 'Credential is healthy - no immediate action required';
+      default:
+        return 'Unknown credential status - verify configuration';
     }
   }
 
@@ -276,14 +391,70 @@ export class MakeApiClient {
     );
   }
 
-  // Health check method
-  public async healthCheck(): Promise<boolean> {
+  // Enhanced health check with credential validation
+  public async healthCheck(): Promise<{
+    healthy: boolean;
+    credentialValid: boolean;
+    rotationNeeded: boolean;
+    securityScore?: number;
+    issues: string[];
+  }> {
+    const issues: string[] = [];
+    let healthy = false;
+    let credentialValid = true;
+    let rotationNeeded = false;
+    let securityScore: number | undefined;
+    
     try {
+      // Check credential security first
+      const validation = credentialSecurityValidator.validateMakeApiKey(this.config.apiKey);
+      credentialValid = validation.isValid;
+      securityScore = validation.score;
+      
+      if (!credentialValid) {
+        issues.push(`Credential validation failed: ${validation.errors.join(', ')}`);
+      }
+      
+      if (validation.score < 60) {
+        issues.push(`Low security score: ${validation.score}/100`);
+      }
+      
+      // Check rotation requirements
+      const rotationCheck = await this.checkCredentialRotation();
+      rotationNeeded = rotationCheck.needsRotation;
+      
+      if (rotationNeeded) {
+        issues.push(rotationCheck.recommendation);
+      }
+      
+      // Test API connectivity
       const response = await this.get('/users/me');
-      return response.success;
+      healthy = response.success;
+      
+      if (!healthy) {
+        issues.push('API connectivity test failed');
+      }
+      
+      return {
+        healthy: healthy && credentialValid,
+        credentialValid,
+        rotationNeeded,
+        securityScore,
+        issues
+      };
     } catch (error) {
-      this.componentLogger.error('Health check failed', error as Record<string, unknown>);
-      return false;
+      issues.push(`Health check error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.componentLogger.error('Enhanced health check failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        issues
+      });
+      
+      return {
+        healthy: false,
+        credentialValid: false,
+        rotationNeeded: true,
+        issues
+      };
     }
   }
 
@@ -300,10 +471,28 @@ export class MakeApiClient {
     };
   }
 
-  // Graceful shutdown
+  // Graceful shutdown with credential cleanup
   public async shutdown(): Promise<void> {
     this.componentLogger.info('Shutting down API client');
-    await this.limiter.stop({ dropWaitingJobs: false });
+    
+    try {
+      // Check and log final credential status
+      const rotationCheck = await this.checkCredentialRotation();
+      if (rotationCheck.needsRotation) {
+        this.componentLogger.warn('Credential rotation needed before next startup', {
+          recommendation: rotationCheck.recommendation
+        });
+      }
+      
+      await this.limiter.stop({ dropWaitingJobs: false });
+      this.componentLogger.info('API client shutdown completed successfully');
+    } catch (error) {
+      this.componentLogger.error('Error during API client shutdown', {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      // Still attempt to stop the limiter
+      await this.limiter.stop({ dropWaitingJobs: true });
+    }
   }
 }
 

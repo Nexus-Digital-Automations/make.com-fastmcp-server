@@ -6,6 +6,7 @@
 import { config as dotenvConfig } from 'dotenv';
 import { z } from 'zod';
 import { ServerConfig, MakeApiConfig, RateLimitConfig } from '../types/index.js';
+import { createCredentialValidator } from './credential-security-validator.js';
 
 // Load environment variables (suppress promotional output for MCP protocol compatibility)
 // Temporarily redirect stdout to stderr during dotenv loading to prevent MCP protocol corruption
@@ -213,16 +214,57 @@ class ConfigManager {
     if (!value || value.trim() === '') {
       throw new ConfigurationError(`Required environment variable is missing or empty`, key);
     }
+    
+    // Enhanced credential validation
+    if (key === 'MAKE_API_KEY') {
+      this.validateApiKeyStrength(value.trim());
+    }
+    
     return value.trim();
+  }
+
+  /**
+   * Validate API key strength and format
+   */
+  private validateApiKeyStrength(apiKey: string): void {
+    const validator = createCredentialValidator();
+    const validationResult = validator.validateMakeApiKey(apiKey);
+    
+    if (!validationResult.isValid) {
+      throw new ValidationError(`API key validation failed: ${validationResult.errors.join(', ')}`, 'MAKE_API_KEY', apiKey);
+    }
+    
+    // Check for weak patterns
+    const weakPatterns = validator.checkWeakPatterns(apiKey);
+    if (weakPatterns.length > 0) {
+      console.warn(`WARNING: API key may have weak patterns: ${weakPatterns.join(', ')}`);
+    }
   }
 
   private validateConfig(): void {
     // Additional business logic validation beyond schema validation
     const errors: string[] = [];
 
-    // Validate Make.com API key format (basic check)
-    if (this.config.make.apiKey && this.config.make.apiKey.length < 10) {
-      errors.push('Make.com API key appears to be too short (should be at least 10 characters)');
+    // Enhanced Make.com API key validation
+    if (this.config.make.apiKey) {
+      const validator = createCredentialValidator();
+      const validationResult = validator.validateMakeApiKey(this.config.make.apiKey);
+      
+      if (!validationResult.isValid) {
+        errors.push(`Make.com API key validation failed: ${validationResult.errors.join(', ')}`);
+      }
+      
+      // Security strength assessment
+      const securityScore = validator.assessSecurityStrength(this.config.make.apiKey);
+      if (securityScore.score < 60) {
+        errors.push(`Make.com API key security score too low (${securityScore.score}/100). Issues: ${securityScore.weaknesses.join(', ')}`);
+      }
+      
+      // Check for credential exposure patterns
+      const exposureRisks = validator.checkCredentialExposure(this.config.make.apiKey);
+      if (exposureRisks.length > 0) {
+        console.warn(`WARNING: API key may have exposure risks: ${exposureRisks.join(', ')}`);
+      }
     }
 
     // Validate port availability in development
@@ -376,9 +418,17 @@ export function createConfigurationValidator(): {
   validateLogLevel: (level: string) => boolean;
   generateSecureSecret: () => string;
 } {
+  // Import the credential validator
+  const credValidator = createCredentialValidator();
   return {
     validateMakeApiKey: (key: string): boolean => {
-      return Boolean(key && key.length >= 10 && key.trim().length > 0);
+      try {
+        const validation = credValidator.validateMakeApiKey(key);
+        return validation.isValid && validation.score >= 40;
+      } catch {
+        // Fallback to basic validation
+        return Boolean(key && key.length >= 10 && key.trim().length > 0);
+      }
     },
     
     validatePort: (port: number): boolean => {

@@ -378,7 +378,8 @@ ${
         };
 
         // Check Make.com API connectivity
-        const apiHealthy = await this.apiClient.healthCheck();
+        const apiHealthResult = await this.apiClient.healthCheck();
+        const apiHealthy = apiHealthResult.healthy;
         const responseTime = Date.now() - startTime;
 
         const rateLimiterStatus = this.apiClient.getRateLimiterStatus();
@@ -392,6 +393,10 @@ ${
             healthy: apiHealthy,
             responseTime: `${responseTime}ms`,
             rateLimiter: rateLimiterStatus,
+            credentialValid: apiHealthResult.credentialValid,
+            rotationNeeded: apiHealthResult.rotationNeeded,
+            securityScore: apiHealthResult.securityScore,
+            issues: apiHealthResult.issues,
           },
           ...(securityStatus && { security: securityStatus }),
           overall: this.determineOverallHealth(
