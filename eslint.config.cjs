@@ -145,11 +145,12 @@ module.exports = [
       'prefer-const': 'error',
       'no-var': 'error',
       
-      // Code complexity management - Adjusted for current codebase reality
-      'complexity': ['warn', { max: 25 }], // Increased from 15 to allow existing patterns
-      'max-lines-per-function': ['warn', { max: 200, skipBlankLines: true, skipComments: true }], // Increased from 100
-      'max-depth': ['warn', 5], // Increased from 4 to allow existing patterns
-      'max-nested-callbacks': ['error', 4],
+      // Code complexity management - Research-based refactoring targets
+      'complexity': ['error', { max: 12 }], // Target complexity after refactoring (Phase 1-4)
+      'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }], // Encourage smaller functions
+      'max-depth': ['error', { max: 4 }], // Reduce nesting complexity
+      'max-nested-callbacks': ['error', 3], // Simplified callback nesting
+      'max-params': ['warn', { max: 5 }], // Limit function parameter complexity
       
       // TypeScript best practices  
       // Temporarily disabled - requires strictNullChecks to be enabled
