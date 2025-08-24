@@ -76,6 +76,33 @@ const logger = winston.createLogger({
   ],
 });
 
+// Add pattern analysis transport if enabled
+if (process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false") {
+  import("./monitoring/pattern-analysis-transport")
+    .then(({ addPatternAnalysisToLogger }) => {
+      addPatternAnalysisToLogger(logger);
+    })
+    .catch((error) => {
+      logger.warn("Failed to load pattern analysis transport", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        correlationId: "pattern-analysis-init",
+      });
+    });
+
+  // Initialize pattern library
+  import("./monitoring/log-pattern-analyzer")
+    .then(async ({ LogPatternAnalyzer }) => {
+      const { ALL_PATTERNS } = await import("./monitoring/pattern-library");
+      LogPatternAnalyzer.registerPatterns(ALL_PATTERNS);
+    })
+    .catch((error) => {
+      logger.warn("Failed to initialize pattern library", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        correlationId: "pattern-library-init",
+      });
+    });
+}
+
 // Performance monitoring interfaces and classes
 interface PerformanceMetrics {
   timestamp: Date;
@@ -497,10 +524,10 @@ class HealthMonitor {
 // Dependency vulnerability severity mapping
 enum VulnerabilitySeverity {
   CRITICAL = "CRITICAL",
-  HIGH = "HIGH", 
+  HIGH = "HIGH",
   MODERATE = "MODERATE",
   LOW = "LOW",
-  INFO = "INFO"
+  INFO = "INFO",
 }
 
 interface VulnerabilityReport {
@@ -532,62 +559,70 @@ interface DependencyStatus {
 
 class DependencyMonitor {
   private static lastScan: DependencyStatus | null = null;
-  
+
   static async scanForVulnerabilities(): Promise<DependencyStatus> {
-    const { exec } = await import('child_process');
-    const { promisify } = await import('util');
+    const { exec } = await import("child_process");
+    const { promisify } = await import("util");
     const execAsync = promisify(exec);
-    
+
     const correlationId = uuidv4();
     const startTime = performance.now();
-    
-    logger.info('Starting dependency vulnerability scan', {
+
+    logger.info("Starting dependency vulnerability scan", {
       correlationId,
-      operation: 'dependency-scan'
+      operation: "dependency-scan",
     });
-    
+
     try {
       // Run npm audit to get vulnerability data
-      const { stdout: auditOutput } = await execAsync('npm audit --json', {
+      const { stdout: auditOutput } = await execAsync("npm audit --json", {
         cwd: process.cwd(),
-        timeout: 30000
+        timeout: 30000,
       });
-      
+
       const auditData = JSON.parse(auditOutput);
       const vulnerabilities: VulnerabilityReport[] = [];
-      
+
       // Parse npm audit results
       if (auditData.vulnerabilities) {
-        Object.entries(auditData.vulnerabilities).forEach(([packageName, vulnData]: [string, any]) => {
-          vulnerabilities.push({
-            packageName,
-            currentVersion: vulnData.via?.[0]?.range || 'unknown',
-            vulnerableVersions: vulnData.range || 'unknown',
-            severity: this.mapNpmSeverity(vulnData.severity),
-            title: vulnData.via?.[0]?.title || `Vulnerability in ${packageName}`,
-            url: vulnData.via?.[0]?.url,
-            cwe: vulnData.via?.[0]?.cwe,
-            cvss: vulnData.via?.[0]?.cvss
-          });
-        });
+        Object.entries(auditData.vulnerabilities).forEach(
+          ([packageName, vulnData]: [string, any]) => {
+            vulnerabilities.push({
+              packageName,
+              currentVersion: vulnData.via?.[0]?.range || "unknown",
+              vulnerableVersions: vulnData.range || "unknown",
+              severity: this.mapNpmSeverity(vulnData.severity),
+              title:
+                vulnData.via?.[0]?.title || `Vulnerability in ${packageName}`,
+              url: vulnData.via?.[0]?.url,
+              cwe: vulnData.via?.[0]?.cwe,
+              cvss: vulnData.via?.[0]?.cvss,
+            });
+          },
+        );
       }
-      
+
       // Check for outdated packages
       let outdatedPackages: any[] = [];
       try {
-        const { stdout: outdatedOutput } = await execAsync('npm outdated --json', {
-          cwd: process.cwd(),
-          timeout: 15000
-        });
-        
+        const { stdout: outdatedOutput } = await execAsync(
+          "npm outdated --json",
+          {
+            cwd: process.cwd(),
+            timeout: 15000,
+          },
+        );
+
         if (outdatedOutput.trim()) {
           const outdatedData = JSON.parse(outdatedOutput);
-          outdatedPackages = Object.entries(outdatedData).map(([pkg, data]: [string, any]) => ({
-            package: pkg,
-            current: data.current,
-            wanted: data.wanted,
-            latest: data.latest
-          }));
+          outdatedPackages = Object.entries(outdatedData).map(
+            ([pkg, data]: [string, any]) => ({
+              package: pkg,
+              current: data.current,
+              wanted: data.wanted,
+              latest: data.latest,
+            }),
+          );
         }
       } catch (error) {
         // npm outdated returns non-zero exit code when packages are outdated
@@ -596,24 +631,34 @@ class DependencyMonitor {
         if (outdatedError.stdout?.trim()) {
           try {
             const outdatedData = JSON.parse(outdatedError.stdout);
-            outdatedPackages = Object.entries(outdatedData).map(([pkg, data]: [string, any]) => ({
-              package: pkg,
-              current: data.current,
-              wanted: data.wanted,
-              latest: data.latest
-            }));
+            outdatedPackages = Object.entries(outdatedData).map(
+              ([pkg, data]: [string, any]) => ({
+                package: pkg,
+                current: data.current,
+                wanted: data.wanted,
+                latest: data.latest,
+              }),
+            );
           } catch {
             // Ignore parsing errors for outdated packages
           }
         }
       }
-      
+
       // Calculate vulnerability counts
-      const criticalCount = vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.CRITICAL).length;
-      const highCount = vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.HIGH).length;
-      const moderateCount = vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.MODERATE).length;
-      const lowCount = vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.LOW).length;
-      
+      const criticalCount = vulnerabilities.filter(
+        (v) => v.severity === VulnerabilitySeverity.CRITICAL,
+      ).length;
+      const highCount = vulnerabilities.filter(
+        (v) => v.severity === VulnerabilitySeverity.HIGH,
+      ).length;
+      const moderateCount = vulnerabilities.filter(
+        (v) => v.severity === VulnerabilitySeverity.MODERATE,
+      ).length;
+      const lowCount = vulnerabilities.filter(
+        (v) => v.severity === VulnerabilitySeverity.LOW,
+      ).length;
+
       const status: DependencyStatus = {
         vulnerabilities,
         outdatedPackages,
@@ -622,107 +667,121 @@ class DependencyMonitor {
         highCount,
         moderateCount,
         lowCount,
-        scanTimestamp: new Date()
+        scanTimestamp: new Date(),
       };
-      
+
       this.lastScan = status;
-      
+
       const duration = performance.now() - startTime;
-      
+
       // Log scan results
-      const logLevel = criticalCount > 0 || highCount > 0 ? 'warn' : 'info';
-      logger[logLevel]('Dependency vulnerability scan completed', {
+      const logLevel = criticalCount > 0 || highCount > 0 ? "warn" : "info";
+      logger[logLevel]("Dependency vulnerability scan completed", {
         correlationId,
-        operation: 'dependency-scan',
+        operation: "dependency-scan",
         duration,
         totalVulnerabilities: vulnerabilities.length,
         criticalCount,
         highCount,
         moderateCount,
         lowCount,
-        outdatedPackages: outdatedPackages.length
+        outdatedPackages: outdatedPackages.length,
       });
-      
+
       // Alert on critical vulnerabilities
       if (criticalCount > 0) {
-        logger.error('CRITICAL vulnerabilities detected', {
+        logger.error("CRITICAL vulnerabilities detected", {
           correlationId,
-          operation: 'security-alert',
-          criticalVulnerabilities: vulnerabilities.filter(v => v.severity === VulnerabilitySeverity.CRITICAL).map(v => ({
-            package: v.packageName,
-            title: v.title,
-            cvss: v.cvss
-          }))
+          operation: "security-alert",
+          criticalVulnerabilities: vulnerabilities
+            .filter((v) => v.severity === VulnerabilitySeverity.CRITICAL)
+            .map((v) => ({
+              package: v.packageName,
+              title: v.title,
+              cvss: v.cvss,
+            })),
         });
       }
-      
+
       return status;
-      
     } catch (error: unknown) {
       const scanError = error as { message?: string };
       const duration = performance.now() - startTime;
-      
-      logger.error('Dependency vulnerability scan failed', {
+
+      logger.error("Dependency vulnerability scan failed", {
         correlationId,
-        operation: 'dependency-scan',
+        operation: "dependency-scan",
         duration,
-        error: scanError.message || 'Unknown error'
+        error: scanError.message || "Unknown error",
       });
-      
+
       throw new MCPServerError(
-        `Dependency vulnerability scan failed: ${scanError.message || 'Unknown error'}`,
+        `Dependency vulnerability scan failed: ${scanError.message || "Unknown error"}`,
         ErrorCategory.INTERNAL_ERROR,
         ErrorSeverity.MEDIUM,
         correlationId,
-        'dependency-scan',
-        error as Error
+        "dependency-scan",
+        error as Error,
       );
     }
   }
-  
+
   private static mapNpmSeverity(npmSeverity: string): VulnerabilitySeverity {
     switch (npmSeverity?.toLowerCase()) {
-      case 'critical':
+      case "critical":
         return VulnerabilitySeverity.CRITICAL;
-      case 'high':
+      case "high":
         return VulnerabilitySeverity.HIGH;
-      case 'moderate':
+      case "moderate":
         return VulnerabilitySeverity.MODERATE;
-      case 'low':
+      case "low":
         return VulnerabilitySeverity.LOW;
       default:
         return VulnerabilitySeverity.INFO;
     }
   }
-  
+
   static async generateMaintenanceReport(): Promise<string> {
-    const scanResults = this.lastScan || await this.scanForVulnerabilities();
+    const scanResults = this.lastScan || (await this.scanForVulnerabilities());
     const health = await HealthMonitor.performHealthCheck();
     const performanceReport = PerformanceMonitor.getMetricsReport();
-    
-    let report = '# FastMCP Server Maintenance Report\n\n';
+
+    let report = "# FastMCP Server Maintenance Report\n\n";
     report += `Generated: ${new Date().toISOString()}\n`;
     report += `Scan Timestamp: ${scanResults.scanTimestamp.toISOString()}\n\n`;
-    
+
     // System Health Summary
-    const healthEmoji = health.status === 'healthy' ? '✅' : health.status === 'degraded' ? '⚠️' : '❌';
+    const healthEmoji =
+      health.status === "healthy"
+        ? "✅"
+        : health.status === "degraded"
+          ? "⚠️"
+          : "❌";
     report += `## System Health: ${healthEmoji} ${health.status.toUpperCase()}\n\n`;
-    
+
     // Security Status
-    const securityEmoji = scanResults.criticalCount === 0 && scanResults.highCount === 0 ? '✅' : '🔒';
+    const securityEmoji =
+      scanResults.criticalCount === 0 && scanResults.highCount === 0
+        ? "✅"
+        : "🔒";
     report += `## Security Status: ${securityEmoji}\n\n`;
     report += `- **Total Vulnerabilities:** ${scanResults.totalVulnerabilities}\n`;
     report += `- **Critical:** ${scanResults.criticalCount}\n`;
     report += `- **High:** ${scanResults.highCount}\n`;
     report += `- **Moderate:** ${scanResults.moderateCount}\n`;
     report += `- **Low:** ${scanResults.lowCount}\n\n`;
-    
+
     if (scanResults.vulnerabilities.length > 0) {
-      report += '### Vulnerability Details\n\n';
-      scanResults.vulnerabilities.forEach(vuln => {
-        const severity = vuln.severity === VulnerabilitySeverity.CRITICAL ? '🔴' :
-                        vuln.severity === VulnerabilitySeverity.HIGH ? '🟠' :
-                        vuln.severity === VulnerabilitySeverity.MODERATE ? '🟡' : '🔵';
+      report += "### Vulnerability Details\n\n";
+      scanResults.vulnerabilities.forEach((vuln) => {
+        const severity =
+          vuln.severity === VulnerabilitySeverity.CRITICAL
+            ? "🔴"
+            : vuln.severity === VulnerabilitySeverity.HIGH
+              ? "🟠"
+              : vuln.severity === VulnerabilitySeverity.MODERATE
+                ? "🟡"
+                : "🔵";
         report += `${severity} **${vuln.packageName}** (${vuln.severity})\n`;
         report += `  - ${vuln.title}\n`;
         if (vuln.cvss) {
@@ -731,67 +790,76 @@ class DependencyMonitor {
         if (vuln.url) {
           report += `  - More info: ${vuln.url}\n`;
         }
-        report += '\n';
+        report += "\n";
       });
     }
-    
+
     // Outdated Packages
-    report += `## Package Updates: ${scanResults.outdatedPackages.length > 0 ? '📦' : '✅'}\n\n`;
+    report += `## Package Updates: ${scanResults.outdatedPackages.length > 0 ? "📦" : "✅"}\n\n`;
     if (scanResults.outdatedPackages.length > 0) {
       report += `Found ${scanResults.outdatedPackages.length} outdated packages:\n\n`;
-      scanResults.outdatedPackages.forEach(pkg => {
+      scanResults.outdatedPackages.forEach((pkg) => {
         report += `- **${pkg.package}**: ${pkg.current} → ${pkg.latest}\n`;
       });
-      report += '\n';
+      report += "\n";
     } else {
-      report += 'All packages are up to date.\n\n';
+      report += "All packages are up to date.\n\n";
     }
-    
+
     // Performance Summary
-    report += '## Performance Summary\n\n';
+    report += "## Performance Summary\n\n";
     report += `- **Total Operations:** ${performanceReport.summary.totalOperations}\n`;
     report += `- **Average Duration:** ${performanceReport.summary.averageDuration.toFixed(2)}ms\n`;
     report += `- **Memory Usage:** ${(performanceReport.summary.currentMemoryUsage / 1024 / 1024).toFixed(2)}MB\n\n`;
-    
+
     // Maintenance Recommendations
-    report += '## Maintenance Recommendations\n\n';
-    
+    report += "## Maintenance Recommendations\n\n";
+
     const recommendations = [];
-    
+
     if (scanResults.criticalCount > 0) {
-      recommendations.push('🔥 **URGENT**: Address critical security vulnerabilities immediately');
+      recommendations.push(
+        "🔥 **URGENT**: Address critical security vulnerabilities immediately",
+      );
     }
-    
+
     if (scanResults.highCount > 0) {
-      recommendations.push('⚠️ **HIGH PRIORITY**: Review and fix high-severity vulnerabilities');
+      recommendations.push(
+        "⚠️ **HIGH PRIORITY**: Review and fix high-severity vulnerabilities",
+      );
     }
-    
+
     if (scanResults.outdatedPackages.length > 5) {
-      recommendations.push('📦 **RECOMMENDED**: Update outdated packages to latest versions');
+      recommendations.push(
+        "📦 **RECOMMENDED**: Update outdated packages to latest versions",
+      );
     }
-    
-    if (health.status !== 'healthy') {
-      recommendations.push('🏥 **ATTENTION**: Address health check failures');
+
+    if (health.status !== "healthy") {
+      recommendations.push("🏥 **ATTENTION**: Address health check failures");
     }
-    
+
     if (performanceReport.summary.averageDuration > 1000) {
-      recommendations.push('⚡ **PERFORMANCE**: Investigate slow operations');
+      recommendations.push("⚡ **PERFORMANCE**: Investigate slow operations");
     }
-    
+
     if (recommendations.length === 0) {
-      recommendations.push('✅ System is in excellent condition - continue monitoring');
+      recommendations.push(
+        "✅ System is in excellent condition - continue monitoring",
+      );
     }
-    
-    recommendations.forEach(rec => {
+
+    recommendations.forEach((rec) => {
       report += `- ${rec}\n`;
     });
-    
-    report += '\n---\n';
-    report += '*Report generated by FastMCP Server automated maintenance system*\n';
-    
+
+    report += "\n---\n";
+    report +=
+      "*Report generated by FastMCP Server automated maintenance system*\n";
+
     return report;
   }
-  
+
   static getLastScanResults(): DependencyStatus | null {
     return this.lastScan;
   }
@@ -813,8 +881,14 @@ const config = {
     process.env.DEPENDENCY_MONITORING_ENABLED !== "false",
   maintenanceReportsEnabled:
     process.env.MAINTENANCE_REPORTS_ENABLED !== "false",
-  vulnerabilityThreshold: (process.env.VULNERABILITY_THRESHOLD || "moderate").toLowerCase(),
-  dependencyScanInterval: parseInt(process.env.DEPENDENCY_SCAN_INTERVAL_HOURS || "24") * 60 * 60 * 1000,
+  vulnerabilityThreshold: (
+    process.env.VULNERABILITY_THRESHOLD || "moderate"
+  ).toLowerCase(),
+  dependencyScanInterval:
+    parseInt(process.env.DEPENDENCY_SCAN_INTERVAL_HOURS || "24") *
+    60 *
+    60 *
+    1000,
 };
 
 // Simple Make.com API client
@@ -1698,7 +1772,12 @@ if (config.dependencyMonitoringEnabled) {
       let filtered = vulnerabilities;
 
       if (args.severity_filter && args.severity_filter !== "all") {
-        const severityLevels: Record<string, number> = { LOW: 1, MODERATE: 2, HIGH: 3, CRITICAL: 4 };
+        const severityLevels: Record<string, number> = {
+          LOW: 1,
+          MODERATE: 2,
+          HIGH: 3,
+          CRITICAL: 4,
+        };
         const minLevel = severityLevels[args.severity_filter.toUpperCase()];
         if (minLevel !== undefined) {
           filtered = vulnerabilities.filter(
@@ -1782,14 +1861,10 @@ if (config.dependencyMonitoringEnabled) {
       let filtered = outdatedPackages;
       if (args.update_type && args.update_type !== "all") {
         filtered = outdatedPackages.filter((pkg) => {
-          const currentMajor =
-            parseInt(pkg.current.split(".")[0], 10) || 0;
-          const latestMajor =
-            parseInt(pkg.latest.split(".")[0], 10) || 0;
-          const currentMinor =
-            parseInt(pkg.current.split(".")[1], 10) || 0;
-          const latestMinor =
-            parseInt(pkg.latest.split(".")[1], 10) || 0;
+          const currentMajor = parseInt(pkg.current.split(".")[0], 10) || 0;
+          const latestMajor = parseInt(pkg.latest.split(".")[0], 10) || 0;
+          const currentMinor = parseInt(pkg.current.split(".")[1], 10) || 0;
+          const latestMinor = parseInt(pkg.latest.split(".")[1], 10) || 0;
 
           if (args.update_type === "major") {
             return latestMajor > currentMajor;
@@ -1814,14 +1889,10 @@ if (config.dependencyMonitoringEnabled) {
       if (filtered.length > 0) {
         const updateTypes = filtered.reduce(
           (counts, pkg) => {
-            const currentMajor =
-              parseInt(pkg.current.split(".")[0], 10) || 0;
-            const latestMajor =
-              parseInt(pkg.latest.split(".")[0], 10) || 0;
-            const currentMinor =
-              parseInt(pkg.current.split(".")[1], 10) || 0;
-            const latestMinor =
-              parseInt(pkg.latest.split(".")[1], 10) || 0;
+            const currentMajor = parseInt(pkg.current.split(".")[0], 10) || 0;
+            const latestMajor = parseInt(pkg.latest.split(".")[0], 10) || 0;
+            const currentMinor = parseInt(pkg.current.split(".")[1], 10) || 0;
+            const latestMinor = parseInt(pkg.latest.split(".")[1], 10) || 0;
 
             if (latestMajor > currentMajor) {
               counts.major = (counts.major || 0) + 1;
@@ -1848,10 +1919,8 @@ if (config.dependencyMonitoringEnabled) {
 
         report += `\nPackage Details:\n`;
         filtered.forEach((pkg) => {
-          const currentMajor =
-            parseInt(pkg.current.split(".")[0], 10) || 0;
-          const latestMajor =
-            parseInt(pkg.latest.split(".")[0], 10) || 0;
+          const currentMajor = parseInt(pkg.current.split(".")[0], 10) || 0;
+          const latestMajor = parseInt(pkg.latest.split(".")[0], 10) || 0;
           const updateEmoji = latestMajor > currentMajor ? "🔴" : "🟡";
 
           report += `\n${updateEmoji} ${pkg.package}\n`;
@@ -1919,10 +1988,7 @@ if (config.maintenanceReportsEnabled) {
       let healthStatus: "healthy" | "warning" | "critical" = "healthy";
       if (criticalVulns > 0 || highVulns > 0) {
         healthStatus = "critical";
-      } else if (
-        scanResult.moderateCount > 0 ||
-        majorUpdates > 5
-      ) {
+      } else if (scanResult.moderateCount > 0 || majorUpdates > 5) {
         healthStatus = "warning";
       }
 
@@ -1959,6 +2025,276 @@ if (config.maintenanceReportsEnabled) {
   });
 }
 
+// LOG PATTERN ANALYSIS TOOLS
+server.addTool({
+  name: "analyze-log-patterns",
+  description: "Analyze recent log patterns and provide insights",
+  parameters: z.object({
+    hours: z
+      .number()
+      .min(1)
+      .max(168)
+      .optional()
+      .describe("Hours of logs to analyze (default: 24)"),
+    severity: z
+      .enum(["info", "warning", "critical"])
+      .optional()
+      .describe("Filter by minimum severity level"),
+  }),
+  execute: async (args) => {
+    const correlationId = uuidv4();
+    const startTime = performance.now();
+
+    try {
+      // Import log analysis components
+      const { LogFileAnalyzer } = await import(
+        "./monitoring/log-file-analyzer"
+      );
+      const { AlertManager } = await import("./monitoring/alert-manager");
+
+      const hours = args.hours || 24;
+
+      logger.info("Starting log pattern analysis", {
+        hours,
+        severity: args.severity,
+        correlationId,
+      });
+
+      // Analyze log files for the specified period
+      const report = await LogFileAnalyzer.analyzeLogFiles(hours);
+
+      let analysis = `📊 Log Pattern Analysis Report\n`;
+      analysis += `🕐 Period: ${report.periodStart.toISOString()} to ${report.periodEnd.toISOString()}\n`;
+      analysis += `📝 Total Entries Analyzed: ${report.totalEntries.toLocaleString()}\n\n`;
+
+      // Include active alerts
+      const activeAlerts = AlertManager.getActiveAlerts();
+      let filteredAlerts = activeAlerts;
+
+      if (args.severity) {
+        const severityLevels = { info: 1, warning: 2, critical: 3 };
+        const minLevel = severityLevels[args.severity];
+        filteredAlerts = activeAlerts.filter((alert) => {
+          return severityLevels[alert.severity] >= minLevel;
+        });
+      }
+
+      analysis += `🚨 Active Alerts: ${filteredAlerts.length}\n`;
+      if (filteredAlerts.length > 0) {
+        filteredAlerts.slice(0, 10).forEach((alert) => {
+          const severityEmoji =
+            alert.severity === "critical"
+              ? "🔴"
+              : alert.severity === "warning"
+                ? "🟡"
+                : "🔵";
+          analysis += `${severityEmoji} ${alert.severity.toUpperCase()}: ${alert.message}\n`;
+          analysis += `   📋 Action: ${alert.action}\n`;
+          analysis += `   📊 Count: ${alert.count} occurrences\n`;
+          analysis += `   ⏰ Last: ${alert.lastOccurrence.toISOString()}\n`;
+          if (alert.escalationLevel > 1) {
+            analysis += `   🆙 Escalation Level: ${alert.escalationLevel}\n`;
+          }
+          analysis += `\n`;
+        });
+
+        if (filteredAlerts.length > 10) {
+          analysis += `... and ${filteredAlerts.length - 10} more alerts\n\n`;
+        }
+      }
+
+      // Pattern statistics
+      if (report.patterns.size > 0) {
+        analysis += `🎯 Pattern Matches:\n`;
+        const sortedPatterns = Array.from(report.patterns.entries())
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 15);
+
+        sortedPatterns.forEach(([patternId, count]) => {
+          analysis += `• ${patternId}: ${count} matches\n`;
+        });
+        analysis += `\n`;
+      }
+
+      // Error trends by hour
+      if (report.trends.errorsByHour.size > 0) {
+        analysis += `📈 Error Trends by Hour:\n`;
+        const sortedErrorHours = Array.from(
+          report.trends.errorsByHour.entries(),
+        )
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10);
+
+        sortedErrorHours.forEach(([hour, count]) => {
+          const hourDisplay = new Date(hour + ":00:00Z").toLocaleString();
+          analysis += `• ${hourDisplay}: ${count} errors\n`;
+        });
+        analysis += `\n`;
+      }
+
+      // Performance trends
+      if (report.trends.performanceByHour.size > 0) {
+        analysis += `⚡ Performance Trends:\n`;
+        for (const [hour, durations] of report.trends.performanceByHour) {
+          if (durations.length > 0) {
+            const avg =
+              durations.reduce((sum, d) => sum + d, 0) / durations.length;
+            const max = Math.max(...durations);
+            const hourDisplay = new Date(hour + ":00:00Z").toLocaleString();
+            analysis += `• ${hourDisplay}: ${avg.toFixed(0)}ms avg, ${max.toFixed(0)}ms max (${durations.length} operations)\n`;
+          }
+        }
+        analysis += `\n`;
+      }
+
+      // Include recommendations
+      if (report.trends.recommendations.length > 0) {
+        analysis += `💡 Recommendations:\n`;
+        report.trends.recommendations.forEach((rec) => {
+          const severityEmoji = rec.severity === "warning" ? "⚠️" : "ℹ️";
+          analysis += `${severityEmoji} ${rec.message}\n`;
+          analysis += `   🔧 Action: ${rec.action}\n\n`;
+        });
+      }
+
+      // Analysis summary
+      const duration = performance.now() - startTime;
+      analysis += `\n⏱️ Analysis completed in ${duration.toFixed(2)}ms\n`;
+
+      logger.info("Log pattern analysis completed", {
+        duration: duration.toFixed(2),
+        totalEntries: report.totalEntries,
+        activeAlerts: filteredAlerts.length,
+        patternMatches: report.patterns.size,
+        correlationId,
+      });
+
+      return {
+        content: [{ type: "text", text: analysis }],
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+
+      logger.error("Log pattern analysis failed", {
+        error: errorMessage,
+        duration: performance.now() - startTime,
+        correlationId,
+      });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `❌ Log pattern analysis failed: ${errorMessage}\n\nPlease ensure log files are accessible and properly formatted.`,
+          },
+        ],
+      };
+    }
+  },
+});
+
+server.addTool({
+  name: "get-log-analytics",
+  description: "Get real-time log analytics and pattern statistics",
+  parameters: z.object({}),
+  execute: async () => {
+    const correlationId = uuidv4();
+    const startTime = performance.now();
+
+    try {
+      // Import log analysis components
+      const { LogPatternAnalyzer } = await import(
+        "./monitoring/log-pattern-analyzer"
+      );
+      const { AlertManager } = await import("./monitoring/alert-manager");
+
+      logger.info("Getting log analytics summary", { correlationId });
+
+      const summary = LogPatternAnalyzer.getAnalyticsSummary();
+      const alertStats = AlertManager.getAlertStats();
+
+      let analytics = `📈 Real-time Log Analytics Summary\n`;
+      analytics += `⏰ Timestamp: ${summary.timestamp.toISOString()}\n`;
+      analytics += `🎯 Total Patterns Registered: ${summary.totalPatterns}\n`;
+      analytics += `🚨 Active Alerts: ${summary.activeAlerts}\n\n`;
+
+      // Alert statistics
+      analytics += `📊 Alert Statistics:\n`;
+      analytics += `• Total Alerts: ${alertStats.total}\n`;
+      analytics += `• Active: ${alertStats.active}\n`;
+      analytics += `• Resolved: ${alertStats.resolved}\n`;
+      analytics += `• Critical: ${alertStats.critical}\n`;
+      analytics += `• Warning: ${alertStats.warning}\n`;
+      analytics += `• Info: ${alertStats.info}\n`;
+      analytics += `• Currently Suppressed: ${alertStats.suppressed}\n\n`;
+
+      // Pattern statistics
+      if (summary.patternStats.size > 0) {
+        analytics += `🎯 Pattern Statistics:\n`;
+        for (const [patternId, stats] of summary.patternStats) {
+          analytics += `${stats.name} (${patternId}):\n`;
+          analytics += `  📊 Total Matches: ${stats.totalMatches}\n`;
+          analytics += `  🕐 Recent Matches (1h): ${stats.recentMatches}\n`;
+          analytics += `  🔥 Severity: ${stats.severity}\n`;
+          analytics += `  ⏰ Last Match: ${stats.lastMatch ? stats.lastMatch.toISOString() : "Never"}\n\n`;
+        }
+      }
+
+      // Trending information
+      analytics += `📈 Current Trends:\n`;
+      analytics += `• Error Rate: ${summary.trending.errorRate.toFixed(2)}%\n`;
+      analytics += `• Avg Response Time: ${summary.trending.avgResponseTime.toFixed(2)}ms\n`;
+
+      if (summary.trending.topPatterns.length > 0) {
+        analytics += `\n🔥 Top Active Patterns:\n`;
+        summary.trending.topPatterns.forEach((pattern, index) => {
+          analytics += `${index + 1}. Pattern ${pattern.patternId}: ${pattern.count} matches\n`;
+        });
+      }
+
+      if (summary.trending.anomalies.length > 0) {
+        analytics += `\n⚠️ Detected Anomalies:\n`;
+        summary.trending.anomalies.forEach((anomaly) => {
+          analytics += `• ${anomaly.description}\n`;
+        });
+      }
+
+      const duration = performance.now() - startTime;
+      analytics += `\n⏱️ Analytics retrieved in ${duration.toFixed(2)}ms\n`;
+
+      logger.info("Log analytics completed", {
+        duration: duration.toFixed(2),
+        patternCount: summary.totalPatterns,
+        alertCount: summary.activeAlerts,
+        correlationId,
+      });
+
+      return {
+        content: [{ type: "text", text: analytics }],
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+
+      logger.error("Log analytics failed", {
+        error: errorMessage,
+        duration: performance.now() - startTime,
+        correlationId,
+      });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `❌ Log analytics failed: ${errorMessage}\n\nPattern analysis system may not be initialized.`,
+          },
+        ],
+      };
+    }
+  },
+});
+
 // Start the server
 server.start({
   transportType: "stdio",
@@ -1971,6 +2307,7 @@ const startupMessage = [
   `Health Checks: ${config.healthCheckEnabled ? "ENABLED" : "DISABLED"}`,
   `Dependency Monitoring: ${config.dependencyMonitoringEnabled ? "ENABLED" : "DISABLED"}`,
   `Maintenance Reports: ${config.maintenanceReportsEnabled ? "ENABLED" : "DISABLED"}`,
+  `Log Pattern Analysis: ${process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false" ? "ENABLED" : "DISABLED"}`,
   `Memory Threshold: ${config.memoryThresholdMB}MB`,
 ].join(" | ");
 

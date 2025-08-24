@@ -1,31 +1,27 @@
-import * as winston from "winston";
+import winston from "winston";
+import TransportStream from "winston-transport";
 import { LogPatternAnalyzer } from "./log-pattern-analyzer";
 import type { LogEntry } from "./log-pattern-analyzer";
-import { logger } from "../utils/logger";
 
-export class PatternAnalysisTransport extends winston.Transport {
+export class PatternAnalysisTransport extends TransportStream {
   private enabled: boolean;
   private analysisCount: number = 0;
   private lastAnalysisTime: Date | null = null;
 
-  constructor(opts?: winston.Transport.TransportStreamOptions) {
+  constructor(opts?: TransportStream.TransportStreamOptions) {
     super(opts);
-    
+
     // Check if pattern analysis is enabled (default: true)
     this.enabled = process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false";
-    
+
     if (this.enabled) {
-      logger.info("Pattern analysis transport initialized", {
-        correlationId: "pattern-analysis-transport",
-      });
+      console.log("🔍 Pattern analysis transport initialized");
     } else {
-      logger.info("Pattern analysis transport disabled by configuration", {
-        correlationId: "pattern-analysis-transport",
-      });
+      console.log("🚫 Pattern analysis transport disabled by configuration");
     }
   }
 
-  log(info: any, callback: () => void): void {
+  log(info: TransportStream.LogEntry, callback: () => void): void {
     // Skip analysis if disabled
     if (!this.enabled) {
       callback();
@@ -56,27 +52,16 @@ export class PatternAnalysisTransport extends winston.Transport {
         this.lastAnalysisTime = new Date();
 
         // Log pattern detection (debug level to avoid noise)
-        logger.debug("Log patterns detected", {
-          patterns: matches.map((m) => ({
-            name: m.pattern.name,
-            severity: m.pattern.severity,
-            patternId: m.pattern.id,
-          })),
-          originalMessage: entry.message.substring(0, 100), // Truncate for safety
-          correlationId: entry.correlationId || "pattern-analysis",
-        });
+        // Silent pattern detection to avoid log noise
       }
 
       // Increment analysis counter for monitoring
       this.analysisCount++;
-
     } catch (error) {
       // Log analysis errors but don't break logging pipeline
-      logger.warn("Pattern analysis error", {
-        error: error instanceof Error ? error.message : "Unknown error",
-        originalLevel: info.level,
-        correlationId: "pattern-analysis-transport",
-      });
+      console.warn(
+        `⚠️ Pattern analysis error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
 
     // Always call callback to continue Winston pipeline
@@ -104,10 +89,9 @@ export class PatternAnalysisTransport extends winston.Transport {
     this.enabled = enabled;
 
     if (wasEnabled !== enabled) {
-      logger.info("Pattern analysis transport status changed", {
-        enabled,
-        correlationId: "pattern-analysis-transport",
-      });
+      console.log(
+        `🔄 Pattern analysis transport ${enabled ? "enabled" : "disabled"}`,
+      );
     }
   }
 
@@ -115,21 +99,20 @@ export class PatternAnalysisTransport extends winston.Transport {
   resetStatistics(): void {
     this.analysisCount = 0;
     this.lastAnalysisTime = null;
-    
-    logger.info("Pattern analysis transport statistics reset", {
-      correlationId: "pattern-analysis-transport",
-    });
+
+    console.log("📈 Pattern analysis transport statistics reset");
   }
 
   // Override close method for cleanup
   close(): void {
     if (this.enabled) {
-      logger.info("Pattern analysis transport closing", {
-        finalAnalysisCount: this.analysisCount,
-        correlationId: "pattern-analysis-transport",
-      });
+      console.log(
+        `🚪 Pattern analysis transport closing (${this.analysisCount} analyses)`,
+      );
     }
-    super.close();
+    if (super.close) {
+      super.close();
+    }
   }
 
   // Health check method
@@ -140,7 +123,7 @@ export class PatternAnalysisTransport extends winston.Transport {
 
 // Factory function for easy integration
 export function createPatternAnalysisTransport(
-  options?: winston.Transport.TransportStreamOptions,
+  options?: TransportStream.TransportStreamOptions,
 ): PatternAnalysisTransport {
   return new PatternAnalysisTransport(options);
 }
@@ -148,15 +131,14 @@ export function createPatternAnalysisTransport(
 // Helper function to add transport to existing logger
 export function addPatternAnalysisToLogger(
   targetLogger: winston.Logger,
-  options?: winston.Transport.TransportStreamOptions,
+  options?: TransportStream.TransportStreamOptions,
 ): PatternAnalysisTransport {
   const transport = createPatternAnalysisTransport(options);
   targetLogger.add(transport);
-  
-  logger.info("Pattern analysis transport added to logger", {
-    transportEnabled: transport.getStatistics().enabled,
-    correlationId: "pattern-analysis-transport",
-  });
-  
+
+  console.log(
+    `➕ Pattern analysis transport added to logger (enabled: ${transport.getStatistics().enabled})`,
+  );
+
   return transport;
 }

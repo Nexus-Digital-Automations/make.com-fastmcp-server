@@ -1,4 +1,4 @@
-import { logger } from "../utils/logger";
+// Logger will be injected via import to avoid circular dependency
 import type { PatternMatch } from "./log-pattern-analyzer";
 
 export interface PatternAlert {
@@ -80,16 +80,9 @@ export class AlertManager {
     this.enforceAlertHistoryLimit();
 
     // Log the alert
-    logger.warn("Pattern alert triggered", {
-      alertId: alert.id,
-      patternId: alert.patternId,
-      severity: alert.severity,
-      message: alert.message,
-      action: alert.action,
-      count: alert.count,
-      escalationLevel: alert.escalationLevel,
-      correlationId: "alert-manager",
-    });
+    console.warn(
+      `🚨 Pattern alert triggered: ${alert.message} (${alert.severity}) - Count: ${alert.count}`,
+    );
 
     // Trigger notification if configured
     this.sendNotification(alert);
@@ -111,8 +104,10 @@ export class AlertManager {
     if (alertArray.length > this.MAX_ALERT_HISTORY) {
       // Remove oldest resolved alerts first
       const resolvedAlerts = alertArray
-        .filter(alert => alert.resolved)
-        .sort((a, b) => a.lastOccurrence.getTime() - b.lastOccurrence.getTime());
+        .filter((alert) => alert.resolved)
+        .sort(
+          (a, b) => a.lastOccurrence.getTime() - b.lastOccurrence.getTime(),
+        );
 
       if (resolvedAlerts.length > 0) {
         const toRemove = Math.min(
@@ -145,21 +140,14 @@ export class AlertManager {
       };
 
       // Log webhook notification attempt
-      logger.info("Alert notification prepared", {
-        alertId: alert.id,
-        webhook: process.env.ALERT_WEBHOOK_URL,
-        severity: alert.severity,
-        escalationLevel: alert.escalationLevel,
-        correlationId: "alert-notification",
-      });
+      console.log(
+        `📢 Alert notification prepared for ${alert.id} (${alert.severity})`,
+      );
 
       // In a production system, this would use fetch/axios to send the webhook
       // For now, we log the payload structure for integration guidance
       if (process.env.NODE_ENV === "development") {
-        logger.debug("Webhook payload", {
-          payload,
-          correlationId: "alert-notification",
-        });
+        console.debug(`📨 Webhook payload:`, payload);
       }
     }
 
@@ -180,10 +168,14 @@ export class AlertManager {
         const severityOrder = { critical: 3, warning: 2, info: 1 };
         const severityDiff =
           severityOrder[b.severity] - severityOrder[a.severity];
-        if (severityDiff !== 0) return severityDiff;
+        if (severityDiff !== 0) {
+          return severityDiff;
+        }
 
         const escalationDiff = b.escalationLevel - a.escalationLevel;
-        if (escalationDiff !== 0) return escalationDiff;
+        if (escalationDiff !== 0) {
+          return escalationDiff;
+        }
 
         return b.lastOccurrence.getTime() - a.lastOccurrence.getTime();
       });
@@ -191,35 +183,33 @@ export class AlertManager {
 
   static getAllAlerts(includeResolved: boolean = false): PatternAlert[] {
     const alerts = Array.from(this.alerts.values());
-    
+
     if (!includeResolved) {
-      return alerts.filter(alert => !alert.resolved);
+      return alerts.filter((alert) => !alert.resolved);
     }
-    
-    return alerts.sort((a, b) => b.lastOccurrence.getTime() - a.lastOccurrence.getTime());
+
+    return alerts.sort(
+      (a, b) => b.lastOccurrence.getTime() - a.lastOccurrence.getTime(),
+    );
   }
 
-  static resolveAlert(alertId: string, reason: string): boolean {
+  static resolveAlert(alertId: string, _reason: string): boolean {
     const alert = this.alerts.get(alertId);
     if (alert && !alert.resolved) {
       alert.resolved = true;
 
-      logger.info("Alert resolved", {
-        alertId,
-        reason,
-        duration: Date.now() - alert.firstOccurrence.getTime(),
-        finalCount: alert.count,
-        correlationId: "alert-manager",
-      });
+      console.log(
+        `✅ Alert resolved: ${alertId} - ${_reason} (Duration: ${Date.now() - alert.firstOccurrence.getTime()}ms)`,
+      );
 
       return true;
     }
     return false;
   }
 
-  static resolveAlertsByPattern(patternId: string, reason: string): number {
+  static resolveAlertsByPattern(patternId: string, _reason: string): number {
     let resolvedCount = 0;
-    
+
     for (const alert of this.alerts.values()) {
       if (alert.patternId === patternId && !alert.resolved) {
         alert.resolved = true;
@@ -228,12 +218,9 @@ export class AlertManager {
     }
 
     if (resolvedCount > 0) {
-      logger.info("Pattern alerts resolved", {
-        patternId,
-        reason,
-        resolvedCount,
-        correlationId: "alert-manager",
-      });
+      console.log(
+        `✅ Pattern alerts resolved: ${patternId} - ${resolvedCount} alerts resolved`,
+      );
     }
 
     return resolvedCount;
@@ -245,7 +232,7 @@ export class AlertManager {
 
   static getAlertsByPattern(patternId: string): PatternAlert[] {
     return Array.from(this.alerts.values())
-      .filter(alert => alert.patternId === patternId)
+      .filter((alert) => alert.patternId === patternId)
       .sort((a, b) => b.lastOccurrence.getTime() - a.lastOccurrence.getTime());
   }
 
@@ -263,13 +250,13 @@ export class AlertManager {
 
     return {
       total: alerts.length,
-      active: alerts.filter(a => !a.resolved).length,
-      resolved: alerts.filter(a => a.resolved).length,
-      critical: alerts.filter(a => a.severity === "critical").length,
-      warning: alerts.filter(a => a.severity === "warning").length,
-      info: alerts.filter(a => a.severity === "info").length,
-      suppressed: alerts.filter(a => 
-        a.suppressedUntil && now < a.suppressedUntil
+      active: alerts.filter((a) => !a.resolved).length,
+      resolved: alerts.filter((a) => a.resolved).length,
+      critical: alerts.filter((a) => a.severity === "critical").length,
+      warning: alerts.filter((a) => a.severity === "warning").length,
+      info: alerts.filter((a) => a.severity === "info").length,
+      suppressed: alerts.filter(
+        (a) => a.suppressedUntil && now < a.suppressedUntil,
       ).length,
     };
   }
@@ -284,15 +271,13 @@ export class AlertManager {
       }
     }
 
-    toDelete.forEach(alertId => this.alerts.delete(alertId));
+    toDelete.forEach((alertId) => this.alerts.delete(alertId));
     const clearedCount = beforeCount - this.alerts.size;
 
     if (clearedCount > 0) {
-      logger.info("Resolved alerts cleared", {
-        clearedCount,
-        remainingAlerts: this.alerts.size,
-        correlationId: "alert-manager",
-      });
+      console.log(
+        `🗑️ Resolved alerts cleared: ${clearedCount} alerts, ${this.alerts.size} remaining`,
+      );
     }
 
     return clearedCount;
@@ -302,10 +287,7 @@ export class AlertManager {
     const clearedCount = this.alerts.size;
     this.alerts.clear();
 
-    logger.warn("All alerts cleared", {
-      clearedCount,
-      correlationId: "alert-manager",
-    });
+    console.warn(`🗑️ All alerts cleared: ${clearedCount} alerts`);
 
     return clearedCount;
   }

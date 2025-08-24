@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import * as readline from "readline";
-import { logger } from "../utils/logger";
+// Logger will be injected via import to avoid circular dependency
 import { LogPatternAnalyzer } from "./log-pattern-analyzer";
 import type { LogEntry } from "./log-pattern-analyzer";
 
@@ -48,92 +48,76 @@ export class LogFileAnalyzer {
       // Get log files for analysis period
       const logFiles = await this.getLogFilesInPeriod(hoursBack);
 
-      logger.info("Starting log file analysis", {
-        hoursBack,
-        logFiles: logFiles.length,
-        correlationId: "log-file-analyzer",
-      });
+      console.log(
+        `📊 Starting log file analysis: ${hoursBack}h back, ${logFiles.length} files`,
+      );
 
       for (const logFile of logFiles) {
         try {
           await this.analyzeLogFile(path.join(this.LOG_DIR, logFile), report);
-        } catch (error) {
-          logger.warn("Failed to analyze log file", {
-            logFile,
-            error: error instanceof Error ? error.message : "Unknown error",
-            correlationId: "log-file-analyzer",
-          });
+        } catch {
+          console.warn(`⚠️ Failed to analyze log file: ${logFile}`);
         }
       }
 
       // Generate insights and recommendations
       this.generateInsights(report);
 
-      logger.info("Log file analysis completed", {
-        totalEntries: report.totalEntries,
-        patternCount: report.patterns.size,
-        recommendationsCount: report.trends.recommendations.length,
-        correlationId: "log-file-analyzer",
-      });
-
+      console.log(
+        `✅ Log file analysis completed: ${report.totalEntries} entries, ${report.patterns.size} patterns`,
+      );
     } catch (error) {
-      logger.error("Log file analysis failed", {
-        error: error instanceof Error ? error.message : "Unknown error",
-        correlationId: "log-file-analyzer",
-      });
+      console.error(
+        `❌ Log file analysis failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
       throw error;
     }
 
     return report;
   }
 
-  private static async getLogFilesInPeriod(hoursBack: number): Promise<string[]> {
+  private static async getLogFilesInPeriod(
+    hoursBack: number,
+  ): Promise<string[]> {
     try {
       // Check if logs directory exists
       try {
         await fs.access(this.LOG_DIR);
       } catch {
-        logger.warn("Log directory not found", {
-          logDir: this.LOG_DIR,
-          correlationId: "log-file-analyzer",
-        });
+        console.warn(`⚠️ Log directory not found: ${this.LOG_DIR}`);
         return [];
       }
 
       const files = await fs.readdir(this.LOG_DIR);
-      const logFiles = files.filter(file => 
-        file.endsWith('.log') || 
-        file.endsWith('.json') ||
-        file.match(/\d{4}-\d{2}-\d{2}/)
+      const logFiles = files.filter(
+        (file) =>
+          file.endsWith(".log") ||
+          file.endsWith(".json") ||
+          file.match(/\d{4}-\d{2}-\d{2}/),
       );
 
-      const cutoffTime = Date.now() - (hoursBack * 60 * 60 * 1000);
+      const cutoffTime = Date.now() - hoursBack * 60 * 60 * 1000;
       const relevantFiles: string[] = [];
 
       for (const file of logFiles) {
         try {
           const filePath = path.join(this.LOG_DIR, file);
           const stats = await fs.stat(filePath);
-          
+
           // Include file if it was modified within the analysis period
           if (stats.mtime.getTime() > cutoffTime) {
             relevantFiles.push(file);
           }
-        } catch (error) {
-          logger.debug("Skipping file due to stat error", {
-            file,
-            error: error instanceof Error ? error.message : "Unknown error",
-            correlationId: "log-file-analyzer",
-          });
+        } catch {
+          // Skip file silently
         }
       }
 
       return relevantFiles.sort();
     } catch (error) {
-      logger.warn("Failed to get log files", {
-        error: error instanceof Error ? error.message : "Unknown error",
-        correlationId: "log-file-analyzer",
-      });
+      console.warn(
+        `⚠️ Failed to get log files: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
       return [];
     }
   }
@@ -146,10 +130,7 @@ export class LogFileAnalyzer {
       // Check if file exists and is accessible
       await fs.access(filePath);
     } catch {
-      logger.debug("Log file not accessible", {
-        filePath,
-        correlationId: "log-file-analyzer",
-      });
+      // Skip inaccessible file silently
       return;
     }
 
@@ -160,16 +141,18 @@ export class LogFileAnalyzer {
     });
 
     let processedEntries = 0;
-    
+
     try {
       for await (const line of rl) {
-        if (!line.trim()) continue;
+        if (!line.trim()) {
+          continue;
+        }
 
         try {
           let entry: LogEntry;
-          
+
           // Try to parse as JSON first (structured logs)
-          if (line.trim().startsWith('{')) {
+          if (line.trim().startsWith("{")) {
             const parsed = JSON.parse(line);
             entry = {
               timestamp: new Date(parsed.timestamp || new Date()),
@@ -196,15 +179,18 @@ export class LogFileAnalyzer {
           }
 
           // Check if entry is within our analysis period
-          if (entry.timestamp >= report.periodStart && entry.timestamp <= report.periodEnd) {
+          if (
+            entry.timestamp >= report.periodStart &&
+            entry.timestamp <= report.periodEnd
+          ) {
             report.totalEntries++;
             processedEntries++;
 
             // Analyze patterns in this log entry
             const matches = LogPatternAnalyzer.analyzeLogEntry(entry);
-            
+
             // Update pattern statistics
-            matches.forEach(match => {
+            matches.forEach((match) => {
               const currentCount = report.patterns.get(match.pattern.id) || 0;
               report.patterns.set(match.pattern.id, currentCount + 1);
             });
@@ -212,25 +198,15 @@ export class LogFileAnalyzer {
             // Update hourly statistics
             this.updateHourlyStats(entry, report);
           }
-        } catch (parseError) {
+        } catch {
           // Skip malformed log entries but don't fail the entire analysis
-          logger.debug("Skipping malformed log entry", {
-            filePath,
-            line: line.substring(0, 100),
-            error: parseError instanceof Error ? parseError.message : "Parse error",
-            correlationId: "log-file-analyzer",
-          });
+          // Skip malformed entry silently
         }
       }
 
       if (processedEntries > 0) {
-        logger.debug("Log file analysis completed", {
-          filePath: path.basename(filePath),
-          processedEntries,
-          correlationId: "log-file-analyzer",
-        });
+        // Analysis completed silently
       }
-
     } finally {
       rl.close();
       fileStream.destroy();
@@ -267,7 +243,8 @@ export class LogFileAnalyzer {
         type: "error-spike",
         severity: "warning",
         message: `Error spike detected at ${errorHours[0][0]} with ${errorHours[0][1]} errors`,
-        action: "Investigate error patterns and root causes during this time period",
+        action:
+          "Investigate error patterns and root causes during this time period",
       });
     }
 
@@ -283,18 +260,19 @@ export class LogFileAnalyzer {
     const sortedPerf = Array.from(avgResponseTimes.entries()).sort(
       (a, b) => b[1] - a[1],
     );
-    
+
     if (sortedPerf.length > 0 && sortedPerf[0][1] > 5000) {
       report.trends.recommendations.push({
         type: "performance-degradation",
         severity: "warning",
         message: `Performance degradation detected at ${sortedPerf[0][0]} with ${sortedPerf[0][1].toFixed(2)}ms average response time`,
-        action: "Review slow operations and optimize performance bottlenecks during this period",
+        action:
+          "Review slow operations and optimize performance bottlenecks during this period",
       });
     }
 
     // Generate top errors list
-    const errorMessages = new Map<string, number>();
+    // const _errorMessages = new Map<string, number>();
     // This would be populated during log analysis - for now we'll use pattern data
     report.trends.topErrors = Array.from(report.patterns.entries())
       .sort((a, b) => b[1] - a[1])
@@ -310,14 +288,16 @@ export class LogFileAnalyzer {
         type: "no-logs",
         severity: "info",
         message: "No log entries found in the specified time period",
-        action: "Verify log file location and ensure logging is properly configured",
+        action:
+          "Verify log file location and ensure logging is properly configured",
       });
     } else if (report.patterns.size > 20) {
       report.trends.recommendations.push({
         type: "high-pattern-activity",
         severity: "info",
         message: `High pattern activity detected (${report.patterns.size} different patterns)`,
-        action: "Review pattern thresholds and consider consolidating similar patterns",
+        action:
+          "Review pattern thresholds and consider consolidating similar patterns",
       });
     }
   }
@@ -340,33 +320,34 @@ export class LogFileAnalyzer {
     try {
       await fs.access(this.LOG_DIR);
       const files = await fs.readdir(this.LOG_DIR);
-      
+
       for (const file of files) {
-        if (file.endsWith('.log') || file.endsWith('.json') || file.match(/\d{4}-\d{2}-\d{2}/)) {
+        if (
+          file.endsWith(".log") ||
+          file.endsWith(".json") ||
+          file.match(/\d{4}-\d{2}-\d{2}/)
+        ) {
           try {
             const filePath = path.join(this.LOG_DIR, file);
             const fileStats = await fs.stat(filePath);
-            
+
             stats.totalFiles++;
             stats.totalSizeBytes += fileStats.size;
-            
+
             if (!stats.oldestFile || fileStats.mtime < stats.oldestFile) {
               stats.oldestFile = fileStats.mtime;
             }
-            
+
             if (!stats.newestFile || fileStats.mtime > stats.newestFile) {
               stats.newestFile = fileStats.mtime;
             }
-          } catch (error) {
+          } catch {
             // Skip files that can't be accessed
           }
         }
       }
-    } catch (error) {
-      logger.debug("Unable to access log directory", {
-        error: error instanceof Error ? error.message : "Unknown error",
-        correlationId: "log-file-analyzer",
-      });
+    } catch {
+      // Skip directory access error
     }
 
     return stats;

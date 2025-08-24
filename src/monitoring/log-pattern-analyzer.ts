@@ -1,4 +1,4 @@
-import { logger } from "../utils/logger";
+// Logger will be injected via import to avoid circular dependency
 
 export interface LogEntry {
   timestamp: Date;
@@ -62,20 +62,17 @@ export class LogPatternAnalyzer {
 
   static registerPattern(pattern: LogPattern): void {
     this.patterns.set(pattern.id, pattern);
-    logger.info("Log pattern registered", {
-      patternId: pattern.id,
-      name: pattern.name,
-      severity: pattern.severity,
-      correlationId: "log-analyzer",
-    });
+    // Log registration - logger will be available in the context where this is called
+    console.log(
+      `Log pattern registered: ${pattern.name} (${pattern.severity})`,
+    );
   }
 
   static registerPatterns(patterns: LogPattern[]): void {
     patterns.forEach((pattern) => this.registerPattern(pattern));
-    logger.info("Multiple log patterns registered", {
-      count: patterns.length,
-      correlationId: "log-analyzer",
-    });
+    console.log(
+      `Multiple log patterns registered: ${patterns.length} patterns`,
+    );
   }
 
   static analyzeLogEntry(entry: LogEntry): PatternMatch[] {
@@ -176,10 +173,14 @@ export class LogPatternAnalyzer {
       (match) => Date.now() - match.timestamp.getTime() < 3600000,
     );
 
-    if (recentMatches.length === 0) return 0;
+    if (recentMatches.length === 0) {
+      return 0;
+    }
 
     const errorMatches = recentMatches.filter(
-      (match) => match.pattern.severity === "critical" || match.pattern.severity === "warning",
+      (match) =>
+        match.pattern.severity === "critical" ||
+        match.pattern.severity === "warning",
     );
 
     return (errorMatches.length / recentMatches.length) * 100;
@@ -188,12 +189,14 @@ export class LogPatternAnalyzer {
   private static calculateAvgResponseTime(): number {
     const allMatches = Array.from(this.recentMatches.values()).flat();
     const recentMatches = allMatches.filter(
-      (match) => 
+      (match) =>
         Date.now() - match.timestamp.getTime() < 3600000 &&
         match.entry.duration !== undefined,
     );
 
-    if (recentMatches.length === 0) return 0;
+    if (recentMatches.length === 0) {
+      return 0;
+    }
 
     const totalDuration = recentMatches.reduce(
       (sum, match) => sum + (match.entry.duration || 0),
@@ -203,7 +206,9 @@ export class LogPatternAnalyzer {
     return totalDuration / recentMatches.length;
   }
 
-  private static getTopPatterns(limit: number): Array<{ patternId: string; count: number }> {
+  private static getTopPatterns(
+    limit: number,
+  ): Array<{ patternId: string; count: number }> {
     const patternCounts = new Map<string, number>();
 
     for (const [patternId, matches] of this.recentMatches) {
@@ -219,7 +224,10 @@ export class LogPatternAnalyzer {
       .map(([patternId, count]) => ({ patternId, count }));
   }
 
-  private static detectAnomalies(): Array<{ type: string; description: string }> {
+  private static detectAnomalies(): Array<{
+    type: string;
+    description: string;
+  }> {
     const anomalies: Array<{ type: string; description: string }> = [];
 
     // Check for unusual error rate spikes
@@ -257,19 +265,14 @@ export class LogPatternAnalyzer {
 
   static clearHistory(): void {
     this.recentMatches.clear();
-    logger.info("Pattern match history cleared", {
-      correlationId: "log-analyzer",
-    });
+    console.log("Pattern match history cleared");
   }
 
   static removePattern(patternId: string): boolean {
     const removed = this.patterns.delete(patternId);
     if (removed) {
       this.recentMatches.delete(patternId);
-      logger.info("Pattern removed", {
-        patternId,
-        correlationId: "log-analyzer",
-      });
+      console.log(`Pattern removed: ${patternId}`);
     }
     return removed;
   }
