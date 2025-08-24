@@ -556,33 +556,24 @@ export class MakeApiClient {
     let securityScore: number | undefined;
     
     try {
-      // Check credential security first
-      const validation = credentialSecurityValidator().validateMakeApiKey(this.config.apiKey);
-      credentialValid = validation.isValid;
-      securityScore = validation.score;
-      
-      if (!credentialValid) {
-        issues.push(`Credential validation failed: ${validation.errors.join(', ')}`);
-      }
-      
-      if (validation.score < 60) {
-        issues.push(`Low security score: ${validation.score}/100`);
-      }
+      // Check credential security
+      const credentialResult = this.validateCredentialHealth();
+      credentialValid = credentialResult.valid;
+      securityScore = credentialResult.score;
+      issues.push(...credentialResult.issues);
       
       // Check rotation requirements
-      const rotationCheck = await this.checkCredentialRotation();
-      rotationNeeded = rotationCheck.needsRotation;
-      
-      if (rotationNeeded) {
-        issues.push(rotationCheck.recommendation);
+      const rotationResult = await this.checkRotationHealth();
+      rotationNeeded = rotationResult.needed;
+      if (rotationResult.issue) {
+        issues.push(rotationResult.issue);
       }
       
       // Test API connectivity
-      const response = await this.get('/users/me');
-      healthy = response.success;
-      
-      if (!healthy) {
-        issues.push('API connectivity test failed');
+      const connectivityResult = await this.testApiConnectivity();
+      healthy = connectivityResult.healthy;
+      if (connectivityResult.issue) {
+        issues.push(connectivityResult.issue);
       }
       
       return {
@@ -593,19 +584,85 @@ export class MakeApiClient {
         issues
       };
     } catch (error) {
-      issues.push(`Health check error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      this.componentLogger.error('Enhanced health check failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        issues
-      });
-      
-      return {
-        healthy: false,
-        credentialValid: false,
-        rotationNeeded: true,
-        issues
-      };
+      return this.handleHealthCheckError(error, issues);
     }
+  }
+
+  /**
+   * Validate credential security and return validation results
+   */
+  private validateCredentialHealth(): {
+    valid: boolean;
+    score: number;
+    issues: string[];
+  } {
+    const validation = credentialSecurityValidator().validateMakeApiKey(this.config.apiKey);
+    const issues: string[] = [];
+    
+    if (!validation.isValid) {
+      issues.push(`Credential validation failed: ${validation.errors.join(', ')}`);
+    }
+    
+    if (validation.score < 60) {
+      issues.push(`Low security score: ${validation.score}/100`);
+    }
+    
+    return {
+      valid: validation.isValid,
+      score: validation.score,
+      issues
+    };
+  }
+
+  /**
+   * Check credential rotation requirements
+   */
+  private async checkRotationHealth(): Promise<{
+    needed: boolean;
+    issue?: string;
+  }> {
+    const rotationCheck = await this.checkCredentialRotation();
+    return {
+      needed: rotationCheck.needsRotation,
+      issue: rotationCheck.needsRotation ? rotationCheck.recommendation : undefined
+    };
+  }
+
+  /**
+   * Test API connectivity with health endpoint
+   */
+  private async testApiConnectivity(): Promise<{
+    healthy: boolean;
+    issue?: string;
+  }> {
+    const response = await this.get('/users/me');
+    return {
+      healthy: response.success,
+      issue: response.success ? undefined : 'API connectivity test failed'
+    };
+  }
+
+  /**
+   * Handle health check errors and return error response
+   */
+  private handleHealthCheckError(error: unknown, issues: string[]): {
+    healthy: boolean;
+    credentialValid: boolean;
+    rotationNeeded: boolean;
+    issues: string[];
+  } {
+    issues.push(`Health check error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    this.componentLogger.error('Enhanced health check failed', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      issues
+    });
+    
+    return {
+      healthy: false,
+      credentialValid: false,
+      rotationNeeded: true,
+      issues
+    };
   }
 
   // Get rate limiter status
@@ -671,60 +728,86 @@ export class MakeApiClient {
     needsRefresh: boolean;
   }> {
     if (!this.useOAuth || !this.currentAccessToken) {
-      return {
-        valid: false,
-        error: 'No OAuth token available',
-        needsRefresh: false,
-      };
+      return this.createTokenValidationResult(false, 'No OAuth token available', false);
     }
 
     try {
       // Check expiry first
       if (this.isTokenExpired()) {
-        return {
-          valid: false,
-          error: 'Token expired',
-          needsRefresh: true,
-        };
+        return this.createTokenValidationResult(false, 'Token expired', true);
       }
 
       // Validate with OAuth client if available
       if (this.oauthClient) {
-        const validation = await this.oauthClient.validateBearerToken(this.currentAccessToken);
-        return {
-          valid: validation.valid,
-          error: validation.error,
-          needsRefresh: !validation.valid,
-        };
+        return await this.validateWithOAuthClient();
       }
 
       // Fallback: Make a test API call to validate token
-      try {
-        await this.axiosInstance.get('/users/me', {
-          timeout: 5000, // Quick validation call
-        });
-        
-        return {
-          valid: true,
-          needsRefresh: false,
-        };
-      } catch (error) {
-        const isAuthError = axios.isAxiosError(error) && 
-          (error.response?.status === 401 || error.response?.status === 403);
-        
-        return {
-          valid: false,
-          error: isAuthError ? 'Token authentication failed' : 'Token validation request failed',
-          needsRefresh: isAuthError,
-        };
-      }
+      return await this.validateWithApiCall();
     } catch (error) {
       this.componentLogger.error('Token validation failed', { error });
-      return {
-        valid: false,
-        error: 'Token validation error',
-        needsRefresh: true,
-      };
+      return this.createTokenValidationResult(false, 'Token validation error', true);
+    }
+  }
+
+  /**
+   * Create token validation result object
+   */
+  private createTokenValidationResult(
+    valid: boolean,
+    error?: string,
+    needsRefresh: boolean = false
+  ): { valid: boolean; error?: string; needsRefresh: boolean } {
+    return {
+      valid,
+      error,
+      needsRefresh,
+    };
+  }
+
+  /**
+   * Validate token using OAuth client
+   */
+  private async validateWithOAuthClient(): Promise<{
+    valid: boolean;
+    error?: string;
+    needsRefresh: boolean;
+  }> {
+    if (!this.oauthClient || !this.currentAccessToken) {
+      return this.createTokenValidationResult(false, 'OAuth client not available', true);
+    }
+
+    const validation = await this.oauthClient.validateBearerToken(this.currentAccessToken);
+    return {
+      valid: validation.valid,
+      error: validation.error,
+      needsRefresh: !validation.valid,
+    };
+  }
+
+  /**
+   * Validate token by making test API call
+   */
+  private async validateWithApiCall(): Promise<{
+    valid: boolean;
+    error?: string;
+    needsRefresh: boolean;
+  }> {
+    try {
+      await this.axiosInstance.get('/users/me', {
+        timeout: 5000, // Quick validation call
+      });
+      
+      return this.createTokenValidationResult(true);
+    } catch (error) {
+      const isAuthError = axios.isAxiosError(error) && 
+        (error.response?.status === 401 || error.response?.status === 403);
+      
+      return this.createTokenValidationResult(
+        false,
+        isAuthError ? 'Token authentication failed' : 'Token validation request failed',
+        isAuthError
+      );
     }
   }
 
