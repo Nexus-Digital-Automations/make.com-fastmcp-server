@@ -135,7 +135,7 @@ async function fetchAnalyticsData(apiClient: MakeApiClient, organizationId: stri
 /**
  * Extract Method: Log analytics success
  */
-function logAnalyticsSuccess(log: any, organizationId: string, analytics: MakeAnalytics): void {
+function logAnalyticsSuccess(log: unknown, organizationId: string, analytics: MakeAnalytics): void {
   if (log?.info) {
     log.info('Successfully retrieved analytics', {
       organizationId,
@@ -149,7 +149,7 @@ function logAnalyticsSuccess(log: any, organizationId: string, analytics: MakeAn
 /**
  * Extract Method: Handle analytics errors
  */
-function handleAnalyticsError(log: any, organizationId: string, error: unknown): never {
+function handleAnalyticsError(log: unknown, organizationId: string, error: unknown): never {
   const errorMessage = error instanceof Error ? error.message : String(error);
   if (log?.error) {
     log.error('Error getting analytics', { organizationId, error: errorMessage });

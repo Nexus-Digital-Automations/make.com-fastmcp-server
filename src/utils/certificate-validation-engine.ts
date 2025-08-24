@@ -1312,7 +1312,7 @@ export class CertificateValidationEngine extends EventEmitter {
   /**
    * Convert peer certificate to PEM format
    */
-  private convertPeerCertToPEM(peerCert: any): string {
+  private convertPeerCertToPEM(parameter: unknown): string {
     if (peerCert.raw) {
       const base64 = peerCert.raw.toString("base64");
       const formatted = base64.match(/.{1,64}/g)?.join("\n") || base64;

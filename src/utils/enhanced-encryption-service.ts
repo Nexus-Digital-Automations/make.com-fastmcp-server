@@ -427,13 +427,13 @@ export class EnhancedEncryptionService extends EventEmitter {
   /**
    * Process batch results into standardized format
    */
-  private processBatchResults(batchResult: any): Array<{
+  private processBatchResults(batchResult: unknown): Array<{
     id: string;
     success: boolean;
     result?: EncryptedData;
     error?: string;
   }> {
-    return batchResult.results.map((result: any) => ({
+    return batchResult.results.map((result: unknown) => ({
       id: result.id,
       success: result.success,
       result:
@@ -842,7 +842,7 @@ export class EnhancedEncryptionService extends EventEmitter {
    * Calculate basic performance statistics
    * Complexity: 4 (extracted from getPerformanceReport)
    */
-  private calculateBasicPerformanceStats(relevantMetrics: any[]) {
+  private calculateBasicPerformanceStats(relevantMetrics: unknown[]) {
     const totalOperations = relevantMetrics.length;
     const avgResponseTime =
       relevantMetrics.reduce((sum, m) => sum + m.processingTime, 0) /
@@ -857,7 +857,7 @@ export class EnhancedEncryptionService extends EventEmitter {
    * Build algorithm breakdown statistics
    * Complexity: 6 (extracted from getPerformanceReport)
    */
-  private buildAlgorithmBreakdown(relevantMetrics: any[]): Record<string, any> {
+  private buildAlgorithmBreakdown(relevantMetrics: unknown[]): Record<string, any> {
     const algorithmBreakdown: Record<string, any> = {};
 
     for (const metric of relevantMetrics) {
@@ -886,7 +886,7 @@ export class EnhancedEncryptionService extends EventEmitter {
    * Calculate HSM usage statistics
    * Complexity: 4 (extracted from getPerformanceReport)
    */
-  private calculateHsmUsage(relevantMetrics: any[]) {
+  private calculateHsmUsage(relevantMetrics: unknown[]) {
     const hsmMetrics = relevantMetrics.filter((m) => m.hsm);
     return {
       enabled: !!this.hsmManager,
@@ -907,7 +907,7 @@ export class EnhancedEncryptionService extends EventEmitter {
   private generatePerformanceRecommendations(
     avgResponseTime: number,
     peakThroughput: number,
-    hsmUsage: any,
+    hsmUsage: unknown,
     totalOperations: number,
   ): string[] {
     const recommendations: string[] = [];
@@ -1059,7 +1059,7 @@ export class EnhancedEncryptionService extends EventEmitter {
    */
   private buildCryptoKeyOptions(
     algorithm: "rsa-4096" | "ecdsa-p384" | "ed25519",
-  ): any {
+  ): unknown {
     if (algorithm === "rsa-4096") {
       return {
         modulusLength: 4096,

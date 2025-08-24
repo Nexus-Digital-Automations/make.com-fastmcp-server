@@ -15,7 +15,7 @@ import logger from '../lib/logger.js';
  */
 export class SecurityMonitoringIntegrationExample {
   private app: express.Application;
-  private server?: any;
+  private server?: unknown;
 
   constructor() {
     this.app = express();

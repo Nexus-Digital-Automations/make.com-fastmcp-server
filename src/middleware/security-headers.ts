@@ -96,7 +96,7 @@ export class SecurityHeadersManager {
     });
   }
 
-  private buildCSPConfig(): any {
+  private buildCSPConfig(): unknown {
     return {
       directives: {
         defaultSrc: ["'self'"],
@@ -160,7 +160,7 @@ export class SecurityHeadersManager {
     ];
   }
 
-  private buildHSTSConfig(): any {
+  private buildHSTSConfig(): unknown {
     return {
       maxAge: 31536000, // 1 year
       includeSubDomains: true,
@@ -168,7 +168,7 @@ export class SecurityHeadersManager {
     };
   }
 
-  private buildCOEPConfig(): any {
+  private buildCOEPConfig(): unknown {
     return this.config.environment === "production"
       ? {
           policy: "require-corp",

@@ -96,7 +96,7 @@ function createWebhookLogger(): ReturnType<typeof logger.child> {
 }
 
 function createListWebhooksExecutor(apiClient: MakeApiClient) {
-  return async (input: any, { log }: any) => {
+  return async (input: unknown, { log }: any) => {
     const { connectionId, scenarioId, status, limit, offset } = input;
 
     log.info('Listing webhooks', {
@@ -139,10 +139,10 @@ function buildWebhookParams(
 }
 
 function formatWebhookListResponse(
-  response: any,
+  response: unknown,
   limit: number,
   offset: number,
-  log: any,
+  log: unknown,
 ) {
   const webhooks = safeGetArray(response.data);
   const metadata = response.metadata;
@@ -163,7 +163,7 @@ function formatWebhookListResponse(
   }, "Webhooks retrieved successfully");
 }
 
-function handleWebhookError(error: unknown, log: any, defaultMessage: string) {
+function handleWebhookError(error: unknown, log: unknown, defaultMessage: string) {
   const errorMessage = error instanceof Error ? error.message : String(error);
   log.error('Webhook operation error', { error: errorMessage });
   if (error instanceof UserError) throw error;

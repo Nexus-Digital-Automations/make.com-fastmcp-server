@@ -13,6 +13,29 @@ import type {
   RotationAgentBase,
 } from "./rotation-agent-base.js";
 
+// Interface extensions for type safety
+interface AgentWithMetadata extends RotationAgentBase {
+  agentId: string;
+  role: string;
+  getStatus(): AgentStatus;
+}
+
+interface MessageData {
+  type: string;
+  payload: Record<string, unknown>;
+  timestamp: Date;
+}
+
+interface _MessageHandler<T = MessageData> {
+  (message: T): Promise<void> | void;
+}
+
+interface _WorkflowStepResult {
+  result: Record<string, unknown>;
+  success: boolean;
+  error?: string;
+}
+
 /**
  * Message routing configuration
  */
@@ -108,8 +131,8 @@ export class RotationMessageBus extends EventEmitter {
    * Register an agent with the message bus
    */
   public registerAgent(agent: RotationAgentBase): void {
-    const agentId = (agent as any).agentId;
-    const role = (agent as any).role;
+    const agentId = (agent as AgentWithMetadata).agentId;
+    const role = (agent as AgentWithMetadata).role;
 
     if (this.agents.has(agentId)) {
       throw new Error(`Agent ${agentId} already registered`);
@@ -150,7 +173,7 @@ export class RotationMessageBus extends EventEmitter {
       return;
     }
 
-    const role = (agent as any).role;
+    const role = (agent as AgentWithMetadata).role;
 
     this.agents.delete(agentId);
     this.agentsByRole.delete(role);
@@ -302,16 +325,38 @@ export class RotationMessageBus extends EventEmitter {
 
   /**
    * Execute a workflow
+   * Complexity reduced via Extract Method pattern
    */
   public async executeWorkflow(
     workflowId: string,
     initialPayload: Record<string, unknown> = {},
   ): Promise<Record<string, unknown>> {
+    const workflow = this.validateWorkflow(workflowId);
+    const execution = this.initializeWorkflowExecution(workflowId, workflow);
+    
+    return this.runWorkflowExecution(execution, initialPayload);
+  }
+
+  /**
+   * Extract Method: Validate workflow exists
+   * Complexity: ≤3
+   */
+  private validateWorkflow(workflowId: string): WorkflowDefinition {
     const workflow = this.workflows.get(workflowId);
     if (!workflow) {
       throw new Error(`Workflow not found: ${workflowId}`);
     }
+    return workflow;
+  }
 
+  /**
+   * Extract Method: Initialize workflow execution
+   * Complexity: ≤5
+   */
+  private initializeWorkflowExecution(
+    workflowId: string,
+    workflow: WorkflowDefinition
+  ): WorkflowExecution {
     const executionId = crypto.randomUUID();
     const execution: WorkflowExecution = {
       workflowId,
@@ -325,13 +370,24 @@ export class RotationMessageBus extends EventEmitter {
     };
 
     this.activeExecutions.set(executionId, execution);
-
+    
     this.componentLogger.info("Starting workflow execution", {
       workflowId,
       executionId,
       steps: workflow.steps.length,
     });
+    
+    return execution;
+  }
 
+  /**
+   * Extract Method: Run workflow execution with error handling
+   * Complexity: ≤8
+   */
+  private async runWorkflowExecution(
+    execution: WorkflowExecution,
+    initialPayload: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     try {
       execution.status = "running";
 
@@ -345,8 +401,8 @@ export class RotationMessageBus extends EventEmitter {
       execution.endTime = new Date();
 
       this.componentLogger.info("Workflow execution completed", {
-        workflowId,
-        executionId,
+        workflowId: execution.workflowId,
+        executionId: execution.executionId,
         durationMs: execution.endTime.getTime() - execution.startTime.getTime(),
         completedSteps: execution.completedSteps.length,
         failedSteps: execution.failedSteps.length,
@@ -354,24 +410,41 @@ export class RotationMessageBus extends EventEmitter {
 
       return results;
     } catch (error) {
-      execution.status = "failed";
-      execution.endTime = new Date();
-
-      this.componentLogger.error("Workflow execution failed", {
-        workflowId,
-        executionId,
-        error: error instanceof Error ? error.message : "Unknown error",
-        completedSteps: execution.completedSteps.length,
-        failedSteps: execution.failedSteps.length,
-      });
-
+      this.handleWorkflowExecutionError(execution, error);
       throw error;
     } finally {
-      // Clean up after some time
-      setTimeout(() => {
-        this.activeExecutions.delete(executionId);
-      }, 300000); // 5 minutes
+      this.scheduleWorkflowCleanup(execution.executionId);
     }
+  }
+
+  /**
+   * Extract Method: Handle workflow execution errors
+   * Complexity: ≤4
+   */
+  private handleWorkflowExecutionError(
+    execution: WorkflowExecution,
+    error: unknown
+  ): void {
+    execution.status = "failed";
+    execution.endTime = new Date();
+
+    this.componentLogger.error("Workflow execution failed", {
+      workflowId: execution.workflowId,
+      executionId: execution.executionId,
+      error: error instanceof Error ? error.message : "Unknown error",
+      completedSteps: execution.completedSteps.length,
+      failedSteps: execution.failedSteps.length,
+    });
+  }
+
+  /**
+   * Extract Method: Schedule workflow cleanup
+   * Complexity: ≤2
+   */
+  private scheduleWorkflowCleanup(executionId: string): void {
+    setTimeout(() => {
+      this.activeExecutions.delete(executionId);
+    }, 300000); // 5 minutes
   }
 
   /**
@@ -427,7 +500,7 @@ export class RotationMessageBus extends EventEmitter {
             throw new Error(`Agent not found for role: ${step.agentRole}`);
           }
 
-          const agentId = (targetAgent as any).agentId;
+          const agentId = (targetAgent as AgentWithMetadata).agentId;
 
           // Execute step
           const result = await this.sendMessage(
@@ -531,7 +604,7 @@ export class RotationMessageBus extends EventEmitter {
 
     for (const [agentId, agent] of this.agents) {
       try {
-        statuses[agentId] = (agent as any).getStatus();
+        statuses[agentId] = (agent as AgentWithMetadata).getStatus();
       } catch (error) {
         this.componentLogger.error("Failed to get agent status", {
           agentId,

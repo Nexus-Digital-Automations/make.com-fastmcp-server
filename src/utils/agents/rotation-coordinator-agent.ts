@@ -25,14 +25,14 @@ class RotationWorkerPool {
   private readonly workers: Worker[] = [];
   private readonly availableWorkers: Worker[] = [];
   private readonly busyWorkers: Set<Worker> = new Set();
-  private readonly workerMessageMap: Map<string, (response: any) => void> =
+  private readonly workerMessageMap: Map<string, (parameter: unknown) => void> =
     new Map();
   private readonly componentLogger;
 
   constructor(
     private readonly maxWorkers: number,
     private readonly workerTimeoutMs: number,
-    private readonly componentLogger: any,
+    private readonly componentLogger: unknown,
   ) {
     this.componentLogger = componentLogger.child({
       component: "RotationWorkerPool",
@@ -65,7 +65,7 @@ class RotationWorkerPool {
       workerData: { workerId: crypto.randomUUID() },
     });
 
-    worker.on("message", (response: any) => {
+    worker.on('message', (response: unknown) => {
       const callback = this.workerMessageMap.get(response.messageId);
       if (callback) {
         callback(response);
@@ -145,7 +145,7 @@ class RotationWorkerPool {
         reject(new Error(`Worker task timeout after ${timeout}ms`));
       }, timeout);
 
-      this.workerMessageMap.set(messageId, (response: any) => {
+      this.workerMessageMap.set(parameter: unknown) => {
         clearTimeout(timer);
         if (response.success) {
           resolve(response.data);

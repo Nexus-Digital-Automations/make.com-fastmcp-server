@@ -356,8 +356,8 @@ ${
 
   private async executeHealthCheck(
     includeSecurity: boolean,
-    log: any,
-    session: any,
+    log: unknown,
+    session: unknown,
   ): Promise<string> {
     const { correlationId, componentLogger } = this.setupHealthCheckLogging(session);
     this.logHealthCheckStart(componentLogger, log, correlationId);
@@ -377,9 +377,9 @@ ${
     return JSON.stringify(healthStatus, null, 2);
   }
 
-  private setupHealthCheckLogging(session: any): {
+  private setupHealthCheckLogging(parameter: unknown): {
     correlationId: string;
-    componentLogger: any;
+    componentLogger: unknown;
   } {
     const correlationId = extractCorrelationId({ session });
     const componentLogger = createComponentLogger({
@@ -392,12 +392,12 @@ ${
     return { correlationId, componentLogger };
   }
 
-  private logHealthCheckStart(componentLogger: any, log: any, correlationId: string): void {
+  private logHealthCheckStart(componentLogger: unknown, log: unknown, correlationId: string): void {
     componentLogger.info("Performing health check");
     log.info("Performing health check", { correlationId });
   }
 
-  private getServerHealthInfo(): any {
+  private getServerHealthInfo(): unknown {
     return {
       server: "healthy",
       timestamp: new Date().toISOString(),
@@ -428,11 +428,11 @@ ${
     };
   }
 
-  private getSecurityStatus(includeSecurity: boolean): any {
+  private getSecurityStatus(includeSecurity: boolean): unknown {
     return includeSecurity ? { overall: "disabled" } : null;
   }
 
-  private buildHealthStatus(serverHealth: any, apiHealthData: any, securityStatus: any): any {
+  private buildHealthStatus(serverHealth: unknown, apiHealthData: unknown, securityStatus: any): unknown {
     return {
       ...serverHealth,
       makeApi: apiHealthData,
@@ -445,9 +445,9 @@ ${
   }
 
   private logHealthCheckCompletion(
-    componentLogger: any,
-    log: any,
-    healthStatus: any,
+    componentLogger: unknown,
+    log: unknown,
+    healthStatus: unknown,
     correlationId: string,
   ): void {
     const logData = {
@@ -536,7 +536,7 @@ ${
     });
   }
 
-  private async executeServerInfoRequest(log: any, session: any): Promise<any> {
+  private async executeServerInfoRequest(log: unknown, session: any): Promise<any> {
     const { correlationId, componentLogger } = this.setupServerInfoLogging(session);
     this.logServerInfoStart(componentLogger, log, correlationId);
 
@@ -551,9 +551,9 @@ ${
     };
   }
 
-  private setupServerInfoLogging(session: any): {
+  private setupServerInfoLogging(parameter: unknown): {
     correlationId: string;
-    componentLogger: any;
+    componentLogger: unknown;
   } {
     const correlationId = extractCorrelationId({ session });
     const componentLogger = createComponentLogger({
@@ -566,12 +566,12 @@ ${
     return { correlationId, componentLogger };
   }
 
-  private logServerInfoStart(componentLogger: any, log: any, correlationId: string): void {
+  private logServerInfoStart(componentLogger: unknown, log: unknown, correlationId: string): void {
     componentLogger.info("Retrieving server information");
     log.info("Retrieving server information", { correlationId });
   }
 
-  private buildServerInfo(): any {
+  private buildServerInfo(): unknown {
     const config = configManager().getConfig();
     return {
       name: config.name,
@@ -585,7 +585,7 @@ ${
     };
   }
 
-  private getNodeInfo(): any {
+  private getNodeInfo(): unknown {
     return {
       version: process.version,
       platform: process.platform,
@@ -593,7 +593,7 @@ ${
     };
   }
 
-  private buildConfigurationInfo(config: any): any {
+  private buildConfigurationInfo(parameter: unknown): unknown {
     return {
       logLevel: config.logLevel,
       authentication: {
@@ -797,9 +797,9 @@ ${
 
   private async executeConfigurationTest(
     includePermissions: boolean,
-    log: any,
-    reportProgress: any,
-    session: any,
+    log: unknown,
+    reportProgress: unknown,
+    session: unknown,
   ): Promise<string> {
     const { correlationId, componentLogger } = 
       this.setupConfigTestLogging(session);
@@ -831,9 +831,9 @@ ${
     }
   }
 
-  private setupConfigTestLogging(session: any): {
+  private setupConfigTestLogging(parameter: unknown): {
     correlationId: string;
-    componentLogger: any;
+    componentLogger: unknown;
   } {
     const correlationId = extractCorrelationId({ session });
     const componentLogger = createComponentLogger({
@@ -847,15 +847,15 @@ ${
   }
 
   private logConfigTestStart(
-    componentLogger: any,
-    log: any,
+    componentLogger: unknown,
+    log: unknown,
     correlationId: string,
   ): void {
     componentLogger.info("Testing Make.com API configuration");
     log.info("Testing Make.com API configuration", { correlationId });
   }
 
-  private async testApiConnectivity(reportProgress: any): Promise<any> {
+  private async testApiConnectivity(parameter: unknown): Promise<any> {
     const userResponse = await this.apiClient.get("/users/me");
     reportProgress({ progress: 25, total: 100 });
 
@@ -869,15 +869,15 @@ ${
   }
 
   private logConnectivitySuccess(
-    componentLogger: any,
-    log: any,
+    componentLogger: unknown,
+    log: unknown,
     correlationId: string,
   ): void {
     componentLogger.info("API connectivity test passed", { correlationId });
     log.info("API connectivity test passed", { correlationId });
   }
 
-  private async testTeamAccess(reportProgress: any): Promise<boolean | null> {
+  private async testTeamAccess(parameter: unknown): Promise<boolean | null> {
     if (!configManager().getMakeConfig().teamId) {
       return null;
     }
@@ -889,7 +889,7 @@ ${
     return teamResponse.success;
   }
 
-  private async testScenarioAccess(reportProgress: any): Promise<boolean> {
+  private async testScenarioAccess(parameter: unknown): Promise<boolean> {
     const scenariosResponse = await this.apiClient.get("/scenarios", {
       params: { limit: 1 },
     });
@@ -898,13 +898,13 @@ ${
   }
 
   private buildTestResults(
-    userResponse: any,
+    userResponse: unknown,
     teamAccess: boolean | null,
     scenarioAccess: boolean,
     includePermissions: boolean,
-    log: any,
-  ): any {
-    const testResults: any = {
+    log: unknown,
+  ): unknown {
+    const testResults: unknown = {
       timestamp: new Date().toISOString(),
       apiConnectivity: userResponse.success,
       userInfo: userResponse.data,
@@ -929,8 +929,8 @@ ${
   }
 
   private logConfigTestSuccess(
-    componentLogger: any,
-    log: any,
+    componentLogger: unknown,
+    log: unknown,
     correlationId: string,
   ): void {
     componentLogger.info("Configuration test completed successfully", {
@@ -943,8 +943,8 @@ ${
 
   private handleConfigTestError(
     error: unknown,
-    componentLogger: any,
-    log: any,
+    componentLogger: unknown,
+    log: unknown,
     correlationId: string,
   ): void {
     const makeError =

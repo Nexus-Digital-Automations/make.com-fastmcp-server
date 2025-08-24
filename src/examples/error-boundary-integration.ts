@@ -142,7 +142,7 @@ export class DatabaseManager {
   /**
    * Execute database query with resource management
    */
-  async executeQuery<T>(query: string, params?: any[]): Promise<T> {
+  async executeQuery<T>(query: string, params?: unknown[]): Promise<T> {
     return databaseBoundary.withResource(
       {
         name: `query-${Date.now()}`,
@@ -304,7 +304,7 @@ export class IntegratedServer {
   /**
    * Process incoming requests with full error handling
    */
-  async handleRequest(requestData: any): Promise<any> {
+  async handleRequest(parameter: unknown): Promise<any> {
     return serverBoundary.execute(
       async () => {
         // Validate request

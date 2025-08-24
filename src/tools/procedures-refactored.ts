@@ -63,11 +63,11 @@ interface ProcedureCreationParams {
   category: string;
   organizationId?: string;
   teamId?: string;
-  configuration: any;
-  input: any;
-  output: any;
-  monitoring: any;
-  security: any;
+  configuration: unknown;
+  input: unknown;
+  output: unknown;
+  monitoring: unknown;
+  security: unknown;
 }
 
 /**
@@ -86,7 +86,7 @@ function resolveEndpoint(organizationId?: string, teamId?: string): string {
 /**
  * Procedure data builder - extracted method (Complexity: 2)
  */
-function buildProcedureData(params: ProcedureCreationParams): any {
+function buildProcedureData(params: ProcedureCreationParams): unknown {
   return {
     name: params.name,
     description: params.description,
@@ -173,7 +173,7 @@ function logError(log: Logger, message: string, data?: any): void {
 async function createProcedureViaAPI(
   apiClient: MakeApiClient,
   endpoint: string, 
-  procedureData: any, 
+  procedureData: unknown, 
   context: ProcedureCreationContext
 ): Promise<MakeRemoteProcedure> {
   const response = await apiClient.post(endpoint, procedureData);
@@ -247,5 +247,5 @@ export async function createRemoteProcedure(
 
 // Helper functions that need to be imported or implemented
 declare function validateProcedureConfiguration(type: string, configuration: any): void;
-declare function buildProcedureMonitoring(monitoring: any): any;
-declare function buildProcedureSecurity(security: any): any;
+declare function buildProcedureMonitoring(parameter: unknown): unknown;
+declare function buildProcedureSecurity(parameter: unknown): unknown;

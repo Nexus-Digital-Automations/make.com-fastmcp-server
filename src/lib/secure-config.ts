@@ -1225,7 +1225,7 @@ export class SecureConfigManager {
    */
   private createBatchRotationRequest(
     credentialIds: string[],
-    options: any,
+    options: unknown,
     policy: RotationPolicy
   ): RotationBatch {
     const requests: CredentialRotationRequest[] = credentialIds.map(credentialId => ({

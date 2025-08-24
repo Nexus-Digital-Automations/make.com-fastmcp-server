@@ -232,7 +232,7 @@ describe("Concurrent Rotation Integration Tests", () => {
     });
 
     test("should maintain agent health monitoring", async () => {
-      const agentErrors: any[] = [];
+      const agentErrors: unknown[] = [];
 
       agent.on("agent_error", (error) => {
         agentErrors.push(error);

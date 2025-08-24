@@ -183,7 +183,7 @@ abstract class HSMProvider_Abstract extends EventEmitter {
  * AWS KMS Provider Implementation
  */
 class AWSKMSProvider extends HSMProvider_Abstract {
-  private kmsClient?: any; // AWS SDK client would be imported here
+  private kmsClient?: unknown; // AWS SDK client would be imported here
 
   async connect(): Promise<void> {
     try {
@@ -584,7 +584,7 @@ class AWSKMSProvider extends HSMProvider_Abstract {
  * HashiCorp Vault Provider Implementation
  */
 class HashiCorpVaultProvider extends HSMProvider_Abstract {
-  private vaultClient?: any; // Vault client would be imported here
+  private vaultClient?: unknown; // Vault client would be imported here
 
   async connect(): Promise<void> {
     try {

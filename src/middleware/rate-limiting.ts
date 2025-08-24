@@ -539,7 +539,7 @@ function createIdentifier(
 
 function setRateLimitHeaders(
   res: HttpResponse,
-  result: any,
+  result: unknown,
   tier: string,
 ): void {
   if (result.resetTime) {

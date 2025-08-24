@@ -130,7 +130,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     };
   }
 
-  private createAuthFailureConditions(): any[] {
+  private createAuthFailureConditions(): unknown[] {
     return [
       {
         field: "event.type",
@@ -147,7 +147,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     ];
   }
 
-  private createSecurityAlertActions(): any[] {
+  private createSecurityAlertActions(): unknown[] {
     return [
       {
         type: "webhook",
@@ -165,7 +165,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     ];
   }
 
-  private createRuleMetadata(category: string): any {
+  private createRuleMetadata(category: string): unknown {
     return {
       author: "system",
       created: new Date(),
@@ -174,7 +174,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     };
   }
 
-  private createInitialStatistics(): any {
+  private createInitialStatistics(): unknown {
     return {
       triggered: 0,
       averageTriggersPerDay: 0,
@@ -238,7 +238,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     };
   }
 
-  private createDataExfiltrationConditions(): any[] {
+  private createDataExfiltrationConditions(): unknown[] {
     return [
       {
         field: "data_size",
@@ -255,7 +255,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     ];
   }
 
-  private createIncidentAlertActions(): any[] {
+  private createIncidentAlertActions(): unknown[] {
     return [
       {
         type: "webhook",
@@ -974,7 +974,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     };
   }
 
-  private buildSIEMSource(req: SecurityEnhancedRequest): any {
+  private buildSIEMSource(req: SecurityEnhancedRequest): unknown {
     return {
       ip: req.ip,
       hostname: req.hostname,
@@ -983,7 +983,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     };
   }
 
-  private buildSIEMUser(req: SecurityEnhancedRequest): any {
+  private buildSIEMUser(req: SecurityEnhancedRequest): unknown {
     return req.securityContext.userId
       ? { id: req.securityContext.userId }
       : undefined;
@@ -992,7 +992,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
   private buildSIEMEventDetails(
     req: SecurityEnhancedRequest,
     res: Response,
-  ): any {
+  ): unknown {
     return {
       category: "web",
       type: "request",
@@ -1007,7 +1007,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
     req: SecurityEnhancedRequest,
     res: Response,
     responseTime: number,
-  ): any {
+  ): unknown {
     return {
       http: {
         request: {
@@ -1216,7 +1216,7 @@ export class AdvancedSecurityMonitoringManager extends EventEmitter {
         : "stable";
 
     const topRisks = Array.isArray(metrics.riskTop)
-      ? metrics.riskTop.map((risk: any) => ({
+      ? metrics.riskTop.map((risk: unknown) => ({
           category:
             typeof risk?.category === "string" ? risk.category : "unknown",
           score: typeof risk?.score === "number" ? risk.score : 0,
