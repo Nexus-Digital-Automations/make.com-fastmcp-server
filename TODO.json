@@ -1,6 +1,79 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1755996665914_96b510zny",
+      "title": "Replace any types with proper TypeScript interfaces",
+      "description": "Critical type safety issue: Replace excessive use of any types and ESLint disables in server.ts, index.ts, error-recovery.ts, and error-response.ts with proper interfaces and union types",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [
+        "src/server.ts",
+        "src/index.ts",
+        "src/utils/error-recovery.ts",
+        "src/utils/error-response.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T00:51:05.914Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755996455843_1_general_31d4b7c2",
+      "started_at": "2025-08-24T00:53:48.050Z",
+      "claimed_by": "development_session_1755996455843_1_general_31d4b7c2",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755996455843_1_general_31d4b7c2",
+          "role": "primary",
+          "assignedAt": "2025-08-24T00:53:48.050Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
+      "id": "task_1755996683425_l7g4vs9b3",
+      "title": "Implement secure credential management validation",
+      "description": "Security issue: Direct access to process.env.MAKE_API_KEY without validation in config.ts and make-api-client.ts. Implement proper credential validation, encryption, and rotation capabilities",
+      "mode": "DEVELOPMENT",
+      "category": "bug",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": ["src/lib/config.ts", "src/lib/make-api-client.ts"],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T00:51:23.425Z",
+      "auto_research_created": false
+    },
+    {
+      "id": "task_1755996673881_0dqww895w",
+      "title": "Extract logger fallback pattern into utility function",
+      "description": "Code duplication issue: The same logger fallback pattern is repeated across server.ts, index.ts, and make-api-client.ts. Create a centralized utility function to eliminate duplication",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "src/server.ts",
+        "src/index.ts",
+        "src/lib/make-api-client.ts"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-24T00:51:13.891Z",
+      "auto_research_created": true
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
@@ -27,6 +100,27 @@
       "maxConcurrentTasks": 5,
       "createdAt": "2025-08-24T00:33:27.154Z",
       "sessionId": "session_1755995607153",
+      "metadata": {}
+    },
+    "development_session_1755996455843_1_general_31d4b7c2": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-24T00:47:35.844Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-24T00:47:35.844Z",
+      "sessionId": "session_1755996455843",
       "metadata": {}
     }
   },

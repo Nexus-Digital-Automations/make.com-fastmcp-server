@@ -3,9 +3,17 @@
  * Implements circuit breaker patterns, exponential backoff, and resilience strategies
  */
 
-import { randomUUID } from 'crypto';
-import { MakeServerError, UserError, createExternalServiceError, createTimeoutError, getErrorStatusCode, getErrorCode } from './errors.js';
-import logger from '../lib/logger.js';
+import { randomUUID } from "crypto";
+import {
+  MakeServerError,
+  UserError,
+  createExternalServiceError,
+  createTimeoutError,
+  getErrorStatusCode,
+  getErrorCode,
+} from "./errors.js";
+import logger from "../lib/logger.js";
+import { ComponentLogger } from "../types/logger.js";
 
 export interface RetryOptions {
   maxRetries?: number;
@@ -25,22 +33,22 @@ export interface CircuitBreakerOptions {
   onStateChange?: (state: CircuitBreakerState) => void;
 }
 
-export type CircuitBreakerState = 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+export type CircuitBreakerState = "CLOSED" | "OPEN" | "HALF_OPEN";
 
 /**
  * Circuit Breaker implementation for external service calls
  */
 export class CircuitBreaker {
-  private state: CircuitBreakerState = 'CLOSED';
+  private state: CircuitBreakerState = "CLOSED";
   private failureCount = 0;
   private successCount = 0;
   private nextAttempt = 0;
   private readonly options: Required<CircuitBreakerOptions>;
-  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private readonly componentLogger: ComponentLogger;
 
   constructor(
     private readonly name: string,
-    options: CircuitBreakerOptions = {}
+    options: CircuitBreakerOptions = {},
   ) {
     this.options = {
       failureThreshold: options.failureThreshold ?? 5,
@@ -51,25 +59,25 @@ export class CircuitBreaker {
     };
 
     this.componentLogger = logger.child({
-      component: 'CircuitBreaker',
+      component: "CircuitBreaker",
       circuitName: name,
     });
   }
 
   async execute<T>(
     operation: () => Promise<T>,
-    correlationId?: string
+    correlationId?: string,
   ): Promise<T> {
     const operationLogger = this.componentLogger.child({
       correlationId: correlationId || randomUUID(),
-      operation: 'circuit-breaker-execute',
+      operation: "circuit-breaker-execute",
     });
 
-    if (this.state === 'OPEN') {
+    if (this.state === "OPEN") {
       if (Date.now() < this.nextAttempt) {
         const error = createExternalServiceError(
           this.name,
-          'Circuit breaker is OPEN - requests blocked',
+          "Circuit breaker is OPEN - requests blocked",
           undefined,
           {
             circuitState: this.state,
@@ -78,20 +86,20 @@ export class CircuitBreaker {
           },
           {
             correlationId,
-            component: 'CircuitBreaker',
-            operation: 'circuit-breaker-execute',
-          }
+            component: "CircuitBreaker",
+            operation: "circuit-breaker-execute",
+          },
         );
 
-        operationLogger.warn('Circuit breaker blocking request', {
+        operationLogger.warn("Circuit breaker blocking request", {
           state: this.state,
           nextAttempt: new Date(this.nextAttempt).toISOString(),
         });
 
         throw error;
       } else {
-        this.setState('HALF_OPEN');
-        operationLogger.info('Circuit breaker transitioning to HALF_OPEN');
+        this.setState("HALF_OPEN");
+        operationLogger.info("Circuit breaker transitioning to HALF_OPEN");
       }
     }
 
@@ -101,11 +109,11 @@ export class CircuitBreaker {
         operation(),
         this.createTimeoutPromise<T>(),
       ]);
-      
+
       const duration = Date.now() - startTime;
       this.onSuccess();
-      
-      operationLogger.info('Circuit breaker operation succeeded', {
+
+      operationLogger.info("Circuit breaker operation succeeded", {
         duration,
         state: this.state,
       });
@@ -113,8 +121,8 @@ export class CircuitBreaker {
       return result;
     } catch (error) {
       this.onFailure();
-      
-      operationLogger.error('Circuit breaker operation failed', {
+
+      operationLogger.error("Circuit breaker operation failed", {
         error: error instanceof Error ? error.message : String(error),
         state: this.state,
         failureCount: this.failureCount,
@@ -127,21 +135,23 @@ export class CircuitBreaker {
   private createTimeoutPromise<T>(): Promise<T> {
     return new Promise((_, reject) => {
       setTimeout(() => {
-        reject(createTimeoutError(
-          `Circuit breaker operation for ${this.name}`,
-          this.options.timeout
-        ));
+        reject(
+          createTimeoutError(
+            `Circuit breaker operation for ${this.name}`,
+            this.options.timeout,
+          ),
+        );
       }, this.options.timeout);
     });
   }
 
   private onSuccess(): void {
     this.failureCount = 0;
-    
-    if (this.state === 'HALF_OPEN') {
+
+    if (this.state === "HALF_OPEN") {
       this.successCount++;
       if (this.successCount >= this.options.successThreshold) {
-        this.setState('CLOSED');
+        this.setState("CLOSED");
         this.successCount = 0;
       }
     }
@@ -152,7 +162,7 @@ export class CircuitBreaker {
     this.successCount = 0;
 
     if (this.failureCount >= this.options.failureThreshold) {
-      this.setState('OPEN');
+      this.setState("OPEN");
       this.nextAttempt = Date.now() + this.options.resetTimeout;
     }
   }
@@ -160,8 +170,8 @@ export class CircuitBreaker {
   private setState(newState: CircuitBreakerState): void {
     const oldState = this.state;
     this.state = newState;
-    
-    this.componentLogger.info('Circuit breaker state changed', {
+
+    this.componentLogger.info("Circuit breaker state changed", {
       oldState,
       newState,
       failureCount: this.failureCount,
@@ -196,7 +206,7 @@ export class CircuitBreaker {
 export async function retryWithBackoff<T>(
   operation: () => Promise<T>,
   options: RetryOptions = {},
-  correlationId?: string
+  correlationId?: string,
 ): Promise<T> {
   const {
     maxRetries = 3,
@@ -208,39 +218,48 @@ export async function retryWithBackoff<T>(
     onRetry,
   } = options;
 
-  const getOperationLogger = (): ReturnType<typeof logger.child> => {
+  const getOperationLogger = (): ComponentLogger => {
     try {
       return logger.child({
-        component: 'RetryMechanism',
+        component: "RetryMechanism",
         correlationId: correlationId || randomUUID(),
-        operation: 'retry-with-backoff',
-      });
+        operation: "retry-with-backoff",
+      }) as ComponentLogger;
     } catch {
-      // Fallback for test environments
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return logger as any;
+      // Fallback for test environments with proper typing
+      return {
+        debug: (..._args: unknown[]): void => {
+          /* fallback debug */
+        },
+        info: (..._args: unknown[]): void => {
+          /* fallback info */
+        },
+        warn: (...args: unknown[]): void => console.warn(...args),
+        error: (...args: unknown[]): void => console.error(...args),
+        child: (_options: Record<string, unknown>) => getOperationLogger(),
+      };
     }
   };
   const operationLogger = getOperationLogger();
 
-  let lastError: Error = new Error('No attempts made');
-  
+  let lastError: Error = new Error("No attempts made");
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const result = await operation();
-      
+
       if (attempt > 0) {
-        operationLogger.info('Operation succeeded after retries', {
+        operationLogger.info("Operation succeeded after retries", {
           attempt,
           totalAttempts: attempt + 1,
         });
       }
-      
+
       return result;
     } catch (error) {
       lastError = error as Error;
-      
-      operationLogger.warn('Operation failed, evaluating retry', {
+
+      operationLogger.warn("Operation failed, evaluating retry", {
         attempt,
         error: lastError.message,
         isLastAttempt: attempt === maxRetries,
@@ -254,14 +273,12 @@ export async function retryWithBackoff<T>(
       // Calculate delay with exponential backoff and optional jitter
       const delay = Math.min(
         baseDelay * Math.pow(exponentialBase, attempt),
-        maxDelay
+        maxDelay,
       );
-      
-      const finalDelay = jitter 
-        ? delay + Math.random() * 1000 
-        : delay;
 
-      operationLogger.info('Retrying operation after delay', {
+      const finalDelay = jitter ? delay + Math.random() * 1000 : delay;
+
+      operationLogger.info("Retrying operation after delay", {
         attempt: attempt + 1,
         delay: finalDelay,
         nextAttempt: attempt + 1,
@@ -272,18 +289,21 @@ export async function retryWithBackoff<T>(
         try {
           onRetry(lastError, attempt + 1);
         } catch (callbackError) {
-          operationLogger.warn('Retry callback failed', {
-            error: callbackError instanceof Error ? callbackError.message : String(callbackError),
+          operationLogger.warn("Retry callback failed", {
+            error:
+              callbackError instanceof Error
+                ? callbackError.message
+                : String(callbackError),
           });
         }
       }
 
-      await new Promise(resolve => setTimeout(resolve, finalDelay));
+      await new Promise((resolve) => setTimeout(resolve, finalDelay));
     }
   }
 
   // All retries exhausted, throw the last error
-  operationLogger.error('All retry attempts exhausted', {
+  operationLogger.error("All retry attempts exhausted", {
     totalAttempts: maxRetries + 1,
     finalError: lastError.message,
   });
@@ -297,8 +317,13 @@ export async function retryWithBackoff<T>(
  */
 export function defaultRetryCondition(error: Error): boolean {
   // Retry on network errors
-  if ('code' in error) {
-    const networkErrors = ['ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND'];
+  if ("code" in error) {
+    const networkErrors = [
+      "ECONNRESET",
+      "ECONNREFUSED",
+      "ETIMEDOUT",
+      "ENOTFOUND",
+    ];
     if (networkErrors.includes(error.code as string)) {
       return true;
     }
@@ -317,12 +342,12 @@ export function defaultRetryCondition(error: Error): boolean {
   }
 
   // Retry on timeout errors (by error code)
-  if (errorCode === 'TIMEOUT') {
+  if (errorCode === "TIMEOUT") {
     return true;
   }
 
   // Retry on external service errors
-  if (errorCode === 'EXTERNAL_SERVICE_ERROR') {
+  if (errorCode === "EXTERNAL_SERVICE_ERROR") {
     return true;
   }
 
@@ -351,35 +376,35 @@ export class Bulkhead {
     correlationId: string;
   }> = [];
 
-  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private readonly componentLogger: ComponentLogger;
 
   constructor(
     private readonly name: string,
     private readonly maxConcurrency: number = 10,
     private readonly maxQueue: number = 100,
-    private readonly timeout: number = 30000
+    private readonly timeout: number = 30000,
   ) {
     this.componentLogger = logger.child({
-      component: 'Bulkhead',
+      component: "Bulkhead",
       bulkheadName: name,
     });
   }
 
   async execute<T>(
     operation: () => Promise<T>,
-    correlationId?: string
+    correlationId?: string,
   ): Promise<T> {
     const requestId = correlationId || randomUUID();
     const operationLogger = this.componentLogger.child({
       correlationId: requestId,
-      operation: 'bulkhead-execute',
+      operation: "bulkhead-execute",
     });
 
     return new Promise<T>((resolve, reject) => {
       if (this.activeRequests < this.maxConcurrency) {
         this.executeImmediate(operation, resolve, reject, requestId);
       } else if (this.queue.length < this.maxQueue) {
-        operationLogger.info('Request queued due to bulkhead limit', {
+        operationLogger.info("Request queued due to bulkhead limit", {
           activeRequests: this.activeRequests,
           queueLength: this.queue.length,
         });
@@ -393,7 +418,7 @@ export class Bulkhead {
       } else {
         const error = createExternalServiceError(
           this.name,
-          'Bulkhead capacity exceeded - request rejected',
+          "Bulkhead capacity exceeded - request rejected",
           undefined,
           {
             activeRequests: this.activeRequests,
@@ -403,12 +428,12 @@ export class Bulkhead {
           },
           {
             correlationId: requestId,
-            component: 'Bulkhead',
-            operation: 'bulkhead-execute',
-          }
+            component: "Bulkhead",
+            operation: "bulkhead-execute",
+          },
         );
 
-        operationLogger.error('Bulkhead capacity exceeded', {
+        operationLogger.error("Bulkhead capacity exceeded", {
           activeRequests: this.activeRequests,
           queueLength: this.queue.length,
         });
@@ -422,19 +447,19 @@ export class Bulkhead {
     operation: () => Promise<T>,
     resolve: (value: T) => void,
     reject: (error: Error) => void,
-    correlationId: string
+    correlationId: string,
   ): Promise<void> {
     this.activeRequests++;
-    
+
     const operationLogger = this.componentLogger.child({
       correlationId,
-      operation: 'bulkhead-execute-immediate',
+      operation: "bulkhead-execute-immediate",
     });
 
     const timeoutId = setTimeout(() => {
       const timeoutError = createTimeoutError(
         `Bulkhead operation for ${this.name}`,
-        this.timeout
+        this.timeout,
       );
       reject(timeoutError);
     }, this.timeout);
@@ -443,15 +468,15 @@ export class Bulkhead {
       const result = await operation();
       clearTimeout(timeoutId);
       resolve(result);
-      
-      operationLogger.info('Bulkhead operation completed successfully', {
+
+      operationLogger.info("Bulkhead operation completed successfully", {
         activeRequests: this.activeRequests - 1,
       });
     } catch (error) {
       clearTimeout(timeoutId);
       reject(error as Error);
-      
-      operationLogger.error('Bulkhead operation failed', {
+
+      operationLogger.error("Bulkhead operation failed", {
         error: error instanceof Error ? error.message : String(error),
         activeRequests: this.activeRequests - 1,
       });
@@ -469,7 +494,7 @@ export class Bulkhead {
           next.operation as () => Promise<unknown>,
           next.resolve,
           next.reject,
-          next.correlationId
+          next.correlationId,
         );
       }
     }
@@ -498,7 +523,7 @@ export class CircuitBreakerFactory {
 
   static getOrCreate(
     name: string,
-    options?: CircuitBreakerOptions
+    options?: CircuitBreakerOptions,
   ): CircuitBreaker {
     if (!this.breakers.has(name)) {
       this.breakers.set(name, new CircuitBreaker(name, options));
@@ -510,8 +535,8 @@ export class CircuitBreakerFactory {
     return breaker;
   }
 
-  static getAllStats(): Record<string, ReturnType<CircuitBreaker['getStats']>> {
-    const stats: Record<string, ReturnType<CircuitBreaker['getStats']>> = {};
+  static getAllStats(): Record<string, ReturnType<CircuitBreaker["getStats"]>> {
+    const stats: Record<string, ReturnType<CircuitBreaker["getStats"]>> = {};
     for (const [name, breaker] of this.breakers) {
       stats[name] = breaker.getStats();
     }
@@ -529,12 +554,12 @@ export class BulkheadFactory {
     name: string,
     maxConcurrency?: number,
     maxQueue?: number,
-    timeout?: number
+    timeout?: number,
   ): Bulkhead {
     if (!this.bulkheads.has(name)) {
       this.bulkheads.set(
         name,
-        new Bulkhead(name, maxConcurrency, maxQueue, timeout)
+        new Bulkhead(name, maxConcurrency, maxQueue, timeout),
       );
     }
     const bulkhead = this.bulkheads.get(name);
@@ -544,8 +569,8 @@ export class BulkheadFactory {
     return bulkhead;
   }
 
-  static getAllStats(): Record<string, ReturnType<Bulkhead['getStats']>> {
-    const stats: Record<string, ReturnType<Bulkhead['getStats']>> = {};
+  static getAllStats(): Record<string, ReturnType<Bulkhead["getStats"]>> {
+    const stats: Record<string, ReturnType<Bulkhead["getStats"]>> = {};
     for (const [name, bulkhead] of this.bulkheads) {
       stats[name] = bulkhead.getStats();
     }

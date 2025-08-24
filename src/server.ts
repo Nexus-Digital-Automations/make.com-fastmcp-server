@@ -12,6 +12,9 @@ type MakeSessionAuth = {
   timestamp: string;
   correlationId: string;
 };
+
+// Import logger types
+import { ComponentLogger } from "./types/logger.js";
 import configManager from "./lib/config.js";
 import logger from "./lib/logger.js";
 import MakeApiClient from "./lib/make-api-client.js";
@@ -58,7 +61,7 @@ import { addBlueprintCollaborationTools } from "./tools/blueprint-collaboration.
 export class MakeServerInstance {
   private readonly server: FastMCP<MakeSessionAuth>;
   private readonly apiClient: MakeApiClient;
-  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private readonly componentLogger: ComponentLogger;
   private processErrorHandlersBound = false;
   private uncaughtExceptionHandler?: (error: Error) => void;
   private unhandledRejectionHandler?: (
@@ -67,13 +70,22 @@ export class MakeServerInstance {
   ) => void;
 
   constructor() {
-    const getComponentLogger = (): ReturnType<typeof logger.child> => {
+    const getComponentLogger = (): ComponentLogger => {
       try {
         return logger.child({ component: "MakeServer" });
       } catch {
-        // Fallback for test environments
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return logger as any;
+        // Fallback for test environments with proper typing
+        return {
+          debug: (..._args: unknown[]): void => {
+            /* fallback debug */
+          },
+          info: (..._args: unknown[]): void => {
+            /* fallback info */
+          },
+          warn: (...args: unknown[]): void => console.warn(...args),
+          error: (...args: unknown[]): void => console.error(...args),
+          child: (): ComponentLogger => getComponentLogger(),
+        };
       }
     };
     this.componentLogger = getComponentLogger();
@@ -182,7 +194,7 @@ ${
     const headers = (requestObj.headers as Record<string, string>) || {};
     const correlationId = extractCorrelationId({ headers });
 
-    const getComponentLogger = (): ReturnType<typeof logger.child> => {
+    const getComponentLogger = (): ComponentLogger => {
       try {
         return this.componentLogger.child({
           operation: "authenticate",
@@ -190,8 +202,7 @@ ${
         });
       } catch {
         // Fallback for test environments
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return this.componentLogger as any;
+        return this.componentLogger;
       }
     };
     const componentLogger = getComponentLogger();

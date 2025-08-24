@@ -3,8 +3,8 @@
  * Comprehensive types for Make.com API integration
  */
 
-import { FastMCP } from 'fastmcp';
-import { z } from 'zod';
+import { FastMCP } from "fastmcp";
+import { z } from "zod";
 
 // FastMCP Server Types
 export type FastMCPSessionAuth = Record<string, unknown> | undefined;
@@ -12,11 +12,16 @@ export type FastMCPServer = FastMCP<FastMCPSessionAuth>;
 export type ToolParameters = z.ZodType<Record<string, unknown>>;
 
 // Tool creation function type
-export type ToolCreationFunction<T = Record<string, unknown>> = (apiClient: T) => {
+export type ToolCreationFunction<T = Record<string, unknown>> = (
+  apiClient: T,
+) => {
   name: string;
   description: string;
   parameters: ToolParameters;
-  execute: (args: Record<string, unknown>, context?: ToolExecutionContext) => Promise<string>;
+  execute: (
+    args: Record<string, unknown>,
+    context?: ToolExecutionContext,
+  ) => Promise<string>;
 };
 
 // Server interface for tool registration
@@ -25,7 +30,10 @@ export interface ToolServer {
     name: string;
     description: string;
     parameters: Params;
-    execute: (args: z.infer<Params>, context?: ToolExecutionContext) => Promise<string>;
+    execute: (
+      args: z.infer<Params>,
+      context?: ToolExecutionContext,
+    ) => Promise<string>;
   }) => void;
 }
 
@@ -49,7 +57,7 @@ export interface ServerConfig {
   name: string;
   version: string;
   port?: number;
-  logLevel?: 'debug' | 'info' | 'warn' | 'error';
+  logLevel?: "debug" | "info" | "warn" | "error";
   authentication?: {
     enabled: boolean;
     secret?: string;
@@ -65,7 +73,7 @@ export interface MakeScenario {
   folderId?: number;
   blueprint: Record<string, unknown>;
   scheduling: {
-    type: 'immediate' | 'indefinitely' | 'on-demand';
+    type: "immediate" | "indefinitely" | "on-demand";
     interval?: number;
   };
   isActive: boolean;
@@ -99,7 +107,7 @@ export interface MakeTemplate {
 export interface MakeExecution {
   id: number;
   scenarioId: number;
-  status: 'success' | 'error' | 'warning' | 'incomplete';
+  status: "success" | "error" | "warning" | "incomplete";
   startedAt: string;
   finishedAt?: string;
   operations: number;
@@ -115,7 +123,7 @@ export interface MakeUser {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'member' | 'viewer';
+  role: "admin" | "member" | "viewer";
   teamId: number;
   organizationId?: number;
   permissions: string[];
@@ -126,7 +134,7 @@ export interface MakeWebhook {
   id: number;
   name: string;
   url: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method: "GET" | "POST" | "PUT" | "DELETE";
   headers?: Record<string, string>;
   isActive: boolean;
   scenarioId?: number;
@@ -137,8 +145,8 @@ export interface MakeVariable {
   id: number;
   name: string;
   value: unknown;
-  type: 'string' | 'number' | 'boolean' | 'json';
-  scope: 'global' | 'team' | 'scenario';
+  type: "string" | "number" | "boolean" | "json";
+  scope: "global" | "team" | "scenario";
   isEncrypted: boolean;
   createdAt: string;
 }
@@ -237,7 +245,7 @@ export interface MakeScenarioLog {
   scenarioId: number;
   executionId: number;
   timestamp: string;
-  level: 'info' | 'warning' | 'error' | 'debug';
+  level: "info" | "warning" | "error" | "debug";
   message: string;
   moduleId?: number;
   moduleName?: string;
@@ -251,7 +259,7 @@ export interface MakeIncompleteExecution {
   startedAt: string;
   stoppedAt: string;
   reason: string;
-  status: 'waiting' | 'paused' | 'failed';
+  status: "waiting" | "paused" | "failed";
   operations: number;
   dataTransfer: number;
   lastModuleId?: number;
@@ -287,12 +295,12 @@ export interface MakeCustomApp {
   name: string;
   description?: string;
   version: string;
-  status: 'draft' | 'testing' | 'published' | 'deprecated' | 'suspended';
+  status: "draft" | "testing" | "published" | "deprecated" | "suspended";
   organizationId?: number;
   teamId?: number;
   configuration: {
-    type: 'connector' | 'trigger' | 'action' | 'transformer' | 'full_app';
-    runtime: 'nodejs' | 'python' | 'php' | 'custom';
+    type: "connector" | "trigger" | "action" | "transformer" | "full_app";
+    runtime: "nodejs" | "python" | "php" | "custom";
     environment: {
       variables: Record<string, string>;
       secrets: string[];
@@ -300,14 +308,14 @@ export interface MakeCustomApp {
     };
     endpoints: Array<{
       name: string;
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+      method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
       path: string;
       description?: string;
       parameters: Record<string, unknown>;
       responses: Record<string, unknown>;
     }>;
     authentication: {
-      type: 'none' | 'api_key' | 'oauth2' | 'basic_auth' | 'custom';
+      type: "none" | "api_key" | "oauth2" | "basic_auth" | "custom";
       configuration: Record<string, unknown>;
     };
     ui: {
@@ -336,8 +344,15 @@ export interface MakeSDKApp {
   description?: string;
   version: string;
   publisher: string;
-  category: 'productivity' | 'integration' | 'automation' | 'analytics' | 'communication' | 'utility' | 'custom';
-  status: 'available' | 'installed' | 'updating' | 'deprecated' | 'suspended';
+  category:
+    | "productivity"
+    | "integration"
+    | "automation"
+    | "analytics"
+    | "communication"
+    | "utility"
+    | "custom";
+  status: "available" | "installed" | "updating" | "deprecated" | "suspended";
   organizationId?: number;
   teamId?: number;
   installation: {
@@ -365,7 +380,7 @@ export interface MakeSDKApp {
     verified: boolean;
     sandboxed: boolean;
     permissions: string[];
-    dataAccess: 'none' | 'read' | 'write' | 'full';
+    dataAccess: "none" | "read" | "write" | "full";
     networkAccess: boolean;
   };
   createdAt: string;
@@ -377,13 +392,13 @@ export interface MakeBillingAccount {
   id: number;
   organizationId: number;
   organizationName: string;
-  accountStatus: 'active' | 'suspended' | 'cancelled' | 'pending';
+  accountStatus: "active" | "suspended" | "cancelled" | "pending";
   billingPlan: {
     name: string;
-    type: 'free' | 'starter' | 'professional' | 'team' | 'enterprise';
+    type: "free" | "starter" | "professional" | "team" | "enterprise";
     price: number;
     currency: string;
-    billingCycle: 'monthly' | 'annual';
+    billingCycle: "monthly" | "annual";
   };
   usage: {
     currentPeriod: {
@@ -399,7 +414,7 @@ export interface MakeBillingAccount {
   billing: {
     nextBillingDate: string;
     currentBalance: number;
-    paymentStatus: 'current' | 'overdue' | 'failed' | 'processing';
+    paymentStatus: "current" | "overdue" | "failed" | "processing";
     autoRenewal: boolean;
   };
   createdAt: string;
@@ -408,12 +423,19 @@ export interface MakeBillingAccount {
 
 export interface MakeNotification {
   id: number;
-  type: 'system' | 'billing' | 'security' | 'scenario' | 'team' | 'marketing' | 'custom';
-  category: 'info' | 'warning' | 'error' | 'success' | 'reminder' | 'alert';
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  type:
+    | "system"
+    | "billing"
+    | "security"
+    | "scenario"
+    | "team"
+    | "marketing"
+    | "custom";
+  category: "info" | "warning" | "error" | "success" | "reminder" | "alert";
+  priority: "low" | "medium" | "high" | "critical";
   title: string;
   message: string;
-  status: 'draft' | 'scheduled' | 'sent' | 'delivered' | 'failed' | 'cancelled';
+  status: "draft" | "scheduled" | "sent" | "delivered" | "failed" | "cancelled";
   channels: {
     email: boolean;
     inApp: boolean;
@@ -457,9 +479,9 @@ export interface MakeLogEntry {
   /** Module end time if applicable */
   moduleEndTime?: string;
   /** Log level */
-  level: 'info' | 'warning' | 'error' | 'debug';
+  level: "info" | "warning" | "error" | "debug";
   /** Log category */
-  category: 'execution' | 'module' | 'connection' | 'validation' | 'system';
+  category: "execution" | "module" | "connection" | "validation" | "system";
   /** Log message */
   message: string;
   /** Additional log details */
@@ -513,7 +535,7 @@ export interface MakeLogEntry {
 export interface LogStreamingConfig {
   /** Real-time filtering options */
   realTimeFiltering: {
-    logLevels: ('debug' | 'info' | 'warn' | 'error' | 'critical')[];
+    logLevels: ("debug" | "info" | "warn" | "error" | "critical")[];
     components: string[];
     correlationIds: string[];
     userSessions: string[];
@@ -570,7 +592,7 @@ export interface LogStreamingSession {
     bytesTransferred: number;
   };
   /** Session status */
-  status: 'connected' | 'disconnected' | 'error';
+  status: "connected" | "disconnected" | "error";
 }
 
 /**
@@ -578,7 +600,7 @@ export interface LogStreamingSession {
  */
 export interface LogExportConfig {
   /** Export format */
-  format: 'json' | 'csv' | 'plain' | 'structured';
+  format: "json" | "csv" | "plain" | "structured";
   /** Time range for export */
   timeRange: {
     start: Date;
@@ -596,7 +618,7 @@ export interface LogExportConfig {
     includeMetadata: boolean;
     compressionEnabled: boolean;
     maxRecords?: number;
-    sortOrder: 'asc' | 'desc';
+    sortOrder: "asc" | "desc";
   };
 }
 
@@ -653,7 +675,7 @@ export interface PerformanceAnalysisFilters {
   /** Error rate threshold for concern (0-1) */
   errorThreshold: number;
   /** Minimum severity to include */
-  severityFilter: 'all' | 'warning' | 'error' | 'critical';
+  severityFilter: "all" | "warning" | "error" | "critical";
 }
 
 /**
@@ -675,32 +697,34 @@ export interface AlertThresholds {
  */
 export interface PerformanceMetrics {
   /** Response time metrics */
-  responseTime?: {
-    average: number;
-    p50: number;
-    p95: number;
-    p99: number;
-    trend: 'improving' | 'stable' | 'degrading';
-  } | number;
+  responseTime?:
+    | {
+        average: number;
+        p50: number;
+        p95: number;
+        p99: number;
+        trend: "improving" | "stable" | "degrading";
+      }
+    | number;
   /** Throughput metrics */
   throughput?: {
     requestsPerSecond: number;
     requestsPerMinute: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
   /** Reliability metrics */
   reliability?: {
     uptime: number;
     errorRate: number;
     successRate: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
   /** Resource utilization metrics */
   resources?: {
     cpuUsage: number;
     memoryUsage: number;
     networkUtilization: number;
-    trend: 'improving' | 'stable' | 'degrading';
+    trend: "improving" | "stable" | "degrading";
   };
 }
 
@@ -741,9 +765,16 @@ export interface CpuMetrics {
  */
 export interface PerformanceBottleneck {
   /** Bottleneck type */
-  type: 'cpu' | 'memory' | 'network' | 'database' | 'api' | 'module' | 'webhook';
+  type:
+    | "cpu"
+    | "memory"
+    | "network"
+    | "database"
+    | "api"
+    | "module"
+    | "webhook";
   /** Severity level */
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   /** Description of the bottleneck */
   description: string;
   /** Location or component affected */
@@ -781,14 +812,14 @@ export interface PerformanceAnalysisResult {
   /** Overall health score (0-100) */
   overallHealthScore: number;
   /** Performance grade */
-  performanceGrade: 'A' | 'B' | 'C' | 'D' | 'F';
+  performanceGrade: "A" | "B" | "C" | "D" | "F";
   /** Detected bottlenecks */
   bottlenecks: PerformanceBottleneck[];
   /** Performance metrics */
   metrics: PerformanceMetrics;
   /** Performance trends */
   trends: {
-    performanceDirection: 'improving' | 'stable' | 'degrading';
+    performanceDirection: "improving" | "stable" | "degrading";
     predictionConfidence: number;
     projectedIssues: string[];
   };
@@ -797,7 +828,7 @@ export interface PerformanceAnalysisResult {
     industryStandard: string;
     currentPerformance: string;
     gap: string;
-    ranking: 'below_average' | 'average' | 'above_average' | 'excellent';
+    ranking: "below_average" | "average" | "above_average" | "excellent";
   };
   /** Optimization recommendations */
   recommendations: {
@@ -855,7 +886,7 @@ export interface ConsolidatedFindings {
     /** Issue description */
     description: string;
     /** Severity level */
-    severity: 'info' | 'warning' | 'error' | 'critical';
+    severity: "info" | "warning" | "error" | "critical";
     /** Affected scenario IDs */
     affectedScenarios: string[];
   }>;
@@ -930,7 +961,8 @@ export type Nullable<T> = T | null;
 /**
  * Utility type for optional properties
  */
-export type OptionalKeys<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+export type OptionalKeys<T, K extends keyof T> = Omit<T, K> &
+  Partial<Pick<T, K>>;
 
 /**
  * Utility type for deep partial
@@ -966,21 +998,21 @@ export type UnknownRecord = Record<string, unknown>;
  * Type guard for checking if value is a record
  */
 export function isRecord(value: unknown): value is UnknownRecord {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /**
  * Type guard for checking if value is a non-empty string
  */
 export function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.length > 0;
+  return typeof value === "string" && value.length > 0;
 }
 
 /**
  * Type guard for checking if value is a number
  */
 export function isNumber(value: unknown): value is number {
-  return typeof value === 'number' && !isNaN(value);
+  return typeof value === "number" && !isNaN(value);
 }
 
 /**
@@ -1012,7 +1044,7 @@ export interface BaseEvent {
  * Log streaming event
  */
 export interface LogStreamEvent extends BaseEvent {
-  type: 'log';
+  type: "log";
   /** Log entry data */
   data: MakeLogEntry;
 }
@@ -1021,7 +1053,7 @@ export interface LogStreamEvent extends BaseEvent {
  * Performance metrics event
  */
 export interface PerformanceEvent extends BaseEvent {
-  type: 'performance';
+  type: "performance";
   /** Performance data */
   data: PerformanceMetrics;
 }
@@ -1030,7 +1062,7 @@ export interface PerformanceEvent extends BaseEvent {
  * Error event
  */
 export interface ErrorEvent extends BaseEvent {
-  type: 'error';
+  type: "error";
   /** Error information */
   data: {
     error: string;
@@ -1043,10 +1075,10 @@ export interface ErrorEvent extends BaseEvent {
  * Status update event
  */
 export interface StatusEvent extends BaseEvent {
-  type: 'status';
+  type: "status";
   /** Status information */
   data: {
-    status: 'connected' | 'disconnected' | 'reconnecting' | 'error';
+    status: "connected" | "disconnected" | "reconnecting" | "error";
     message?: string;
     details?: UnknownRecord;
   };
@@ -1055,12 +1087,18 @@ export interface StatusEvent extends BaseEvent {
 /**
  * Union of all streaming events
  */
-export type StreamingEvent = LogStreamEvent | PerformanceEvent | ErrorEvent | StatusEvent;
+export type StreamingEvent =
+  | LogStreamEvent
+  | PerformanceEvent
+  | ErrorEvent
+  | StatusEvent;
 
 /**
  * Event emitter callback type
  */
-export type EventCallback<T = UnknownRecord> = (data: T) => void | Promise<void>;
+export type EventCallback<T = UnknownRecord> = (
+  data: T,
+) => void | Promise<void>;
 
 /**
  * Event listener configuration
@@ -1084,18 +1122,18 @@ export interface EventListenerConfig {
 /**
  * Query operators for advanced filtering
  */
-export type QueryOperator = 
-  | 'eq'    // equals
-  | 'ne'    // not equals
-  | 'gt'    // greater than
-  | 'gte'   // greater than or equal
-  | 'lt'    // less than
-  | 'lte'   // less than or equal
-  | 'in'    // in array
-  | 'nin'   // not in array
-  | 'regex' // regex match
-  | 'exists' // field exists
-  | 'contains'; // string contains
+export type QueryOperator =
+  | "eq" // equals
+  | "ne" // not equals
+  | "gt" // greater than
+  | "gte" // greater than or equal
+  | "lt" // less than
+  | "lte" // less than or equal
+  | "in" // in array
+  | "nin" // not in array
+  | "regex" // regex match
+  | "exists" // field exists
+  | "contains"; // string contains
 
 /**
  * Query condition for filtering
@@ -1128,7 +1166,7 @@ export interface SortConfig {
   /** Field to sort by */
   field: string;
   /** Sort direction */
-  direction: 'asc' | 'desc';
+  direction: "asc" | "desc";
   /** Sort priority (for multi-field sorting) */
   priority?: number;
 }
@@ -1224,7 +1262,7 @@ export interface CacheStats {
 /**
  * Health check status
  */
-export type HealthStatus = 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
+export type HealthStatus = "healthy" | "degraded" | "unhealthy" | "unknown";
 
 /**
  * Health check result
@@ -1294,7 +1332,7 @@ export interface TimeSeriesData {
     end: number;
   };
   /** Aggregation type */
-  aggregation?: 'avg' | 'sum' | 'min' | 'max' | 'count';
+  aggregation?: "avg" | "sum" | "min" | "max" | "count";
 }
 
 // =====================================
@@ -1314,7 +1352,7 @@ export interface SecurityContext {
   /** User permissions */
   permissions?: string[];
   /** Authentication method */
-  authMethod?: 'api_key' | 'oauth' | 'jwt' | 'basic';
+  authMethod?: "api_key" | "oauth" | "jwt" | "basic";
   /** Authentication timestamp */
   authenticatedAt?: string;
   /** IP address */
@@ -1356,7 +1394,7 @@ export interface AuditLogEntry {
   /** Resource ID */
   resourceId?: string;
   /** Action result */
-  result: 'success' | 'failure' | 'partial';
+  result: "success" | "failure" | "partial";
   /** Error message if failure */
   error?: string;
   /** Additional details */
@@ -1377,20 +1415,20 @@ export interface AuditLogEntry {
 /**
  * Standard error codes used across the application
  */
-export type ErrorCode = 
-  | 'VALIDATION_ERROR'
-  | 'AUTHENTICATION_ERROR'
-  | 'AUTHORIZATION_ERROR'
-  | 'NOT_FOUND_ERROR'
-  | 'CONFLICT_ERROR'
-  | 'RATE_LIMIT_ERROR'
-  | 'API_ERROR'
-  | 'NETWORK_ERROR'
-  | 'TIMEOUT_ERROR'
-  | 'INTERNAL_ERROR'
-  | 'CONFIGURATION_ERROR'
-  | 'RESOURCE_ERROR'
-  | 'DEPENDENCY_ERROR';
+export type ErrorCode =
+  | "VALIDATION_ERROR"
+  | "AUTHENTICATION_ERROR"
+  | "AUTHORIZATION_ERROR"
+  | "NOT_FOUND_ERROR"
+  | "CONFLICT_ERROR"
+  | "RATE_LIMIT_ERROR"
+  | "API_ERROR"
+  | "NETWORK_ERROR"
+  | "TIMEOUT_ERROR"
+  | "INTERNAL_ERROR"
+  | "CONFIGURATION_ERROR"
+  | "RESOURCE_ERROR"
+  | "DEPENDENCY_ERROR";
 
 /**
  * Enhanced error interface with context
@@ -1451,11 +1489,11 @@ export interface ValidationResult {
  */
 export interface EnvironmentConfig {
   /** Environment name */
-  environment: 'development' | 'staging' | 'production' | 'test';
+  environment: "development" | "staging" | "production" | "test";
   /** Debug mode enabled */
   debug: boolean;
   /** Log level */
-  logLevel: 'debug' | 'info' | 'warn' | 'error';
+  logLevel: "debug" | "info" | "warn" | "error";
   /** Node environment */
   nodeEnv: string;
   /** Application version */
@@ -1547,7 +1585,7 @@ export interface IntegrationConfig {
   /** Integration name */
   name: string;
   /** Integration type */
-  type: 'webhook' | 'api' | 'database' | 'queue' | 'storage';
+  type: "webhook" | "api" | "database" | "queue" | "storage";
   /** Whether integration is enabled */
   enabled: boolean;
   /** Connection configuration */
@@ -1574,12 +1612,17 @@ export interface IntegrationConfig {
 /**
  * Re-export all diagnostic types for convenience
  */
-export type * from './diagnostics.js';
+export type * from "./diagnostics.js";
+
+/**
+ * Re-export all logger types for convenience
+ */
+export type * from "./logger.js";
 
 /**
  * Collection of all Make.com entity types
  */
-export type MakeEntity = 
+export type MakeEntity =
   | MakeScenario
   | MakeConnection
   | MakeTemplate

@@ -4,90 +4,104 @@
  * Supports: Core Server, Analytics Server, or Legacy Monolithic Server
  */
 
-import MakeServerInstance from './server.js';
-import CoreServer from './servers/core-server.js';
-import AnalyticsServer from './servers/analytics-server.js';
-import logger from './lib/logger.js';
-import configManager from './lib/config.js';
-import { setupGlobalErrorHandlers, serverBoundary, AsyncErrorBoundary } from './utils/async-error-boundary.js';
+import MakeServerInstance from "./server.js";
+import CoreServer from "./servers/core-server.js";
+import AnalyticsServer from "./servers/analytics-server.js";
+import logger from "./lib/logger.js";
+import configManager from "./lib/config.js";
+import {
+  setupGlobalErrorHandlers,
+  serverBoundary,
+  AsyncErrorBoundary,
+} from "./utils/async-error-boundary.js";
+import { ComponentLogger } from "./types/logger.js";
 
-type ServerType = 'core' | 'analytics' | 'legacy' | 'both';
+type ServerType = "core" | "analytics" | "legacy" | "both";
 type ServerInstance = MakeServerInstance | CoreServer | AnalyticsServer;
 
 function getServerType(): ServerType {
   const args = process.argv;
-  
-  if (args.includes('--core')) {return 'core';}
-  if (args.includes('--analytics')) {return 'analytics';} 
-  if (args.includes('--both')) {return 'both';}
-  if (args.includes('--legacy')) {return 'legacy';}
-  
+
+  if (args.includes("--core")) {
+    return "core";
+  }
+  if (args.includes("--analytics")) {
+    return "analytics";
+  }
+  if (args.includes("--both")) {
+    return "both";
+  }
+  if (args.includes("--legacy")) {
+    return "legacy";
+  }
+
   // Default to legacy for backward compatibility
-  return 'legacy';
+  return "legacy";
 }
 
-function createServerInstance(serverType: Exclude<ServerType, 'both'>): ServerInstance {
+function createServerInstance(
+  serverType: Exclude<ServerType, "both">,
+): ServerInstance {
   switch (serverType) {
-    case 'core':
+    case "core":
       return new CoreServer();
-    case 'analytics':
+    case "analytics":
       return new AnalyticsServer();
-    case 'legacy':
+    case "legacy":
     default:
       return new MakeServerInstance();
   }
 }
 
-async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promise<void> {
-  const getComponentLogger = (): { info: (...args: unknown[]) => void; error: (...args: unknown[]) => void; warn: (...args: unknown[]) => void; debug: (...args: unknown[]) => void; } => {
+async function startSingleServer(
+  serverType: Exclude<ServerType, "both">,
+): Promise<void> {
+  const getComponentLogger = (): ComponentLogger => {
     try {
-      const childLogger = logger.child({ component: 'Main', serverType });
+      const childLogger = logger.child({ component: "Main", serverType });
       // Verify the child logger has required methods
-      if (childLogger && typeof childLogger.error === 'function') {
-        return childLogger;
+      if (childLogger && typeof childLogger.error === "function") {
+        return childLogger as ComponentLogger;
       }
     } catch {
       // Fall through to fallback
     }
-    
-    // Robust fallback for test environments
+
+    // Robust fallback for test environments with proper typing
     return {
       info: (...args: unknown[]): void => {
-        if (logger?.info) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (logger.info as any)(...args);
+        if (logger?.info && typeof logger.info === "function") {
+          (logger.info as (...args: unknown[]) => void)(...args);
         } else {
-          process.stdout.write(`${args.join(' ')}\n`);
+          process.stdout.write(`${args.join(" ")}\n`);
         }
       },
       error: (...args: unknown[]): void => {
-        if (logger?.error) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (logger.error as any)(...args);
+        if (logger?.error && typeof logger.error === "function") {
+          (logger.error as (...args: unknown[]) => void)(...args);
         } else {
-          process.stderr.write(`${args.join(' ')}\n`);
+          process.stderr.write(`${args.join(" ")}\n`);
         }
       },
       warn: (...args: unknown[]): void => {
-        if (logger?.warn) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (logger.warn as any)(...args);
+        if (logger?.warn && typeof logger.warn === "function") {
+          (logger.warn as (...args: unknown[]) => void)(...args);
         } else {
-          process.stderr.write(`${args.join(' ')}\n`);
+          process.stderr.write(`${args.join(" ")}\n`);
         }
       },
       debug: (...args: unknown[]): void => {
-        if (logger?.debug) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (logger.debug as any)(...args);
+        if (logger?.debug && typeof logger.debug === "function") {
+          (logger.debug as (...args: unknown[]) => void)(...args);
         } else {
-          process.stdout.write(`${args.join(' ')}\n`);
+          process.stdout.write(`${args.join(" ")}\n`);
         }
       },
+      child: (_options: Record<string, unknown>) => getComponentLogger(),
     };
   };
   const componentLogger = getComponentLogger();
-  
+
   try {
     componentLogger.info(`Initializing Make.com ${serverType} server`);
 
@@ -97,47 +111,58 @@ async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promi
     // Setup graceful shutdown handlers with error boundary cleanup
     const gracefulShutdown = async (signal: string): Promise<void> => {
       componentLogger.info(`Received ${signal}, starting graceful shutdown`);
-      
+
       try {
         // Shutdown server instance
         await serverInstance.shutdown();
-        
+
         // Cleanup all async error boundaries and resources
         await AsyncErrorBoundary.shutdown();
-        
-        componentLogger.info('Graceful shutdown completed');
+
+        componentLogger.info("Graceful shutdown completed");
         process.exit(0);
       } catch (error) {
-        componentLogger.error('Error during graceful shutdown', error as Record<string, unknown>);
-        
+        componentLogger.error(
+          "Error during graceful shutdown",
+          error as Record<string, unknown>,
+        );
+
         // Force cleanup on error
         try {
           await AsyncErrorBoundary.shutdown();
         } catch (cleanupError) {
-          componentLogger.error('Error during emergency cleanup', cleanupError as Record<string, unknown>);
+          componentLogger.error(
+            "Error during emergency cleanup",
+            cleanupError as Record<string, unknown>,
+          );
         }
-        
+
         process.exit(1);
       }
     };
 
     // Register shutdown handlers
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
     // Start the server
-    const transportType = process.argv.includes('--http') ? 'httpStream' : 'stdio';
+    const transportType = process.argv.includes("--http")
+      ? "httpStream"
+      : "stdio";
     let port = configManager.getConfig().port || 3000;
-    
+
     // Adjust port based on server type
-    if (serverType === 'analytics') {
+    if (serverType === "analytics") {
       port = 3001;
     }
-    
-    const httpOptions = transportType === 'httpStream' ? {
-      endpoint: '/',
-      port: port,
-    } : undefined;
+
+    const httpOptions =
+      transportType === "httpStream"
+        ? {
+            endpoint: "/",
+            port: port,
+          }
+        : undefined;
 
     await serverInstance.start({
       transportType,
@@ -149,25 +174,32 @@ async function startSingleServer(serverType: Exclude<ServerType, 'both'>): Promi
       transport: transportType,
       port: httpOptions?.port,
     });
-
   } catch (error) {
-    componentLogger.error(`Failed to start ${serverType} server`, error as Record<string, unknown>);
+    componentLogger.error(
+      `Failed to start ${serverType} server`,
+      error as Record<string, unknown>,
+    );
     process.exit(1);
   }
 }
 
 async function startBothServers(): Promise<void> {
-  const getComponentLogger = (): { info: (...args: unknown[]) => void; error: (...args: unknown[]) => void; warn: (...args: unknown[]) => void; debug: (...args: unknown[]) => void; } => {
+  const getComponentLogger = (): {
+    info: (...args: unknown[]) => void;
+    error: (...args: unknown[]) => void;
+    warn: (...args: unknown[]) => void;
+    debug: (...args: unknown[]) => void;
+  } => {
     try {
-      const childLogger = logger.child({ component: 'Main', mode: 'dual' });
+      const childLogger = logger.child({ component: "Main", mode: "dual" });
       // Verify the child logger has required methods
-      if (childLogger && typeof childLogger.error === 'function') {
+      if (childLogger && typeof childLogger.error === "function") {
         return childLogger;
       }
     } catch {
       // Fall through to fallback
     }
-    
+
     // Robust fallback for test environments
     return {
       info: (...args: unknown[]): void => {
@@ -175,7 +207,7 @@ async function startBothServers(): Promise<void> {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (logger.info as any)(...args);
         } else {
-          process.stdout.write(`${args.join(' ')}\n`);
+          process.stdout.write(`${args.join(" ")}\n`);
         }
       },
       error: (...args: unknown[]): void => {
@@ -183,7 +215,7 @@ async function startBothServers(): Promise<void> {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (logger.error as any)(...args);
         } else {
-          process.stderr.write(`${args.join(' ')}\n`);
+          process.stderr.write(`${args.join(" ")}\n`);
         }
       },
       warn: (...args: unknown[]): void => {
@@ -191,7 +223,7 @@ async function startBothServers(): Promise<void> {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (logger.warn as any)(...args);
         } else {
-          process.stderr.write(`${args.join(' ')}\n`);
+          process.stderr.write(`${args.join(" ")}\n`);
         }
       },
       debug: (...args: unknown[]): void => {
@@ -199,29 +231,31 @@ async function startBothServers(): Promise<void> {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (logger.debug as any)(...args);
         } else {
-          process.stdout.write(`${args.join(' ')}\n`);
+          process.stdout.write(`${args.join(" ")}\n`);
         }
       },
     };
   };
   const componentLogger = getComponentLogger();
-  
-  componentLogger.info('Starting both Core and Analytics servers');
-  
+
+  componentLogger.info("Starting both Core and Analytics servers");
+
   try {
     // Start both servers in parallel
-    const corePromise = startSingleServer('core');
-    const analyticsPromise = startSingleServer('analytics');
-    
+    const corePromise = startSingleServer("core");
+    const analyticsPromise = startSingleServer("analytics");
+
     await Promise.all([corePromise, analyticsPromise]);
-    
-    componentLogger.info('Both servers started successfully', {
+
+    componentLogger.info("Both servers started successfully", {
       corePort: 3000,
-      analyticsPort: 3001
+      analyticsPort: 3001,
     });
-    
   } catch (error) {
-    componentLogger.error('Failed to start both servers', error as Record<string, unknown>);
+    componentLogger.error(
+      "Failed to start both servers",
+      error as Record<string, unknown>,
+    );
     process.exit(1);
   }
 }
@@ -229,46 +263,46 @@ async function startBothServers(): Promise<void> {
 async function main(): Promise<void> {
   // Setup global error handlers and boundaries
   setupGlobalErrorHandlers();
-  
+
   await serverBoundary.execute(
     async () => {
       const serverType = getServerType();
-      
-      logger.info('Starting FastMCP server with error boundaries', {
+
+      logger.info("Starting FastMCP server with error boundaries", {
         serverType,
         nodeVersion: process.version,
-        platform: process.platform
+        platform: process.platform,
       });
-      
-      if (serverType === 'both') {
+
+      if (serverType === "both") {
         await startBothServers();
       } else {
         await startSingleServer(serverType);
       }
-      
-      logger.info('Server startup completed successfully', { serverType });
+
+      logger.info("Server startup completed successfully", { serverType });
     },
     {
-      operation: 'serverStartup',
+      operation: "serverStartup",
       metadata: {
         serverType: getServerType(),
-        startTime: Date.now()
-      }
-    }
+        startTime: Date.now(),
+      },
+    },
   );
 }
 
 // Start the server only when running directly (not in test environment)
 function isMainModule(): boolean {
   // In test environment, avoid using import.meta.url
-  if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {
+  if (process.env.NODE_ENV === "test" || process.env.JEST_WORKER_ID) {
     return false;
   }
-  
+
   try {
-    // Dynamic import.meta access to avoid Jest parsing issues  
+    // Dynamic import.meta access to avoid Jest parsing issues
     // eslint-disable-next-line no-eval
-    const importMeta = (0, eval)('import.meta');
+    const importMeta = (0, eval)("import.meta");
     return importMeta.url === `file://${process.argv[1]}`;
   } catch {
     // Fallback for environments that don't support import.meta

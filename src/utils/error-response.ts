@@ -3,9 +3,18 @@
  * Provides consistent error response structure with correlation tracking
  */
 
-import { randomUUID } from 'crypto';
-import { MakeServerError, ErrorContext, UserError, EnhancedUserError, getErrorCode, getErrorStatusCode, getErrorCorrelationId } from './errors.js';
-import logger from '../lib/logger.js';
+import { randomUUID } from "crypto";
+import {
+  MakeServerError,
+  ErrorContext,
+  UserError,
+  EnhancedUserError,
+  getErrorCode,
+  getErrorStatusCode,
+  getErrorCorrelationId,
+} from "./errors.js";
+import logger from "../lib/logger.js";
+import { ComponentLogger } from "../types/logger.js";
 
 export interface ErrorResponse {
   error: {
@@ -36,24 +45,34 @@ export type ApiResponse<T = unknown> = SuccessResponse<T> | ErrorResponse;
  */
 export function formatErrorResponse(
   error: Error | MakeServerError | UserError,
-  correlationId?: string
+  correlationId?: string,
 ): ErrorResponse {
-  const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
-  const getComponentLogger = (): ReturnType<typeof logger.child> => {
+  const errorCorrelationId =
+    correlationId || getErrorCorrelationId(error) || randomUUID();
+  const getComponentLogger = (): ComponentLogger => {
     try {
-      return logger.child({ 
-        component: 'ErrorResponseFormatter',
-        correlationId: errorCorrelationId
-      });
+      return logger.child({
+        component: "ErrorResponseFormatter",
+        correlationId: errorCorrelationId,
+      }) as ComponentLogger;
     } catch {
-      // Fallback for test environments
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return logger as any;
+      // Fallback for test environments with proper typing
+      return {
+        debug: (..._args: unknown[]): void => {
+          /* fallback debug */
+        },
+        info: (..._args: unknown[]): void => {
+          /* fallback info */
+        },
+        warn: (...args: unknown[]): void => console.warn(...args),
+        error: (...args: unknown[]): void => console.error(...args),
+        child: (_options: Record<string, unknown>) => getComponentLogger(),
+      };
     }
   };
   const componentLogger = getComponentLogger();
 
-  let formattedError: ErrorResponse['error'];
+  let formattedError: ErrorResponse["error"];
 
   if (error instanceof MakeServerError) {
     // Use structured error information from MakeServerError
@@ -69,7 +88,7 @@ export function formatErrorResponse(
       stack: structured.stack,
     };
 
-    componentLogger.error('Formatted MakeServerError', {
+    componentLogger.error("Formatted MakeServerError", {
       code: structured.code,
       statusCode: structured.statusCode,
       correlationId: structured.correlationId,
@@ -91,10 +110,10 @@ export function formatErrorResponse(
       timestamp,
       context,
       details,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     };
 
-    componentLogger.error('Formatted UserError', {
+    componentLogger.error("Formatted UserError", {
       code,
       statusCode,
       correlationId: errorCorrelationId,
@@ -103,8 +122,8 @@ export function formatErrorResponse(
   } else {
     // Handle generic Error objects
     formattedError = {
-      message: error.message || 'Internal server error',
-      code: 'UNKNOWN_ERROR',
+      message: error.message || "Internal server error",
+      code: "UNKNOWN_ERROR",
       statusCode: 500,
       correlationId: errorCorrelationId,
       timestamp: new Date().toISOString(),
@@ -112,11 +131,11 @@ export function formatErrorResponse(
         name: error.name,
         originalMessage: error.message,
       },
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     };
 
-    componentLogger.error('Formatted generic Error', {
-      code: 'UNKNOWN_ERROR',
+    componentLogger.error("Formatted generic Error", {
+      code: "UNKNOWN_ERROR",
       correlationId: errorCorrelationId,
       originalError: error.name,
     });
@@ -133,7 +152,7 @@ export function formatErrorResponse(
  */
 export function formatSuccessResponse<T>(
   data: T,
-  correlationId?: string
+  correlationId?: string,
 ): SuccessResponse<T> {
   return {
     data,
@@ -147,34 +166,57 @@ export function formatSuccessResponse<T>(
  * Express middleware for handling errors with correlation tracking
  */
 export function errorHandlerMiddleware() {
-  return (error: Error, req: Record<string, unknown>, res: Record<string, unknown>): void => {
-    const correlationId = (req.correlationId as string) || (req.headers as Record<string, string>)?.['x-correlation-id'] || randomUUID();
-    
-    const getComponentLogger = (): ReturnType<typeof logger.child> => {
+  return (
+    error: Error,
+    req: Record<string, unknown>,
+    res: Record<string, unknown>,
+  ): void => {
+    const correlationId =
+      (req.correlationId as string) ||
+      (req.headers as Record<string, string>)?.["x-correlation-id"] ||
+      randomUUID();
+
+    const getComponentLogger = (): ComponentLogger => {
       try {
-        return logger.child({ 
-          component: 'ErrorMiddleware',
+        return logger.child({
+          component: "ErrorMiddleware",
           correlationId,
           operation: `${req.method as string} ${req.path as string}`,
-        });
+        }) as ComponentLogger;
       } catch {
-        // Fallback for test environments
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return logger as any;
+        // Fallback for test environments with proper typing
+        return {
+          debug: (..._args: unknown[]): void => {
+            /* fallback debug */
+          },
+          info: (..._args: unknown[]): void => {
+            /* fallback info */
+          },
+          warn: (...args: unknown[]): void => console.warn(...args),
+          error: (...args: unknown[]): void => console.error(...args),
+          child: (_options: Record<string, unknown>): ComponentLogger =>
+            getComponentLogger(),
+        };
       }
     };
     const componentLogger = getComponentLogger();
 
     const errorResponse = formatErrorResponse(error, correlationId);
 
-    componentLogger.error('Request error handled', {
+    componentLogger.error("Request error handled", {
       method: req.method as string,
       path: req.path as string,
       statusCode: errorResponse.error.statusCode,
       errorCode: errorResponse.error.code,
     });
 
-    (res as Record<string, unknown> & { status: (code: number) => { json: (data: unknown) => void } }).status(errorResponse.error.statusCode).json(errorResponse);
+    (
+      res as Record<string, unknown> & {
+        status: (code: number) => { json: (data: unknown) => void };
+      }
+    )
+      .status(errorResponse.error.statusCode)
+      .json(errorResponse);
   };
 }
 
@@ -182,10 +224,20 @@ export function errorHandlerMiddleware() {
  * Correlation ID middleware for request tracking
  */
 export function correlationMiddleware() {
-  return (req: Record<string, unknown>, res: Record<string, unknown>, next: () => void): void => {
-    const correlationId = (req.headers as Record<string, string>)?.['x-correlation-id'] || randomUUID();
+  return (
+    req: Record<string, unknown>,
+    res: Record<string, unknown>,
+    next: () => void,
+  ): void => {
+    const correlationId =
+      (req.headers as Record<string, string>)?.["x-correlation-id"] ||
+      randomUUID();
     req.correlationId = correlationId;
-    (res as Record<string, unknown> & { set: (key: string, value: string) => void }).set('X-Correlation-ID', correlationId);
+    (
+      res as Record<string, unknown> & {
+        set: (key: string, value: string) => void;
+      }
+    ).set("X-Correlation-ID", correlationId);
     next();
   };
 }
@@ -197,27 +249,37 @@ export function correlationMiddleware() {
 export function createToolErrorResponse(
   error: Error | MakeServerError | UserError,
   operation: string,
-  correlationId?: string
+  correlationId?: string,
 ): string {
-  const errorCorrelationId = correlationId || getErrorCorrelationId(error) || randomUUID();
-  const getComponentLogger = (): ReturnType<typeof logger.child> => {
+  const errorCorrelationId =
+    correlationId || getErrorCorrelationId(error) || randomUUID();
+  const getComponentLogger = (): ComponentLogger => {
     try {
-      return logger.child({ 
-        component: 'ToolErrorHandler',
+      return logger.child({
+        component: "ToolErrorHandler",
         operation,
-        correlationId: errorCorrelationId
-      });
+        correlationId: errorCorrelationId,
+      }) as ComponentLogger;
     } catch {
-      // Fallback for test environments
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return logger as any;
+      // Fallback for test environments with proper typing
+      return {
+        debug: (..._args: unknown[]): void => {
+          /* fallback debug */
+        },
+        info: (..._args: unknown[]): void => {
+          /* fallback info */
+        },
+        warn: (...args: unknown[]): void => console.warn(...args),
+        error: (...args: unknown[]): void => console.error(...args),
+        child: (_options: Record<string, unknown>) => getComponentLogger(),
+      };
     }
   };
   const componentLogger = getComponentLogger();
 
   const errorResponse = formatErrorResponse(error, errorCorrelationId);
 
-  componentLogger.error('Tool operation failed', {
+  componentLogger.error("Tool operation failed", {
     operation,
     errorCode: errorResponse.error.code,
     statusCode: errorResponse.error.statusCode,
@@ -234,26 +296,35 @@ export function createToolErrorResponse(
 export function createToolSuccessResponse<T>(
   data: T,
   operation: string,
-  correlationId?: string
+  correlationId?: string,
 ): string {
-  const getComponentLogger = (): ReturnType<typeof logger.child> => {
+  const getComponentLogger = (): ComponentLogger => {
     try {
-      return logger.child({ 
-        component: 'ToolSuccessHandler',
+      return logger.child({
+        component: "ToolSuccessHandler",
         operation,
         correlationId,
-      });
+      }) as ComponentLogger;
     } catch {
-      // Fallback for test environments
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return logger as any;
+      // Fallback for test environments with proper typing
+      return {
+        debug: (..._args: unknown[]): void => {
+          /* fallback debug */
+        },
+        info: (..._args: unknown[]): void => {
+          /* fallback info */
+        },
+        warn: (...args: unknown[]): void => console.warn(...args),
+        error: (...args: unknown[]): void => console.error(...args),
+        child: (_options: Record<string, unknown>) => getComponentLogger(),
+      };
     }
   };
   const componentLogger = getComponentLogger();
 
   const successResponse = formatSuccessResponse(data, correlationId);
 
-  componentLogger.info('Tool operation succeeded', {
+  componentLogger.info("Tool operation succeeded", {
     operation,
     hasData: !!data,
   });
@@ -271,13 +342,19 @@ export function extractCorrelationId(context: {
 }): string {
   // Helper function to validate correlation ID is a non-empty string
   const isValidCorrelationId = (value: unknown): value is string => {
-    return typeof value === 'string' && value.length > 0;
+    return typeof value === "string" && value.length > 0;
   };
 
   return (
-    (isValidCorrelationId(context.correlationId) ? context.correlationId : null) ||
-    (isValidCorrelationId(context.headers?.['x-correlation-id']) ? context.headers['x-correlation-id'] : null) ||
-    (isValidCorrelationId(context.session?.correlationId) ? context.session.correlationId : null) ||
+    (isValidCorrelationId(context.correlationId)
+      ? context.correlationId
+      : null) ||
+    (isValidCorrelationId(context.headers?.["x-correlation-id"])
+      ? context.headers["x-correlation-id"]
+      : null) ||
+    (isValidCorrelationId(context.session?.correlationId)
+      ? context.session.correlationId
+      : null) ||
     randomUUID()
   );
 }
