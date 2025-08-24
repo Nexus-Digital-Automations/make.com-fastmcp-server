@@ -26274,9 +26274,150 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755994583945_3p90hqdt8",
+      "title": "Fix TypeScript error in async-error-boundary.ts",
+      "description": "Resolve TypeScript error: Type unknown is not assignable to type T in fallbackResult at line 153",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": ["src/utils/async-error-boundary.ts"],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T00:16:23.945Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1755994042523_1_general_df126782",
+      "started_at": "2025-08-24T00:16:32.226Z",
+      "claimed_by": "development_session_1755994042523_1_general_df126782",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755994042523_1_general_df126782",
+          "role": "primary",
+          "assignedAt": "2025-08-24T00:16:32.226Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T00:20:30.161Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T00:20:30.162Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755994893495_uejut14cl",
+      "title": "Research: Improve TypeScript type safety in caching middleware",
+      "description": "Research and analysis required for implementing: \"Improve TypeScript type safety in caching middleware\"\n\n**Implementation Task Details:**\nReplace any types with proper TypeScript interfaces in src/middleware/caching.ts to improve type safety\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1755994893495_oxagn3y1t\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1755994893495_uejut14cl.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1755994893495_uejut14cl.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T00:21:33.495Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1755994893495_oxagn3y1t",
+      "assigned_agent": "development_session_1755994042523_1_general_df126782",
+      "started_at": "2025-08-24T00:21:41.694Z",
+      "claimed_by": "development_session_1755994042523_1_general_df126782",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755994042523_1_general_df126782",
+          "role": "primary",
+          "assignedAt": "2025-08-24T00:21:41.694Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T00:24:27.835Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T00:24:27.836Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1755994893495_oxagn3y1t",
+      "title": "Improve TypeScript type safety in caching middleware",
+      "description": "Replace any types with proper TypeScript interfaces in src/middleware/caching.ts to improve type safety",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "medium",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": ["src/middleware/caching.ts"],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-24T00:21:33.500Z",
+      "auto_research_created": true,
+      "assigned_agent": "development_session_1755994042523_1_general_df126782",
+      "started_at": "2025-08-24T00:24:42.806Z",
+      "claimed_by": "development_session_1755994042523_1_general_df126782",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1755994042523_1_general_df126782",
+          "role": "primary",
+          "assignedAt": "2025-08-24T00:24:42.806Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T00:32:39.798Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T00:32:39.801Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 609,
-  "last_completion": "2025-08-24T00:13:52.852Z",
+  "total_completed": 612,
+  "last_completion": "2025-08-24T00:32:39.801Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
