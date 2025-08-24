@@ -3,9 +3,17 @@
  * Provides error tracking, metrics collection, and performance monitoring
  */
 
-import { randomUUID } from 'crypto';
-import { MakeServerError, ErrorContext, UserError, EnhancedUserError, getErrorCode, getErrorStatusCode, getErrorCorrelationId } from './errors.js';
-import logger from '../lib/logger.js';
+import { randomUUID } from "crypto";
+import {
+  MakeServerError,
+  ErrorContext,
+  UserError,
+  EnhancedUserError,
+  getErrorCode,
+  getErrorStatusCode,
+  getErrorCorrelationId,
+} from "./errors.js";
+import logger from "../lib/logger.js";
 
 export interface ErrorMetrics {
   totalErrors: number;
@@ -58,7 +66,7 @@ export class ErrorAnalytics {
 
   private constructor() {
     this.componentLogger = logger.child({
-      component: 'ErrorAnalytics',
+      component: "ErrorAnalytics",
     });
 
     // Clean up old events periodically
@@ -87,27 +95,86 @@ export class ErrorAnalytics {
       sessionId?: string;
       duration?: number;
       correlationId?: string;
-    }
+    },
   ): void {
-    const correlationId = context?.correlationId || getErrorCorrelationId(error) || randomUUID();
-    const code = getErrorCode(error);
-    const statusCode = getErrorStatusCode(error);
-    
-    // Get context from error if available
-    let errorContext: ErrorContext | undefined;
-    if (error instanceof MakeServerError) {
-      errorContext = error.context;
-    } else if (error instanceof UserError && 'context' in error) {
-      errorContext = (error as EnhancedUserError).context;
-    }
+    const correlationId = this.extractCorrelationId(error, context);
+    const errorMetadata = this.extractErrorMetadata(error);
+    const errorContext = this.extractErrorContext(error);
 
-    const errorEvent: ErrorEvent = {
+    const errorEvent = this.createErrorEvent(
+      error,
+      correlationId,
+      errorMetadata,
+      errorContext,
+      context,
+    );
+
+    this.storeErrorEvent(errorEvent);
+    this.logErrorEvent(errorEvent);
+  }
+
+  /**
+   * Extract correlation ID from error or context
+   */
+  private extractCorrelationId(
+    error: Error | MakeServerError | UserError,
+    context?: { correlationId?: string },
+  ): string {
+    return (
+      context?.correlationId || getErrorCorrelationId(error) || randomUUID()
+    );
+  }
+
+  /**
+   * Extract error metadata (code and status)
+   */
+  private extractErrorMetadata(error: Error | MakeServerError | UserError): {
+    code: string;
+    statusCode: number;
+  } {
+    return {
+      code: getErrorCode(error),
+      statusCode: getErrorStatusCode(error),
+    };
+  }
+
+  /**
+   * Extract error context from specialized error types
+   */
+  private extractErrorContext(
+    error: Error | MakeServerError | UserError,
+  ): ErrorContext | undefined {
+    if (error instanceof MakeServerError) {
+      return error.context;
+    } else if (error instanceof UserError && "context" in error) {
+      return (error as EnhancedUserError).context;
+    }
+    return undefined;
+  }
+
+  /**
+   * Create error event object
+   */
+  private createErrorEvent(
+    error: Error | MakeServerError | UserError,
+    correlationId: string,
+    errorMetadata: { code: string; statusCode: number },
+    errorContext: ErrorContext | undefined,
+    context?: {
+      component?: string;
+      operation?: string;
+      userId?: string;
+      sessionId?: string;
+      duration?: number;
+    },
+  ): ErrorEvent {
+    return {
       id: randomUUID(),
       timestamp: new Date().toISOString(),
       correlationId,
-      code,
+      code: errorMetadata.code,
       message: error.message,
-      statusCode,
+      statusCode: errorMetadata.statusCode,
       component: context?.component,
       operation: context?.operation,
       userId: context?.userId,
@@ -116,15 +183,25 @@ export class ErrorAnalytics {
       context: errorContext,
       resolved: false,
     };
+  }
 
+  /**
+   * Store error event and manage array size
+   */
+  private storeErrorEvent(errorEvent: ErrorEvent): void {
     this.errors.push(errorEvent);
 
     // Keep only the most recent events
     if (this.errors.length > this.maxEvents) {
       this.errors = this.errors.slice(-this.maxEvents);
     }
+  }
 
-    this.componentLogger.info('Error event recorded', {
+  /**
+   * Log error event recording
+   */
+  private logErrorEvent(errorEvent: ErrorEvent): void {
+    this.componentLogger.info("Error event recorded", {
       errorId: errorEvent.id,
       correlationId: errorEvent.correlationId,
       code: errorEvent.code,
@@ -144,7 +221,7 @@ export class ErrorAnalytics {
     // Keep only recent performance data (last hour)
     const oneHourAgo = Date.now() - 3600000;
     this.performanceData = this.performanceData.filter(
-      (data) => data.timestamp > oneHourAgo
+      (data) => data.timestamp > oneHourAgo,
     );
   }
 
@@ -157,7 +234,7 @@ export class ErrorAnalytics {
       error.resolved = true;
       error.resolvedAt = new Date().toISOString();
 
-      this.componentLogger.info('Error marked as resolved', {
+      this.componentLogger.info("Error marked as resolved", {
         errorId,
         correlationId: error.correlationId,
         code: error.code,
@@ -172,7 +249,7 @@ export class ErrorAnalytics {
     const now = Date.now();
     const oneHourAgo = now - 3600000;
     const recentErrors = this.errors.filter(
-      (error) => new Date(error.timestamp).getTime() > oneHourAgo
+      (error) => new Date(error.timestamp).getTime() > oneHourAgo,
     );
 
     // Calculate error counts by different dimensions
@@ -182,25 +259,26 @@ export class ErrorAnalytics {
 
     recentErrors.forEach((error) => {
       errorsByCode[error.code] = (errorsByCode[error.code] || 0) + 1;
-      
+
       if (error.component) {
-        errorsByComponent[error.component] = 
+        errorsByComponent[error.component] =
           (errorsByComponent[error.component] || 0) + 1;
       }
-      
-      errorsByStatusCode[error.statusCode.toString()] = 
+
+      errorsByStatusCode[error.statusCode.toString()] =
         (errorsByStatusCode[error.statusCode.toString()] || 0) + 1;
     });
 
     // Calculate average response time from performance data
     const recentPerformanceData = this.performanceData.filter(
-      (data) => data.timestamp > oneHourAgo
+      (data) => data.timestamp > oneHourAgo,
     );
-    
-    const averageResponseTime = recentPerformanceData.length > 0
-      ? recentPerformanceData.reduce((sum, data) => sum + data.duration, 0) / 
-        recentPerformanceData.length
-      : 0;
+
+    const averageResponseTime =
+      recentPerformanceData.length > 0
+        ? recentPerformanceData.reduce((sum, data) => sum + data.duration, 0) /
+          recentPerformanceData.length
+        : 0;
 
     // Calculate error rate (errors per minute)
     const errorRate = recentErrors.length / 60;
@@ -226,7 +304,7 @@ export class ErrorAnalytics {
   public getPerformanceMetrics(): PerformanceMetrics {
     const oneHourAgo = Date.now() - 3600000;
     const recentData = this.performanceData.filter(
-      (data) => data.timestamp > oneHourAgo
+      (data) => data.timestamp > oneHourAgo,
     );
 
     if (recentData.length === 0) {
@@ -246,8 +324,8 @@ export class ErrorAnalytics {
       .map((data) => data.duration)
       .sort((a, b) => a - b);
 
-    const averageResponseTime = 
-      sortedDurations.reduce((sum, duration) => sum + duration, 0) / 
+    const averageResponseTime =
+      sortedDurations.reduce((sum, duration) => sum + duration, 0) /
       sortedDurations.length;
 
     const p95Index = Math.floor(sortedDurations.length * 0.95);
@@ -283,24 +361,28 @@ export class ErrorAnalytics {
     const startTime = now - timeRangeMs;
 
     const relevantErrors = this.errors.filter(
-      (error) => new Date(error.timestamp).getTime() > startTime
+      (error) => new Date(error.timestamp).getTime() > startTime,
     );
 
     // Group errors by hour
     const errorsByHour: Record<string, number> = {};
-    
+
     relevantErrors.forEach((error) => {
       const errorTime = new Date(error.timestamp);
-      const hourKey = errorTime.toISOString().substring(0, 13) + ':00:00.000Z';
+      const hourKey = errorTime.toISOString().substring(0, 13) + ":00:00.000Z";
       errorsByHour[hourKey] = (errorsByHour[hourKey] || 0) + 1;
     });
 
     // Create time series data
-    const trends: Array<{ hour: string; errorCount: number; errorRate: number }> = [];
-    
+    const trends: Array<{
+      hour: string;
+      errorCount: number;
+      errorRate: number;
+    }> = [];
+
     for (let i = 0; i < timeRangeHours; i++) {
-      const hourTime = new Date(startTime + (i * 3600000));
-      const hourKey = hourTime.toISOString().substring(0, 13) + ':00:00.000Z';
+      const hourTime = new Date(startTime + i * 3600000);
+      const hourKey = hourTime.toISOString().substring(0, 13) + ":00:00.000Z";
       const errorCount = errorsByHour[hourKey] || 0;
       const errorRate = errorCount / 60; // errors per minute
 
@@ -324,15 +406,18 @@ export class ErrorAnalytics {
     lastOccurrence: string;
     components: string[];
   }> {
-    const patterns: Record<string, {
-      count: number;
-      lastOccurrence: string;
-      components: Set<string>;
-    }> = {};
+    const patterns: Record<
+      string,
+      {
+        count: number;
+        lastOccurrence: string;
+        components: Set<string>;
+      }
+    > = {};
 
     this.errors.forEach((error) => {
       const pattern = `${error.code}: ${error.message}`;
-      
+
       if (!patterns[pattern]) {
         patterns[pattern] = {
           count: 0,
@@ -343,14 +428,14 @@ export class ErrorAnalytics {
 
       patterns[pattern].count++;
       patterns[pattern].lastOccurrence = error.timestamp;
-      
+
       if (error.component) {
         patterns[pattern].components.add(error.component);
       }
     });
 
     const totalErrors = this.errors.length;
-    
+
     return Object.entries(patterns)
       .map(([pattern, data]) => ({
         pattern,
@@ -370,8 +455,8 @@ export class ErrorAnalytics {
     timestamp: string;
     metrics: ErrorMetrics;
     performance: PerformanceMetrics;
-    trends: ReturnType<ErrorAnalytics['getErrorTrends']>;
-    patterns: ReturnType<ErrorAnalytics['getTopErrorPatterns']>;
+    trends: ReturnType<ErrorAnalytics["getErrorTrends"]>;
+    patterns: ReturnType<ErrorAnalytics["getTopErrorPatterns"]>;
   } {
     return {
       timestamp: new Date().toISOString(),
@@ -388,15 +473,15 @@ export class ErrorAnalytics {
   private cleanupOldEvents(): void {
     const oneDayAgo = Date.now() - 86400000; // 24 hours
     const initialCount = this.errors.length;
-    
+
     this.errors = this.errors.filter(
-      (error) => new Date(error.timestamp).getTime() > oneDayAgo
+      (error) => new Date(error.timestamp).getTime() > oneDayAgo,
     );
 
     const removedCount = initialCount - this.errors.length;
-    
+
     if (removedCount > 0) {
-      this.componentLogger.info('Cleaned up old error events', {
+      this.componentLogger.info("Cleaned up old error events", {
         removedCount,
         remainingCount: this.errors.length,
       });
@@ -410,8 +495,8 @@ export class ErrorAnalytics {
     this.errors = [];
     this.performanceData = [];
     this.startTime = Date.now();
-    
-    this.componentLogger.info('Analytics data reset');
+
+    this.componentLogger.info("Analytics data reset");
   }
 }
 
@@ -424,14 +509,17 @@ export const errorAnalytics = ErrorAnalytics.getInstance();
  * Middleware for automatic error recording
  */
 export function createErrorAnalyticsMiddleware() {
-  return (error: Error, context?: {
-    component?: string;
-    operation?: string;
-    userId?: string;
-    sessionId?: string;
-    duration?: number;
-    correlationId?: string;
-  }): void => {
+  return (
+    error: Error,
+    context?: {
+      component?: string;
+      operation?: string;
+      userId?: string;
+      sessionId?: string;
+      duration?: number;
+      correlationId?: string;
+    },
+  ): void => {
     errorAnalytics.recordError(error, context);
   };
 }
@@ -439,31 +527,33 @@ export function createErrorAnalyticsMiddleware() {
 /**
  * Performance monitoring decorator
  */
-export function monitorPerformance<T extends (...args: unknown[]) => Promise<unknown>>(
+export function monitorPerformance<
+  T extends (...args: unknown[]) => Promise<unknown>,
+>(
   fn: T,
   context?: {
     component?: string;
     operation?: string;
-  }
+  },
 ): T {
   return (async (...args: Parameters<T>) => {
     const startTime = Date.now();
-    
+
     try {
       const result = await fn(...args);
       const duration = Date.now() - startTime;
-      
+
       errorAnalytics.recordPerformance(duration);
-      
+
       return result;
     } catch (error) {
       const duration = Date.now() - startTime;
-      
+
       errorAnalytics.recordError(error as Error, {
         ...context,
         duration,
       });
-      
+
       throw error;
     }
   }) as T;
