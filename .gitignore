@@ -359,4 +359,4 @@ TODO.json.*
 *.credential.*
 *credentials*
 *secrets*
-*.secret
+*.secretcoverage/
