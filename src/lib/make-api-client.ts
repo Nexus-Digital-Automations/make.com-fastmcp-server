@@ -10,6 +10,9 @@ import { ComponentLogger } from '../types/logger.js';
 import { secureConfigManager } from './secure-config.js';
 import { createComponentLogger } from '../utils/logger-factory.js';
 import { credentialSecurityValidator } from './credential-security-validator.js';
+import { OAuth21Authenticator } from './oauth-authenticator.js';
+import { getMakeOAuthConfig } from '../config/make-oauth-config.js';
+import { AuthenticationError } from '../utils/errors.js';
 
 export class MakeApiClient {
   private readonly axiosInstance: AxiosInstance;
@@ -17,23 +20,68 @@ export class MakeApiClient {
   private config: MakeApiConfig;
   private readonly componentLogger: ComponentLogger;
   private readonly userId?: string;
+  
+  // OAuth 2.1 + PKCE support
+  private readonly oauthClient?: OAuth21Authenticator;
+  private currentAccessToken?: string;
+  private tokenExpiry?: Date;
+  private readonly useOAuth: boolean;
 
-  constructor(config: MakeApiConfig, userId?: string) {
+  constructor(config: MakeApiConfig, userId?: string, accessToken?: string) {
     this.config = config;
     this.userId = userId;
+    this.useOAuth = !!accessToken;
+    this.currentAccessToken = accessToken;
+    
     this.componentLogger = createComponentLogger({
       component: 'MakeApiClient',
-      metadata: { userId },
+      metadata: { userId, useOAuth: this.useOAuth },
     });
     
-    // Validate API key security on initialization
-    this.validateCredentialSecurity(config.apiKey);
+    // Initialize OAuth client if using OAuth authentication
+    if (this.useOAuth) {
+      try {
+        const oauthConfig = getMakeOAuthConfig();
+        this.oauthClient = new OAuth21Authenticator({
+          clientId: oauthConfig.clientId,
+          clientSecret: oauthConfig.clientSecret,
+          redirectUri: oauthConfig.redirectUri,
+          scope: oauthConfig.scope,
+          tokenEndpoint: oauthConfig.tokenEndpoint,
+          authEndpoint: oauthConfig.authEndpoint,
+          revokeEndpoint: oauthConfig.revokeEndpoint,
+          usePKCE: oauthConfig.usePKCE,
+        });
+        
+        this.componentLogger.info('OAuth authentication mode enabled', {
+          clientId: oauthConfig.clientId,
+          hasAccessToken: !!accessToken,
+        });
+      } catch (error) {
+        this.componentLogger.warn('OAuth configuration failed, falling back to API key', { error });
+        this.useOAuth = false;
+      }
+    }
+    
+    // Validate credentials based on authentication method
+    if (this.useOAuth) {
+      if (!accessToken) {
+        throw new AuthenticationError('Access token required for OAuth authentication');
+      }
+    } else {
+      this.validateCredentialSecurity(config.apiKey);
+    }
+    
+    // Create axios instance with appropriate authentication
+    const authHeaders = this.useOAuth && accessToken
+      ? { 'Authorization': `Bearer ${accessToken}` }
+      : { 'Authorization': `Token ${config.apiKey}` };
     
     this.axiosInstance = axios.create({
       baseURL: config.baseUrl,
       timeout: config.timeout || 30000,
       headers: {
-        'Authorization': `Token ${config.apiKey}`,
+        ...authHeaders,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
@@ -458,6 +506,146 @@ export class MakeApiClient {
       running: typeof running === 'number' ? running : 0,
       queued: typeof queued === 'number' ? queued : 0,
     };
+  }
+
+  /**
+   * Update OAuth access token for authenticated requests
+   * @param accessToken New access token
+   * @param expiresIn Token expiry time in seconds
+   */
+  public updateAccessToken(accessToken: string, expiresIn?: number): void {
+    if (!this.useOAuth) {
+      throw new AuthenticationError('Cannot update access token for non-OAuth client');
+    }
+
+    this.currentAccessToken = accessToken;
+    this.tokenExpiry = expiresIn 
+      ? new Date(Date.now() + expiresIn * 1000)
+      : undefined;
+
+    // Update axios headers
+    this.axiosInstance.defaults.headers.Authorization = `Bearer ${accessToken}`;
+
+    this.componentLogger.info('Access token updated', {
+      hasExpiry: !!this.tokenExpiry,
+      expiresAt: this.tokenExpiry?.toISOString(),
+    });
+  }
+
+  /**
+   * Check if current access token is expired or about to expire
+   * @param bufferSeconds Buffer time in seconds before expiry (default: 300 = 5 minutes)
+   * @returns True if token needs refresh
+   */
+  public isTokenExpired(bufferSeconds = 300): boolean {
+    if (!this.useOAuth || !this.tokenExpiry) {
+      return false; // No expiry tracking for API key auth or tokens without expiry
+    }
+
+    const now = new Date();
+    const expiryWithBuffer = new Date(this.tokenExpiry.getTime() - bufferSeconds * 1000);
+    
+    return now >= expiryWithBuffer;
+  }
+
+  /**
+   * Validate current access token with Make.com
+   * @returns Token validation result
+   */
+  public async validateCurrentToken(): Promise<{
+    valid: boolean;
+    error?: string;
+    needsRefresh: boolean;
+  }> {
+    if (!this.useOAuth || !this.currentAccessToken) {
+      return {
+        valid: false,
+        error: 'No OAuth token available',
+        needsRefresh: false,
+      };
+    }
+
+    try {
+      // Check expiry first
+      if (this.isTokenExpired()) {
+        return {
+          valid: false,
+          error: 'Token expired',
+          needsRefresh: true,
+        };
+      }
+
+      // Validate with OAuth client if available
+      if (this.oauthClient) {
+        const validation = await this.oauthClient.validateBearerToken(this.currentAccessToken);
+        return {
+          valid: validation.valid,
+          error: validation.error,
+          needsRefresh: !validation.valid,
+        };
+      }
+
+      // Fallback: Make a test API call to validate token
+      try {
+        await this.axiosInstance.get('/users/me', {
+          timeout: 5000, // Quick validation call
+        });
+        
+        return {
+          valid: true,
+          needsRefresh: false,
+        };
+      } catch (error) {
+        const isAuthError = axios.isAxiosError(error) && 
+          (error.response?.status === 401 || error.response?.status === 403);
+        
+        return {
+          valid: false,
+          error: isAuthError ? 'Token authentication failed' : 'Token validation request failed',
+          needsRefresh: isAuthError,
+        };
+      }
+    } catch (error) {
+      this.componentLogger.error('Token validation failed', { error });
+      return {
+        valid: false,
+        error: 'Token validation error',
+        needsRefresh: true,
+      };
+    }
+  }
+
+  /**
+   * Get current authentication method information
+   * @returns Authentication method details
+   */
+  public getAuthInfo(): {
+    method: 'oauth' | 'apikey';
+    hasToken: boolean;
+    tokenExpiry?: string;
+    isExpired?: boolean;
+  } {
+    return {
+      method: this.useOAuth ? 'oauth' : 'apikey',
+      hasToken: this.useOAuth ? !!this.currentAccessToken : !!this.config.apiKey,
+      tokenExpiry: this.tokenExpiry?.toISOString(),
+      isExpired: this.useOAuth ? this.isTokenExpired() : undefined,
+    };
+  }
+
+  /**
+   * Create a new OAuth-enabled MakeApiClient instance
+   * @param config Make.com API configuration
+   * @param accessToken OAuth access token
+   * @param userId User identifier
+   * @returns New MakeApiClient instance with OAuth authentication
+   */
+  public static createWithOAuth(
+    config: MakeApiConfig, 
+    accessToken: string, 
+    userId?: string
+  ): MakeApiClient {
+    return new MakeApiClient(config, userId, accessToken);
   }
 
   // Graceful shutdown with credential cleanup
