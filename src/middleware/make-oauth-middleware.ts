@@ -116,41 +116,19 @@ export class MakeOAuthMiddleware {
     });
 
     try {
-      // Generate PKCE challenge
-      const pkceChallenge = this.oauthClient.generatePKCEChallenge();
-      const state = crypto.randomBytes(16).toString("hex");
-
-      // Create OAuth flow state
-      const flowState: OAuthFlowState = {
-        codeVerifier: pkceChallenge.code_verifier,
-        codeChallenge: pkceChallenge.code_challenge,
-        state,
-        redirectUri: customRedirectUri || this.config.redirectUri,
-        scopes: customScopes || this.config.scope,
-      };
-
-      // Store PKCE verifier and state in session
-      await this.sessionStore.set(
-        sessionId,
-        {
-          codeVerifier: flowState.codeVerifier,
-          state: flowState.state,
-          lastActivity: new Date(),
-        },
-        1800,
-      ); // 30 minutes
-
-      // Generate authorization URL
-      const authorizationUrl = this.oauthClient.generateAuthorizationUrl(
-        state,
-        pkceChallenge,
+      const flowState = this.createOAuthFlowState(
+        customScopes,
+        customRedirectUri,
       );
+      await this.storeOAuthFlowSession(sessionId, flowState);
+      const authorizationUrl = this.generateAuthorizationUrl(flowState);
 
-      componentLogger.info("OAuth flow initiated successfully", {
-        hasCustomScopes: !!customScopes,
-        hasCustomRedirect: !!customRedirectUri,
-        scopeCount: flowState.scopes.split(" ").length,
-      });
+      this.logOAuthFlowInitiation(
+        componentLogger,
+        customScopes,
+        customRedirectUri,
+        flowState,
+      );
 
       return {
         authorizationUrl,
@@ -184,74 +162,24 @@ export class MakeOAuthMiddleware {
     });
 
     try {
-      // Retrieve session data
-      const session = await this.sessionStore.get(sessionId);
-      if (!session) {
-        throw new AuthenticationError("Invalid or expired session");
-      }
-
-      // Validate state parameter (CSRF protection)
-      if (state !== session.state) {
-        componentLogger.warn("State parameter mismatch", {
-          expected: session.state,
-          received: receivedState,
-        });
-        throw new AuthenticationError("Invalid state parameter");
-      }
-
-      // Exchange authorization code for tokens using PKCE
-      const tokens = await this.oauthClient.exchangeCodeForToken(
+      const session = await this.validateOAuthCallbackSession(
+        sessionId,
+        state,
+        receivedState,
+        componentLogger,
+      );
+      const tokens = await this.exchangeAuthorizationCode(
         authorizationCode,
-        session.codeVerifier,
+        session,
         correlationId,
       );
+      const userInfo = await this.fetchUserInfo(
+        tokens.access_token,
+        componentLogger,
+      );
+      await this.updateSessionWithTokens(sessionId, session, tokens, userInfo);
 
-      // Fetch user information if userinfo endpoint is configured
-      let userInfo: Record<string, unknown> | undefined;
-      try {
-        const userInfoResponse = await fetch(this.config.userinfoEndpoint, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${tokens.access_token}`,
-            Accept: "application/json",
-          },
-        });
-
-        if (userInfoResponse.ok) {
-          userInfo = await userInfoResponse.json();
-          componentLogger.debug("User info retrieved successfully");
-        }
-      } catch (error) {
-        componentLogger.warn("Failed to fetch user info", { error });
-        // Non-critical - continue without user info
-      }
-
-      // Update session with tokens and user info
-      const tokenExpiry = tokens.expires_in
-        ? new Date(Date.now() + tokens.expires_in * 1000)
-        : new Date(Date.now() + 3600 * 1000); // Default 1 hour
-
-      await this.sessionStore.set(
-        sessionId,
-        {
-          ...session,
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token,
-          tokenExpiry,
-          userInfo,
-          lastActivity: new Date(),
-          // Clear OAuth flow state
-          codeVerifier: undefined,
-          state: undefined,
-        },
-        3600,
-      ); // 1 hour session
-
-      componentLogger.info("OAuth callback handled successfully", {
-        hasRefreshToken: !!tokens.refresh_token,
-        hasUserInfo: !!userInfo,
-        tokenExpiry: tokenExpiry.toISOString(),
-      });
+      this.logOAuthCallbackSuccess(componentLogger, tokens, userInfo);
 
       return {
         accessToken: tokens.access_token,
@@ -260,15 +188,7 @@ export class MakeOAuthMiddleware {
       };
     } catch (error) {
       componentLogger.error("OAuth callback handling failed", { error });
-
-      // Clean up failed session
-      try {
-        await this.sessionStore.delete(sessionId);
-      } catch (cleanupError) {
-        componentLogger.warn("Failed to clean up session after OAuth failure", {
-          cleanupError,
-        });
-      }
+      await this.cleanupFailedOAuthSession(sessionId, componentLogger);
 
       if (error instanceof AuthenticationError) {
         throw error;
@@ -306,27 +226,12 @@ export class MakeOAuthMiddleware {
 
       // Check token expiry
       if (session.tokenExpiry && session.tokenExpiry <= new Date()) {
-        componentLogger.debug("Access token expired, attempting refresh");
-
-        if (session.refreshToken) {
-          try {
-            await this.refreshAccessToken(sessionId);
-            // Retry with refreshed token
-            const updatedSession = await this.sessionStore.get(sessionId);
-            if (updatedSession?.accessToken) {
-              return this.validateAccessToken(
-                updatedSession,
-                componentLogger,
-                requestId,
-              );
-            }
-          } catch (error) {
-            componentLogger.warn("Token refresh failed", { error });
-          }
-        }
-
-        componentLogger.debug("Token expired and refresh failed");
-        return { authenticated: false };
+        return this.handleExpiredToken(
+          sessionId,
+          session,
+          componentLogger,
+          requestId,
+        );
       }
 
       return this.validateAccessToken(session, componentLogger, requestId);
@@ -472,6 +377,254 @@ export class MakeOAuthMiddleware {
    */
   getPublicConfig(): Partial<ReturnType<typeof getMakeOAuthConfig>> {
     return this.oauthClient.getPublicConfig();
+  }
+
+  /**
+   * Create OAuth flow state with PKCE challenge
+   */
+  private createOAuthFlowState(
+    customScopes?: string,
+    customRedirectUri?: string,
+  ): OAuthFlowState {
+    const pkceChallenge = this.oauthClient.generatePKCEChallenge();
+    const state = crypto.randomBytes(16).toString("hex");
+
+    return {
+      codeVerifier: pkceChallenge.code_verifier,
+      codeChallenge: pkceChallenge.code_challenge,
+      state,
+      redirectUri: customRedirectUri || this.config.redirectUri,
+      scopes: customScopes || this.config.scope,
+    };
+  }
+
+  /**
+   * Store OAuth flow session data
+   */
+  private async storeOAuthFlowSession(
+    sessionId: string,
+    flowState: OAuthFlowState,
+  ): Promise<void> {
+    await this.sessionStore.set(
+      sessionId,
+      {
+        codeVerifier: flowState.codeVerifier,
+        state: flowState.state,
+        lastActivity: new Date(),
+      },
+      1800, // 30 minutes
+    );
+  }
+
+  /**
+   * Generate authorization URL from flow state
+   */
+  private generateAuthorizationUrl(flowState: OAuthFlowState): string {
+    return this.oauthClient.generateAuthorizationUrl(flowState.state, {
+      code_verifier: flowState.codeVerifier,
+      code_challenge: flowState.codeChallenge,
+      code_challenge_method: "S256",
+    });
+  }
+
+  /**
+   * Log OAuth flow initiation success
+   */
+  private logOAuthFlowInitiation(
+    componentLogger: ReturnType<typeof logger.child>,
+    customScopes?: string,
+    customRedirectUri?: string,
+    flowState?: OAuthFlowState,
+  ): void {
+    componentLogger.info("OAuth flow initiated successfully", {
+      hasCustomScopes: !!customScopes,
+      hasCustomRedirect: !!customRedirectUri,
+      scopeCount: flowState?.scopes.split(" ").length || 0,
+    });
+  }
+
+  /**
+   * Validate OAuth callback session and state
+   */
+  private async validateOAuthCallbackSession(
+    sessionId: string,
+    state: string,
+    receivedState: string | undefined,
+    componentLogger: ReturnType<typeof logger.child>,
+  ): Promise<SessionData> {
+    const session = await this.sessionStore.get(sessionId);
+    if (!session) {
+      throw new AuthenticationError("Invalid or expired session");
+    }
+
+    // Validate state parameter (CSRF protection)
+    if (state !== session.state) {
+      componentLogger.warn("State parameter mismatch", {
+        expected: session.state,
+        received: receivedState,
+      });
+      throw new AuthenticationError("Invalid state parameter");
+    }
+
+    return session;
+  }
+
+  /**
+   * Exchange authorization code for tokens
+   */
+  private async exchangeAuthorizationCode(
+    authorizationCode: string,
+    session: SessionData,
+    correlationId: string,
+  ): Promise<{
+    access_token: string;
+    refresh_token?: string;
+    expires_in?: number;
+  }> {
+    return this.oauthClient.exchangeCodeForToken(
+      authorizationCode,
+      session.codeVerifier,
+      correlationId,
+    );
+  }
+
+  /**
+   * Fetch user information using access token
+   */
+  private async fetchUserInfo(
+    accessToken: string,
+    componentLogger: ReturnType<typeof logger.child>,
+  ): Promise<Record<string, unknown> | undefined> {
+    try {
+      const userInfoResponse = await fetch(this.config.userinfoEndpoint, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+        },
+      });
+
+      if (userInfoResponse.ok) {
+        const userInfo = await userInfoResponse.json();
+        componentLogger.debug("User info retrieved successfully");
+        return userInfo;
+      }
+    } catch (error) {
+      componentLogger.warn("Failed to fetch user info", { error });
+      // Non-critical - continue without user info
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Update session with OAuth tokens and user info
+   */
+  private async updateSessionWithTokens(
+    sessionId: string,
+    session: SessionData,
+    tokens: {
+      access_token: string;
+      refresh_token?: string;
+      expires_in?: number;
+    },
+    userInfo?: Record<string, unknown>,
+  ): Promise<void> {
+    const tokenExpiry = tokens.expires_in
+      ? new Date(Date.now() + tokens.expires_in * 1000)
+      : new Date(Date.now() + 3600 * 1000); // Default 1 hour
+
+    await this.sessionStore.set(
+      sessionId,
+      {
+        ...session,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        tokenExpiry,
+        userInfo,
+        lastActivity: new Date(),
+        // Clear OAuth flow state
+        codeVerifier: undefined,
+        state: undefined,
+      },
+      3600, // 1 hour session
+    );
+  }
+
+  /**
+   * Log OAuth callback success
+   */
+  private logOAuthCallbackSuccess(
+    componentLogger: ReturnType<typeof logger.child>,
+    tokens: {
+      access_token: string;
+      refresh_token?: string;
+      expires_in?: number;
+    },
+    userInfo?: Record<string, unknown>,
+  ): void {
+    const tokenExpiry = tokens.expires_in
+      ? new Date(Date.now() + tokens.expires_in * 1000)
+      : new Date(Date.now() + 3600 * 1000);
+
+    componentLogger.info("OAuth callback handled successfully", {
+      hasRefreshToken: !!tokens.refresh_token,
+      hasUserInfo: !!userInfo,
+      tokenExpiry: tokenExpiry.toISOString(),
+    });
+  }
+
+  /**
+   * Clean up failed OAuth session
+   */
+  private async cleanupFailedOAuthSession(
+    sessionId: string,
+    componentLogger: ReturnType<typeof logger.child>,
+  ): Promise<void> {
+    try {
+      await this.sessionStore.delete(sessionId);
+    } catch (cleanupError) {
+      componentLogger.warn("Failed to clean up session after OAuth failure", {
+        cleanupError,
+      });
+    }
+  }
+
+  /**
+   * Handle expired token with refresh attempt
+   */
+  private async handleExpiredToken(
+    sessionId: string,
+    session: SessionData,
+    componentLogger: ReturnType<typeof logger.child>,
+    requestId: string,
+  ): Promise<{
+    authenticated: boolean;
+    userId?: string;
+    scopes?: string[];
+    userInfo?: Record<string, unknown>;
+  }> {
+    componentLogger.debug("Access token expired, attempting refresh");
+
+    if (session.refreshToken) {
+      try {
+        await this.refreshAccessToken(sessionId);
+        // Retry with refreshed token
+        const updatedSession = await this.sessionStore.get(sessionId);
+        if (updatedSession?.accessToken) {
+          return this.validateAccessToken(
+            updatedSession,
+            componentLogger,
+            requestId,
+          );
+        }
+      } catch (error) {
+        componentLogger.warn("Token refresh failed", { error });
+      }
+    }
+
+    componentLogger.debug("Token expired and refresh failed");
+    return { authenticated: false };
   }
 }
 

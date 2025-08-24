@@ -394,8 +394,23 @@ export class CachingMiddleware {
       "Registering cache management tools with FastMCP server",
     );
 
-    // Cache status tool
-    this.server.addTool({
+    this.addCacheStatusTool();
+    this.addCacheInvalidationTool();
+    this.addCacheWarmupTool();
+
+    this.componentLogger.info(
+      "Cache management tools registered successfully",
+      {
+        tools: ["cache-status", "cache-invalidate", "cache-warmup"],
+      },
+    );
+  }
+
+  /**
+   * Add cache status tool to server
+   */
+  private addCacheStatusTool(): void {
+    this.server!.addTool({
       name: "cache-status",
       description: "Get cache system status and statistics",
       annotations: {
@@ -406,45 +421,54 @@ export class CachingMiddleware {
         openWorldHint: false,
       },
       parameters: z.object({}),
-      execute: async () => {
-        try {
-          const stats = await this.cache.getStats();
-          const health = await this.cache.healthCheck();
-          const operationStats = Object.fromEntries(this.operationMetrics);
-
-          const result = {
-            success: true,
-            data: {
-              health,
-              stats,
-              operationStats,
-              strategies: Object.keys(this.config.strategies),
-              config: {
-                compression: this.config.cache.compression,
-                ttl: this.config.cache.ttl,
-              },
-            },
-            timestamp: new Date().toISOString(),
-          };
-
-          return JSON.stringify(result, null, 2);
-        } catch (error) {
-          const result = {
-            success: false,
-            error: {
-              message: "Failed to get cache status",
-              details: error instanceof Error ? error.message : "Unknown error",
-            },
-            timestamp: new Date().toISOString(),
-          };
-
-          return JSON.stringify(result, null, 2);
-        }
-      },
+      execute: async () => this.executeCacheStatusTool(),
     });
+  }
 
-    // Cache invalidation tool
-    this.server.addTool({
+  /**
+   * Execute cache status tool logic
+   */
+  private async executeCacheStatusTool(): Promise<string> {
+    try {
+      const stats = await this.cache.getStats();
+      const health = await this.cache.healthCheck();
+      const operationStats = Object.fromEntries(this.operationMetrics);
+
+      const result = {
+        success: true,
+        data: {
+          health,
+          stats,
+          operationStats,
+          strategies: Object.keys(this.config.strategies),
+          config: {
+            compression: this.config.cache.compression,
+            ttl: this.config.cache.ttl,
+          },
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      return JSON.stringify(result, null, 2);
+    } catch (error) {
+      const result = {
+        success: false,
+        error: {
+          message: "Failed to get cache status",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      return JSON.stringify(result, null, 2);
+    }
+  }
+
+  /**
+   * Add cache invalidation tool to server
+   */
+  private addCacheInvalidationTool(): void {
+    this.server!.addTool({
       name: "cache-invalidate",
       description: "Invalidate cache entries based on trigger patterns",
       annotations: {
@@ -464,43 +488,55 @@ export class CachingMiddleware {
           .optional()
           .describe("Optional context for pattern expansion"),
       }),
-      execute: async (args) => {
-        try {
-          const { trigger, context } = args;
-          const deletedCount = await this.cache.invalidate(trigger, context);
-
-          this.componentLogger.info("Cache invalidated via tool", {
-            trigger,
-            deletedCount,
-          });
-
-          const result = {
-            success: true,
-            data: {
-              trigger,
-              deletedCount,
-              timestamp: new Date().toISOString(),
-            },
-          };
-
-          return JSON.stringify(result, null, 2);
-        } catch (error) {
-          const result = {
-            success: false,
-            error: {
-              message: "Failed to invalidate cache",
-              details: error instanceof Error ? error.message : "Unknown error",
-            },
-            timestamp: new Date().toISOString(),
-          };
-
-          return JSON.stringify(result, null, 2);
-        }
-      },
+      execute: async (args) => this.executeCacheInvalidationTool(args),
     });
+  }
 
-    // Cache warm-up tool
-    this.server.addTool({
+  /**
+   * Execute cache invalidation tool logic
+   */
+  private async executeCacheInvalidationTool(args: {
+    trigger: string;
+    context?: Record<string, string>;
+  }): Promise<string> {
+    try {
+      const { trigger, context } = args;
+      const deletedCount = await this.cache.invalidate(trigger, context);
+
+      this.componentLogger.info("Cache invalidated via tool", {
+        trigger,
+        deletedCount,
+      });
+
+      const result = {
+        success: true,
+        data: {
+          trigger,
+          deletedCount,
+          timestamp: new Date().toISOString(),
+        },
+      };
+
+      return JSON.stringify(result, null, 2);
+    } catch (error) {
+      const result = {
+        success: false,
+        error: {
+          message: "Failed to invalidate cache",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      return JSON.stringify(result, null, 2);
+    }
+  }
+
+  /**
+   * Add cache warmup tool to server
+   */
+  private addCacheWarmupTool(): void {
+    this.server!.addTool({
       name: "cache-warmup",
       description: "Warm up cache with predefined data sets",
       annotations: {
@@ -518,45 +554,44 @@ export class CachingMiddleware {
             'List of operations to warm up (e.g., ["list_scenarios", "list_users"])',
           ),
       }),
-      execute: async (args) => {
-        try {
-          const operations =
-            args.operations || Object.keys(this.config.strategies);
-          const warmupData = await this.generateWarmupData(operations);
-          const successCount = await this.cache.warmUp(warmupData);
-
-          const result = {
-            success: true,
-            data: {
-              operations,
-              totalItems: warmupData.length,
-              successfulItems: successCount,
-              timestamp: new Date().toISOString(),
-            },
-          };
-
-          return JSON.stringify(result, null, 2);
-        } catch (error) {
-          const result = {
-            success: false,
-            error: {
-              message: "Failed to warm up cache",
-              details: error instanceof Error ? error.message : "Unknown error",
-            },
-            timestamp: new Date().toISOString(),
-          };
-
-          return JSON.stringify(result, null, 2);
-        }
-      },
+      execute: async (args) => this.executeCacheWarmupTool(args),
     });
+  }
 
-    this.componentLogger.info(
-      "Cache management tools registered successfully",
-      {
-        tools: ["cache-status", "cache-invalidate", "cache-warmup"],
-      },
-    );
+  /**
+   * Execute cache warmup tool logic
+   */
+  private async executeCacheWarmupTool(args: {
+    operations?: string[];
+  }): Promise<string> {
+    try {
+      const operations = args.operations || Object.keys(this.config.strategies);
+      const warmupData = await this.generateWarmupData(operations);
+      const successCount = await this.cache.warmUp(warmupData);
+
+      const result = {
+        success: true,
+        data: {
+          operations,
+          totalItems: warmupData.length,
+          successfulItems: successCount,
+          timestamp: new Date().toISOString(),
+        },
+      };
+
+      return JSON.stringify(result, null, 2);
+    } catch (error) {
+      const result = {
+        success: false,
+        error: {
+          message: "Failed to warm up cache",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      return JSON.stringify(result, null, 2);
+    }
   }
 
   /**
@@ -702,63 +737,137 @@ export class CachingMiddleware {
     );
 
     try {
-      // Try to get from cache
-      const cached = await this.cache.get<CachedResponse<T>>(cacheKey);
-
-      if (cached && this.isCacheValid(cached, strategy)) {
-        this.recordCacheHit(operation, Date.now() - startTime);
-
-        this.componentLogger.debug("Cache hit", {
-          operation,
-          cacheKey,
-          age: Date.now() - cached.timestamp,
-        });
-
-        return cached.data;
-      }
-
-      // Cache miss - execute operation
-      const result = await executor();
-
-      // Check if response should be cached
-      if (this.shouldCacheResponse(operation, params, result, strategy)) {
-        const cachedResponse: CachedResponse<T> = {
-          data: result,
-          etag: this.generateEtag(result),
-          timestamp: Date.now(),
-          operation,
-          params,
-        };
-
-        // Store in cache with strategy TTL and tags
-        await this.cache.set(
-          cacheKey,
-          cachedResponse,
-          strategy.ttl,
-          strategy.tags,
-        );
-
-        this.componentLogger.debug("Cached response", {
-          operation,
-          cacheKey,
-          ttl: strategy.ttl,
-          tags: strategy.tags,
-        });
-      }
-
-      this.recordCacheMiss(operation, Date.now() - startTime);
-      return result;
-    } catch (error) {
-      this.recordCacheError(operation);
-      this.componentLogger.error("Cache operation error", {
+      return await this.attemptCacheOperation(
         operation,
+        params,
+        executor,
+        strategy,
         cacheKey,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-
-      // Execute operation without caching on cache error
-      return executor();
+        startTime,
+      );
+    } catch (error) {
+      return this.handleCacheError(operation, cacheKey, error, executor);
     }
+  }
+
+  /**
+   * Attempt cache operation with hit/miss logic
+   */
+  private async attemptCacheOperation<T extends CacheableApiResponse>(
+    operation: string,
+    params: Record<string, unknown>,
+    executor: () => Promise<T>,
+    strategy: CacheStrategy,
+    cacheKey: string,
+    startTime: number,
+  ): Promise<T> {
+    // Try to get from cache
+    const cached = await this.cache.get<CachedResponse<T>>(cacheKey);
+
+    if (cached && this.isCacheValid(cached, strategy)) {
+      return this.handleCacheHit(operation, cacheKey, cached, startTime);
+    }
+
+    // Cache miss - execute operation
+    const result = await executor();
+    await this.handleCacheMiss(
+      operation,
+      params,
+      result,
+      strategy,
+      cacheKey,
+      startTime,
+    );
+
+    return result;
+  }
+
+  /**
+   * Handle cache hit scenario
+   */
+  private handleCacheHit<T>(
+    operation: string,
+    cacheKey: string,
+    cached: CachedResponse<T>,
+    startTime: number,
+  ): T {
+    this.recordCacheHit(operation, Date.now() - startTime);
+
+    this.componentLogger.debug("Cache hit", {
+      operation,
+      cacheKey,
+      age: Date.now() - cached.timestamp,
+    });
+
+    return cached.data;
+  }
+
+  /**
+   * Handle cache miss scenario
+   */
+  private async handleCacheMiss<T extends CacheableApiResponse>(
+    operation: string,
+    params: Record<string, unknown>,
+    result: T,
+    strategy: CacheStrategy,
+    cacheKey: string,
+    startTime: number,
+  ): Promise<void> {
+    // Check if response should be cached
+    if (this.shouldCacheResponse(operation, params, result, strategy)) {
+      await this.storeInCache(result, operation, params, strategy, cacheKey);
+    }
+
+    this.recordCacheMiss(operation, Date.now() - startTime);
+  }
+
+  /**
+   * Store result in cache
+   */
+  private async storeInCache<T extends CacheableApiResponse>(
+    result: T,
+    operation: string,
+    params: Record<string, unknown>,
+    strategy: CacheStrategy,
+    cacheKey: string,
+  ): Promise<void> {
+    const cachedResponse: CachedResponse<T> = {
+      data: result,
+      etag: this.generateEtag(result),
+      timestamp: Date.now(),
+      operation,
+      params,
+    };
+
+    // Store in cache with strategy TTL and tags
+    await this.cache.set(cacheKey, cachedResponse, strategy.ttl, strategy.tags);
+
+    this.componentLogger.debug("Cached response", {
+      operation,
+      cacheKey,
+      ttl: strategy.ttl,
+      tags: strategy.tags,
+    });
+  }
+
+  /**
+   * Handle cache operation errors
+   */
+  private async handleCacheError<T extends CacheableApiResponse>(
+    operation: string,
+    cacheKey: string,
+    error: unknown,
+    executor: () => Promise<T>,
+  ): Promise<T> {
+    this.recordCacheError(operation);
+    this.componentLogger.error("Cache operation error", {
+      operation,
+      cacheKey,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+
+    // Execute operation without caching on cache error
+    return executor();
   }
 
   /**
