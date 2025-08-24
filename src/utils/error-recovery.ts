@@ -201,6 +201,173 @@ export class CircuitBreaker {
 }
 
 /**
+ * Creates a fallback logger for test environments
+ */
+function createFallbackLogger(): ComponentLogger {
+  return {
+    debug: (..._args: unknown[]): void => {
+      /* fallback debug */
+    },
+    info: (..._args: unknown[]): void => {
+      /* fallback info */
+    },
+    warn: (...args: unknown[]): void => console.warn(...args),
+    error: (...args: unknown[]): void => console.error(...args),
+    child: (_options: Record<string, unknown>) => createFallbackLogger(),
+  };
+}
+
+/**
+ * Creates operation logger with fallback support
+ */
+function createOperationLogger(correlationId?: string): ComponentLogger {
+  try {
+    return logger.child({
+      component: "RetryMechanism",
+      correlationId: correlationId || randomUUID(),
+      operation: "retry-with-backoff",
+    }) as ComponentLogger;
+  } catch {
+    return createFallbackLogger();
+  }
+}
+
+/**
+ * Calculates retry delay with exponential backoff and optional jitter
+ */
+function calculateRetryDelay(
+  attempt: number,
+  baseDelay: number,
+  maxDelay: number,
+  exponentialBase: number,
+  jitter: boolean,
+): number {
+  const delay = Math.min(
+    baseDelay * Math.pow(exponentialBase, attempt),
+    maxDelay,
+  );
+
+  return jitter ? delay + Math.random() * 1000 : delay;
+}
+
+/**
+ * Executes retry callback with error handling
+ */
+function executeRetryCallback(
+  onRetry: (error: Error, attempt: number) => void,
+  error: Error,
+  nextAttempt: number,
+  operationLogger: ComponentLogger,
+): void {
+  try {
+    onRetry(error, nextAttempt);
+  } catch (callbackError) {
+    operationLogger.warn("Retry callback failed", {
+      error:
+        callbackError instanceof Error
+          ? callbackError.message
+          : String(callbackError),
+    });
+  }
+}
+
+/**
+ * Determines if retry should be attempted based on conditions
+ */
+function shouldRetry(
+  attempt: number,
+  maxRetries: number,
+  error: Error,
+  retryCondition: (error: Error) => boolean,
+): boolean {
+  return attempt < maxRetries && retryCondition(error);
+}
+
+/**
+ * Handles successful operation execution with logging
+ */
+function logOperationSuccess(
+  attempt: number,
+  operationLogger: ComponentLogger,
+): void {
+  if (attempt > 0) {
+    operationLogger.info("Operation succeeded after retries", {
+      attempt,
+      totalAttempts: attempt + 1,
+    });
+  }
+}
+
+/**
+ * Processes retry error handling and returns whether to continue retrying
+ */
+function processRetryError(
+  attempt: number,
+  maxRetries: number,
+  error: Error,
+  retryCondition: (error: Error) => boolean,
+  operationLogger: ComponentLogger,
+): boolean {
+  operationLogger.warn("Operation failed, evaluating retry", {
+    attempt,
+    error: error.message,
+    isLastAttempt: attempt === maxRetries,
+  });
+
+  return shouldRetry(attempt, maxRetries, error, retryCondition);
+}
+
+/**
+ * Executes retry delay with logging and callback handling
+ */
+async function executeRetryDelay(
+  attempt: number,
+  baseDelay: number,
+  maxDelay: number,
+  exponentialBase: number,
+  jitter: boolean,
+  onRetry: ((error: Error, attempt: number) => void) | undefined,
+  error: Error,
+  operationLogger: ComponentLogger,
+): Promise<void> {
+  const finalDelay = calculateRetryDelay(
+    attempt,
+    baseDelay,
+    maxDelay,
+    exponentialBase,
+    jitter,
+  );
+
+  operationLogger.info("Retrying operation after delay", {
+    attempt: attempt + 1,
+    delay: finalDelay,
+    nextAttempt: attempt + 1,
+  });
+
+  if (onRetry) {
+    executeRetryCallback(onRetry, error, attempt + 1, operationLogger);
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, finalDelay));
+}
+
+/**
+ * Logs and throws final error when all retries are exhausted
+ */
+function throwExhaustedError(
+  maxRetries: number,
+  lastError: Error,
+  operationLogger: ComponentLogger,
+): never {
+  operationLogger.error("All retry attempts exhausted", {
+    totalAttempts: maxRetries + 1,
+    finalError: lastError.message,
+  });
+
+  throw lastError;
+}
+
+/**
  * Retry mechanism with exponential backoff and jitter
  */
 export async function retryWithBackoff<T>(
@@ -218,97 +385,43 @@ export async function retryWithBackoff<T>(
     onRetry,
   } = options;
 
-  const getOperationLogger = (): ComponentLogger => {
-    try {
-      return logger.child({
-        component: "RetryMechanism",
-        correlationId: correlationId || randomUUID(),
-        operation: "retry-with-backoff",
-      }) as ComponentLogger;
-    } catch {
-      // Fallback for test environments with proper typing
-      return {
-        debug: (..._args: unknown[]): void => {
-          /* fallback debug */
-        },
-        info: (..._args: unknown[]): void => {
-          /* fallback info */
-        },
-        warn: (...args: unknown[]): void => console.warn(...args),
-        error: (...args: unknown[]): void => console.error(...args),
-        child: (_options: Record<string, unknown>) => getOperationLogger(),
-      };
-    }
-  };
-  const operationLogger = getOperationLogger();
-
+  const operationLogger = createOperationLogger(correlationId);
   let lastError: Error = new Error("No attempts made");
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const result = await operation();
-
-      if (attempt > 0) {
-        operationLogger.info("Operation succeeded after retries", {
-          attempt,
-          totalAttempts: attempt + 1,
-        });
-      }
-
+      logOperationSuccess(attempt, operationLogger);
       return result;
     } catch (error) {
       lastError = error as Error;
 
-      operationLogger.warn("Operation failed, evaluating retry", {
+      const shouldContinue = processRetryError(
         attempt,
-        error: lastError.message,
-        isLastAttempt: attempt === maxRetries,
-      });
+        maxRetries,
+        lastError,
+        retryCondition,
+        operationLogger,
+      );
 
-      // Don't retry on the last attempt or if retry condition is not met
-      if (attempt === maxRetries || !retryCondition(lastError)) {
+      if (!shouldContinue) {
         break;
       }
 
-      // Calculate delay with exponential backoff and optional jitter
-      const delay = Math.min(
-        baseDelay * Math.pow(exponentialBase, attempt),
+      await executeRetryDelay(
+        attempt,
+        baseDelay,
         maxDelay,
+        exponentialBase,
+        jitter,
+        onRetry,
+        lastError,
+        operationLogger,
       );
-
-      const finalDelay = jitter ? delay + Math.random() * 1000 : delay;
-
-      operationLogger.info("Retrying operation after delay", {
-        attempt: attempt + 1,
-        delay: finalDelay,
-        nextAttempt: attempt + 1,
-      });
-
-      // Call retry callback if provided
-      if (onRetry) {
-        try {
-          onRetry(lastError, attempt + 1);
-        } catch (callbackError) {
-          operationLogger.warn("Retry callback failed", {
-            error:
-              callbackError instanceof Error
-                ? callbackError.message
-                : String(callbackError),
-          });
-        }
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, finalDelay));
     }
   }
 
-  // All retries exhausted, throw the last error
-  operationLogger.error("All retry attempts exhausted", {
-    totalAttempts: maxRetries + 1,
-    finalError: lastError.message,
-  });
-
-  throw lastError;
+  throwExhaustedError(maxRetries, lastError, operationLogger);
 }
 
 /**
