@@ -46,12 +46,28 @@ export class MakeApiClient {
     this.useOAuth = !!accessToken;
     this.currentAccessToken = accessToken;
     
+    this.initializeLogger(userId);
+    this.initializeOAuthClient(accessToken);
+    this.validateAuthentication(config.apiKey, accessToken);
+    this.setupAxiosInstance(config, accessToken);
+    this.setupRateLimit();
+    this.setupInterceptors();
+  }
+
+  /**
+   * Initialize component logger with metadata
+   */
+  private initializeLogger(userId?: string): void {
     this.componentLogger = createComponentLogger({
       component: 'MakeApiClient',
       metadata: { userId, useOAuth: this.useOAuth },
     });
-    
-    // Initialize OAuth client if using OAuth authentication
+  }
+
+  /**
+   * Initialize OAuth client if using OAuth authentication
+   */
+  private initializeOAuthClient(accessToken?: string): void {
     if (this.useOAuth) {
       try {
         const oauthConfig = getMakeOAuthConfig();
@@ -75,17 +91,25 @@ export class MakeApiClient {
         this.useOAuth = false;
       }
     }
-    
-    // Validate credentials based on authentication method
+  }
+
+  /**
+   * Validate credentials based on authentication method
+   */
+  private validateAuthentication(apiKey: string, accessToken?: string): void {
     if (this.useOAuth) {
       if (!accessToken) {
         throw new AuthenticationError('Access token required for OAuth authentication');
       }
     } else {
-      this.validateCredentialSecurity(config.apiKey);
+      this.validateCredentialSecurity(apiKey);
     }
-    
-    // Create axios instance with appropriate authentication
+  }
+
+  /**
+   * Setup axios instance with appropriate authentication
+   */
+  private setupAxiosInstance(config: MakeApiConfig, accessToken?: string): void {
     const authHeaders = this.useOAuth && accessToken
       ? { 'Authorization': `Bearer ${accessToken}` }
       : { 'Authorization': `Token ${config.apiKey}` };
@@ -99,7 +123,12 @@ export class MakeApiClient {
         'Accept': 'application/json',
       },
     });
+  }
 
+  /**
+   * Setup rate limiter for Make.com API constraints
+   */
+  private setupRateLimit(): void {
     // Initialize rate limiter (Make.com allows 10 requests per second)
     this.limiter = new Bottleneck({
       minTime: 100, // 100ms between requests (10 req/sec)
@@ -108,8 +137,6 @@ export class MakeApiClient {
       reservoirRefreshAmount: 600,
       reservoirRefreshInterval: 60 * 1000, // 1 minute
     });
-
-    this.setupInterceptors();
   }
 
   /**
