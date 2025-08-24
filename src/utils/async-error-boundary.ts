@@ -77,6 +77,42 @@ export class AsyncErrorBoundary {
     executeOptions?: ErrorBoundaryExecuteOptions<T>,
   ): Promise<T> {
     const startTime = Date.now();
+
+    try {
+      // Execute operation with retry logic
+      return await this.executeRetryLoop(operation, context, executeOptions, startTime);
+    } catch (lastError) {
+      // Handle fallback execution after all retries failed
+      return await this.executeFallbackOperation(lastError as Error, context, executeOptions);
+    }
+  }
+
+  /**
+   * Build error context object for consistent error reporting
+   */
+  private buildErrorContext(
+    context: { operation: string; metadata?: Record<string, unknown> },
+    attempt: number,
+    startTime: number,
+  ): ErrorContext {
+    return {
+      boundaryName: this.options.name,
+      operation: context.operation,
+      attempt,
+      startTime,
+      metadata: context.metadata,
+    };
+  }
+
+  /**
+   * Execute retry loop with exponential backoff
+   */
+  private async executeRetryLoop<T>(
+    operation: () => Promise<T>,
+    context: { operation: string; metadata?: Record<string, unknown> },
+    executeOptions?: ErrorBoundaryExecuteOptions<T>,
+    startTime: number,
+  ): Promise<T> {
     let lastError: Error | undefined;
 
     for (
@@ -84,13 +120,7 @@ export class AsyncErrorBoundary {
       attempt <= this.options.retryAttempts + 1;
       attempt++
     ) {
-      const errorContext: ErrorContext = {
-        boundaryName: this.options.name,
-        operation: context.operation,
-        attempt,
-        startTime,
-        metadata: context.metadata,
-      };
+      const errorContext = this.buildErrorContext(context, attempt, startTime);
 
       try {
         // Execute with timeout wrapper
@@ -101,97 +131,213 @@ export class AsyncErrorBoundary {
 
         // Log successful execution on retry
         if (attempt > 1) {
-          this.componentLogger.info("Operation succeeded after retry", {
-            operation: context.operation,
-            attempt,
-            duration: Date.now() - startTime,
-          });
+          this.logRetrySuccess(context.operation, attempt, startTime);
         }
 
         return result;
       } catch (error) {
-        lastError = error instanceof Error ? error : new Error(String(error));
-
-        this.componentLogger.error("Operation failed in error boundary", {
-          operation: context.operation,
-          attempt,
-          error: lastError.message,
-          stack: lastError.stack,
-          duration: Date.now() - startTime,
-        });
-
-        // Call custom error handler
-        const errorHandler = executeOptions?.onError || this.options.onError;
-        if (errorHandler) {
-          try {
-            await errorHandler(lastError, errorContext);
-          } catch (handlerError) {
-            this.componentLogger.error("Error handler threw exception", {
-              handlerError:
-                handlerError instanceof Error
-                  ? handlerError.message
-                  : String(handlerError),
-            });
-          }
-        }
+        lastError = this.processOperationError(error);
+        await this.handleOperationError(lastError, errorContext, executeOptions);
 
         // If this is the last attempt, break to fallback
         if (attempt > this.options.retryAttempts) {
           break;
         }
 
-        // Wait before retry
-        if (this.options.retryDelayMs > 0) {
-          await this.delay(this.options.retryDelayMs * attempt); // Exponential backoff
-        }
+        // Execute retry delay with exponential backoff
+        await this.executeRetryDelay(attempt);
       }
     }
 
-    // All retries failed, try fallback
-    const fallbackFn = executeOptions?.fallback || this.options.fallback;
+    // All retries failed, throw the last error to trigger fallback
+    throw lastError!;
+  }
+
+  /**
+   * Process operation error to ensure Error instance
+   */
+  private processOperationError(error: unknown): Error {
+    return error instanceof Error ? error : new Error(String(error));
+  }
+
+  /**
+   * Log successful retry attempt
+   */
+  private logRetrySuccess(
+    operation: string,
+    attempt: number,
+    startTime: number,
+  ): void {
+    this.componentLogger.info("Operation succeeded after retry", {
+      operation,
+      attempt,
+      duration: Date.now() - startTime,
+    });
+  }
+
+  /**
+   * Handle operation error with logging and custom error handler execution
+   */
+  private async handleOperationError(
+    error: Error,
+    errorContext: ErrorContext,
+    executeOptions?: ErrorBoundaryExecuteOptions<unknown>,
+  ): Promise<void> {
+    // Log operation failure
+    this.logOperationFailure(error, errorContext);
+
+    // Execute custom error handler if available
+    const errorHandler = executeOptions?.onError || this.options.onError;
+    if (errorHandler) {
+      await this.executeCustomErrorHandler(errorHandler, error, errorContext);
+    }
+  }
+
+  /**
+   * Log operation failure with context details
+   */
+  private logOperationFailure(error: Error, errorContext: ErrorContext): void {
+    this.componentLogger.error("Operation failed in error boundary", {
+      operation: errorContext.operation,
+      attempt: errorContext.attempt,
+      error: error.message,
+      stack: error.stack,
+      duration: Date.now() - errorContext.startTime,
+    });
+  }
+
+  /**
+   * Safely execute custom error handler with exception handling
+   */
+  private async executeCustomErrorHandler(
+    errorHandler: (error: Error, context: ErrorContext) => Promise<void> | void,
+    error: Error,
+    errorContext: ErrorContext,
+  ): Promise<void> {
+    try {
+      await errorHandler(error, errorContext);
+    } catch (handlerError) {
+      this.componentLogger.error("Error handler threw exception", {
+        handlerError:
+          handlerError instanceof Error
+            ? handlerError.message
+            : String(handlerError),
+      });
+    }
+  }
+
+  /**
+   * Execute retry delay with exponential backoff
+   */
+  private async executeRetryDelay(attempt: number): Promise<void> {
+    if (this.options.retryDelayMs > 0) {
+      await this.delay(this.options.retryDelayMs * attempt); // Exponential backoff
+    }
+  }
+
+  /**
+   * Execute fallback operation after all retries failed
+   */
+  private async executeFallbackOperation<T>(
+    lastError: Error,
+    context: { operation: string; metadata?: Record<string, unknown> },
+    executeOptions?: ErrorBoundaryExecuteOptions<T>,
+  ): Promise<T> {
+    const fallbackFn = this.getFallbackFunction(executeOptions);
+    
     if (fallbackFn) {
       try {
-        this.componentLogger.warn(
-          "All retry attempts exhausted, executing fallback",
-          {
-            operation: context.operation,
-            totalAttempts: this.options.retryAttempts + 1,
-            finalError: lastError?.message,
-          },
-        );
-
+        this.logFallbackExecution(context, this.options.retryAttempts + 1, lastError);
         const fallbackResult = await fallbackFn();
-        return fallbackResult as T;
+        return this.handleFallbackSuccess(fallbackResult as T);
       } catch (fallbackError) {
-        const finalError = new Error(
-          `Operation failed after ${this.options.retryAttempts + 1} attempts, and fallback also failed. Original error: ${lastError?.message}. Fallback error: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`,
-        );
-
-        this.componentLogger.error("Fallback execution failed", {
-          operation: context.operation,
-          originalError: lastError?.message,
-          fallbackError:
-            fallbackError instanceof Error
-              ? fallbackError.message
-              : String(fallbackError),
-        });
-
+        const finalError = this.handleFallbackFailure(context, lastError, fallbackError);
         throw finalError;
       }
     }
 
-    // No fallback available, throw the original error
+    // No fallback available, create final error
+    const finalError = this.createFinalError(context, lastError, this.options.retryAttempts + 1);
+    throw finalError;
+  }
+
+  /**
+   * Get fallback function from options with priority
+   */
+  private getFallbackFunction<T>(
+    executeOptions?: ErrorBoundaryExecuteOptions<T>,
+  ): (() => Promise<T> | T) | undefined {
+    return executeOptions?.fallback || this.options.fallback;
+  }
+
+  /**
+   * Log fallback execution initiation
+   */
+  private logFallbackExecution(
+    context: { operation: string; metadata?: Record<string, unknown> },
+    totalAttempts: number,
+    lastError: Error,
+  ): void {
+    this.componentLogger.warn(
+      "All retry attempts exhausted, executing fallback",
+      {
+        operation: context.operation,
+        totalAttempts,
+        finalError: lastError?.message,
+      },
+    );
+  }
+
+  /**
+   * Handle successful fallback execution
+   */
+  private handleFallbackSuccess<T>(result: T): T {
+    return result;
+  }
+
+  /**
+   * Handle fallback failure with comprehensive error construction
+   */
+  private handleFallbackFailure(
+    context: { operation: string; metadata?: Record<string, unknown> },
+    lastError: Error,
+    fallbackError: unknown,
+  ): Error {
     const finalError = new Error(
-      `Operation failed after ${this.options.retryAttempts + 1} attempts. Original error: ${lastError?.message}`,
+      `Operation failed after ${this.options.retryAttempts + 1} attempts, and fallback also failed. Original error: ${lastError?.message}. Fallback error: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`,
+    );
+
+    this.componentLogger.error("Fallback execution failed", {
+      operation: context.operation,
+      originalError: lastError?.message,
+      fallbackError:
+        fallbackError instanceof Error
+          ? fallbackError.message
+          : String(fallbackError),
+    });
+
+    return finalError;
+  }
+
+  /**
+   * Create final error when no fallback available
+   */
+  private createFinalError(
+    context: { operation: string; metadata?: Record<string, unknown> },
+    lastError: Error,
+    totalAttempts: number,
+  ): Error {
+    const finalError = new Error(
+      `Operation failed after ${totalAttempts} attempts. Original error: ${lastError?.message}`,
     );
 
     this.componentLogger.error("Operation failed with no fallback", {
       operation: context.operation,
       originalError: lastError?.message,
-      totalAttempts: this.options.retryAttempts + 1,
+      totalAttempts,
     });
 
-    throw finalError;
+    return finalError;
   }
 
   /**

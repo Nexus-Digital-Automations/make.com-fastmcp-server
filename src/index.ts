@@ -7,6 +7,10 @@
 import MakeServerInstance from "./server.js";
 import CoreServer from "./servers/core-server.js";
 import AnalyticsServer from "./servers/analytics-server.js";
+import EssentialServer from "./servers/essential-server.js";
+import DevelopmentServer from "./servers/development-server.js";
+import GovernanceServer from "./servers/governance-server.js";
+import EnterpriseServer from "./servers/enterprise-server.js";
 import logger from "./lib/logger.js";
 import configManager from "./lib/config.js";
 import {
@@ -16,12 +20,24 @@ import {
 } from "./utils/async-error-boundary.js";
 import { createComponentLogger } from "./utils/logger-factory.js";
 
-type ServerType = "core" | "analytics" | "legacy" | "both";
-type ServerInstance = MakeServerInstance | CoreServer | AnalyticsServer;
+type ServerType = "essential" | "development" | "governance" | "enterprise" | "core" | "analytics" | "legacy" | "both";
+type ServerInstance = MakeServerInstance | CoreServer | AnalyticsServer | EssentialServer | DevelopmentServer | GovernanceServer | EnterpriseServer;
 
 function getServerType(): ServerType {
   const args = process.argv;
 
+  if (args.includes("--essential")) {
+    return "essential";
+  }
+  if (args.includes("--development")) {
+    return "development";
+  }
+  if (args.includes("--governance")) {
+    return "governance";
+  }
+  if (args.includes("--enterprise")) {
+    return "enterprise";
+  }
   if (args.includes("--core")) {
     return "core";
   }
@@ -35,14 +51,22 @@ function getServerType(): ServerType {
     return "legacy";
   }
 
-  // Default to legacy for backward compatibility
-  return "legacy";
+  // Default to essential for best performance
+  return "essential";
 }
 
 function createServerInstance(
   serverType: Exclude<ServerType, "both">,
 ): ServerInstance {
   switch (serverType) {
+    case "essential":
+      return new EssentialServer();
+    case "development":
+      return new DevelopmentServer();
+    case "governance":
+      return new GovernanceServer();
+    case "enterprise":
+      return new EnterpriseServer();
     case "core":
       return new CoreServer();
     case "analytics":
@@ -112,8 +136,24 @@ async function startSingleServer(
     let port = configManager().getConfig().port || 3000;
 
     // Adjust port based on server type
-    if (serverType === "analytics") {
-      port = 3001;
+    switch (serverType) {
+      case "essential":
+        port = 3000;
+        break;
+      case "development":
+        port = 3001;
+        break;
+      case "governance":
+        port = 3002;
+        break;
+      case "enterprise":
+        port = 3003;
+        break;
+      case "analytics":
+        port = 3001;
+        break;
+      default:
+        port = configManager().getConfig().port || 3000;
     }
 
     const httpOptions =
@@ -230,5 +270,5 @@ if (isMainModule()) {
   });
 }
 
-export { MakeServerInstance, CoreServer, AnalyticsServer };
+export { MakeServerInstance, CoreServer, AnalyticsServer, EssentialServer, DevelopmentServer, GovernanceServer, EnterpriseServer };
 export default main;
