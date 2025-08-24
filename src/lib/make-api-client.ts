@@ -14,6 +14,19 @@ import { OAuth21Authenticator } from './oauth-authenticator.js';
 import { getMakeOAuthConfig } from '../config/make-oauth-config.js';
 import { AuthenticationError } from '../utils/errors.js';
 
+/**
+ * Type definition for axios-like error structure
+ */
+interface AxiosErrorLike {
+  response?: {
+    data?: { message?: string };
+    statusText?: string;
+    status?: number;
+  };
+  request?: unknown;
+  message?: string;
+}
+
 export class MakeApiClient {
   private readonly axiosInstance: AxiosInstance;
   private readonly limiter: Bottleneck;
@@ -296,44 +309,89 @@ export class MakeApiClient {
   private handleAxiosError(error: unknown): MakeApiError {
     const makeError = new Error('API client error') as MakeApiError;
     
-    // Type guard for axios error
-    const axiosError = error as {
-      response?: {
-        data?: { message?: string };
-        statusText?: string;
-        status?: number;
-      };
-      request?: unknown;
-      message?: string;
-    };
+    const axiosError = this.castToAxiosError(error);
     
     if (axiosError?.response) {
-      // Server responded with error status
-      makeError.message = axiosError.response.data?.message || axiosError.response.statusText || 'API request failed';
-      makeError.status = axiosError.response.status;
-      makeError.code = (axiosError.response.data as { code?: string })?.code || `HTTP_${axiosError.response?.status}` || 'HTTP_UNKNOWN';
-      makeError.details = axiosError.response.data;
-      
-      // Determine if error is retryable
-      makeError.retryable = (axiosError.response?.status || 0) >= 500 || axiosError.response?.status === 429;
+      this.handleResponseError(makeError, axiosError.response);
     } else if (axiosError?.request) {
-      // Network error
-      makeError.message = 'Network error - no response received';
-      makeError.code = 'NETWORK_ERROR';
-      makeError.retryable = true;
+      this.handleNetworkError(makeError);
     } else {
-      // Request configuration error
-      if (error === undefined) {
-        makeError.message = 'Unknown API client error';
-      } else {
-        makeError.message = (error as Error)?.message || String(error) || 'Unknown API client error';
-      }
-      makeError.code = 'CLIENT_ERROR';
-      makeError.retryable = false;
+      this.handleClientError(makeError, error);
     }
     
     makeError.name = 'MakeApiError';
     return makeError;
+  }
+
+  /**
+   * Cast unknown error to axios error structure
+   */
+  private castToAxiosError(error: unknown): AxiosErrorLike {
+    return error as AxiosErrorLike;
+  }
+
+  /**
+   * Handle HTTP response errors with status codes
+   */
+  private handleResponseError(makeError: MakeApiError, response: AxiosErrorLike['response']): void {
+    if (!response) {return;}
+    
+    makeError.message = this.extractErrorMessage(response);
+    makeError.status = response.status;
+    makeError.code = this.generateErrorCode(response);
+    makeError.details = response.data;
+    makeError.retryable = this.isRetryableStatus(response.status);
+  }
+
+  /**
+   * Handle network connectivity errors
+   */
+  private handleNetworkError(makeError: MakeApiError): void {
+    makeError.message = 'Network error - no response received';
+    makeError.code = 'NETWORK_ERROR';
+    makeError.retryable = true;
+  }
+
+  /**
+   * Handle client configuration errors
+   */
+  private handleClientError(makeError: MakeApiError, error: unknown): void {
+    makeError.message = this.extractClientErrorMessage(error);
+    makeError.code = 'CLIENT_ERROR';
+    makeError.retryable = false;
+  }
+
+  /**
+   * Extract error message from response with fallbacks
+   */
+  private extractErrorMessage(response: AxiosErrorLike['response']): string {
+    if (!response) {return 'API request failed';}
+    return response.data?.message || response.statusText || 'API request failed';
+  }
+
+  /**
+   * Generate error code from response data and status
+   */
+  private generateErrorCode(response: AxiosErrorLike['response']): string {
+    if (!response) {return 'HTTP_UNKNOWN';}
+    return (response.data as { code?: string })?.code || `HTTP_${response.status}` || 'HTTP_UNKNOWN';
+  }
+
+  /**
+   * Determine if HTTP status code indicates retryable error
+   */
+  private isRetryableStatus(status: number | undefined): boolean {
+    return (status || 0) >= 500 || status === 429;
+  }
+
+  /**
+   * Extract error message from client error with fallbacks
+   */
+  private extractClientErrorMessage(error: unknown): string {
+    if (error === undefined) {
+      return 'Unknown API client error';
+    }
+    return (error as Error)?.message || String(error) || 'Unknown API client error';
   }
 
   private async executeWithRetry<T>(
@@ -345,49 +403,104 @@ export class MakeApiClient {
     
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
-        this.componentLogger.debug(`Executing ${operationName}`, { attempt, maxRetries: retries });
-        
-        const response = await this.limiter.schedule(() => operation());
-        
-        return {
-          success: true,
-          data: response.data,
-          metadata: {
-            total: response.headers['x-total-count'] ? parseInt(response.headers['x-total-count']) : undefined,
-            page: response.headers['x-page'] ? parseInt(response.headers['x-page']) : undefined,
-            limit: response.headers['x-per-page'] ? parseInt(response.headers['x-per-page']) : undefined,
-          },
-        };
+        const response = await this.executeOperation(operation, operationName, attempt, retries);
+        return this.createSuccessResponse(response);
       } catch (error) {
-        // Ensure error is properly processed, especially for null/undefined cases
-        if (error && typeof error === 'object' && 'name' in error && error.name === 'MakeApiError') {
-          lastError = error as MakeApiError;
-        } else {
-          // Process unknown/null/undefined errors through handleAxiosError
-          lastError = this.handleAxiosError(error);
-        }
+        lastError = this.handleRetryError(error);
         
-        if (!lastError.retryable || attempt === retries) {
+        if (!this.shouldRetry(lastError, attempt, retries)) {
           break;
         }
         
-        // Exponential backoff with jitter
-        const delay = Math.min(1000 * Math.pow(2, attempt - 1) + Math.random() * 1000, 30000);
-        this.componentLogger.warn(`Retrying ${operationName} in ${delay}ms`, {
-          attempt,
-          error: lastError.message,
-        });
-        
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await this.delayRetry(operationName, attempt, lastError);
       }
     }
     
+    return this.createErrorResponse(lastError);
+  }
+
+  /**
+   * Execute a single operation with logging
+   */
+  private async executeOperation<T>(
+    operation: () => Promise<AxiosResponse<T>>,
+    operationName: string,
+    attempt: number,
+    maxRetries: number
+  ): Promise<AxiosResponse<T>> {
+    this.componentLogger.debug(`Executing ${operationName}`, { attempt, maxRetries });
+    return await this.limiter.schedule(() => operation());
+  }
+
+  /**
+   * Create a successful API response object
+   */
+  private createSuccessResponse<T>(response: AxiosResponse<T>): ApiResponse<T> {
+    return {
+      success: true,
+      data: response.data,
+      metadata: {
+        total: response.headers['x-total-count'] ? parseInt(response.headers['x-total-count']) : undefined,
+        page: response.headers['x-page'] ? parseInt(response.headers['x-page']) : undefined,
+        limit: response.headers['x-per-page'] ? parseInt(response.headers['x-per-page']) : undefined,
+      },
+    };
+  }
+
+  /**
+   * Handle and process retry errors
+   */
+  private handleRetryError(error: unknown): MakeApiError {
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'MakeApiError') {
+      return error as MakeApiError;
+    } else {
+      return this.handleAxiosError(error);
+    }
+  }
+
+  /**
+   * Determine if operation should be retried
+   */
+  private shouldRetry(error: MakeApiError, attempt: number, maxRetries: number): boolean {
+    return error.retryable && attempt < maxRetries;
+  }
+
+  /**
+   * Handle retry delay with exponential backoff and jitter
+   */
+  private async delayRetry(
+    operationName: string,
+    attempt: number,
+    error: MakeApiError
+  ): Promise<void> {
+    const delay = this.calculateRetryDelay(attempt);
+    this.componentLogger.warn(`Retrying ${operationName} in ${delay}ms`, {
+      attempt,
+      error: error.message,
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  /**
+   * Calculate retry delay with exponential backoff and jitter
+   */
+  private calculateRetryDelay(attempt: number): number {
+    return Math.min(1000 * Math.pow(2, attempt - 1) + Math.random() * 1000, 30000);
+  }
+
+  /**
+   * Create an error API response object
+   */
+  private createErrorResponse<T>(lastError?: MakeApiError): ApiResponse<T> {
     return {
       success: false,
       error: {
         message: lastError?.message ?? 'Unknown error',
         code: lastError?.code ?? 'UNKNOWN',
-        details: typeof lastError?.details === 'object' ? lastError.details : { message: lastError?.details ?? 'No error details available' },
+        details: typeof lastError?.details === 'object' 
+          ? lastError.details 
+          : { message: lastError?.details ?? 'No error details available' },
       },
     };
   }

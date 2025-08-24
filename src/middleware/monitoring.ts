@@ -3,9 +3,9 @@
  * Integrates metrics collection and monitoring with server operations
  */
 
-import { FastMCP } from 'fastmcp';
-import metrics from '../lib/metrics.js';
-import logger from '../lib/logger.js';
+import { FastMCP } from "fastmcp";
+import metrics from "../lib/metrics.js";
+import logger from "../lib/logger.js";
 
 interface MonitoringContext {
   tool?: string;
@@ -22,7 +22,7 @@ export interface ToolMetrics {
   startTime: number;
   endTime?: number;
   duration?: number;
-  status?: 'success' | 'error' | 'timeout';
+  status?: "success" | "error" | "timeout";
   errorType?: string;
 }
 
@@ -34,8 +34,10 @@ class MonitoringMiddleware {
   constructor() {
     // Robust logger initialization for both production and test environments
     try {
-      if (logger && typeof logger.child === 'function') {
-        this.componentLogger = logger.child({ component: 'MonitoringMiddleware' });
+      if (logger && typeof logger.child === "function") {
+        this.componentLogger = logger.child({
+          component: "MonitoringMiddleware",
+        });
       } else {
         // Fallback for test environments when logger.child is not available
         this.componentLogger = logger;
@@ -43,12 +45,17 @@ class MonitoringMiddleware {
     } catch (error) {
       // Ultimate fallback for test environments
       // Use stderr for logger initialization failures to avoid interfering with application output
-      process.stderr.write(`MonitoringMiddleware logger initialization failed, using fallback: ${error}\n`);
+      process.stderr.write(
+        `MonitoringMiddleware logger initialization failed, using fallback: ${error}\n`,
+      );
       this.componentLogger = this.createFallbackLogger();
     }
 
     // Additional safety check for test environments
-    if (!this.componentLogger || typeof this.componentLogger.info !== 'function') {
+    if (
+      !this.componentLogger ||
+      typeof this.componentLogger.info !== "function"
+    ) {
       this.componentLogger = this.createFallbackLogger();
     }
   }
@@ -57,26 +64,26 @@ class MonitoringMiddleware {
    * Create a fallback logger that's compatible with the Logger interface
    */
   private createFallbackLogger(): ReturnType<typeof logger.child> {
-    const fallbackLogger = {
+    const fallbackLogger: any = {
       info: (..._args: unknown[]): void => {},
       debug: (..._args: unknown[]): void => {},
       warn: (..._args: unknown[]): void => {},
       error: (..._args: unknown[]): void => {},
       child: (): typeof fallbackLogger => fallbackLogger,
       // Add required Logger properties to match the interface
-      logLevel: 'info' as const,
+      logLevel: "info" as const,
       logLevels: { debug: 0, info: 1, warn: 2, error: 3 },
       shouldLog: (): boolean => true,
-      formatLogEntry: (): string => '',
+      formatLogEntry: (): string => "",
       log: (): void => {},
-      logWithCorrelation: (): string => 'fallback_correlation_id',
+      logWithCorrelation: (): string => "fallback_correlation_id",
       logDuration: (): void => {},
       setLogLevel: (): void => {},
-      getLogLevel: (): 'info' => 'info' as const,
-      generateCorrelationId: (): string => 'fallback_correlation_id',
-      generateTraceId: (): string => 'fallback_trace_id',
-      generateSpanId: (): string => 'fallback_span_id',
-      generateRequestId: (): string => 'fallback_request_id'
+      getLogLevel: (): "info" => "info" as const,
+      generateCorrelationId: (): string => "fallback_correlation_id",
+      generateTraceId: (): string => "fallback_trace_id",
+      generateSpanId: (): string => "fallback_span_id",
+      generateRequestId: (): string => "fallback_request_id",
     };
     return fallbackLogger as unknown as ReturnType<typeof logger.child>;
   }
@@ -85,38 +92,38 @@ class MonitoringMiddleware {
    * Initialize monitoring for FastMCP server
    */
   public initializeServerMonitoring(server: FastMCP): void {
-    this.componentLogger.info('Initializing server monitoring');
+    this.componentLogger.info("Initializing server monitoring");
 
     // Monitor connection events
-    server.on('connect', (event) => {
+    server.on("connect", (event) => {
       this.activeConnections++;
       metrics.setActiveConnections(this.activeConnections);
-      
+
       const sessionId = this.extractSessionId(event.session);
-      
-      this.componentLogger.info('Client connected', { 
+
+      this.componentLogger.info("Client connected", {
         sessionId,
-        activeConnections: this.activeConnections 
+        activeConnections: this.activeConnections,
       });
 
-      metrics.recordRequest('connect', 'client_connect', 'success', 0);
+      metrics.recordRequest("connect", "client_connect", "success", 0);
     });
 
-    server.on('disconnect', (event) => {
+    server.on("disconnect", (event) => {
       this.activeConnections = Math.max(0, this.activeConnections - 1);
       metrics.setActiveConnections(this.activeConnections);
-      
+
       const sessionId = this.extractSessionId(event.session);
-      
-      this.componentLogger.info('Client disconnected', { 
+
+      this.componentLogger.info("Client disconnected", {
         sessionId,
-        activeConnections: this.activeConnections 
+        activeConnections: this.activeConnections,
       });
 
-      metrics.recordRequest('disconnect', 'client_disconnect', 'success', 0);
+      metrics.recordRequest("disconnect", "client_disconnect", "success", 0);
     });
 
-    this.componentLogger.info('Server monitoring initialized');
+    this.componentLogger.info("Server monitoring initialized");
   }
 
   /**
@@ -126,67 +133,76 @@ class MonitoringMiddleware {
     toolName: string,
     operation: string,
     execution: () => Promise<T>,
-    context: MonitoringContext = {}
+    context: MonitoringContext = {},
   ): () => Promise<T> {
     return async (): Promise<T> => {
       const executionId = `${toolName}_${Date.now()}_${Math.random()}`;
       const timer = metrics.createTimer();
-      
+
       const toolMetrics: ToolMetrics = {
-        startTime: Date.now()
+        startTime: Date.now(),
       };
-      
+
       this.toolExecutions.set(executionId, toolMetrics);
 
       const contextLogger = this.componentLogger.child({
         tool: toolName,
         operation,
         executionId,
-        ...context
+        ...context,
       });
 
-      contextLogger.info('Tool execution started', {
+      contextLogger.info("Tool execution started", {
         tool: toolName,
-        operation
+        operation,
       });
 
       try {
         const result = await execution();
-        
+
         const duration = timer();
         toolMetrics.endTime = Date.now();
         toolMetrics.duration = duration;
-        toolMetrics.status = 'success';
+        toolMetrics.status = "success";
 
-        metrics.recordToolExecution(toolName, 'success', duration, context.userId);
+        metrics.recordToolExecution(
+          toolName,
+          "success",
+          duration,
+          context.userId,
+        );
 
-        contextLogger.info('Tool execution completed successfully', {
+        contextLogger.info("Tool execution completed successfully", {
           duration: `${duration.toFixed(3)}s`,
           tool: toolName,
-          operation
+          operation,
         });
 
         this.toolExecutions.delete(executionId);
         return result;
-
       } catch (error) {
         const duration = timer();
         const errorType = this.classifyError(error);
-        
+
         toolMetrics.endTime = Date.now();
         toolMetrics.duration = duration;
-        toolMetrics.status = 'error';
+        toolMetrics.status = "error";
         toolMetrics.errorType = errorType;
 
-        metrics.recordToolExecution(toolName, 'error', duration, context.userId);
+        metrics.recordToolExecution(
+          toolName,
+          "error",
+          duration,
+          context.userId,
+        );
         metrics.recordError(errorType, operation, toolName);
 
-        contextLogger.error('Tool execution failed', {
+        contextLogger.error("Tool execution failed", {
           duration: `${duration.toFixed(3)}s`,
           error: error instanceof Error ? error.message : String(error),
           errorType,
           tool: toolName,
-          operation
+          operation,
         });
 
         this.toolExecutions.delete(executionId);
@@ -200,43 +216,42 @@ class MonitoringMiddleware {
    */
   public monitorAuthentication<T>(
     execution: () => Promise<T>,
-    context: MonitoringContext = {}
+    context: MonitoringContext = {},
   ): () => Promise<T> {
     return async (): Promise<T> => {
       const timer = metrics.createTimer();
-      
+
       const contextLogger = this.componentLogger.child({
-        operation: 'authentication',
-        ...context
+        operation: "authentication",
+        ...context,
       });
 
-      contextLogger.info('Authentication attempt started');
+      contextLogger.info("Authentication attempt started");
 
       try {
         const result = await execution();
         const duration = timer();
-        
-        metrics.recordAuthAttempt('success');
+
+        metrics.recordAuthAttempt("success");
         metrics.recordAuthDuration(duration);
 
-        contextLogger.info('Authentication successful', {
-          duration: `${duration.toFixed(3)}s`
+        contextLogger.info("Authentication successful", {
+          duration: `${duration.toFixed(3)}s`,
         });
 
         return result;
-
       } catch (error) {
         const duration = timer();
         const errorType = this.classifyError(error);
-        
-        metrics.recordAuthAttempt('failure', errorType);
-        metrics.recordAuthDuration(duration);
-        metrics.recordError(errorType, 'authentication');
 
-        contextLogger.error('Authentication failed', {
+        metrics.recordAuthAttempt("failure", errorType);
+        metrics.recordAuthDuration(duration);
+        metrics.recordError(errorType, "authentication");
+
+        contextLogger.error("Authentication failed", {
           duration: `${duration.toFixed(3)}s`,
           error: error instanceof Error ? error.message : String(error),
-          errorType
+          errorType,
         });
 
         throw error;
@@ -251,50 +266,49 @@ class MonitoringMiddleware {
     endpoint: string,
     method: string,
     execution: () => Promise<T>,
-    context: MonitoringContext = {}
+    context: MonitoringContext = {},
   ): () => Promise<T> {
     return async (): Promise<T> => {
       const timer = metrics.createTimer();
-      
+
       const contextLogger = this.componentLogger.child({
-        operation: 'make_api_call',
+        operation: "make_api_call",
         endpoint,
         method,
-        ...context
+        ...context,
       });
 
-      contextLogger.info('Make.com API call started', {
+      contextLogger.info("Make.com API call started", {
         endpoint,
-        method
+        method,
       });
 
       try {
         const result = await execution();
         const duration = timer();
-        
-        metrics.recordMakeApiCall(endpoint, method, 'success', duration);
 
-        contextLogger.info('Make.com API call completed', {
+        metrics.recordMakeApiCall(endpoint, method, "success", duration);
+
+        contextLogger.info("Make.com API call completed", {
           endpoint,
           method,
-          duration: `${duration.toFixed(3)}s`
+          duration: `${duration.toFixed(3)}s`,
         });
 
         return result;
-
       } catch (error) {
         const duration = timer();
         const errorType = this.classifyError(error);
-        
-        metrics.recordMakeApiCall(endpoint, method, 'error', duration);
-        metrics.recordError(errorType, 'make_api_call', endpoint);
 
-        contextLogger.error('Make.com API call failed', {
+        metrics.recordMakeApiCall(endpoint, method, "error", duration);
+        metrics.recordError(errorType, "make_api_call", endpoint);
+
+        contextLogger.error("Make.com API call failed", {
           endpoint,
           method,
           duration: `${duration.toFixed(3)}s`,
           error: error instanceof Error ? error.message : String(error),
-          errorType
+          errorType,
         });
 
         throw error;
@@ -313,7 +327,7 @@ class MonitoringMiddleware {
     return {
       activeConnections: this.activeConnections,
       activeToolExecutions: this.toolExecutions.size,
-      metricsHealth: metrics.healthCheck()
+      metricsHealth: metrics.healthCheck(),
     };
   }
 
@@ -330,7 +344,7 @@ class MonitoringMiddleware {
       executionId: id,
       startTime: metrics.startTime,
       duration: metrics.duration,
-      status: metrics.status
+      status: metrics.status,
     }));
   }
 
@@ -338,10 +352,10 @@ class MonitoringMiddleware {
    * Extract session ID from session object
    */
   private extractSessionId(session: unknown): string {
-    if (session && typeof session === 'object' && 'id' in session) {
+    if (session && typeof session === "object" && "id" in session) {
       return String((session as { id: unknown }).id);
     }
-    return 'unknown';
+    return "unknown";
   }
 
   /**
@@ -349,32 +363,92 @@ class MonitoringMiddleware {
    * Enhanced to work with FastMCP UserError patterns
    */
   private classifyError(error: unknown): string {
-    if (error instanceof Error) {
-      // Check for specific error types by name
-      if (error.name === 'AuthenticationError') {return 'authentication';}
-      if (error.name === 'UserError') {return 'user_error';}
-      if (error.name === 'MakeServerError') {return 'make_server_error';}
-      
-      // Check for UserError with embedded error codes
-      if (error.name === 'UserError' && error.message.includes('[AUTHENTICATION_ERROR:')) {return 'authentication';}
-      if (error.name === 'UserError' && error.message.includes('[VALIDATION_ERROR:')) {return 'validation';}
-      if (error.name === 'UserError' && error.message.includes('[NOT_FOUND:')) {return 'not_found';}
-      if (error.name === 'UserError' && error.message.includes('[RATE_LIMIT:')) {return 'rate_limit';}
-      if (error.name === 'UserError' && error.message.includes('[TIMEOUT:')) {return 'timeout';}
-      if (error.name === 'UserError' && error.message.includes('[EXTERNAL_SERVICE_ERROR:')) {return 'external_service';}
-      
-      // Fallback to message content analysis
-      if (error.message.includes('timeout')) {return 'timeout';}
-      if (error.message.includes('network')) {return 'network';}
-      if (error.message.includes('rate limit')) {return 'rate_limit';}
-      if (error.message.includes('permission')) {return 'permission';}
-      if (error.message.includes('authentication')) {return 'authentication';}
-      if (error.message.includes('validation')) {return 'validation';}
-      
-      return 'generic_error';
+    if (!(error instanceof Error)) {
+      return "unknown_error";
     }
-    
-    return 'unknown_error';
+
+    // Check for specific error types by name first
+    const nameBasedClassification = this.classifyByErrorName(error);
+    if (nameBasedClassification !== null) {
+      return nameBasedClassification;
+    }
+
+    // Check for UserError with embedded error codes
+    const userErrorClassification = this.classifyUserErrorByCodes(error);
+    if (userErrorClassification !== null) {
+      return userErrorClassification;
+    }
+
+    // Fallback to message content analysis
+    const messageBasedClassification = this.classifyByErrorMessage(error);
+    return messageBasedClassification || "generic_error";
+  }
+
+  /**
+   * Classify errors based on their error name
+   */
+  private classifyByErrorName(error: Error): string | null {
+    if (error.name === "AuthenticationError") {
+      return "authentication";
+    }
+    if (error.name === "UserError") {
+      return "user_error";
+    }
+    if (error.name === "MakeServerError") {
+      return "make_server_error";
+    }
+    return null;
+  }
+
+  /**
+   * Classify UserError instances by embedded error codes
+   */
+  private classifyUserErrorByCodes(error: Error): string | null {
+    if (error.name !== "UserError") {
+      return null;
+    }
+
+    const errorCodeMappings = [
+      { pattern: "[AUTHENTICATION_ERROR:", classification: "authentication" },
+      { pattern: "[VALIDATION_ERROR:", classification: "validation" },
+      { pattern: "[NOT_FOUND:", classification: "not_found" },
+      { pattern: "[RATE_LIMIT:", classification: "rate_limit" },
+      { pattern: "[TIMEOUT:", classification: "timeout" },
+      {
+        pattern: "[EXTERNAL_SERVICE_ERROR:",
+        classification: "external_service",
+      },
+    ];
+
+    for (const mapping of errorCodeMappings) {
+      if (error.message.includes(mapping.pattern)) {
+        return mapping.classification;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Classify errors based on message content patterns
+   */
+  private classifyByErrorMessage(error: Error): string | null {
+    const messagePatterns = [
+      { pattern: "timeout", classification: "timeout" },
+      { pattern: "network", classification: "network" },
+      { pattern: "rate limit", classification: "rate_limit" },
+      { pattern: "permission", classification: "permission" },
+      { pattern: "authentication", classification: "authentication" },
+      { pattern: "validation", classification: "validation" },
+    ];
+
+    for (const pattern of messagePatterns) {
+      if (error.message.includes(pattern.pattern)) {
+        return pattern.classification;
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -388,23 +462,23 @@ class MonitoringMiddleware {
   }> {
     try {
       const metricsHealth = await metrics.healthCheck();
-      
+
       return {
         healthy: metricsHealth.healthy,
         activeConnections: this.activeConnections,
         activeToolExecutions: this.toolExecutions.size,
-        metricsSystem: metricsHealth
+        metricsSystem: metricsHealth,
       };
     } catch (error) {
-      this.componentLogger.error('Monitoring health check failed', {
-        error: error instanceof Error ? error.message : String(error)
+      this.componentLogger.error("Monitoring health check failed", {
+        error: error instanceof Error ? error.message : String(error),
       });
-      
+
       return {
         healthy: false,
         activeConnections: this.activeConnections,
         activeToolExecutions: this.toolExecutions.size,
-        metricsSystem: { healthy: false, metricsCount: 0 }
+        metricsSystem: { healthy: false, metricsCount: 0 },
       };
     }
   }
@@ -413,16 +487,19 @@ class MonitoringMiddleware {
    * Shutdown monitoring system
    */
   public shutdown(): void {
-    this.componentLogger.info('Shutting down monitoring middleware');
-    
+    this.componentLogger.info("Shutting down monitoring middleware");
+
     try {
       this.toolExecutions.clear();
       this.activeConnections = 0;
       metrics.setActiveConnections(0);
     } catch (error) {
-      this.componentLogger.error('Error during monitoring middleware shutdown', {
-        error: error instanceof Error ? error.message : String(error)
-      });
+      this.componentLogger.error(
+        "Error during monitoring middleware shutdown",
+        {
+          error: error instanceof Error ? error.message : String(error),
+        },
+      );
       // Continue shutdown process despite errors
     }
   }
@@ -440,7 +517,9 @@ export function getMonitoringInstance(): MonitoringMiddleware {
       monitoringInstance = new MonitoringMiddleware();
     } catch (error) {
       // Use stderr for critical initialization errors
-      process.stderr.write(`Failed to create MonitoringMiddleware instance: ${error}\n`);
+      process.stderr.write(
+        `Failed to create MonitoringMiddleware instance: ${error}\n`,
+      );
       throw error;
     }
   }
@@ -457,7 +536,9 @@ export function resetMonitoringInstance(): void {
       monitoringInstance.shutdown();
     } catch (error) {
       // Use stderr for shutdown errors to avoid interfering with application output
-      process.stderr.write(`Error during monitoring middleware shutdown: ${error}\n`);
+      process.stderr.write(
+        `Error during monitoring middleware shutdown: ${error}\n`,
+      );
     }
     monitoringInstance = null;
   }
