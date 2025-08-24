@@ -48,7 +48,7 @@ export class LogFileAnalyzer {
       // Get log files for analysis period
       const logFiles = await this.getLogFilesInPeriod(hoursBack);
 
-      console.log(
+      console.warn(
         `📊 Starting log file analysis: ${hoursBack}h back, ${logFiles.length} files`,
       );
 
@@ -63,7 +63,7 @@ export class LogFileAnalyzer {
       // Generate insights and recommendations
       this.generateInsights(report);
 
-      console.log(
+      console.warn(
         `✅ Log file analysis completed: ${report.totalEntries} entries, ${report.patterns.size} patterns`,
       );
     } catch (error) {

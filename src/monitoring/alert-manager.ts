@@ -79,10 +79,16 @@ export class AlertManager {
     // Maintain alert history limit
     this.enforceAlertHistoryLimit();
 
-    // Log the alert
-    console.warn(
-      `🚨 Pattern alert triggered: ${alert.message} (${alert.severity}) - Count: ${alert.count}`,
-    );
+    // Log the alert using appropriate level
+    if (alert.severity === "critical") {
+      console.error(
+        `🚨 Pattern alert triggered: ${alert.message} (${alert.severity}) - Count: ${alert.count}`,
+      );
+    } else {
+      console.warn(
+        `🚨 Pattern alert triggered: ${alert.message} (${alert.severity}) - Count: ${alert.count}`,
+      );
+    }
 
     // Trigger notification if configured
     this.sendNotification(alert);
@@ -139,15 +145,15 @@ export class AlertManager {
         escalation_level: alert.escalationLevel,
       };
 
-      // Log webhook notification attempt
-      console.log(
+      // Log webhook notification attempt using warn level for operational visibility
+      console.warn(
         `📢 Alert notification prepared for ${alert.id} (${alert.severity})`,
       );
 
       // In a production system, this would use fetch/axios to send the webhook
       // For now, we log the payload structure for integration guidance
       if (process.env.NODE_ENV === "development") {
-        console.debug(`📨 Webhook payload:`, payload);
+        console.warn(`📨 Webhook payload:`, payload);
       }
     }
 
@@ -198,7 +204,7 @@ export class AlertManager {
     if (alert && !alert.resolved) {
       alert.resolved = true;
 
-      console.log(
+      console.warn(
         `✅ Alert resolved: ${alertId} - ${_reason} (Duration: ${Date.now() - alert.firstOccurrence.getTime()}ms)`,
       );
 
@@ -218,7 +224,7 @@ export class AlertManager {
     }
 
     if (resolvedCount > 0) {
-      console.log(
+      console.warn(
         `✅ Pattern alerts resolved: ${patternId} - ${resolvedCount} alerts resolved`,
       );
     }
@@ -275,7 +281,7 @@ export class AlertManager {
     const clearedCount = beforeCount - this.alerts.size;
 
     if (clearedCount > 0) {
-      console.log(
+      console.warn(
         `🗑️ Resolved alerts cleared: ${clearedCount} alerts, ${this.alerts.size} remaining`,
       );
     }

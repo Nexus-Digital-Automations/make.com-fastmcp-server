@@ -15,13 +15,13 @@ export class PatternAnalysisTransport extends TransportStream {
     this.enabled = process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false";
 
     if (this.enabled) {
-      console.log("🔍 Pattern analysis transport initialized");
+      console.warn("🔍 Pattern analysis transport initialized");
     } else {
-      console.log("🚫 Pattern analysis transport disabled by configuration");
+      console.warn("🚫 Pattern analysis transport disabled by configuration");
     }
   }
 
-  log(info: TransportStream.LogEntry, callback: () => void): void {
+  log(info: winston.LogEntry, callback: () => void): void {
     // Skip analysis if disabled
     if (!this.enabled) {
       callback();
@@ -89,7 +89,7 @@ export class PatternAnalysisTransport extends TransportStream {
     this.enabled = enabled;
 
     if (wasEnabled !== enabled) {
-      console.log(
+      console.warn(
         `🔄 Pattern analysis transport ${enabled ? "enabled" : "disabled"}`,
       );
     }
@@ -100,13 +100,13 @@ export class PatternAnalysisTransport extends TransportStream {
     this.analysisCount = 0;
     this.lastAnalysisTime = null;
 
-    console.log("📈 Pattern analysis transport statistics reset");
+    console.warn("📈 Pattern analysis transport statistics reset");
   }
 
   // Override close method for cleanup
   close(): void {
     if (this.enabled) {
-      console.log(
+      console.warn(
         `🚪 Pattern analysis transport closing (${this.analysisCount} analyses)`,
       );
     }
@@ -136,7 +136,7 @@ export function addPatternAnalysisToLogger(
   const transport = createPatternAnalysisTransport(options);
   targetLogger.add(transport);
 
-  console.log(
+  console.warn(
     `➕ Pattern analysis transport added to logger (enabled: ${transport.getStatistics().enabled})`,
   );
 

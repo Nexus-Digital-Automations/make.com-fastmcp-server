@@ -63,14 +63,14 @@ export class LogPatternAnalyzer {
   static registerPattern(pattern: LogPattern): void {
     this.patterns.set(pattern.id, pattern);
     // Log registration - logger will be available in the context where this is called
-    console.log(
+    console.warn(
       `Log pattern registered: ${pattern.name} (${pattern.severity})`,
     );
   }
 
   static registerPatterns(patterns: LogPattern[]): void {
     patterns.forEach((pattern) => this.registerPattern(pattern));
-    console.log(
+    console.warn(
       `Multiple log patterns registered: ${patterns.length} patterns`,
     );
   }
@@ -265,14 +265,14 @@ export class LogPatternAnalyzer {
 
   static clearHistory(): void {
     this.recentMatches.clear();
-    console.log("Pattern match history cleared");
+    console.warn("Pattern match history cleared");
   }
 
   static removePattern(patternId: string): boolean {
     const removed = this.patterns.delete(patternId);
     if (removed) {
       this.recentMatches.delete(patternId);
-      console.log(`Pattern removed: ${patternId}`);
+      console.warn(`Pattern removed: ${patternId}`);
     }
     return removed;
   }
