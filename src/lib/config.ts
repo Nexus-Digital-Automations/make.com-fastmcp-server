@@ -228,11 +228,23 @@ class ConfigManager {
 
     // Note: API key validation moved to server initialization to avoid circular dependencies
 
+    this.validatePortConfiguration(errors);
+    this.validateAuthenticationConfiguration(errors);
+    this.validateEnvironmentSpecificSettings();
+
+    if (errors.length > 0) {
+      throw new ValidationError(`Configuration validation failed: ${errors.join('; ')}`);
+    }
+  }
+
+  private validatePortConfiguration(errors: string[]): void {
     // Validate port availability in development
     if (this.isDevelopment() && this.config.port && this.config.port < 1024) {
       errors.push('Port numbers below 1024 require elevated privileges in development');
     }
+  }
 
+  private validateAuthenticationConfiguration(errors: string[]): void {
     // Validate authentication configuration consistency
     if (this.config.authentication?.enabled) {
       if (!this.config.authentication.secret) {
@@ -241,7 +253,9 @@ class ConfigManager {
         errors.push('Authentication secret should be at least 32 characters for security');
       }
     }
+  }
 
+  private validateEnvironmentSpecificSettings(): void {
     // Validate environment-specific settings
     if (this.isProduction()) {
       if (this.config.logLevel === 'debug') {
@@ -250,10 +264,6 @@ class ConfigManager {
       if (!this.config.authentication?.enabled) {
         console.warn('WARNING: Authentication is disabled in production environment');
       }
-    }
-
-    if (errors.length > 0) {
-      throw new ValidationError(`Configuration validation failed: ${errors.join('; ')}`);
     }
   }
 
@@ -300,38 +310,10 @@ class ConfigManager {
     const warnings: string[] = [];
 
     try {
-      // Test Make.com API key presence
-      if (!process.env.MAKE_API_KEY) {
-        errors.push('MAKE_API_KEY is required but not set');
-      }
-
-      // Check for common configuration issues
-      if (process.env.NODE_ENV === 'production') {
-        if (process.env.LOG_LEVEL === 'debug') {
-          warnings.push('Debug logging enabled in production');
-        }
-        if (process.env.AUTH_ENABLED !== 'true') {
-          warnings.push('Authentication disabled in production');
-        }
-      }
-
-      // Validate numeric environment variables
-      const numericVars = ['PORT', 'MAKE_TIMEOUT', 'MAKE_RETRIES', 'RATE_LIMIT_MAX_REQUESTS', 'RATE_LIMIT_WINDOW_MS'];
-      for (const varName of numericVars) {
-        const value = process.env[varName];
-        if (value && isNaN(parseInt(value))) {
-          errors.push(`${varName} must be a valid number, got: ${value}`);
-        }
-      }
-
-      // Validate boolean environment variables
-      const booleanVars = ['AUTH_ENABLED', 'RATE_LIMIT_SKIP_SUCCESS', 'RATE_LIMIT_SKIP_FAILED'];
-      for (const varName of booleanVars) {
-        const value = process.env[varName];
-        if (value && !['true', 'false', '1', '0', 'yes', 'no'].includes(value.toLowerCase())) {
-          errors.push(`${varName} must be a valid boolean, got: ${value}`);
-        }
-      }
+      this.validateRequiredEnvironmentVariables(errors);
+      this.checkProductionConfigurationIssues(warnings);
+      this.validateNumericEnvironmentVariables(errors);
+      this.validateBooleanEnvironmentVariables(errors);
 
       return { valid: errors.length === 0, errors, warnings };
     } catch (error) {
@@ -340,34 +322,87 @@ class ConfigManager {
     }
   }
 
+  private validateRequiredEnvironmentVariables(errors: string[]): void {
+    // Test Make.com API key presence
+    if (!process.env.MAKE_API_KEY) {
+      errors.push('MAKE_API_KEY is required but not set');
+    }
+  }
+
+  private checkProductionConfigurationIssues(warnings: string[]): void {
+    // Check for common configuration issues
+    if (process.env.NODE_ENV === 'production') {
+      if (process.env.LOG_LEVEL === 'debug') {
+        warnings.push('Debug logging enabled in production');
+      }
+      if (process.env.AUTH_ENABLED !== 'true') {
+        warnings.push('Authentication disabled in production');
+      }
+    }
+  }
+
+  private validateNumericEnvironmentVariables(errors: string[]): void {
+    // Validate numeric environment variables
+    const numericVars = ['PORT', 'MAKE_TIMEOUT', 'MAKE_RETRIES', 'RATE_LIMIT_MAX_REQUESTS', 'RATE_LIMIT_WINDOW_MS'];
+    for (const varName of numericVars) {
+      const value = process.env[varName];
+      if (value && isNaN(parseInt(value))) {
+        errors.push(`${varName} must be a valid number, got: ${value}`);
+      }
+    }
+  }
+
+  private validateBooleanEnvironmentVariables(errors: string[]): void {
+    // Validate boolean environment variables
+    const booleanVars = ['AUTH_ENABLED', 'RATE_LIMIT_SKIP_SUCCESS', 'RATE_LIMIT_SKIP_FAILED'];
+    for (const varName of booleanVars) {
+      const value = process.env[varName];
+      if (value && !['true', 'false', '1', '0', 'yes', 'no'].includes(value.toLowerCase())) {
+        errors.push(`${varName} must be a valid boolean, got: ${value}`);
+      }
+    }
+  }
+
   // Configuration reporting for debugging
   public getConfigurationReport(): string {
     const report = {
       environment: process.env.NODE_ENV || 'unknown',
-      server: {
-        name: this.config.name,
-        version: this.config.version,
-        port: this.config.port,
-        logLevel: this.config.logLevel,
-      },
-      make: {
-        baseUrl: this.config.make.baseUrl,
-        hasApiKey: !!this.config.make.apiKey,
-        apiKeyLength: this.config.make.apiKey?.length || 0,
-        teamId: this.config.make.teamId || 'not set',
-        organizationId: this.config.make.organizationId || 'not set',
-        timeout: this.config.make.timeout,
-        retries: this.config.make.retries,
-      },
-      authentication: {
-        enabled: this.config.authentication?.enabled || false,
-        hasSecret: !!this.config.authentication?.secret,
-        secretLength: this.config.authentication?.secret?.length || 0,
-      },
+      server: this.buildServerReportSection(),
+      make: this.buildMakeReportSection(),
+      authentication: this.buildAuthenticationReportSection(),
       rateLimit: this.config.rateLimit || 'not configured',
     };
 
     return JSON.stringify(report, null, 2);
+  }
+
+  private buildServerReportSection(): Record<string, unknown> {
+    return {
+      name: this.config.name,
+      version: this.config.version,
+      port: this.config.port,
+      logLevel: this.config.logLevel,
+    };
+  }
+
+  private buildMakeReportSection(): Record<string, unknown> {
+    return {
+      baseUrl: this.config.make.baseUrl,
+      hasApiKey: !!this.config.make.apiKey,
+      apiKeyLength: this.config.make.apiKey?.length || 0,
+      teamId: this.config.make.teamId || 'not set',
+      organizationId: this.config.make.organizationId || 'not set',
+      timeout: this.config.make.timeout,
+      retries: this.config.make.retries,
+    };
+  }
+
+  private buildAuthenticationReportSection(): Record<string, unknown> {
+    return {
+      enabled: this.config.authentication?.enabled || false,
+      hasSecret: !!this.config.authentication?.secret,
+      secretLength: this.config.authentication?.secret?.length || 0,
+    };
   }
 }
 
