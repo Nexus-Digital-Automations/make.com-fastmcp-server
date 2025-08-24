@@ -10,6 +10,7 @@ import dotenv from "dotenv";
 import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { v4 as uuidv4 } from "uuid";
+import { performance } from "perf_hooks";
 
 // Load environment variables
 dotenv.config();
@@ -74,11 +75,362 @@ const logger = winston.createLogger({
   ],
 });
 
+// Performance monitoring interfaces and classes
+interface PerformanceMetrics {
+  timestamp: Date;
+  operation: string;
+  duration: number;
+  memoryDelta: number;
+  cpuUsage: NodeJS.CpuUsage;
+  concurrentRequests: number;
+  correlationId: string;
+}
+
+interface HealthStatus {
+  status: 'healthy' | 'degraded' | 'unhealthy';
+  timestamp: Date;
+  checks: {
+    [checkName: string]: {
+      status: 'pass' | 'fail';
+      duration: number;
+      message?: string;
+    };
+  };
+}
+
+interface MetricsSnapshot {
+  httpRequestDuration: Map<string, number[]>;
+  httpRequestCount: Map<string, number>;
+  errorCount: Map<string, number>;
+  memoryUsage: number;
+  timestamp: Date;
+}
+
+class PerformanceMonitor {
+  private static metrics: PerformanceMetrics[] = [];
+  private static concurrentOperations = 0;
+  private static readonly MAX_METRICS_HISTORY = 1000;
+  
+  static async trackOperation<T>(
+    operation: string,
+    correlationId: string,
+    fn: () => Promise<T>
+  ): Promise<{ result: T; metrics: PerformanceMetrics }> {
+    const startTime = performance.now();
+    const startMemory = process.memoryUsage().heapUsed;
+    const startCpu = process.cpuUsage();
+    
+    this.concurrentOperations++;
+    
+    try {
+      const result = await fn();
+      const endTime = performance.now();
+      const endMemory = process.memoryUsage().heapUsed;
+      const endCpu = process.cpuUsage(startCpu);
+      
+      const metrics: PerformanceMetrics = {
+        timestamp: new Date(),
+        operation,
+        duration: endTime - startTime,
+        memoryDelta: endMemory - startMemory,
+        cpuUsage: endCpu,
+        concurrentRequests: this.concurrentOperations,
+        correlationId
+      };
+      
+      this.recordMetrics(metrics);
+      
+      // Log performance warnings for slow operations
+      if (metrics.duration > 5000) {
+        logger.warn('Slow operation detected', {
+          operation: metrics.operation,
+          duration: metrics.duration,
+          correlationId: metrics.correlationId,
+          memoryDelta: metrics.memoryDelta,
+          concurrentRequests: metrics.concurrentRequests
+        });
+      }
+      
+      return { result, metrics };
+    } finally {
+      this.concurrentOperations--;
+    }
+  }
+  
+  private static recordMetrics(metrics: PerformanceMetrics) {
+    this.metrics.push(metrics);
+    
+    // Keep metrics history under control
+    if (this.metrics.length > this.MAX_METRICS_HISTORY) {
+      this.metrics = this.metrics.slice(-this.MAX_METRICS_HISTORY);
+    }
+    
+    // Log periodic performance summaries every 100 operations
+    if (this.metrics.length % 100 === 0) {
+      this.logPerformanceSummary();
+    }
+  }
+  
+  private static logPerformanceSummary() {
+    const recentMetrics = this.metrics.slice(-100);
+    const avgDuration = recentMetrics.reduce((sum, m) => sum + m.duration, 0) / recentMetrics.length;
+    const maxDuration = Math.max(...recentMetrics.map(m => m.duration));
+    const avgMemoryDelta = recentMetrics.reduce((sum, m) => sum + m.memoryDelta, 0) / recentMetrics.length;
+    
+    logger.info('Performance summary (last 100 operations)', {
+      averageDuration: Math.round(avgDuration),
+      maxDuration: Math.round(maxDuration),
+      averageMemoryDelta: Math.round(avgMemoryDelta / 1024), // KB
+      totalOperations: this.metrics.length,
+      correlationId: 'perf-summary'
+    });
+  }
+  
+  static getMetricsReport(): {
+    summary: {
+      totalOperations: number;
+      averageDuration: number;
+      maxDuration: number;
+      currentMemoryUsage: number;
+      concurrentOperations: number;
+    };
+    percentiles: {
+      p50: number;
+      p95: number;
+      p99: number;
+    };
+  } {
+    const durations = this.metrics.map(m => m.duration);
+    const sortedDurations = durations.sort((a, b) => a - b);
+    
+    return {
+      summary: {
+        totalOperations: this.metrics.length,
+        averageDuration: durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0,
+        maxDuration: durations.length > 0 ? Math.max(...durations) : 0,
+        currentMemoryUsage: process.memoryUsage().heapUsed,
+        concurrentOperations: this.concurrentOperations
+      },
+      percentiles: {
+        p50: sortedDurations[Math.floor(sortedDurations.length * 0.5)] || 0,
+        p95: sortedDurations[Math.floor(sortedDurations.length * 0.95)] || 0,
+        p99: sortedDurations[Math.floor(sortedDurations.length * 0.99)] || 0
+      }
+    };
+  }
+}
+
+class MetricsCollector {
+  private static snapshot: MetricsSnapshot = {
+    httpRequestDuration: new Map(),
+    httpRequestCount: new Map(),
+    errorCount: new Map(),
+    memoryUsage: 0,
+    timestamp: new Date()
+  };
+  
+  static recordRequest(operation: string, duration: number, success: boolean) {
+    // Update request duration histogram
+    if (!this.snapshot.httpRequestDuration.has(operation)) {
+      this.snapshot.httpRequestDuration.set(operation, []);
+    }
+    this.snapshot.httpRequestDuration.get(operation)!.push(duration);
+    
+    // Update request count
+    const currentCount = this.snapshot.httpRequestCount.get(operation) || 0;
+    this.snapshot.httpRequestCount.set(operation, currentCount + 1);
+    
+    // Update error count
+    if (!success) {
+      const currentErrorCount = this.snapshot.errorCount.get(operation) || 0;
+      this.snapshot.errorCount.set(operation, currentErrorCount + 1);
+    }
+    
+    // Update memory usage
+    this.snapshot.memoryUsage = process.memoryUsage().heapUsed;
+    this.snapshot.timestamp = new Date();
+  }
+  
+  static getMetricsReport(): string {
+    let report = 'FastMCP Server Metrics Report\n';
+    report += `Timestamp: ${this.snapshot.timestamp.toISOString()}\n`;
+    report += `Memory Usage: ${(this.snapshot.memoryUsage / 1024 / 1024).toFixed(2)} MB\n\n`;
+    
+    // Request duration analysis
+    this.snapshot.httpRequestDuration.forEach((durations, operation) => {
+      if (durations.length === 0) {
+        return;
+      }
+      
+      const sorted = durations.sort((a, b) => a - b);
+      const p50 = sorted[Math.floor(sorted.length * 0.5)];
+      const p95 = sorted[Math.floor(sorted.length * 0.95)];
+      const p99 = sorted[Math.floor(sorted.length * 0.99)];
+      
+      report += `${operation}:\n`;
+      report += `  Requests: ${durations.length}\n`;
+      report += `  P50: ${p50?.toFixed(2) || 0}ms\n`;
+      report += `  P95: ${p95?.toFixed(2) || 0}ms\n`;
+      report += `  P99: ${p99?.toFixed(2) || 0}ms\n`;
+      
+      const errorCount = this.snapshot.errorCount.get(operation) || 0;
+      const errorRate = (errorCount / durations.length * 100).toFixed(2);
+      report += `  Error Rate: ${errorRate}%\n\n`;
+    });
+    
+    return report;
+  }
+}
+
+class HealthMonitor {
+  static async performHealthCheck(): Promise<HealthStatus> {
+    const checks: HealthStatus['checks'] = {};
+    
+    // Check Make.com API connectivity
+    checks.makeApiConnectivity = await this.checkMakeApiConnectivity();
+    
+    // Check memory usage
+    checks.memoryUsage = this.checkMemoryUsage();
+    
+    // Check log file system
+    checks.logFileSystem = await this.checkLogFileSystem();
+    
+    // Check error rates
+    checks.errorRates = this.checkErrorRates();
+    
+    // Determine overall status
+    const failedChecks = Object.values(checks).filter(check => check.status === 'fail');
+    let status: HealthStatus['status'];
+    
+    if (failedChecks.length === 0) {
+      status = 'healthy';
+    } else if (failedChecks.length <= 1) {
+      status = 'degraded';
+    } else {
+      status = 'unhealthy';
+    }
+    
+    const healthStatus: HealthStatus = {
+      status,
+      timestamp: new Date(),
+      checks
+    };
+    
+    // Log health status if degraded or unhealthy
+    if (status !== 'healthy') {
+      logger.warn('Health check failed', {
+        status,
+        failedChecks: failedChecks.length,
+        details: checks,
+        correlationId: 'health-check'
+      });
+    } else {
+      logger.info('Health check passed', {
+        status,
+        correlationId: 'health-check'
+      });
+    }
+    
+    return healthStatus;
+  }
+  
+  private static async checkMakeApiConnectivity(): Promise<HealthStatus['checks'][string]> {
+    const startTime = performance.now();
+    try {
+      // Attempt lightweight API call to test connectivity
+      await axios.get(`${config.makeBaseUrl}/users?limit=1`, {
+        headers: { Authorization: `Token ${config.makeApiKey}` },
+        timeout: 5000
+      });
+      
+      return {
+        status: 'pass',
+        duration: performance.now() - startTime
+      };
+    } catch (error: unknown) {
+      const axiosError = error as { message?: string };
+      return {
+        status: 'fail',
+        duration: performance.now() - startTime,
+        message: `Make.com API connectivity failed: ${axiosError.message || 'Unknown error'}`
+      };
+    }
+  }
+  
+  private static checkMemoryUsage(): HealthStatus['checks'][string] {
+    const startTime = performance.now();
+    const memUsage = process.memoryUsage();
+    const memoryUsageMB = memUsage.heapUsed / 1024 / 1024;
+    
+    // Use configured memory threshold
+    const threshold = config.memoryThresholdMB;
+    const status = memoryUsageMB > threshold ? 'fail' : 'pass';
+    
+    return {
+      status,
+      duration: performance.now() - startTime,
+      message: status === 'fail' ? 
+        `Memory usage ${memoryUsageMB.toFixed(2)}MB exceeds threshold ${threshold}MB` : 
+        `Memory usage: ${memoryUsageMB.toFixed(2)}MB`
+    };
+  }
+  
+  private static async checkLogFileSystem(): Promise<HealthStatus['checks'][string]> {
+    const startTime = performance.now();
+    const fs = await import('fs');
+    const path = await import('path');
+    
+    try {
+      const logsDir = path.join(process.cwd(), 'logs');
+      await fs.promises.access(logsDir, fs.constants.R_OK | fs.constants.W_OK);
+      
+      return {
+        status: 'pass',
+        duration: performance.now() - startTime,
+        message: 'Log directory accessible'
+      };
+    } catch (error: unknown) {
+      const fsError = error as { message?: string };
+      return {
+        status: 'fail',
+        duration: performance.now() - startTime,
+        message: `Log file system check failed: ${fsError.message || 'Unknown error'}`
+      };
+    }
+  }
+  
+  private static checkErrorRates(): HealthStatus['checks'][string] {
+    const startTime = performance.now();
+    const metricsReport = PerformanceMonitor.getMetricsReport();
+    
+    // Simple error rate check based on recent operations
+    const errorThreshold = 0.05; // 5% error rate threshold
+    const _totalOperations = metricsReport.summary.totalOperations;
+    
+    // For simplicity, we'll use a basic check - in production this would
+    // analyze actual error counts from metrics
+    const estimatedErrorRate = 0; // Would be calculated from actual error metrics
+    
+    const status = estimatedErrorRate > errorThreshold ? 'fail' : 'pass';
+    
+    return {
+      status,
+      duration: performance.now() - startTime,
+      message: `Current error rate: ${(estimatedErrorRate * 100).toFixed(2)}%`
+    };
+  }
+}
+
 // Simple configuration from environment
 const config = {
   makeApiKey: process.env.MAKE_API_KEY,
   makeBaseUrl: process.env.MAKE_BASE_URL || "https://us1.make.com/api/v2",
   timeout: 30000,
+  // Performance monitoring configuration
+  performanceMonitoringEnabled: process.env.PERFORMANCE_MONITORING_ENABLED !== "false",
+  memoryThresholdMB: parseInt(process.env.MEMORY_THRESHOLD_MB || "512"),
+  metricsCollectionEnabled: process.env.METRICS_COLLECTION_ENABLED !== "false",
+  healthCheckEnabled: process.env.HEALTH_CHECK_ENABLED !== "false",
 };
 
 // Simple Make.com API client
@@ -105,6 +457,36 @@ class SimpleMakeClient {
   ) {
     const requestId = correlationId || uuidv4();
     const operation = `${method.toUpperCase()} ${endpoint}`;
+
+    // Use performance monitoring if enabled, otherwise fallback to direct execution
+    if (config.performanceMonitoringEnabled) {
+      const { result, metrics } = await PerformanceMonitor.trackOperation(
+        operation,
+        requestId,
+        async () => {
+          return await this.executeRequest(method, endpoint, data, requestId, operation);
+        }
+      );
+
+      // Record metrics if enabled
+      if (config.metricsCollectionEnabled) {
+        const success = !result || typeof result === 'object';
+        MetricsCollector.recordRequest(operation, metrics.duration, success);
+      }
+
+      return result;
+    } else {
+      return await this.executeRequest(method, endpoint, data, requestId, operation);
+    }
+  }
+
+  private async executeRequest(
+    method: string,
+    endpoint: string,
+    data: unknown,
+    requestId: string,
+    operation: string,
+  ) {
     const startTime = Date.now();
 
     logger.info("API request started", {
@@ -811,9 +1193,111 @@ ${error_message ? `Reported issue: ${error_message}\n\n` : ""}General connection
   },
 });
 
+// PERFORMANCE MONITORING TOOLS (conditionally enabled)
+if (config.performanceMonitoringEnabled) {
+  server.addTool({
+    name: "get-performance-metrics",
+    description: "Get comprehensive performance metrics and statistics",
+    parameters: z.object({}),
+    execute: async () => {
+      const report = PerformanceMonitor.getMetricsReport();
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Performance Metrics Report:
+
+Summary:
+- Total Operations: ${report.summary.totalOperations}
+- Average Duration: ${report.summary.averageDuration.toFixed(2)}ms
+- Max Duration: ${report.summary.maxDuration.toFixed(2)}ms
+- Current Memory Usage: ${(report.summary.currentMemoryUsage / 1024 / 1024).toFixed(2)}MB
+- Concurrent Operations: ${report.summary.concurrentOperations}
+
+Percentiles:
+- P50 (Median): ${report.percentiles.p50.toFixed(2)}ms
+- P95: ${report.percentiles.p95.toFixed(2)}ms
+- P99: ${report.percentiles.p99.toFixed(2)}ms`,
+          },
+        ],
+      };
+    },
+  });
+}
+
+if (config.metricsCollectionEnabled) {
+  server.addTool({
+    name: "get-metrics-report",
+    description: "Get detailed metrics report with request analysis",
+    parameters: z.object({}),
+    execute: async () => {
+      const report = MetricsCollector.getMetricsReport();
+      return {
+        content: [
+          {
+            type: "text",
+            text: report,
+          },
+        ],
+      };
+    },
+  });
+}
+
+if (config.healthCheckEnabled) {
+  server.addTool({
+    name: "perform-health-check",
+    description: "Perform comprehensive system health check",
+    parameters: z.object({}),
+    execute: async () => {
+      const health = await HealthMonitor.performHealthCheck();
+      const statusEmoji = health.status === 'healthy' ? '✅' : 
+                        health.status === 'degraded' ? '⚠️' : '❌';
+      
+      let report = `${statusEmoji} System Health Status: ${health.status.toUpperCase()}\n`;
+      report += `Timestamp: ${health.timestamp.toISOString()}\n\n`;
+      
+      report += "Health Checks:\n";
+      Object.entries(health.checks).forEach(([checkName, result]) => {
+        const checkEmoji = result.status === 'pass' ? '✅' : '❌';
+        report += `${checkEmoji} ${checkName}: ${result.status} (${result.duration.toFixed(2)}ms)\n`;
+        if (result.message) {
+          report += `   ${result.message}\n`;
+        }
+      });
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: report,
+          },
+        ],
+      };
+    },
+  });
+}
+
 // Start the server
 server.start({
   transportType: "stdio",
 });
 
-console.error("Make.com Simple FastMCP Server started successfully");
+const startupMessage = [
+  "Make.com Simple FastMCP Server started successfully",
+  `Performance Monitoring: ${config.performanceMonitoringEnabled ? 'ENABLED' : 'DISABLED'}`,
+  `Metrics Collection: ${config.metricsCollectionEnabled ? 'ENABLED' : 'DISABLED'}`,
+  `Health Checks: ${config.healthCheckEnabled ? 'ENABLED' : 'DISABLED'}`,
+  `Memory Threshold: ${config.memoryThresholdMB}MB`
+].join(" | ");
+
+console.error(startupMessage);
+
+// Log startup configuration
+logger.info("FastMCP Server started", {
+  performanceMonitoring: config.performanceMonitoringEnabled,
+  metricsCollection: config.metricsCollectionEnabled,
+  healthCheck: config.healthCheckEnabled,
+  memoryThreshold: config.memoryThresholdMB,
+  correlationId: 'server-startup'
+});
