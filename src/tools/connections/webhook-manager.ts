@@ -66,17 +66,7 @@ const UpdateWebhookSchema = z.object({
  * ```
  */
 export function addWebhookTools(server: FastMCP, apiClient: MakeApiClient): void {
-  const getComponentLogger = (): ReturnType<typeof logger.child> => {
-    try {
-      return logger.child({ component: 'WebhookTools' });
-    } catch {
-      // Fallback for test environments
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return logger as any;
-    }
-  };
-  const componentLogger = getComponentLogger();
-  
+  const componentLogger = createWebhookLogger();
   componentLogger.info('Adding webhook management tools');
 
   // List webhooks tool
@@ -89,58 +79,96 @@ export function addWebhookTools(server: FastMCP, apiClient: MakeApiClient): void
       readOnlyHint: true,
       openWorldHint: true,
     },
-    execute: async (input, { log }) => {
-      const { connectionId, scenarioId, status, limit, offset } = input;
-
-      log.info('Listing webhooks', {
-        connectionId,
-        scenarioId,
-        status,
-        limit,
-        offset,
-      });
-
-      try {
-        const params: Record<string, unknown> = {
-          limit,
-          offset,
-        };
-
-        if (connectionId) {params.connectionId = connectionId;}
-        if (scenarioId) {params.scenarioId = scenarioId;}
-        if (status !== 'all') {params.active = status === 'active';}
-
-        const response = await apiClient.get('/webhooks', { params });
-
-        if (!response.success) {
-          throw new UserError(`Failed to list webhooks: ${response.error?.message || 'Unknown error'}`);
-        }
-
-        const webhooks = safeGetArray(response.data);
-        const metadata = response.metadata;
-
-        log.info('Successfully retrieved webhooks', {
-          count: webhooks.length,
-          total: metadata?.total,
-        });
-
-        return formatSuccessResponse({
-          webhooks,
-          pagination: {
-            total: metadata?.total || webhooks.length,
-            limit,
-            offset,
-            hasMore: (metadata?.total || 0) > (offset + webhooks.length),
-          },
-        }, "Webhooks retrieved successfully");
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error('Error listing webhooks', { error: errorMessage });
-        if (error instanceof UserError) {throw error;}
-        throw new UserError(`Failed to list webhooks: ${errorMessage}`);
-      }
-    },
+    execute: createListWebhooksExecutor(apiClient),
   });
+
+  componentLogger.info('Webhook management tools added successfully');
+}
+
+function createWebhookLogger(): ReturnType<typeof logger.child> {
+  try {
+    return logger.child({ component: 'WebhookTools' });
+  } catch {
+    // Fallback for test environments
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return logger as any;
+  }
+}
+
+function createListWebhooksExecutor(apiClient: MakeApiClient) {
+  return async (input: any, { log }: any) => {
+    const { connectionId, scenarioId, status, limit, offset } = input;
+
+    log.info('Listing webhooks', {
+      connectionId,
+      scenarioId,
+      status,
+      limit,
+      offset,
+    });
+
+    try {
+      const params = buildWebhookParams(connectionId, scenarioId, status, limit, offset);
+      const response = await apiClient.get('/webhooks', { params });
+
+      if (!response.success) {
+        throw new UserError(`Failed to list webhooks: ${response.error?.message || 'Unknown error'}`);
+      }
+
+      return formatWebhookListResponse(response, limit, offset, log);
+    } catch (error: unknown) {
+      return handleWebhookError(error, log, 'Failed to list webhooks');
+    }
+  };
+}
+
+function buildWebhookParams(
+  connectionId?: number,
+  scenarioId?: number,
+  status?: string,
+  limit?: number,
+  offset?: number,
+): Record<string, unknown> {
+  const params: Record<string, unknown> = { limit, offset };
+
+  if (connectionId) params.connectionId = connectionId;
+  if (scenarioId) params.scenarioId = scenarioId;
+  if (status !== 'all') params.active = status === 'active';
+
+  return params;
+}
+
+function formatWebhookListResponse(
+  response: any,
+  limit: number,
+  offset: number,
+  log: any,
+) {
+  const webhooks = safeGetArray(response.data);
+  const metadata = response.metadata;
+
+  log.info('Successfully retrieved webhooks', {
+    count: webhooks.length,
+    total: metadata?.total,
+  });
+
+  return formatSuccessResponse({
+    webhooks,
+    pagination: {
+      total: metadata?.total || webhooks.length,
+      limit,
+      offset,
+      hasMore: (metadata?.total || 0) > (offset + webhooks.length),
+    },
+  }, "Webhooks retrieved successfully");
+}
+
+function handleWebhookError(error: unknown, log: any, defaultMessage: string) {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  log.error('Webhook operation error', { error: errorMessage });
+  if (error instanceof UserError) throw error;
+  throw new UserError(`${defaultMessage}: ${errorMessage}`);
+}
 
   // Create webhook tool
   server.addTool({

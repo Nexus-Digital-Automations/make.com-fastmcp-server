@@ -185,125 +185,158 @@ export class CachingMiddleware {
   private server?: FastMCP;
 
   constructor(config?: Partial<CachingMiddlewareConfig>) {
-    this.config = {
-      cache: defaultCacheConfig,
-      strategies: {
-        // Scenario operations - medium TTL, scenario tags
-        list_scenarios: {
-          enabled: true,
-          ttl: 1800, // 30 minutes
-          tags: ["scenarios"],
-          invalidateOn: [
-            "scenario:create",
-            "scenario:update",
-            "scenario:delete",
-          ],
-        },
-        get_scenario: {
-          enabled: true,
-          ttl: 3600, // 1 hour
-          tags: ["scenarios"],
-          invalidateOn: ["scenario:update", "scenario:delete"],
-        },
-
-        // User operations - short TTL due to permissions
-        list_users: {
-          enabled: true,
-          ttl: 900, // 15 minutes
-          tags: ["users"],
-          invalidateOn: ["user:update", "user:create", "user:delete"],
-        },
-        get_user: {
-          enabled: true,
-          ttl: 1800, // 30 minutes
-          tags: ["users"],
-          invalidateOn: ["user:update", "user:delete"],
-        },
-
-        // Analytics - very short TTL due to frequent updates
-        get_analytics: {
-          enabled: true,
-          ttl: 300, // 5 minutes
-          tags: ["analytics"],
-          invalidateOn: ["scenario:execute", "data:update"],
-        },
-        get_execution_history: {
-          enabled: true,
-          ttl: 600, // 10 minutes
-          tags: ["analytics", "executions"],
-          invalidateOn: ["scenario:execute"],
-        },
-
-        // Connection operations - medium TTL
-        list_connections: {
-          enabled: true,
-          ttl: 1800, // 30 minutes
-          tags: ["connections"],
-          invalidateOn: [
-            "connection:create",
-            "connection:update",
-            "connection:delete",
-          ],
-        },
-        get_connection: {
-          enabled: true,
-          ttl: 3600, // 1 hour
-          tags: ["connections"],
-          invalidateOn: ["connection:update", "connection:delete"],
-        },
-
-        // Template operations - long TTL, rarely change
-        list_templates: {
-          enabled: true,
-          ttl: 7200, // 2 hours
-          tags: ["templates"],
-          invalidateOn: [
-            "template:create",
-            "template:update",
-            "template:delete",
-          ],
-        },
-        get_template: {
-          enabled: true,
-          ttl: 14400, // 4 hours
-          tags: ["templates"],
-          invalidateOn: ["template:update", "template:delete"],
-        },
-
-        // Organization/team operations - medium TTL
-        list_organizations: {
-          enabled: true,
-          ttl: 3600, // 1 hour
-          tags: ["organizations"],
-          invalidateOn: ["org:update", "team:update"],
-        },
-        list_teams: {
-          enabled: true,
-          ttl: 1800, // 30 minutes
-          tags: ["teams"],
-          invalidateOn: ["team:create", "team:update", "team:delete"],
-        },
-      },
-      defaultStrategy: {
-        enabled: true,
-        ttl: 1800, // 30 minutes default
-        tags: ["default"],
-        invalidateOn: [],
-      },
-      enableConditionalCaching: true,
-      enableEtagSupport: true,
-      toolWrapping: {
-        enabled: true,
-        mode: "selective",
-        excludedTools: ["cache-status", "cache-invalidate", "cache-warmup"], // Don't cache cache management tools
-        defaultEnabled: true,
-      },
-      ...config,
-    };
-
+    this.config = this.buildConfiguration(config);
     this.componentLogger = logger.child({ component: "CachingMiddleware" });
     this.cache = new RedisCache(this.config.cache);
     this.initializeMetrics();
+  }
+
+  private buildConfiguration(config?: Partial<CachingMiddlewareConfig>): CachingMiddlewareConfig {
+    return {
+      cache: defaultCacheConfig,
+      strategies: this.buildCachingStrategies(),
+      defaultStrategy: this.getDefaultStrategy(),
+      enableConditionalCaching: true,
+      enableEtagSupport: true,
+      toolWrapping: this.getToolWrappingConfig(),
+      ...config,
+    };
+  }
+
+  private buildCachingStrategies(): Record<string, CacheStrategy> {
+    return {
+      ...this.getScenarioStrategies(),
+      ...this.getUserStrategies(),
+      ...this.getAnalyticsStrategies(),
+      ...this.getConnectionStrategies(),
+      ...this.getTemplateStrategies(),
+      ...this.getOrganizationStrategies(),
+    };
+  }
+
+  private getScenarioStrategies(): Record<string, CacheStrategy> {
+    return {
+      list_scenarios: {
+        enabled: true,
+        ttl: 1800, // 30 minutes
+        tags: ["scenarios"],
+        invalidateOn: ["scenario:create", "scenario:update", "scenario:delete"],
+      },
+      get_scenario: {
+        enabled: true,
+        ttl: 3600, // 1 hour
+        tags: ["scenarios"],
+        invalidateOn: ["scenario:update", "scenario:delete"],
+      },
+    };
+  }
+
+  private getUserStrategies(): Record<string, CacheStrategy> {
+    return {
+      list_users: {
+        enabled: true,
+        ttl: 900, // 15 minutes
+        tags: ["users"],
+        invalidateOn: ["user:update", "user:create", "user:delete"],
+      },
+      get_user: {
+        enabled: true,
+        ttl: 1800, // 30 minutes
+        tags: ["users"],
+        invalidateOn: ["user:update", "user:delete"],
+      },
+    };
+  }
+
+  private getAnalyticsStrategies(): Record<string, CacheStrategy> {
+    return {
+      get_analytics: {
+        enabled: true,
+        ttl: 300, // 5 minutes
+        tags: ["analytics"],
+        invalidateOn: ["scenario:execute", "data:update"],
+      },
+      get_execution_history: {
+        enabled: true,
+        ttl: 600, // 10 minutes
+        tags: ["analytics", "executions"],
+        invalidateOn: ["scenario:execute"],
+      },
+    };
+  }
+
+  private getConnectionStrategies(): Record<string, CacheStrategy> {
+    return {
+      list_connections: {
+        enabled: true,
+        ttl: 1800, // 30 minutes
+        tags: ["connections"],
+        invalidateOn: ["connection:create", "connection:update", "connection:delete"],
+      },
+      get_connection: {
+        enabled: true,
+        ttl: 3600, // 1 hour
+        tags: ["connections"],
+        invalidateOn: ["connection:update", "connection:delete"],
+      },
+    };
+  }
+
+  private getTemplateStrategies(): Record<string, CacheStrategy> {
+    return {
+      list_templates: {
+        enabled: true,
+        ttl: 7200, // 2 hours
+        tags: ["templates"],
+        invalidateOn: ["template:create", "template:update", "template:delete"],
+      },
+      get_template: {
+        enabled: true,
+        ttl: 14400, // 4 hours
+        tags: ["templates"],
+        invalidateOn: ["template:update", "template:delete"],
+      },
+    };
+  }
+
+  private getOrganizationStrategies(): Record<string, CacheStrategy> {
+    return {
+      list_organizations: {
+        enabled: true,
+        ttl: 3600, // 1 hour
+        tags: ["organizations"],
+        invalidateOn: ["org:update", "team:update"],
+      },
+      list_teams: {
+        enabled: true,
+        ttl: 1800, // 30 minutes
+        tags: ["teams"],
+        invalidateOn: ["team:create", "team:update", "team:delete"],
+      },
+    };
+  }
+
+  private getDefaultStrategy(): CacheStrategy {
+    return {
+      enabled: true,
+      ttl: 1800, // 30 minutes default
+      tags: ["default"],
+      invalidateOn: [],
+    };
+  }
+
+  private getToolWrappingConfig(): {
+    enabled: boolean;
+    mode: string;
+    excludedTools: string[];
+    defaultEnabled: boolean;
+  } {
+    return {
+      enabled: true,
+      mode: "selective",
+      excludedTools: ["cache-status", "cache-invalidate", "cache-warmup"],
+      defaultEnabled: true,
+    };
   }
 
   /**

@@ -503,65 +503,89 @@ export function createRateLimitMiddleware(
     next: NextFunction,
   ): Promise<void> => {
     const startTime = Date.now();
-    const identifier =
-      tier === "auth"
-        ? `auth:${rateLimitManager.getClientIP(req)}`
-        : tier === "webhooks"
-          ? `webhook:${req.headers["x-webhook-id"] || rateLimitManager.getClientIP(req)}`
-          : `${tier}:${req.user?.id || rateLimitManager.getClientIP(req)}`;
+    const identifier = createIdentifier(tier, req);
 
     try {
-      const result = await rateLimitManager.checkRateLimit(
-        tier,
-        identifier,
-        req,
-      );
-
-      // Set rate limit headers
-      if (result.resetTime) {
-        res.setHeader(
-          "X-RateLimit-Reset",
-          Math.ceil(result.resetTime.getTime() / 1000),
-        );
-      }
-      if (result.remaining !== undefined) {
-        res.setHeader("X-RateLimit-Remaining", result.remaining);
-      }
-      res.setHeader("X-RateLimit-Tier", tier);
+      const result = await rateLimitManager.checkRateLimit(tier, identifier, req);
+      setRateLimitHeaders(res, result, tier);
 
       if (!result.allowed) {
-        logger.warn(`Rate limit exceeded for ${tier}`, {
-          identifier: identifier.substring(0, 20) + "...",
-          ip: rateLimitManager.getClientIP(req),
-        });
-
-        return res.status(429).json({
-          error: {
-            code: "RATE_LIMIT_EXCEEDED",
-            message: "Too many requests. Please try again later.",
-            tier,
-            resetTime: result.resetTime?.toISOString(),
-          },
-        });
+        handleRateLimitExceeded(res, tier, identifier, req);
+        return;
       }
 
-      // Record response time for adaptive limiting
-      res.on("finish", () => {
-        const responseTime = Date.now() - startTime;
-        rateLimitManager.recordResponseTime(responseTime);
-      });
-
+      setupResponseTimeTracking(res, startTime);
       next();
     } catch (error) {
-      logger.error("Rate limiting middleware error", {
-        error: error instanceof Error ? error.message : String(error),
-        tier,
-      });
-
-      // Fail open - allow request if rate limiting fails
-      next();
+      handleRateLimitError(error, tier);
+      next(); // Fail open
     }
   };
+}
+
+function createIdentifier(
+  tier: "auth" | "standard" | "sensitive" | "webhooks",
+  req: HttpRequest,
+): string {
+  switch (tier) {
+    case "auth":
+      return `auth:${rateLimitManager.getClientIP(req)}`;
+    case "webhooks":
+      return `webhook:${req.headers["x-webhook-id"] || rateLimitManager.getClientIP(req)}`;
+    default:
+      return `${tier}:${req.user?.id || rateLimitManager.getClientIP(req)}`;
+  }
+}
+
+function setRateLimitHeaders(
+  res: HttpResponse,
+  result: any,
+  tier: string,
+): void {
+  if (result.resetTime) {
+    res.setHeader(
+      "X-RateLimit-Reset",
+      Math.ceil(result.resetTime.getTime() / 1000),
+    );
+  }
+  if (result.remaining !== undefined) {
+    res.setHeader("X-RateLimit-Remaining", result.remaining);
+  }
+  res.setHeader("X-RateLimit-Tier", tier);
+}
+
+function handleRateLimitExceeded(
+  res: HttpResponse,
+  tier: string,
+  identifier: string,
+  req: HttpRequest,
+): void {
+  logger.warn(`Rate limit exceeded for ${tier}`, {
+    identifier: identifier.substring(0, 20) + "...",
+    ip: rateLimitManager.getClientIP(req),
+  });
+
+  res.status(429).json({
+    error: {
+      code: "RATE_LIMIT_EXCEEDED",
+      message: "Too many requests. Please try again later.",
+      tier,
+    },
+  });
+}
+
+function setupResponseTimeTracking(res: HttpResponse, startTime: number): void {
+  res.on("finish", () => {
+    const responseTime = Date.now() - startTime;
+    rateLimitManager.recordResponseTime(responseTime);
+  });
+}
+
+function handleRateLimitError(error: unknown, tier: string): void {
+  logger.error("Rate limiting middleware error", {
+    error: error instanceof Error ? error.message : String(error),
+    tier,
+  });
 }
 
 // DDoS protection middleware

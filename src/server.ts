@@ -247,49 +247,72 @@ ${
   }
 
   private setupProcessErrorHandlers(): void {
-    // Only set up process error handlers once per process to prevent memory leaks
-    if (
-      this.processErrorHandlersBound ||
-      process.listenerCount("uncaughtException") > 0
-    ) {
+    if (this.shouldSkipErrorHandlerSetup()) {
       return;
     }
 
-    // Store references to bound handlers for cleanup
-    this.uncaughtExceptionHandler = (error: Error): void => {
-      if (error.message.includes("JSON") || error.message.includes("parse")) {
-        this.componentLogger.error("JSON parsing error intercepted", {
-          error: {
-            name: error.name,
-            message: error.message,
-            stack: error.stack,
-          },
-          suggestion:
-            "This may be a message framing issue in MCP protocol communication",
-        });
+    this.createErrorHandlers();
+    this.bindProcessErrorHandlers();
+  }
 
-        // Don't exit for JSON parsing errors, just log them
+  private shouldSkipErrorHandlerSetup(): boolean {
+    return (
+      this.processErrorHandlersBound ||
+      process.listenerCount("uncaughtException") > 0
+    );
+  }
+
+  private createErrorHandlers(): void {
+    this.uncaughtExceptionHandler = this.createUncaughtExceptionHandler();
+    this.unhandledRejectionHandler = this.createUnhandledRejectionHandler();
+  }
+
+  private createUncaughtExceptionHandler(): (error: Error) => void {
+    return (error: Error): void => {
+      if (this.isJSONParsingError(error)) {
+        this.handleJSONParsingError(error);
         return;
       }
 
-      this.componentLogger.error("Uncaught exception", {
-        error: {
-          name: error.name,
-          message: error.message,
-          stack: error.stack,
-        },
-      });
-
-      // Only exit in non-test environments
-      if (process.env.NODE_ENV !== "test") {
-        process.exit(1);
-      }
+      this.handleUncaughtException(error);
     };
+  }
 
-    this.unhandledRejectionHandler = (
-      reason: unknown,
-      promise: Promise<unknown>,
-    ): void => {
+  private isJSONParsingError(error: Error): boolean {
+    return error.message.includes("JSON") || error.message.includes("parse");
+  }
+
+  private handleJSONParsingError(error: Error): void {
+    this.componentLogger.error("JSON parsing error intercepted", {
+      error: {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      },
+      suggestion:
+        "This may be a message framing issue in MCP protocol communication",
+    });
+  }
+
+  private handleUncaughtException(error: Error): void {
+    this.componentLogger.error("Uncaught exception", {
+      error: {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      },
+    });
+
+    if (process.env.NODE_ENV !== "test") {
+      process.exit(1);
+    }
+  }
+
+  private createUnhandledRejectionHandler(): (
+    reason: unknown,
+    promise: Promise<unknown>,
+  ) => void {
+    return (reason: unknown, promise: Promise<unknown>): void => {
       this.componentLogger.error("Unhandled promise rejection", {
         reason:
           reason instanceof Error
@@ -302,14 +325,15 @@ ${
         promise: promise.toString(),
       });
     };
+  }
 
+  private bindProcessErrorHandlers(): void {
     process.on("uncaughtException", this.uncaughtExceptionHandler);
     process.on("unhandledRejection", this.unhandledRejectionHandler);
     this.processErrorHandlersBound = true;
   }
 
   private addHealthCheckTool(): void {
-    // Enhanced health check tool with security status
     this.server.addTool({
       name: "health-check",
       description: "Check server and Make.com API connectivity status",
@@ -325,74 +349,115 @@ ${
         openWorldHint: true,
       },
       execute: async ({ includeSecurity }, { log, session }) => {
-        const correlationId = extractCorrelationId({ session });
-        const componentLogger = createComponentLogger({
-          component: "HealthCheck",
-          metadata: {
-            operation: "health-check",
-            correlationId,
-          },
-        });
-
-        componentLogger.info("Performing health check");
-        log.info("Performing health check", { correlationId });
-
-        const startTime = Date.now();
-        const serverHealth = {
-          server: "healthy",
-          timestamp: new Date().toISOString(),
-          uptime: process.uptime(),
-          memory: process.memoryUsage(),
-          config: {
-            logLevel: configManager().getLogLevel(),
-            authEnabled: configManager().isAuthEnabled(),
-            environment: process.env.NODE_ENV || "development",
-          },
-        };
-
-        // Check Make.com API connectivity
-        const apiHealthResult = await this.apiClient.healthCheck();
-        const apiHealthy = apiHealthResult.healthy;
-        const responseTime = Date.now() - startTime;
-
-        const rateLimiterStatus = this.apiClient.getRateLimiterStatus();
-
-        // Get security status if requested
-        const securityStatus = includeSecurity ? { overall: "disabled" } : null; // securityManager.getSecurityStatus() : null;
-
-        const healthStatus = {
-          ...serverHealth,
-          makeApi: {
-            healthy: apiHealthy,
-            responseTime: `${responseTime}ms`,
-            rateLimiter: rateLimiterStatus,
-            credentialValid: apiHealthResult.credentialValid,
-            rotationNeeded: apiHealthResult.rotationNeeded,
-            securityScore: apiHealthResult.securityScore,
-            issues: apiHealthResult.issues,
-          },
-          ...(securityStatus && { security: securityStatus }),
-          overall: this.determineOverallHealth(
-            apiHealthy,
-            securityStatus || { overall: "disabled" },
-          ),
-        };
-
-        componentLogger.info("Health check completed", {
-          overall: healthStatus.overall,
-          responseTime: healthStatus.makeApi.responseTime,
-          correlationId,
-        });
-
-        log.info("Health check completed", {
-          overall: healthStatus.overall,
-          responseTime: healthStatus.makeApi.responseTime,
-          correlationId,
-        });
-
-        return JSON.stringify(healthStatus, null, 2);
+        return this.executeHealthCheck(includeSecurity, log, session);
       },
     });
+  }
+
+  private async executeHealthCheck(
+    includeSecurity: boolean,
+    log: any,
+    session: any,
+  ): Promise<string> {
+    const { correlationId, componentLogger } = this.setupHealthCheckLogging(session);
+    this.logHealthCheckStart(componentLogger, log, correlationId);
+
+    const startTime = Date.now();
+    const serverHealth = this.getServerHealthInfo();
+    const apiHealthData = await this.getApiHealthData(startTime);
+    const securityStatus = this.getSecurityStatus(includeSecurity);
+    
+    const healthStatus = this.buildHealthStatus(
+      serverHealth,
+      apiHealthData,
+      securityStatus,
+    );
+
+    this.logHealthCheckCompletion(componentLogger, log, healthStatus, correlationId);
+    return JSON.stringify(healthStatus, null, 2);
+  }
+
+  private setupHealthCheckLogging(session: any): {
+    correlationId: string;
+    componentLogger: any;
+  } {
+    const correlationId = extractCorrelationId({ session });
+    const componentLogger = createComponentLogger({
+      component: "HealthCheck",
+      metadata: {
+        operation: "health-check",
+        correlationId,
+      },
+    });
+    return { correlationId, componentLogger };
+  }
+
+  private logHealthCheckStart(componentLogger: any, log: any, correlationId: string): void {
+    componentLogger.info("Performing health check");
+    log.info("Performing health check", { correlationId });
+  }
+
+  private getServerHealthInfo(): any {
+    return {
+      server: "healthy",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      config: {
+        logLevel: configManager().getLogLevel(),
+        authEnabled: configManager().isAuthEnabled(),
+        environment: process.env.NODE_ENV || "development",
+      },
+    };
+  }
+
+  private async getApiHealthData(startTime: number): Promise<any> {
+    const apiHealthResult = await this.apiClient.healthCheck();
+    const apiHealthy = apiHealthResult.healthy;
+    const responseTime = Date.now() - startTime;
+    const rateLimiterStatus = this.apiClient.getRateLimiterStatus();
+
+    return {
+      healthy: apiHealthy,
+      responseTime: `${responseTime}ms`,
+      rateLimiter: rateLimiterStatus,
+      credentialValid: apiHealthResult.credentialValid,
+      rotationNeeded: apiHealthResult.rotationNeeded,
+      securityScore: apiHealthResult.securityScore,
+      issues: apiHealthResult.issues,
+    };
+  }
+
+  private getSecurityStatus(includeSecurity: boolean): any {
+    return includeSecurity ? { overall: "disabled" } : null;
+  }
+
+  private buildHealthStatus(serverHealth: any, apiHealthData: any, securityStatus: any): any {
+    return {
+      ...serverHealth,
+      makeApi: apiHealthData,
+      ...(securityStatus && { security: securityStatus }),
+      overall: this.determineOverallHealth(
+        apiHealthData.healthy,
+        securityStatus || { overall: "disabled" },
+      ),
+    };
+  }
+
+  private logHealthCheckCompletion(
+    componentLogger: any,
+    log: any,
+    healthStatus: any,
+    correlationId: string,
+  ): void {
+    const logData = {
+      overall: healthStatus.overall,
+      responseTime: healthStatus.makeApi.responseTime,
+      correlationId,
+    };
+
+    componentLogger.info("Health check completed", logData);
+    log.info("Health check completed", logData);
   }
 
   private addSecurityStatusTool(): void {
@@ -457,7 +522,6 @@ ${
   }
 
   private addServerInfoTool(): void {
-    // Server info tool
     this.server.addTool({
       name: "server-info",
       description: "Get detailed server configuration and capabilities",
@@ -467,183 +531,242 @@ ${
         readOnlyHint: true,
       },
       execute: async (args, { log, session }) => {
-        const correlationId = extractCorrelationId({ session });
-        const componentLogger = createComponentLogger({
-          component: "ServerInfo",
-          metadata: {
-            operation: "server-info",
-            correlationId,
-          },
-        });
-
-        componentLogger.info("Retrieving server information");
-        log.info("Retrieving server information", { correlationId });
-
-        const config = configManager().getConfig();
-        const serverInfo = {
-          name: config.name,
-          version: config.version,
-          environment: process.env.NODE_ENV || "development",
-          node: {
-            version: process.version,
-            platform: process.platform,
-            arch: process.arch,
-          },
-          configuration: {
-            logLevel: config.logLevel,
-            authentication: {
-              enabled: config.authentication?.enabled || false,
-            },
-            rateLimit: config.rateLimit
-              ? {
-                  maxRequests: config.rateLimit.maxRequests,
-                  windowMs: config.rateLimit.windowMs,
-                }
-              : null,
-            makeApi: {
-              baseUrl: config.make.baseUrl,
-              timeout: config.make.timeout,
-              retries: config.make.retries,
-              teamId: config.make.teamId || "not_configured",
-              organizationId: config.make.organizationId || "not_configured",
-            },
-          },
-          capabilities: [
-            "scenario-management",
-            "connection-management",
-            "user-permissions",
-            "role-management",
-            "team-management",
-            "organization-management",
-            "analytics-reporting",
-            "audit-logging",
-            "execution-monitoring",
-            "performance-metrics",
-            "data-export",
-            "template-management",
-            "template-creation",
-            "template-sharing",
-            "folder-organization",
-            "data-store-management",
-            "resource-categorization",
-            "webhook-management",
-            "variable-management",
-            "custom-variable-management",
-            "ai-agent-management",
-            "llm-provider-integration",
-            "incomplete-execution-recovery",
-            "certificate-management",
-            "key-lifecycle-management",
-            "remote-procedure-execution",
-            "device-configuration-management",
-            "custom-app-development",
-            "sdk-app-management",
-            "hook-lifecycle-management",
-            "custom-function-deployment",
-            "billing-management",
-            "payment-processing",
-            "notification-system",
-            "email-preferences",
-            "data-structure-validation",
-            "performance-analysis",
-            "bottleneck-detection",
-            "performance-monitoring",
-            "trend-analysis",
-            "optimization-recommendations",
-            "real-time-log-streaming",
-            "historical-log-querying",
-            "live-execution-monitoring",
-            "log-export-analysis",
-            "naming-convention-policy-management",
-            "enterprise-naming-standards",
-            "policy-validation-enforcement",
-            "naming-rule-templates",
-            "scenario-archival-policy-management",
-            "automated-scenario-lifecycle-management",
-            "usage-based-archival-triggers",
-            "grace-period-management",
-            "scenario-rollback-capabilities",
-            "comprehensive-compliance-management",
-            "regulatory-framework-support",
-            "sox-compliance-controls",
-            "gdpr-privacy-protection",
-            "hipaa-phi-security",
-            "pci-dss-payment-security",
-            "iso27001-security-management",
-            "custom-compliance-frameworks",
-            "automated-policy-enforcement",
-            "compliance-violation-detection",
-            "regulatory-reporting-automation",
-            "audit-trail-management",
-            "security-health-monitoring",
-            "incident-management-integration",
-            "compliance-evidence-collection",
-            "public-app-marketplace-integration",
-            "advanced-app-discovery",
-            "graphql-style-filtering",
-            "ai-powered-recommendations",
-            "marketplace-analytics",
-            "integration-planning-tools",
-            "enterprise-budget-control",
-            "multi-tenant-budget-management",
-            "real-time-cost-analysis",
-            "ml-powered-cost-projections",
-            "automated-scenario-control",
-            "budget-threshold-monitoring",
-            "cost-forecasting-analytics",
-            "approval-workflow-management",
-            "cicd-integration",
-            "test-suite-execution",
-            "coverage-analysis",
-            "deployment-readiness-validation",
-            "build-reporting-analytics",
-            "developer-workflow-automation",
-            "multi-tenant-security-architecture",
-            "tenant-provisioning-lifecycle",
-            "cryptographic-tenant-isolation",
-            "tenant-specific-encryption-keys",
-            "network-segmentation-virtualization",
-            "resource-quota-management",
-            "tenant-governance-policies",
-            "cross-tenant-data-leakage-prevention",
-            "compliance-boundary-management",
-            "tenant-specific-compliance-frameworks",
-            "enterprise-secrets-management",
-            "hashicorp-vault-integration",
-            "hardware-security-module-support",
-            "automated-key-rotation",
-            "dynamic-secret-generation",
-            "rbac-secret-access-control",
-            "secret-scanning-leakage-prevention",
-            "breach-detection-response",
-            "secrets-audit-compliance",
-            "ai-driven-governance",
-            "intelligent-compliance-monitoring",
-            "ml-powered-predictive-analytics",
-            "automated-policy-enforcement",
-            "policy-conflict-detection-resolution",
-            "behavioral-risk-assessment",
-            "automated-remediation-workflows",
-            "governance-intelligence-dashboard",
-          ],
-          uptime: process.uptime(),
-          memory: process.memoryUsage(),
-        };
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(serverInfo, null, 2),
-            },
-          ],
-        };
+        return this.executeServerInfoRequest(log, session);
       },
     });
   }
 
+  private async executeServerInfoRequest(log: any, session: any): Promise<any> {
+    const { correlationId, componentLogger } = this.setupServerInfoLogging(session);
+    this.logServerInfoStart(componentLogger, log, correlationId);
+
+    const serverInfo = this.buildServerInfo();
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(serverInfo, null, 2),
+        },
+      ],
+    };
+  }
+
+  private setupServerInfoLogging(session: any): {
+    correlationId: string;
+    componentLogger: any;
+  } {
+    const correlationId = extractCorrelationId({ session });
+    const componentLogger = createComponentLogger({
+      component: "ServerInfo",
+      metadata: {
+        operation: "server-info",
+        correlationId,
+      },
+    });
+    return { correlationId, componentLogger };
+  }
+
+  private logServerInfoStart(componentLogger: any, log: any, correlationId: string): void {
+    componentLogger.info("Retrieving server information");
+    log.info("Retrieving server information", { correlationId });
+  }
+
+  private buildServerInfo(): any {
+    const config = configManager().getConfig();
+    return {
+      name: config.name,
+      version: config.version,
+      environment: process.env.NODE_ENV || "development",
+      node: this.getNodeInfo(),
+      configuration: this.buildConfigurationInfo(config),
+      capabilities: this.getServerCapabilities(),
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+    };
+  }
+
+  private getNodeInfo(): any {
+    return {
+      version: process.version,
+      platform: process.platform,
+      arch: process.arch,
+    };
+  }
+
+  private buildConfigurationInfo(config: any): any {
+    return {
+      logLevel: config.logLevel,
+      authentication: {
+        enabled: config.authentication?.enabled || false,
+      },
+      rateLimit: config.rateLimit
+        ? {
+            maxRequests: config.rateLimit.maxRequests,
+            windowMs: config.rateLimit.windowMs,
+          }
+        : null,
+      makeApi: {
+        baseUrl: config.make.baseUrl,
+        timeout: config.make.timeout,
+        retries: config.make.retries,
+        teamId: config.make.teamId || "not_configured",
+        organizationId: config.make.organizationId || "not_configured",
+      },
+    };
+  }
+
+  private getServerCapabilities(): string[] {
+    return [
+      ...this.getBasicCapabilities(),
+      ...this.getComplianceCapabilities(),
+      ...this.getEnterpriseCapabilities(),
+      ...this.getSecurityCapabilities(),
+      ...this.getGovernanceCapabilities(),
+    ];
+  }
+
+  private getBasicCapabilities(): string[] {
+    return [
+      "scenario-management",
+      "connection-management",
+      "user-permissions",
+      "role-management",
+      "team-management",
+      "organization-management",
+      "analytics-reporting",
+      "audit-logging",
+      "execution-monitoring",
+      "performance-metrics",
+      "data-export",
+      "template-management",
+      "template-creation",
+      "template-sharing",
+      "folder-organization",
+      "data-store-management",
+      "resource-categorization",
+      "webhook-management",
+      "variable-management",
+      "custom-variable-management",
+      "ai-agent-management",
+      "llm-provider-integration",
+      "incomplete-execution-recovery",
+    ];
+  }
+
+  private getComplianceCapabilities(): string[] {
+    return [
+      "comprehensive-compliance-management",
+      "regulatory-framework-support",
+      "sox-compliance-controls",
+      "gdpr-privacy-protection",
+      "hipaa-phi-security",
+      "pci-dss-payment-security",
+      "iso27001-security-management",
+      "custom-compliance-frameworks",
+      "automated-policy-enforcement",
+      "compliance-violation-detection",
+      "regulatory-reporting-automation",
+      "audit-trail-management",
+      "security-health-monitoring",
+      "incident-management-integration",
+      "compliance-evidence-collection",
+    ];
+  }
+
+  private getEnterpriseCapabilities(): string[] {
+    return [
+      "certificate-management",
+      "key-lifecycle-management",
+      "remote-procedure-execution",
+      "device-configuration-management",
+      "custom-app-development",
+      "sdk-app-management",
+      "hook-lifecycle-management",
+      "custom-function-deployment",
+      "billing-management",
+      "payment-processing",
+      "notification-system",
+      "email-preferences",
+      "data-structure-validation",
+      "performance-analysis",
+      "bottleneck-detection",
+      "performance-monitoring",
+      "trend-analysis",
+      "optimization-recommendations",
+      "real-time-log-streaming",
+      "historical-log-querying",
+      "live-execution-monitoring",
+      "log-export-analysis",
+      "naming-convention-policy-management",
+      "enterprise-naming-standards",
+      "policy-validation-enforcement",
+      "naming-rule-templates",
+      "scenario-archival-policy-management",
+      "automated-scenario-lifecycle-management",
+      "usage-based-archival-triggers",
+      "grace-period-management",
+      "scenario-rollback-capabilities",
+    ];
+  }
+
+  private getSecurityCapabilities(): string[] {
+    return [
+      "multi-tenant-security-architecture",
+      "tenant-provisioning-lifecycle",
+      "cryptographic-tenant-isolation",
+      "tenant-specific-encryption-keys",
+      "network-segmentation-virtualization",
+      "resource-quota-management",
+      "tenant-governance-policies",
+      "cross-tenant-data-leakage-prevention",
+      "compliance-boundary-management",
+      "tenant-specific-compliance-frameworks",
+      "enterprise-secrets-management",
+      "hashicorp-vault-integration",
+      "hardware-security-module-support",
+      "automated-key-rotation",
+      "dynamic-secret-generation",
+      "rbac-secret-access-control",
+      "secret-scanning-leakage-prevention",
+      "breach-detection-response",
+      "secrets-audit-compliance",
+    ];
+  }
+
+  private getGovernanceCapabilities(): string[] {
+    return [
+      "ai-driven-governance",
+      "intelligent-compliance-monitoring",
+      "ml-powered-predictive-analytics",
+      "automated-policy-enforcement",
+      "policy-conflict-detection-resolution",
+      "behavioral-risk-assessment",
+      "automated-remediation-workflows",
+      "governance-intelligence-dashboard",
+      "public-app-marketplace-integration",
+      "advanced-app-discovery",
+      "graphql-style-filtering",
+      "ai-powered-recommendations",
+      "marketplace-analytics",
+      "integration-planning-tools",
+      "enterprise-budget-control",
+      "multi-tenant-budget-management",
+      "real-time-cost-analysis",
+      "ml-powered-cost-projections",
+      "automated-scenario-control",
+      "budget-threshold-monitoring",
+      "cost-forecasting-analytics",
+      "approval-workflow-management",
+      "cicd-integration",
+      "test-suite-execution",
+      "coverage-analysis",
+      "deployment-readiness-validation",
+      "build-reporting-analytics",
+      "developer-workflow-automation",
+    ];
+  }
+
   private addTestConfigurationTool(): void {
-    // Configuration test tool
     this.server.addTool({
       name: "test-configuration",
       description: "Test Make.com API configuration and permissions",
@@ -662,119 +785,196 @@ ${
         { includePermissions },
         { log, reportProgress, session },
       ) => {
-        const correlationId = extractCorrelationId({ session });
-        const componentLogger = createComponentLogger({
-          component: "ConfigTest",
-          metadata: {
-            operation: "test-configuration",
-            correlationId,
-          },
-        });
-
-        componentLogger.info("Testing Make.com API configuration");
-        log.info("Testing Make.com API configuration", { correlationId });
-
-        reportProgress({ progress: 0, total: 100 });
-
-        try {
-          // Test basic API connectivity
-          const userResponse = await this.apiClient.get("/users/me");
-          reportProgress({ progress: 25, total: 100 });
-
-          if (!userResponse.success) {
-            throw new UserError(
-              `API connectivity test failed: ${userResponse.error?.message}`,
-            );
-          }
-
-          componentLogger.info("API connectivity test passed", {
-            correlationId,
-          });
-          log.info("API connectivity test passed", { correlationId });
-
-          // Test team access if configured
-          let teamAccess: boolean | null = null;
-          if (configManager().getMakeConfig().teamId) {
-            const teamResponse = await this.apiClient.get(
-              `/teams/${configManager().getMakeConfig().teamId}`,
-            );
-            teamAccess = teamResponse.success;
-            reportProgress({ progress: 50, total: 100 });
-          }
-
-          // Test scenario access
-          const scenariosResponse = await this.apiClient.get("/scenarios", {
-            params: { limit: 1 },
-          });
-          const scenarioAccess = scenariosResponse.success;
-          reportProgress({ progress: 75, total: 100 });
-
-          const testResults = {
-            timestamp: new Date().toISOString(),
-            apiConnectivity: userResponse.success,
-            userInfo: userResponse.data,
-            teamAccess,
-            scenarioAccess,
-            configuration: {
-              baseUrl: configManager().getMakeConfig().baseUrl,
-              hasTeamId: !!configManager().getMakeConfig().teamId,
-              hasOrgId: !!configManager().getMakeConfig().organizationId,
-            },
-          };
-
-          if (includePermissions && userResponse.data) {
-            log.info("Analyzing user permissions");
-            // Add more detailed permission analysis here
-            (testResults as Record<string, unknown>).permissions = {
-              analyzed: true,
-              // This would include detailed role and permission analysis
-            };
-          }
-
-          reportProgress({ progress: 100, total: 100 });
-          componentLogger.info("Configuration test completed successfully", {
-            correlationId,
-          });
-          log.info("Configuration test completed successfully", {
-            correlationId,
-          });
-
-          return JSON.stringify(testResults, null, 2);
-        } catch (error) {
-          const makeError =
-            error instanceof MakeServerError
-              ? error
-              : new MakeServerError(
-                  `Configuration test failed: ${error instanceof Error ? error.message : String(error)}`,
-                  "CONFIG_TEST_FAILED",
-                  500,
-                  true,
-                  {
-                    originalError:
-                      error instanceof Error ? error.message : String(error),
-                  },
-                  {
-                    correlationId,
-                    operation: "test-configuration",
-                    component: "ConfigTest",
-                  },
-                );
-
-          componentLogger.error("Configuration test failed", {
-            correlationId: makeError.correlationId,
-            errorCode: makeError.code,
-            originalError:
-              error instanceof Error ? error.message : String(error),
-          });
-
-          log.error("Configuration test failed", {
-            correlationId: makeError.correlationId,
-            error: makeError.message,
-          });
-
-          throw new UserError(makeError.message);
-        }
+        return this.executeConfigurationTest(
+          includePermissions,
+          log,
+          reportProgress,
+          session,
+        );
       },
+    });
+  }
+
+  private async executeConfigurationTest(
+    includePermissions: boolean,
+    log: any,
+    reportProgress: any,
+    session: any,
+  ): Promise<string> {
+    const { correlationId, componentLogger } = 
+      this.setupConfigTestLogging(session);
+    this.logConfigTestStart(componentLogger, log, correlationId);
+    reportProgress({ progress: 0, total: 100 });
+
+    try {
+      const userResponse = await this.testApiConnectivity(reportProgress);
+      this.logConnectivitySuccess(componentLogger, log, correlationId);
+      
+      const teamAccess = await this.testTeamAccess(reportProgress);
+      const scenarioAccess = await this.testScenarioAccess(reportProgress);
+      
+      const testResults = this.buildTestResults(
+        userResponse,
+        teamAccess,
+        scenarioAccess,
+        includePermissions,
+        log,
+      );
+
+      reportProgress({ progress: 100, total: 100 });
+      this.logConfigTestSuccess(componentLogger, log, correlationId);
+      
+      return JSON.stringify(testResults, null, 2);
+    } catch (error) {
+      this.handleConfigTestError(error, componentLogger, log, correlationId);
+      throw error; // Re-throw after logging
+    }
+  }
+
+  private setupConfigTestLogging(session: any): {
+    correlationId: string;
+    componentLogger: any;
+  } {
+    const correlationId = extractCorrelationId({ session });
+    const componentLogger = createComponentLogger({
+      component: "ConfigTest",
+      metadata: {
+        operation: "test-configuration",
+        correlationId,
+      },
+    });
+    return { correlationId, componentLogger };
+  }
+
+  private logConfigTestStart(
+    componentLogger: any,
+    log: any,
+    correlationId: string,
+  ): void {
+    componentLogger.info("Testing Make.com API configuration");
+    log.info("Testing Make.com API configuration", { correlationId });
+  }
+
+  private async testApiConnectivity(reportProgress: any): Promise<any> {
+    const userResponse = await this.apiClient.get("/users/me");
+    reportProgress({ progress: 25, total: 100 });
+
+    if (!userResponse.success) {
+      throw new UserError(
+        `API connectivity test failed: ${userResponse.error?.message}`,
+      );
+    }
+    
+    return userResponse;
+  }
+
+  private logConnectivitySuccess(
+    componentLogger: any,
+    log: any,
+    correlationId: string,
+  ): void {
+    componentLogger.info("API connectivity test passed", { correlationId });
+    log.info("API connectivity test passed", { correlationId });
+  }
+
+  private async testTeamAccess(reportProgress: any): Promise<boolean | null> {
+    if (!configManager().getMakeConfig().teamId) {
+      return null;
+    }
+
+    const teamResponse = await this.apiClient.get(
+      `/teams/${configManager().getMakeConfig().teamId}`,
+    );
+    reportProgress({ progress: 50, total: 100 });
+    return teamResponse.success;
+  }
+
+  private async testScenarioAccess(reportProgress: any): Promise<boolean> {
+    const scenariosResponse = await this.apiClient.get("/scenarios", {
+      params: { limit: 1 },
+    });
+    reportProgress({ progress: 75, total: 100 });
+    return scenariosResponse.success;
+  }
+
+  private buildTestResults(
+    userResponse: any,
+    teamAccess: boolean | null,
+    scenarioAccess: boolean,
+    includePermissions: boolean,
+    log: any,
+  ): any {
+    const testResults: any = {
+      timestamp: new Date().toISOString(),
+      apiConnectivity: userResponse.success,
+      userInfo: userResponse.data,
+      teamAccess,
+      scenarioAccess,
+      configuration: {
+        baseUrl: configManager().getMakeConfig().baseUrl,
+        hasTeamId: !!configManager().getMakeConfig().teamId,
+        hasOrgId: !!configManager().getMakeConfig().organizationId,
+      },
+    };
+
+    if (includePermissions && userResponse.data) {
+      log.info("Analyzing user permissions");
+      testResults.permissions = {
+        analyzed: true,
+        // This would include detailed role and permission analysis
+      };
+    }
+
+    return testResults;
+  }
+
+  private logConfigTestSuccess(
+    componentLogger: any,
+    log: any,
+    correlationId: string,
+  ): void {
+    componentLogger.info("Configuration test completed successfully", {
+      correlationId,
+    });
+    log.info("Configuration test completed successfully", {
+      correlationId,
+    });
+  }
+
+  private handleConfigTestError(
+    error: unknown,
+    componentLogger: any,
+    log: any,
+    correlationId: string,
+  ): void {
+    const makeError =
+      error instanceof MakeServerError
+        ? error
+        : new MakeServerError(
+            `Configuration test failed: ${error instanceof Error ? error.message : String(error)}`,
+            "CONFIG_TEST_FAILED",
+            500,
+            true,
+            {
+              originalError:
+                error instanceof Error ? error.message : String(error),
+            },
+            {
+              correlationId,
+              operation: "test-configuration",
+              component: "ConfigTest",
+            },
+          );
+
+    componentLogger.error("Configuration test failed", {
+      correlationId: makeError.correlationId,
+      errorCode: makeError.code,
+      originalError: error instanceof Error ? error.message : String(error),
+    });
+
+    log.error("Configuration test failed", {
+      correlationId: makeError.correlationId,
+      error: makeError.message,
     });
   }
 
@@ -789,118 +989,83 @@ ${
   private addAdvancedTools(): void {
     this.componentLogger.info("Adding advanced Make.com API tools");
 
-    // Add scenario management tools
-    addScenarioTools(this.server, this.apiClient);
-
-    // Add connection management tools
-    addConnectionTools(this.server, this.apiClient);
-
-    // Add user permission management tools
-    addPermissionTools(this.server, this.apiClient);
-
-    // Add analytics and audit log tools
-    addAnalyticsTools(this.server, this.apiClient);
-
-    // Add custom variable management tools
-    addVariableTools(this.server, this.apiClient);
-
-    // Add AI agent management tools
-    addAIAgentTools(this.server, this.apiClient);
-
-    // Add template management tools
-    addTemplateTools(this.server, this.apiClient);
-
-    // Add folder organization and data store tools
-    addFolderTools(this.server, this.apiClient);
-
-    // Add certificate and key management tools
-    addCertificateTools(this.server, this.apiClient);
-
-    // Add remote procedure and device management tools
-    addProcedureTools(this.server, this.apiClient);
-
-    // Add custom app development tools
-    addCustomAppTools(this.server, this.apiClient);
-
-    // Add SDK app management tools
-    addSDKTools(this.server, this.apiClient);
-
-    // Add billing and payment management tools
-    addBillingTools(this.server, this.apiClient);
-
-    // Add notification and email management tools
-    addNotificationTools(this.server, this.apiClient);
-
-    // Add performance analysis and bottleneck detection tools
-    addPerformanceAnalysisTools(this.server, this.apiClient);
-
-    // Add real-time log streaming and monitoring tools
-    addLogStreamingTools(this.server, this.apiClient);
-
-    // Add enhanced real-time execution monitoring tools
-    addRealTimeMonitoringTools(this.server, this.apiClient);
-
-    // Add naming convention policy management tools
-    addNamingConventionPolicyTools(this.server, this.apiClient);
-
-    // Add scenario archival policy management tools
-    addScenarioArchivalPolicyTools(this.server, this.apiClient);
-
-    // Add audit and compliance logging tools
-    addAuditComplianceTools(this.server, this.apiClient);
-
-    // Add comprehensive compliance policy management tools
-    addCompliancePolicyTools(this.server, this.apiClient);
-
-    // Add unified policy compliance validation tools
-    addPolicyComplianceValidationTools(this.server, this.apiClient);
-
-    // Add public app marketplace integration tools
-    addMarketplaceTools(this.server, this.apiClient);
-
-    // Add enterprise budget control and cost management tools
-    addBudgetControlTools(this.server, this.apiClient);
-
-    // Add CI/CD integration and developer workflow tools
-    addCICDIntegrationTools(this.server, this.apiClient);
-
-    // Add Zero Trust Authentication Framework tools
-    try {
-      addZeroTrustAuthTools(this.server, this.apiClient);
-      this.componentLogger.debug(
-        "Zero Trust Authentication tools loaded successfully",
-      );
-    } catch (error) {
-      this.componentLogger.error(
-        "Failed to load Zero Trust Authentication tools",
-        { error: error instanceof Error ? error.message : String(error) },
-      );
-    }
-
-    // Add Multi-Tenant Security Architecture tools
-    try {
-      addMultiTenantSecurityTools(this.server, this.apiClient);
-      this.componentLogger.debug(
-        "Multi-Tenant Security tools loaded successfully",
-      );
-    } catch (error) {
-      this.componentLogger.error("Failed to load Multi-Tenant Security tools", {
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-
-    // Add Enterprise Secrets Management tools
-    addEnterpriseSecretsTools(this.server, this.apiClient);
-
-    // Add AI-driven governance engine with intelligent compliance monitoring
-    addAIGovernanceEngineTools(this.server, this.apiClient);
-
-    // Add Blueprint Versioning and Collaboration System tools
-    addBlueprintCollaborationTools(this.server, this.apiClient);
+    this.addCoreManagementTools();
+    this.addDevelopmentTools();
+    this.addMonitoringAndAnalyticsTools();
+    this.addComplianceAndSecurityTools();
+    this.addEnterpriseTools();
 
     this.componentLogger.info(
       "Advanced tools added successfully (scenarios + connections + permissions + analytics + variables + ai-agents + templates + folders + certificates + procedures + custom-apps + sdk + billing + notifications + performance-analysis + log-streaming + real-time-monitoring + naming-convention-policy + scenario-archival-policy + audit-compliance + compliance-policy + policy-compliance-validation + marketplace + budget-control + cicd-integration + zero-trust-auth + multi-tenant-security + enterprise-secrets + ai-governance-engine + blueprint-collaboration)",
     );
+  }
+
+  private addCoreManagementTools(): void {
+    addScenarioTools(this.server, this.apiClient);
+    addConnectionTools(this.server, this.apiClient);
+    addPermissionTools(this.server, this.apiClient);
+    addVariableTools(this.server, this.apiClient);
+    addTemplateTools(this.server, this.apiClient);
+    addFolderTools(this.server, this.apiClient);
+  }
+
+  private addDevelopmentTools(): void {
+    addAIAgentTools(this.server, this.apiClient);
+    addCustomAppTools(this.server, this.apiClient);
+    addSDKTools(this.server, this.apiClient);
+    addProcedureTools(this.server, this.apiClient);
+    addCICDIntegrationTools(this.server, this.apiClient);
+    addBlueprintCollaborationTools(this.server, this.apiClient);
+  }
+
+  private addMonitoringAndAnalyticsTools(): void {
+    addAnalyticsTools(this.server, this.apiClient);
+    addPerformanceAnalysisTools(this.server, this.apiClient);
+    addLogStreamingTools(this.server, this.apiClient);
+    addRealTimeMonitoringTools(this.server, this.apiClient);
+  }
+
+  private addComplianceAndSecurityTools(): void {
+    addCertificateTools(this.server, this.apiClient);
+    addAuditComplianceTools(this.server, this.apiClient);
+    addCompliancePolicyTools(this.server, this.apiClient);
+    addPolicyComplianceValidationTools(this.server, this.apiClient);
+    addNamingConventionPolicyTools(this.server, this.apiClient);
+    addScenarioArchivalPolicyTools(this.server, this.apiClient);
+    
+    this.addOptionalSecurityTools();
+  }
+
+  private addOptionalSecurityTools(): void {
+    this.tryAddSecurityTool(
+      () => addZeroTrustAuthTools(this.server, this.apiClient),
+      "Zero Trust Authentication",
+    );
+    
+    this.tryAddSecurityTool(
+      () => addMultiTenantSecurityTools(this.server, this.apiClient),
+      "Multi-Tenant Security",
+    );
+  }
+
+  private tryAddSecurityTool(addFunction: () => void, toolName: string): void {
+    try {
+      addFunction();
+      this.componentLogger.debug(`${toolName} tools loaded successfully`);
+    } catch (error) {
+      this.componentLogger.error(`Failed to load ${toolName} tools`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  private addEnterpriseTools(): void {
+    addBillingTools(this.server, this.apiClient);
+    addNotificationTools(this.server, this.apiClient);
+    addMarketplaceTools(this.server, this.apiClient);
+    addBudgetControlTools(this.server, this.apiClient);
+    addEnterpriseSecretsTools(this.server, this.apiClient);
+    addAIGovernanceEngineTools(this.server, this.apiClient);
   }
 
   public getServer(): FastMCP<MakeSessionAuth> {
@@ -908,83 +1073,100 @@ ${
   }
 
   public async start(options?: Record<string, unknown>): Promise<void> {
+    this.logServerStartup();
+
+    try {
+      await this.validateConfiguration();
+      await this.startServerWithOptions(options);
+      this.loadAdvancedToolsAsync();
+    } catch (error) {
+      this.handleStartupError(error);
+      throw error;
+    }
+  }
+
+  private logServerStartup(): void {
     this.componentLogger.info("Starting Make.com FastMCP Server", {
       version: configManager().getConfig().version,
       environment: process.env.NODE_ENV || "development",
       authEnabled: configManager().isAuthEnabled(),
     });
+  }
 
-    try {
-      // Validate configuration before starting (skip in development with test key)
-      if (!configManager().getMakeConfig().apiKey.includes("test_key")) {
-        const isHealthy = await this.apiClient.healthCheck();
-        if (!isHealthy) {
-          throw new Error(
-            "Make.com API is not accessible. Please check your configuration.",
-          );
-        }
-        this.componentLogger.info("Make.com API connectivity verified");
-      } else {
-        this.componentLogger.warn(
-          "Running in development mode with test API key - some features may not work",
-        );
+  private async validateConfiguration(): Promise<void> {
+    if (configManager().getMakeConfig().apiKey.includes("test_key")) {
+      this.componentLogger.warn(
+        "Running in development mode with test API key - some features may not work",
+      );
+      return;
+    }
+
+    const isHealthy = await this.apiClient.healthCheck();
+    if (!isHealthy) {
+      throw new Error(
+        "Make.com API is not accessible. Please check your configuration.",
+      );
+    }
+    this.componentLogger.info("Make.com API connectivity verified");
+  }
+
+  private async startServerWithOptions(
+    options?: Record<string, unknown>,
+  ): Promise<void> {
+    const startOptions = options || { transportType: "stdio" };
+
+    this.componentLogger.debug("Starting FastMCP server with options", {
+      startOptions,
+    });
+
+    await this.server.start(startOptions);
+    this.componentLogger.info("Server started successfully");
+  }
+
+  private loadAdvancedToolsAsync(): void {
+    this.componentLogger.info("Loading advanced tools asynchronously...");
+    setImmediate(() => {
+      try {
+        this.addAdvancedTools();
+        this.componentLogger.info("Advanced tools loaded successfully");
+      } catch (error) {
+        this.componentLogger.error("Failed to load advanced tools", {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
+    });
+  }
 
-      // Start server with enhanced error handling
-      const startOptions = options || {
-        transportType: "stdio",
-      };
+  private handleStartupError(error: unknown): void {
+    this.componentLogger.error("Failed to start server", {
+      error:
+        error instanceof Error
+          ? {
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+            }
+          : error,
+    });
 
-      this.componentLogger.debug("Starting FastMCP server with options", {
-        startOptions,
-      });
+    if (error instanceof Error) {
+      this.logSpecificStartupErrors(error);
+    }
+  }
 
-      await this.server.start(startOptions);
-
-      this.componentLogger.info("Server started successfully");
-
-      // Load advanced tools after server initialization to avoid timeout
-      this.componentLogger.info("Loading advanced tools asynchronously...");
-      setImmediate(() => {
-        try {
-          this.addAdvancedTools();
-          this.componentLogger.info("Advanced tools loaded successfully");
-        } catch (error) {
-          this.componentLogger.error("Failed to load advanced tools", {
-            error: error instanceof Error ? error.message : String(error),
-          });
-        }
-      });
-    } catch (error) {
-      this.componentLogger.error("Failed to start server", {
-        error:
-          error instanceof Error
-            ? {
-                name: error.name,
-                message: error.message,
-                stack: error.stack,
-              }
-            : error,
-      });
-
-      // Add specific handling for common startup errors
-      if (error instanceof Error) {
-        if (error.message.includes("EADDRINUSE")) {
-          this.componentLogger.error(
-            "Port already in use. Please check if another instance is running.",
-          );
-        } else if (error.message.includes("EACCES")) {
-          this.componentLogger.error(
-            "Permission denied. Please check port access permissions.",
-          );
-        } else if (error.message.includes("JSON")) {
-          this.componentLogger.error(
-            "JSON parsing error during startup. This may indicate message format issues.",
-          );
-        }
-      }
-
-      throw error;
+  private logSpecificStartupErrors(error: Error): void {
+    if (error.message.includes("EADDRINUSE")) {
+      this.componentLogger.error(
+        "Port already in use. Please check if another instance is running.",
+      );
+    } else if (error.message.includes("EACCES")) {
+      this.componentLogger.error(
+        "Permission denied. Please check port access permissions.",
+      );
+    } else if (error.message.includes("JSON")) {
+      this.componentLogger.error(
+        "JSON parsing error during startup. This may indicate message format issues.",
+      );
     }
   }
 
