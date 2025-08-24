@@ -28588,9 +28588,73 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1756033061491_u74ivlz9o",
+      "title": "Refactor retryWithBackoff method to reduce complexity from 17 to ≤12",
+      "description": "Apply Extract Method pattern to break down complex retry logic while maintaining all error recovery functionality and timing behavior",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T10:57:41.492Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T11:07:05.627Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T11:07:05.635Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1756033713229_uxfaq0uuv",
+      "title": "Refactor configuration validation methods to reduce complexity",
+      "description": "Reduce complexity of validateConfig, validateEnvironment, and getConfigurationReport methods from 13-17 to ≤12 using Extract Method pattern. Target 8-30% complexity reduction per method while preserving all validation logic and error reporting.",
+      "mode": "DEVELOPMENT",
+      "category": "refactor",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": ["task_1756033713230_saon2zlqi"],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-24T11:08:33.245Z",
+      "auto_research_created": true,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-24T11:14:09.870Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-24T11:14:09.871Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 660,
-  "last_completion": "2025-08-24T10:33:48.462Z",
+  "total_completed": 662,
+  "last_completion": "2025-08-24T11:14:09.871Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
