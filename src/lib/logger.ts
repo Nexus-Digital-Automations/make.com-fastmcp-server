@@ -102,34 +102,72 @@ export class Logger {
   private circularRefs?: WeakSet<object>;
 
   private formatLogEntry(entry: LogEntry): string {
-    const { 
-      timestamp, level, message, component, operation, sessionId, userId, 
-      correlationId, traceId, spanId, requestId, duration, data, metadata 
-    } = entry;
+    const { timestamp, level, message, data, metadata } = entry;
     
     let logLine = `[${timestamp}] ${level.toUpperCase()}`;
-    
-    if (correlationId) {logLine += ` [corr:${correlationId}]`;}
-    if (traceId) {logLine += ` [trace:${traceId}]`;}
-    if (spanId) {logLine += ` [span:${spanId}]`;}
-    if (requestId) {logLine += ` [req:${requestId}]`;}
-    if (component) {logLine += ` [${component}]`;}
-    if (operation) {logLine += ` [${operation}]`;}
-    if (sessionId) {logLine += ` [session:${sessionId}]`;}
-    if (userId) {logLine += ` [user:${userId}]`;}
-    if (duration !== undefined) {logLine += ` [${duration.toFixed(3)}s]`;}
-    
+    logLine += this.formatTrackingFields(entry);
+    logLine += this.formatContextFields(entry);
     logLine += `: ${message}`;
-    
-    if (data && Object.keys(data).length > 0) {
-      logLine += ` | Data: ${this.safeStringify(data)}`;
-    }
-
-    if (metadata && Object.keys(metadata).length > 0) {
-      logLine += ` | Meta: ${this.safeStringify(metadata)}`;
-    }
+    logLine += this.formatDataFields(data, metadata);
     
     return logLine;
+  }
+
+  private formatTrackingFields(entry: LogEntry): string {
+    const { correlationId, traceId, spanId, requestId } = entry;
+    let trackingInfo = '';
+    
+    if (correlationId) {
+      trackingInfo += ` [corr:${correlationId}]`;
+    }
+    if (traceId) {
+      trackingInfo += ` [trace:${traceId}]`;
+    }
+    if (spanId) {
+      trackingInfo += ` [span:${spanId}]`;
+    }
+    if (requestId) {
+      trackingInfo += ` [req:${requestId}]`;
+    }
+    
+    return trackingInfo;
+  }
+
+  private formatContextFields(entry: LogEntry): string {
+    const { component, operation, sessionId, userId, duration } = entry;
+    let contextInfo = '';
+    
+    if (component) {
+      contextInfo += ` [${component}]`;
+    }
+    if (operation) {
+      contextInfo += ` [${operation}]`;
+    }
+    if (sessionId) {
+      contextInfo += ` [session:${sessionId}]`;
+    }
+    if (userId) {
+      contextInfo += ` [user:${userId}]`;
+    }
+    if (duration !== undefined) {
+      contextInfo += ` [${duration.toFixed(3)}s]`;
+    }
+    
+    return contextInfo;
+  }
+
+  private formatDataFields(data?: Record<string, unknown>, metadata?: Record<string, unknown>): string {
+    let dataInfo = '';
+    
+    if (data && Object.keys(data).length > 0) {
+      dataInfo += ` | Data: ${this.safeStringify(data)}`;
+    }
+    
+    if (metadata && Object.keys(metadata).length > 0) {
+      dataInfo += ` | Meta: ${this.safeStringify(metadata)}`;
+    }
+    
+    return dataInfo;
   }
 
   private log(level: LogLevel, message: string, data?: Record<string, unknown>, context?: LogContext): void {
