@@ -129,66 +129,11 @@ export class EnhancedEncryptionService extends EventEmitter {
     }
 
     try {
-      this.componentLogger.info("Initializing enhanced encryption service", {
-        concurrentProcessing: this.config.concurrentProcessing.enabled,
-        hsmIntegration: this.config.hsmIntegration.enabled,
-        performanceMonitoring: this.config.performanceMonitoring.enabled,
-      });
-
-      // Initialize concurrent agent if enabled
-      if (this.concurrentAgent) {
-        await this.concurrentAgent.initialize();
-
-        // Setup event handlers
-        this.concurrentAgent.on("jobCompleted", (result) => {
-          this.emit("operationCompleted", result);
-          if (result.metadata) {
-            this.recordPerformanceMetric({
-              operationType: "concurrent_job",
-              algorithm: result.metadata.algorithm,
-              dataSize: 0, // Would need to track from original request
-              processingTime: result.metadata.processingTime,
-              throughput: 1000 / result.metadata.processingTime,
-              cpuUsage: 0,
-              memoryUsage: 0,
-              workerId: result.metadata.workerId,
-              timestamp: new Date(),
-              hsm: result.metadata.hsm,
-            });
-          }
-        });
-
-        this.concurrentAgent.on("jobError", (result) => {
-          this.emit("operationError", result);
-        });
-      }
-
-      // Initialize HSM manager if enabled
-      if (this.hsmManager) {
-        await this.hsmManager.initialize();
-
-        // Setup HSM event handlers
-        this.hsmManager.on("providerConnected", (provider) => {
-          this.componentLogger.info("HSM provider connected", { provider });
-          this.emit("hsmConnected", provider);
-        });
-
-        this.hsmManager.on("providerError", (provider, error) => {
-          this.componentLogger.error("HSM provider error", { provider, error });
-          this.emit("hsmError", provider, error);
-        });
-      }
-
-      // Start performance monitoring if enabled
-      if (this.config.performanceMonitoring.enabled) {
-        this.startPerformanceMonitoring();
-      }
-
-      this.isInitialized = true;
-      this.componentLogger.info(
-        "Enhanced encryption service initialized successfully",
-      );
-      this.emit("initialized");
+      this.logInitializationStart();
+      await this.initializeConcurrentAgent();
+      await this.initializeHsmManager();
+      this.startMonitoringIfEnabled();
+      this.completeInitialization();
     } catch (error) {
       this.componentLogger.error(
         "Failed to initialize enhanced encryption service",
@@ -198,6 +143,111 @@ export class EnhancedEncryptionService extends EventEmitter {
       );
       throw error;
     }
+  }
+
+  /**
+   * Log initialization start with configuration
+   */
+  private logInitializationStart(): void {
+    this.componentLogger.info("Initializing enhanced encryption service", {
+      concurrentProcessing: this.config.concurrentProcessing.enabled,
+      hsmIntegration: this.config.hsmIntegration.enabled,
+      performanceMonitoring: this.config.performanceMonitoring.enabled,
+    });
+  }
+
+  /**
+   * Initialize concurrent agent and setup event handlers
+   */
+  private async initializeConcurrentAgent(): Promise<void> {
+    if (!this.concurrentAgent) {
+      return;
+    }
+
+    await this.concurrentAgent.initialize();
+    this.setupConcurrentAgentEventHandlers();
+  }
+
+  /**
+   * Setup event handlers for concurrent agent
+   */
+  private setupConcurrentAgentEventHandlers(): void {
+    if (!this.concurrentAgent) {
+      return;
+    }
+
+    this.concurrentAgent.on("jobCompleted", (result) => {
+      this.emit("operationCompleted", result);
+      if (result.metadata) {
+        this.recordPerformanceMetric({
+          operationType: "concurrent_job",
+          algorithm: result.metadata.algorithm,
+          dataSize: 0, // Would need to track from original request
+          processingTime: result.metadata.processingTime,
+          throughput: 1000 / result.metadata.processingTime,
+          cpuUsage: 0,
+          memoryUsage: 0,
+          workerId: result.metadata.workerId,
+          timestamp: new Date(),
+          hsm: result.metadata.hsm,
+        });
+      }
+    });
+
+    this.concurrentAgent.on("jobError", (result) => {
+      this.emit("operationError", result);
+    });
+  }
+
+  /**
+   * Initialize HSM manager and setup event handlers
+   */
+  private async initializeHsmManager(): Promise<void> {
+    if (!this.hsmManager) {
+      return;
+    }
+
+    await this.hsmManager.initialize();
+    this.setupHsmEventHandlers();
+  }
+
+  /**
+   * Setup event handlers for HSM manager
+   */
+  private setupHsmEventHandlers(): void {
+    if (!this.hsmManager) {
+      return;
+    }
+
+    this.hsmManager.on("providerConnected", (provider) => {
+      this.componentLogger.info("HSM provider connected", { provider });
+      this.emit("hsmConnected", provider);
+    });
+
+    this.hsmManager.on("providerError", (provider, error) => {
+      this.componentLogger.error("HSM provider error", { provider, error });
+      this.emit("hsmError", provider, error);
+    });
+  }
+
+  /**
+   * Start performance monitoring if enabled in configuration
+   */
+  private startMonitoringIfEnabled(): void {
+    if (this.config.performanceMonitoring.enabled) {
+      this.startPerformanceMonitoring();
+    }
+  }
+
+  /**
+   * Complete the initialization process
+   */
+  private completeInitialization(): void {
+    this.isInitialized = true;
+    this.componentLogger.info(
+      "Enhanced encryption service initialized successfully",
+    );
+    this.emit("initialized");
   }
 
   /**
@@ -316,7 +366,25 @@ export class EnhancedEncryptionService extends EventEmitter {
       throw new Error("Concurrent processing not enabled");
     }
 
-    const jobs: EncryptionJobRequest[] = requests.map((req) => ({
+    const jobs = this.createBatchEncryptionJobs(requests);
+    const batchRequest = this.createBatchRequest(jobs, options);
+    const batchResult = await this.concurrentAgent.processBatch(batchRequest);
+
+    return this.processBatchResults(batchResult);
+  }
+
+  /**
+   * Create encryption jobs from batch requests
+   */
+  private createBatchEncryptionJobs(
+    requests: Array<{
+      plaintext: string;
+      masterPassword: string;
+      id: string;
+      priority?: "low" | "medium" | "high" | "critical";
+    }>,
+  ): EncryptionJobRequest[] {
+    return requests.map((req) => ({
       id: req.id,
       operation: "encrypt",
       algorithm: {
@@ -331,8 +399,20 @@ export class EnhancedEncryptionService extends EventEmitter {
         priority: req.priority || "medium",
       },
     }));
+  }
 
-    const batchRequest: BatchEncryptionRequest = {
+  /**
+   * Create batch request with configuration options
+   */
+  private createBatchRequest(
+    jobs: EncryptionJobRequest[],
+    options: {
+      maxConcurrency?: number;
+      timeout?: number;
+      failFast?: boolean;
+    },
+  ): BatchEncryptionRequest {
+    return {
       batchId: crypto.randomUUID(),
       jobs,
       options: {
@@ -342,10 +422,18 @@ export class EnhancedEncryptionService extends EventEmitter {
         failFast: options.failFast ?? false,
       },
     };
+  }
 
-    const batchResult = await this.concurrentAgent.processBatch(batchRequest);
-
-    return batchResult.results.map((result) => ({
+  /**
+   * Process batch results into standardized format
+   */
+  private processBatchResults(batchResult: any): Array<{
+    id: string;
+    success: boolean;
+    result?: EncryptedData;
+    error?: string;
+  }> {
+    return batchResult.results.map((result: any) => ({
       id: result.id,
       success: result.success,
       result:

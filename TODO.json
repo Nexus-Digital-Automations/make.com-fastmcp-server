@@ -2,35 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1756062696523_wjeqhzh79",
-      "title": "Fix 10 max-lines violations across multiple files",
-      "description": "Fix multiple max-lines violations found in codebase: validateEnvironmentCredential (60→≤50), validateMakeApiKey (63→≤50), runDiagnostics (95→≤50), applyAutoFixes (56→≤50), performHealthCheck (74→≤50), addHealthTools (141→≤50), Constructor (59→≤50), healthCheck (53→≤50), validateCurrentToken (54→≤50), exchangeCodeForToken (57→≤50). Apply Extract Method pattern.",
-      "mode": "DEVELOPMENT",
-      "category": "linter-error",
-      "priority": "critical",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-24T19:11:36.523Z",
-      "auto_research_created": false,
-      "assigned_agent": "development_session_1756062197506_1_general_79e93ec9",
-      "started_at": "2025-08-24T19:11:42.315Z",
-      "claimed_by": "development_session_1756062197506_1_general_79e93ec9",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1756062197506_1_general_79e93ec9",
-          "role": "primary",
-          "assignedAt": "2025-08-24T19:11:42.315Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1756061881555_m3vcf9u0h",
       "title": "Fix complexity violations in enhanced-encryption-service.ts (multiple methods 15-17→≤12)",
       "description": "Fix multiple complexity violations in enhanced-encryption-service.ts: encrypt method (15→≤12), decrypt method (15→≤12), generateKeyPair method (17→≤12), getPerformanceReport method (15→≤12). Use Extract Method pattern.",
@@ -45,14 +16,27 @@
       "subtasks": [],
       "created_at": "2025-08-24T18:58:01.555Z",
       "auto_research_created": false,
-      "assigned_agent": "development_session_1756061132934_1_general_0a95b8f6",
-      "started_at": "2025-08-24T18:58:07.329Z",
-      "claimed_by": "development_session_1756061132934_1_general_0a95b8f6",
+      "assigned_agent": "development_session_1756065159838_1_general_e2598657",
+      "started_at": "2025-08-24T19:52:53.079Z",
+      "claimed_by": "development_session_1756065159838_1_general_e2598657",
       "agent_assignment_history": [
         {
           "agentId": "development_session_1756061132934_1_general_0a95b8f6",
           "role": "primary",
           "assignedAt": "2025-08-24T18:58:07.329Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-24T19:52:34.390Z",
+          "reason": "Task stale for 54 minutes"
+        },
+        {
+          "agentId": "development_session_1756065159838_1_general_e2598657",
+          "role": "primary",
+          "assignedAt": "2025-08-24T19:52:53.079Z",
           "reassignReason": null,
           "claimPriority": "normal"
         }
@@ -64,7 +48,7 @@
       "description": "Fix complexity violation in recordError method in error-analytics.ts - reduce from 13 to ≤12 complexity points using Extract Method pattern",
       "category": "linter-error",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
       "important_files": ["./src/utils/error-analytics.ts"],
       "success_criteria": [],
@@ -73,14 +57,20 @@
       "subtasks": [],
       "created_at": "2025-08-24T18:57:26.438Z",
       "auto_research_created": false,
-      "started_at": "2025-08-24T18:57:47.140Z",
-      "claimed_by": "agent_1756061867140",
-      "assigned_agent": "agent_1756061867140",
+      "started_at": null,
+      "claimed_by": null,
+      "assigned_agent": null,
       "agent_assignment_history": [
         {
           "agent": "agent_1756061867140",
           "action": "claimed",
           "timestamp": "2025-08-24T18:57:47.140Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-24T19:52:34.390Z",
+          "reason": "Task stale for 55 minutes"
         }
       ]
     },
@@ -129,13 +119,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1756062197506_1_general_79e93ec9": {
+    "development_session_1756065159838_1_general_e2598657": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-24T19:03:17.507Z",
+      "lastHeartbeat": "2025-08-24T19:52:39.839Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -146,8 +136,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-24T19:03:17.507Z",
-      "sessionId": "session_1756062197506",
+      "createdAt": "2025-08-24T19:52:39.839Z",
+      "sessionId": "session_1756065159838",
       "metadata": {}
     }
   },
