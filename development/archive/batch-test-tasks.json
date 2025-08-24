@@ -25,13 +25,13 @@
     "requires_research": false
   },
   {
-    "title": "Fix remaining TypeScript compilation errors in tool modules", 
+    "title": "Fix remaining TypeScript compilation errors in tool modules",
     "description": "Resolve the remaining 632+ TypeScript compilation errors in audit-compliance.ts, billing.ts, connections.ts and other tool modules to enable clean builds",
     "mode": "DEVELOPMENT",
     "priority": "high",
     "dependencies": [
       "src/tools/audit-compliance.ts",
-      "src/tools/billing.ts", 
+      "src/tools/billing.ts",
       "src/tools/connections.ts"
     ],
     "important_files": [
@@ -52,12 +52,9 @@
   {
     "title": "Execute comprehensive test suite and achieve 90%+ coverage",
     "description": "Run all existing test suites to validate they work with fixed infrastructure and achieve target coverage across all tool modules",
-    "mode": "TESTING", 
+    "mode": "TESTING",
     "priority": "high",
-    "dependencies": [
-      "tests/unit/tools/",
-      "src/tools/"
-    ],
+    "dependencies": ["tests/unit/tools/", "src/tools/"],
     "important_files": [
       "tests/unit/tools/scenarios.test.ts",
       "tests/unit/tools/billing.test.ts",
@@ -66,7 +63,7 @@
     ],
     "success_criteria": [
       "All existing tests execute successfully",
-      "90%+ coverage achieved on all tool modules", 
+      "90%+ coverage achieved on all tool modules",
       "100% coverage on critical modules (API client, errors, validation)",
       "Zero test failures in comprehensive test run"
     ],
@@ -77,14 +74,11 @@
     "title": "Create missing analytics.test.ts and connections.test.ts test files",
     "description": "Create comprehensive test suites for the missing analytics.ts and connections.ts modules following established testing patterns",
     "mode": "TESTING",
-    "priority": "high", 
-    "dependencies": [
-      "src/tools/analytics.ts",
-      "src/tools/connections.ts"
-    ],
+    "priority": "high",
+    "dependencies": ["src/tools/analytics.ts", "src/tools/connections.ts"],
     "important_files": [
       "src/tools/analytics.ts",
-      "src/tools/connections.ts", 
+      "src/tools/connections.ts",
       "tests/unit/tools/billing.test.ts"
     ],
     "success_criteria": [
@@ -103,7 +97,7 @@
     "priority": "medium",
     "dependencies": [
       "Dockerfile",
-      "docker-compose.yml", 
+      "docker-compose.yml",
       "k8s/",
       "package.json"
     ],
@@ -115,7 +109,7 @@
     ],
     "success_criteria": [
       "Docker build completes successfully",
-      "Docker Compose production stack starts correctly", 
+      "Docker Compose production stack starts correctly",
       "Kubernetes manifests deploy without errors",
       "Health checks pass in all deployment scenarios",
       "Production configuration validated"

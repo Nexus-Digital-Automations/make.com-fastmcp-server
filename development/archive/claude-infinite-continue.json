@@ -21,42 +21,27 @@
   ],
   "mode_config": {
     "development": {
-      "priority_checks": [
-        "linting",
-        "basic_tests"
-      ],
+      "priority_checks": ["linting", "basic_tests"],
       "feedback_style": "progress_focused",
       "coverage_threshold": 80
     },
     "testing": {
-      "priority_checks": [
-        "full_test_suite",
-        "coverage"
-      ],
+      "priority_checks": ["full_test_suite", "coverage"],
       "feedback_style": "test_focused",
       "coverage_threshold": 95
     },
     "debugging": {
-      "priority_checks": [
-        "error_analysis",
-        "stack_traces"
-      ],
+      "priority_checks": ["error_analysis", "stack_traces"],
       "feedback_style": "diagnostic_focused",
       "coverage_threshold": 95
     },
     "refactoring": {
-      "priority_checks": [
-        "complexity_analysis",
-        "code_quality"
-      ],
+      "priority_checks": ["complexity_analysis", "code_quality"],
       "feedback_style": "quality_focused",
       "coverage_threshold": 95
     },
     "documentation": {
-      "priority_checks": [
-        "documentation_completeness",
-        "examples"
-      ],
+      "priority_checks": ["documentation_completeness", "examples"],
       "feedback_style": "documentation_focused",
       "coverage_threshold": 95
     }

@@ -18,8 +18,14 @@
     "description": "Resolve failing URL validation tests and schema validation issues in validation.test.ts",
     "mode": "TESTING",
     "priority": "high",
-    "dependencies": ["tests/unit/utils/validation.test.ts", "src/utils/validation.ts"],
-    "important_files": ["tests/unit/utils/validation.test.ts", "src/utils/validation.ts"],
+    "dependencies": [
+      "tests/unit/utils/validation.test.ts",
+      "src/utils/validation.ts"
+    ],
+    "important_files": [
+      "tests/unit/utils/validation.test.ts",
+      "src/utils/validation.ts"
+    ],
     "success_criteria": [
       "All URL validation tests pass",
       "Schema validation tests work correctly",
@@ -32,8 +38,14 @@
     "description": "Improve existing make-api-client tests to achieve 100% line coverage including edge cases, error scenarios, and authentication flows",
     "mode": "TESTING",
     "priority": "high",
-    "dependencies": ["tests/unit/lib/make-api-client.test.ts", "src/lib/make-api-client.ts"],
-    "important_files": ["tests/unit/lib/make-api-client.test.ts", "src/lib/make-api-client.ts"],
+    "dependencies": [
+      "tests/unit/lib/make-api-client.test.ts",
+      "src/lib/make-api-client.ts"
+    ],
+    "important_files": [
+      "tests/unit/lib/make-api-client.test.ts",
+      "src/lib/make-api-client.ts"
+    ],
     "success_criteria": [
       "100% line coverage on make-api-client.ts",
       "All authentication scenarios tested",
@@ -48,7 +60,10 @@
     "mode": "TESTING",
     "priority": "medium",
     "dependencies": ["tests/unit/utils/errors.test.ts", "src/utils/errors.ts"],
-    "important_files": ["tests/unit/utils/errors.test.ts", "src/utils/errors.ts"],
+    "important_files": [
+      "tests/unit/utils/errors.test.ts",
+      "src/utils/errors.ts"
+    ],
     "success_criteria": [
       "100% line coverage on errors.ts",
       "All error classes thoroughly tested",
