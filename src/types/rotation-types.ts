@@ -547,10 +547,10 @@ export namespace RotationTypes {
   export type Batch = RotationBatch;
   export type Result = RotationResult;
   export type Error = RotationError;
-  export type AuditEvent = AuditEvent;
-  export type WorkerMessage = WorkerMessage;
-  export type WorkerResponse = WorkerResponse;
-  export type AgentStatus = AgentStatus;
+  export type Audit = AuditEvent;
+  export type Message = WorkerMessage;
+  export type Response = WorkerResponse;
+  export type Agent = AgentStatus;
   export type Queue = RotationQueue;
   export type LifecycleEvent = CredentialLifecycleEvent;
   export type Config = RotationManagerConfig;
