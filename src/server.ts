@@ -13,10 +13,10 @@ type MakeSessionAuth = {
   correlationId: string;
 };
 
-// Import logger types
+// Import logger types and factory
 import { ComponentLogger } from "./types/logger.js";
+import { createComponentLogger } from "./utils/logger-factory.js";
 import configManager from "./lib/config.js";
-import logger from "./lib/logger.js";
 import MakeApiClient from "./lib/make-api-client.js";
 import {
   setupGlobalErrorHandlers,
@@ -70,25 +70,10 @@ export class MakeServerInstance {
   ) => void;
 
   constructor() {
-    const getComponentLogger = (): ComponentLogger => {
-      try {
-        return logger.child({ component: "MakeServer" });
-      } catch {
-        // Fallback for test environments with proper typing
-        return {
-          debug: (..._args: unknown[]): void => {
-            /* fallback debug */
-          },
-          info: (..._args: unknown[]): void => {
-            /* fallback info */
-          },
-          warn: (...args: unknown[]): void => console.warn(...args),
-          error: (...args: unknown[]): void => console.error(...args),
-          child: (): ComponentLogger => getComponentLogger(),
-        };
-      }
-    };
-    this.componentLogger = getComponentLogger();
+    this.componentLogger = createComponentLogger({
+      component: "MakeServer",
+      fallbackStrategy: "simple",
+    });
 
     // Setup global error handlers
     setupGlobalErrorHandlers();
@@ -194,18 +179,13 @@ ${
     const headers = (requestObj.headers as Record<string, string>) || {};
     const correlationId = extractCorrelationId({ headers });
 
-    const getComponentLogger = (): ComponentLogger => {
-      try {
-        return this.componentLogger.child({
-          operation: "authenticate",
-          correlationId,
-        });
-      } catch {
-        // Fallback for test environments
-        return this.componentLogger;
-      }
-    };
-    const componentLogger = getComponentLogger();
+    const componentLogger = createComponentLogger({
+      component: "MakeServer",
+      metadata: {
+        operation: "authenticate",
+        correlationId,
+      },
+    });
 
     const apiKey = headers["x-api-key"];
     const expectedSecret = configManager.getAuthSecret();
@@ -346,20 +326,13 @@ ${
       },
       execute: async ({ includeSecurity }, { log, session }) => {
         const correlationId = extractCorrelationId({ session });
-        const getComponentLogger = (): ReturnType<typeof logger.child> => {
-          try {
-            return logger.child({
-              component: "HealthCheck",
-              operation: "health-check",
-              correlationId,
-            });
-          } catch {
-            // Fallback for test environments
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return logger as any;
-          }
-        };
-        const componentLogger = getComponentLogger();
+        const componentLogger = createComponentLogger({
+          component: "HealthCheck",
+          metadata: {
+            operation: "health-check",
+            correlationId,
+          },
+        });
 
         componentLogger.info("Performing health check");
         log.info("Performing health check", { correlationId });
@@ -443,20 +416,13 @@ ${
       },
       execute: async ({ includeMetrics, includeEvents }, { log, session }) => {
         const correlationId = extractCorrelationId({ session });
-        const getComponentLogger = (): ReturnType<typeof logger.child> => {
-          try {
-            return logger.child({
-              component: "SecurityStatus",
-              operation: "security-status",
-              correlationId,
-            });
-          } catch {
-            // Fallback for test environments
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return logger as any;
-          }
-        };
-        const componentLogger = getComponentLogger();
+        const componentLogger = createComponentLogger({
+          component: "SecurityStatus",
+          metadata: {
+            operation: "security-status",
+            correlationId,
+          },
+        });
 
         componentLogger.info("Getting security status");
         log.info("Getting security status", { correlationId });
@@ -502,20 +468,13 @@ ${
       },
       execute: async (args, { log, session }) => {
         const correlationId = extractCorrelationId({ session });
-        const getComponentLogger = (): ReturnType<typeof logger.child> => {
-          try {
-            return logger.child({
-              component: "ServerInfo",
-              operation: "server-info",
-              correlationId,
-            });
-          } catch {
-            // Fallback for test environments
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return logger as any;
-          }
-        };
-        const componentLogger = getComponentLogger();
+        const componentLogger = createComponentLogger({
+          component: "ServerInfo",
+          metadata: {
+            operation: "server-info",
+            correlationId,
+          },
+        });
 
         componentLogger.info("Retrieving server information");
         log.info("Retrieving server information", { correlationId });
@@ -704,20 +663,13 @@ ${
         { log, reportProgress, session },
       ) => {
         const correlationId = extractCorrelationId({ session });
-        const getComponentLogger = (): ReturnType<typeof logger.child> => {
-          try {
-            return logger.child({
-              component: "ConfigTest",
-              operation: "test-configuration",
-              correlationId,
-            });
-          } catch {
-            // Fallback for test environments
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return logger as any;
-          }
-        };
-        const componentLogger = getComponentLogger();
+        const componentLogger = createComponentLogger({
+          component: "ConfigTest",
+          metadata: {
+            operation: "test-configuration",
+            correlationId,
+          },
+        });
 
         componentLogger.info("Testing Make.com API configuration");
         log.info("Testing Make.com API configuration", { correlationId });

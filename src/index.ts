@@ -14,7 +14,7 @@ import {
   serverBoundary,
   AsyncErrorBoundary,
 } from "./utils/async-error-boundary.js";
-import { ComponentLogger } from "./types/logger.js";
+import { createComponentLogger } from "./utils/logger-factory.js";
 
 type ServerType = "core" | "analytics" | "legacy" | "both";
 type ServerInstance = MakeServerInstance | CoreServer | AnalyticsServer;
@@ -56,51 +56,11 @@ function createServerInstance(
 async function startSingleServer(
   serverType: Exclude<ServerType, "both">,
 ): Promise<void> {
-  const getComponentLogger = (): ComponentLogger => {
-    try {
-      const childLogger = logger.child({ component: "Main", serverType });
-      // Verify the child logger has required methods
-      if (childLogger && typeof childLogger.error === "function") {
-        return childLogger as ComponentLogger;
-      }
-    } catch {
-      // Fall through to fallback
-    }
-
-    // Robust fallback for test environments with proper typing
-    return {
-      info: (...args: unknown[]): void => {
-        if (logger?.info && typeof logger.info === "function") {
-          (logger.info as (...args: unknown[]) => void)(...args);
-        } else {
-          process.stdout.write(`${args.join(" ")}\n`);
-        }
-      },
-      error: (...args: unknown[]): void => {
-        if (logger?.error && typeof logger.error === "function") {
-          (logger.error as (...args: unknown[]) => void)(...args);
-        } else {
-          process.stderr.write(`${args.join(" ")}\n`);
-        }
-      },
-      warn: (...args: unknown[]): void => {
-        if (logger?.warn && typeof logger.warn === "function") {
-          (logger.warn as (...args: unknown[]) => void)(...args);
-        } else {
-          process.stderr.write(`${args.join(" ")}\n`);
-        }
-      },
-      debug: (...args: unknown[]): void => {
-        if (logger?.debug && typeof logger.debug === "function") {
-          (logger.debug as (...args: unknown[]) => void)(...args);
-        } else {
-          process.stdout.write(`${args.join(" ")}\n`);
-        }
-      },
-      child: (_options: Record<string, unknown>) => getComponentLogger(),
-    };
-  };
-  const componentLogger = getComponentLogger();
+  const componentLogger = createComponentLogger({
+    component: "Main",
+    serverType,
+    fallbackStrategy: "console",
+  });
 
   try {
     componentLogger.info(`Initializing Make.com ${serverType} server`);
@@ -184,59 +144,11 @@ async function startSingleServer(
 }
 
 async function startBothServers(): Promise<void> {
-  const getComponentLogger = (): {
-    info: (...args: unknown[]) => void;
-    error: (...args: unknown[]) => void;
-    warn: (...args: unknown[]) => void;
-    debug: (...args: unknown[]) => void;
-  } => {
-    try {
-      const childLogger = logger.child({ component: "Main", mode: "dual" });
-      // Verify the child logger has required methods
-      if (childLogger && typeof childLogger.error === "function") {
-        return childLogger;
-      }
-    } catch {
-      // Fall through to fallback
-    }
-
-    // Robust fallback for test environments
-    return {
-      info: (...args: unknown[]): void => {
-        if (logger?.info) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (logger.info as any)(...args);
-        } else {
-          process.stdout.write(`${args.join(" ")}\n`);
-        }
-      },
-      error: (...args: unknown[]): void => {
-        if (logger?.error) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (logger.error as any)(...args);
-        } else {
-          process.stderr.write(`${args.join(" ")}\n`);
-        }
-      },
-      warn: (...args: unknown[]): void => {
-        if (logger?.warn) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (logger.warn as any)(...args);
-        } else {
-          process.stderr.write(`${args.join(" ")}\n`);
-        }
-      },
-      debug: (...args: unknown[]): void => {
-        if (logger?.debug) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (logger.debug as any)(...args);
-        } else {
-          process.stdout.write(`${args.join(" ")}\n`);
-        }
-      },
-    };
-  };
-  const componentLogger = getComponentLogger();
+  const componentLogger = createComponentLogger({
+    component: "Main",
+    metadata: { mode: "dual" },
+    fallbackStrategy: "console",
+  });
 
   componentLogger.info("Starting both Core and Analytics servers");
 

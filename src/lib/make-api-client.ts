@@ -6,30 +6,25 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import Bottleneck from 'bottleneck';
 import { MakeApiConfig, ApiResponse, MakeApiError } from '../types/index.js';
-import logger from './logger.js';
+import { ComponentLogger } from '../types/logger.js';
 import { secureConfigManager } from './secure-config.js';
+import { createComponentLogger } from '../utils/logger-factory.js';
 import { credentialSecurityValidator } from './credential-security-validator.js';
 
 export class MakeApiClient {
   private readonly axiosInstance: AxiosInstance;
   private readonly limiter: Bottleneck;
   private config: MakeApiConfig;
-  private readonly componentLogger: ReturnType<typeof logger.child>;
+  private readonly componentLogger: ComponentLogger;
   private readonly userId?: string;
 
   constructor(config: MakeApiConfig, userId?: string) {
     this.config = config;
     this.userId = userId;
-    const getComponentLogger = (): ReturnType<typeof logger.child> => {
-      try {
-        return logger.child({ component: 'MakeApiClient' });
-      } catch {
-        // Fallback for test environments
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return logger as any;
-      }
-    };
-    this.componentLogger = getComponentLogger();
+    this.componentLogger = createComponentLogger({
+      component: 'MakeApiClient',
+      metadata: { userId },
+    });
     
     // Validate API key security on initialization
     this.validateCredentialSecurity(config.apiKey);
@@ -64,16 +59,10 @@ export class MakeApiClient {
       const secureConfig = await secureConfigManager.getSecureMakeConfig(userId);
       return new MakeApiClient(secureConfig, userId);
     } catch (error) {
-      const getComponentLogger = (): ReturnType<typeof logger.child> => {
-    try {
-      return logger.child({ component: 'MakeApiClient' });
-    } catch {
-      // Fallback for test environments
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return logger as any;
-    }
-  };
-  const componentLogger = getComponentLogger();
+      const componentLogger = createComponentLogger({
+        component: 'MakeApiClient',
+        metadata: { operation: 'createSecure', userId },
+      });
       componentLogger.error('Failed to create secure API client', {
         error: error instanceof Error ? error.message : 'Unknown error',
         userId
