@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "logs/.f84cfe7a33ddb0ee0c26b22fee43096d3b51b75d-audit.json",
+    "files": [
+        {
+            "date": 1756073346188,
+            "name": "logs/fastmcp-server-2025-08-24.log",
+            "hash": "f14d8a483275d87d6ae7810b26a467593586af34f2e65dc75b6b79f9f0a27215"
+        }
+    ],
+    "hashType": "sha256"
+}

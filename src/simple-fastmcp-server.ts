@@ -7,9 +7,70 @@ import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import axios from "axios";
 import dotenv from "dotenv";
+import winston from "winston";
+import DailyRotateFile from "winston-daily-rotate-file";
+import { v4 as uuidv4 } from "uuid";
 
 // Load environment variables
 dotenv.config();
+
+// Error classification system
+enum ErrorCategory {
+  MAKE_API_ERROR = 'MAKE_API_ERROR',
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+  AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR',
+  RATE_LIMIT_ERROR = 'RATE_LIMIT_ERROR',
+  TIMEOUT_ERROR = 'TIMEOUT_ERROR',
+  INTERNAL_ERROR = 'INTERNAL_ERROR',
+  MCP_PROTOCOL_ERROR = 'MCP_PROTOCOL_ERROR'
+}
+
+enum ErrorSeverity {
+  LOW = 'LOW',       // Recoverable, expected errors
+  MEDIUM = 'MEDIUM', // Service degradation
+  HIGH = 'HIGH',     // Service failure
+  CRITICAL = 'CRITICAL' // System failure
+}
+
+class MCPServerError extends Error {
+  constructor(
+    message: string,
+    public readonly category: ErrorCategory,
+    public readonly severity: ErrorSeverity,
+    public readonly correlationId: string,
+    public readonly operation: string,
+    public readonly cause?: Error
+  ) {
+    super(message);
+    this.name = 'MCPServerError';
+  }
+}
+
+// Logger configuration
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
+    }),
+    ...(process.env.LOG_FILE_ENABLED !== 'false' ? [
+      new DailyRotateFile({
+        filename: 'logs/fastmcp-server-%DATE%.log',
+        datePattern: 'YYYY-MM-DD',
+        maxSize: '20m',
+        maxFiles: '14d'
+      })
+    ] : [])
+  ]
+});
 
 // Simple configuration from environment
 const config = {
@@ -34,7 +95,18 @@ class SimpleMakeClient {
     this.timeout = config.timeout;
   }
 
-  private async request(method: string, endpoint: string, data?: unknown) {
+  private async request(method: string, endpoint: string, data?: unknown, correlationId?: string) {
+    const requestId = correlationId || uuidv4();
+    const operation = `${method.toUpperCase()} ${endpoint}`;
+    const startTime = Date.now();
+
+    logger.info('API request started', {
+      correlationId: requestId,
+      operation,
+      endpoint,
+      method
+    });
+
     try {
       const response = await axios({
         method,
@@ -43,21 +115,68 @@ class SimpleMakeClient {
           Authorization: `Token ${this.apiKey}`,
           "Content-Type": "application/json",
           Accept: "application/json",
+          'X-Correlation-ID': requestId
         },
         data,
         timeout: this.timeout,
       });
 
+      const duration = Date.now() - startTime;
+      logger.info('API request completed', {
+        correlationId: requestId,
+        operation,
+        duration,
+        statusCode: response.status
+      });
+
       return response.data;
     } catch (error: unknown) {
+      const duration = Date.now() - startTime;
       const axiosError = error as {
-        response?: { data?: { message?: string } };
+        response?: { data?: { message?: string }; status?: number };
         message?: string;
+        code?: string;
       };
-      throw new Error(
+
+      const mcpError = new MCPServerError(
         `Make.com API error: ${axiosError.response?.data?.message || axiosError.message || "Unknown error"}`,
+        this.classifyError(axiosError),
+        this.determineSeverity(axiosError),
+        requestId,
+        operation,
+        error as Error
       );
+
+      logger.error('API request failed', {
+        correlationId: requestId,
+        operation,
+        duration,
+        category: mcpError.category,
+        severity: mcpError.severity,
+        statusCode: axiosError.response?.status,
+        errorCode: axiosError.code,
+        message: mcpError.message,
+        stack: mcpError.stack
+      });
+
+      throw mcpError;
     }
+  }
+
+  private classifyError(error: { response?: { status?: number }; code?: string }): ErrorCategory {
+    if (error.response?.status === 401) {return ErrorCategory.AUTHENTICATION_ERROR;}
+    if (error.response?.status === 429) {return ErrorCategory.RATE_LIMIT_ERROR;}
+    if (error.code === 'ECONNABORTED') {return ErrorCategory.TIMEOUT_ERROR;}
+    if (error.response?.status >= 500) {return ErrorCategory.INTERNAL_ERROR;}
+    return ErrorCategory.MAKE_API_ERROR;
+  }
+
+  private determineSeverity(error: { response?: { status?: number }; code?: string }): ErrorSeverity {
+    if (error.response?.status === 401) {return ErrorSeverity.HIGH;}
+    if (error.response?.status === 429) {return ErrorSeverity.MEDIUM;}
+    if (error.response?.status >= 500) {return ErrorSeverity.HIGH;}
+    if (error.code === 'ECONNABORTED') {return ErrorSeverity.MEDIUM;}
+    return ErrorSeverity.LOW;
   }
 
   async getScenarios(limit?: number) {

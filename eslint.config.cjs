@@ -8,7 +8,9 @@ module.exports = [
     ignores: [
       'dist/**/*',
       'node_modules/**/*',
-      '**/*.test.ts'
+      'tests/**/*',
+      '**/*.test.ts',
+      '**/*.cjs'
     ]
   },
   // Configuration for TypeScript files
