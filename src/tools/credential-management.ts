@@ -932,12 +932,20 @@ export const getConcurrentRotationStatusTool = {
       const status = secureConfigManager.getConcurrentRotationStatus();
       const policies = secureConfigManager.getEnhancedRotationPolicies();
 
+      // Type guard to ensure status properties exist and are properly typed
+      const statusInfo = status.status as Record<string, unknown> | undefined;
+      const performanceMetrics = status.performanceMetrics as
+        | Record<string, unknown>
+        | undefined;
+
       componentLogger.info(
         "Retrieved concurrent rotation status via MCP tool",
         {
           enabled: status.enabled,
-          activeOperations: status.status?.activeOperations,
-          totalOperations: status.performanceMetrics?.totalOperationsProcessed,
+          activeOperations: statusInfo?.activeOperations as number | undefined,
+          totalOperations: performanceMetrics?.totalOperationsProcessed as
+            | number
+            | undefined,
         },
       );
 
@@ -952,14 +960,25 @@ export const getConcurrentRotationStatusTool = {
         }),
       );
 
+      // Properly type the return object with type guards
+      const typedStatus = status.status as Record<string, unknown> | undefined;
+      const typedQueueStatus = status.queueStatus as
+        | Record<string, unknown>
+        | undefined;
+      const typedPerformanceMetrics = status.performanceMetrics as
+        | Record<string, unknown>
+        | undefined;
+
       return {
         enabled: status.enabled,
-        status: status.status,
-        queueStatus: status.queueStatus,
-        performanceMetrics: status.performanceMetrics,
+        status: typedStatus,
+        queueStatus: typedQueueStatus,
+        performanceMetrics: typedPerformanceMetrics,
         policies: policiesArray,
-        uptime: status.status?.startedAt
-          ? new Date(Date.now() - new Date(status.status.startedAt).getTime())
+        uptime: typedStatus?.startedAt
+          ? new Date(
+              Date.now() - new Date(typedStatus.startedAt as string).getTime(),
+            )
               .toISOString()
               .substr(11, 8)
           : undefined,
