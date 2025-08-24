@@ -4,10 +4,10 @@
  * Phase 2 Security Enhancement Implementation
  */
 
-import CircuitBreaker from 'opossum';
-import { RateLimiterRedis, RateLimiterMemory } from 'rate-limiter-flexible';
-import Redis from 'ioredis';
-import logger from '../lib/logger.js';
+import CircuitBreaker from "opossum";
+import { RateLimiterRedis, RateLimiterMemory } from "rate-limiter-flexible";
+import Redis from "ioredis";
+import logger from "../lib/logger.js";
 
 // Circuit breaker configuration interface
 interface CircuitBreakerConfig {
@@ -74,249 +74,346 @@ interface IPReputationData {
 // Advanced DDoS protection with behavioral analysis
 export class AdvancedDDoSProtection {
   private redisClient: Redis | null = null;
-  private readonly rateLimiters: Map<string, RateLimiterRedis | RateLimiterMemory> = new Map();
+  private readonly rateLimiters: Map<
+    string,
+    RateLimiterRedis | RateLimiterMemory
+  > = new Map();
   private readonly behaviorAnalyzer: BehaviorAnalyzer;
   private readonly ipReputation: Map<string, IPReputationData> = new Map();
-  
+
   constructor() {
     this.initializeRedis();
     this.behaviorAnalyzer = new BehaviorAnalyzer();
     this.setupRateLimiters();
     this.startIPReputationCleanup();
   }
-  
+
   private initializeRedis(): void {
     try {
       if (process.env.REDIS_URL) {
         this.redisClient = new Redis(process.env.REDIS_URL, {
           maxRetriesPerRequest: 3,
           enableReadyCheck: true,
-          lazyConnect: true
+          lazyConnect: true,
         });
-        
-        this.redisClient.on('error', (error) => {
-          logger.error('DDoS Protection Redis error, falling back to memory', { 
-            error: error.message 
+
+        this.redisClient.on("error", (error) => {
+          logger.error("DDoS Protection Redis error, falling back to memory", {
+            error: error.message,
           });
           this.redisClient = null;
         });
       }
     } catch (error) {
-      logger.error('Failed to initialize DDoS protection Redis client', { 
-        error: error instanceof Error ? error.message : String(error) 
+      logger.error("Failed to initialize DDoS protection Redis client", {
+        error: error instanceof Error ? error.message : String(error),
       });
     }
   }
-  
+
   private setupRateLimiters(): void {
     // Global DDoS protection
     const globalLimiter = this.redisClient
       ? new RateLimiterRedis({
           storeClient: this.redisClient,
-          keyPrefix: 'ddos:global',
+          keyPrefix: "ddos:global",
           points: 10000, // 10k requests
           duration: 60, // Per minute
           blockDuration: 300, // Block for 5 minutes
-          execEvenly: true
+          execEvenly: true,
         })
       : new RateLimiterMemory({
           points: 10000,
           duration: 60,
-          blockDuration: 300
+          blockDuration: 300,
         });
-    
-    this.rateLimiters.set('global', globalLimiter);
-    
+
+    this.rateLimiters.set("global", globalLimiter);
+
     // IP-based DDoS protection
     const ipLimiter = this.redisClient
       ? new RateLimiterRedis({
           storeClient: this.redisClient,
-          keyPrefix: 'ddos:ip',
+          keyPrefix: "ddos:ip",
           points: 1000, // 1k requests per IP
           duration: 60, // Per minute
           blockDuration: 600, // Block for 10 minutes
-          execEvenly: true
+          execEvenly: true,
         })
       : new RateLimiterMemory({
           points: 1000,
           duration: 60,
-          blockDuration: 600
+          blockDuration: 600,
         });
-    
-    this.rateLimiters.set('ip', ipLimiter);
-    
+
+    this.rateLimiters.set("ip", ipLimiter);
+
     // Suspicious behavior limiter
     const suspiciousLimiter = this.redisClient
       ? new RateLimiterRedis({
           storeClient: this.redisClient,
-          keyPrefix: 'ddos:suspicious',
+          keyPrefix: "ddos:suspicious",
           points: 100, // 100 requests for suspicious IPs
           duration: 60,
           blockDuration: 3600, // Block for 1 hour
-          execEvenly: true
+          execEvenly: true,
         })
       : new RateLimiterMemory({
           points: 100,
           duration: 60,
-          blockDuration: 3600
+          blockDuration: 3600,
         });
-    
-    this.rateLimiters.set('suspicious', suspiciousLimiter);
+
+    this.rateLimiters.set("suspicious", suspiciousLimiter);
   }
-  
+
   public async checkDDoSProtection(req: HttpRequest): Promise<{
     allowed: boolean;
     reason?: string;
     blockDuration?: number;
     riskScore?: number;
   }> {
-    const clientIP = this.getClientIP(req);
-    const userAgentHeader = req.headers['user-agent'];
-    const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] || '' : userAgentHeader || '';
-    
+    const clientIP = this.extractClientIP(req);
+
     try {
       // Analyze behavior patterns
-      const behaviorAnalysis = await this.behaviorAnalyzer.analyzeRequest(req, clientIP);
-      
+      const behaviorAnalysis = await this.analyzeBehavior(req, clientIP);
+
       // Update IP reputation
       this.updateIPReputation(clientIP, behaviorAnalysis);
-      
-      // Check global rate limit first
-      const globalLimiter = this.rateLimiters.get('global');
-      if (globalLimiter) {
-        await globalLimiter.consume('global');
-      }
-      
-      // Determine which limiter to use based on IP reputation
-      const ipReputation = this.ipReputation.get(clientIP);
-      const isSuspicious = ipReputation && ipReputation.riskScore > 0.7;
-      
-      const limiterKey = isSuspicious ? 'suspicious' : 'ip';
-      const limiter = this.rateLimiters.get(limiterKey);
-      
-      if (limiter) {
-        await limiter.consume(clientIP);
-      }
-      
+
+      // Enforce rate limits based on reputation
+      await this.enforceRateLimits(clientIP, behaviorAnalysis);
+
       // Log successful request for behavior analysis
       this.behaviorAnalyzer.recordSuccessfulRequest(clientIP, req);
-      
-      return {
-        allowed: true,
-        riskScore: ipReputation?.riskScore || 0
-      };
-      
-    } catch (error: unknown) {
-      const isRateLimiterError = (err: unknown): err is RateLimiterError => {
-        return typeof err === 'object' && err !== null && 'remainingPoints' in err;
-      };
 
-      if (isRateLimiterError(error)) {
-        // Rate limit exceeded
-        const reason = (error.totalHits || 0) > ((error.points || 1) * 2) ? 'aggressive_ddos' : 'rate_limit_exceeded';
-        
-        logger.warn('DDoS protection triggered', {
-          clientIP: this.hashIP(clientIP),
-          userAgent: userAgent.substring(0, 100),
-          reason,
-          remainingPoints: error.remainingPoints,
-          resetTime: new Date(Date.now() + (error.msBeforeNext ?? 0)),
-          endpoint: req.path,
-          method: req.method
-        });
-        
-        // Increase IP reputation risk for blocked requests
-        this.updateIPReputation(clientIP, { riskScore: 0.3, isBlocked: true });
-        
-        return {
-          allowed: false,
-          reason,
-          blockDuration: Math.ceil((error.msBeforeNext ?? 1000) / 1000),
-          riskScore: this.ipReputation.get(clientIP)?.riskScore || 0
-        };
+      return this.createSecurityAllowResponse(behaviorAnalysis, clientIP);
+    } catch (error: unknown) {
+      const rateLimitResult = this.handleRateLimitError(error, clientIP, req);
+      if (rateLimitResult) {
+        return rateLimitResult;
       }
-      
-      logger.error('DDoS protection error', {
+
+      // Handle other errors
+      logger.error("DDoS protection error", {
         error: error instanceof Error ? error.message : String(error),
-        clientIP: this.hashIP(clientIP)
+        clientIP: this.hashIP(clientIP),
       });
-      
+
       // Fail open for technical errors
       return { allowed: true, riskScore: 0 };
     }
   }
-  
-  private getClientIP(req: HttpRequest): string {
-    const xForwardedFor = req.headers['x-forwarded-for'];
-    const forwardedIP = Array.isArray(xForwardedFor) 
-      ? xForwardedFor[0]?.split(',')[0]?.trim()
-      : xForwardedFor?.split(',')[0]?.trim();
-    
-    const xRealIP = req.headers['x-real-ip'];
-    const realIP = Array.isArray(xRealIP) ? xRealIP[0] : xRealIP;
-    
-    return req.ip ||
-           req.connection?.remoteAddress ||
-           req.socket?.remoteAddress ||
-           forwardedIP ||
-           realIP ||
-           'unknown';
+
+  private extractClientIP(req: HttpRequest): string {
+    return (
+      this.getForwardedIP(req) ||
+      this.getDirectIP(req) ||
+      this.getRealIP(req) ||
+      "unknown"
+    );
   }
-  
+
+  private getForwardedIP(req: HttpRequest): string | undefined {
+    const xForwardedFor = req.headers["x-forwarded-for"];
+    if (Array.isArray(xForwardedFor)) {
+      return xForwardedFor[0]?.split(",")[0]?.trim();
+    }
+    return xForwardedFor?.split(",")[0]?.trim();
+  }
+
+  private getDirectIP(req: HttpRequest): string | undefined {
+    return req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
+  }
+
+  private getRealIP(req: HttpRequest): string | undefined {
+    const xRealIP = req.headers["x-real-ip"];
+    return Array.isArray(xRealIP) ? xRealIP[0] : xRealIP;
+  }
+
+  private async analyzeBehavior(
+    req: HttpRequest,
+    clientIP: string,
+  ): Promise<BehaviorAnalysis> {
+    return await this.behaviorAnalyzer.analyzeRequest(req, clientIP);
+  }
+
+  private async enforceRateLimits(
+    clientIP: string,
+    _analysis: BehaviorAnalysis,
+  ): Promise<void> {
+    // Check global rate limit first
+    const globalLimiter = this.rateLimiters.get("global");
+    if (globalLimiter) {
+      await globalLimiter.consume("global");
+    }
+
+    // Determine which limiter to use based on IP reputation
+    const ipReputation = this.ipReputation.get(clientIP);
+    const isSuspicious = ipReputation && ipReputation.riskScore > 0.7;
+
+    const limiterKey = isSuspicious ? "suspicious" : "ip";
+    const limiter = this.rateLimiters.get(limiterKey);
+
+    if (limiter) {
+      await limiter.consume(clientIP);
+    }
+  }
+
+  private createSecurityAllowResponse(
+    analysis: BehaviorAnalysis,
+    clientIP: string,
+  ): {
+    allowed: boolean;
+    riskScore: number;
+  } {
+    const ipReputation = this.ipReputation.get(clientIP);
+    return {
+      allowed: true,
+      riskScore: ipReputation?.riskScore || analysis.riskScore || 0,
+    };
+  }
+
+  private createSecurityBlockResponse(
+    error: RateLimiterError,
+    clientIP: string,
+  ): {
+    allowed: boolean;
+    reason: string;
+    blockDuration: number;
+    riskScore: number;
+  } {
+    const reason =
+      (error.totalHits || 0) > (error.points || 1) * 2
+        ? "aggressive_ddos"
+        : "rate_limit_exceeded";
+
+    return {
+      allowed: false,
+      reason,
+      blockDuration: Math.ceil((error.msBeforeNext ?? 1000) / 1000),
+      riskScore: this.ipReputation.get(clientIP)?.riskScore || 0,
+    };
+  }
+
+  private handleRateLimitError(
+    error: unknown,
+    clientIP: string,
+    req: HttpRequest,
+  ): {
+    allowed: boolean;
+    reason?: string;
+    blockDuration?: number;
+    riskScore?: number;
+  } | null {
+    const isRateLimiterError = (err: unknown): err is RateLimiterError => {
+      return (
+        typeof err === "object" && err !== null && "remainingPoints" in err
+      );
+    };
+
+    if (!isRateLimiterError(error)) {
+      return null;
+    }
+
+    // Log the rate limit trigger
+    this.logRateLimitTrigger(error, clientIP, req);
+
+    // Increase IP reputation risk for blocked requests
+    this.updateIPReputation(clientIP, { riskScore: 0.3, isBlocked: true });
+
+    return this.createSecurityBlockResponse(error, clientIP);
+  }
+
+  private logRateLimitTrigger(
+    error: RateLimiterError,
+    clientIP: string,
+    req: HttpRequest,
+  ): void {
+    const userAgentHeader = req.headers["user-agent"];
+    const userAgent = Array.isArray(userAgentHeader)
+      ? userAgentHeader[0] || ""
+      : userAgentHeader || "";
+
+    const reason =
+      (error.totalHits || 0) > (error.points || 1) * 2
+        ? "aggressive_ddos"
+        : "rate_limit_exceeded";
+
+    logger.warn("DDoS protection triggered", {
+      clientIP: this.hashIP(clientIP),
+      userAgent: userAgent.substring(0, 100),
+      reason,
+      remainingPoints: error.remainingPoints,
+      resetTime: new Date(Date.now() + (error.msBeforeNext ?? 0)),
+      endpoint: req.path,
+      method: req.method,
+    });
+  }
+
   private updateIPReputation(ip: string, analysis: BehaviorAnalysis): void {
     const existing = this.ipReputation.get(ip) || {
       riskScore: 0,
       requestCount: 0,
       lastSeen: Date.now(),
       blockedCount: 0,
-      patterns: []
+      patterns: [],
     };
-    
+
     existing.requestCount++;
     existing.lastSeen = Date.now();
-    
+
     if (analysis.isBlocked) {
       existing.blockedCount++;
     }
-    
+
     if (analysis.riskScore !== undefined) {
       // Exponential moving average for risk score
       existing.riskScore = existing.riskScore * 0.8 + analysis.riskScore * 0.2;
     }
-    
+
     this.ipReputation.set(ip, existing);
   }
-  
+
   private hashIP(ip: string): string {
-    const crypto = require('crypto');
-    return crypto.createHash('sha256').update(ip + (process.env.IP_HASH_SALT || 'default-salt')).digest('hex').substring(0, 16);
+    const crypto = require("crypto");
+    return crypto
+      .createHash("sha256")
+      .update(ip + (process.env.IP_HASH_SALT || "default-salt"))
+      .digest("hex")
+      .substring(0, 16);
   }
-  
+
   private startIPReputationCleanup(): void {
-    setInterval(() => {
-      const now = Date.now();
-      const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-      
-      for (const [ip, data] of this.ipReputation.entries()) {
-        if (now - data.lastSeen > maxAge) {
-          this.ipReputation.delete(ip);
+    setInterval(
+      () => {
+        const now = Date.now();
+        const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+
+        for (const [ip, data] of this.ipReputation.entries()) {
+          if (now - data.lastSeen > maxAge) {
+            this.ipReputation.delete(ip);
+          }
         }
-      }
-    }, 60 * 60 * 1000); // Clean up every hour
+      },
+      60 * 60 * 1000,
+    ); // Clean up every hour
   }
-  
+
   public getStats(): {
     trackedIPs: number;
     suspiciousIPs: number;
     redisConnected: boolean;
   } {
-    const suspiciousCount = Array.from(this.ipReputation.values())
-      .filter(data => data.riskScore > 0.7).length;
-    
+    const suspiciousCount = Array.from(this.ipReputation.values()).filter(
+      (data) => data.riskScore > 0.7,
+    ).length;
+
     return {
       trackedIPs: this.ipReputation.size,
       suspiciousIPs: suspiciousCount,
-      redisConnected: !!this.redisClient && this.redisClient.status === 'ready'
+      redisConnected: !!this.redisClient && this.redisClient.status === "ready",
     };
   }
 }
@@ -324,48 +421,55 @@ export class AdvancedDDoSProtection {
 // Behavioral analysis for detecting bot patterns
 class BehaviorAnalyzer {
   private readonly requestPatterns: Map<string, RequestPattern[]> = new Map();
-  
-  async analyzeRequest(req: HttpRequest, clientIP: string): Promise<{
+
+  async analyzeRequest(
+    req: HttpRequest,
+    clientIP: string,
+  ): Promise<{
     riskScore: number;
     patterns: string[];
     isBot?: boolean;
   }> {
     const patterns = this.requestPatterns.get(clientIP) || [];
     const now = Date.now();
-    
+
     // Add current request to pattern
-    const userAgentHeader = req.headers['user-agent'];
-    const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] || '' : userAgentHeader || '';
-    const contentLengthHeader = req.headers['content-length'];
-    const contentLength = Array.isArray(contentLengthHeader) 
-      ? parseInt(contentLengthHeader[0] || '0', 10)
-      : parseInt(contentLengthHeader || '0', 10);
-    
+    const userAgentHeader = req.headers["user-agent"];
+    const userAgent = Array.isArray(userAgentHeader)
+      ? userAgentHeader[0] || ""
+      : userAgentHeader || "";
+    const contentLengthHeader = req.headers["content-length"];
+    const contentLength = Array.isArray(contentLengthHeader)
+      ? parseInt(contentLengthHeader[0] || "0", 10)
+      : parseInt(contentLengthHeader || "0", 10);
+
     patterns.push({
       timestamp: now,
-      endpoint: req.path || '/',
-      method: req.method || 'GET',
+      endpoint: req.path || "/",
+      method: req.method || "GET",
       userAgent,
-      contentLength
+      contentLength,
     });
-    
+
     // Keep only recent patterns (last 5 minutes)
-    const recentPatterns = patterns.filter(p => now - p.timestamp < 5 * 60 * 1000);
+    const recentPatterns = patterns.filter(
+      (p) => now - p.timestamp < 5 * 60 * 1000,
+    );
     this.requestPatterns.set(clientIP, recentPatterns.slice(-100)); // Keep max 100 patterns
-    
+
     return this.calculateRiskScore(recentPatterns);
   }
-  
+
   recordSuccessfulRequest(clientIP: string, _req: HttpRequest): void {
     // Update patterns for successful requests
     const patterns = this.requestPatterns.get(clientIP) || [];
     const lastPattern = patterns[patterns.length - 1];
-    
+
     if (lastPattern) {
       lastPattern.successful = true;
     }
   }
-  
+
   private calculateRiskScore(patterns: RequestPattern[]): {
     riskScore: number;
     patterns: string[];
@@ -374,61 +478,73 @@ class BehaviorAnalyzer {
     if (patterns.length < 3) {
       return { riskScore: 0, patterns: [] };
     }
-    
+
     let riskScore = 0;
     const detectedPatterns: string[] = [];
-    
+
     // High frequency requests
     const requestsPerMinute = patterns.length / 5;
     if (requestsPerMinute > 100) {
       riskScore += 0.4;
-      detectedPatterns.push('high_frequency');
+      detectedPatterns.push("high_frequency");
     }
-    
+
     // Same endpoint repeated rapidly
-    const endpointCounts = patterns.reduce((acc, p) => {
-      acc[p.endpoint] = (acc[p.endpoint] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const endpointCounts = patterns.reduce(
+      (acc, p) => {
+        acc[p.endpoint] = (acc[p.endpoint] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
     const maxEndpointCount = Math.max(...Object.values(endpointCounts));
     if (maxEndpointCount > patterns.length * 0.8) {
       riskScore += 0.3;
-      detectedPatterns.push('endpoint_hammering');
+      detectedPatterns.push("endpoint_hammering");
     }
-    
+
     // Suspicious user agent patterns
-    const userAgents = new Set(patterns.map(p => p.userAgent));
+    const userAgents = new Set(patterns.map((p) => p.userAgent));
     if (userAgents.size === 1) {
       const userAgent = Array.from(userAgents)[0];
-      if (!userAgent || userAgent.length < 10 || /bot|crawler|spider/i.test(userAgent)) {
+      if (
+        !userAgent ||
+        userAgent.length < 10 ||
+        /bot|crawler|spider/i.test(userAgent)
+      ) {
         riskScore += 0.2;
-        detectedPatterns.push('suspicious_user_agent');
+        detectedPatterns.push("suspicious_user_agent");
       }
     }
-    
+
     // Perfect timing patterns (likely bot)
-    const intervals = patterns.slice(1).map((p, i) => p.timestamp - patterns[i].timestamp);
+    const intervals = patterns
+      .slice(1)
+      .map((p, i) => p.timestamp - patterns[i].timestamp);
     const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-    const intervalVariance = intervals.reduce((acc, interval) => 
-      acc + Math.pow(interval - avgInterval, 2), 0) / intervals.length;
-    
+    const intervalVariance =
+      intervals.reduce(
+        (acc, interval) => acc + Math.pow(interval - avgInterval, 2),
+        0,
+      ) / intervals.length;
+
     if (intervalVariance < avgInterval * 0.1 && patterns.length > 10) {
       riskScore += 0.3;
-      detectedPatterns.push('perfect_timing');
+      detectedPatterns.push("perfect_timing");
     }
-    
+
     // No successful requests (all errors)
-    const successfulRequests = patterns.filter(p => p.successful).length;
+    const successfulRequests = patterns.filter((p) => p.successful).length;
     if (successfulRequests === 0 && patterns.length > 10) {
       riskScore += 0.2;
-      detectedPatterns.push('all_failed_requests');
+      detectedPatterns.push("all_failed_requests");
     }
-    
+
     return {
       riskScore: Math.min(riskScore, 1.0),
       patterns: detectedPatterns,
-      isBot: riskScore > 0.6
+      isBot: riskScore > 0.6,
     };
   }
 }
@@ -437,7 +553,7 @@ class BehaviorAnalyzer {
 export class EnterpriseCircuitBreakerManager {
   private readonly circuitBreakers: Map<string, CircuitBreaker> = new Map();
   private readonly defaultConfig: CircuitBreakerConfig;
-  
+
   constructor(config?: Partial<CircuitBreakerConfig>) {
     this.defaultConfig = {
       timeout: 3000, // 3 second timeout
@@ -446,77 +562,85 @@ export class EnterpriseCircuitBreakerManager {
       rollingCountTimeout: 10000, // 10 second rolling window
       rollingCountBuckets: 10, // Number of buckets in rolling window
       volumeThreshold: 10, // Minimum requests before circuit can trip
-      ...config
+      ...config,
     };
   }
-  
-  public createCircuitBreaker(name: string, operation: (...args: unknown[]) => Promise<unknown>, config?: Partial<CircuitBreakerConfig>): CircuitBreaker {
+
+  public createCircuitBreaker(
+    name: string,
+    operation: (...args: unknown[]) => Promise<unknown>,
+    config?: Partial<CircuitBreakerConfig>,
+  ): CircuitBreaker {
     const finalConfig = { ...this.defaultConfig, ...config };
-    
+
     const breaker = new CircuitBreaker(operation, {
       timeout: finalConfig.timeout,
       errorThresholdPercentage: finalConfig.errorThresholdPercentage,
       resetTimeout: finalConfig.resetTimeout,
       rollingCountTimeout: finalConfig.rollingCountTimeout,
       rollingCountBuckets: finalConfig.rollingCountBuckets,
-      volumeThreshold: finalConfig.volumeThreshold
+      volumeThreshold: finalConfig.volumeThreshold,
     });
-    
+
     // Event handlers for logging
-    breaker.on('open', () => {
+    breaker.on("open", () => {
       logger.warn(`Circuit breaker opened for ${name}`, {
         circuitBreaker: name,
-        state: 'open'
+        state: "open",
       });
     });
-    
-    breaker.on('halfOpen', () => {
+
+    breaker.on("halfOpen", () => {
       logger.info(`Circuit breaker half-open for ${name}`, {
         circuitBreaker: name,
-        state: 'half-open'
+        state: "half-open",
       });
     });
-    
-    breaker.on('close', () => {
+
+    breaker.on("close", () => {
       logger.info(`Circuit breaker closed for ${name}`, {
         circuitBreaker: name,
-        state: 'closed'
+        state: "closed",
       });
     });
-    
-    breaker.on('reject', () => {
+
+    breaker.on("reject", () => {
       logger.debug(`Circuit breaker rejected request for ${name}`, {
         circuitBreaker: name,
-        action: 'rejected'
+        action: "rejected",
       });
     });
-    
+
     this.circuitBreakers.set(name, breaker);
     return breaker;
   }
-  
+
   public getCircuitBreaker(name: string): CircuitBreaker | undefined {
     return this.circuitBreakers.get(name);
   }
-  
+
   public getAllStats(): Record<string, unknown> {
     const stats: Record<string, unknown> = {};
-    
+
     for (const [name, breaker] of this.circuitBreakers.entries()) {
       stats[name] = {
-        state: breaker.opened ? 'open' : breaker.halfOpen ? 'half-open' : 'closed',
+        state: breaker.opened
+          ? "open"
+          : breaker.halfOpen
+            ? "half-open"
+            : "closed",
         stats: {
           fires: breaker.stats.fires || 0,
           failures: breaker.stats.failures || 0,
           timeouts: breaker.stats.timeouts || 0,
-          fallbacks: breaker.stats.fallbacks || 0
-        }
+          fallbacks: breaker.stats.fallbacks || 0,
+        },
       };
     }
-    
+
     return stats;
   }
-  
+
   public async shutdown(): Promise<void> {
     for (const [name, breaker] of this.circuitBreakers.entries()) {
       breaker.shutdown();
@@ -540,37 +664,40 @@ interface HttpResponse {
 
 // Middleware factory for DDoS protection
 export function createDDoSProtectionMiddleware() {
-  return async (req: HttpRequest, res: HttpResponse, next: () => void): Promise<void> => {
+  return async (
+    req: HttpRequest,
+    res: HttpResponse,
+    next: () => void,
+  ): Promise<void> => {
     try {
       const result = await ddosProtection.checkDDoSProtection(req);
-      
+
       if (!result.allowed) {
-        const statusCode = result.reason === 'aggressive_ddos' ? 503 : 429;
-        
+        const statusCode = result.reason === "aggressive_ddos" ? 503 : 429;
+
         // Set appropriate headers
-        res.setHeader('Retry-After', result.blockDuration || 300);
-        res.setHeader('X-DDoS-Protection', 'active');
-        res.setHeader('X-Risk-Score', (result.riskScore || 0).toFixed(2));
-        
+        res.setHeader("Retry-After", result.blockDuration || 300);
+        res.setHeader("X-DDoS-Protection", "active");
+        res.setHeader("X-Risk-Score", (result.riskScore || 0).toFixed(2));
+
         return res.status(statusCode).json({
           error: {
-            code: result.reason?.toUpperCase() || 'DDOS_PROTECTION',
-            message: 'Request blocked by DDoS protection',
-            retryAfter: result.blockDuration || 300
-          }
+            code: result.reason?.toUpperCase() || "DDOS_PROTECTION",
+            message: "Request blocked by DDoS protection",
+            retryAfter: result.blockDuration || 300,
+          },
         });
       }
-      
+
       // Add risk score to request for other middleware
       req.riskScore = result.riskScore;
-      
+
       next();
-      
     } catch (error) {
-      logger.error('DDoS protection middleware error', {
-        error: error instanceof Error ? error.message : String(error)
+      logger.error("DDoS protection middleware error", {
+        error: error instanceof Error ? error.message : String(error),
       });
-      
+
       // Fail open
       next();
     }
