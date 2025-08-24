@@ -1,6 +1,24 @@
 {
   "project": "root_files",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "task_1756029201347_drvczihvp",
+      "title": "Fix TypeScript compilation errors in telemetry.ts",
+      "description": "Fix OpenTelemetry module imports, Resource usage, HTTP headers type issues, re-export syntax, and duplicate exports",
+      "mode": "DEVELOPMENT",
+      "category": "error",
+      "priority": "critical",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-24T09:53:21.347Z",
+      "auto_research_created": false
+    }
+  ],
   "current_mode": "DEVELOPMENT",
   "last_mode": null,
   "execution_count": 0,
