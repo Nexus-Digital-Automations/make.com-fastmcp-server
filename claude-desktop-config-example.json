@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "make-fastmcp-server": {
+      "command": "node",
+      "args": [
+        "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/dist/simple-fastmcp-server.js"
+      ],
+      "env": {
+        "MAKE_API_KEY": "your_make_api_key_here",
+        "MAKE_BASE_URL": "https://eu1.make.com/api/v2",
+        "LOG_LEVEL": "info",
+        "RATE_LIMIT_MAX_REQUESTS": "100",
+        "RATE_LIMIT_WINDOW_MS": "60000"
+      }
+    }
+  }
+}
