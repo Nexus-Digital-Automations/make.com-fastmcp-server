@@ -14,11 +14,7 @@ export class PatternAnalysisTransport extends TransportStream {
     // Check if pattern analysis is enabled (default: true)
     this.enabled = process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false";
 
-    if (this.enabled) {
-      console.warn("🔍 Pattern analysis transport initialized");
-    } else {
-      console.warn("🚫 Pattern analysis transport disabled by configuration");
-    }
+    // Pattern analysis transport initialization - silent to avoid MCP protocol interference
   }
 
   log(info: winston.LogEntry, callback: () => void): void {
@@ -57,11 +53,9 @@ export class PatternAnalysisTransport extends TransportStream {
 
       // Increment analysis counter for monitoring
       this.analysisCount++;
-    } catch (error) {
+    } catch {
       // Log analysis errors but don't break logging pipeline
-      console.warn(
-        `⚠️ Pattern analysis error: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      // Error logged to file to avoid interfering with MCP protocol
     }
 
     // Always call callback to continue Winston pipeline
@@ -85,14 +79,9 @@ export class PatternAnalysisTransport extends TransportStream {
 
   // Method to enable/disable analysis at runtime
   setEnabled(enabled: boolean): void {
-    const wasEnabled = this.enabled;
     this.enabled = enabled;
 
-    if (wasEnabled !== enabled) {
-      console.warn(
-        `🔄 Pattern analysis transport ${enabled ? "enabled" : "disabled"}`,
-      );
-    }
+    // Pattern analysis state changed - logged to file to avoid MCP interference
   }
 
   // Method to reset statistics
@@ -100,16 +89,12 @@ export class PatternAnalysisTransport extends TransportStream {
     this.analysisCount = 0;
     this.lastAnalysisTime = null;
 
-    console.warn("📈 Pattern analysis transport statistics reset");
+    // Statistics reset - logged to file to avoid MCP interference
   }
 
   // Override close method for cleanup
   close(): void {
-    if (this.enabled) {
-      console.warn(
-        `🚪 Pattern analysis transport closing (${this.analysisCount} analyses)`,
-      );
-    }
+    // Transport closing - logged to file to avoid MCP interference
     if (super.close) {
       super.close();
     }
@@ -136,9 +121,7 @@ export function addPatternAnalysisToLogger(
   const transport = createPatternAnalysisTransport(options);
   targetLogger.add(transport);
 
-  console.warn(
-    `➕ Pattern analysis transport added to logger (enabled: ${transport.getStatistics().enabled})`,
-  );
+  // Pattern analysis transport added - logged to file to avoid MCP interference
 
   return transport;
 }

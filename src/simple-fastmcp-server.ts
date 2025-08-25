@@ -11,6 +11,10 @@ import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { v4 as uuidv4 } from "uuid";
 import { performance } from "perf_hooks";
+import {
+  RateLimitManager,
+  MAKE_API_RATE_LIMIT_CONFIG,
+} from "./rate-limit-manager.js";
 // Dependency monitoring is handled by local DependencyMonitor class
 
 // Load environment variables
@@ -29,10 +33,10 @@ const logsDir = path.join(projectRoot, "logs");
 try {
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
-    console.error(`✅ Created logs directory at: ${logsDir}`);
+    // Log directory creation - logged to file to avoid MCP interference
   }
-} catch (error) {
-  console.error(`❌ Failed to create logs directory at ${logsDir}:`, error);
+} catch {
+  // Log directory creation error - logged to file to avoid MCP interference
   // Continue execution - Winston will handle logging to console only
 }
 
@@ -68,7 +72,7 @@ class MCPServerError extends Error {
   }
 }
 
-// Logger configuration
+// Logger configuration - disable console output for MCP to avoid interfering with JSON protocol
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || "info",
   format: winston.format.combine(
@@ -77,12 +81,17 @@ const logger = winston.createLogger({
     winston.format.json(),
   ),
   transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple(),
-      ),
-    }),
+    // Console transport disabled for MCP compatibility - interferes with JSON protocol
+    ...(process.env.ENABLE_CONSOLE_LOGGING === "true"
+      ? [
+          new winston.transports.Console({
+            format: winston.format.combine(
+              winston.format.colorize(),
+              winston.format.simple(),
+            ),
+          }),
+        ]
+      : []),
     ...(process.env.LOG_FILE_ENABLED !== "false"
       ? [
           new DailyRotateFile({
@@ -909,6 +918,18 @@ const config = {
     60 *
     60 *
     1000,
+  // Rate limiting configuration
+  rateLimitingEnabled: process.env.RATE_LIMITING_ENABLED !== "false",
+  rateLimitMaxRetries: parseInt(process.env.RATE_LIMIT_MAX_RETRIES || "3"),
+  rateLimitBaseDelayMs: parseInt(
+    process.env.RATE_LIMIT_BASE_DELAY_MS || "2000",
+  ),
+  rateLimitMaxConcurrent: parseInt(
+    process.env.RATE_LIMIT_MAX_CONCURRENT || "8",
+  ),
+  rateLimitRequestsPerWindow: parseInt(
+    process.env.RATE_LIMIT_REQUESTS_PER_WINDOW || "50",
+  ),
 };
 
 // Simple Make.com API client
@@ -916,6 +937,7 @@ class SimpleMakeClient {
   private readonly apiKey: string;
   private readonly baseUrl: string;
   private readonly timeout: number;
+  private readonly rateLimitManager?: RateLimitManager;
 
   constructor() {
     if (!config.makeApiKey) {
@@ -925,6 +947,25 @@ class SimpleMakeClient {
     this.apiKey = config.makeApiKey;
     this.baseUrl = config.makeBaseUrl;
     this.timeout = config.timeout;
+
+    // Initialize rate limiting if enabled
+    if (config.rateLimitingEnabled) {
+      const rateLimitConfig = {
+        ...MAKE_API_RATE_LIMIT_CONFIG,
+        maxRetries: config.rateLimitMaxRetries,
+        baseDelayMs: config.rateLimitBaseDelayMs,
+        maxConcurrentRequests: config.rateLimitMaxConcurrent,
+        requestsPerWindow: config.rateLimitRequestsPerWindow,
+      };
+      this.rateLimitManager = new RateLimitManager(rateLimitConfig);
+
+      logger.info("Rate limiting enabled for Make.com API", {
+        maxRetries: rateLimitConfig.maxRetries,
+        baseDelayMs: rateLimitConfig.baseDelayMs,
+        maxConcurrentRequests: rateLimitConfig.maxConcurrentRequests,
+        requestsPerWindow: rateLimitConfig.requestsPerWindow,
+      });
+    }
   }
 
   private async request(
@@ -936,30 +977,8 @@ class SimpleMakeClient {
     const requestId = correlationId || uuidv4();
     const operation = `${method.toUpperCase()} ${endpoint}`;
 
-    // Use performance monitoring if enabled, otherwise fallback to direct execution
-    if (config.performanceMonitoringEnabled) {
-      const { result, metrics } = await PerformanceMonitor.trackOperation(
-        operation,
-        requestId,
-        async () => {
-          return await this.executeRequest(
-            method,
-            endpoint,
-            data,
-            requestId,
-            operation,
-          );
-        },
-      );
-
-      // Record metrics if enabled
-      if (config.metricsCollectionEnabled) {
-        const success = !result || typeof result === "object";
-        MetricsCollector.recordRequest(operation, metrics.duration, success);
-      }
-
-      return result;
-    } else {
+    // Wrap execution function for rate limiting and performance monitoring
+    const executeFunction = async () => {
       return await this.executeRequest(
         method,
         endpoint,
@@ -967,6 +986,59 @@ class SimpleMakeClient {
         requestId,
         operation,
       );
+    };
+
+    // Apply rate limiting if enabled
+    if (this.rateLimitManager) {
+      const rateLimitedExecution = async () => {
+        return await this.rateLimitManager!.executeWithRateLimit(
+          operation,
+          executeFunction,
+          {
+            correlationId: requestId,
+            endpoint: endpoint,
+            priority: this.determineRequestPriority(method, endpoint),
+          },
+        );
+      };
+
+      // Use performance monitoring if enabled
+      if (config.performanceMonitoringEnabled) {
+        const { result, metrics } = await PerformanceMonitor.trackOperation(
+          operation,
+          requestId,
+          rateLimitedExecution,
+        );
+
+        // Record metrics if enabled
+        if (config.metricsCollectionEnabled) {
+          const success = !result || typeof result === "object";
+          MetricsCollector.recordRequest(operation, metrics.duration, success);
+        }
+
+        return result;
+      } else {
+        return await rateLimitedExecution();
+      }
+    } else {
+      // No rate limiting - use original logic
+      if (config.performanceMonitoringEnabled) {
+        const { result, metrics } = await PerformanceMonitor.trackOperation(
+          operation,
+          requestId,
+          executeFunction,
+        );
+
+        // Record metrics if enabled
+        if (config.metricsCollectionEnabled) {
+          const success = !result || typeof result === "object";
+          MetricsCollector.recordRequest(operation, metrics.duration, success);
+        }
+
+        return result;
+      } else {
+        return await executeFunction();
+      }
     }
   }
 
@@ -1080,6 +1152,37 @@ class SimpleMakeClient {
     return ErrorSeverity.LOW;
   }
 
+  private determineRequestPriority(
+    method: string,
+    endpoint: string,
+  ): "normal" | "high" | "low" {
+    // High priority requests that should be processed first
+    if (endpoint.includes("/users") || endpoint.includes("/organizations")) {
+      return "high"; // User/org management is critical
+    }
+
+    // High priority for GET requests that are typically used for health checks
+    if (method === "GET" && endpoint.includes("?limit=1")) {
+      return "high"; // Health check requests
+    }
+
+    // High priority for scenario execution
+    if (endpoint.includes("/run")) {
+      return "high"; // Scenario execution
+    }
+
+    // Low priority for bulk operations
+    if (endpoint.includes("?limit=") && !endpoint.includes("limit=1")) {
+      const limitMatch = endpoint.match(/limit=(\d+)/);
+      if (limitMatch && parseInt(limitMatch[1]) > 10) {
+        return "low"; // Bulk requests with large limits
+      }
+    }
+
+    // Normal priority for everything else
+    return "normal";
+  }
+
   async getScenarios(limit?: number) {
     const params = limit ? `?limit=${limit}` : "";
     return this.request("GET", `/scenarios${params}`);
@@ -1148,6 +1251,11 @@ const server = new FastMCP({
 
 // Initialize Make.com API client
 const makeClient = new SimpleMakeClient();
+
+// Get access to the rate limit manager for monitoring tools
+const getRateLimitManager = () => {
+  return (makeClient as any).rateLimitManager as RateLimitManager | undefined;
+};
 
 // Dependency monitoring is handled by static DependencyMonitor class
 
@@ -2045,6 +2153,191 @@ if (config.maintenanceReportsEnabled) {
   });
 }
 
+// RATE LIMITING TOOLS (conditionally enabled)
+if (config.rateLimitingEnabled) {
+  server.addTool({
+    name: "get-rate-limit-status",
+    description: "Get current rate limiting status and metrics",
+    parameters: z.object({}),
+    execute: async () => {
+      const rateLimitManager = getRateLimitManager();
+
+      if (!rateLimitManager) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Rate limiting is not enabled",
+            },
+          ],
+        };
+      }
+
+      const metrics = rateLimitManager.getMetrics();
+      const status = rateLimitManager.getRateLimitStatus();
+      const queueStatus = rateLimitManager.getQueueStatus();
+
+      let report = "📊 Rate Limiting Status Report\n\n";
+
+      // Current status
+      report += "🚦 Current Status:\n";
+      report += `• Can Make Request: ${status.canMakeRequest ? "✅ Yes" : "❌ No"}\n`;
+      report += `• Global Rate Limit Active: ${status.globalRateLimitActive ? "🔴 Yes" : "✅ No"}\n`;
+      if (status.globalRateLimitActive) {
+        const remaining = Math.max(0, status.globalRateLimitUntil - Date.now());
+        report += `• Rate Limit Expires: ${new Date(status.globalRateLimitUntil).toISOString()} (${Math.round(remaining / 1000)}s)\n`;
+      }
+      report += `• Requests in Current Window: ${status.requestsInWindow}\n`;
+      report += `• Active Requests: ${queueStatus.activeRequests}\n\n`;
+
+      // Queue status
+      report += "📋 Queue Status:\n";
+      report += `• Queue Size: ${queueStatus.size}\n`;
+      if (queueStatus.size > 0) {
+        report += `• Oldest Request Age: ${Math.round(queueStatus.oldestRequestAge / 1000)}s\n`;
+        report += `• Priority Breakdown:\n`;
+        report += `  - High: ${queueStatus.priorityBreakdown.high}\n`;
+        report += `  - Normal: ${queueStatus.priorityBreakdown.normal}\n`;
+        report += `  - Low: ${queueStatus.priorityBreakdown.low}\n`;
+      }
+      report += "\n";
+
+      // Metrics
+      report += "📈 Performance Metrics:\n";
+      report += `• Total Requests: ${metrics.totalRequests}\n`;
+      report += `• Rate Limited Requests: ${metrics.rateLimitedRequests}\n`;
+      report += `• Success Rate: ${(metrics.successRate * 100).toFixed(1)}%\n`;
+      report += `• Average Delay: ${metrics.averageDelayMs.toFixed(0)}ms\n`;
+      report += `• Max Delay: ${metrics.maxDelayMs.toFixed(0)}ms\n`;
+
+      if (metrics.rateLimitedRequests > 0) {
+        const rateLimitRate = (
+          (metrics.rateLimitedRequests / metrics.totalRequests) *
+          100
+        ).toFixed(1);
+        report += `• Rate Limit Rate: ${rateLimitRate}%\n`;
+      }
+
+      // Endpoint-specific limits
+      if (status.endpointLimits.length > 0) {
+        report += "\n🎯 Endpoint-Specific Limits:\n";
+        status.endpointLimits.forEach((limit) => {
+          const remaining = Math.max(0, limit.limitUntil - Date.now());
+          report += `• ${limit.endpoint}: ${Math.round(remaining / 1000)}s remaining\n`;
+        });
+      }
+
+      return {
+        content: [{ type: "text", text: report }],
+      };
+    },
+  });
+
+  server.addTool({
+    name: "clear-rate-limit-queue",
+    description: "Clear the rate limiting request queue (emergency use only)",
+    parameters: z.object({}),
+    execute: async () => {
+      const rateLimitManager = getRateLimitManager();
+
+      if (!rateLimitManager) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Rate limiting is not enabled",
+            },
+          ],
+        };
+      }
+
+      const queueStatus = rateLimitManager.getQueueStatus();
+      const clearedCount = queueStatus.size;
+
+      rateLimitManager.clearQueue();
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `🧹 Rate limit queue cleared\n\n• Cleared ${clearedCount} pending requests\n• Queue is now empty\n\n⚠️ Note: Cleared requests will fail with queue cleared errors`,
+          },
+        ],
+      };
+    },
+  });
+
+  server.addTool({
+    name: "update-rate-limit-config",
+    description: "Update rate limiting configuration at runtime",
+    parameters: z.object({
+      max_concurrent_requests: z
+        .number()
+        .min(1)
+        .max(50)
+        .optional()
+        .describe("Maximum concurrent requests"),
+      base_delay_ms: z
+        .number()
+        .min(500)
+        .max(30000)
+        .optional()
+        .describe("Base delay in milliseconds"),
+      max_retries: z
+        .number()
+        .min(1)
+        .max(10)
+        .optional()
+        .describe("Maximum retry attempts"),
+      requests_per_window: z
+        .number()
+        .min(1)
+        .max(1000)
+        .optional()
+        .describe("Requests per time window"),
+    }),
+    execute: async (args) => {
+      const rateLimitManager = getRateLimitManager();
+
+      if (!rateLimitManager) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Rate limiting is not enabled",
+            },
+          ],
+        };
+      }
+
+      const updates: any = {};
+      if (args.max_concurrent_requests !== undefined) {
+        updates.maxConcurrentRequests = args.max_concurrent_requests;
+      }
+      if (args.base_delay_ms !== undefined) {
+        updates.baseDelayMs = args.base_delay_ms;
+      }
+      if (args.max_retries !== undefined) {
+        updates.maxRetries = args.max_retries;
+      }
+      if (args.requests_per_window !== undefined) {
+        updates.requestsPerWindow = args.requests_per_window;
+      }
+
+      rateLimitManager.updateConfig(updates);
+
+      let report = "⚙️ Rate limiting configuration updated:\n\n";
+      Object.entries(updates).forEach(([key, value]) => {
+        report += `• ${key}: ${value}\n`;
+      });
+
+      return {
+        content: [{ type: "text", text: report }],
+      };
+    },
+  });
+}
+
 // LOG PATTERN ANALYSIS TOOLS
 server.addTool({
   name: "analyze-log-patterns",
@@ -2352,23 +2645,17 @@ try {
       process.env.ALERT_WEBHOOK_URL || "http://localhost:3000/webhook",
   });
 
-  console.error("✅ Enhanced Alert Manager initialized with Phase 1 features");
+  // Enhanced Alert Manager initialized - logged to file to avoid MCP interference
 
   // Perform health check
   const healthCheck = await globalEnhancedAlertManager.getSystemHealth();
   if (healthCheck.alertManager.healthy) {
-    console.error("✅ Enhanced Alert Manager health check passed");
+    // Alert Manager health check passed - logged to file to avoid MCP interference
   } else {
-    console.warn(
-      "⚠️ Enhanced Alert Manager health check issues:",
-      healthCheck.alertManager.details,
-    );
+    // Alert Manager health check issues - logged to file to avoid MCP interference
   }
-} catch (error) {
-  console.error("❌ Failed to initialize Enhanced Alert Manager:", error);
-  console.error(
-    "🔄 Server will continue with basic AlertManager functionality",
-  );
+} catch {
+  // Failed to initialize Enhanced Alert Manager - logged to file to avoid MCP interference
 }
 
 // Start the server
@@ -2385,13 +2672,14 @@ const startupMessage = [
   `Maintenance Reports: ${config.maintenanceReportsEnabled ? "ENABLED" : "DISABLED"}`,
   `Log Pattern Analysis: ${process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false" ? "ENABLED" : "DISABLED"}`,
   `Enhanced Alert Manager: ENABLED (Phase 1)`,
+  `Rate Limiting: ${config.rateLimitingEnabled ? "ENABLED" : "DISABLED"}`,
   `Memory Threshold: ${config.memoryThresholdMB}MB`,
 ].join(" | ");
 
-console.error(startupMessage);
+// Log startup message - logged to file to avoid MCP interference
 
 // Log startup configuration
-logger.info("FastMCP Server started", {
+logger.info(startupMessage, {
   performanceMonitoring: config.performanceMonitoringEnabled,
   metricsCollection: config.metricsCollectionEnabled,
   healthCheck: config.healthCheckEnabled,

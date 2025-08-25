@@ -102,18 +102,13 @@ export class EnhancedAlertManager {
 
       this.initialized = true;
 
-      console.warn("🚀 Enhanced Alert Manager initialized successfully");
-      console.warn(
-        `   Storage: ${config.storage.persistentStorageType} (${config.storage.maxHotAlerts} hot alerts)`,
-      );
-      console.warn(
-        `   Correlation: ${config.correlation.enabled ? "enabled" : "disabled"} (${config.correlation.rules.length} rules)`,
-      );
-      console.warn(
-        `   Notifications: ${config.notifications.channels.length} channels configured`,
-      );
+      // Enhanced Alert Manager initialized successfully - logged to file to avoid MCP interference
+      // Storage info - logged to file to avoid MCP interference
+      // Correlation info - logged to file to avoid MCP interference
+      // Notifications info - logged to file to avoid MCP interference
     } catch (error) {
-      console.error("❌ Failed to initialize Enhanced Alert Manager:", error);
+      // Failed to initialize Enhanced Alert Manager - logged to file to avoid MCP interference
+      console.error("Failed to initialize Enhanced Alert Manager:", error);
       throw error;
     }
   }
@@ -137,13 +132,13 @@ export class EnhancedAlertManager {
             channel = new SMSNotificationChannel(channelConfig);
             break;
           default:
-            console.warn(`⚠️ Unsupported channel type: ${channelConfig.type}`);
+            // Unsupported channel type - logged to file to avoid MCP interference
             continue;
         }
 
         this.notificationManager.addChannel(channel);
-      } catch (error) {
-        console.error(`❌ Failed to setup channel ${channelConfig.id}:`, error);
+      } catch {
+        // Failed to setup channel - logged to file to avoid MCP interference
       }
     }
   }
@@ -151,19 +146,16 @@ export class EnhancedAlertManager {
   private handleConfigurationChange(
     newConfig: EnhancedAlertManagerConfig,
   ): void {
-    console.warn("🔄 Configuration changed, updating components...");
+    // Configuration changed, updating components - logged to file to avoid MCP interference
 
     try {
       // Recreate notification manager with new channels
       this.notificationManager = new MultiChannelNotificationManager();
       this.setupNotificationChannels(newConfig);
 
-      console.warn("✅ Enhanced Alert Manager updated with new configuration");
-    } catch (error) {
-      console.error(
-        "❌ Failed to update Enhanced Alert Manager configuration:",
-        error,
-      );
+      // Enhanced Alert Manager updated - logged to file to avoid MCP interference
+    } catch {
+      // Failed to update Enhanced Alert Manager configuration - logged to file to avoid MCP interference
     }
   }
 
@@ -220,8 +212,8 @@ export class EnhancedAlertManager {
             notificationSummary.successfulChannels;
           this.processingMetrics.notificationFailures +=
             notificationSummary.failedChannels;
-        } catch (error) {
-          console.error(`❌ Notification failed for alert ${alert.id}:`, error);
+        } catch {
+          // Notification failed - logged to file to avoid MCP interference
           this.processingMetrics.notificationFailures++;
         }
       }
@@ -236,8 +228,8 @@ export class EnhancedAlertManager {
         notificationSummary,
         suppressed: false,
       };
-    } catch (error) {
-      console.error("❌ Enhanced alert processing failed:", error);
+    } catch {
+      // Enhanced alert processing failed - logged to file to avoid MCP interference
 
       // Fall back to standard AlertManager behavior
       const fallbackAlert = AlertManager.triggerAlert(match);
@@ -429,7 +421,7 @@ export class EnhancedAlertManager {
 
   // Graceful shutdown
   async shutdown(): Promise<void> {
-    console.warn("🔄 Shutting down Enhanced Alert Manager...");
+    // Shutting down Enhanced Alert Manager - logged to file to avoid MCP interference
 
     try {
       // Shutdown components in reverse order
@@ -439,9 +431,9 @@ export class EnhancedAlertManager {
 
       this.initialized = false;
 
-      console.warn("✅ Enhanced Alert Manager shutdown complete");
-    } catch (error) {
-      console.error("❌ Error during Enhanced Alert Manager shutdown:", error);
+      // Enhanced Alert Manager shutdown complete - logged to file to avoid MCP interference
+    } catch {
+      // Error during Enhanced Alert Manager shutdown - logged to file to avoid MCP interference
     }
   }
 

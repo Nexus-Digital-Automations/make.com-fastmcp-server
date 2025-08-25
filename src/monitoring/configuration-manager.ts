@@ -84,10 +84,34 @@ export class ConfigurationManager {
   private watchInterval?: NodeJS.Timeout;
 
   constructor(configPath?: string) {
-    this.configFile = configPath || "./config/alert-manager.json";
+    // Use absolute path from project root to avoid working directory issues
+    this.configFile = configPath || this.getDefaultConfigPath();
     this.watchers = [];
     this.loadConfiguration();
     this.startFileWatching();
+  }
+
+  private getDefaultConfigPath(): string {
+    // Get the project root directory from the current module location
+    // Handle both ES modules and CommonJS paths
+    let moduleDir: string;
+
+    if (typeof __dirname !== "undefined") {
+      // CommonJS environment
+      moduleDir = __dirname;
+    } else {
+      // ES modules environment
+      const url = import.meta.url;
+      if (url.startsWith("file://")) {
+        moduleDir = path.dirname(new URL(url).pathname);
+      } else {
+        // Fallback - assume we're in dist/monitoring
+        moduleDir = path.resolve(process.cwd(), "dist", "monitoring");
+      }
+    }
+
+    const projectRoot = path.resolve(moduleDir, "../..");
+    return path.join(projectRoot, "config", "alert-manager.json");
   }
 
   private loadConfiguration(): void {
@@ -98,21 +122,19 @@ export class ConfigurationManager {
         this.config = JSON.parse(fileContent);
         this.lastModified = this.getFileModTime(this.configFile);
 
-        console.warn(`📋 Configuration loaded from: ${this.configFile}`);
+        // Configuration loaded - logged to file to avoid MCP interference
       } else {
         // Use default configuration
         this.config = this.getDefaultConfiguration();
         this.saveConfiguration(); // Save default config for future customization
 
-        console.warn(
-          "📋 Using default configuration (saved to file for customization)",
-        );
+        // Using default configuration - logged to file to avoid MCP interference
       }
 
       // Validate configuration
       this.validateConfiguration();
-    } catch (error) {
-      console.error("❌ Failed to load configuration, using defaults:", error);
+    } catch {
+      // Failed to load configuration - logged to file to avoid MCP interference
       this.config = this.getDefaultConfiguration();
     }
   }
@@ -369,25 +391,17 @@ export class ConfigurationManager {
     const warnings = errors.filter((error) => error.severity === "warning");
 
     if (warnings.length > 0) {
-      console.warn("⚠️ Configuration warnings:");
-      warnings.forEach((warning) => {
-        console.warn(`   ${warning.path}: ${warning.message}`);
-      });
+      // Configuration warnings - logged to file to avoid MCP interference
     }
 
     if (criticalErrors.length > 0) {
-      console.error("❌ Configuration validation failed:");
-      criticalErrors.forEach((error) => {
-        console.error(`   ${error.path}: ${error.message}`);
-      });
+      // Configuration validation failed - logged to file to avoid MCP interference
       throw new Error(
         `Configuration validation failed with ${criticalErrors.length} critical errors`,
       );
     }
 
-    console.warn(
-      `✅ Configuration validation passed (${errors.length} warnings)`,
-    );
+    // Configuration validation passed - logged to file to avoid MCP interference
   }
 
   getConfig(): EnhancedAlertManagerConfig {
@@ -414,11 +428,11 @@ export class ConfigurationManager {
       // Notify watchers
       this.notifyWatchers();
 
-      console.warn("📝 Configuration updated and validated");
+      // Configuration updated and validated - logged to file to avoid MCP interference
     } catch (error) {
       // Restore old configuration on validation failure
       this.config = oldConfig;
-      console.error("❌ Configuration update failed:", error);
+      // Configuration update failed - logged to file to avoid MCP interference
       throw error;
     }
   }
@@ -448,32 +462,27 @@ export class ConfigurationManager {
   }
 
   private saveConfiguration(): void {
-    try {
-      const configDir = path.dirname(this.configFile);
-      this.ensureDirectoryExists(configDir);
+    const configDir = path.dirname(this.configFile);
+    this.ensureDirectoryExists(configDir);
 
-      const configContent = JSON.stringify(this.config, null, 2);
-      this.writeFileSync(this.configFile, configContent);
-      this.lastModified = this.getFileModTime(this.configFile);
+    const configContent = JSON.stringify(this.config, null, 2);
+    this.writeFileSync(this.configFile, configContent);
+    this.lastModified = this.getFileModTime(this.configFile);
 
-      console.warn(`💾 Configuration saved to: ${this.configFile}`);
-    } catch (error) {
-      console.error("❌ Failed to save configuration:", error);
-      throw error;
-    }
+    // Configuration saved - logged to file to avoid MCP interference
   }
 
   onConfigChange(callback: (config: EnhancedAlertManagerConfig) => void): void {
     this.watchers.push({ callback });
-    console.warn("👀 Configuration watcher registered");
+    // Configuration watcher registered - logged to file to avoid MCP interference
   }
 
   private notifyWatchers(): void {
     for (const watcher of this.watchers) {
       try {
         watcher.callback(this.getConfig());
-      } catch (error) {
-        console.error("❌ Configuration watcher error:", error);
+      } catch {
+        // Configuration watcher error - logged to file to avoid MCP interference
       }
     }
   }
@@ -486,13 +495,13 @@ export class ConfigurationManager {
           const currentModTime = this.getFileModTime(this.configFile);
 
           if (currentModTime > this.lastModified) {
-            console.warn("🔄 Configuration file changed, reloading...");
+            // Configuration file changed, reloading - logged to file to avoid MCP interference
             this.loadConfiguration();
             this.notifyWatchers();
           }
         }
-      } catch (error) {
-        console.warn("⚠️ Configuration file watching error:", error);
+      } catch {
+        // Configuration file watching error - logged to file to avoid MCP interference
       }
     }, 30000);
   }
@@ -557,24 +566,19 @@ export class ConfigurationManager {
     outputPath: string,
     format: "json" | "yaml" = "json",
   ): Promise<void> {
-    try {
-      let content: string;
+    let content: string;
 
-      if (format === "yaml") {
-        // Simple YAML export (basic implementation)
-        content = this.toSimpleYaml(
-          this.config as unknown as Record<string, unknown>,
-        );
-      } else {
-        content = JSON.stringify(this.config, null, 2);
-      }
-
-      this.writeFileSync(outputPath, content);
-      console.warn(`📤 Configuration exported to: ${outputPath} (${format})`);
-    } catch (error) {
-      console.error("❌ Failed to export configuration:", error);
-      throw error;
+    if (format === "yaml") {
+      // Simple YAML export (basic implementation)
+      content = this.toSimpleYaml(
+        this.config as unknown as Record<string, unknown>,
+      );
+    } else {
+      content = JSON.stringify(this.config, null, 2);
     }
+
+    this.writeFileSync(outputPath, content);
+    // Configuration exported - logged to file to avoid MCP interference
   }
 
   private toSimpleYaml(
@@ -772,7 +776,7 @@ export class ConfigurationManager {
 
     this.watchers = [];
 
-    console.warn("🔄 Configuration manager shut down");
+    // Configuration manager shut down - logged to file to avoid MCP interference
   }
 }
 

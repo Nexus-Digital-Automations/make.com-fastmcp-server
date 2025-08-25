@@ -46,13 +46,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1756092881227_1_general_392c84e3": {
+    "development_session_1756093854700_1_general_f6514f64": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-25T03:34:41.227Z",
+      "lastHeartbeat": "2025-08-25T03:50:54.700Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -63,17 +63,17 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-25T03:34:41.227Z",
-      "sessionId": "session_1756092881227",
+      "createdAt": "2025-08-25T03:50:54.700Z",
+      "sessionId": "session_1756093854700",
       "metadata": {}
     },
-    "development_session_1756093192275_1_general_2b5b2d3a": {
+    "development_session_1756094140494_1_general_87a5be64": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-25T03:39:52.276Z",
+      "lastHeartbeat": "2025-08-25T03:55:40.495Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -84,8 +84,29 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-25T03:39:52.276Z",
-      "sessionId": "session_1756093192275",
+      "createdAt": "2025-08-25T03:55:40.495Z",
+      "sessionId": "session_1756094140494",
+      "metadata": {}
+    },
+    "development_session_1756094288162_1_general_56d73d33": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-25T03:58:08.162Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-25T03:58:08.162Z",
+      "sessionId": "session_1756094288162",
       "metadata": {}
     }
   },
