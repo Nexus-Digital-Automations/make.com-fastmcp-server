@@ -7,6 +7,13 @@ import { performance } from "perf_hooks";
 import { v4 as uuidv4 } from "uuid";
 import winston from "winston";
 
+// Advanced rate limiting components
+import { TokenBucket } from "./rate-limiting/token-bucket";
+import {
+  RateLimitParser,
+  RateLimitInfo as ParsedRateLimitInfo,
+} from "./rate-limiting/rate-limit-parser";
+
 // Rate limiting configuration interface
 export interface RateLimitConfig {
   // Base configuration
@@ -27,6 +34,20 @@ export interface RateLimitConfig {
   // Monitoring and alerting
   enableMetrics: boolean;
   alertThresholdMs: number;
+
+  // Advanced features configuration
+  enableAdvancedComponents?: boolean;
+  tokenBucket?: {
+    enabled: boolean;
+    safetyMargin: number; // 0.8 = use 80% of available rate limit
+    synchronizeWithHeaders: boolean;
+    initialCapacity?: number; // Override default capacity
+    initialRefillRate?: number; // Override default refill rate
+  };
+  headerParsing?: {
+    enabled: boolean;
+    preferServerHeaders: boolean; // Prefer server rate limit headers over fallback
+  };
 }
 
 // Rate limit detection result
@@ -60,6 +81,13 @@ interface RateLimitMetrics {
   activeRequests: number;
   successRate: number;
   lastResetTime: Date;
+  // Advanced metrics
+  tokenBucket?: {
+    tokens: number;
+    capacity: number;
+    successRate: number;
+    utilizationRate: number;
+  };
 }
 
 // Rate limit error
@@ -87,6 +115,10 @@ export class RateLimitManager {
   private globalRateLimitUntil = 0;
   private endpointLimits = new Map<string, number>();
 
+  // Advanced rate limiting components
+  private tokenBucket?: TokenBucket;
+  private lastKnownRateLimit?: ParsedRateLimitInfo;
+
   constructor(config: Partial<RateLimitConfig> = {}) {
     this.config = {
       maxRetries: 3,
@@ -100,6 +132,17 @@ export class RateLimitManager {
       queueTimeoutMs: 300000, // 5 minutes
       enableMetrics: true,
       alertThresholdMs: 30000,
+      // Advanced features defaults
+      enableAdvancedComponents: true,
+      tokenBucket: {
+        enabled: true,
+        safetyMargin: 0.8, // Use 80% of available rate limit
+        synchronizeWithHeaders: true,
+      },
+      headerParsing: {
+        enabled: true,
+        preferServerHeaders: true,
+      },
       ...config,
     };
 
@@ -113,6 +156,9 @@ export class RateLimitManager {
       successRate: 1.0,
       lastResetTime: new Date(),
     };
+
+    // Initialize advanced components if enabled
+    this.initializeAdvancedComponents();
 
     // Initialize logger
     this.logger = winston.createLogger({
@@ -136,6 +182,50 @@ export class RateLimitManager {
     setInterval(() => {
       this.cleanupRequestHistory();
     }, 60000);
+  }
+
+  /**
+   * Initialize advanced components (TokenBucket, etc.)
+   */
+  private initializeAdvancedComponents(): void {
+    if (!this.config.enableAdvancedComponents) {
+      this.logger.info("Advanced rate limiting components disabled", {
+        enableAdvancedComponents: this.config.enableAdvancedComponents,
+      });
+      return;
+    }
+
+    // Initialize TokenBucket if enabled
+    if (this.config.tokenBucket?.enabled) {
+      const tokenBucketConfig = {
+        capacity:
+          this.config.tokenBucket.initialCapacity ||
+          this.config.requestsPerWindow,
+        refillRate:
+          this.config.tokenBucket.initialRefillRate ||
+          this.config.requestsPerWindow / (this.config.requestWindowMs / 1000),
+        safetyMargin: this.config.tokenBucket.safetyMargin,
+      };
+
+      this.tokenBucket = new TokenBucket(tokenBucketConfig);
+
+      this.logger.info(
+        "TokenBucket initialized for pre-emptive rate limiting",
+        {
+          operationId: uuidv4(),
+          tokenBucketConfig,
+          component: "RateLimitManager",
+          initializationStatus: "success",
+        },
+      );
+    }
+
+    this.logger.info("Advanced rate limiting components initialized", {
+      operationId: uuidv4(),
+      tokenBucketEnabled: this.config.tokenBucket?.enabled,
+      headerParsingEnabled: this.config.headerParsing?.enabled,
+      component: "RateLimitManager",
+    });
   }
 
   /**
@@ -193,8 +283,25 @@ export class RateLimitManager {
    * Check if we can make a request now without rate limiting
    */
   private canMakeRequestNow(endpoint?: string): boolean {
+    const operationId = uuidv4();
+
+    this.logger.debug(`[${operationId}] Starting rate limit check`, {
+      operationId,
+      endpoint,
+      timestamp: new Date().toISOString(),
+      component: "RateLimitManager",
+    });
+
     // Check global rate limit
     if (Date.now() < this.globalRateLimitUntil) {
+      this.logger.debug(
+        `[${operationId}] Request blocked by global rate limit`,
+        {
+          operationId,
+          globalRateLimitUntil: this.globalRateLimitUntil,
+          waitTimeMs: this.globalRateLimitUntil - Date.now(),
+        },
+      );
       return false;
     }
 
@@ -202,26 +309,89 @@ export class RateLimitManager {
     if (endpoint) {
       const endpointLimit = this.endpointLimits.get(endpoint);
       if (endpointLimit && Date.now() < endpointLimit) {
+        this.logger.debug(
+          `[${operationId}] Request blocked by endpoint-specific rate limit`,
+          {
+            operationId,
+            endpoint,
+            endpointLimitUntil: endpointLimit,
+            waitTimeMs: endpointLimit - Date.now(),
+          },
+        );
         return false;
       }
     }
 
     // Check concurrent request limit
     if (this.activeRequests >= this.config.maxConcurrentRequests) {
+      this.logger.debug(
+        `[${operationId}] Request blocked by concurrent request limit`,
+        {
+          operationId,
+          activeRequests: this.activeRequests,
+          maxConcurrentRequests: this.config.maxConcurrentRequests,
+        },
+      );
       return false;
     }
 
-    // Check request window limit
-    const now = Date.now();
-    const windowStart = now - this.config.requestWindowMs;
-    const recentRequests = this.requestHistory.filter(
-      (time) => time > windowStart,
+    // Advanced component: Check TokenBucket if enabled
+    if (
+      this.config.enableAdvancedComponents &&
+      this.config.tokenBucket?.enabled &&
+      this.tokenBucket
+    ) {
+      const tokenAvailable = this.tokenBucket.tryConsume(1);
+      if (!tokenAvailable) {
+        const timeUntilTokens = this.tokenBucket.getTimeUntilTokensAvailable(1);
+        this.logger.debug(
+          `[${operationId}] Request blocked by TokenBucket - insufficient tokens`,
+          {
+            operationId,
+            tokenBucketState: this.tokenBucket.getState(),
+            timeUntilTokensMs: timeUntilTokens,
+            component: "TokenBucket",
+          },
+        );
+        return false;
+      }
+
+      this.logger.debug(`[${operationId}] TokenBucket allowed request`, {
+        operationId,
+        tokenBucketState: this.tokenBucket.getState(),
+        component: "TokenBucket",
+      });
+    } else {
+      // Fallback: Check request window limit (legacy behavior)
+      const now = Date.now();
+      const windowStart = now - this.config.requestWindowMs;
+      const recentRequests = this.requestHistory.filter(
+        (time) => time > windowStart,
+      );
+
+      if (recentRequests.length >= this.config.requestsPerWindow) {
+        this.logger.debug(
+          `[${operationId}] Request blocked by window limit (legacy behavior)`,
+          {
+            operationId,
+            recentRequestsCount: recentRequests.length,
+            requestsPerWindow: this.config.requestsPerWindow,
+            windowMs: this.config.requestWindowMs,
+          },
+        );
+        return false;
+      }
+    }
+
+    this.logger.debug(
+      `[${operationId}] Rate limit check passed - request allowed`,
+      {
+        operationId,
+        endpoint,
+        activeRequests: this.activeRequests,
+        tokenBucketEnabled: this.config.tokenBucket?.enabled,
+      },
     );
-
-    if (recentRequests.length >= this.config.requestsPerWindow) {
-      return false;
-    }
-
     return true;
   }
 
@@ -447,15 +617,110 @@ export class RateLimitManager {
 
   /**
    * Extract rate limit information from error response
+   * Enhanced with RateLimitParser for better accuracy
    */
   private extractRateLimitInfo(error: unknown): RateLimitInfo {
+    const operationId = uuidv4();
+
+    this.logger.debug(
+      `[${operationId}] Extracting rate limit information from error`,
+      {
+        operationId,
+        component: "RateLimitManager",
+        hasError: !!error,
+      },
+    );
+
     if (!error || typeof error !== "object") {
+      this.logger.debug(
+        `[${operationId}] No error object available, returning default rate limit info`,
+        {
+          operationId,
+        },
+      );
       return { isRateLimited: true };
     }
 
     const errorObj = error as Record<string, unknown>;
     const response = errorObj.response as Record<string, unknown> | undefined;
     const headers = (response?.headers as Record<string, string>) || {};
+
+    // Enhanced: Use RateLimitParser if advanced components are enabled
+    if (
+      this.config.enableAdvancedComponents &&
+      this.config.headerParsing?.enabled
+    ) {
+      const parsedInfo = RateLimitParser.parseHeaders(headers);
+
+      if (parsedInfo) {
+        this.logger.info(
+          `[${operationId}] Rate limit info parsed successfully with RateLimitParser`,
+          {
+            operationId,
+            parsedInfo,
+            component: "RateLimitParser",
+          },
+        );
+
+        // Store the parsed info for future use
+        this.lastKnownRateLimit = parsedInfo;
+
+        // Update TokenBucket if enabled and we have good data
+        if (
+          this.config.tokenBucket?.synchronizeWithHeaders &&
+          this.tokenBucket &&
+          parsedInfo.limit > 0
+        ) {
+          const windowSeconds = parsedInfo.window || 3600; // Default to 1 hour if not specified
+          this.tokenBucket.updateFromRateLimit(
+            parsedInfo.limit,
+            parsedInfo.remaining,
+            windowSeconds,
+          );
+
+          this.logger.info(
+            `[${operationId}] TokenBucket synchronized with API headers`,
+            {
+              operationId,
+              limit: parsedInfo.limit,
+              remaining: parsedInfo.remaining,
+              windowSeconds,
+              tokenBucketState: this.tokenBucket.getState(),
+            },
+          );
+        }
+
+        // Convert to legacy format for backward compatibility
+        return {
+          isRateLimited: true,
+          retryAfterMs: parsedInfo.retryAfter
+            ? parsedInfo.retryAfter * 1000
+            : RateLimitParser.getTimeUntilReset(parsedInfo),
+          remainingRequests: parsedInfo.remaining,
+          resetTimeMs:
+            parsedInfo.reset > 0 ? parsedInfo.reset * 1000 : undefined,
+          quotaType: "parsed-headers",
+        };
+      }
+
+      this.logger.debug(
+        `[${operationId}] RateLimitParser could not parse headers, falling back to legacy parsing`,
+        {
+          operationId,
+          headers: Object.keys(headers),
+        },
+      );
+    }
+
+    // Legacy fallback parsing (maintained for backward compatibility)
+    this.logger.debug(
+      `[${operationId}] Using legacy rate limit header parsing`,
+      {
+        operationId,
+        advancedComponentsEnabled: this.config.enableAdvancedComponents,
+        headerParsingEnabled: this.config.headerParsing?.enabled,
+      },
+    );
 
     // Try various header formats used by different APIs
     let retryAfterMs: number | undefined;
@@ -491,6 +756,15 @@ export class RateLimitManager {
         "0",
       10,
     );
+
+    this.logger.debug(`[${operationId}] Legacy rate limit parsing completed`, {
+      operationId,
+      retryAfterMs,
+      remainingRequests: isNaN(remainingRequests)
+        ? undefined
+        : remainingRequests,
+      resetTimeMs: resetTime ? resetTime * 1000 : undefined,
+    });
 
     return {
       isRateLimited: true,
@@ -595,13 +869,32 @@ export class RateLimitManager {
 
   /**
    * Get current metrics
+   * Enhanced with TokenBucket statistics
    */
   getMetrics(): RateLimitMetrics {
-    return {
+    const baseMetrics: RateLimitMetrics = {
       ...this.metrics,
       queueSize: this.requestQueue.length,
       activeRequests: this.activeRequests,
     };
+
+    // Add TokenBucket metrics if enabled
+    if (this.config.enableAdvancedComponents && this.tokenBucket) {
+      const bucketStats = this.tokenBucket.getStatistics();
+      baseMetrics.tokenBucket = {
+        tokens: bucketStats.state.tokens,
+        capacity: bucketStats.config.capacity,
+        successRate: bucketStats.stats.successRate,
+        utilizationRate: bucketStats.stats.utilizationRate,
+      };
+
+      this.logger.debug("TokenBucket metrics included in rate limit metrics", {
+        tokenBucket: baseMetrics.tokenBucket,
+        component: "RateLimitManager",
+      });
+    }
+
+    return baseMetrics;
   }
 
   /**
@@ -652,10 +945,46 @@ export class RateLimitManager {
 
   /**
    * Update configuration at runtime
+   * Enhanced to reinitialize advanced components if needed
    */
   updateConfig(updates: Partial<RateLimitConfig>): void {
+    const oldConfig = { ...this.config };
     this.config = { ...this.config, ...updates };
-    this.logger.info("Rate limit configuration updated", updates);
+
+    // Reinitialize advanced components if their config changed
+    if (
+      updates.enableAdvancedComponents !== undefined ||
+      updates.tokenBucket !== undefined ||
+      updates.headerParsing !== undefined
+    ) {
+      this.logger.info(
+        "Advanced components configuration changed, reinitializing",
+        {
+          oldAdvancedEnabled: oldConfig.enableAdvancedComponents,
+          newAdvancedEnabled: this.config.enableAdvancedComponents,
+          tokenBucketUpdated: !!updates.tokenBucket,
+          headerParsingUpdated: !!updates.headerParsing,
+        },
+      );
+
+      this.initializeAdvancedComponents();
+    }
+
+    // Update TokenBucket configuration if it exists and relevant config changed
+    if (this.tokenBucket && updates.tokenBucket) {
+      this.tokenBucket.updateConfig({
+        safetyMargin: updates.tokenBucket.safetyMargin,
+      });
+
+      this.logger.info("TokenBucket configuration updated dynamically", {
+        updatedConfig: updates.tokenBucket,
+      });
+    }
+
+    this.logger.info("Rate limit configuration updated", {
+      updates,
+      component: "RateLimitManager",
+    });
   }
 
   /**
@@ -687,10 +1016,83 @@ export class RateLimitManager {
       canMakeRequest: this.canMakeRequestNow(),
     };
   }
+
+  /**
+   * Get advanced components status and configuration
+   */
+  getAdvancedComponentsStatus(): {
+    enabled: boolean;
+    tokenBucket: {
+      enabled: boolean;
+      initialized: boolean;
+      state?: {
+        tokens: number;
+        lastRefill: number;
+        totalConsumed: number;
+        totalRequested: number;
+      };
+      statistics?: {
+        config: {
+          capacity: number;
+          refillRate: number;
+          safetyMargin: number;
+        };
+        state: {
+          tokens: number;
+          lastRefill: number;
+          totalConsumed: number;
+          totalRequested: number;
+        };
+        stats: {
+          successRate: number;
+          averageTokensPerSecond: number;
+          utilizationRate: number;
+        };
+      };
+    };
+    headerParsing: {
+      enabled: boolean;
+      lastParsedInfo?: ParsedRateLimitInfo;
+    };
+    featureFlags: {
+      enableAdvancedComponents: boolean;
+      tokenBucketEnabled: boolean;
+      headerParsingEnabled: boolean;
+    };
+  } {
+    const tokenBucketEnabled =
+      this.config.enableAdvancedComponents && this.config.tokenBucket?.enabled;
+
+    return {
+      enabled: !!this.config.enableAdvancedComponents,
+      tokenBucket: {
+        enabled: !!tokenBucketEnabled,
+        initialized: !!this.tokenBucket,
+        state: this.tokenBucket?.getState(),
+        statistics: this.tokenBucket?.getStatistics(),
+      },
+      headerParsing: {
+        enabled: !!(
+          this.config.enableAdvancedComponents &&
+          this.config.headerParsing?.enabled
+        ),
+        lastParsedInfo: this.lastKnownRateLimit,
+      },
+      featureFlags: {
+        enableAdvancedComponents: !!this.config.enableAdvancedComponents,
+        tokenBucketEnabled: !!tokenBucketEnabled,
+        headerParsingEnabled: !!(
+          this.config.enableAdvancedComponents &&
+          this.config.headerParsing?.enabled
+        ),
+      },
+    };
+  }
 }
 
-// Default configuration for Make.com API
+// Default configuration for Make.com API with advanced features
 export const MAKE_API_RATE_LIMIT_CONFIG: RateLimitConfig = {
+  // Base configuration
   maxRetries: 3,
   baseDelayMs: 2000, // Start with 2 second delay
   maxDelayMs: 300000, // Max 5 minutes
@@ -702,4 +1104,35 @@ export const MAKE_API_RATE_LIMIT_CONFIG: RateLimitConfig = {
   queueTimeoutMs: 600000, // 10 minutes queue timeout
   enableMetrics: true,
   alertThresholdMs: 60000, // Alert if delays exceed 1 minute
+
+  // Advanced features configuration for Make.com
+  enableAdvancedComponents: true,
+  tokenBucket: {
+    enabled: true,
+    safetyMargin: 0.8, // Use 80% of available rate limit for conservative operation
+    synchronizeWithHeaders: true,
+    initialCapacity: 40, // 80% of 50 requests per window for safety
+    initialRefillRate: 0.67, // 40 requests / 60 seconds = ~0.67 requests per second
+  },
+  headerParsing: {
+    enabled: true,
+    preferServerHeaders: true, // Always prefer server-provided rate limit headers
+  },
+};
+
+// Backward compatibility configuration (legacy behavior)
+export const LEGACY_MAKE_API_RATE_LIMIT_CONFIG: RateLimitConfig = {
+  maxRetries: 3,
+  baseDelayMs: 2000,
+  maxDelayMs: 300000,
+  backoffMultiplier: 2.5,
+  maxConcurrentRequests: 8,
+  requestWindowMs: 60000,
+  requestsPerWindow: 50,
+  maxQueueSize: 500,
+  queueTimeoutMs: 600000,
+  enableMetrics: true,
+  alertThresholdMs: 60000,
+  // Disable advanced features for legacy compatibility
+  enableAdvancedComponents: false,
 };
