@@ -8,10 +8,9 @@ import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import winston from "winston";
 import {
-  EnhancedMakeClient,
+  MakeAPIClient,
   MakeAPIError,
-} from "../make-client/enhanced-make-client.js";
-import { OrganizationRole, TeamRole } from "../types/make-api-types.js";
+} from "../make-client/simple-make-client.js";
 
 // ==============================================================================
 // Schema Definitions for User and Access Management Tools
@@ -53,13 +52,19 @@ const UserInviteSchema = z.object({
   email: z.string().email().describe("User email address"),
   organizationId: z.string().describe("Organization ID to invite user to"),
   role: z
-    .nativeEnum(OrganizationRole)
+    .enum(["owner", "admin", "member"])
     .describe("Organization role for the user"),
   teamAssignments: z
     .array(
       z.object({
         teamId: z.string(),
-        role: z.nativeEnum(TeamRole),
+        role: z.enum([
+          "admin",
+          "member",
+          "monitoring",
+          "operator",
+          "restricted",
+        ]),
       }),
     )
     .optional()
@@ -101,7 +106,7 @@ const UserActivitySchema = z.object({
 
 export function registerUserAccessManagementTools(
   server: FastMCP,
-  makeClient: EnhancedMakeClient,
+  makeClient: MakeAPIClient,
   logger: winston.Logger,
 ): void {
   // ==============================================================================
@@ -141,7 +146,7 @@ export function registerUserAccessManagementTools(
 
         // Format organizations with enhanced information
         const formattedOrgs = await Promise.all(
-          organizations.map(async (org) => {
+          organizations.map(async (org: any) => {
             let teamCount = 0;
             let userCount = 0;
 
@@ -162,7 +167,7 @@ export function registerUserAccessManagementTools(
             return {
               id: org.id,
               name: org.name,
-              role: org.role,
+              role: (org as any).role || "member",
               ...(args.includeTeamCounts && {
                 teamCount,
                 estimatedUserCount: userCount,
@@ -276,16 +281,16 @@ export function registerUserAccessManagementTools(
               text:
                 `🏢 Organization Details\n\n**${org?.name}**\n` +
                 `- ID: ${org?.id}\n` +
-                `- Organization ID: ${org?.organizationId}\n` +
-                `- Your Role: ${org?.role}\n\n` +
+                `- Organization ID: ${(org as any)?.organizationId}\n` +
+                `- Your Role: ${(org as any)?.role || "member"}\n\n` +
                 (args.includeTeams && teams.length > 0
                   ? `**Teams (${teams.length}):**\n` +
                     teams
                       .map(
-                        (team, index) =>
+                        (team: any, index: number) =>
                           `${index + 1}. **${team.name}**\n` +
                           `   - ID: ${team.id}\n` +
-                          `   - Created: ${new Date(team.createdAt || "").toLocaleDateString()}\n`,
+                          `   - Created: ${new Date((team as any).createdAt || "").toLocaleDateString()}\n`,
                       )
                       .join("") +
                     "\n"
@@ -363,7 +368,7 @@ export function registerUserAccessManagementTools(
 
         // Format teams with enhanced information
         const formattedTeams = await Promise.all(
-          teams.map(async (team) => {
+          teams.map(async (team: any) => {
             let scenarioCount = 0;
             let memberCount = 0;
 
@@ -393,7 +398,7 @@ export function registerUserAccessManagementTools(
               id: team.id,
               name: team.name,
               organizationId: team.organizationId,
-              createdAt: team.createdAt,
+              createdAt: (team as any).createdAt,
               ...(args.includeMembers && { memberCount }),
               ...(args.includeScenarios && { scenarioCount }),
             };
@@ -412,7 +417,7 @@ export function registerUserAccessManagementTools(
                       `**${index + 1}. ${team.name}**\n` +
                       `- ID: ${team.id}\n` +
                       `- Organization: ${team.organizationId}\n` +
-                      `- Created: ${new Date(team.createdAt || "").toLocaleDateString()}\n` +
+                      `- Created: ${new Date((team as any).createdAt || "").toLocaleDateString()}\n` +
                       (args.includeMembers
                         ? `- Members: ${team.memberCount}\n`
                         : "") +
@@ -468,7 +473,7 @@ export function registerUserAccessManagementTools(
           name: args.name,
           organizationId: args.organizationId,
           description: args.description,
-          ...args.settings,
+          settings: args.settings,
         };
 
         const result = await makeClient.createTeam(teamData);

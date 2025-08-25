@@ -18,6 +18,7 @@ import { MakeAPIClient } from "./make-client/simple-make-client.js";
 // Import tool registration functions
 import { registerDevelopmentCustomizationTools } from "./tools/development-customization-tools.js";
 import { registerAIAgentManagementTools } from "./tools/ai-agent-management-tools.js";
+import { registerUserAccessManagementTools } from "./tools/user-access-management-tools.js";
 
 // Load environment variables
 dotenv.config();
@@ -738,9 +739,11 @@ registerDevelopmentCustomizationTools(server, makeClient, logger);
 // Register AI Agent Management Tools
 registerAIAgentManagementTools(server, makeClient, logger);
 
+// Register User and Access Management Tools
+registerUserAccessManagementTools(server, makeClient, logger);
+
 // Note: Additional tool modules temporarily disabled until TypeScript issues are resolved
 // registerAdvancedMakeTools(server, makeClient, logger);
-// registerUserAccessManagementTools(server, makeClient, logger);
 // registerConnectionDataManagementTools(server, makeClient, logger);
 
 // ==============================================================================
@@ -756,10 +759,11 @@ const startupMessage = [
   `📊 Environment: ${process.env.NODE_ENV || "development"}`,
   `🌐 API Base URL: ${process.env.MAKE_BASE_URL || "https://eu1.make.com/api/v2"}`,
   `📝 Log Level: ${process.env.LOG_LEVEL || "info"}`,
-  `⚙️  Enhanced Features: Scenarios, Webhooks, Analytics, Health Monitoring, Development & Customization, AI Agent Management`,
+  `⚙️  Enhanced Features: Scenarios, Webhooks, Analytics, Health Monitoring, Development & Customization, AI Agent Management, User & Access Management`,
   `🔧 Core Tools: ${["list-scenarios-enhanced", "create-webhook-enhanced", "list-webhooks-enhanced", "get-enhanced-analytics", "system-health-check"].length} enhanced tools`,
   `🛠️  Development Tools: ${["create-make-custom-app", "list-make-custom-apps", "create-make-app-module", "create-make-app-rpc", "create-make-template", "create-advanced-webhook", "publish-make-custom-app"].length} custom development tools`,
   `🤖 AI Agent Tools: ${["create-ai-agent", "start-ai-agent", "manage-agent-context", "configure-agent-llm", "configure-agent-monitoring", "configure-agent-auth", "configure-agent-cache", "configure-agent-testing"].length} comprehensive AI agent management tools`,
+  `👥 User & Access Tools: ${["list-make-organizations", "get-make-organization-details", "list-make-teams", "create-make-team", "invite-make-user", "manage-make-permissions", "get-make-user-activity"].length} comprehensive user and access management tools`,
   `📚 Resources: Enhanced documentation and guides`,
   "✅ Ready for comprehensive Make.com automation and development tasks!",
 ];
