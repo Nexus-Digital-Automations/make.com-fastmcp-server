@@ -8,12 +8,12 @@
 
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
-import axios from "axios";
 import dotenv from "dotenv";
 import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
-import { v4 as uuidv4 } from "uuid";
-import { performance } from "perf_hooks";
+
+// Import our enhanced Make.com API client and tools (temporarily using compatible client)
+import { MakeAPIClient } from "./make-client/simple-make-client.js";
 
 // Load environment variables
 dotenv.config();
@@ -37,15 +37,8 @@ try {
 }
 
 // ==============================================================================
-// Enhanced Configuration and Types
+// Local Interface Definitions
 // ==============================================================================
-
-interface MakeClientConfig {
-  apiToken: string;
-  baseURL: string;
-  timeout: number;
-  retries: number;
-}
 
 interface WebhookData {
   name: string;
@@ -58,15 +51,22 @@ interface WebhookData {
   scenarioId?: string;
 }
 
-interface DataStoreField {
+interface _DataStoreField {
   name: string;
-  type: "string" | "number" | "boolean" | "date" | "datetime" | "json" | "array";
+  type:
+    | "string"
+    | "number"
+    | "boolean"
+    | "date"
+    | "datetime"
+    | "json"
+    | "array";
   required: boolean;
   unique: boolean;
-  defaultValue?: any;
+  defaultValue?: unknown;
 }
 
-interface TemplateData {
+interface _TemplateData {
   name: string;
   description?: string;
   category: string;
@@ -115,133 +115,7 @@ const logger = winston.createLogger({
   ],
 });
 
-// ==============================================================================
-// Enhanced Make.com API Client
-// ==============================================================================
-
-class MakeAPIClient {
-  private config: MakeClientConfig;
-  private axios: any;
-  private requestCount = 0;
-  private resetTime = Date.now() + 60000;
-
-  constructor(config: MakeClientConfig) {
-    this.config = config;
-    this.axios = axios.create({
-      baseURL: config.baseURL,
-      timeout: config.timeout,
-      headers: {
-        Authorization: `Bearer ${config.apiToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    // Request interceptor for logging
-    this.axios.interceptors.request.use((config: any) => {
-      const correlationId = uuidv4();
-      config.correlationId = correlationId;
-      config.startTime = performance.now();
-
-      logger.debug("Make.com API request started", {
-        correlationId,
-        method: config.method?.toUpperCase(),
-        url: config.url,
-      });
-
-      return config;
-    });
-
-    // Response interceptor for logging and rate limiting
-    this.axios.interceptors.response.use(
-      (response: any) => {
-        const { correlationId, startTime } = response.config;
-        const duration = startTime ? performance.now() - startTime : 0;
-
-        logger.info("Make.com API request completed", {
-          correlationId,
-          status: response.status,
-          duration: Math.round(duration),
-          method: response.config.method?.toUpperCase(),
-          url: response.config.url,
-        });
-
-        this.updateRateLimit();
-        return response;
-      },
-      (error: any) => {
-        const { correlationId, startTime } = error.config || {};
-        const duration = startTime ? performance.now() - startTime : 0;
-
-        logger.error("Make.com API request failed", {
-          correlationId,
-          error: error.message,
-          status: error.response?.status,
-          duration: Math.round(duration),
-          method: error.config?.method?.toUpperCase(),
-          url: error.config?.url,
-          responseData: error.response?.data,
-        });
-
-        return Promise.reject(this.formatError(error));
-      }
-    );
-  }
-
-  private updateRateLimit() {
-    if (Date.now() > this.resetTime) {
-      this.requestCount = 0;
-      this.resetTime = Date.now() + 60000;
-    }
-    this.requestCount++;
-  }
-
-  private formatError(error: any) {
-    const status = error.response?.status;
-    const data = error.response?.data;
-
-    switch (status) {
-      case 401:
-        return new Error(`Authentication failed: ${data?.message || "Invalid token"}`);
-      case 403:
-        return new Error(`Access denied: ${data?.message || "Insufficient permissions"}`);
-      case 404:
-        return new Error(`Resource not found: ${data?.message || "Not found"}`);
-      case 429:
-        return new Error(`Rate limit exceeded: ${data?.message || "Too many requests"}`);
-      default:
-        return new Error(`API error: ${data?.message || error.message}`);
-    }
-  }
-
-  // Core API methods
-  async get(endpoint: string, params?: any) {
-    return this.axios.get(endpoint, { params });
-  }
-
-  async post(endpoint: string, data?: any) {
-    return this.axios.post(endpoint, data);
-  }
-
-  async patch(endpoint: string, data?: any) {
-    return this.axios.patch(endpoint, data);
-  }
-
-  async delete(endpoint: string) {
-    return this.axios.delete(endpoint);
-  }
-
-  getRateLimitStatus() {
-    const now = Date.now();
-    const remaining = Math.max(0, 100 - this.requestCount);
-    const resetIn = Math.max(0, this.resetTime - now);
-
-    return {
-      remaining,
-      resetIn: Math.ceil(resetIn / 1000),
-      limit: 100,
-    };
-  }
-}
+// Old MakeAPIClient class removed - now using imported version from simple-make-client.ts
 
 // ==============================================================================
 // Initialize FastMCP Server and Client
@@ -258,12 +132,27 @@ if (!process.env.MAKE_API_KEY) {
   process.exit(1);
 }
 
-const makeClient = new MakeAPIClient({
-  apiToken: process.env.MAKE_API_KEY,
-  baseURL: process.env.MAKE_BASE_URL || "https://eu1.make.com/api/v2",
-  timeout: parseInt(process.env.MAKE_TIMEOUT || "30000"),
-  retries: parseInt(process.env.MAKE_RETRIES || "3"),
-});
+const makeClient = new MakeAPIClient(
+  {
+    apiToken: process.env.MAKE_API_KEY,
+    zone: process.env.MAKE_ZONE || "eu1",
+    apiVersion: "v2",
+    timeout: parseInt(process.env.MAKE_TIMEOUT || "30000"),
+    retryConfig: {
+      maxRetries: parseInt(process.env.MAKE_RETRIES || "3"),
+      retryDelay: 1000,
+      backoffMultiplier: 2,
+      maxRetryDelay: 10000,
+    },
+    rateLimitConfig: {
+      maxRequests: parseInt(process.env.MAKE_RATE_LIMIT || "60"),
+      windowMs: 60000,
+      skipSuccessfulRequests: false,
+      skipFailedRequests: false,
+    },
+  },
+  logger,
+);
 
 logger.info("Enhanced Make.com API client initialized");
 
@@ -275,14 +164,22 @@ server.addTool({
   name: "list-scenarios-enhanced",
   description: "List Make.com scenarios with enhanced filtering and pagination",
   parameters: z.object({
-    limit: z.number().min(1).max(100).optional().describe("Maximum scenarios to return"),
+    limit: z
+      .number()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe("Maximum scenarios to return"),
     teamId: z.string().optional().describe("Filter by team ID"),
-    status: z.enum(["active", "inactive", "paused", "error"]).optional().describe("Filter by status"),
+    status: z
+      .enum(["active", "inactive", "paused", "error"])
+      .optional()
+      .describe("Filter by status"),
     search: z.string().optional().describe("Search scenarios by name"),
   }),
   execute: async (args, { log }) => {
     const operationId = `list-scenarios-${Date.now()}`;
-    
+
     log.info(`[${operationId}] Listing scenarios with enhanced filters`, {
       limit: args.limit,
       teamId: args.teamId,
@@ -291,28 +188,48 @@ server.addTool({
     });
 
     try {
-      const params: any = {};
-      if (args.limit) params.limit = args.limit;
-      if (args.teamId) params.teamId = args.teamId;
-      if (args.status) params.status = args.status;
-      if (args.search) params.search = args.search;
+      const params: Record<string, unknown> = {};
+      if (args.limit) {
+        params.limit = args.limit;
+      }
+      if (args.teamId) {
+        params.teamId = args.teamId;
+      }
+      if (args.status) {
+        params.status = args.status;
+      }
+      if (args.search) {
+        params.search = args.search;
+      }
 
-      const response = await makeClient.get("/scenarios", params);
+      const response = await makeClient.getScenarios(params.teamId, params);
       const scenarios = response.data;
 
-      log.info(`[${operationId}] Retrieved ${scenarios?.length || 0} scenarios`);
+      log.info(
+        `[${operationId}] Retrieved ${scenarios?.length || 0} scenarios`,
+      );
 
       return {
         content: [
           {
             type: "text",
-            text: `📋 **Enhanced Scenarios List**\n\n**Found:** ${scenarios?.length || 0} scenarios\n**Filters Applied:** ${Object.entries(args).filter(([_, v]) => v !== undefined).map(([k, v]) => `${k}: ${v}`).join(", ") || "None"}\n\n${scenarios?.map((s: any, i: number) => 
-              `**${i + 1}. ${s.name}**\n` +
-              `- ID: \`${s.id}\`\n` +
-              `- Status: ${s.status}\n` +
-              `- Team: ${s.teamId || "N/A"}\n` +
-              `- Last Modified: ${s.updatedAt || "N/A"}\n`
-            ).join("\n") || "No scenarios found"}\n\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining\n\nFull response:\n\`\`\`json\n${JSON.stringify(scenarios, null, 2)}\n\`\`\``,
+            text: `📋 **Enhanced Scenarios List**\n\n**Found:** ${scenarios?.length || 0} scenarios\n**Filters Applied:** ${
+              Object.entries(args)
+                .filter(([_, v]) => v !== undefined)
+                .map(([k, v]) => `${k}: ${v}`)
+                .join(", ") || "None"
+            }\n\n${
+              scenarios
+                ?.map(
+                  (s: unknown, i: number) =>
+                    `**${i + 1}. ${(s as Record<string, unknown>).name}**\n` +
+                    `- ID: \`${(s as Record<string, unknown>).id}\`\n` +
+                    `- Status: ${(s as Record<string, unknown>).status}\n` +
+                    `- Team: ${(s as Record<string, unknown>).teamId || "N/A"}\n` +
+                    `- Last Modified: ${(s as Record<string, unknown>).updatedAt || "N/A"}\n`,
+                )
+                .join("\n") || "No scenarios found"
+            }\n\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining\n\nFull response:\n\`\`\`json\n${JSON.stringify(scenarios ?? [], null, 2)}\n\`\`\``,
           },
         ],
       };
@@ -341,7 +258,11 @@ server.addTool({
   name: "create-webhook-enhanced",
   description: "Create a Make.com webhook with advanced configuration options",
   parameters: z.object({
-    name: z.string().min(1).max(128).describe("Webhook name (max 128 characters)"),
+    name: z
+      .string()
+      .min(1)
+      .max(128)
+      .describe("Webhook name (max 128 characters)"),
     teamId: z.string().optional().describe("Team ID for webhook"),
     typeName: z.string().describe("Webhook type identifier"),
     method: z.boolean().default(true).describe("Track HTTP methods"),
@@ -352,7 +273,7 @@ server.addTool({
   }),
   execute: async (args, { log }) => {
     const operationId = `create-webhook-${Date.now()}`;
-    
+
     log.info(`[${operationId}] Creating enhanced webhook`, {
       name: args.name,
       typeName: args.typeName,
@@ -371,7 +292,7 @@ server.addTool({
         scenarioId: args.scenarioId,
       };
 
-      const response = await makeClient.post("/hooks", webhookData);
+      const response = await makeClient.createWebhook(webhookData);
       const webhook = response.data;
 
       log.info(`[${operationId}] Webhook created successfully`, {
@@ -410,12 +331,20 @@ server.addTool({
   description: "List Make.com webhooks with detailed information and filtering",
   parameters: z.object({
     teamId: z.string().optional().describe("Filter by team ID"),
-    status: z.enum(["enabled", "disabled", "learning"]).optional().describe("Filter by status"),
-    limit: z.number().min(1).max(50).optional().describe("Maximum webhooks to return"),
+    status: z
+      .enum(["enabled", "disabled", "learning"])
+      .optional()
+      .describe("Filter by status"),
+    limit: z
+      .number()
+      .min(1)
+      .max(50)
+      .optional()
+      .describe("Maximum webhooks to return"),
   }),
   execute: async (args, { log }) => {
     const operationId = `list-webhooks-${Date.now()}`;
-    
+
     log.info(`[${operationId}] Listing webhooks with filters`, {
       teamId: args.teamId,
       status: args.status,
@@ -423,25 +352,35 @@ server.addTool({
     });
 
     try {
-      const params: any = {};
-      if (args.teamId) params.teamId = args.teamId;
-      if (args.status) params.status = args.status;
-      if (args.limit) params.limit = args.limit;
+      const params: Record<string, unknown> = {};
+      if (args.teamId) {
+        params.teamId = args.teamId;
+      }
+      if (args.status) {
+        params.status = args.status;
+      }
+      if (args.limit) {
+        params.limit = args.limit;
+      }
 
-      const response = await makeClient.get("/hooks", params);
+      const response = await makeClient.getWebhooks(params.teamId, params);
       const webhooks = response.data;
 
       log.info(`[${operationId}] Retrieved ${webhooks?.length || 0} webhooks`);
 
-      const webhookList = webhooks?.map((w: any, i: number) => 
-        `**${i + 1}. ${w.name}**\n` +
-        `- ID: \`${w.id}\`\n` +
-        `- URL: \`${w.url}\`\n` +
-        `- Status: ${w.status}\n` +
-        `- Type: ${w.typeName || "N/A"}\n` +
-        `- Team: ${w.teamId || "Default"}\n` +
-        `- Created: ${w.createdAt || "N/A"}\n`
-      ).join("\n") || "No webhooks found";
+      const webhookList =
+        webhooks
+          ?.map(
+            (w: any, i: number) =>
+              `**${i + 1}. ${w.name}**\n` +
+              `- ID: \`${w.id}\`\n` +
+              `- URL: \`${w.url}\`\n` +
+              `- Status: ${w.status}\n` +
+              `- Type: ${w.typeName || "N/A"}\n` +
+              `- Team: ${w.teamId || "Default"}\n` +
+              `- Created: ${w.createdAt || "N/A"}\n`,
+          )
+          .join("\n") || "No webhooks found";
 
       const statusCounts = webhooks?.reduce((acc: any, w: any) => {
         acc[w.status] = (acc[w.status] || 0) + 1;
@@ -452,7 +391,16 @@ server.addTool({
         content: [
           {
             type: "text",
-            text: `🪝 **Enhanced Webhooks List**\n\n**Summary:**\n- Total: ${webhooks?.length || 0} webhooks\n- Status Breakdown: ${Object.entries(statusCounts || {}).map(([status, count]) => `${status}: ${count}`).join(", ")}\n- Filters: ${Object.entries(args).filter(([_, v]) => v !== undefined).map(([k, v]) => `${k}: ${v}`).join(", ") || "None"}\n\n**Webhooks:**\n${webhookList}\n\n**Management Commands:**\n- Use \`manage-webhook-enhanced\` to enable/disable webhooks\n- Use \`webhook-learning-mode\` to start/stop learning\n- Use \`delete-webhook\` to remove webhooks\n\n**Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining`,
+            text: `🪝 **Enhanced Webhooks List**\n\n**Summary:**\n- Total: ${webhooks?.length || 0} webhooks\n- Status Breakdown: ${Object.entries(
+              statusCounts || {},
+            )
+              .map(([status, count]) => `${status}: ${count}`)
+              .join(", ")}\n- Filters: ${
+              Object.entries(args)
+                .filter(([_, v]) => v !== undefined)
+                .map(([k, v]) => `${k}: ${v}`)
+                .join(", ") || "None"
+            }\n\n**Webhooks:**\n${webhookList}\n\n**Management Commands:**\n- Use \`manage-webhook-enhanced\` to enable/disable webhooks\n- Use \`webhook-learning-mode\` to start/stop learning\n- Use \`delete-webhook\` to remove webhooks\n\n**Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining`,
           },
         ],
       };
@@ -479,17 +427,24 @@ server.addTool({
 
 server.addTool({
   name: "get-enhanced-analytics",
-  description: "Get comprehensive Make.com analytics with advanced metrics and insights",
+  description:
+    "Get comprehensive Make.com analytics with advanced metrics and insights",
   parameters: z.object({
     startDate: z.string().describe("Start date (ISO format: YYYY-MM-DD)"),
     endDate: z.string().describe("End date (ISO format: YYYY-MM-DD)"),
     teamId: z.string().optional().describe("Filter by team ID"),
-    includeDetails: z.boolean().default(true).describe("Include detailed breakdowns"),
-    metricTypes: z.array(z.enum(["operations", "data_transfer", "errors", "performance"])).optional().describe("Specific metrics to include"),
+    includeDetails: z
+      .boolean()
+      .default(true)
+      .describe("Include detailed breakdowns"),
+    metricTypes: z
+      .array(z.enum(["operations", "data_transfer", "errors", "performance"]))
+      .optional()
+      .describe("Specific metrics to include"),
   }),
   execute: async (args, { log }) => {
     const operationId = `analytics-${Date.now()}`;
-    
+
     log.info(`[${operationId}] Fetching enhanced analytics`, {
       dateRange: `${args.startDate} to ${args.endDate}`,
       teamId: args.teamId,
@@ -502,33 +457,59 @@ server.addTool({
         endDate: args.endDate,
         includeDetails: args.includeDetails,
       };
-      if (args.teamId) params.teamId = args.teamId;
-      if (args.metricTypes) params.metrics = args.metricTypes.join(",");
+      if (args.teamId) {
+        params.teamId = args.teamId;
+      }
+      if (args.metricTypes) {
+        params.metrics = args.metricTypes.join(",");
+      }
 
-      const response = await makeClient.get("/analytics", params);
+      const response = await makeClient.getAnalytics(params);
       const analytics = response.data;
 
       // Generate insights
       const insights = {
         totalOperations: analytics.operations?.total || 0,
-        successRate: analytics.operations?.total ? 
-          ((analytics.operations.successful / analytics.operations.total) * 100).toFixed(2) + "%" : "N/A",
-        dataTransferMB: analytics.dataTransfer ? 
-          (analytics.dataTransfer.totalBytes / 1024 / 1024).toFixed(2) + " MB" : "N/A",
-        avgResponseTime: analytics.performance?.averageResponseTime ? 
-          analytics.performance.averageResponseTime + "ms" : "N/A",
-        errorRate: analytics.operations?.total ? 
-          ((analytics.operations.failed / analytics.operations.total) * 100).toFixed(2) + "%" : "N/A",
+        successRate: analytics.operations?.total
+          ? (
+              (analytics.operations.successful / analytics.operations.total) *
+              100
+            ).toFixed(2) + "%"
+          : "N/A",
+        dataTransferMB: analytics.dataTransfer
+          ? (analytics.dataTransfer.totalBytes / 1024 / 1024).toFixed(2) + " MB"
+          : "N/A",
+        avgResponseTime: analytics.performance?.averageResponseTime
+          ? analytics.performance.averageResponseTime + "ms"
+          : "N/A",
+        errorRate: analytics.operations?.total
+          ? (
+              (analytics.operations.failed / analytics.operations.total) *
+              100
+            ).toFixed(2) + "%"
+          : "N/A",
       };
 
       // Performance assessment
       const performance = {
-        successRating: parseFloat(insights.successRate) >= 95 ? "🟢 Excellent" : 
-                      parseFloat(insights.successRate) >= 90 ? "🟡 Good" : "🔴 Needs Attention",
-        errorRating: parseFloat(insights.errorRate) <= 5 ? "🟢 Low" : 
-                    parseFloat(insights.errorRate) <= 10 ? "🟡 Moderate" : "🔴 High",
-        responseRating: analytics.performance?.averageResponseTime <= 1000 ? "🟢 Fast" : 
-                       analytics.performance?.averageResponseTime <= 3000 ? "🟡 Moderate" : "🔴 Slow",
+        successRating:
+          parseFloat(insights.successRate) >= 95
+            ? "🟢 Excellent"
+            : parseFloat(insights.successRate) >= 90
+              ? "🟡 Good"
+              : "🔴 Needs Attention",
+        errorRating:
+          parseFloat(insights.errorRate) <= 5
+            ? "🟢 Low"
+            : parseFloat(insights.errorRate) <= 10
+              ? "🟡 Moderate"
+              : "🔴 High",
+        responseRating:
+          analytics.performance?.averageResponseTime <= 1000
+            ? "🟢 Fast"
+            : analytics.performance?.averageResponseTime <= 3000
+              ? "🟡 Moderate"
+              : "🔴 Slow",
       };
 
       log.info(`[${operationId}] Analytics generated with insights`, {
@@ -540,7 +521,19 @@ server.addTool({
         content: [
           {
             type: "text",
-            text: `📊 **Enhanced Analytics Report**\n\n**Period:** ${args.startDate} to ${args.endDate}${args.teamId ? `\n**Team:** ${args.teamId}` : ""}\n\n## 📈 Key Metrics\n- **Total Operations:** ${insights.totalOperations}\n- **Success Rate:** ${insights.successRate} ${performance.successRating}\n- **Error Rate:** ${insights.errorRate} ${performance.errorRating}\n- **Data Transfer:** ${insights.dataTransferMB}\n- **Avg Response:** ${insights.avgResponseTime} ${performance.responseRating}\n\n## 🔍 Detailed Breakdown\n${analytics.operations ? `**Operations:**\n- Successful: ${analytics.operations.successful}\n- Failed: ${analytics.operations.failed}\n- Total: ${analytics.operations.total}` : "No operation data"}\n\n${analytics.dataTransfer ? `**Data Transfer:**\n- Inbound: ${(analytics.dataTransfer.inboundBytes / 1024 / 1024).toFixed(2)} MB\n- Outbound: ${(analytics.dataTransfer.outboundBytes / 1024 / 1024).toFixed(2)} MB\n- Total: ${(analytics.dataTransfer.totalBytes / 1024 / 1024).toFixed(2)} MB` : "No transfer data"}\n\n${analytics.errors ? `**Error Analysis:**\n- Total Errors: ${analytics.errors.totalErrors}\n- By Type: ${Object.entries(analytics.errors.errorsByType || {}).map(([type, count]) => `${type}(${count})`).join(", ")}\n- By Status: ${Object.entries(analytics.errors.errorsByStatus || {}).map(([status, count]) => `${status}(${count})`).join(", ")}` : "No error data"}\n\n## 💡 Recommendations\n${insights.totalOperations > 0 ? `${parseFloat(insights.successRate) > 95 ? "✅ Excellent performance! Your scenarios are running smoothly." : "⚠️ Consider investigating failed operations to improve success rate."}\n${analytics.performance?.averageResponseTime ? (analytics.performance.averageResponseTime < 1000 ? "✅ Great response times!" : "⚠️ Consider optimizing scenarios for better performance.") : ""}\n${analytics.errors?.totalErrors === 0 ? "✅ No errors detected - great job!" : "⚠️ Review error patterns and implement better error handling."}` : "📈 Start running scenarios to generate meaningful analytics!"}\n\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining\n\nFull analytics data:\n\`\`\`json\n${JSON.stringify(analytics, null, 2)}\n\`\`\``,
+            text: `📊 **Enhanced Analytics Report**\n\n**Period:** ${args.startDate} to ${args.endDate}${args.teamId ? `\n**Team:** ${args.teamId}` : ""}\n\n## 📈 Key Metrics\n- **Total Operations:** ${insights.totalOperations}\n- **Success Rate:** ${insights.successRate} ${performance.successRating}\n- **Error Rate:** ${insights.errorRate} ${performance.errorRating}\n- **Data Transfer:** ${insights.dataTransferMB}\n- **Avg Response:** ${insights.avgResponseTime} ${performance.responseRating}\n\n## 🔍 Detailed Breakdown\n${analytics.operations ? `**Operations:**\n- Successful: ${analytics.operations.successful}\n- Failed: ${analytics.operations.failed}\n- Total: ${analytics.operations.total}` : "No operation data"}\n\n${analytics.dataTransfer ? `**Data Transfer:**\n- Inbound: ${(analytics.dataTransfer.inboundBytes / 1024 / 1024).toFixed(2)} MB\n- Outbound: ${(analytics.dataTransfer.outboundBytes / 1024 / 1024).toFixed(2)} MB\n- Total: ${(analytics.dataTransfer.totalBytes / 1024 / 1024).toFixed(2)} MB` : "No transfer data"}\n\n${
+              analytics.errors
+                ? `**Error Analysis:**\n- Total Errors: ${analytics.errors.totalErrors}\n- By Type: ${Object.entries(
+                    analytics.errors.errorsByType || {},
+                  )
+                    .map(([type, count]) => `${type}(${count})`)
+                    .join(", ")}\n- By Status: ${Object.entries(
+                    analytics.errors.errorsByStatus || {},
+                  )
+                    .map(([status, count]) => `${status}(${count})`)
+                    .join(", ")}`
+                : "No error data"
+            }\n\n## 💡 Recommendations\n${insights.totalOperations > 0 ? `${parseFloat(insights.successRate) > 95 ? "✅ Excellent performance! Your scenarios are running smoothly." : "⚠️ Consider investigating failed operations to improve success rate."}\n${analytics.performance?.averageResponseTime ? (analytics.performance.averageResponseTime < 1000 ? "✅ Great response times!" : "⚠️ Consider optimizing scenarios for better performance.") : ""}\n${analytics.errors?.totalErrors === 0 ? "✅ No errors detected - great job!" : "⚠️ Review error patterns and implement better error handling."}` : "📈 Start running scenarios to generate meaningful analytics!"}\n\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining\n\nFull analytics data:\n\`\`\`json\n${JSON.stringify(analytics, null, 2)}\n\`\`\``,
           },
         ],
       };
@@ -568,14 +561,21 @@ server.addTool({
 
 server.addTool({
   name: "system-health-check",
-  description: "Perform comprehensive health check of Make.com API connectivity and server status",
+  description:
+    "Perform comprehensive health check of Make.com API connectivity and server status",
   parameters: z.object({
-    includeRateLimit: z.boolean().default(true).describe("Include rate limit information"),
-    testConnections: z.boolean().default(false).describe("Test API connectivity with sample requests"),
+    includeRateLimit: z
+      .boolean()
+      .default(true)
+      .describe("Include rate limit information"),
+    testConnections: z
+      .boolean()
+      .default(false)
+      .describe("Test API connectivity with sample requests"),
   }),
   execute: async (args, { log }) => {
     const operationId = `health-check-${Date.now()}`;
-    
+
     log.info(`[${operationId}] Performing system health check`, {
       includeRateLimit: args.includeRateLimit,
       testConnections: args.testConnections,
@@ -606,7 +606,7 @@ server.addTool({
       // Basic connectivity test
       if (args.testConnections) {
         try {
-          const testResponse = await makeClient.get("/organizations");
+          const _testResponse = await makeClient.getOrganizations();
           healthData.makeApi.status = "connected";
           healthData.connectivity = {
             organizations: "accessible",
@@ -622,9 +622,10 @@ server.addTool({
       }
 
       // Overall health assessment
-      const isHealthy = healthData.makeApi.tokenConfigured && 
-                       (healthData.makeApi.status !== "error") &&
-                       (healthData.rateLimit?.remaining > 10 || !args.includeRateLimit);
+      const isHealthy =
+        healthData.makeApi.tokenConfigured &&
+        healthData.makeApi.status !== "error" &&
+        (healthData.rateLimit?.remaining > 10 || !args.includeRateLimit);
 
       log.info(`[${operationId}] Health check completed`, {
         overall: isHealthy ? "healthy" : "degraded",
@@ -718,6 +719,15 @@ Set these environment variables:
 });
 
 // ==============================================================================
+// Register Additional Tool Modules
+// ==============================================================================
+
+// Note: Additional tool modules temporarily disabled until TypeScript issues are resolved
+// registerAdvancedMakeTools(server, makeClient, logger);
+// registerUserAccessManagementTools(server, makeClient, logger);
+// registerConnectionDataManagementTools(server, makeClient, logger);
+
+// ==============================================================================
 // Start Enhanced Server
 // ==============================================================================
 
@@ -736,6 +746,6 @@ const startupMessage = [
   "✅ Ready for Make.com automation tasks!",
 ];
 
-startupMessage.forEach(msg => logger.info(msg));
+startupMessage.forEach((msg) => logger.info(msg));
 
 export default server;

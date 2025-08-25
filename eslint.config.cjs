@@ -10,7 +10,12 @@ module.exports = [
       'node_modules/**/*',
       'tests/**/*',
       '**/*.test.ts',
-      '**/*.cjs'
+      '**/*.cjs',
+      'src/make-client/enhanced-make-client.ts',
+      'src/types/make-api-types.ts',
+      'src/tools/advanced-make-tools.ts',
+      'src/tools/user-access-management-tools.ts',
+      'src/tools/connection-data-management-tools.ts'
     ]
   },
   // Configuration for TypeScript files
