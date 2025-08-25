@@ -21,7 +21,11 @@ import * as fs from "fs";
 import * as path from "path";
 
 // Create logs directory with proper error handling
-const logsDir = path.resolve(process.cwd(), "logs");
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, "..");
+const logsDir = path.join(projectRoot, "logs");
 try {
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
@@ -82,11 +86,7 @@ const logger = winston.createLogger({
     ...(process.env.LOG_FILE_ENABLED !== "false"
       ? [
           new DailyRotateFile({
-            filename: path.join(
-              process.cwd(),
-              "logs",
-              "fastmcp-server-%DATE%.log",
-            ),
+            filename: path.join(logsDir, "fastmcp-server-%DATE%.log"),
             datePattern: "YYYY-MM-DD",
             maxSize: "20m",
             maxFiles: "14d",
