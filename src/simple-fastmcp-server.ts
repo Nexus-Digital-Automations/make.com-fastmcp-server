@@ -16,6 +16,22 @@ import { performance } from "perf_hooks";
 // Load environment variables
 dotenv.config();
 
+// Ensure logs directory exists before Winston initialization
+import * as fs from "fs";
+import * as path from "path";
+
+// Create logs directory with proper error handling
+const logsDir = path.resolve(process.cwd(), "logs");
+try {
+  if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+    console.error(`✅ Created logs directory at: ${logsDir}`);
+  }
+} catch (error) {
+  console.error(`❌ Failed to create logs directory at ${logsDir}:`, error);
+  // Continue execution - Winston will handle logging to console only
+}
+
 // Error classification system
 enum ErrorCategory {
   MAKE_API_ERROR = "MAKE_API_ERROR",
@@ -66,7 +82,11 @@ const logger = winston.createLogger({
     ...(process.env.LOG_FILE_ENABLED !== "false"
       ? [
           new DailyRotateFile({
-            filename: "logs/fastmcp-server-%DATE%.log",
+            filename: path.join(
+              process.cwd(),
+              "logs",
+              "fastmcp-server-%DATE%.log",
+            ),
             datePattern: "YYYY-MM-DD",
             maxSize: "20m",
             maxFiles: "14d",
