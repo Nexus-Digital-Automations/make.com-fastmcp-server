@@ -11,10 +11,14 @@ import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import { v4 as uuidv4 } from "uuid";
 import { performance } from "perf_hooks";
+import { RateLimitManager } from "./rate-limit-manager.js";
+
+// Import enhanced rate limiting components
 import {
-  RateLimitManager,
-  MAKE_API_RATE_LIMIT_CONFIG,
-} from "./rate-limit-manager.js";
+  EnhancedRateLimitManager,
+  ENHANCED_MAKE_API_CONFIG,
+  EnhancedRateLimitMetrics,
+} from "./enhanced-rate-limit-manager.js";
 // Dependency monitoring is handled by local DependencyMonitor class
 
 // Load environment variables
@@ -550,6 +554,31 @@ class HealthMonitor {
   }
 }
 
+// NPM Audit data interfaces for type safety
+interface NpmAuditVulnerabilityVia {
+  range?: string;
+  title?: string;
+  url?: string;
+  cwe?: string[];
+  cvss?: number;
+}
+
+interface NpmAuditVulnerabilityData {
+  via?: NpmAuditVulnerabilityVia[];
+  range?: string;
+  severity?: string;
+}
+
+interface NpmAuditData {
+  vulnerabilities?: Record<string, NpmAuditVulnerabilityData>;
+}
+
+interface NpmOutdatedPackage {
+  current: string;
+  wanted: string;
+  latest: string;
+}
+
 // Dependency vulnerability severity mapping
 enum VulnerabilitySeverity {
   CRITICAL = "CRITICAL",
@@ -609,18 +638,18 @@ class DependencyMonitor {
         timeout: 30000,
       });
 
-      const auditData = JSON.parse(auditOutput);
+      const auditData = JSON.parse(auditOutput) as NpmAuditData;
       const vulnerabilities: VulnerabilityReport[] = [];
 
       // Parse npm audit results
       if (auditData.vulnerabilities) {
         Object.entries(auditData.vulnerabilities).forEach(
-          ([packageName, vulnData]: [string, any]) => {
+          ([packageName, vulnData]: [string, NpmAuditVulnerabilityData]) => {
             vulnerabilities.push({
               packageName,
               currentVersion: vulnData.via?.[0]?.range || "unknown",
               vulnerableVersions: vulnData.range || "unknown",
-              severity: this.mapNpmSeverity(vulnData.severity),
+              severity: this.mapNpmSeverity(vulnData.severity || "unknown"),
               title:
                 vulnData.via?.[0]?.title || `Vulnerability in ${packageName}`,
               url: vulnData.via?.[0]?.url,
@@ -632,7 +661,12 @@ class DependencyMonitor {
       }
 
       // Check for outdated packages
-      let outdatedPackages: any[] = [];
+      let outdatedPackages: Array<{
+        package: string;
+        current: string;
+        wanted: string;
+        latest: string;
+      }> = [];
       try {
         const { stdout: outdatedOutput } = await execAsync(
           "npm outdated --json",
@@ -643,9 +677,12 @@ class DependencyMonitor {
         );
 
         if (outdatedOutput.trim()) {
-          const outdatedData = JSON.parse(outdatedOutput);
+          const outdatedData = JSON.parse(outdatedOutput) as Record<
+            string,
+            NpmOutdatedPackage
+          >;
           outdatedPackages = Object.entries(outdatedData).map(
-            ([pkg, data]: [string, any]) => ({
+            ([pkg, data]: [string, NpmOutdatedPackage]) => ({
               package: pkg,
               current: data.current,
               wanted: data.wanted,
@@ -659,9 +696,12 @@ class DependencyMonitor {
         const outdatedError = error as { stdout?: string };
         if (outdatedError.stdout?.trim()) {
           try {
-            const outdatedData = JSON.parse(outdatedError.stdout);
+            const outdatedData = JSON.parse(outdatedError.stdout) as Record<
+              string,
+              NpmOutdatedPackage
+            >;
             outdatedPackages = Object.entries(outdatedData).map(
-              ([pkg, data]: [string, any]) => ({
+              ([pkg, data]: [string, NpmOutdatedPackage]) => ({
                 package: pkg,
                 current: data.current,
                 wanted: data.wanted,
@@ -937,7 +977,7 @@ class SimpleMakeClient {
   private readonly apiKey: string;
   private readonly baseUrl: string;
   private readonly timeout: number;
-  private readonly rateLimitManager?: RateLimitManager;
+  private readonly rateLimitManager?: EnhancedRateLimitManager;
 
   constructor() {
     if (!config.makeApiKey) {
@@ -948,22 +988,43 @@ class SimpleMakeClient {
     this.baseUrl = config.makeBaseUrl;
     this.timeout = config.timeout;
 
-    // Initialize rate limiting if enabled
+    // Initialize enhanced rate limiting if enabled
     if (config.rateLimitingEnabled) {
-      const rateLimitConfig = {
-        ...MAKE_API_RATE_LIMIT_CONFIG,
+      const enhancedRateLimitConfig = {
+        ...ENHANCED_MAKE_API_CONFIG,
+        // Override with environment configuration
         maxRetries: config.rateLimitMaxRetries,
         baseDelayMs: config.rateLimitBaseDelayMs,
         maxConcurrentRequests: config.rateLimitMaxConcurrent,
         requestsPerWindow: config.rateLimitRequestsPerWindow,
+        // Enhanced configuration options from environment
+        safetyMargin: parseFloat(
+          process.env.RATE_LIMIT_SAFETY_MARGIN || "0.85",
+        ),
+        jitterFactor: parseFloat(process.env.RATE_LIMIT_JITTER_FACTOR || "0.1"),
+        headerParsingEnabled: process.env.RATE_LIMIT_HEADER_PARSING !== "false",
+        dynamicCapacity: process.env.RATE_LIMIT_DYNAMIC_CAPACITY !== "false",
+        approachingLimitThreshold: parseFloat(
+          process.env.RATE_LIMIT_WARNING_THRESHOLD || "0.1",
+        ),
       };
-      this.rateLimitManager = new RateLimitManager(rateLimitConfig);
 
-      logger.info("Rate limiting enabled for Make.com API", {
-        maxRetries: rateLimitConfig.maxRetries,
-        baseDelayMs: rateLimitConfig.baseDelayMs,
-        maxConcurrentRequests: rateLimitConfig.maxConcurrentRequests,
-        requestsPerWindow: rateLimitConfig.requestsPerWindow,
+      this.rateLimitManager = new EnhancedRateLimitManager(
+        enhancedRateLimitConfig,
+      );
+
+      logger.info("Enhanced rate limiting enabled for Make.com API", {
+        maxRetries: enhancedRateLimitConfig.maxRetries,
+        baseDelayMs: enhancedRateLimitConfig.baseDelayMs,
+        maxConcurrentRequests: enhancedRateLimitConfig.maxConcurrentRequests,
+        requestsPerWindow: enhancedRateLimitConfig.requestsPerWindow,
+        headerParsingEnabled: enhancedRateLimitConfig.headerParsingEnabled,
+        dynamicCapacity: enhancedRateLimitConfig.dynamicCapacity,
+        safetyMargin: enhancedRateLimitConfig.safetyMargin,
+        tokenBucketEnabled: enhancedRateLimitConfig.tokenBucket?.enabled,
+        backoffStrategyEnabled:
+          enhancedRateLimitConfig.backoffStrategy?.enabled,
+        correlationId: "enhanced-rate-limit-init",
       });
     }
   }
@@ -988,7 +1049,7 @@ class SimpleMakeClient {
       );
     };
 
-    // Apply rate limiting if enabled
+    // Apply enhanced rate limiting if enabled
     if (this.rateLimitManager) {
       const rateLimitedExecution = async () => {
         return await this.rateLimitManager!.executeWithRateLimit(
@@ -1073,6 +1134,42 @@ class SimpleMakeClient {
       });
 
       const duration = Date.now() - startTime;
+
+      // Process rate limit headers from successful responses with enhanced manager
+      if (this.rateLimitManager && response.headers) {
+        try {
+          // Convert Axios headers to the expected format
+          const headerRecord: Record<string, string | string[]> = {};
+          Object.entries(response.headers).forEach(([key, value]) => {
+            if (value !== undefined) {
+              headerRecord[key] = Array.isArray(value) ? value : String(value);
+            }
+          });
+
+          this.rateLimitManager.updateFromResponseHeaders(headerRecord);
+
+          logger.debug("Rate limit headers processed", {
+            correlationId: requestId,
+            operation,
+            headerCount: Object.keys(response.headers).length,
+            hasRateLimitHeaders: !!(
+              response.headers["x-ratelimit-limit"] ||
+              response.headers["x-rate-limit-limit"] ||
+              response.headers["ratelimit-limit"]
+            ),
+          });
+        } catch (headerError) {
+          logger.warn("Failed to process rate limit headers", {
+            correlationId: requestId,
+            operation,
+            error:
+              headerError instanceof Error
+                ? headerError.message
+                : "Unknown error",
+          });
+        }
+      }
+
       logger.info("API request completed", {
         correlationId: requestId,
         operation,
@@ -1183,6 +1280,102 @@ class SimpleMakeClient {
     return "normal";
   }
 
+  /**
+   * Get enhanced metrics from the rate limit manager
+   */
+  public getEnhancedMetrics(): EnhancedRateLimitMetrics | null {
+    if (!this.rateLimitManager) {
+      return null;
+    }
+
+    const operationId = uuidv4();
+    logger.debug("Retrieving enhanced rate limit metrics", {
+      operationId,
+      correlationId: "enhanced-metrics-retrieval",
+    });
+
+    try {
+      const metrics = this.rateLimitManager.getEnhancedMetrics();
+
+      logger.info("Enhanced metrics retrieved successfully", {
+        operationId,
+        totalRequests: metrics.totalRequests,
+        utilizationRate: metrics.tokenBucket?.utilizationRate,
+        correlationId: "enhanced-metrics-retrieval",
+      });
+
+      return metrics;
+    } catch (error) {
+      logger.error("Failed to retrieve enhanced metrics", {
+        operationId,
+        error: error instanceof Error ? error.message : "Unknown error",
+        correlationId: "enhanced-metrics-retrieval",
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Get current rate limit status with utilization information
+   */
+  public getRateLimitStatus(): {
+    utilizationRate: number;
+    tokensAvailable: number;
+    nextTokenIn: number;
+    approachingLimit: boolean;
+    rateLimitActive: boolean;
+    queueSize: number;
+  } | null {
+    if (!this.rateLimitManager) {
+      return null;
+    }
+
+    const operationId = uuidv4();
+    logger.debug("Retrieving rate limit status", {
+      operationId,
+      correlationId: "rate-limit-status",
+    });
+
+    try {
+      const metrics = this.rateLimitManager.getEnhancedMetrics();
+      const status = this.rateLimitManager.getRateLimitStatus();
+      const queueStatus = this.rateLimitManager.getQueueStatus();
+
+      const rateLimitStatus = {
+        utilizationRate: metrics.tokenBucket?.utilizationRate || 0,
+        tokensAvailable: metrics.tokenBucket?.tokens || 0,
+        nextTokenIn: 0, // This information is not available in the current interface
+        approachingLimit: (metrics.tokenBucket?.utilizationRate || 0) > 0.9,
+        rateLimitActive: status.globalRateLimitActive,
+        queueSize: queueStatus.size,
+      };
+
+      logger.info("Rate limit status retrieved", {
+        operationId,
+        utilizationRate: rateLimitStatus.utilizationRate,
+        approachingLimit: rateLimitStatus.approachingLimit,
+        queueSize: rateLimitStatus.queueSize,
+        correlationId: "rate-limit-status",
+      });
+
+      return rateLimitStatus;
+    } catch (error) {
+      logger.error("Failed to retrieve rate limit status", {
+        operationId,
+        error: error instanceof Error ? error.message : "Unknown error",
+        correlationId: "rate-limit-status",
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Generate a correlation ID for request tracking
+   */
+  private generateCorrelationId(): string {
+    return `make-api-${uuidv4().substring(0, 8)}-${Date.now()}`;
+  }
+
   async getScenarios(limit?: number) {
     const params = limit ? `?limit=${limit}` : "";
     return this.request("GET", `/scenarios${params}`);
@@ -1252,9 +1445,20 @@ const server = new FastMCP({
 // Initialize Make.com API client
 const makeClient = new SimpleMakeClient();
 
-// Get access to the rate limit manager for monitoring tools
-const getRateLimitManager = () => {
-  return (makeClient as any).rateLimitManager as RateLimitManager | undefined;
+// Get access to the enhanced rate limit manager for monitoring tools
+const getRateLimitManager = (): EnhancedRateLimitManager | undefined => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (makeClient as any).rateLimitManager as
+    | EnhancedRateLimitManager
+    | undefined;
+};
+
+// Legacy compatibility function for basic RateLimitManager interface
+// This is kept for potential backward compatibility but is currently unused
+
+const _getLegacyRateLimitManager = () => {
+  const enhancedManager = getRateLimitManager();
+  return enhancedManager as unknown as RateLimitManager | undefined;
 };
 
 // Dependency monitoring is handled by static DependencyMonitor class
@@ -2310,7 +2514,7 @@ if (config.rateLimitingEnabled) {
         };
       }
 
-      const updates: any = {};
+      const updates: Record<string, number> = {};
       if (args.max_concurrent_requests !== undefined) {
         updates.maxConcurrentRequests = args.max_concurrent_requests;
       }
@@ -2330,6 +2534,134 @@ if (config.rateLimitingEnabled) {
       Object.entries(updates).forEach(([key, value]) => {
         report += `• ${key}: ${value}\n`;
       });
+
+      return {
+        content: [{ type: "text", text: report }],
+      };
+    },
+  });
+
+  server.addTool({
+    name: "get-enhanced-rate-limit-status",
+    description:
+      "Get enhanced rate limiting status with token bucket and utilization metrics",
+    parameters: z.object({}),
+    execute: async () => {
+      const status = makeClient.getRateLimitStatus();
+
+      if (!status) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Enhanced rate limiting is not enabled",
+            },
+          ],
+        };
+      }
+
+      const statusEmoji = status.approachingLimit
+        ? "⚠️"
+        : status.rateLimitActive
+          ? "🔴"
+          : "✅";
+      let report = `${statusEmoji} Enhanced Rate Limiting Status\n\n`;
+
+      report += `🪣 Token Bucket Status:\n`;
+      report += `• Utilization Rate: ${(status.utilizationRate * 100).toFixed(1)}%\n`;
+      report += `• Tokens Available: ${status.tokensAvailable}\n`;
+      report += `• Next Token In: ${status.nextTokenIn}ms\n`;
+      report += `• Approaching Limit: ${status.approachingLimit ? "⚠️ Yes" : "✅ No"}\n\n`;
+
+      report += `🚦 Rate Limit Status:\n`;
+      report += `• Rate Limit Active: ${status.rateLimitActive ? "🔴 Yes" : "✅ No"}\n`;
+      report += `• Queue Size: ${status.queueSize}\n`;
+
+      return {
+        content: [{ type: "text", text: report }],
+      };
+    },
+  });
+
+  server.addTool({
+    name: "get-enhanced-metrics",
+    description:
+      "Get comprehensive enhanced rate limiting metrics including token bucket and backoff strategy details",
+    parameters: z.object({}),
+    execute: async () => {
+      const metrics = makeClient.getEnhancedMetrics();
+
+      if (!metrics) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Enhanced rate limiting is not enabled",
+            },
+          ],
+        };
+      }
+
+      let report = `📊 Enhanced Rate Limiting Metrics Report\n\n`;
+
+      // Base metrics
+      report += `📈 Base Metrics:\n`;
+      report += `• Total Requests: ${metrics.totalRequests}\n`;
+      report += `• Rate Limited Requests: ${metrics.rateLimitedRequests}\n`;
+      report += `• Success Rate: ${(metrics.successRate * 100).toFixed(1)}%\n`;
+      report += `• Average Delay: ${metrics.averageDelayMs.toFixed(0)}ms\n`;
+      report += `• Max Delay: ${metrics.maxDelayMs.toFixed(0)}ms\n\n`;
+
+      // Token bucket metrics
+      if (metrics.tokenBucket) {
+        const bucket = metrics.tokenBucket;
+        const utilizationEmoji =
+          bucket.utilizationRate > 0.9
+            ? "🔴"
+            : bucket.utilizationRate > 0.7
+              ? "🟡"
+              : "✅";
+
+        report += `🪣 Token Bucket Metrics:\n`;
+        report += `• Capacity: ${bucket.capacity}\n`;
+        report += `• Available Tokens: ${bucket.tokens}\n`;
+        report += `• Utilization Rate: ${utilizationEmoji} ${(bucket.utilizationRate * 100).toFixed(1)}%\n`;
+        report += `• Success Rate: ${(bucket.successRate * 100).toFixed(1)}%\n\n`;
+      }
+
+      // Backoff strategy metrics
+      if (metrics.backoffStrategy) {
+        const backoff = metrics.backoffStrategy;
+
+        report += `⏰ Backoff Strategy Metrics:\n`;
+        report += `• Total Retries: ${backoff.totalRetries}\n`;
+        report += `• Average Delay: ${backoff.averageDelay.toFixed(0)}ms\n`;
+        report += `• Successful Retries: ${backoff.successfulRetries}\n`;
+        report += `• Failed Retries: ${backoff.failedRetries}\n\n`;
+      }
+
+      // Rate limit parser metrics
+      if (metrics.rateLimitParser) {
+        const parser = metrics.rateLimitParser;
+
+        report += `🔍 Rate Limit Parser Metrics:\n`;
+        report += `• Headers Processed: ${parser.headersProcessed}\n`;
+        report += `• Successful Header Parsing: ${parser.successfulHeaderParsing}\n`;
+        report += `• Header Parsing Failures: ${parser.headerParsingFailures}\n`;
+        report += `• Dynamic Updates Applied: ${parser.dynamicUpdatesApplied}\n`;
+        report += `• Approaching Limit Warnings: ${parser.approachingLimitWarnings}\n`;
+        report += `• Last Header Update: ${parser.lastHeaderUpdate ? parser.lastHeaderUpdate.toISOString() : "Never"}\n`;
+        report += `• Supported Header Formats: ${parser.supportedHeaderFormats.join(", ")}\n\n`;
+      }
+
+      // Basic request tracking from base metrics
+      report += `📋 Request Tracking:\n`;
+      report += `• Active Requests: ${metrics.activeRequests}\n`;
+      report += `• Queue Size: ${metrics.queueSize}\n`;
+      report += `• Total Requests: ${metrics.totalRequests}\n`;
+      report += `• Rate Limited Requests: ${metrics.rateLimitedRequests}\n\n`;
+
+      report += `⏰ Last Updated: ${new Date().toISOString()}\n`;
 
       return {
         content: [{ type: "text", text: report }],
@@ -2631,7 +2963,7 @@ server.addTool({
 });
 
 // Initialize Enhanced Alert Manager before starting the server
-let globalEnhancedAlertManager: any = null;
+let globalEnhancedAlertManager: unknown = null;
 try {
   const { EnhancedAlertManager } = await import(
     "./monitoring/enhanced-alert-manager.js"
@@ -2648,11 +2980,21 @@ try {
   // Enhanced Alert Manager initialized - logged to file to avoid MCP interference
 
   // Perform health check
-  const healthCheck = await globalEnhancedAlertManager.getSystemHealth();
-  if (healthCheck.alertManager.healthy) {
-    // Alert Manager health check passed - logged to file to avoid MCP interference
-  } else {
-    // Alert Manager health check issues - logged to file to avoid MCP interference
+  if (
+    globalEnhancedAlertManager &&
+    typeof globalEnhancedAlertManager === "object" &&
+    "getSystemHealth" in globalEnhancedAlertManager
+  ) {
+    const healthCheck = await (
+      globalEnhancedAlertManager as {
+        getSystemHealth: () => Promise<{ alertManager: { healthy: boolean } }>;
+      }
+    ).getSystemHealth();
+    if (healthCheck.alertManager.healthy) {
+      // Alert Manager health check passed - logged to file to avoid MCP interference
+    } else {
+      // Alert Manager health check issues - logged to file to avoid MCP interference
+    }
   }
 } catch {
   // Failed to initialize Enhanced Alert Manager - logged to file to avoid MCP interference
@@ -2672,7 +3014,7 @@ const startupMessage = [
   `Maintenance Reports: ${config.maintenanceReportsEnabled ? "ENABLED" : "DISABLED"}`,
   `Log Pattern Analysis: ${process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false" ? "ENABLED" : "DISABLED"}`,
   `Enhanced Alert Manager: ENABLED (Phase 1)`,
-  `Rate Limiting: ${config.rateLimitingEnabled ? "ENABLED" : "DISABLED"}`,
+  `Enhanced Rate Limiting: ${config.rateLimitingEnabled ? "ENABLED (Phase 4)" : "DISABLED"}`,
   `Memory Threshold: ${config.memoryThresholdMB}MB`,
 ].join(" | ");
 
