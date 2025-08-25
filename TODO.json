@@ -38,6 +38,15 @@
             "oldStatus": "in_progress",
             "newStatus": "in_progress"
           }
+        },
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-25T23:44:16.872Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "in_progress"
+          }
         }
       ]
     },

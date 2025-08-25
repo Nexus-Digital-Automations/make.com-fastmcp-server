@@ -45,6 +45,7 @@ interface MakeScenario {
   totalExecutions?: number;
   modules?: ScenarioModule[];
   connections?: ScenarioConnection[];
+  blueprint?: Record<string, unknown>;
   metadata?: Record<string, unknown>;
 }
 
@@ -348,7 +349,7 @@ export function registerScenarioExecutionManagementTools(
           args.teamId,
           queryParams,
         );
-        const scenarios = response.data || [];
+        const scenarios = (response.data as MakeScenario[]) || [];
 
         reportProgress({ progress: 70, total: 100 });
 
@@ -358,10 +359,13 @@ export function registerScenarioExecutionManagementTools(
             acc[scenario.status] = (acc[scenario.status] || 0) + 1;
             return acc;
           },
-          {},
+          {} as StatusCount,
         );
 
         const recentActivity = scenarios.filter((s: MakeScenario) => {
+          if (!s.lastExecutionAt) {
+            return false;
+          }
           const lastExecution = new Date(s.lastExecutionAt);
           const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
           return lastExecution > dayAgo;
@@ -507,7 +511,7 @@ ${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`,
           scenarioId: args.scenarioId,
         });
 
-        const scenario = scenarioResponse.data?.[0];
+        const scenario = (scenarioResponse.data as MakeScenario[])?.[0];
         if (!scenario) {
           throw new Error(`Scenario ${args.scenarioId} not found`);
         }
@@ -520,12 +524,13 @@ ${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`,
           analytics?: unknown;
           connections?: ScenarioConnection[];
           modules?: ScenarioModule[];
+          blueprint?: Record<string, unknown>;
         } = {
           scenario,
-          blueprint: null,
-          analytics: null,
-          connections: null,
-          modules: null,
+          blueprint: undefined,
+          analytics: undefined,
+          connections: undefined,
+          modules: undefined,
         };
 
         if (args.includeAnalytics) {
@@ -654,7 +659,7 @@ ${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`,
 
         // Create the scenario
         const response = await makeClient.post("/scenarios", scenarioData);
-        const newScenario = response.data;
+        const newScenario = response.data as MakeScenario;
 
         reportProgress({ progress: 90, total: 100 });
 
@@ -1647,7 +1652,7 @@ ${
           scenarioId: args.scenarioId,
         });
 
-        const scenario = scenarioResponse.data?.[0];
+        const scenario = (scenarioResponse.data as MakeScenario[])?.[0];
         if (!scenario) {
           throw new Error(`Scenario ${args.scenarioId} not found`);
         }
