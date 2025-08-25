@@ -8,16 +8,16 @@ import { v4 as uuidv4 } from "uuid";
 import * as winston from "winston";
 
 // Advanced rate limiting components
-import { TokenBucket } from "./rate-limiting/token-bucket";
+import { TokenBucket } from "./rate-limiting/token-bucket.js";
 import {
   RateLimitParser,
   RateLimitInfo as ParsedRateLimitInfo,
-} from "./rate-limiting/rate-limit-parser";
+} from "./rate-limiting/rate-limit-parser.js";
 import {
   BackoffStrategy,
   BackoffConfig,
   BackoffResult,
-} from "./rate-limiting/backoff-strategy";
+} from "./rate-limiting/backoff-strategy.js";
 
 // Rate limiting configuration interface
 export interface RateLimitConfig {
@@ -181,10 +181,7 @@ export class RateLimitManager {
       lastResetTime: new Date(),
     };
 
-    // Initialize advanced components if enabled
-    this.initializeAdvancedComponents();
-
-    // Initialize logger
+    // Initialize logger first (needed by advanced components)
     this.logger = winston.createLogger({
       level: "info",
       format: winston.format.combine(
@@ -198,6 +195,9 @@ export class RateLimitManager {
         }),
       ],
     });
+
+    // Initialize advanced components if enabled
+    this.initializeAdvancedComponents();
 
     // Start queue processor
     this.startQueueProcessor();
