@@ -1,0 +1,15 @@
+{
+  "keep": {
+    "days": true,
+    "amount": 30
+  },
+  "auditLog": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/logs/.15974e0b5094d7b11d08d70c891f111c716df4bc-audit.json",
+  "files": [
+    {
+      "date": 1756156899954,
+      "name": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/logs/enhanced-make-server-2025-08-25.log",
+      "hash": "5d5ecae37431d99c0b7f0f58ad2304ee62551f2b47e3c40b7485761536400c34"
+    }
+  ],
+  "hashType": "sha256"
+}

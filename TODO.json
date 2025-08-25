@@ -2,35 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1756139791542_rh56g45hk",
-      "title": "Research Make.com User and Access Management API",
-      "description": "Research Make.com API for organizations, teams, user management, and API tokens. Read @development/FASTMCP_TYPESCRIPT_PROTOCOL.md for implementation guidance.",
-      "mode": "DEVELOPMENT",
-      "category": "research",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-25T16:36:31.542Z",
-      "auto_research_created": false,
-      "assigned_agent": "claude-agent",
-      "started_at": "2025-08-25T18:50:59.360Z",
-      "claimed_by": "claude-agent",
-      "agent_assignment_history": [
-        {
-          "agentId": "claude-agent",
-          "role": "primary",
-          "assignedAt": "2025-08-25T18:50:59.360Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
-    },
-    {
       "id": "task_1756139785404_5vblu13px",
       "title": "Research Make.com Data and Connectivity API",
       "description": "Research Make.com API for connections management, data stores, webhooks, and keys. Read @development/FASTMCP_TYPESCRIPT_PROTOCOL.md for implementation guidance.",
@@ -45,7 +16,25 @@
       "requires_research": false,
       "subtasks": [],
       "created_at": "2025-08-25T16:36:25.404Z",
-      "auto_research_created": false
+      "auto_research_created": false,
+      "assigned_agent": null,
+      "started_at": null,
+      "claimed_by": null,
+      "agent_assignment_history": [
+        {
+          "agentId": "claude-agent",
+          "role": "primary",
+          "assignedAt": "2025-08-25T19:20:06.642Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-25T19:49:03.926Z",
+          "reason": "Task stale for 29 minutes"
+        }
+      ]
     },
     {
       "id": "task_1756139779846_xaj83ewwy",
@@ -172,6 +161,23 @@
       "auto_research_created": false
     },
     {
+      "id": "task_1756139830936_y1lvsx27j",
+      "title": "Implement User and Access Management Tools",
+      "description": "Implement FastMCP tools for organizations, teams, user management, roles, permissions, and API tokens. Review @development/FASTMCP_TYPESCRIPT_PROTOCOL.md for proper FastMCP implementation patterns.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-25T16:37:10.940Z",
+      "auto_research_created": true
+    },
+    {
       "id": "task_1756034288610_puw5mxlnh",
       "title": "Refactor executeWithRetry method complexity (22 → ≤12)",
       "description": "Apply Extract Method pattern to reduce executeWithRetry method complexity from 22 to ≤12 - highest priority remaining violation",
@@ -209,21 +215,26 @@
       ]
     },
     {
-      "id": "task_1756139830936_y1lvsx27j",
-      "title": "Implement User and Access Management Tools",
-      "description": "Implement FastMCP tools for organizations, teams, user management, roles, permissions, and API tokens. Review @development/FASTMCP_TYPESCRIPT_PROTOCOL.md for proper FastMCP implementation patterns.",
+      "id": "task_1756151221513_s1r5lu1py",
+      "title": "Research Make.com Keys API for Data and Connectivity Management",
+      "description": "Comprehensive research on Make.com Keys API including endpoints, key types, management operations, and FastMCP integration patterns to complete the Data and Connectivity API suite",
       "mode": "DEVELOPMENT",
-      "category": "missing-feature",
+      "category": "research",
       "priority": "high",
       "status": "pending",
-      "dependencies": ["task_1756139791542_rh56g45hk"],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "dependencies": [],
+      "important_files": [
+        "development/research-reports/comprehensive-makecom-connections-api-research-2025.md",
+        "development/research-reports/comprehensive-makecom-data-stores-api-research-2025.md",
+        "development/research-reports/comprehensive-makecom-webhooks-api-research-2025.md"
+      ],
       "success_criteria": [],
       "estimate": "",
-      "requires_research": true,
+      "requires_research": false,
       "subtasks": [],
-      "created_at": "2025-08-25T16:37:10.940Z",
-      "auto_research_created": true
+      "created_at": "2025-08-25T19:47:01.513Z",
+      "auto_research_created": false,
+      "last_modified": "2025-08-25T19:47:35.114Z"
     },
     {
       "id": "task_1756139823931_qzxqogvav",
@@ -266,7 +277,29 @@
   "review_strikes": 0,
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
-  "agents": {},
+  "agents": {
+    "development_session_1756151353007_1_general_7f61bf5d": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-25T19:49:13.008Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-25T19:49:13.008Z",
+      "sessionId": "session_1756151353007",
+      "metadata": {}
+    }
+  },
   "current_task_index": 0,
   "settings": {
     "auto_sort_enabled": true,
