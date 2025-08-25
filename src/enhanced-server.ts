@@ -20,6 +20,7 @@ import { registerDevelopmentCustomizationTools } from "./tools/development-custo
 import { registerAIAgentManagementTools } from "./tools/ai-agent-management-tools.js";
 import { registerUserAccessManagementTools } from "./tools/user-access-management-tools.js";
 import { registerDataConnectivityManagementTools } from "./tools/data-connectivity-management-tools.js";
+import { registerBillingAdministrationTools } from "./tools/billing-administration-tools.js";
 
 // Load environment variables
 dotenv.config();
@@ -745,6 +746,9 @@ registerUserAccessManagementTools(server, makeClient, logger);
 
 // Register Data and Connectivity Management Tools
 registerDataConnectivityManagementTools(server, makeClient, logger);
+
+// Register Billing and Administration Tools
+registerBillingAdministrationTools(server, makeClient, logger);
 
 // Note: Additional tool modules temporarily disabled until TypeScript issues are resolved
 // registerAdvancedMakeTools(server, makeClient, logger);

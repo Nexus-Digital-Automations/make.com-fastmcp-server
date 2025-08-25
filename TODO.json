@@ -17,14 +17,27 @@
       "subtasks": [],
       "created_at": "2025-08-25T16:37:32.844Z",
       "auto_research_created": true,
-      "started_at": "2025-08-25T22:04:55.397Z",
-      "claimed_by": "agent_1756159495397",
-      "assigned_agent": "agent_1756159495397",
+      "started_at": "2025-08-25T22:32:07.578Z",
+      "claimed_by": "development_session_1756161077548_1_general_842bef59",
+      "assigned_agent": "development_session_1756161077548_1_general_842bef59",
       "agent_assignment_history": [
         {
           "agent": "agent_1756159495397",
           "action": "claimed",
           "timestamp": "2025-08-25T22:04:55.397Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-25T22:31:06.505Z",
+          "reason": "Task stale for 26 minutes"
+        },
+        {
+          "agentId": "development_session_1756161077548_1_general_842bef59",
+          "role": "primary",
+          "assignedAt": "2025-08-25T22:32:07.578Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
         }
       ]
     },
@@ -131,6 +144,27 @@
       "maxConcurrentTasks": 5,
       "createdAt": "2025-08-25T22:18:33.997Z",
       "sessionId": "session_1756160313995",
+      "metadata": {}
+    },
+    "development_session_1756161077548_1_general_842bef59": {
+      "name": "development Agent",
+      "role": "development",
+      "specialization": [],
+      "status": "active",
+      "assignedTasks": [],
+      "lastHeartbeat": "2025-08-25T22:31:17.549Z",
+      "parentAgentId": null,
+      "capabilities": [
+        "file-operations",
+        "linting",
+        "testing",
+        "build-fixes",
+        "refactoring"
+      ],
+      "workload": 0,
+      "maxConcurrentTasks": 5,
+      "createdAt": "2025-08-25T22:31:17.549Z",
+      "sessionId": "session_1756161077548",
       "metadata": {}
     }
   },
