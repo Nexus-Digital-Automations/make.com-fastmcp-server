@@ -49,12 +49,15 @@ try {
 // ==============================================================================
 
 interface WebhookData {
+  id?: string;
   name: string;
+  url?: string;
+  status?: string;
   teamId?: string;
-  typeName: string;
-  method: boolean;
-  header: boolean;
-  stringify: boolean;
+  typeName?: string;
+  method?: boolean;
+  header?: boolean;
+  stringify?: boolean;
   connectionId?: string;
   scenarioId?: string;
 }
@@ -81,6 +84,41 @@ interface _TemplateData {
   tags: string[];
   scenarioId: string;
   isPublic: boolean;
+}
+
+// Additional interfaces for type safety
+interface StatusCount {
+  [status: string]: number;
+}
+
+interface HealthData {
+  timestamp: string;
+  server: {
+    status: string;
+    uptime: number;
+    environment: string;
+  };
+  make?: {
+    connected: boolean;
+    version?: string;
+    lastPing?: string;
+  };
+  memory?: {
+    used: number;
+    total: number;
+    percentage: number;
+  };
+  performance?: {
+    requestCount: number;
+    averageResponseTime: number;
+  };
+}
+
+interface UsageParams {
+  startDate?: string;
+  endDate?: string;
+  teamId?: string;
+  granularity?: string;
 }
 
 // ==============================================================================
@@ -385,7 +423,7 @@ server.addTool({
       const webhookList =
         webhooks
           ?.map(
-            (w: any, i: number) =>
+            (w: WebhookData, i: number) =>
               `**${i + 1}. ${w.name}**\n` +
               `- ID: \`${w.id}\`\n` +
               `- URL: \`${w.url}\`\n` +
@@ -396,10 +434,13 @@ server.addTool({
           )
           .join("\n") || "No webhooks found";
 
-      const statusCounts = webhooks?.reduce((acc: any, w: any) => {
-        acc[w.status] = (acc[w.status] || 0) + 1;
-        return acc;
-      }, {});
+      const statusCounts = webhooks?.reduce(
+        (acc: StatusCount, w: WebhookData) => {
+          acc[w.status] = (acc[w.status] || 0) + 1;
+          return acc;
+        },
+        {},
+      );
 
       return {
         content: [
@@ -466,7 +507,7 @@ server.addTool({
     });
 
     try {
-      const params: any = {
+      const params: UsageParams = {
         startDate: args.startDate,
         endDate: args.endDate,
         includeDetails: args.includeDetails,
@@ -595,7 +636,7 @@ server.addTool({
       testConnections: args.testConnections,
     });
 
-    const healthData: any = {
+    const healthData: HealthData = {
       timestamp: new Date().toISOString(),
       server: {
         status: "operational",
