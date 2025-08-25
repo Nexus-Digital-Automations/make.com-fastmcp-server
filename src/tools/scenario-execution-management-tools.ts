@@ -1,9 +1,9 @@
 /**
  * Scenario and Execution Management Tools for Make.com FastMCP Server
- * 
+ *
  * Comprehensive FastMCP tools for scenario CRUD operations, blueprint management,
  * scheduling, monitoring, logs analysis, and incomplete executions management.
- * 
+ *
  * Features:
  * - Complete scenario CRUD operations with advanced filtering
  * - Blueprint management and validation
@@ -11,7 +11,7 @@
  * - Advanced logs analysis and monitoring
  * - Comprehensive incomplete executions management
  * - Health monitoring and performance analytics
- * 
+ *
  * Based on comprehensive Make.com API research:
  * - Scenarios API for full lifecycle management
  * - Executions API for monitoring and control
@@ -22,13 +22,10 @@
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import winston from "winston";
-import {
-  MakeAPIClient,
-  MakeAPIError,
-} from "../make-client/simple-make-client.js";
+import { MakeAPIClient } from "../make-client/simple-make-client.js";
 
 // Logger placeholder - will use logger passed to registration function
-let moduleLogger: winston.Logger;
+let _moduleLogger: winston.Logger;
 
 // ================================
 // Core Type Definitions and Schemas
@@ -121,9 +118,7 @@ const ScenarioExecutionSchema = z.object({
 
 // Blueprint Management Schemas
 const BlueprintValidationSchema = z.object({
-  blueprint: z
-    .record(z.string(), z.any())
-    .describe("Blueprint to validate"),
+  blueprint: z.record(z.string(), z.any()).describe("Blueprint to validate"),
   strictMode: z
     .boolean()
     .default(false)
@@ -150,7 +145,7 @@ const BlueprintOptimizationSchema = z.object({
 });
 
 // Execution Monitoring Schemas
-const ExecutionLogsSchema = z.object({
+const _ExecutionLogsSchema = z.object({
   scenarioId: z.string().describe("Scenario ID for logs"),
   executionId: z.string().optional().describe("Specific execution ID"),
   dateRange: z
@@ -171,7 +166,7 @@ const ExecutionLogsSchema = z.object({
     .describe("Include detailed execution data"),
 });
 
-const IncompleteExecutionsSchema = z.object({
+const _IncompleteExecutionsSchema = z.object({
   scenarioId: z.string().optional().describe("Filter by scenario ID"),
   teamId: z.string().optional().describe("Filter by team ID"),
   dateRange: z
@@ -181,10 +176,7 @@ const IncompleteExecutionsSchema = z.object({
     })
     .optional()
     .describe("Date range for incomplete executions"),
-  errorTypes: z
-    .array(z.string())
-    .optional()
-    .describe("Filter by error types"),
+  errorTypes: z.array(z.string()).optional().describe("Filter by error types"),
   limit: z.number().min(1).max(100).default(25).describe("Results limit"),
   includeBlueprints: z
     .boolean()
@@ -193,7 +185,7 @@ const IncompleteExecutionsSchema = z.object({
 });
 
 // Analytics and Monitoring Schemas
-const ScenarioAnalyticsSchema = z.object({
+const _ScenarioAnalyticsSchema = z.object({
   scenarioId: z.string().optional().describe("Specific scenario ID"),
   teamId: z.string().optional().describe("Team ID for analytics"),
   dateRange: z
@@ -211,7 +203,7 @@ const ScenarioAnalyticsSchema = z.object({
         "costs",
         "errors",
         "data_transfer",
-      ])
+      ]),
     )
     .default(["executions", "success_rate", "performance"])
     .describe("Metrics to include"),
@@ -233,7 +225,7 @@ export function registerScenarioExecutionManagementTools(
   makeClient: MakeAPIClient,
   logger: winston.Logger,
 ): void {
-  moduleLogger = logger;
+  _moduleLogger = logger;
 
   // ================================
   // Scenario CRUD Operations
@@ -268,16 +260,29 @@ export function registerScenarioExecutionManagementTools(
           sortDir: args.sortDir,
         };
 
-        if (args.teamId) queryParams.teamId = args.teamId;
-        if (args.status) queryParams.status = args.status;
-        if (args.folder) queryParams.folder = args.folder;
-        if (args.search) queryParams.search = args.search;
-        if (args.tags) queryParams.tags = args.tags.join(",");
+        if (args.teamId) {
+          queryParams.teamId = args.teamId;
+        }
+        if (args.status) {
+          queryParams.status = args.status;
+        }
+        if (args.folder) {
+          queryParams.folder = args.folder;
+        }
+        if (args.search) {
+          queryParams.search = args.search;
+        }
+        if (args.tags) {
+          queryParams.tags = args.tags.join(",");
+        }
 
         reportProgress({ progress: 30, total: 100 });
 
         // Execute API request
-        const response = await makeClient.getScenarios(args.teamId, queryParams);
+        const response = await makeClient.getScenarios(
+          args.teamId,
+          queryParams,
+        );
         const scenarios = response.data || [];
 
         reportProgress({ progress: 70, total: 100 });
@@ -310,21 +315,29 @@ export function registerScenarioExecutionManagementTools(
 
 **Summary:**
 - Total Found: ${scenarios.length} scenarios
-- Status Breakdown: ${Object.entries(statusCounts)
-                .map(([status, count]) => `${status}(${count})`)
-                .join(", ") || "None"}
+- Status Breakdown: ${
+                Object.entries(statusCounts)
+                  .map(([status, count]) => `${status}(${count})`)
+                  .join(", ") || "None"
+              }
 - Recent Activity: ${recentActivity} scenarios executed in last 24h
 
 **Filters Applied:**
-${Object.entries(args)
-                .filter(([_, v]) => v !== undefined && v !== "" && (Array.isArray(v) ? v.length > 0 : true))
-                .map(([k, v]) => `- ${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
-                .join("\n") || "- None"}
+${
+  Object.entries(args)
+    .filter(
+      ([_, v]) =>
+        v !== undefined && v !== "" && (Array.isArray(v) ? v.length > 0 : true),
+    )
+    .map(([k, v]) => `- ${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+    .join("\n") || "- None"
+}
 
 **Scenarios:**
-${scenarios
-                .map(
-                  (scenario: any, i: number) => `**${i + 1}. ${scenario.name}**
+${
+  scenarios
+    .map(
+      (scenario: any, i: number) => `**${i + 1}. ${scenario.name}**
 - ID: \`${scenario.id}\`
 - Status: ${getStatusEmoji(scenario.status)} ${scenario.status}
 - Team: ${scenario.teamId || "Default"}
@@ -332,9 +345,10 @@ ${scenarios
 - Success Rate: ${scenario.successRate ? `${(scenario.successRate * 100).toFixed(1)}%` : "N/A"}
 - Created: ${scenario.createdAt ? new Date(scenario.createdAt).toLocaleDateString() : "N/A"}
 ${scenario.description ? `- Description: ${scenario.description}` : ""}
-${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`
-                )
-                .join("\n\n") || "No scenarios found"}
+${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`,
+    )
+    .join("\n\n") || "No scenarios found"
+}
 
 **Next Steps:**
 - Use \`get-scenario-details\` to view full scenario information
@@ -445,7 +459,9 @@ ${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`
           try {
             const analyticsResponse = await makeClient.getAnalytics({
               scenarioId: args.scenarioId,
-              startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+              startDate: new Date(
+                Date.now() - 30 * 24 * 60 * 60 * 1000,
+              ).toISOString(),
               endDate: new Date().toISOString(),
             });
             details.analytics = analyticsResponse.data;
@@ -674,7 +690,9 @@ ${args.description ? `- **Description:** ${args.description}\n` : ""}${args.fold
 
       log.info(`[${operationId}] Updating scenario`, {
         scenarioId: args.scenarioId,
-        updates: Object.keys(args).filter(k => k !== "scenarioId" && (args as any)[k] !== undefined),
+        updates: Object.keys(args).filter(
+          (k) => k !== "scenarioId" && (args as any)[k] !== undefined,
+        ),
         correlationId: operationId,
       });
 
@@ -683,12 +701,22 @@ ${args.description ? `- **Description:** ${args.description}\n` : ""}${args.fold
       try {
         // Prepare update data
         const updateData: any = {};
-        
-        if (args.name !== undefined) updateData.name = args.name;
-        if (args.blueprint !== undefined) updateData.blueprint = args.blueprint;
-        if (args.description !== undefined) updateData.description = args.description;
-        if (args.folder !== undefined) updateData.folder = args.folder;
-        if (args.scheduling !== undefined) updateData.scheduling = args.scheduling;
+
+        if (args.name !== undefined) {
+          updateData.name = args.name;
+        }
+        if (args.blueprint !== undefined) {
+          updateData.blueprint = args.blueprint;
+        }
+        if (args.description !== undefined) {
+          updateData.description = args.description;
+        }
+        if (args.folder !== undefined) {
+          updateData.folder = args.folder;
+        }
+        if (args.scheduling !== undefined) {
+          updateData.scheduling = args.scheduling;
+        }
 
         reportProgress({ progress: 50, total: 100 });
 
@@ -719,16 +747,16 @@ ${args.description ? `- **Description:** ${args.description}\n` : ""}${args.fold
 
 **Updates Applied:**
 ${Object.entries(updateData)
-                .map(([key, value]) => {
-                  if (key === "blueprint") {
-                    return `- **Blueprint:** Updated (${JSON.stringify(value).length} characters)`;
-                  } else if (key === "scheduling") {
-                    return `- **Scheduling:** ${(value as any).type} ${(value as any).interval ? `every ${(value as any).interval} ${(value as any).unit}(s)` : ""}`;
-                  } else {
-                    return `- **${key}:** ${value}`;
-                  }
-                })
-                .join("\n")}
+  .map(([key, value]) => {
+    if (key === "blueprint") {
+      return `- **Blueprint:** Updated (${JSON.stringify(value).length} characters)`;
+    } else if (key === "scheduling") {
+      return `- **Scheduling:** ${(value as any).type} ${(value as any).interval ? `every ${(value as any).interval} ${(value as any).unit}(s)` : ""}`;
+    } else {
+      return `- **${key}:** ${value}`;
+    }
+  })
+  .join("\n")}
 
 **Configuration Summary:**
 - Total Modules: ${updatedScenario.modules?.length || 0}
@@ -767,9 +795,12 @@ ${Object.entries(updateData)
 
 **Attempted Updates:**
 ${Object.entries(args)
-                .filter(([k, v]) => k !== "scenarioId" && v !== undefined)
-                .map(([k, v]) => `- ${k}: ${typeof v === "object" ? JSON.stringify(v).substring(0, 100) + "..." : v}`)
-                .join("\n")}
+  .filter(([k, v]) => k !== "scenarioId" && v !== undefined)
+  .map(
+    ([k, v]) =>
+      `- ${k}: ${typeof v === "object" ? JSON.stringify(v).substring(0, 100) + "..." : v}`,
+  )
+  .join("\n")}
 
 **Operation ID:** ${operationId}`,
             },
@@ -787,7 +818,9 @@ ${Object.entries(args)
       scenarioId: z.string().describe("Scenario ID to delete"),
       confirmed: z
         .boolean()
-        .describe("Confirmation that you want to permanently delete this scenario"),
+        .describe(
+          "Confirmation that you want to permanently delete this scenario",
+        ),
       reason: z.string().optional().describe("Optional reason for deletion"),
     }),
     annotations: {
@@ -834,8 +867,10 @@ To permanently delete scenario \`${args.scenarioId}\`, you must set the \`confir
             scenarioId: args.scenarioId,
           });
           scenarioInfo = response.data?.[0];
-        } catch (error) {
-          log.warn(`[${operationId}] Could not fetch scenario info before deletion`);
+        } catch {
+          log.warn(
+            `[${operationId}] Could not fetch scenario info before deletion`,
+          );
         }
 
         // Delete the scenario
@@ -971,10 +1006,14 @@ ${args.reason ? `- **Reason:** ${args.reason}` : ""}
 - **Started:** ${new Date().toLocaleString()}
 - **Mode:** Asynchronous (not waiting for completion)
 
-${args.inputData ? `**Input Data:**
+${
+  args.inputData
+    ? `**Input Data:**
 \`\`\`json
 ${JSON.stringify(args.inputData, null, 2)}
-\`\`\`` : "**Input Data:** None provided"}
+\`\`\``
+    : "**Input Data:** None provided"
+}
 
 **Monitoring:**
 - Use \`get-execution-status\` with execution ID \`${executionId}\` to check progress
@@ -993,8 +1032,11 @@ ${JSON.stringify(args.inputData, null, 2)}
         let executionStatus = "running";
         let executionResult = null;
 
-        while (executionStatus === "running" && Date.now() - startTime < timeoutMs) {
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+        while (
+          executionStatus === "running" &&
+          Date.now() - startTime < timeoutMs
+        ) {
+          await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
 
           try {
             const statusResponse = await makeClient.get(
@@ -1005,7 +1047,10 @@ ${JSON.stringify(args.inputData, null, 2)}
             executionResult = statusData;
 
             const elapsed = (Date.now() - startTime) / 1000;
-            const progressPercent = Math.min(90, 50 + (elapsed / args.timeout) * 40);
+            const progressPercent = Math.min(
+              90,
+              50 + (elapsed / args.timeout) * 40,
+            );
             reportProgress({ progress: progressPercent, total: 100 });
           } catch (error) {
             log.warn(`[${operationId}] Failed to check execution status`, {
@@ -1057,7 +1102,8 @@ ${JSON.stringify(args.inputData, null, 2)}
           correlationId: operationId,
         });
 
-        const success = executionStatus === "success" || executionStatus === "completed";
+        const success =
+          executionStatus === "success" || executionStatus === "completed";
 
         return {
           content: [
@@ -1073,15 +1119,23 @@ ${JSON.stringify(args.inputData, null, 2)}
 - **Completed:** ${new Date().toLocaleString()}
 
 **Results:**
-${executionResult ? `- **Operations:** ${executionResult.operationsCount || 0}
+${
+  executionResult
+    ? `- **Operations:** ${executionResult.operationsCount || 0}
 - **Data Processed:** ${executionResult.dataProcessed ? `${(executionResult.dataProcessed / 1024).toFixed(2)} KB` : "N/A"}
 - **Modules Executed:** ${executionResult.modulesExecuted || 0}
-${executionResult.errors ? `- **Errors:** ${executionResult.errors.length}` : ""}` : "- Detailed results not available"}
+${executionResult.errors ? `- **Errors:** ${executionResult.errors.length}` : ""}`
+    : "- Detailed results not available"
+}
 
-${!success && executionResult?.error ? `**Error Details:**
+${
+  !success && executionResult?.error
+    ? `**Error Details:**
 \`\`\`
 ${executionResult.error}
-\`\`\`` : ""}
+\`\`\``
+    : ""
+}
 
 **Next Steps:**
 ${success ? "- ✅ Review execution logs for detailed results" : "- 🔍 Use `get-execution-logs` to debug the failure"}
@@ -1135,7 +1189,10 @@ ${success ? "- ✅ Review execution logs for detailed results" : "- 🔍 Use `ge
       status: z
         .enum(["active", "inactive", "paused"])
         .describe("New status for the scenario"),
-      reason: z.string().optional().describe("Optional reason for status change"),
+      reason: z
+        .string()
+        .optional()
+        .describe("Optional reason for status change"),
     }),
     annotations: {
       title: "Update Scenario Status",
@@ -1185,11 +1242,12 @@ ${success ? "- ✅ Review execution logs for detailed results" : "- 🔍 Use `ge
 ${args.reason ? `**Reason:** ${args.reason}` : ""}
 
 **Impact:**
-${args.status === "active" 
-  ? "🟢 Scenario is now active and will execute based on its triggers"
-  : args.status === "paused"
-  ? "🟡 Scenario is paused - existing executions will complete but no new ones will start"
-  : "⚪ Scenario is inactive and will not execute"
+${
+  args.status === "active"
+    ? "🟢 Scenario is now active and will execute based on its triggers"
+    : args.status === "paused"
+      ? "🟡 Scenario is paused - existing executions will complete but no new ones will start"
+      : "⚪ Scenario is inactive and will not execute"
 }
 
 **Next Steps:**
@@ -1301,29 +1359,40 @@ ${args.status === "active"
 
         // Validate modules
         if (args.checkModules && args.blueprint.modules) {
-          const modules = Array.isArray(args.blueprint.modules) 
-            ? args.blueprint.modules 
+          const modules = Array.isArray(args.blueprint.modules)
+            ? args.blueprint.modules
             : Object.values(args.blueprint.modules);
 
           validationResults.analysis.moduleCount = modules.length;
 
           modules.forEach((module: any, index: number) => {
             if (!module.id) {
-              validationResults.errors.push(`Module ${index + 1}: Missing required 'id' field`);
+              validationResults.errors.push(
+                `Module ${index + 1}: Missing required 'id' field`,
+              );
               validationResults.isValid = false;
             }
 
             if (!module.type) {
-              validationResults.errors.push(`Module ${index + 1}: Missing required 'type' field`);
+              validationResults.errors.push(
+                `Module ${index + 1}: Missing required 'type' field`,
+              );
               validationResults.isValid = false;
             }
 
             if (module.type === "webhook" && !module.url) {
-              validationResults.warnings.push(`Module ${index + 1}: Webhook module should have a URL`);
+              validationResults.warnings.push(
+                `Module ${index + 1}: Webhook module should have a URL`,
+              );
             }
 
-            if (module.parameters && Object.keys(module.parameters).length === 0) {
-              validationResults.suggestions.push(`Module ${index + 1}: Consider adding parameters for better functionality`);
+            if (
+              module.parameters &&
+              Object.keys(module.parameters).length === 0
+            ) {
+              validationResults.suggestions.push(
+                `Module ${index + 1}: Consider adding parameters for better functionality`,
+              );
             }
           });
         }
@@ -1340,12 +1409,16 @@ ${args.status === "active"
 
           connections.forEach((connection: any, index: number) => {
             if (!connection.id) {
-              validationResults.errors.push(`Connection ${index + 1}: Missing required 'id' field`);
+              validationResults.errors.push(
+                `Connection ${index + 1}: Missing required 'id' field`,
+              );
               validationResults.isValid = false;
             }
 
             if (!connection.type) {
-              validationResults.errors.push(`Connection ${index + 1}: Missing required 'type' field`);
+              validationResults.errors.push(
+                `Connection ${index + 1}: Missing required 'type' field`,
+              );
               validationResults.isValid = false;
             }
           });
@@ -1354,23 +1427,27 @@ ${args.status === "active"
         reportProgress({ progress: 80, total: 100 });
 
         // Calculate complexity score
-        validationResults.analysis.complexity = 
-          validationResults.analysis.moduleCount * 2 + 
+        validationResults.analysis.complexity =
+          validationResults.analysis.moduleCount * 2 +
           validationResults.analysis.connectionCount * 1.5;
 
         // Estimate cost (rough calculation)
         validationResults.analysis.estimatedCost = Math.ceil(
-          validationResults.analysis.moduleCount * 0.1 + 
-          validationResults.analysis.connectionCount * 0.05
+          validationResults.analysis.moduleCount * 0.1 +
+            validationResults.analysis.connectionCount * 0.05,
         );
 
         // Add suggestions based on analysis
         if (validationResults.analysis.moduleCount > 20) {
-          validationResults.suggestions.push("Consider breaking this scenario into smaller, more manageable scenarios");
+          validationResults.suggestions.push(
+            "Consider breaking this scenario into smaller, more manageable scenarios",
+          );
         }
 
         if (validationResults.analysis.complexity > 50) {
-          validationResults.suggestions.push("High complexity scenario - ensure thorough testing");
+          validationResults.suggestions.push(
+            "High complexity scenario - ensure thorough testing",
+          );
         }
 
         reportProgress({ progress: 100, total: 100 });
@@ -1397,25 +1474,40 @@ ${args.status === "active"
 - **Complexity Score:** ${validationResults.analysis.complexity}
 - **Estimated Cost:** ${validationResults.analysis.estimatedCost} operations
 
-${validationResults.errors.length > 0 ? `**❌ Errors (${validationResults.errors.length}):**
-${validationResults.errors.map((error: string, i: number) => `${i + 1}. ${error}`).join("\n")}` : ""}
+${
+  validationResults.errors.length > 0
+    ? `**❌ Errors (${validationResults.errors.length}):**
+${validationResults.errors.map((error: string, i: number) => `${i + 1}. ${error}`).join("\n")}`
+    : ""
+}
 
-${validationResults.warnings.length > 0 ? `**⚠️ Warnings (${validationResults.warnings.length}):**
-${validationResults.warnings.map((warning: string, i: number) => `${i + 1}. ${warning}`).join("\n")}` : ""}
+${
+  validationResults.warnings.length > 0
+    ? `**⚠️ Warnings (${validationResults.warnings.length}):**
+${validationResults.warnings.map((warning: string, i: number) => `${i + 1}. ${warning}`).join("\n")}`
+    : ""
+}
 
-${validationResults.suggestions.length > 0 ? `**💡 Suggestions (${validationResults.suggestions.length}):**
-${validationResults.suggestions.map((suggestion: string, i: number) => `${i + 1}. ${suggestion}`).join("\n")}` : ""}
+${
+  validationResults.suggestions.length > 0
+    ? `**💡 Suggestions (${validationResults.suggestions.length}):**
+${validationResults.suggestions.map((suggestion: string, i: number) => `${i + 1}. ${suggestion}`).join("\n")}`
+    : ""
+}
 
 **Recommendations:**
-${validationResults.isValid 
-  ? "✅ Blueprint is valid and ready for deployment"
-  : "🔴 Fix all errors before using this blueprint"}
+${
+  validationResults.isValid
+    ? "✅ Blueprint is valid and ready for deployment"
+    : "🔴 Fix all errors before using this blueprint"
+}
 
-${validationResults.analysis.complexity > 50 
-  ? "⚠️ High complexity scenario - ensure thorough testing"
-  : validationResults.analysis.complexity > 25
-  ? "🟡 Moderate complexity - standard testing recommended"
-  : "🟢 Low complexity - minimal testing required"
+${
+  validationResults.analysis.complexity > 50
+    ? "⚠️ High complexity scenario - ensure thorough testing"
+    : validationResults.analysis.complexity > 25
+      ? "🟡 Moderate complexity - standard testing recommended"
+      : "🟢 Low complexity - minimal testing required"
 }
 
 **Operation ID:** ${operationId}`,
@@ -1507,7 +1599,7 @@ ${validationResults.analysis.complexity > 50
               "Consider caching frequently accessed data",
               "Use filters early in the workflow to reduce data processing",
               "Combine multiple API calls where possible",
-              "Implement error handling to prevent unnecessary retries"
+              "Implement error handling to prevent unnecessary retries",
             );
             break;
 
@@ -1516,7 +1608,7 @@ ${validationResults.analysis.complexity > 50
               "Review module usage - remove unnecessary operations",
               "Use webhooks instead of polling where possible",
               "Implement data validation to prevent processing invalid records",
-              "Consider batch processing for large datasets"
+              "Consider batch processing for large datasets",
             );
             break;
 
@@ -1525,7 +1617,7 @@ ${validationResults.analysis.complexity > 50
               "Add comprehensive error handling modules",
               "Implement retry logic with exponential backoff",
               "Use data validation before processing",
-              "Add monitoring and alerting modules"
+              "Add monitoring and alerting modules",
             );
             break;
 
@@ -1534,15 +1626,16 @@ ${validationResults.analysis.complexity > 50
               "Add descriptive names and comments to modules",
               "Group related functionality into sub-scenarios",
               "Use consistent data transformation patterns",
-              "Document complex logic with notes"
+              "Document complex logic with notes",
             );
             break;
         }
 
         // Calculate optimization level
-        const complexityScore = optimizations.currentAnalysis.moduleCount * 2 + 
-                               optimizations.currentAnalysis.connectionCount;
-        
+        const complexityScore =
+          optimizations.currentAnalysis.moduleCount * 2 +
+          optimizations.currentAnalysis.connectionCount;
+
         if (complexityScore < 10) {
           optimizations.optimizationLevel = "minimal";
         } else if (complexityScore < 25) {
@@ -1580,11 +1673,12 @@ ${validationResults.analysis.complexity > 50
 ${optimizations.recommendations.map((rec, i) => `${i + 1}. ${rec}`).join("\n")}
 
 **Implementation Priority:**
-${optimizations.optimizationLevel === "significant" 
-  ? "🔴 **High Priority** - Significant optimization potential identified"
-  : optimizations.optimizationLevel === "moderate"
-  ? "🟡 **Medium Priority** - Moderate optimization opportunities available"
-  : "🟢 **Low Priority** - Scenario is already well-optimized"
+${
+  optimizations.optimizationLevel === "significant"
+    ? "🔴 **High Priority** - Significant optimization potential identified"
+    : optimizations.optimizationLevel === "moderate"
+      ? "🟡 **Medium Priority** - Moderate optimization opportunities available"
+      : "🟢 **Low Priority** - Scenario is already well-optimized"
 }
 
 **Next Steps:**
@@ -1648,9 +1742,12 @@ function getStatusEmoji(status: string): string {
   }
 }
 
-function generateScenarioDetailsText(details: any, operationId: string): string {
+function generateScenarioDetailsText(
+  details: any,
+  operationId: string,
+): string {
   const scenario = details.scenario;
-  
+
   return `🔍 **Detailed Scenario Information**
 
 **Basic Information:**
@@ -1673,12 +1770,16 @@ ${scenario.folder ? `- **Folder:** ${scenario.folder}` : ""}
 - **Connections:** ${scenario.connections?.length || 0}
 - **Webhooks:** ${scenario.webhooks?.length || 0}
 
-${details.analytics ? `**Recent Analytics (30 days):**
+${
+  details.analytics
+    ? `**Recent Analytics (30 days):**
 - **Executions:** ${details.analytics.totalExecutions || 0}
 - **Success Rate:** ${details.analytics.successRate ? `${(details.analytics.successRate * 100).toFixed(1)}%` : "N/A"}
 - **Avg Duration:** ${details.analytics.averageDuration ? `${details.analytics.averageDuration}ms` : "N/A"}
 - **Data Processed:** ${details.analytics.dataProcessed ? `${(details.analytics.dataProcessed / 1024 / 1024).toFixed(2)} MB` : "N/A"}
-` : ""}
+`
+    : ""
+}
 
 **Next Actions:**
 - Use \`execute-scenario\` to run this scenario
@@ -1688,6 +1789,5 @@ ${details.analytics ? `**Recent Analytics (30 days):**
 
 **Operation ID:** ${operationId}`;
 }
-
 
 export default registerScenarioExecutionManagementTools;
