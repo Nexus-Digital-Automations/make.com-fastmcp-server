@@ -29,23 +29,6 @@
       ]
     },
     {
-      "id": "task_1756139823931_qzxqogvav",
-      "title": "Implement Data and Connectivity Management Tools",
-      "description": "Implement FastMCP tools for connections, data stores, webhooks (hooks), and keys management. Review @development/FASTMCP_TYPESCRIPT_PROTOCOL.md for proper FastMCP implementation patterns.",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-25T16:37:03.932Z",
-      "auto_research_created": false
-    },
-    {
       "id": "task_1756139817983_m7jnkhe9e",
       "title": "Implement Scenario and Execution Management Tools",
       "description": "Implement FastMCP tools for scenario CRUD, blueprint management, scheduling, logs, and incomplete executions. Review @development/FASTMCP_TYPESCRIPT_PROTOCOL.md for proper FastMCP implementation patterns.",
@@ -129,13 +112,13 @@
   "strikes_completed_last_run": false,
   "last_hook_activation": 1755045713680,
   "agents": {
-    "development_session_1756158839484_1_general_5a40e630": {
+    "development_session_1756160313995_1_general_fd1d1063": {
       "name": "development Agent",
       "role": "development",
       "specialization": [],
       "status": "active",
       "assignedTasks": [],
-      "lastHeartbeat": "2025-08-25T21:53:59.485Z",
+      "lastHeartbeat": "2025-08-25T22:18:33.997Z",
       "parentAgentId": null,
       "capabilities": [
         "file-operations",
@@ -146,29 +129,8 @@
       ],
       "workload": 0,
       "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-25T21:53:59.485Z",
-      "sessionId": "session_1756158839484",
-      "metadata": {}
-    },
-    "development_session_1756159313498_1_general_7ad083cd": {
-      "name": "development Agent",
-      "role": "development",
-      "specialization": [],
-      "status": "active",
-      "assignedTasks": [],
-      "lastHeartbeat": "2025-08-25T22:01:53.499Z",
-      "parentAgentId": null,
-      "capabilities": [
-        "file-operations",
-        "linting",
-        "testing",
-        "build-fixes",
-        "refactoring"
-      ],
-      "workload": 0,
-      "maxConcurrentTasks": 5,
-      "createdAt": "2025-08-25T22:01:53.499Z",
-      "sessionId": "session_1756159313498",
+      "createdAt": "2025-08-25T22:18:33.997Z",
+      "sessionId": "session_1756160313995",
       "metadata": {}
     }
   },
