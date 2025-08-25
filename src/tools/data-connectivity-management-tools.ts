@@ -28,6 +28,69 @@ import {
 // Logger placeholder - will use logger passed to registration function
 let moduleLogger: winston.Logger;
 
+// ==============================================
+// Type Definitions for Make.com API Responses
+// ==============================================
+
+interface MakeConnection {
+  id: string;
+  name: string;
+  accountName?: string;
+  accountType: string;
+  teamId?: string;
+  expire?: string;
+  status?: string;
+  scopes?: string[];
+  created?: string;
+  verified?: boolean;
+  metadata?: Record<string, unknown>;
+}
+
+interface MakeDataStore {
+  id: string;
+  name: string;
+  label?: string;
+  teamId?: string;
+  created?: string;
+  structure?: Record<string, unknown>;
+  size?: number;
+  recordCount?: number;
+}
+
+interface MakeWebhook {
+  id: string;
+  name: string;
+  url?: string;
+  status?: string;
+  teamId?: string;
+  created?: string;
+  modified?: string;
+  enabled?: boolean;
+}
+
+interface StatusCount {
+  [key: string]: number;
+}
+
+interface MakeDataStoreField {
+  name: string;
+  type: string;
+  required: boolean;
+  unique: boolean;
+  constraints?: Record<string, unknown>;
+}
+
+interface MakeAPIKey {
+  id: string;
+  name: string;
+  keyType: string;
+  isActive: boolean;
+  scopes: string[];
+  expiresAt?: string;
+  lastUsedAt?: string;
+  createdAt?: string;
+}
+
 // ================================
 // Core Type Definitions
 // ================================
@@ -283,33 +346,41 @@ export function registerDataConnectivityManagementTools(
         const processingTime = Date.now() - startTime;
 
         // Filter and enhance connection data
-        const formattedConnections = connections.map((conn: any) => ({
-          id: conn.id,
-          name: conn.name,
-          accountName: conn.accountName,
-          accountType: conn.accountType,
-          teamId: conn.teamId,
-          status:
-            conn.expire && new Date(conn.expire) < new Date()
-              ? "expired"
-              : "active",
-          expire: conn.expire,
-          scopes: conn.scopes,
-          editable: conn.editable,
-          ...(args.includeMetadata && { metadata: conn.metadata }),
-        }));
+        const formattedConnections = connections.map(
+          (conn: MakeConnection) => ({
+            id: conn.id,
+            name: conn.name,
+            accountName: conn.accountName,
+            accountType: conn.accountType,
+            teamId: conn.teamId,
+            status:
+              conn.expire && new Date(conn.expire) < new Date()
+                ? "expired"
+                : "active",
+            expire: conn.expire,
+            scopes: conn.scopes,
+            editable: conn.editable,
+            ...(args.includeMetadata && { metadata: conn.metadata }),
+          }),
+        );
 
         // Generate statistics
         const stats = {
           total: formattedConnections.length,
-          byType: formattedConnections.reduce((acc: any, conn: any) => {
-            acc[conn.accountType] = (acc[conn.accountType] || 0) + 1;
-            return acc;
-          }, {}),
-          byStatus: formattedConnections.reduce((acc: any, conn: any) => {
-            acc[conn.status] = (acc[conn.status] || 0) + 1;
-            return acc;
-          }, {}),
+          byType: formattedConnections.reduce(
+            (acc: StatusCount, conn: MakeConnection) => {
+              acc[conn.accountType] = (acc[conn.accountType] || 0) + 1;
+              return acc;
+            },
+            {},
+          ),
+          byStatus: formattedConnections.reduce(
+            (acc: StatusCount, conn: MakeConnection) => {
+              acc[conn.status] = (acc[conn.status] || 0) + 1;
+              return acc;
+            },
+            {},
+          ),
         };
 
         log.info(`[${operationId}] Connections listed successfully`, {
@@ -333,7 +404,7 @@ export function registerDataConnectivityManagementTools(
                   ", ",
                 )}\n${args.teamId ? `- Team: ${args.teamId}\n` : ""}\n**Connections:**\n\n${formattedConnections
                 .map(
-                  (conn: any, index: number) =>
+                  (conn: MakeConnection, index: number) =>
                     `**${index + 1}. ${conn.name}**\n` +
                     `- ID: ${conn.id}\n` +
                     `- Account: ${conn.accountName} (${conn.accountType})\n` +
@@ -601,7 +672,7 @@ export function registerDataConnectivityManagementTools(
 
         // Enhance data store information
         const formattedDataStores = await Promise.all(
-          dataStores.map(async (store: any) => {
+          dataStores.map(async (store: MakeDataStore) => {
             const formatted = {
               id: store.id,
               name: store.name,
@@ -631,17 +702,20 @@ export function registerDataConnectivityManagementTools(
         const stats = {
           total: formattedDataStores.length,
           totalRecords: formattedDataStores.reduce(
-            (sum: number, store: any) => sum + store.recordCount,
+            (sum: number, store: MakeDataStore) => sum + store.recordCount,
             0,
           ),
           totalSizeMB: formattedDataStores.reduce(
-            (sum: number, store: any) => sum + store.maxSizeMB,
+            (sum: number, store: MakeDataStore) => sum + store.maxSizeMB,
             0,
           ),
-          byStatus: formattedDataStores.reduce((acc: any, store: any) => {
-            acc[store.status] = (acc[store.status] || 0) + 1;
-            return acc;
-          }, {}),
+          byStatus: formattedDataStores.reduce(
+            (acc: StatusCount, store: MakeDataStore) => {
+              acc[store.status] = (acc[store.status] || 0) + 1;
+              return acc;
+            },
+            {},
+          ),
         };
 
         log.info(`[${operationId}] Data stores listed successfully`, {
@@ -664,7 +738,7 @@ export function registerDataConnectivityManagementTools(
                   ", ",
                 )}\n${args.teamId ? `- Team: ${args.teamId}\n` : ""}\n**Data Stores:**\n\n${formattedDataStores
                 .map(
-                  (store: any, index: number) =>
+                  (store: MakeDataStore, index: number) =>
                     `**${index + 1}. ${store.name}**\n` +
                     `- ID: ${store.id}\n` +
                     `- Team: ${store.teamId}\n` +
@@ -777,7 +851,7 @@ export function registerDataConnectivityManagementTools(
               type: "text",
               text: `✅ **Data Store Created Successfully!**\n\n**Data Store Details:**\n- **ID:** ${dataStore.id}\n- **Name:** ${dataStore.name}\n- **Team:** ${dataStore.teamId}\n- **Capacity:** ${dataStore.maxSizeMB} MB\n- **Validation:** ${dataStore.strictValidation ? "Strict" : "Flexible"}\n- **Status:** 🟢 Active\n\n**Data Structure Schema:**\n${args.dataStructure.fields
                 .map(
-                  (field: any, index: number) =>
+                  (field: MakeDataStoreField, index: number) =>
                     `**${index + 1}. ${field.name}** (${field.type})\n` +
                     `   - Required: ${field.required ? "✅" : "❌"}\n` +
                     `   - Unique: ${field.unique ? "✅" : "❌"}\n` +
@@ -866,7 +940,7 @@ export function registerDataConnectivityManagementTools(
         const processingTime = Date.now() - startTime;
 
         // Format webhook information
-        const formattedWebhooks = webhooks.map((hook: any) => ({
+        const formattedWebhooks = webhooks.map((hook: MakeWebhook) => ({
           id: hook.id,
           name: hook.name,
           url: hook.url,
@@ -881,14 +955,20 @@ export function registerDataConnectivityManagementTools(
         // Generate statistics
         const stats = {
           total: formattedWebhooks.length,
-          byStatus: formattedWebhooks.reduce((acc: any, hook: any) => {
-            acc[hook.status] = (acc[hook.status] || 0) + 1;
-            return acc;
-          }, {}),
-          byType: formattedWebhooks.reduce((acc: any, hook: any) => {
-            acc[hook.typeName] = (acc[hook.typeName] || 0) + 1;
-            return acc;
-          }, {}),
+          byStatus: formattedWebhooks.reduce(
+            (acc: StatusCount, hook: MakeWebhook) => {
+              acc[hook.status] = (acc[hook.status] || 0) + 1;
+              return acc;
+            },
+            {},
+          ),
+          byType: formattedWebhooks.reduce(
+            (acc: StatusCount, hook: MakeWebhook) => {
+              acc[hook.typeName] = (acc[hook.typeName] || 0) + 1;
+              return acc;
+            },
+            {},
+          ),
         };
 
         log.info(`[${operationId}] Webhooks listed successfully`, {
@@ -912,7 +992,7 @@ export function registerDataConnectivityManagementTools(
                   ", ",
                 )}\n${args.teamId ? `- Team: ${args.teamId}\n` : ""}\n**Webhooks:**\n\n${formattedWebhooks
                 .map(
-                  (hook: any, index: number) =>
+                  (hook: MakeWebhook, index: number) =>
                     `**${index + 1}. ${hook.name}**\n` +
                     `- ID: ${hook.id}\n` +
                     `- URL: ${hook.url}\n` +
@@ -1079,7 +1159,7 @@ export function registerDataConnectivityManagementTools(
 
       try {
         const startTime = Date.now();
-        let result: any;
+        let result: unknown;
 
         switch (args.action) {
           case "list":
@@ -1161,7 +1241,7 @@ export function registerDataConnectivityManagementTools(
           const keys = result.data || [];
           responseText = `🔑 **API Keys Management**\n\n**Team:** ${args.teamId || "All Teams"}\n**Total Keys:** ${keys.length}\n\n${keys
             .map(
-              (key: any, index: number) =>
+              (key: MakeAPIKey, index: number) =>
                 `**${index + 1}. ${key.name}**\n` +
                 `- ID: ${key.id}\n` +
                 `- Type: ${key.keyType}\n` +

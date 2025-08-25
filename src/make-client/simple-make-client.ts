@@ -3,7 +3,12 @@
  * Compatibility layer for FastMCP tools integration
  */
 
-import axios, { AxiosInstance } from "axios";
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosError,
+} from "axios";
 import winston from "winston";
 import { v4 as uuidv4 } from "uuid";
 import { performance } from "perf_hooks";
@@ -31,22 +36,22 @@ export interface MakeClientConfig {
   };
 }
 
-export interface APIResponse<T = any> {
+export interface APIResponse<T = unknown> {
   data?: T;
-  error?: any;
+  error?: unknown;
   status?: number;
 }
 
 export class MakeAPIError extends Error {
   public code: string;
   public statusCode: number;
-  public details?: any;
+  public details?: unknown;
 
   constructor(
     message: string,
     code: string,
     statusCode: number,
-    details?: any,
+    details?: unknown,
   ) {
     super(message);
     this.name = "MakeAPIError";
@@ -83,23 +88,37 @@ export class MakeAPIClient {
     });
 
     // Request interceptor for logging
-    this.axios.interceptors.request.use((config: any) => {
-      const correlationId = uuidv4();
-      config.correlationId = correlationId;
-      config.startTime = performance.now();
+    this.axios.interceptors.request.use(
+      (
+        config: AxiosRequestConfig & {
+          correlationId?: string;
+          startTime?: number;
+        },
+      ) => {
+        const correlationId = uuidv4();
+        config.correlationId = correlationId;
+        config.startTime = performance.now();
 
-      this.logger.debug("Make.com API request started", {
-        correlationId,
-        method: config.method?.toUpperCase(),
-        url: config.url,
-      });
+        this.logger.debug("Make.com API request started", {
+          correlationId,
+          method: config.method?.toUpperCase(),
+          url: config.url,
+        });
 
-      return config;
-    });
+        return config;
+      },
+    );
 
     // Response interceptor for logging and rate limiting
     this.axios.interceptors.response.use(
-      (response: any) => {
+      (
+        response: AxiosResponse & {
+          config: AxiosRequestConfig & {
+            correlationId?: string;
+            startTime?: number;
+          };
+        },
+      ) => {
         const { correlationId, startTime } = response.config;
         const duration = startTime ? performance.now() - startTime : 0;
 
@@ -114,7 +133,7 @@ export class MakeAPIClient {
         this.updateRateLimit();
         return response;
       },
-      (error: any) => {
+      (error: AxiosError) => {
         const { correlationId, startTime } = error.config || {};
         const duration = startTime ? performance.now() - startTime : 0;
 
@@ -141,7 +160,7 @@ export class MakeAPIClient {
     this.requestCount++;
   }
 
-  private formatError(error: any): MakeAPIError {
+  private formatError(error: AxiosError): MakeAPIError {
     const status = error.response?.status;
     const data = error.response?.data;
 
@@ -200,8 +219,11 @@ export class MakeAPIClient {
   // API Methods for Compatibility
   // ==============================================================================
 
-  async getScenarios(teamId?: string, params?: any): Promise<APIResponse> {
-    const queryParams: any = { ...params };
+  async getScenarios(
+    teamId?: string,
+    params?: Record<string, unknown>,
+  ): Promise<APIResponse> {
+    const queryParams: Record<string, unknown> = { ...params };
     if (teamId) {
       queryParams.teamId = teamId;
     }
@@ -216,7 +238,9 @@ export class MakeAPIClient {
     }
   }
 
-  async createWebhook(webhookData: any): Promise<APIResponse> {
+  async createWebhook(
+    webhookData: Record<string, unknown>,
+  ): Promise<APIResponse> {
     try {
       const response = await this.axios.post("/hooks", webhookData);
       return { data: response.data, status: response.status };
@@ -225,8 +249,11 @@ export class MakeAPIClient {
     }
   }
 
-  async getWebhooks(teamId?: string, params?: any): Promise<APIResponse> {
-    const queryParams: any = { ...params };
+  async getWebhooks(
+    teamId?: string,
+    params?: Record<string, unknown>,
+  ): Promise<APIResponse> {
+    const queryParams: Record<string, unknown> = { ...params };
     if (teamId) {
       queryParams.teamId = teamId;
     }
@@ -239,7 +266,7 @@ export class MakeAPIClient {
     }
   }
 
-  async getAnalytics(params?: any): Promise<APIResponse> {
+  async getAnalytics(params?: Record<string, unknown>): Promise<APIResponse> {
     try {
       const response = await this.axios.get("/analytics", { params });
       return { data: response.data, status: response.status };
@@ -276,7 +303,7 @@ export class MakeAPIClient {
     }
   }
 
-  async createTeam(teamData: any): Promise<APIResponse> {
+  async createTeam(teamData: Record<string, unknown>): Promise<APIResponse> {
     try {
       const response = await this.axios.post("/teams", teamData);
       return { data: response.data, status: response.status };
@@ -287,9 +314,9 @@ export class MakeAPIClient {
 
   async getConnections(
     teamId?: string,
-    pagination?: any,
+    pagination?: Record<string, unknown>,
   ): Promise<APIResponse> {
-    const params: any = { ...pagination };
+    const params: Record<string, unknown> = { ...pagination };
     if (teamId) {
       params.teamId = teamId;
     }
@@ -302,7 +329,9 @@ export class MakeAPIClient {
     }
   }
 
-  async createConnection(connectionData: any): Promise<APIResponse> {
+  async createConnection(
+    connectionData: Record<string, unknown>,
+  ): Promise<APIResponse> {
     try {
       const response = await this.axios.post("/connections", connectionData);
       return { data: response.data, status: response.status };
@@ -331,8 +360,11 @@ export class MakeAPIClient {
     }
   }
 
-  async getDataStores(teamId?: string, pagination?: any): Promise<APIResponse> {
-    const params: any = { ...pagination };
+  async getDataStores(
+    teamId?: string,
+    pagination?: Record<string, unknown>,
+  ): Promise<APIResponse> {
+    const params: Record<string, unknown> = { ...pagination };
     if (teamId) {
       params.teamId = teamId;
     }
@@ -358,7 +390,10 @@ export class MakeAPIClient {
   // Generic HTTP Methods for Custom Requests
   // ==============================================================================
 
-  async get(path: string, params?: any): Promise<APIResponse> {
+  async get(
+    path: string,
+    params?: Record<string, unknown>,
+  ): Promise<APIResponse> {
     try {
       const response = await this.axios.get(path, { params });
       return { data: response.data, status: response.status };
@@ -367,7 +402,7 @@ export class MakeAPIClient {
     }
   }
 
-  async post(path: string, data?: any): Promise<APIResponse> {
+  async post(path: string, data?: unknown): Promise<APIResponse> {
     try {
       const response = await this.axios.post(path, data);
       return { data: response.data, status: response.status };
@@ -376,7 +411,7 @@ export class MakeAPIClient {
     }
   }
 
-  async put(path: string, data?: any): Promise<APIResponse> {
+  async put(path: string, data?: unknown): Promise<APIResponse> {
     try {
       const response = await this.axios.put(path, data);
       return { data: response.data, status: response.status };
@@ -385,7 +420,7 @@ export class MakeAPIClient {
     }
   }
 
-  async patch(path: string, data?: any): Promise<APIResponse> {
+  async patch(path: string, data?: unknown): Promise<APIResponse> {
     try {
       const response = await this.axios.patch(path, data);
       return { data: response.data, status: response.status };

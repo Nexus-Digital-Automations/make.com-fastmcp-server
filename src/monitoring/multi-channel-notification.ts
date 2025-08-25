@@ -1,4 +1,15 @@
 import type { PatternAlert } from "./alert-manager.js";
+import {
+  logNotificationChannelAdded,
+  logNotificationChannelRemoved,
+  logNotificationChannelUnhealthy,
+  logNotificationChannelRestored,
+  logNotificationChannelHealthCheckFailed,
+  logNoApplicableChannelsFound,
+  logAlertNotificationSummary,
+  logEmailNotificationSent,
+  logSMSNotificationSent,
+} from "../utils/logger.js";
 
 export interface NotificationChannel {
   id: string;
@@ -255,8 +266,9 @@ export abstract class BaseNotificationChannel {
       // Mark unhealthy after 3 consecutive errors
       if (this.healthStatus.errorCount >= 3) {
         this.healthStatus.healthy = false;
-        console.warn(
-          `❌ Channel ${this.config.id} marked unhealthy after ${this.healthStatus.errorCount} errors`,
+        logNotificationChannelUnhealthy(
+          this.config.id,
+          this.healthStatus.errorCount,
         );
       }
     }
@@ -269,15 +281,10 @@ export abstract class BaseNotificationChannel {
         if (isHealthy && !this.healthStatus.healthy) {
           this.healthStatus.healthy = true;
           this.healthStatus.errorCount = 0;
-          console.warn(
-            `✅ Channel ${this.config.id} restored to healthy status`,
-          );
+          logNotificationChannelRestored(this.config.id);
         }
       } catch (error) {
-        console.warn(
-          `⚠️ Health check failed for channel ${this.config.id}:`,
-          error,
-        );
+        logNotificationChannelHealthCheckFailed(this.config.id, error);
       }
     }, this.config.healthCheck.interval);
   }
@@ -438,9 +445,7 @@ export class EmailNotificationChannel extends BaseNotificationChannel {
   async sendNotification(alert: PatternAlert): Promise<NotificationResult> {
     // This is a placeholder implementation
     // In a real implementation, you would use nodemailer or similar
-    console.warn(`📧 Email notification would be sent for alert ${alert.id}`);
-    console.warn(`   To: ${this.config.config.email!.to.join(", ")}`);
-    console.warn(`   Subject: FastMCP Alert: ${alert.patternId}`);
+    logEmailNotificationSent(alert.id, this.config.config.email!.to);
 
     return {
       success: true,
@@ -459,11 +464,7 @@ export class SMSNotificationChannel extends BaseNotificationChannel {
   async sendNotification(alert: PatternAlert): Promise<NotificationResult> {
     // This is a placeholder implementation
     // In a real implementation, you would use Twilio, AWS SNS, etc.
-    console.warn(`📱 SMS notification would be sent for alert ${alert.id}`);
-    console.warn(`   To: ${this.config.config.sms!.phoneNumbers.join(", ")}`);
-    console.warn(
-      `   Message: FastMCP ALERT - ${alert.patternId}: ${alert.message}`,
-    );
+    logSMSNotificationSent(alert.id, this.config.config.sms!.phoneNumbers);
 
     return {
       success: true,
@@ -490,15 +491,13 @@ export class MultiChannelNotificationManager {
 
   addChannel(channel: BaseNotificationChannel): void {
     this.channels.set(channel.config.id, channel);
-    console.warn(
-      `➕ Added notification channel: ${channel.config.id} (${channel.config.type})`,
-    );
+    logNotificationChannelAdded(channel.config.id, channel.config.type);
   }
 
   removeChannel(channelId: string): boolean {
     const removed = this.channels.delete(channelId);
     if (removed) {
-      console.warn(`➖ Removed notification channel: ${channelId}`);
+      logNotificationChannelRemoved(channelId);
     }
     return removed;
   }
@@ -508,7 +507,7 @@ export class MultiChannelNotificationManager {
     const results: NotificationResult[] = [];
 
     if (applicableChannels.length === 0) {
-      console.warn(`⚠️ No applicable channels found for alert ${alert.id}`);
+      logNoApplicableChannelsFound(alert.id);
       return {
         alertId: alert.id,
         totalChannels: 0,
@@ -556,8 +555,10 @@ export class MultiChannelNotificationManager {
       results: results,
     };
 
-    console.warn(
-      `📤 Alert notification summary: ${summary.successfulChannels}/${summary.totalChannels} channels successful for ${alert.id}`,
+    logAlertNotificationSummary(
+      alert.id,
+      summary.successfulChannels,
+      summary.totalChannels,
     );
 
     return summary;

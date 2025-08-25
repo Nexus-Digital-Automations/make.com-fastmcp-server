@@ -27,6 +27,71 @@ import { MakeAPIClient } from "../make-client/simple-make-client.js";
 // Logger placeholder - will use logger passed to registration function
 let _moduleLogger: winston.Logger;
 
+// ==============================================
+// Type Definitions for Make.com Scenario API
+// ==============================================
+
+interface MakeScenario {
+  id: string;
+  name: string;
+  status: string;
+  teamId?: string;
+  folder?: string;
+  description?: string;
+  updatedAt?: string;
+  createdAt?: string;
+  lastExecutionAt?: string;
+  successRate?: number;
+  totalExecutions?: number;
+  modules?: ScenarioModule[];
+  connections?: ScenarioConnection[];
+  metadata?: Record<string, unknown>;
+}
+
+interface ScenarioModule {
+  id: string;
+  type: string;
+  parameters?: Record<string, unknown>;
+  name?: string;
+}
+
+interface ScenarioConnection {
+  id: string;
+  type: string;
+  name?: string;
+  verified?: boolean;
+}
+
+interface _ScenarioExecution {
+  id: string;
+  scenarioId: string;
+  status: string;
+  startedAt?: string;
+  completedAt?: string;
+  duration?: number;
+  operationsCount?: number;
+  dataProcessed?: number;
+  modulesExecuted?: number;
+  errors?: ExecutionError[];
+  error?: string;
+}
+
+interface ExecutionError {
+  message: string;
+  module?: string;
+  code?: string;
+}
+
+interface StatusCount {
+  [key: string]: number;
+}
+
+interface SchedulingConfig {
+  type: string;
+  interval?: string;
+  unit?: string;
+}
+
 // ================================
 // Core Type Definitions and Schemas
 // ================================
@@ -253,7 +318,7 @@ export function registerScenarioExecutionManagementTools(
 
       try {
         // Build query parameters
-        const queryParams: Record<string, any> = {
+        const queryParams: Record<string, unknown> = {
           limit: args.limit,
           offset: args.offset,
           sortBy: args.sortBy,
@@ -288,12 +353,15 @@ export function registerScenarioExecutionManagementTools(
         reportProgress({ progress: 70, total: 100 });
 
         // Generate insights
-        const statusCounts = scenarios.reduce((acc: any, scenario: any) => {
-          acc[scenario.status] = (acc[scenario.status] || 0) + 1;
-          return acc;
-        }, {});
+        const statusCounts = scenarios.reduce(
+          (acc: StatusCount, scenario: MakeScenario) => {
+            acc[scenario.status] = (acc[scenario.status] || 0) + 1;
+            return acc;
+          },
+          {},
+        );
 
-        const recentActivity = scenarios.filter((s: any) => {
+        const recentActivity = scenarios.filter((s: MakeScenario) => {
           const lastExecution = new Date(s.lastExecutionAt);
           const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
           return lastExecution > dayAgo;
@@ -337,7 +405,7 @@ ${
 ${
   scenarios
     .map(
-      (scenario: any, i: number) => `**${i + 1}. ${scenario.name}**
+      (scenario: MakeScenario, i: number) => `**${i + 1}. ${scenario.name}**
 - ID: \`${scenario.id}\`
 - Status: ${getStatusEmoji(scenario.status)} ${scenario.status}
 - Team: ${scenario.teamId || "Default"}
@@ -447,7 +515,12 @@ ${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`,
         reportProgress({ progress: 50, total: 100 });
 
         // Collect additional information based on options
-        const details: any = {
+        const details: {
+          scenario: MakeScenario;
+          analytics?: unknown;
+          connections?: ScenarioConnection[];
+          modules?: ScenarioModule[];
+        } = {
           scenario,
           blueprint: null,
           analytics: null,
@@ -558,7 +631,7 @@ ${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`,
 
       try {
         // Prepare scenario data
-        const scenarioData: any = {
+        const scenarioData: Record<string, unknown> = {
           name: args.name,
           teamId: args.teamId,
           blueprint: args.blueprint,
@@ -691,7 +764,9 @@ ${args.description ? `- **Description:** ${args.description}\n` : ""}${args.fold
       log.info(`[${operationId}] Updating scenario`, {
         scenarioId: args.scenarioId,
         updates: Object.keys(args).filter(
-          (k) => k !== "scenarioId" && (args as any)[k] !== undefined,
+          (k) =>
+            k !== "scenarioId" &&
+            (args as Record<string, unknown>)[k] !== undefined,
         ),
         correlationId: operationId,
       });
@@ -700,7 +775,7 @@ ${args.description ? `- **Description:** ${args.description}\n` : ""}${args.fold
 
       try {
         // Prepare update data
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
 
         if (args.name !== undefined) {
           updateData.name = args.name;
@@ -751,7 +826,8 @@ ${Object.entries(updateData)
     if (key === "blueprint") {
       return `- **Blueprint:** Updated (${JSON.stringify(value).length} characters)`;
     } else if (key === "scheduling") {
-      return `- **Scheduling:** ${(value as any).type} ${(value as any).interval ? `every ${(value as any).interval} ${(value as any).unit}(s)` : ""}`;
+      const scheduling = value as SchedulingConfig;
+      return `- **Scheduling:** ${scheduling.type} ${scheduling.interval ? `every ${scheduling.interval} ${scheduling.unit}(s)` : ""}`;
     } else {
       return `- **${key}:** ${value}`;
     }
@@ -964,7 +1040,7 @@ ${args.reason ? `- **Reason:** ${args.reason}` : ""}
 
       try {
         // Prepare execution data
-        const executionData: any = {
+        const executionData: Record<string, unknown> = {
           scenarioId: args.scenarioId,
         };
 
@@ -1211,7 +1287,7 @@ ${success ? "- ✅ Review execution logs for detailed results" : "- 🔍 Use `ge
       });
 
       try {
-        const updateData: any = { status: args.status };
+        const updateData: Record<string, unknown> = { status: args.status };
         if (args.reason) {
           updateData.statusChangeReason = args.reason;
         }
@@ -1365,7 +1441,7 @@ ${
 
           validationResults.analysis.moduleCount = modules.length;
 
-          modules.forEach((module: any, index: number) => {
+          modules.forEach((module: ScenarioModule, index: number) => {
             if (!module.id) {
               validationResults.errors.push(
                 `Module ${index + 1}: Missing required 'id' field`,
@@ -1407,21 +1483,23 @@ ${
 
           validationResults.analysis.connectionCount = connections.length;
 
-          connections.forEach((connection: any, index: number) => {
-            if (!connection.id) {
-              validationResults.errors.push(
-                `Connection ${index + 1}: Missing required 'id' field`,
-              );
-              validationResults.isValid = false;
-            }
+          connections.forEach(
+            (connection: ScenarioConnection, index: number) => {
+              if (!connection.id) {
+                validationResults.errors.push(
+                  `Connection ${index + 1}: Missing required 'id' field`,
+                );
+                validationResults.isValid = false;
+              }
 
-            if (!connection.type) {
-              validationResults.errors.push(
-                `Connection ${index + 1}: Missing required 'type' field`,
-              );
-              validationResults.isValid = false;
-            }
-          });
+              if (!connection.type) {
+                validationResults.errors.push(
+                  `Connection ${index + 1}: Missing required 'type' field`,
+                );
+                validationResults.isValid = false;
+              }
+            },
+          );
         }
 
         reportProgress({ progress: 80, total: 100 });
@@ -1743,7 +1821,12 @@ function getStatusEmoji(status: string): string {
 }
 
 function generateScenarioDetailsText(
-  details: any,
+  details: {
+    scenario: MakeScenario;
+    analytics?: unknown;
+    connections?: ScenarioConnection[];
+    modules?: ScenarioModule[];
+  },
   operationId: string,
 ): string {
   const scenario = details.scenario;

@@ -1,3 +1,10 @@
+import {
+  logPatternRegistration,
+  logMultiplePatternRegistration,
+  logPatternHistoryCleared,
+  logPatternRemoved,
+} from "../utils/logger.js";
+
 // Logger will be injected via import to avoid circular dependency
 
 export interface LogEntry {
@@ -62,17 +69,13 @@ export class LogPatternAnalyzer {
 
   static registerPattern(pattern: LogPattern): void {
     this.patterns.set(pattern.id, pattern);
-    // Log registration - logger will be available in the context where this is called
-    console.warn(
-      `Log pattern registered: ${pattern.name} (${pattern.severity})`,
-    );
+    // Log registration using Winston logger to avoid MCP protocol interference
+    logPatternRegistration(pattern.name, pattern.severity);
   }
 
   static registerPatterns(patterns: LogPattern[]): void {
     patterns.forEach((pattern) => this.registerPattern(pattern));
-    console.warn(
-      `Multiple log patterns registered: ${patterns.length} patterns`,
-    );
+    logMultiplePatternRegistration(patterns.length);
   }
 
   static analyzeLogEntry(entry: LogEntry): PatternMatch[] {
@@ -267,14 +270,14 @@ export class LogPatternAnalyzer {
 
   static clearHistory(): void {
     this.recentMatches.clear();
-    console.warn("Pattern match history cleared");
+    logPatternHistoryCleared();
   }
 
   static removePattern(patternId: string): boolean {
     const removed = this.patterns.delete(patternId);
     if (removed) {
       this.recentMatches.delete(patternId);
-      console.warn(`Pattern removed: ${patternId}`);
+      logPatternRemoved(patternId);
     }
     return removed;
   }

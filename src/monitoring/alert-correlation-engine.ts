@@ -1,4 +1,14 @@
 import type { PatternAlert } from "./alert-manager.js";
+import {
+  logCorrelationRulesInitialized,
+  logCorrelationRuleAdded,
+  logCorrelationRuleRemoved,
+  logAlertCorrelationCreated,
+  logRuleLearning,
+  logExpiredCorrelationsCleanup,
+  logCorrelationEngineShutdown,
+  logCorrelationEngineShutdownComplete,
+} from "../utils/logger.js";
 
 export interface CorrelationRule {
   id: string;
@@ -149,22 +159,18 @@ export class BasicCorrelationEngine {
       confidence: 0.8,
     });
 
-    console.warn(
-      `🔗 Initialized ${this.correlationRules.size} correlation rules`,
-    );
+    logCorrelationRulesInitialized(this.correlationRules.size);
   }
 
   addRule(rule: CorrelationRule): void {
     this.correlationRules.set(rule.id, rule);
-    console.warn(
-      `📋 Added correlation rule: ${rule.name} (${rule.correlationType})`,
-    );
+    logCorrelationRuleAdded(rule.name, rule.correlationType);
   }
 
   removeRule(ruleId: string): boolean {
     const removed = this.correlationRules.delete(ruleId);
     if (removed) {
-      console.warn(`🗑️ Removed correlation rule: ${ruleId}`);
+      logCorrelationRuleRemoved(ruleId);
     }
     return removed;
   }
@@ -184,8 +190,10 @@ export class BasicCorrelationEngine {
       if (correlation) {
         this.activeCorrelations.set(correlation.id, correlation);
 
-        console.warn(
-          `🔗 Alert correlation created: ${correlation.id} (${correlation.correlationType}) - ${correlation.correlatedAlertIds.length} alerts`,
+        logAlertCorrelationCreated(
+          correlation.id,
+          correlation.correlationType,
+          correlation.correlatedAlertIds.length,
         );
 
         // Learn from successful correlations
@@ -377,9 +385,7 @@ export class BasicCorrelationEngine {
       );
       rule.confidence = Math.min(0.95, rule.confidence + adjustment);
 
-      console.warn(
-        `🧠 Rule learning: ${rule.id} confidence increased to ${rule.confidence.toFixed(3)}`,
-      );
+      logRuleLearning(rule.id, rule.confidence);
     }
   }
 
@@ -398,7 +404,7 @@ export class BasicCorrelationEngine {
     }
 
     if (expiredIds.length > 0) {
-      console.warn(`🧹 Cleaned up ${expiredIds.length} expired correlations`);
+      logExpiredCorrelationsCleanup(expiredIds.length);
     }
   }
 
@@ -501,9 +507,9 @@ export class BasicCorrelationEngine {
   }
 
   shutdown(): void {
-    console.warn("🔄 Shutting down correlation engine...");
+    logCorrelationEngineShutdown();
     this.activeCorrelations.clear();
     this.patternFrequency.clear();
-    console.warn("✅ Correlation engine shutdown complete");
+    logCorrelationEngineShutdownComplete();
   }
 }

@@ -2,6 +2,35 @@
   "project": "root_files",
   "tasks": [
     {
+      "id": "task_1756163798804_i0hnybiyg",
+      "title": "Fix TypeScript ESLint warnings (78 explicit any warnings)",
+      "description": "Replace explicit 'any' types with proper TypeScript types across all tools files for better type safety and code quality",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "high",
+      "status": "in_progress",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-25T23:16:38.804Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1756162643591_1_general_ea4be754",
+      "started_at": "2025-08-25T23:16:49.282Z",
+      "claimed_by": "development_session_1756162643591_1_general_ea4be754",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1756162643591_1_general_ea4be754",
+          "role": "primary",
+          "assignedAt": "2025-08-25T23:16:49.282Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ]
+    },
+    {
       "id": "task_1756034288610_puw5mxlnh",
       "title": "Refactor executeWithRetry method complexity (22 → ≤12)",
       "description": "Apply Extract Method pattern to reduce executeWithRetry method complexity from 22 to ≤12 - highest priority remaining violation",

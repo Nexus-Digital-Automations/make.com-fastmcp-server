@@ -28,6 +28,58 @@ import {
 // Logger placeholder - will use logger passed to registration function
 let moduleLogger: winston.Logger;
 
+// ==============================================
+// Type Definitions for Make.com Billing API
+// ==============================================
+
+interface _MakeBillingExecution {
+  id: string;
+  scenarioId?: string;
+  status: string;
+  startedAt?: string;
+  duration?: number;
+  operationsCount?: number;
+  failure?: {
+    reason?: string;
+    message?: string;
+  };
+}
+
+interface _MakeBillingActivity {
+  date: string;
+  operations: number;
+  scenarios: number;
+  cost?: number;
+  userId?: string;
+}
+
+interface ComplianceIssue {
+  severity: string;
+  description: string;
+  category?: string;
+}
+
+interface _ComplianceResult {
+  complianceScore: number;
+  auditLogsRetention: {
+    status: string;
+    retentionDays: number;
+  };
+  dataPrivacy: {
+    status: string;
+    gdprCompliant: boolean;
+  };
+  accessControls: {
+    status: string;
+    rbacEnabled: boolean;
+  };
+  backups: {
+    status: string;
+    lastBackup: string;
+  };
+  issues: ComplianceIssue[];
+}
+
 // ================================
 // Core Type Definitions
 // ================================
@@ -450,7 +502,7 @@ export function registerBillingAdministrationTools(
         reportProgress({ progress: 0, total: 100 });
 
         const startTime = Date.now();
-        let result: any;
+        let result: unknown;
 
         switch (args.action) {
           case "list":
@@ -576,10 +628,13 @@ export function registerBillingAdministrationTools(
 
         if (args.action === "list") {
           const executions = result.data || [];
-          const failureReasons = executions.reduce((acc: any, exec: any) => {
-            acc[exec.failureReason] = (acc[exec.failureReason] || 0) + 1;
-            return acc;
-          }, {});
+          const failureReasons = executions.reduce(
+            (acc: Record<string, number>, exec: _MakeBillingExecution) => {
+              acc[exec.failureReason] = (acc[exec.failureReason] || 0) + 1;
+              return acc;
+            },
+            {},
+          );
 
           responseText =
             `🔧 **Incomplete Executions Management**\n\n**Summary:**\n- Total Failed Executions: ${executions.length}\n- Failure Patterns: ${Object.entries(
@@ -590,7 +645,7 @@ export function registerBillingAdministrationTools(
                 ", ",
               )}\n${args.scenarioId ? `- Scenario: ${args.scenarioId}\n` : ""}${args.teamId ? `- Team: ${args.teamId}\n` : ""}\n**Failed Executions:**\n\n${executions
               .map(
-                (exec: any, index: number) =>
+                (exec: _MakeBillingExecution, index: number) =>
                   `**${index + 1}. ${exec.dlqId}**\n` +
                   `- **Scenario:** ${exec.scenarioId}\n` +
                   `- **Failed At:** ${new Date(exec.failedAt).toLocaleString()}\n` +
@@ -614,7 +669,7 @@ export function registerBillingAdministrationTools(
         } else if (args.action === "bulk_retry") {
           responseText = `🔄 **Bulk Retry Completed**\n\n**Bulk Retry Summary:**\n- **Total Executions:** ${args.dlqIds?.length}\n- **Successfully Initiated:** ${result.data.retriedCount}\n- **Success Rate:** ${((result.data.retriedCount / (args.dlqIds?.length || 1)) * 100).toFixed(1)}%\n\n**Retry Results:**\n${result.data.results
             .map(
-              (res: any, index: number) =>
+              (res: unknown, index: number) =>
                 `${index + 1}. DLQ ${res.dlqId}: ${res.retryInitiated ? "✅" : "❌"} (${res.newExecutionId})`,
             )
             .join(
@@ -686,7 +741,7 @@ export function registerBillingAdministrationTools(
         const startTime = Date.now();
 
         // Build analytics query parameters
-        const queryParams: any = {
+        const queryParams: Record<string, unknown> = {
           organizationId: args.organizationId,
           period: args.period,
           from: args.dateRange.from,
@@ -854,7 +909,7 @@ export function registerBillingAdministrationTools(
         reportProgress({ progress: 0, total: 100 });
 
         const startTime = Date.now();
-        let result: any;
+        let result: unknown;
 
         switch (args.operation) {
           case "user_management":
@@ -966,7 +1021,7 @@ export function registerBillingAdministrationTools(
         if (args.operation === "user_management") {
           responseText = `👥 **User Management Analysis**\n\n**User Statistics:**\n- **Total Users:** ${result.totalUsers}\n- **Active Users:** ${result.activeUsers}\n- **Inactive Users:** ${result.inactiveUsers}\n- **Admin Users:** ${result.adminUsers}\n- **Member Users:** ${result.memberUsers}\n\n**Recent Activity:**\n${result.recentActivity
             .map(
-              (activity: any) =>
+              (activity: _MakeBillingActivity) =>
                 `- **${activity.userId}:** ${activity.action} at ${new Date(activity.timestamp).toLocaleString()}`,
             )
             .join(
@@ -975,7 +1030,7 @@ export function registerBillingAdministrationTools(
         } else if (args.operation === "security_audit") {
           responseText = `🔒 **Security Audit Report**\n\n**Security Score:** ${result.securityScore}/100 ${result.securityScore >= 90 ? "🟢" : result.securityScore >= 70 ? "🟡" : "🔴"}\n\n**API Keys:**\n- **Total:** ${result.apiKeys.total}\n- **Expired:** ${result.apiKeys.expired} ${result.apiKeys.expired > 0 ? "⚠️" : "✅"}\n- **Expiring Soon:** ${result.apiKeys.expiringSoon} ${result.apiKeys.expiringSoon > 0 ? "⚠️" : "✅"}\n\n**Connections:**\n- **Total:** ${result.connections.total}\n- **Failed:** ${result.connections.failed} ${result.connections.failed > 0 ? "🔴" : "✅"}\n- **Need Update:** ${result.connections.needsUpdate} ${result.connections.needsUpdate > 0 ? "⚠️" : "✅"}\n\n**Permissions:**\n- **Over-Privileged:** ${result.permissions.overPrivileged} ${result.permissions.overPrivileged > 0 ? "🔴" : "✅"}\n- **Under-Privileged:** ${result.permissions.underPrivileged} ${result.permissions.underPrivileged > 0 ? "⚠️" : "✅"}\n\n**Security Recommendations:**\n${result.recommendations.map((rec: string, index: number) => `${index + 1}. ${rec}`).join("\n")}`;
         } else if (args.operation === "compliance_check") {
-          responseText = `📋 **Compliance Check Report**\n\n**Compliance Score:** ${result.complianceScore}/100 ${result.complianceScore >= 90 ? "🟢" : result.complianceScore >= 70 ? "🟡" : "🔴"}\n\n**Audit Logs:**\n- **Status:** ${result.auditLogsRetention.status === "compliant" ? "✅ Compliant" : "⚠️ Non-Compliant"}\n- **Retention:** ${result.auditLogsRetention.retentionDays} days\n\n**Data Privacy:**\n- **Status:** ${result.dataPrivacy.status === "compliant" ? "✅ Compliant" : "⚠️ Non-Compliant"}\n- **GDPR Compliant:** ${result.dataPrivacy.gdprCompliant ? "✅" : "❌"}\n\n**Access Controls:**\n- **Status:** ${result.accessControls.status === "compliant" ? "✅ Compliant" : "⚠️ Non-Compliant"}\n- **RBAC Enabled:** ${result.accessControls.rbacEnabled ? "✅" : "❌"}\n\n**Backups:**\n- **Status:** ${result.backups.status === "compliant" ? "✅ Compliant" : result.backups.status === "warning" ? "⚠️ Warning" : "🔴 Non-Compliant"}\n- **Last Backup:** ${new Date(result.backups.lastBackup).toLocaleString()}\n\n**Compliance Issues:**\n${result.issues.length === 0 ? "✅ **No compliance issues detected**" : result.issues.map((issue: any, index: number) => `${index + 1}. **${issue.severity.toUpperCase()}:** ${issue.description}`).join("\n")}`;
+          responseText = `📋 **Compliance Check Report**\n\n**Compliance Score:** ${result.complianceScore}/100 ${result.complianceScore >= 90 ? "🟢" : result.complianceScore >= 70 ? "🟡" : "🔴"}\n\n**Audit Logs:**\n- **Status:** ${result.auditLogsRetention.status === "compliant" ? "✅ Compliant" : "⚠️ Non-Compliant"}\n- **Retention:** ${result.auditLogsRetention.retentionDays} days\n\n**Data Privacy:**\n- **Status:** ${result.dataPrivacy.status === "compliant" ? "✅ Compliant" : "⚠️ Non-Compliant"}\n- **GDPR Compliant:** ${result.dataPrivacy.gdprCompliant ? "✅" : "❌"}\n\n**Access Controls:**\n- **Status:** ${result.accessControls.status === "compliant" ? "✅ Compliant" : "⚠️ Non-Compliant"}\n- **RBAC Enabled:** ${result.accessControls.rbacEnabled ? "✅" : "❌"}\n\n**Backups:**\n- **Status:** ${result.backups.status === "compliant" ? "✅ Compliant" : result.backups.status === "warning" ? "⚠️ Warning" : "🔴 Non-Compliant"}\n- **Last Backup:** ${new Date(result.backups.lastBackup).toLocaleString()}\n\n**Compliance Issues:**\n${result.issues.length === 0 ? "✅ **No compliance issues detected**" : result.issues.map((issue: ComplianceIssue, index: number) => `${index + 1}. **${issue.severity.toUpperCase()}:** ${issue.description}`).join("\n")}`;
         } else if (args.operation === "resource_usage") {
           responseText = `📊 **Resource Usage Analysis**\n\n**Utilization Score:** ${result.utilizationScore}/100 ${result.utilizationScore >= 80 ? "🟢" : result.utilizationScore >= 60 ? "🟡" : "🔴"}\n\n**Scenarios:**\n- **Total:** ${result.scenarios.total}\n- **Active:** ${result.scenarios.active} (${((result.scenarios.active / result.scenarios.total) * 100).toFixed(1)}%)\n- **Inactive:** ${result.scenarios.inactive}\n\n**Connections:**\n- **Total:** ${result.connections.total}\n- **Active:** ${result.connections.active}\n- **Unused:** ${result.connections.unused} ${result.connections.unused > 0 ? "⚠️" : "✅"}\n\n**Data Stores:**\n- **Total:** ${result.dataStores.total}\n- **Size:** ${result.dataStores.sizeMB} MB\n- **Utilization:** ${(result.dataStores.utilizationRate * 100).toFixed(1)}%\n\n**Webhooks:**\n- **Total:** ${result.webhooks.total}\n- **Active:** ${result.webhooks.active}\n- **Disabled:** ${result.webhooks.disabled}\n\n**Optimization Recommendations:**\n${result.recommendations.map((rec: string, index: number) => `${index + 1}. ${rec}`).join("\n")}`;
         }
