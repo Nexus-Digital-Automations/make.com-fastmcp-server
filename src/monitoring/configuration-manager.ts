@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as fs from "fs";
 import type { AlertStorageConfig } from "./enhanced-alert-storage.js";
 import type { CorrelationRule } from "./alert-correlation-engine.js";
 import type { NotificationChannel } from "./multi-channel-notification.js";
@@ -683,23 +684,23 @@ export class ConfigurationManager {
   // Utility methods for file operations (can be overridden for testing)
   private fileExists(filePath: string): boolean {
     try {
-      return require("fs").existsSync(filePath);
+      return fs.existsSync(filePath);
     } catch {
       return false;
     }
   }
 
   private readFileSync(filePath: string): string {
-    return require("fs").readFileSync(filePath, "utf-8");
+    return fs.readFileSync(filePath, "utf-8");
   }
 
   private writeFileSync(filePath: string, content: string): void {
-    require("fs").writeFileSync(filePath, content, "utf-8");
+    fs.writeFileSync(filePath, content, "utf-8");
   }
 
   private getFileModTime(filePath: string): number {
     try {
-      return require("fs").statSync(filePath).mtime.getTime();
+      return fs.statSync(filePath).mtime.getTime();
     } catch {
       return 0;
     }
@@ -707,7 +708,7 @@ export class ConfigurationManager {
 
   private ensureDirectoryExists(dirPath: string): void {
     try {
-      require("fs").mkdirSync(dirPath, { recursive: true });
+      fs.mkdirSync(dirPath, { recursive: true });
     } catch {
       // Directory might already exist
     }

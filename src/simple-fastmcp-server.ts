@@ -2070,7 +2070,9 @@ server.addTool({
       const { LogFileAnalyzer } = await import(
         "./monitoring/log-file-analyzer.js"
       );
-      const { AlertManager } = await import("./monitoring/alert-manager.js");
+      const { enhancedAlertManager } = await import(
+        "./monitoring/enhanced-alert-manager.js"
+      );
 
       const hours = args.hours || 24;
 
@@ -2088,7 +2090,7 @@ server.addTool({
       analysis += `📝 Total Entries Analyzed: ${report.totalEntries.toLocaleString()}\n\n`;
 
       // Include active alerts
-      const activeAlerts = AlertManager.getActiveAlerts();
+      const activeAlerts = enhancedAlertManager.getActiveAlerts();
       let filteredAlerts = activeAlerts;
 
       if (args.severity) {
@@ -2227,27 +2229,47 @@ server.addTool({
       const { LogPatternAnalyzer } = await import(
         "./monitoring/log-pattern-analyzer.js"
       );
-      const { AlertManager } = await import("./monitoring/alert-manager.js");
+      const { enhancedAlertManager } = await import(
+        "./monitoring/enhanced-alert-manager.js"
+      );
 
       logger.info("Getting log analytics summary", { correlationId });
 
       const summary = LogPatternAnalyzer.getAnalyticsSummary();
-      const alertStats = AlertManager.getAlertStats();
+      const alertStats = enhancedAlertManager.getAlertStats();
 
       let analytics = `📈 Real-time Log Analytics Summary\n`;
       analytics += `⏰ Timestamp: ${summary.timestamp.toISOString()}\n`;
       analytics += `🎯 Total Patterns Registered: ${summary.totalPatterns}\n`;
       analytics += `🚨 Active Alerts: ${summary.activeAlerts}\n\n`;
 
-      // Alert statistics
-      analytics += `📊 Alert Statistics:\n`;
+      // Alert statistics (Enhanced)
+      analytics += `📊 Alert Statistics (Enhanced):\n`;
       analytics += `• Total Alerts: ${alertStats.total}\n`;
       analytics += `• Active: ${alertStats.active}\n`;
       analytics += `• Resolved: ${alertStats.resolved}\n`;
       analytics += `• Critical: ${alertStats.critical}\n`;
       analytics += `• Warning: ${alertStats.warning}\n`;
       analytics += `• Info: ${alertStats.info}\n`;
-      analytics += `• Currently Suppressed: ${alertStats.suppressed}\n\n`;
+      analytics += `• Currently Suppressed: ${alertStats.suppressed}\n`;
+      if (alertStats.storage) {
+        analytics += `• Hot Storage: ${alertStats.storage.hotAlerts}\n`;
+        analytics += `• Warm Storage: ${alertStats.storage.warmAlerts}\n`;
+        analytics += `• Memory Usage: ${alertStats.storage.approximateMemoryUsage}\n`;
+      }
+      if (alertStats.correlation) {
+        analytics += `• Total Rules: ${alertStats.correlation.totalRules || 0}\n`;
+        analytics += `• Active Correlations: ${alertStats.correlation.activeCorrelations || 0}\n`;
+        analytics += `• Average Confidence: ${alertStats.correlation.avgConfidence || 0}\n`;
+      }
+      if (alertStats.notifications) {
+        analytics += `• Notification Channels: ${alertStats.notifications.channels}\n`;
+        analytics += `• Healthy Channels: ${alertStats.notifications.healthyChannels}\n`;
+      }
+      if (alertStats.processing) {
+        analytics += `• Processing Metrics: ${alertStats.processing.totalProcessed} processed, ${alertStats.processing.suppressed} suppressed\n`;
+      }
+      analytics += `\n`;
 
       // Pattern statistics
       if (summary.patternStats.size > 0) {
@@ -2315,6 +2337,40 @@ server.addTool({
   },
 });
 
+// Initialize Enhanced Alert Manager before starting the server
+let globalEnhancedAlertManager: any = null;
+try {
+  const { EnhancedAlertManager } = await import(
+    "./monitoring/enhanced-alert-manager.js"
+  );
+
+  // Create enhanced alert manager with default development configuration
+  globalEnhancedAlertManager = EnhancedAlertManager.createWithDefaults({
+    template: "development",
+    enableCorrelation: true,
+    webhookUrl:
+      process.env.ALERT_WEBHOOK_URL || "http://localhost:3000/webhook",
+  });
+
+  console.error("✅ Enhanced Alert Manager initialized with Phase 1 features");
+
+  // Perform health check
+  const healthCheck = await globalEnhancedAlertManager.getSystemHealth();
+  if (healthCheck.alertManager.healthy) {
+    console.error("✅ Enhanced Alert Manager health check passed");
+  } else {
+    console.warn(
+      "⚠️ Enhanced Alert Manager health check issues:",
+      healthCheck.alertManager.details,
+    );
+  }
+} catch (error) {
+  console.error("❌ Failed to initialize Enhanced Alert Manager:", error);
+  console.error(
+    "🔄 Server will continue with basic AlertManager functionality",
+  );
+}
+
 // Start the server
 server.start({
   transportType: "stdio",
@@ -2328,6 +2384,7 @@ const startupMessage = [
   `Dependency Monitoring: ${config.dependencyMonitoringEnabled ? "ENABLED" : "DISABLED"}`,
   `Maintenance Reports: ${config.maintenanceReportsEnabled ? "ENABLED" : "DISABLED"}`,
   `Log Pattern Analysis: ${process.env.LOG_PATTERN_ANALYSIS_ENABLED !== "false" ? "ENABLED" : "DISABLED"}`,
+  `Enhanced Alert Manager: ENABLED (Phase 1)`,
   `Memory Threshold: ${config.memoryThresholdMB}MB`,
 ].join(" | ");
 

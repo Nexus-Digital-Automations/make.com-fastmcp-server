@@ -1,0 +1,86 @@
+{
+  "alerts": {
+    "maxAlerts": 500,
+    "cleanupThreshold": 500,
+    "defaultSuppressionMs": 60000,
+    "escalationThreshold": 5
+  },
+  "storage": {
+    "maxHotAlerts": 500,
+    "maxWarmAlerts": 5000,
+    "archiveThreshold": 7,
+    "retentionPolicy": 30,
+    "compressionEnabled": true,
+    "persistentStorageType": "file",
+    "archiveDirectory": "./data/alert-archives"
+  },
+  "correlation": {
+    "enabled": true,
+    "timeWindow": 300000,
+    "maxCorrelations": 100,
+    "minConfidenceThreshold": 0.7,
+    "enableLearning": true,
+    "rules": []
+  },
+  "notifications": {
+    "enabled": true,
+    "channels": [
+      {
+        "id": "default-webhook",
+        "type": "webhook",
+        "name": "Default Webhook",
+        "enabled": true,
+        "config": {
+          "webhook": {
+            "url": "http://localhost:3000/webhook",
+            "method": "POST",
+            "timeout": 5000
+          }
+        },
+        "rateLimits": {
+          "maxPerMinute": 20,
+          "maxPerHour": 200,
+          "burstLimit": 5,
+          "backoffStrategy": "exponential"
+        },
+        "healthCheck": {
+          "enabled": true,
+          "interval": 300000,
+          "timeout": 10000
+        },
+        "retryConfig": {
+          "maxRetries": 3,
+          "retryDelay": 1000,
+          "backoffMultiplier": 2
+        }
+      }
+    ],
+    "defaultChannels": ["default-webhook"],
+    "rateLimiting": {
+      "globalMaxPerMinute": 50,
+      "globalMaxPerHour": 500
+    }
+  },
+  "performance": {
+    "asyncProcessing": false,
+    "batchSize": 10,
+    "maxConcurrentNotifications": 20,
+    "healthCheckInterval": 60000
+  },
+  "integrations": {
+    "winston": {
+      "enabled": true,
+      "logLevel": "info"
+    },
+    "metrics": {
+      "enabled": false,
+      "port": 9090
+    }
+  },
+  "security": {
+    "enableSanitization": true,
+    "allowedPatterns": ["*"],
+    "blockedPatterns": [],
+    "maxMessageLength": 10000
+  }
+}

@@ -24,12 +24,7 @@ export {
   PatternStatistics,
 } from "./log-pattern-analyzer.js";
 
-// Alert management
-export {
-  AlertManager,
-  PatternAlert,
-  AlertNotificationPayload,
-} from "./alert-manager.js";
+// Enhanced Alert Management (Primary - Phase 1)
 export {
   EnhancedAlertManager,
   createEnhancedAlertManager,
@@ -37,6 +32,13 @@ export {
   EnhancedAlertTriggerResult,
   AlertProcessingMetrics,
 } from "./enhanced-alert-manager.js";
+
+// Legacy Alert Management (Backward Compatibility)
+export {
+  AlertManager,
+  PatternAlert,
+  AlertNotificationPayload,
+} from "./alert-manager.js";
 
 // Enhanced alert storage and archiving
 export {

@@ -98,10 +98,12 @@ export class LogPatternAnalyzer {
           this.getPatternCount(patternId, pattern.timeWindowMs) >=
             pattern.threshold
         ) {
-          // Import AlertManager dynamically to avoid circular dependency
-          import("./alert-manager").then(({ AlertManager }) => {
-            AlertManager.triggerAlert(patternMatch);
-          });
+          // Import EnhancedAlertManager dynamically to avoid circular dependency
+          import("./enhanced-alert-manager.js").then(
+            ({ enhancedAlertManager }) => {
+              enhancedAlertManager.triggerAlert(patternMatch);
+            },
+          );
         }
       }
     }

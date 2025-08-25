@@ -10,6 +10,10 @@ import {
   createSlackChannel,
   type NotificationSummary,
   type BaseNotificationChannel,
+  WebhookNotificationChannel,
+  SlackNotificationChannel,
+  EmailNotificationChannel,
+  SMSNotificationChannel,
 } from "./multi-channel-notification.js";
 import {
   ConfigurationManager,
@@ -121,28 +125,16 @@ export class EnhancedAlertManager {
 
         switch (channelConfig.type) {
           case "webhook":
-            channel =
-              new (require("./multi-channel-notification.js").WebhookNotificationChannel)(
-                channelConfig,
-              );
+            channel = new WebhookNotificationChannel(channelConfig);
             break;
           case "slack":
-            channel =
-              new (require("./multi-channel-notification.js").SlackNotificationChannel)(
-                channelConfig,
-              );
+            channel = new SlackNotificationChannel(channelConfig);
             break;
           case "email":
-            channel =
-              new (require("./multi-channel-notification.js").EmailNotificationChannel)(
-                channelConfig,
-              );
+            channel = new EmailNotificationChannel(channelConfig);
             break;
           case "sms":
-            channel =
-              new (require("./multi-channel-notification.js").SMSNotificationChannel)(
-                channelConfig,
-              );
+            channel = new SMSNotificationChannel(channelConfig);
             break;
           default:
             console.warn(`⚠️ Unsupported channel type: ${channelConfig.type}`);
