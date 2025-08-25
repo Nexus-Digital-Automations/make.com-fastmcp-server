@@ -5,7 +5,7 @@
 
 import { performance } from "perf_hooks";
 import { v4 as uuidv4 } from "uuid";
-import winston from "winston";
+import * as winston from "winston";
 
 // Advanced rate limiting components
 import { TokenBucket } from "./rate-limiting/token-bucket";
@@ -13,6 +13,11 @@ import {
   RateLimitParser,
   RateLimitInfo as ParsedRateLimitInfo,
 } from "./rate-limiting/rate-limit-parser";
+import {
+  BackoffStrategy,
+  BackoffConfig,
+  BackoffResult,
+} from "./rate-limiting/backoff-strategy";
 
 // Rate limiting configuration interface
 export interface RateLimitConfig {
@@ -47,6 +52,15 @@ export interface RateLimitConfig {
   headerParsing?: {
     enabled: boolean;
     preferServerHeaders: boolean; // Prefer server rate limit headers over fallback
+  };
+  backoffStrategy?: {
+    enabled: boolean;
+    baseDelay: number;
+    maxDelay: number;
+    maxRetries: number;
+    jitterFactor: number;
+    useServerGuidedDelay: boolean; // Use Retry-After headers when available
+    backoffMultiplier?: number; // Optional: exponential backoff multiplier
   };
 }
 
@@ -118,6 +132,7 @@ export class RateLimitManager {
   // Advanced rate limiting components
   private tokenBucket?: TokenBucket;
   private lastKnownRateLimit?: ParsedRateLimitInfo;
+  private backoffStrategy?: BackoffStrategy;
 
   constructor(config: Partial<RateLimitConfig> = {}) {
     this.config = {
@@ -142,6 +157,15 @@ export class RateLimitManager {
       headerParsing: {
         enabled: true,
         preferServerHeaders: true,
+      },
+      backoffStrategy: {
+        enabled: true,
+        baseDelay: 1000, // 1 second base delay
+        maxDelay: 60000, // 60 seconds max delay
+        maxRetries: 3, // 3 retry attempts
+        jitterFactor: 0.1, // 10% jitter
+        useServerGuidedDelay: true, // Use Retry-After headers when available
+        backoffMultiplier: 2, // Exponential backoff multiplier
       },
       ...config,
     };
@@ -220,10 +244,34 @@ export class RateLimitManager {
       );
     }
 
+    // Initialize BackoffStrategy if enabled
+    if (this.config.backoffStrategy?.enabled) {
+      const backoffConfig: BackoffConfig = {
+        baseDelay: this.config.backoffStrategy.baseDelay,
+        maxDelay: this.config.backoffStrategy.maxDelay,
+        maxRetries: this.config.backoffStrategy.maxRetries,
+        jitterFactor: this.config.backoffStrategy.jitterFactor,
+        backoffMultiplier: this.config.backoffStrategy.backoffMultiplier || 2,
+      };
+
+      this.backoffStrategy = new BackoffStrategy(backoffConfig);
+
+      this.logger.info(
+        "BackoffStrategy initialized for intelligent retry logic",
+        {
+          operationId: uuidv4(),
+          backoffConfig,
+          component: "RateLimitManager",
+          initializationStatus: "success",
+        },
+      );
+    }
+
     this.logger.info("Advanced rate limiting components initialized", {
       operationId: uuidv4(),
       tokenBucketEnabled: this.config.tokenBucket?.enabled,
       headerParsingEnabled: this.config.headerParsing?.enabled,
+      backoffStrategyEnabled: this.config.backoffStrategy?.enabled,
       component: "RateLimitManager",
     });
   }
@@ -426,21 +474,37 @@ export class RateLimitManager {
         const rateLimitInfo = this.extractRateLimitInfo(error);
         this.handleRateLimit(rateLimitInfo, correlationId);
 
-        // Retry with exponential backoff if we haven't exceeded max retries
+        // Enhanced: Use BackoffStrategy for intelligent retry logic
         if (retryCount < this.config.maxRetries) {
-          const delayMs = this.calculateBackoffDelay(retryCount, rateLimitInfo);
+          const backoffResult = this.calculateIntelligentBackoffDelay(
+            retryCount,
+            error,
+            rateLimitInfo,
+            correlationId,
+          );
 
-          console.warn(
-            `Rate limited for operation ${operation}, retrying in ${delayMs}ms (attempt ${retryCount + 1}/${this.config.maxRetries})`,
+          if (!backoffResult.shouldRetry) {
+            throw new RateLimitError(
+              `Request rate limited - ${backoffResult.reason}`,
+              backoffResult.delay,
+              correlationId,
+            );
+          }
+
+          this.logger.warn(
+            `Rate limited for operation ${operation}, retrying in ${backoffResult.delay}ms - ${backoffResult.reason}`,
             {
               correlationId,
               operation,
               retryCount,
-              delayMs,
+              delayMs: backoffResult.delay,
+              backoffReason: backoffResult.reason,
+              attempt: backoffResult.attempt,
+              maxRetries: this.config.maxRetries,
             },
           );
 
-          await this.sleep(delayMs);
+          await this.sleep(backoffResult.delay);
           return this.executeRequestDirectly(
             operation,
             requestFn,
@@ -616,6 +680,96 @@ export class RateLimitManager {
   }
 
   /**
+   * Classify error type for intelligent backoff decisions
+   */
+  private classifyError(
+    error: unknown,
+  ): "rate_limit" | "server_error" | "timeout" | "client_error" | "unknown" {
+    const operationId = uuidv4();
+
+    this.logger.debug(
+      `[${operationId}] Classifying error for backoff strategy`,
+      {
+        operationId,
+        hasError: !!error,
+        errorType: typeof error,
+      },
+    );
+
+    if (!error || typeof error !== "object") {
+      return "unknown";
+    }
+
+    const errorObj = error as Record<string, unknown>;
+    const response = errorObj.response as Record<string, unknown> | undefined;
+    const status = response?.status as number | undefined;
+    const code = errorObj.code as string | undefined;
+    const message = errorObj.message as string | undefined;
+
+    // Rate limit errors (429 or specific rate limit codes/messages)
+    if (
+      status === 429 ||
+      code === "RATE_LIMITED" ||
+      (message &&
+        (message.includes("rate limit") ||
+          message.includes("too many requests")))
+    ) {
+      this.logger.debug(`[${operationId}] Error classified as rate_limit`, {
+        operationId,
+        status,
+        code,
+        messageSnippet: message?.substring(0, 100),
+      });
+      return "rate_limit";
+    }
+
+    // Server errors (5xx)
+    if (status && status >= 500 && status < 600) {
+      this.logger.debug(`[${operationId}] Error classified as server_error`, {
+        operationId,
+        status,
+      });
+      return "server_error";
+    }
+
+    // Client errors (4xx, excluding 429 which is rate limit)
+    if (status && status >= 400 && status < 500 && status !== 429) {
+      this.logger.debug(`[${operationId}] Error classified as client_error`, {
+        operationId,
+        status,
+      });
+      return "client_error";
+    }
+
+    // Timeout errors
+    if (
+      code === "ETIMEDOUT" ||
+      code === "TIMEOUT" ||
+      code === "ECONNRESET" ||
+      code === "ECONNREFUSED" ||
+      (message &&
+        (message.includes("timeout") ||
+          message.includes("connection reset") ||
+          message.includes("connection refused")))
+    ) {
+      this.logger.debug(`[${operationId}] Error classified as timeout`, {
+        operationId,
+        code,
+        messageSnippet: message?.substring(0, 100),
+      });
+      return "timeout";
+    }
+
+    this.logger.debug(`[${operationId}] Error classified as unknown`, {
+      operationId,
+      status,
+      code,
+      messageSnippet: message?.substring(0, 100),
+    });
+    return "unknown";
+  }
+
+  /**
    * Extract rate limit information from error response
    * Enhanced with RateLimitParser for better accuracy
    */
@@ -779,11 +933,13 @@ export class RateLimitManager {
 
   /**
    * Handle rate limit by updating internal state
+   * Enhanced with BackoffStrategy context
    */
   private handleRateLimit(
     rateLimitInfo: RateLimitInfo,
     correlationId: string,
   ): void {
+    const operationId = uuidv4();
     this.metrics.rateLimitedRequests++;
 
     const now = Date.now();
@@ -795,34 +951,134 @@ export class RateLimitManager {
       now + waitTimeMs,
     );
 
-    console.warn("Rate limit detected and handled", {
+    this.logger.warn(`[${operationId}] Rate limit detected and handled`, {
+      operationId,
       correlationId,
       waitTimeMs,
       remainingRequests: rateLimitInfo.remainingRequests,
       resetTimeMs: rateLimitInfo.resetTimeMs,
       quotaType: rateLimitInfo.quotaType,
+      backoffStrategyEnabled: !!this.backoffStrategy,
+      component: "RateLimitManager",
     });
+
+    // Enhanced: Sync with BackoffStrategy if enabled
+    if (this.backoffStrategy && rateLimitInfo) {
+      const parsedInfo = this.convertToBackoffRateLimitInfo(rateLimitInfo);
+      if (parsedInfo) {
+        this.logger.debug(
+          `[${operationId}] Rate limit context available for BackoffStrategy`,
+          {
+            operationId,
+            correlationId,
+            parsedInfo,
+          },
+        );
+      }
+    }
 
     // Trigger alert if delay is significant
     if (waitTimeMs > this.config.alertThresholdMs) {
-      console.error("Significant rate limit delay detected", {
-        correlationId,
-        delayMs: waitTimeMs,
-        thresholdMs: this.config.alertThresholdMs,
-      });
+      this.logger.error(
+        `[${operationId}] Significant rate limit delay detected`,
+        {
+          operationId,
+          correlationId,
+          delayMs: waitTimeMs,
+          thresholdMs: this.config.alertThresholdMs,
+          backoffStrategyEnabled: !!this.backoffStrategy,
+        },
+      );
     }
   }
 
   /**
-   * Calculate exponential backoff delay
+   * Calculate intelligent backoff delay using BackoffStrategy
+   * Enhanced with error type classification and server-guided delays
    */
-  private calculateBackoffDelay(
+  private calculateIntelligentBackoffDelay(
     retryCount: number,
+    error: unknown,
     rateLimitInfo: RateLimitInfo,
-  ): number {
+    correlationId: string,
+  ): BackoffResult {
+    const operationId = uuidv4();
+
+    this.logger.debug(
+      `[${operationId}] Calculating intelligent backoff delay`,
+      {
+        operationId,
+        correlationId,
+        retryCount,
+        backoffStrategyEnabled: !!this.backoffStrategy,
+        useServerGuidedDelay: this.config.backoffStrategy?.useServerGuidedDelay,
+      },
+    );
+
+    // Enhanced: Use BackoffStrategy if available
+    if (
+      this.config.enableAdvancedComponents &&
+      this.config.backoffStrategy?.enabled &&
+      this.backoffStrategy
+    ) {
+      const errorType = this.classifyError(error);
+      const parsedRateLimitInfo =
+        this.convertToBackoffRateLimitInfo(rateLimitInfo);
+
+      this.logger.info(
+        `[${operationId}] Using BackoffStrategy for intelligent retry calculation`,
+        {
+          operationId,
+          correlationId,
+          retryCount,
+          errorType,
+          hasRateLimitInfo: !!parsedRateLimitInfo,
+          useServerGuidedDelay:
+            this.config.backoffStrategy.useServerGuidedDelay,
+        },
+      );
+
+      const backoffResult = this.backoffStrategy.calculateAdaptiveDelay(
+        retryCount,
+        this.config.backoffStrategy.useServerGuidedDelay
+          ? parsedRateLimitInfo
+          : undefined,
+        errorType,
+      );
+
+      this.logger.info(`[${operationId}] BackoffStrategy calculated delay`, {
+        operationId,
+        correlationId,
+        backoffResult,
+        errorType,
+      });
+
+      return backoffResult;
+    }
+
+    // Fallback: Legacy exponential backoff calculation
+    this.logger.debug(
+      `[${operationId}] Using legacy backoff calculation (BackoffStrategy disabled)`,
+      {
+        operationId,
+        correlationId,
+        advancedComponentsEnabled: this.config.enableAdvancedComponents,
+        backoffStrategyEnabled: this.config.backoffStrategy?.enabled,
+      },
+    );
+
     // Use provided retry-after if available
     if (rateLimitInfo.retryAfterMs) {
-      return Math.min(rateLimitInfo.retryAfterMs, this.config.maxDelayMs);
+      const delayMs = Math.min(
+        rateLimitInfo.retryAfterMs,
+        this.config.maxDelayMs,
+      );
+      return {
+        delay: delayMs,
+        attempt: retryCount + 1,
+        shouldRetry: retryCount < this.config.maxRetries,
+        reason: `Server-specified retry-after: ${rateLimitInfo.retryAfterMs}ms (legacy)`,
+      };
     }
 
     // Calculate exponential backoff
@@ -832,8 +1088,51 @@ export class RateLimitManager {
 
     // Add jitter to prevent thundering herd
     const jitter = Math.random() * 1000;
+    const finalDelay = Math.min(
+      exponentialDelay + jitter,
+      this.config.maxDelayMs,
+    );
 
-    return Math.min(exponentialDelay + jitter, this.config.maxDelayMs);
+    return {
+      delay: finalDelay,
+      attempt: retryCount + 1,
+      shouldRetry: retryCount < this.config.maxRetries,
+      reason: `Legacy exponential backoff (attempt ${retryCount + 1}/${this.config.maxRetries})`,
+    };
+  }
+
+  /**
+   * Convert legacy RateLimitInfo to BackoffStrategy RateLimitInfo format
+   */
+  private convertToBackoffRateLimitInfo(
+    rateLimitInfo: RateLimitInfo,
+  ): ParsedRateLimitInfo | undefined {
+    if (!rateLimitInfo || !rateLimitInfo.isRateLimited) {
+      return undefined;
+    }
+
+    // Convert from legacy format to BackoffStrategy format
+    const parsedInfo: ParsedRateLimitInfo = {
+      limit: 0, // Not available in legacy format
+      remaining: rateLimitInfo.remainingRequests || 0,
+      reset: rateLimitInfo.resetTimeMs ? rateLimitInfo.resetTimeMs / 1000 : 0,
+      retryAfter: rateLimitInfo.retryAfterMs
+        ? rateLimitInfo.retryAfterMs / 1000
+        : undefined,
+      resetAfter: undefined, // Not available in legacy format
+      window: undefined, // Not available in legacy format
+      // quota: rateLimitInfo.quotaType, // Not part of ParsedRateLimitInfo interface
+    };
+
+    this.logger.debug(
+      "Converted legacy RateLimitInfo to BackoffStrategy format",
+      {
+        legacyInfo: rateLimitInfo,
+        parsedInfo,
+      },
+    );
+
+    return parsedInfo;
   }
 
   /**
@@ -955,7 +1254,8 @@ export class RateLimitManager {
     if (
       updates.enableAdvancedComponents !== undefined ||
       updates.tokenBucket !== undefined ||
-      updates.headerParsing !== undefined
+      updates.headerParsing !== undefined ||
+      updates.backoffStrategy !== undefined
     ) {
       this.logger.info(
         "Advanced components configuration changed, reinitializing",
@@ -964,10 +1264,42 @@ export class RateLimitManager {
           newAdvancedEnabled: this.config.enableAdvancedComponents,
           tokenBucketUpdated: !!updates.tokenBucket,
           headerParsingUpdated: !!updates.headerParsing,
+          backoffStrategyUpdated: !!updates.backoffStrategy,
         },
       );
 
       this.initializeAdvancedComponents();
+    }
+
+    // Update BackoffStrategy configuration if it exists and relevant config changed
+    if (this.backoffStrategy && updates.backoffStrategy) {
+      const backoffConfig: Partial<BackoffConfig> = {};
+
+      if (updates.backoffStrategy.baseDelay !== undefined) {
+        backoffConfig.baseDelay = updates.backoffStrategy.baseDelay;
+      }
+      if (updates.backoffStrategy.maxDelay !== undefined) {
+        backoffConfig.maxDelay = updates.backoffStrategy.maxDelay;
+      }
+      if (updates.backoffStrategy.maxRetries !== undefined) {
+        backoffConfig.maxRetries = updates.backoffStrategy.maxRetries;
+      }
+      if (updates.backoffStrategy.jitterFactor !== undefined) {
+        backoffConfig.jitterFactor = updates.backoffStrategy.jitterFactor;
+      }
+      if (updates.backoffStrategy.backoffMultiplier !== undefined) {
+        backoffConfig.backoffMultiplier =
+          updates.backoffStrategy.backoffMultiplier;
+      }
+
+      if (Object.keys(backoffConfig).length > 0) {
+        this.backoffStrategy.updateConfig(backoffConfig);
+
+        this.logger.info("BackoffStrategy configuration updated dynamically", {
+          updatedConfig: backoffConfig,
+          component: "BackoffStrategy",
+        });
+      }
     }
 
     // Update TokenBucket configuration if it exists and relevant config changed
@@ -1019,6 +1351,7 @@ export class RateLimitManager {
 
   /**
    * Get advanced components status and configuration
+   * Enhanced with BackoffStrategy status
    */
   getAdvancedComponentsStatus(): {
     enabled: boolean;
@@ -1054,14 +1387,25 @@ export class RateLimitManager {
       enabled: boolean;
       lastParsedInfo?: ParsedRateLimitInfo;
     };
+    backoffStrategy: {
+      enabled: boolean;
+      initialized: boolean;
+      config?: BackoffConfig;
+      useServerGuidedDelay: boolean;
+    };
     featureFlags: {
       enableAdvancedComponents: boolean;
       tokenBucketEnabled: boolean;
       headerParsingEnabled: boolean;
+      backoffStrategyEnabled: boolean;
     };
   } {
     const tokenBucketEnabled =
       this.config.enableAdvancedComponents && this.config.tokenBucket?.enabled;
+
+    const backoffStrategyEnabled =
+      this.config.enableAdvancedComponents &&
+      this.config.backoffStrategy?.enabled;
 
     return {
       enabled: !!this.config.enableAdvancedComponents,
@@ -1078,6 +1422,13 @@ export class RateLimitManager {
         ),
         lastParsedInfo: this.lastKnownRateLimit,
       },
+      backoffStrategy: {
+        enabled: !!backoffStrategyEnabled,
+        initialized: !!this.backoffStrategy,
+        config: this.backoffStrategy?.getConfig(),
+        useServerGuidedDelay:
+          !!this.config.backoffStrategy?.useServerGuidedDelay,
+      },
       featureFlags: {
         enableAdvancedComponents: !!this.config.enableAdvancedComponents,
         tokenBucketEnabled: !!tokenBucketEnabled,
@@ -1085,6 +1436,7 @@ export class RateLimitManager {
           this.config.enableAdvancedComponents &&
           this.config.headerParsing?.enabled
         ),
+        backoffStrategyEnabled: !!backoffStrategyEnabled,
       },
     };
   }
@@ -1118,6 +1470,15 @@ export const MAKE_API_RATE_LIMIT_CONFIG: RateLimitConfig = {
     enabled: true,
     preferServerHeaders: true, // Always prefer server-provided rate limit headers
   },
+  backoffStrategy: {
+    enabled: true,
+    baseDelay: 2000, // 2 second base delay for Make.com API
+    maxDelay: 300000, // 5 minutes max delay
+    maxRetries: 3, // 3 retry attempts
+    jitterFactor: 0.15, // 15% jitter for Make.com API (higher spread)
+    useServerGuidedDelay: true, // Always use Retry-After headers when available
+    backoffMultiplier: 2.5, // Match the existing configuration
+  },
 };
 
 // Backward compatibility configuration (legacy behavior)
@@ -1135,4 +1496,13 @@ export const LEGACY_MAKE_API_RATE_LIMIT_CONFIG: RateLimitConfig = {
   alertThresholdMs: 60000,
   // Disable advanced features for legacy compatibility
   enableAdvancedComponents: false,
+  backoffStrategy: {
+    enabled: false,
+    baseDelay: 2000,
+    maxDelay: 300000,
+    maxRetries: 3,
+    jitterFactor: 0.1,
+    useServerGuidedDelay: false,
+    backoffMultiplier: 2.5,
+  },
 };

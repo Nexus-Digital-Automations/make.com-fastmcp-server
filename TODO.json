@@ -2,32 +2,6 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1756094945883_u963zpd8t",
-      "title": "Research: Create EnhancedRateLimitManager with TokenBucket integration",
-      "description": "Research and analysis required for implementing: \"Create EnhancedRateLimitManager with TokenBucket integration\"\n\n**Implementation Task Details:**\nCreate EnhancedRateLimitManager class that extends existing RateLimitManager and integrates TokenBucket for pre-emptive rate limiting with 85% safety margin\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1756094945883_loupkiewv\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
-      "mode": "RESEARCH",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [
-        "./development/research-reports/research-report-task_1756094945883_u963zpd8t.md"
-      ],
-      "success_criteria": [
-        "Research methodology and approach documented",
-        "Key findings and recommendations provided",
-        "Implementation guidance and best practices identified",
-        "Risk assessment and mitigation strategies outlined",
-        "Research report created: ./development/research-reports/research-report-task_1756094945883_u963zpd8t.md"
-      ],
-      "estimate": "1-2 hours",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-25T04:09:05.883Z",
-      "created_by": "auto-research-system",
-      "auto_created_for": "task_1756094945883_loupkiewv"
-    },
-    {
       "id": "task_1756094492201_kdykg4sz3",
       "title": "Integrate advanced rate limiting components (Phase 1-2 completion)",
       "description": "Integrate the existing TokenBucket, BackoffStrategy, and RateLimitParser components with the current RateLimitManager to enable intelligent pre-emptive rate limiting and header-aware backoff strategies for the Make.com API",
@@ -105,6 +79,32 @@
       ]
     },
     {
+      "id": "task_1756094945883_u963zpd8t",
+      "title": "Research: Create EnhancedRateLimitManager with TokenBucket integration",
+      "description": "Research and analysis required for implementing: \"Create EnhancedRateLimitManager with TokenBucket integration\"\n\n**Implementation Task Details:**\nCreate EnhancedRateLimitManager class that extends existing RateLimitManager and integrates TokenBucket for pre-emptive rate limiting with 85% safety margin\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1756094945883_loupkiewv\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
+      "mode": "RESEARCH",
+      "category": "research",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": [],
+      "important_files": [
+        "./development/research-reports/research-report-task_1756094945883_u963zpd8t.md"
+      ],
+      "success_criteria": [
+        "Research methodology and approach documented",
+        "Key findings and recommendations provided",
+        "Implementation guidance and best practices identified",
+        "Risk assessment and mitigation strategies outlined",
+        "Research report created: ./development/research-reports/research-report-task_1756094945883_u963zpd8t.md"
+      ],
+      "estimate": "1-2 hours",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-25T04:09:05.883Z",
+      "created_by": "auto-research-system",
+      "auto_created_for": "task_1756094945883_loupkiewv"
+    },
+    {
       "id": "task_1756094611994_nx6zuoyur",
       "title": "Complete advanced rate limiting integration research",
       "description": "Conduct comprehensive analysis of integrating TokenBucket, BackoffStrategy, and RateLimitParser with current RateLimitManager. Create detailed research report with architecture integration analysis, implementation strategy, risk assessment, performance impact analysis, configuration management plan, and testing strategy.",
@@ -133,27 +133,6 @@
           "claimPriority": "normal"
         }
       ]
-    },
-    {
-      "id": "task_1756094945883_loupkiewv",
-      "title": "Create EnhancedRateLimitManager with TokenBucket integration",
-      "description": "Create EnhancedRateLimitManager class that extends existing RateLimitManager and integrates TokenBucket for pre-emptive rate limiting with 85% safety margin",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": ["task_1756094945883_u963zpd8t"],
-      "important_files": [
-        "src/rate-limit-manager.ts",
-        "src/rate-limiting/token-bucket.ts",
-        "development/research-reports/research-report-task_1756093343037_a5emsmna2.md"
-      ],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-25T04:09:05.887Z",
-      "auto_research_created": true
     }
   ],
   "current_mode": "DEVELOPMENT",

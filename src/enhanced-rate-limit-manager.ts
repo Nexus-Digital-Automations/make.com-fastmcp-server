@@ -6,7 +6,7 @@
 
 import { performance } from "perf_hooks";
 import { v4 as uuidv4 } from "uuid";
-import winston from "winston";
+import * as winston from "winston";
 
 // Base rate limiting components
 import { RateLimitManager, RateLimitConfig } from "./rate-limit-manager";
@@ -88,8 +88,8 @@ export interface EnhancedRateLimitMetrics {
  */
 export class EnhancedRateLimitManager extends RateLimitManager {
   private enhancedConfig: EnhancedRateLimitConfig;
-  private tokenBucket: TokenBucket;
-  private logger: winston.Logger;
+  private enhancedTokenBucket!: TokenBucket; // Definite assignment assertion
+  private enhancedLogger!: winston.Logger; // Definite assignment assertion
 
   // Enhanced tracking
   private responseTimes: number[] = [];
@@ -141,7 +141,7 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     this.initializeEnhancedTokenBucket();
 
     // Initialize enhanced logger
-    this.logger = winston.createLogger({
+    this.enhancedLogger = winston.createLogger({
       level: "info",
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -156,7 +156,7 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     });
 
     const operationId = uuidv4();
-    this.logger.info(
+    this.enhancedLogger.info(
       `[${operationId}] Enhanced Rate Limit Manager initialized`,
       {
         operationId,
@@ -167,7 +167,7 @@ export class EnhancedRateLimitManager extends RateLimitManager {
           adaptiveSafetyMargin: this.enhancedConfig.adaptiveSafetyMargin,
           learningMode: this.enhancedConfig.learningMode,
         },
-        tokenBucketState: this.tokenBucket.getState(),
+        tokenBucketState: this.enhancedTokenBucket.getState(),
       },
     );
 
@@ -183,12 +183,15 @@ export class EnhancedRateLimitManager extends RateLimitManager {
   private initializeEnhancedTokenBucket(): void {
     const operationId = uuidv4();
 
-    this.logger.debug(`[${operationId}] Initializing enhanced TokenBucket`, {
-      operationId,
-      requestsPerWindow: this.enhancedConfig.requestsPerWindow,
-      requestWindowMs: this.enhancedConfig.requestWindowMs,
-      safetyMargin: this.enhancedConfig.safetyMargin,
-    });
+    this.enhancedLogger.debug(
+      `[${operationId}] Initializing enhanced TokenBucket`,
+      {
+        operationId,
+        requestsPerWindow: this.enhancedConfig.requestsPerWindow,
+        requestWindowMs: this.enhancedConfig.requestWindowMs,
+        safetyMargin: this.enhancedConfig.safetyMargin,
+      },
+    );
 
     // Calculate optimal token bucket parameters
     const refillRate =
@@ -196,64 +199,56 @@ export class EnhancedRateLimitManager extends RateLimitManager {
       (this.enhancedConfig.requestWindowMs / 1000);
     const capacity = Math.max(10, this.enhancedConfig.requestsPerWindow);
 
-    this.tokenBucket = new TokenBucket({
+    this.enhancedTokenBucket = new TokenBucket({
       capacity,
       refillRate,
       safetyMargin: this.enhancedConfig.safetyMargin || 0.85,
     });
 
-    this.logger.info(
+    this.enhancedLogger.info(
       `[${operationId}] Enhanced TokenBucket initialized successfully`,
       {
         operationId,
         capacity,
         refillRate,
         safetyMargin: this.enhancedConfig.safetyMargin,
-        initialState: this.tokenBucket.getState(),
+        initialState: this.enhancedTokenBucket.getState(),
       },
     );
   }
 
   /**
    * Enhanced pre-emptive request validation using TokenBucket
-   * Overrides base implementation with more intelligent logic
+   * Uses advanced token bucket logic for pre-emptive rate limiting
    */
-  protected canMakeRequestNow(endpoint?: string): boolean {
+  private enhancedCanMakeRequestNow(endpoint?: string): boolean {
     const operationId = uuidv4();
     const startTime = performance.now();
 
-    this.logger.debug(`[${operationId}] Starting enhanced rate limit check`, {
-      operationId,
-      endpoint,
-      timestamp: new Date().toISOString(),
-    });
-
-    // First, check base constraints (concurrent requests, global limits, etc.)
-    if (!super.canMakeRequestNow(endpoint)) {
-      this.logger.debug(
-        `[${operationId}] Request blocked by base rate limit constraints`,
-        {
-          operationId,
-          checkDuration: performance.now() - startTime,
-        },
-      );
-      return false;
-    }
+    this.enhancedLogger.debug(
+      `[${operationId}] Starting enhanced rate limit check`,
+      {
+        operationId,
+        endpoint,
+        timestamp: new Date().toISOString(),
+      },
+    );
 
     // Enhanced: Pre-emptive TokenBucket check with dynamic thresholds
-    const tokenState = this.tokenBucket.getState();
+    const tokenState = this.enhancedTokenBucket.getState();
     const currentUtilization = this.calculateUtilization(tokenState);
 
     // Apply pre-emptive threshold logic
     if (
       currentUtilization >= (this.enhancedConfig.preemptiveThreshold || 0.9)
     ) {
-      const timeUntilTokens = this.tokenBucket.getTimeUntilTokensAvailable(1);
+      const timeUntilTokens =
+        this.enhancedTokenBucket.getTimeUntilTokensAvailable(1);
 
       if (timeUntilTokens > 0) {
         this.preemptiveBlockCount++;
 
-        this.logger.info(
+        this.enhancedLogger.info(
           `[${operationId}] Request pre-emptively blocked by enhanced TokenBucket`,
           {
             operationId,
@@ -270,16 +265,17 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     }
 
     // Attempt to consume token with enhanced safety checks
-    const tokenConsumed = this.tokenBucket.tryConsume(1);
+    const tokenConsumed = this.enhancedTokenBucket.tryConsume(1);
 
     if (!tokenConsumed) {
-      const timeUntilTokens = this.tokenBucket.getTimeUntilTokensAvailable(1);
+      const timeUntilTokens =
+        this.enhancedTokenBucket.getTimeUntilTokensAvailable(1);
 
-      this.logger.debug(
+      this.enhancedLogger.debug(
         `[${operationId}] TokenBucket rejected request - insufficient tokens`,
         {
           operationId,
-          tokenState: this.tokenBucket.getState(),
+          tokenState: this.enhancedTokenBucket.getState(),
           timeUntilTokensMs: timeUntilTokens,
           currentSafetyMargin: this.adaptiveMetrics.currentSafetyMargin,
         },
@@ -288,15 +284,39 @@ export class EnhancedRateLimitManager extends RateLimitManager {
       return false;
     }
 
-    this.logger.debug(`[${operationId}] Enhanced rate limit check passed`, {
-      operationId,
-      endpoint,
-      tokenState: this.tokenBucket.getState(),
-      currentUtilization,
-      checkDuration: performance.now() - startTime,
-    });
+    this.enhancedLogger.debug(
+      `[${operationId}] Enhanced rate limit check passed`,
+      {
+        operationId,
+        endpoint,
+        tokenState: this.enhancedTokenBucket.getState(),
+        currentUtilization,
+        checkDuration: performance.now() - startTime,
+      },
+    );
 
     return true;
+  }
+
+  /**
+   * Enhanced rate limit error detection
+   */
+  private enhancedIsRateLimitError(error: unknown): boolean {
+    if (!error || typeof error !== "object") {
+      return false;
+    }
+
+    const errorObj = error as Record<string, unknown>;
+    const response = errorObj.response as Record<string, unknown> | undefined;
+
+    return (
+      response?.status === 429 ||
+      errorObj.code === "RATE_LIMITED" ||
+      (typeof errorObj.message === "string" &&
+        errorObj.message.includes("rate limit")) ||
+      (typeof errorObj.message === "string" &&
+        errorObj.message.includes("too many requests"))
+    );
   }
 
   /**
@@ -309,7 +329,7 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     totalRequested: number;
   }): number {
     const maxUsableTokens = Math.floor(
-      this.tokenBucket.getStatistics().config.capacity *
+      this.enhancedTokenBucket.getStatistics().config.capacity *
         this.adaptiveMetrics.currentSafetyMargin,
     );
     return maxUsableTokens > 0
@@ -318,7 +338,7 @@ export class EnhancedRateLimitManager extends RateLimitManager {
   }
 
   /**
-   * Enhanced request execution with detailed performance tracking
+   * Enhanced request execution with detailed performance tracking and pre-emptive logic
    */
   async executeWithRateLimit<T>(
     operation: string,
@@ -333,7 +353,7 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     const correlationId = options.correlationId || operationId;
     const startTime = performance.now();
 
-    this.logger.info(
+    this.enhancedLogger.info(
       `[${operationId}] Starting enhanced rate-limited request execution`,
       {
         operationId,
@@ -341,12 +361,28 @@ export class EnhancedRateLimitManager extends RateLimitManager {
         operation,
         endpoint: options.endpoint,
         priority: options.priority || "normal",
-        tokenBucketState: this.tokenBucket.getState(),
+        tokenBucketState: this.enhancedTokenBucket.getState(),
       },
     );
 
+    // Enhanced: Pre-emptive rate limit check using TokenBucket
+    if (!this.enhancedCanMakeRequestNow(options.endpoint)) {
+      // If pre-emptive check fails, queue the request using base implementation
+      this.enhancedLogger.info(
+        `[${operationId}] Request blocked by enhanced pre-emptive rate limiting, queuing with base implementation`,
+        {
+          operationId,
+          correlationId,
+          tokenBucketState: this.enhancedTokenBucket.getState(),
+        },
+      );
+
+      // Use base implementation which will handle queuing
+      return super.executeWithRateLimit(operation, requestFn, options);
+    }
+
     try {
-      // Execute using base implementation with enhanced error handling
+      // Execute using base implementation but with our enhanced pre-validation already passed
       const result = await super.executeWithRateLimit(
         operation,
         requestFn,
@@ -357,14 +393,14 @@ export class EnhancedRateLimitManager extends RateLimitManager {
       const duration = performance.now() - startTime;
       this.trackResponseTime(duration);
 
-      this.logger.info(
+      this.enhancedLogger.info(
         `[${operationId}] Enhanced rate-limited request completed successfully`,
         {
           operationId,
           correlationId,
           duration,
           operation,
-          tokenBucketState: this.tokenBucket.getState(),
+          tokenBucketState: this.enhancedTokenBucket.getState(),
         },
       );
 
@@ -374,11 +410,11 @@ export class EnhancedRateLimitManager extends RateLimitManager {
       this.trackResponseTime(duration, false);
 
       // Enhanced error analysis and learning
-      if (this.isRateLimitError(error)) {
+      if (this.enhancedIsRateLimitError(error)) {
         await this.handleEnhancedRateLimit(error, correlationId, operationId);
       }
 
-      this.logger.error(
+      this.enhancedLogger.error(
         `[${operationId}] Enhanced rate-limited request failed`,
         {
           operationId,
@@ -386,7 +422,7 @@ export class EnhancedRateLimitManager extends RateLimitManager {
           duration,
           operation,
           error: error instanceof Error ? error.message : String(error),
-          tokenBucketState: this.tokenBucket.getState(),
+          tokenBucketState: this.enhancedTokenBucket.getState(),
         },
       );
 
@@ -402,11 +438,14 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     correlationId: string,
     operationId: string,
   ): Promise<void> {
-    this.logger.warn(`[${operationId}] Enhanced rate limit error detected`, {
-      operationId,
-      correlationId,
-      error: error instanceof Error ? error.message : String(error),
-    });
+    this.enhancedLogger.warn(
+      `[${operationId}] Enhanced rate limit error detected`,
+      {
+        operationId,
+        correlationId,
+        error: error instanceof Error ? error.message : String(error),
+      },
+    );
 
     // Extract enhanced rate limit information
     const errorObj = error as Record<string, unknown>;
@@ -419,18 +458,18 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     if (parsedInfo) {
       // Update TokenBucket with real API data
       const windowSeconds = parsedInfo.window || 3600;
-      this.tokenBucket.updateFromRateLimit(
+      this.enhancedTokenBucket.updateFromRateLimit(
         parsedInfo.limit,
         parsedInfo.remaining,
         windowSeconds,
       );
 
-      this.logger.info(
+      this.enhancedLogger.info(
         `[${operationId}] TokenBucket synchronized with API rate limit headers`,
         {
           operationId,
           parsedInfo,
-          tokenBucketState: this.tokenBucket.getState(),
+          tokenBucketState: this.enhancedTokenBucket.getState(),
         },
       );
 
@@ -471,11 +510,11 @@ export class EnhancedRateLimitManager extends RateLimitManager {
       this.adaptiveMetrics.lastAdjustment = new Date();
 
       // Update TokenBucket with new safety margin
-      this.tokenBucket.updateConfig({
+      this.enhancedTokenBucket.updateConfig({
         safetyMargin: this.adaptiveMetrics.currentSafetyMargin,
       });
 
-      this.logger.info(
+      this.enhancedLogger.info(
         `[${operationId}] Adaptive safety margin decreased for better rate limit avoidance`,
         {
           operationId,
@@ -514,7 +553,7 @@ export class EnhancedRateLimitManager extends RateLimitManager {
       this.performAdaptiveTuning();
     }, 300000);
 
-    this.logger.info(
+    this.enhancedLogger.info(
       "Adaptive learning started for Enhanced Rate Limit Manager",
       {
         interval: "5 minutes",
@@ -552,11 +591,11 @@ export class EnhancedRateLimitManager extends RateLimitManager {
         0.9,
         this.adaptiveMetrics.currentSafetyMargin * 1.05,
       );
-      this.tokenBucket.updateConfig({
+      this.enhancedTokenBucket.updateConfig({
         safetyMargin: this.adaptiveMetrics.currentSafetyMargin,
       });
 
-      this.logger.info(
+      this.enhancedLogger.info(
         `[${operationId}] Adaptive safety margin increased for better throughput`,
         {
           operationId,
@@ -576,8 +615,8 @@ export class EnhancedRateLimitManager extends RateLimitManager {
    */
   getEnhancedMetrics(): EnhancedRateLimitMetrics {
     const baseMetrics = super.getMetrics();
-    const tokenStats = this.tokenBucket.getStatistics();
-    const tokenState = this.tokenBucket.getState();
+    const tokenStats = this.enhancedTokenBucket.getStatistics();
+    const tokenState = this.enhancedTokenBucket.getState();
 
     // Calculate performance metrics
     const avgResponseTime =
@@ -621,7 +660,8 @@ export class EnhancedRateLimitManager extends RateLimitManager {
         safetyMarginActive:
           tokenState.tokens <
           tokenStats.config.capacity * tokenStats.config.safetyMargin,
-        timeUntilNextToken: this.tokenBucket.getTimeUntilTokensAvailable(1),
+        timeUntilNextToken:
+          this.enhancedTokenBucket.getTimeUntilTokensAvailable(1),
         tokensConsumedPerSecond: tokenStats.stats.averageTokensPerSecond,
         preemptiveBlockCount: this.preemptiveBlockCount,
       },
@@ -653,7 +693,7 @@ export class EnhancedRateLimitManager extends RateLimitManager {
   updateEnhancedConfig(updates: Partial<EnhancedRateLimitConfig>): void {
     const operationId = uuidv4();
 
-    this.logger.info(
+    this.enhancedLogger.info(
       `[${operationId}] Updating enhanced rate limit configuration`,
       {
         operationId,
@@ -669,13 +709,18 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     // Update TokenBucket if safety margin changed
     if (updates.safetyMargin !== undefined) {
       this.adaptiveMetrics.currentSafetyMargin = updates.safetyMargin;
-      this.tokenBucket.updateConfig({ safetyMargin: updates.safetyMargin });
-
-      this.logger.info(`[${operationId}] TokenBucket safety margin updated`, {
-        operationId,
-        newSafetyMargin: updates.safetyMargin,
-        tokenBucketState: this.tokenBucket.getState(),
+      this.enhancedTokenBucket.updateConfig({
+        safetyMargin: updates.safetyMargin,
       });
+
+      this.enhancedLogger.info(
+        `[${operationId}] TokenBucket safety margin updated`,
+        {
+          operationId,
+          newSafetyMargin: updates.safetyMargin,
+          tokenBucketState: this.enhancedTokenBucket.getState(),
+        },
+      );
     }
 
     // Reinitialize TokenBucket if major parameters changed
@@ -685,11 +730,11 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     ) {
       this.initializeEnhancedTokenBucket();
 
-      this.logger.info(
+      this.enhancedLogger.info(
         `[${operationId}] TokenBucket reinitialized due to capacity/rate changes`,
         {
           operationId,
-          newTokenBucketState: this.tokenBucket.getState(),
+          newTokenBucketState: this.enhancedTokenBucket.getState(),
         },
       );
     }
@@ -699,10 +744,49 @@ export class EnhancedRateLimitManager extends RateLimitManager {
    * Get comprehensive status including enhanced components
    */
   getEnhancedStatus(): {
-    base: any;
+    base: {
+      enabled: boolean;
+      tokenBucket: {
+        enabled: boolean;
+        initialized: boolean;
+        state?: unknown;
+        statistics?: unknown;
+      };
+      headerParsing: {
+        enabled: boolean;
+        lastParsedInfo?: unknown;
+      };
+      featureFlags: {
+        enableAdvancedComponents: boolean;
+        tokenBucketEnabled: boolean;
+        headerParsingEnabled: boolean;
+      };
+    };
     enhanced: {
-      tokenBucket: any;
-      adaptiveMetrics: typeof this.adaptiveMetrics;
+      tokenBucket: {
+        config: {
+          capacity: number;
+          refillRate: number;
+          safetyMargin: number;
+        };
+        state: {
+          tokens: number;
+          lastRefill: number;
+          totalConsumed: number;
+          totalRequested: number;
+        };
+        stats: {
+          successRate: number;
+          averageTokensPerSecond: number;
+          utilizationRate: number;
+        };
+      };
+      adaptiveMetrics: {
+        adjustmentCount: number;
+        lastAdjustment: Date;
+        effectivenessScore: number;
+        currentSafetyMargin: number;
+      };
       performance: {
         responseTimeHistory: number;
         preemptiveBlockCount: number;
@@ -712,14 +796,14 @@ export class EnhancedRateLimitManager extends RateLimitManager {
     };
   } {
     const baseStatus = super.getAdvancedComponentsStatus();
-    const tokenState = this.tokenBucket.getState();
+    const tokenState = this.enhancedTokenBucket.getState();
     const currentUtilization = this.calculateUtilization(tokenState);
 
     return {
       base: baseStatus,
       enhanced: {
         tokenBucket: {
-          ...this.tokenBucket.getStatistics(),
+          ...this.enhancedTokenBucket.getStatistics(),
           state: tokenState,
         },
         adaptiveMetrics: { ...this.adaptiveMetrics },
@@ -743,24 +827,31 @@ export class EnhancedRateLimitManager extends RateLimitManager {
   ): void {
     const operationId = uuidv4();
 
-    this.logger.info(
+    this.enhancedLogger.info(
       `[${operationId}] Forcing TokenBucket synchronization with API limits`,
       {
         operationId,
         limit,
         remaining,
         windowSeconds,
-        beforeState: this.tokenBucket.getState(),
+        beforeState: this.enhancedTokenBucket.getState(),
       },
     );
 
-    this.tokenBucket.updateFromRateLimit(limit, remaining, windowSeconds);
+    this.enhancedTokenBucket.updateFromRateLimit(
+      limit,
+      remaining,
+      windowSeconds,
+    );
 
-    this.logger.info(`[${operationId}] TokenBucket synchronized successfully`, {
-      operationId,
-      afterState: this.tokenBucket.getState(),
-      statistics: this.tokenBucket.getStatistics(),
-    });
+    this.enhancedLogger.info(
+      `[${operationId}] TokenBucket synchronized successfully`,
+      {
+        operationId,
+        afterState: this.enhancedTokenBucket.getState(),
+        statistics: this.enhancedTokenBucket.getStatistics(),
+      },
+    );
   }
 }
 
