@@ -48,7 +48,7 @@ try {
 // Local Interface Definitions
 // ==============================================================================
 
-interface WebhookData {
+interface WebhookData extends Record<string, unknown> {
   id?: string;
   name: string;
   url?: string;
@@ -60,6 +60,7 @@ interface WebhookData {
   stringify?: boolean;
   connectionId?: string;
   scenarioId?: string;
+  createdAt?: string;
 }
 
 interface _DataStoreField {
@@ -87,6 +88,32 @@ interface _TemplateData {
 }
 
 // Additional interfaces for type safety
+interface MakeScenario {
+  id: string;
+  name: string;
+  status: string;
+  teamId?: string;
+  updatedAt?: string;
+  createdAt?: string;
+  blueprint?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
+interface MakeWebhook {
+  id: string;
+  name: string;
+  url: string;
+  status: string;
+  typeName?: string;
+  teamId?: string;
+  createdAt?: string;
+  method?: boolean;
+  header?: boolean;
+  stringify?: boolean;
+  connectionId?: string;
+  scenarioId?: string;
+}
+
 interface StatusCount {
   [status: string]: number;
 }
@@ -97,11 +124,43 @@ interface HealthData {
     status: string;
     uptime: number;
     environment: string;
+    memory?: {
+      used: number;
+      total: number;
+      percentage: number;
+      heapUsed?: number;
+      heapTotal?: number;
+      rss?: number;
+      external?: number;
+      arrayBuffers?: number;
+    };
   };
   make?: {
     connected: boolean;
     version?: string;
     lastPing?: string;
+  };
+  makeApi?: {
+    connected: boolean;
+    status: string;
+    lastCheck: string;
+    responseTime: number;
+    baseURL?: string;
+    tokenConfigured?: boolean;
+  };
+  connectivity?: {
+    status: string;
+    lastCheck: string;
+    organizations?: boolean;
+    error?: string;
+    lastTest?: string;
+  };
+  rateLimit?: {
+    remaining: number;
+    total: number;
+    resetAt: string;
+    limit?: number;
+    resetIn?: number;
   };
   memory?: {
     used: number;
@@ -114,11 +173,45 @@ interface HealthData {
   };
 }
 
-interface UsageParams {
+interface UsageParams extends Record<string, unknown> {
   startDate?: string;
   endDate?: string;
   teamId?: string;
   granularity?: string;
+  includeDetails?: boolean;
+  metrics?: boolean;
+  metricTypes?: string;
+}
+
+interface AnalyticsData {
+  total?: number;
+  successful?: number;
+  failed?: number;
+  totalBytes?: number;
+  inboundBytes?: number;
+  outboundBytes?: number;
+  averageResponseTime?: number;
+  totalErrors?: number;
+  errorsByType?: Record<string, number>;
+  errorsByStatus?: Record<string, number>;
+  operations?: {
+    total?: number;
+    successful?: number;
+    failed?: number;
+  };
+  dataTransfer?: {
+    totalBytes?: number;
+    inboundBytes?: number;
+    outboundBytes?: number;
+  };
+  performance?: {
+    averageResponseTime?: number;
+  };
+  errors?: {
+    totalErrors?: number;
+    errorsByType?: Record<string, number>;
+    errorsByStatus?: Record<string, number>;
+  };
 }
 
 // ==============================================================================
@@ -252,7 +345,7 @@ server.addTool({
         params.teamId as string | undefined,
         params,
       );
-      const scenarios = response.data;
+      const scenarios = response.data as MakeScenario[];
 
       log.info(
         `[${operationId}] Retrieved ${scenarios?.length || 0} scenarios`,
@@ -270,12 +363,12 @@ server.addTool({
             }\n\n${
               scenarios
                 ?.map(
-                  (s: unknown, i: number) =>
-                    `**${i + 1}. ${(s as Record<string, unknown>).name}**\n` +
-                    `- ID: \`${(s as Record<string, unknown>).id}\`\n` +
-                    `- Status: ${(s as Record<string, unknown>).status}\n` +
-                    `- Team: ${(s as Record<string, unknown>).teamId || "N/A"}\n` +
-                    `- Last Modified: ${(s as Record<string, unknown>).updatedAt || "N/A"}\n`,
+                  (s: MakeScenario, i: number) =>
+                    `**${i + 1}. ${s.name}**\n` +
+                    `- ID: \`${s.id}\`\n` +
+                    `- Status: ${s.status}\n` +
+                    `- Team: ${s.teamId || "N/A"}\n` +
+                    `- Last Modified: ${s.updatedAt || "N/A"}\n`,
                 )
                 .join("\n") || "No scenarios found"
             }\n\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining\n\nFull response:\n\`\`\`json\n${JSON.stringify(scenarios ?? [], null, 2)}\n\`\`\``,
@@ -342,7 +435,7 @@ server.addTool({
       };
 
       const response = await makeClient.createWebhook(webhookData);
-      const webhook = response.data;
+      const webhook = response.data as MakeWebhook;
 
       log.info(`[${operationId}] Webhook created successfully`, {
         webhookId: webhook.id,
@@ -416,14 +509,14 @@ server.addTool({
         params.teamId as string | undefined,
         params,
       );
-      const webhooks = response.data;
+      const webhooks = response.data as MakeWebhook[];
 
       log.info(`[${operationId}] Retrieved ${webhooks?.length || 0} webhooks`);
 
       const webhookList =
         webhooks
           ?.map(
-            (w: WebhookData, i: number) =>
+            (w: MakeWebhook, i: number) =>
               `**${i + 1}. ${w.name}**\n` +
               `- ID: \`${w.id}\`\n` +
               `- URL: \`${w.url}\`\n` +
@@ -435,11 +528,11 @@ server.addTool({
           .join("\n") || "No webhooks found";
 
       const statusCounts = webhooks?.reduce(
-        (acc: StatusCount, w: WebhookData) => {
+        (acc: StatusCount, w: MakeWebhook) => {
           acc[w.status] = (acc[w.status] || 0) + 1;
           return acc;
         },
-        {},
+        {} as StatusCount,
       );
 
       return {
@@ -516,11 +609,13 @@ server.addTool({
         params.teamId = args.teamId;
       }
       if (args.metricTypes) {
-        params.metrics = args.metricTypes.join(",");
+        params.metrics = true;
+        // Store metric types for filtering (implementation detail)
+        params.metricTypes = args.metricTypes.join(",");
       }
 
       const response = await makeClient.getAnalytics(params);
-      const analytics = response.data;
+      const analytics = response.data as AnalyticsData;
 
       // Generate insights
       const insights = {
@@ -641,12 +736,23 @@ server.addTool({
       server: {
         status: "operational",
         uptime: process.uptime(),
-        memory: process.memoryUsage(),
+        environment: process.env.NODE_ENV || "development",
+        memory: {
+          ...process.memoryUsage(),
+          used: process.memoryUsage().heapUsed,
+          total: process.memoryUsage().heapTotal,
+          percentage:
+            (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) *
+            100,
+        },
       },
       makeApi: {
+        connected: false,
+        status: "unknown",
+        lastCheck: new Date().toISOString(),
+        responseTime: 0,
         baseURL: process.env.MAKE_BASE_URL || "https://eu1.make.com/api/v2",
         tokenConfigured: !!process.env.MAKE_API_KEY,
-        status: "unknown",
       },
       rateLimit: null,
       connectivity: null,
@@ -655,7 +761,16 @@ server.addTool({
     try {
       // Rate limit check
       if (args.includeRateLimit) {
-        healthData.rateLimit = makeClient.getRateLimitStatus();
+        const rateLimitStatus = makeClient.getRateLimitStatus();
+        healthData.rateLimit = {
+          remaining: rateLimitStatus.remaining,
+          total: rateLimitStatus.limit || 100,
+          resetAt: new Date(
+            Date.now() + (rateLimitStatus.resetIn || 0) * 1000,
+          ).toISOString(),
+          limit: rateLimitStatus.limit,
+          resetIn: rateLimitStatus.resetIn,
+        };
       }
 
       // Basic connectivity test
@@ -664,12 +779,17 @@ server.addTool({
           const _testResponse = await makeClient.getOrganizations();
           healthData.makeApi.status = "connected";
           healthData.connectivity = {
-            organizations: "accessible",
+            status: "connected",
+            lastCheck: new Date().toISOString(),
+            organizations: true,
             lastTest: new Date().toISOString(),
           };
         } catch (error) {
           healthData.makeApi.status = "error";
           healthData.connectivity = {
+            status: "error",
+            lastCheck: new Date().toISOString(),
+            organizations: false,
             error: error instanceof Error ? error.message : String(error),
             lastTest: new Date().toISOString(),
           };
