@@ -21,6 +21,7 @@ import { registerAIAgentManagementTools } from "./tools/ai-agent-management-tool
 import { registerUserAccessManagementTools } from "./tools/user-access-management-tools.js";
 import { registerDataConnectivityManagementTools } from "./tools/data-connectivity-management-tools.js";
 import { registerBillingAdministrationTools } from "./tools/billing-administration-tools.js";
+import { registerScenarioExecutionManagementTools } from "./tools/scenario-execution-management-tools.js";
 
 // Load environment variables
 dotenv.config();
@@ -750,6 +751,9 @@ registerDataConnectivityManagementTools(server, makeClient, logger);
 // Register Billing and Administration Tools
 registerBillingAdministrationTools(server, makeClient, logger);
 
+// Register Scenario and Execution Management Tools
+registerScenarioExecutionManagementTools(server, makeClient, logger);
+
 // Note: Additional tool modules temporarily disabled until TypeScript issues are resolved
 // registerAdvancedMakeTools(server, makeClient, logger);
 
@@ -766,14 +770,15 @@ const startupMessage = [
   `📊 Environment: ${process.env.NODE_ENV || "development"}`,
   `🌐 API Base URL: ${process.env.MAKE_BASE_URL || "https://eu1.make.com/api/v2"}`,
   `📝 Log Level: ${process.env.LOG_LEVEL || "info"}`,
-  `⚙️  Enhanced Features: Scenarios, Webhooks, Analytics, Health Monitoring, Development & Customization, AI Agent Management, User & Access Management, Data & Connectivity Management`,
+  `⚙️  Enhanced Features: Scenarios, Webhooks, Analytics, Health Monitoring, Development & Customization, AI Agent Management, User & Access Management, Data & Connectivity Management, Scenario & Execution Management`,
   `🔧 Core Tools: ${["list-scenarios-enhanced", "create-webhook-enhanced", "list-webhooks-enhanced", "get-enhanced-analytics", "system-health-check"].length} enhanced tools`,
+  `📋 Scenario Management: ${["list-scenarios-advanced", "get-scenario-details", "create-scenario", "update-scenario", "delete-scenario", "execute-scenario", "update-scenario-status", "validate-scenario-blueprint", "optimize-scenario-blueprint"].length} comprehensive scenario and execution management tools`,
   `🛠️  Development Tools: ${["create-make-custom-app", "list-make-custom-apps", "create-make-app-module", "create-make-app-rpc", "create-make-template", "create-advanced-webhook", "publish-make-custom-app"].length} custom development tools`,
   `🤖 AI Agent Tools: ${["create-ai-agent", "start-ai-agent", "manage-agent-context", "configure-agent-llm", "configure-agent-monitoring", "configure-agent-auth", "configure-agent-cache", "configure-agent-testing"].length} comprehensive AI agent management tools`,
   `👥 User & Access Tools: ${["list-make-organizations", "get-make-organization-details", "list-make-teams", "create-make-team", "invite-make-user", "manage-make-permissions", "get-make-user-activity"].length} comprehensive user and access management tools`,
   `🔗 Data & Connectivity Tools: ${["list-make-connections", "create-make-connection", "test-make-connection", "list-make-data-stores", "create-make-data-store", "list-make-webhooks", "create-make-webhook", "manage-make-api-keys"].length} comprehensive data and connectivity management tools`,
   `📚 Resources: Enhanced documentation and guides`,
-  "✅ Ready for comprehensive Make.com automation and development tasks!",
+  "✅ Ready for comprehensive Make.com automation, development, and scenario management tasks!",
 ];
 
 startupMessage.forEach((msg) => logger.info(msg));

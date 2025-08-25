@@ -2822,7 +2822,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/lib/logger.js", "development/research-reports/"],
+      "important_files": [
+        "src/lib/logger.js",
+        "development/research-reports/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": true,
@@ -3165,7 +3168,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/permissions.ts", "src/lib/"],
+      "important_files": [
+        "src/tools/permissions.ts",
+        "src/lib/"
+      ],
       "success_criteria": [],
       "estimate": "8-10 hours",
       "requires_research": false,
@@ -3349,7 +3355,9 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/notifications.ts"],
+      "important_files": [
+        "src/tools/notifications.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -3546,7 +3554,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/research-reports/"],
+      "important_files": [
+        "development/research-reports/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -3782,7 +3792,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/scenarios.ts", "src/lib/"],
+      "important_files": [
+        "src/tools/scenarios.ts",
+        "src/lib/"
+      ],
       "success_criteria": [],
       "estimate": "6-8 hours",
       "requires_research": true,
@@ -3837,7 +3850,11 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/", "scripts/", "src/tools/"],
+      "important_files": [
+        "tests/",
+        "scripts/",
+        "src/tools/"
+      ],
       "success_criteria": [],
       "estimate": "4-6 hours",
       "requires_research": true,
@@ -4314,7 +4331,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/", "development/research-reports/"],
+      "important_files": [
+        "src/tools/",
+        "development/research-reports/"
+      ],
       "success_criteria": [],
       "estimate": "40-60 hours",
       "requires_research": true,
@@ -4478,7 +4498,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755727617693_dtof63i21"],
+      "dependencies": [
+        "task_1755727617693_dtof63i21"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -4871,7 +4893,12 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/", "cypress/", "playwright/", "package.json"],
+      "important_files": [
+        "tests/",
+        "cypress/",
+        "playwright/",
+        "package.json"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -4912,7 +4939,11 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/helpers/", "tests/utils/", "src/test/utils/"],
+      "important_files": [
+        "tests/helpers/",
+        "tests/utils/",
+        "src/test/utils/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -5054,7 +5085,10 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/utils/", "tests/unit/utils/"],
+      "important_files": [
+        "src/utils/",
+        "tests/unit/utils/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -5095,7 +5129,10 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/lib/", "tests/unit/lib/"],
+      "important_files": [
+        "src/lib/",
+        "tests/unit/lib/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -5272,7 +5309,11 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/integration/", "src/", "tests/e2e/"],
+      "important_files": [
+        "tests/integration/",
+        "src/",
+        "tests/e2e/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -5400,7 +5441,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/", "tests/unit/tools/"],
+      "important_files": [
+        "src/tools/",
+        "tests/unit/tools/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -6043,7 +6087,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755758304908_dw9bly3da"],
+      "dependencies": [
+        "task_1755758304908_dw9bly3da"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -6661,7 +6707,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755763416973_7m5fdcdoj"],
+      "dependencies": [
+        "task_1755763416973_7m5fdcdoj"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -7888,7 +7936,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755766032834_0og3cdxc5"],
+      "dependencies": [
+        "task_1755766032834_0og3cdxc5"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -7920,7 +7970,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755766029241_7r21y615c"],
+      "dependencies": [
+        "task_1755766029241_7r21y615c"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -7952,7 +8004,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755766056125_ri7qrpgr3"],
+      "dependencies": [
+        "task_1755766056125_ri7qrpgr3"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -7984,7 +8038,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755766064319_kahjhx1au"],
+      "dependencies": [
+        "task_1755766064319_kahjhx1au"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -9567,7 +9623,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755794136264_u6mjeced7"],
+      "dependencies": [
+        "task_1755794136264_u6mjeced7"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -9640,7 +9698,9 @@
       "category": "missing-feature",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755794138881_zv7sw22oe"],
+      "dependencies": [
+        "task_1755794138881_zv7sw22oe"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -10729,7 +10789,9 @@
       "category": "missing-feature",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755800104901_f3zdg63d9"],
+      "dependencies": [
+        "task_1755800104901_f3zdg63d9"
+      ],
       "important_files": [
         "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/development/research-reports/research-report-task_1755799747752_0idc3ajpu.md"
       ],
@@ -14108,7 +14170,9 @@
       "category": "missing-feature",
       "priority": "critical",
       "status": "completed",
-      "dependencies": ["task_1755842383714_9holql3rn"],
+      "dependencies": [
+        "task_1755842383714_9holql3rn"
+      ],
       "important_files": [
         "./development/research-reports/research-report-task_1755841050540_eigopqxdb.md",
         "./src/server.ts",
@@ -15500,7 +15564,9 @@
       "category": "missing-feature",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755856703617_ypaht1u93"],
+      "dependencies": [
+        "task_1755856703617_ypaht1u93"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -20481,7 +20547,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755908035784_yy7iudi6e"],
+      "dependencies": [
+        "task_1755908035784_yy7iudi6e"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -25179,7 +25247,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1755983861122_dslt80t7s"],
+      "dependencies": [
+        "task_1755983861122_dslt80t7s"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -26240,7 +26310,11 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": [".", "development/", "docs/"],
+      "important_files": [
+        ".",
+        "development/",
+        "docs/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -26284,7 +26358,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/utils/async-error-boundary.ts"],
+      "important_files": [
+        "src/utils/async-error-boundary.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -26381,7 +26457,9 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/middleware/caching.ts"],
+      "important_files": [
+        "src/middleware/caching.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": true,
@@ -26425,7 +26503,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/utils/async-error-boundary.ts"],
+      "important_files": [
+        "src/utils/async-error-boundary.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -26516,7 +26596,9 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/tools/scenarios/tools/delete-scenario.ts"],
+      "important_files": [
+        "src/tools/scenarios/tools/delete-scenario.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -26731,7 +26813,9 @@
       "category": "missing-feature",
       "priority": "critical",
       "status": "completed",
-      "dependencies": ["task_1755997624871_qtszh4cfe"],
+      "dependencies": [
+        "task_1755997624871_qtszh4cfe"
+      ],
       "important_files": [
         "src/lib/config.ts",
         "src/lib/make-api-client.ts",
@@ -26769,7 +26853,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/lib/config.ts", "src/lib/make-api-client.ts"],
+      "important_files": [
+        "src/lib/config.ts",
+        "src/lib/make-api-client.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -27017,7 +27104,9 @@
       "category": "missing-feature",
       "priority": "critical",
       "status": "completed",
-      "dependencies": ["task_1756004037567_qktr71hab"],
+      "dependencies": [
+        "task_1756004037567_qktr71hab"
+      ],
       "important_files": [
         "src/middleware/security-monitoring.ts",
         "src/middleware/security.ts",
@@ -27842,7 +27931,10 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["tests/unit/lib/config.test.ts", "src/lib/config.ts"],
+      "important_files": [
+        "tests/unit/lib/config.test.ts",
+        "src/lib/config.ts"
+      ],
       "success_criteria": [
         "All config tests pass",
         "Test coverage maintained",
@@ -28629,7 +28721,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756033713230_saon2zlqi"],
+      "dependencies": [
+        "task_1756033713230_saon2zlqi"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -28857,7 +28951,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756036085305_wg4ypzhnh"],
+      "dependencies": [
+        "task_1756036085305_wg4ypzhnh"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -29397,7 +29493,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756054439058_xd5aw5xgf"],
+      "dependencies": [
+        "task_1756054439058_xd5aw5xgf"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -29477,7 +29575,9 @@
       "category": "refactor",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756054862503_961a2z10r"],
+      "dependencies": [
+        "task_1756054862503_961a2z10r"
+      ],
       "important_files": [
         "src/middleware/circuit-breaker.ts",
         "development/research-reports/ddos-protection-research.md"
@@ -29512,7 +29612,9 @@
       "category": "refactor",
       "priority": "critical",
       "status": "completed",
-      "dependencies": ["task_1756054796768_tvvemdw2i"],
+      "dependencies": [
+        "task_1756054796768_tvvemdw2i"
+      ],
       "important_files": [
         "./src/middleware/circuit-breaker.ts",
         "./development/research-reports/research-report-task_1756036085305_wg4ypzhnh.md"
@@ -30205,7 +30307,9 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["./src/lib/diagnostic-rules.ts"],
+      "important_files": [
+        "./src/lib/diagnostic-rules.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -30328,7 +30432,9 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["./src/lib/audit-command-manager.ts"],
+      "important_files": [
+        "./src/lib/audit-command-manager.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -30382,7 +30488,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["./src/lib/logger.ts"],
+      "important_files": [
+        "./src/lib/logger.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -30425,7 +30533,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["./src/lib/llm-sampling.ts"],
+      "important_files": [
+        "./src/lib/llm-sampling.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -30468,7 +30578,9 @@
       "priority": "medium",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["./src/lib/oauth-session-store.ts"],
+      "important_files": [
+        "./src/lib/oauth-session-store.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -30511,7 +30623,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["./src/lib/cache.ts"],
+      "important_files": [
+        "./src/lib/cache.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -30555,7 +30669,9 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["./src/lib/secure-config.ts"],
+      "important_files": [
+        "./src/lib/secure-config.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -30865,7 +30981,9 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["./src/utils/enhanced-encryption-service.ts"],
+      "important_files": [
+        "./src/utils/enhanced-encryption-service.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -30921,7 +31039,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["./src/utils/error-analytics.ts"],
+      "important_files": [
+        "./src/utils/error-analytics.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -32738,7 +32858,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/monitoring/index.ts"],
+      "important_files": [
+        "src/monitoring/index.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -33030,7 +33152,9 @@
       "category": "missing-feature",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756076142403_g948yo8em"],
+      "dependencies": [
+        "task_1756076142403_g948yo8em"
+      ],
       "important_files": [
         "development/research-reports/research-report-task_1756074852965_vg9p7jv6x.md",
         "src/simple-fastmcp-server.ts"
@@ -33302,7 +33426,9 @@
       "priority": "critical",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["src/monitoring/enhanced-alert-storage.ts"],
+      "important_files": [
+        "src/monitoring/enhanced-alert-storage.ts"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -34315,7 +34441,9 @@
       "category": "missing-feature",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756094945883_u963zpd8t"],
+      "dependencies": [
+        "task_1756094945883_u963zpd8t"
+      ],
       "important_files": [
         "src/rate-limit-manager.ts",
         "src/rate-limiting/token-bucket.ts",
@@ -34445,7 +34573,9 @@
       "category": "enhancement",
       "priority": "high",
       "status": "completed",
-      "dependencies": ["task_1756096328281_1bvme9cq1"],
+      "dependencies": [
+        "task_1756096328281_1bvme9cq1"
+      ],
       "important_files": [],
       "success_criteria": [],
       "estimate": "",
@@ -34946,7 +35076,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/research-reports/"],
+      "important_files": [
+        "development/research-reports/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -35078,7 +35210,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/research-reports/"],
+      "important_files": [
+        "development/research-reports/"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -35229,7 +35363,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -35270,7 +35406,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -35366,7 +35504,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -35681,7 +35821,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -35935,7 +36077,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -35985,7 +36129,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -36230,7 +36376,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": true,
@@ -36274,7 +36422,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -36318,7 +36468,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": true,
@@ -36398,7 +36550,9 @@
       "priority": "high",
       "status": "completed",
       "dependencies": [],
-      "important_files": ["development/FASTMCP_TYPESCRIPT_PROTOCOL.md"],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
       "success_criteria": [],
       "estimate": "",
       "requires_research": false,
@@ -36466,9 +36620,177 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1756139852839_c1ub63pj5",
+      "title": "Implement Billing and Administration Tools",
+      "description": "Implement FastMCP tools for cashier/billing functions and audit logs for security and compliance purposes. Review @development/FASTMCP_TYPESCRIPT_PROTOCOL.md for proper FastMCP implementation patterns.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": true,
+      "subtasks": [],
+      "created_at": "2025-08-25T16:37:32.844Z",
+      "auto_research_created": true,
+      "started_at": "2025-08-25T22:32:07.578Z",
+      "claimed_by": "development_session_1756161077548_1_general_842bef59",
+      "assigned_agent": "development_session_1756161077548_1_general_842bef59",
+      "agent_assignment_history": [
+        {
+          "agent": "agent_1756159495397",
+          "action": "claimed",
+          "timestamp": "2025-08-25T22:04:55.397Z"
+        },
+        {
+          "agent": "system",
+          "action": "auto_reset_stale",
+          "timestamp": "2025-08-25T22:31:06.505Z",
+          "reason": "Task stale for 26 minutes"
+        },
+        {
+          "agentId": "development_session_1756161077548_1_general_842bef59",
+          "role": "primary",
+          "assignedAt": "2025-08-25T22:32:07.578Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-25T22:45:49.361Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-25T22:45:49.362Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1756139817983_m7jnkhe9e",
+      "title": "Implement Scenario and Execution Management Tools",
+      "description": "Implement FastMCP tools for scenario CRUD, blueprint management, scheduling, logs, and incomplete executions. Review @development/FASTMCP_TYPESCRIPT_PROTOCOL.md for proper FastMCP implementation patterns.",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "development/FASTMCP_TYPESCRIPT_PROTOCOL.md"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-25T16:36:57.983Z",
+      "auto_research_created": false,
+      "assigned_agent": "development_session_1756161077548_1_general_842bef59",
+      "started_at": "2025-08-25T22:47:12.366Z",
+      "claimed_by": "development_session_1756161077548_1_general_842bef59",
+      "agent_assignment_history": [
+        {
+          "agentId": "development_session_1756161077548_1_general_842bef59",
+          "role": "primary",
+          "assignedAt": "2025-08-25T22:47:12.366Z",
+          "reassignReason": null,
+          "claimPriority": "normal"
+        }
+      ],
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-25T22:57:40.688Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "in_progress",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-25T22:57:40.689Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1756162727764_yhgybn3u6",
+      "title": "Comprehensive Make.com Keys API Research",
+      "description": "Research all available Keys API endpoints, CRUD operations, key types, authentication, security, permissions, and data models for FastMCP tool development",
+      "mode": "DEVELOPMENT",
+      "category": "research",
+      "priority": "high",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [
+        "development/research-reports/"
+      ],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-25T22:58:47.764Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-25T23:03:11.584Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-25T23:03:11.584Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
+    },
+    {
+      "id": "task_1756163010453_fac7apbvc",
+      "title": "Fix linting errors in temp_check.js file",
+      "mode": "DEVELOPMENT",
+      "category": "linter-error",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-25T23:03:30.454Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-25T23:03:48.593Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-25T23:03:48.594Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 844,
-  "last_completion": "2025-08-25T22:37:33.527Z",
+  "total_completed": 848,
+  "last_completion": "2025-08-25T23:03:48.594Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }

@@ -353,6 +353,55 @@ export class MakeAPIClient {
       throw this.formatError(error);
     }
   }
+
+  // ==============================================================================
+  // Generic HTTP Methods for Custom Requests
+  // ==============================================================================
+
+  async get(path: string, params?: any): Promise<APIResponse> {
+    try {
+      const response = await this.axios.get(path, { params });
+      return { data: response.data, status: response.status };
+    } catch (error) {
+      throw this.formatError(error);
+    }
+  }
+
+  async post(path: string, data?: any): Promise<APIResponse> {
+    try {
+      const response = await this.axios.post(path, data);
+      return { data: response.data, status: response.status };
+    } catch (error) {
+      throw this.formatError(error);
+    }
+  }
+
+  async put(path: string, data?: any): Promise<APIResponse> {
+    try {
+      const response = await this.axios.put(path, data);
+      return { data: response.data, status: response.status };
+    } catch (error) {
+      throw this.formatError(error);
+    }
+  }
+
+  async patch(path: string, data?: any): Promise<APIResponse> {
+    try {
+      const response = await this.axios.patch(path, data);
+      return { data: response.data, status: response.status };
+    } catch (error) {
+      throw this.formatError(error);
+    }
+  }
+
+  async delete(path: string): Promise<APIResponse> {
+    try {
+      const response = await this.axios.delete(path);
+      return { data: response.data, status: response.status };
+    } catch (error) {
+      throw this.formatError(error);
+    }
+  }
 }
 
 export default MakeAPIClient;
