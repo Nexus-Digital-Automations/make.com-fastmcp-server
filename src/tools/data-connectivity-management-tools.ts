@@ -44,6 +44,7 @@ interface MakeConnection {
   created?: string;
   verified?: boolean;
   metadata?: Record<string, unknown>;
+  editable?: boolean;
 }
 
 interface MakeDataStore {
@@ -55,6 +56,10 @@ interface MakeDataStore {
   structure?: Record<string, unknown>;
   size?: number;
   recordCount?: number;
+  maxSizeMB?: number;
+  strictValidation?: boolean;
+  status?: string;
+  createdAt?: string;
 }
 
 interface MakeWebhook {
@@ -66,6 +71,10 @@ interface MakeWebhook {
   created?: string;
   modified?: string;
   enabled?: boolean;
+  typeName?: string;
+  configuration?: Record<string, unknown>;
+  security?: Record<string, unknown>;
+  createdAt?: string;
 }
 
 interface StatusCount {
@@ -89,6 +98,14 @@ interface MakeAPIKey {
   expiresAt?: string;
   lastUsedAt?: string;
   createdAt?: string;
+  key?: string;
+}
+
+interface MakeTestResult {
+  success?: boolean;
+  status?: string;
+  message?: string;
+  details?: Record<string, unknown>;
 }
 
 // ================================
@@ -342,7 +359,7 @@ export function registerDataConnectivityManagementTools(
           includeExpired: args.includeExpired,
           limit: args.limit,
         });
-        const connections = response.data || [];
+        const connections = (response.data as MakeConnection[]) || [];
         const processingTime = Date.now() - startTime;
 
         // Filter and enhance connection data
@@ -376,7 +393,8 @@ export function registerDataConnectivityManagementTools(
           ),
           byStatus: formattedConnections.reduce(
             (acc: StatusCount, conn: MakeConnection) => {
-              acc[conn.status] = (acc[conn.status] || 0) + 1;
+              const status = conn.status || "unknown";
+              acc[status] = (acc[status] || 0) + 1;
               return acc;
             },
             {},
@@ -475,7 +493,7 @@ export function registerDataConnectivityManagementTools(
         };
 
         const response = await makeClient.createConnection(connectionData);
-        const connection = response.data;
+        const connection = response.data as MakeConnection;
         const processingTime = Date.now() - startTime;
 
         log.info(`[${operationId}] Connection created successfully`, {
@@ -561,12 +579,12 @@ export function registerDataConnectivityManagementTools(
         const connectionResponse = await makeClient.getConnection(
           args.connectionId,
         );
-        const connection = connectionResponse.data;
+        const connection = connectionResponse.data as MakeConnection;
 
         // Perform connection test
         reportProgress({ progress: 75, total: 100 });
         const testResponse = await makeClient.testConnection(args.connectionId);
-        const testResult = testResponse.data;
+        const testResult = testResponse.data as MakeTestResult;
 
         reportProgress({ progress: 100, total: 100 });
         const processingTime = Date.now() - startTime;
@@ -667,7 +685,7 @@ export function registerDataConnectivityManagementTools(
           sortBy: args.sortBy,
           limit: args.limit,
         });
-        const dataStores = response.data || [];
+        const dataStores = (response.data as MakeDataStore[]) || [];
         const processingTime = Date.now() - startTime;
 
         // Enhance data store information
@@ -681,7 +699,7 @@ export function registerDataConnectivityManagementTools(
               strictValidation: store.strictValidation,
               recordCount: store.recordCount || 0,
               createdAt: store.createdAt,
-              status: store.recordCount > 0 ? "active" : "empty",
+              status: (store.recordCount || 0) > 0 ? "active" : "empty",
             };
 
             // Note: Record count fetching would require additional API endpoint
@@ -702,16 +720,18 @@ export function registerDataConnectivityManagementTools(
         const stats = {
           total: formattedDataStores.length,
           totalRecords: formattedDataStores.reduce(
-            (sum: number, store: MakeDataStore) => sum + store.recordCount,
+            (sum: number, store: MakeDataStore) =>
+              sum + (store.recordCount || 0),
             0,
           ),
           totalSizeMB: formattedDataStores.reduce(
-            (sum: number, store: MakeDataStore) => sum + store.maxSizeMB,
+            (sum: number, store: MakeDataStore) => sum + (store.maxSizeMB || 0),
             0,
           ),
           byStatus: formattedDataStores.reduce(
             (acc: StatusCount, store: MakeDataStore) => {
-              acc[store.status] = (acc[store.status] || 0) + 1;
+              const status = store.status || "unknown";
+              acc[status] = (acc[status] || 0) + 1;
               return acc;
             },
             {},
@@ -742,7 +762,7 @@ export function registerDataConnectivityManagementTools(
                     `**${index + 1}. ${store.name}**\n` +
                     `- ID: ${store.id}\n` +
                     `- Team: ${store.teamId}\n` +
-                    `- Records: ${store.recordCount.toLocaleString()}\n` +
+                    `- Records: ${(store.recordCount || 0).toLocaleString()}\n` +
                     `- Capacity: ${store.maxSizeMB} MB\n` +
                     `- Validation: ${store.strictValidation ? "Strict" : "Flexible"}\n` +
                     `- Status: ${store.status === "active" ? "🟢" : "⚪"} ${store.status}\n` +
@@ -832,7 +852,7 @@ export function registerDataConnectivityManagementTools(
         };
         // TODO: Implement actual API call when createDataStore method is available
         // const response = await makeClient.createDataStore(dataStoreData);
-        const dataStore = response.data;
+        const dataStore = response.data as MakeDataStore;
 
         reportProgress({ progress: 100, total: 100 });
         const processingTime = Date.now() - startTime;
@@ -936,7 +956,7 @@ export function registerDataConnectivityManagementTools(
           status: args.status,
           limit: args.limit,
         });
-        const webhooks = response.data || [];
+        const webhooks = (response.data as MakeWebhook[]) || [];
         const processingTime = Date.now() - startTime;
 
         // Format webhook information
@@ -957,14 +977,16 @@ export function registerDataConnectivityManagementTools(
           total: formattedWebhooks.length,
           byStatus: formattedWebhooks.reduce(
             (acc: StatusCount, hook: MakeWebhook) => {
-              acc[hook.status] = (acc[hook.status] || 0) + 1;
+              const status = hook.status || "unknown";
+              acc[status] = (acc[status] || 0) + 1;
               return acc;
             },
             {},
           ),
           byType: formattedWebhooks.reduce(
             (acc: StatusCount, hook: MakeWebhook) => {
-              acc[hook.typeName] = (acc[hook.typeName] || 0) + 1;
+              const typeName = hook.typeName || "unknown";
+              acc[typeName] = (acc[typeName] || 0) + 1;
               return acc;
             },
             {},
@@ -1062,7 +1084,7 @@ export function registerDataConnectivityManagementTools(
         };
 
         const response = await makeClient.createWebhook(webhookData);
-        const webhook = response.data;
+        const webhook = response.data as MakeWebhook;
         const processingTime = Date.now() - startTime;
 
         log.info(`[${operationId}] Webhook created successfully`, {
@@ -1238,7 +1260,7 @@ export function registerDataConnectivityManagementTools(
         let responseText = "";
 
         if (args.action === "list") {
-          const keys = result.data || [];
+          const keys = (result as { data: MakeAPIKey[] }).data || [];
           responseText = `🔑 **API Keys Management**\n\n**Team:** ${args.teamId || "All Teams"}\n**Total Keys:** ${keys.length}\n\n${keys
             .map(
               (key: MakeAPIKey, index: number) =>
@@ -1252,10 +1274,10 @@ export function registerDataConnectivityManagementTools(
             )
             .join("\n")}`;
         } else if (args.action === "create") {
-          const key = result.data;
+          const key = (result as { data: MakeAPIKey }).data;
           responseText = `✅ **API Key Created Successfully!**\n\n**Key Details:**\n- **ID:** ${key.id}\n- **Name:** ${key.name}\n- **Type:** ${key.keyType}\n- **Scopes:** ${key.scopes.join(", ")}\n- **Key:** \`${key.key || "[Generated - Store Securely]"}\`\n\n⚠️ **Important:** Store the key securely as it cannot be retrieved again!`;
         } else {
-          responseText = `✅ **API Key ${args.action} completed successfully!**\n\n**Result:** ${JSON.stringify(result.data, null, 2)}`;
+          responseText = `✅ **API Key ${args.action} completed successfully!**\n\n**Result:** ${JSON.stringify((result as { data: unknown }).data, null, 2)}`;
         }
 
         return {
