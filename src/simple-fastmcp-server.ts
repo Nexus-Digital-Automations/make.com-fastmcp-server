@@ -106,17 +106,7 @@ const logger = winston.createLogger({
     winston.format.json(),
   ),
   transports: [
-    // Console transport disabled for MCP compatibility - interferes with JSON protocol
-    ...(process.env.ENABLE_CONSOLE_LOGGING === "true"
-      ? [
-          new winston.transports.Console({
-            format: winston.format.combine(
-              winston.format.colorize(),
-              winston.format.simple(),
-            ),
-          }),
-        ]
-      : []),
+    // Console output DISABLED for MCP compliance - JSON-RPC protocol requires clean stdout
     ...(process.env.LOG_FILE_ENABLED !== "false"
       ? [
           new DailyRotateFile({

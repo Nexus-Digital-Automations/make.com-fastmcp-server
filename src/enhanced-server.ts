@@ -11,9 +11,16 @@ import { z } from "zod";
 import dotenv from "dotenv";
 import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
+import { v4 as uuidv4 } from "uuid";
 
 // Import our enhanced Make.com API client and tools (temporarily using compatible client)
 import { MakeAPIClient } from "./make-client/simple-make-client.js";
+
+// Import rate limiting components
+import {
+  EnhancedRateLimitManager,
+  ENHANCED_MAKE_API_CONFIG,
+} from "./enhanced-rate-limit-manager.js";
 
 // Import tool registration functions
 import { registerDevelopmentCustomizationTools } from "./tools/development-customization-tools.js";
@@ -247,16 +254,7 @@ const logger = winston.createLogger({
     winston.format.json(),
   ),
   transports: [
-    ...(process.env.ENABLE_CONSOLE_LOGGING === "true"
-      ? [
-          new winston.transports.Console({
-            format: winston.format.combine(
-              winston.format.colorize(),
-              winston.format.simple(),
-            ),
-          }),
-        ]
-      : []),
+    // Console output DISABLED for MCP compliance - JSON-RPC protocol requires clean stdout
     ...(process.env.LOG_FILE_ENABLED !== "false"
       ? [
           new DailyRotateFile({
@@ -275,7 +273,14 @@ const logger = winston.createLogger({
   ],
 });
 
-// Old MakeAPIClient class removed - now using imported version from simple-make-client.ts
+// ==============================================================================
+// Initialize Enhanced Rate Limiting System
+// ==============================================================================
+
+// Initialize enhanced rate limit manager with Make.com optimized configuration
+const rateLimitManager = new EnhancedRateLimitManager(ENHANCED_MAKE_API_CONFIG);
+
+// Initialize Make.com API client without rate limiting (delegated to enhanced manager)
 
 // ==============================================================================
 // Initialize FastMCP Server and Client
@@ -296,6 +301,19 @@ if (!process.env.MAKE_API_KEY) {
   process.exit(1);
 }
 
+// Create rate-limited wrapper for API calls
+function createRateLimitedApiCall<T>(
+  operation: string,
+  apiCall: () => Promise<T>,
+  options: { priority?: "normal" | "high" | "low" } = {},
+): Promise<T> {
+  return rateLimitManager.executeWithRateLimit(operation, apiCall, {
+    priority: options.priority || "normal",
+    correlationId: uuidv4(),
+    endpoint: operation,
+  });
+}
+
 const makeClient = new MakeAPIClient(
   {
     apiToken: process.env.MAKE_API_KEY,
@@ -308,17 +326,127 @@ const makeClient = new MakeAPIClient(
       backoffMultiplier: 2,
       maxRetryDelay: 10000,
     },
+    // Remove built-in rate limiting - delegated to EnhancedRateLimitManager
     rateLimitConfig: {
-      maxRequests: parseInt(process.env.MAKE_RATE_LIMIT || "60"),
-      windowMs: 60000,
-      skipSuccessfulRequests: false,
-      skipFailedRequests: false,
+      maxRequests: 999999, // Effectively unlimited - handled by EnhancedRateLimitManager
+      windowMs: 1000,
+      skipSuccessfulRequests: true,
+      skipFailedRequests: true,
     },
   },
   logger,
 );
 
 // API client initialized - logged to file only
+
+// ==============================================================================
+// Rate Limiting Management Tools
+// ==============================================================================
+
+server.addTool({
+  name: "rate-limit-status",
+  description: "Get comprehensive rate limiting status and metrics",
+  parameters: z.object({
+    includeMetrics: z.boolean().optional().describe("Include detailed metrics"),
+    includeParserStatus: z
+      .boolean()
+      .optional()
+      .describe("Include RateLimitParser status"),
+    includeAdvancedStatus: z
+      .boolean()
+      .optional()
+      .describe("Include advanced components status"),
+  }),
+  execute: async (args, { log, reportProgress }) => {
+    const operationId = uuidv4();
+    log.info(`[${operationId}] Getting rate limit status`, {
+      operationId,
+      includeMetrics: args.includeMetrics,
+      includeParserStatus: args.includeParserStatus,
+      includeAdvancedStatus: args.includeAdvancedStatus,
+    });
+
+    reportProgress({ progress: 25, total: 100 });
+
+    const basicStatus = rateLimitManager.getRateLimitStatus();
+    const enhancedMetrics = args.includeMetrics
+      ? rateLimitManager.getEnhancedMetrics()
+      : null;
+    const parserStatus = args.includeParserStatus
+      ? rateLimitManager.getRateLimitParserStatus()
+      : null;
+    const advancedStatus = args.includeAdvancedStatus
+      ? rateLimitManager.getAdvancedComponentsStatus()
+      : null;
+
+    reportProgress({ progress: 75, total: 100 });
+
+    let statusText = `🚦 **Enhanced Rate Limiting Status**\n\n`;
+
+    // Basic status
+    const queueStatus = rateLimitManager.getQueueStatus();
+    statusText += `## 📊 Current Status\n`;
+    statusText += `- **Active Requests:** ${queueStatus.activeRequests}\n`;
+    statusText += `- **Queue Size:** ${queueStatus.size}\n`;
+    statusText += `- **Requests in Window:** ${basicStatus.requestsInWindow}\n`;
+    statusText += `- **Can Make Request:** ${basicStatus.canMakeRequest ? "✅" : "❌"}\n`;
+    statusText += `- **Global Rate Limit Active:** ${basicStatus.globalRateLimitActive ? "🔴" : "🟢"}\n\n`;
+
+    // Enhanced metrics
+    if (enhancedMetrics) {
+      statusText += `## 📈 Enhanced Metrics\n`;
+      statusText += `- **Total Requests:** ${enhancedMetrics.totalRequests}\n`;
+      statusText += `- **Rate Limited:** ${enhancedMetrics.rateLimitedRequests}\n`;
+      statusText += `- **Success Rate:** ${enhancedMetrics.successRate.toFixed(2)}%\n`;
+      statusText += `- **Average Delay:** ${enhancedMetrics.averageDelayMs}ms\n`;
+      statusText += `- **Max Delay:** ${enhancedMetrics.maxDelayMs}ms\n`;
+
+      if (enhancedMetrics.tokenBucket) {
+        statusText += `\n### 🪣 Token Bucket\n`;
+        statusText += `- **Tokens Available:** ${enhancedMetrics.tokenBucket.tokens}/${enhancedMetrics.tokenBucket.capacity}\n`;
+        statusText += `- **Utilization:** ${(enhancedMetrics.tokenBucket.utilizationRate * 100).toFixed(1)}%\n`;
+        statusText += `- **Success Rate:** ${(enhancedMetrics.tokenBucket.successRate * 100).toFixed(1)}%\n`;
+      }
+
+      if (enhancedMetrics.rateLimitParser) {
+        statusText += `\n### 🔍 Rate Limit Parser\n`;
+        statusText += `- **Headers Processed:** ${enhancedMetrics.rateLimitParser.headersProcessed}\n`;
+        statusText += `- **Dynamic Updates:** ${enhancedMetrics.rateLimitParser.dynamicUpdatesApplied}\n`;
+        statusText += `- **Successful Parsing:** ${enhancedMetrics.rateLimitParser.successfulHeaderParsing}\n`;
+        statusText += `- **Parsing Failures:** ${enhancedMetrics.rateLimitParser.headerParsingFailures}\n`;
+        statusText += `- **Approaching Limit Warnings:** ${enhancedMetrics.rateLimitParser.approachingLimitWarnings}\n`;
+      }
+    }
+
+    // Parser status
+    if (parserStatus) {
+      statusText += `\n## ⚙️ Parser Configuration\n`;
+      statusText += `- **Enabled:** ${parserStatus.enabled ? "✅" : "❌"}\n`;
+      statusText += `- **Dynamic Capacity:** ${parserStatus.dynamicCapacityEnabled ? "✅" : "❌"}\n`;
+      statusText += `- **Processing Count:** ${parserStatus.headerProcessingCount}\n`;
+      statusText += `- **Success Rate:** ${parserStatus.successfulParsingRate.toFixed(1)}%\n`;
+      statusText += `- **Last Update:** ${parserStatus.lastUpdate?.toISOString() || "Never"}\n`;
+    }
+
+    // Advanced status
+    if (advancedStatus) {
+      statusText += `\n## 🔧 Advanced Components\n`;
+      statusText += `- **Token Bucket:** ${advancedStatus.tokenBucket.enabled ? "✅" : "❌"} ${advancedStatus.tokenBucket.initialized ? "(Initialized)" : "(Not Initialized)"}\n`;
+      statusText += `- **Backoff Strategy:** ${advancedStatus.backoffStrategy.enabled ? "✅" : "❌"} ${advancedStatus.backoffStrategy.initialized ? "(Initialized)" : "(Not Initialized)"}\n`;
+    }
+
+    reportProgress({ progress: 100, total: 100 });
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: statusText,
+        },
+      ],
+    };
+  },
+});
 
 // ==============================================================================
 // Core Scenario Tools (Enhanced)
@@ -366,9 +494,11 @@ server.addTool({
         params.search = args.search;
       }
 
-      const response = await makeClient.getScenarios(
-        params.teamId as string | undefined,
-        params,
+      const response = await createRateLimitedApiCall(
+        "get-scenarios",
+        () =>
+          makeClient.getScenarios(params.teamId as string | undefined, params),
+        { priority: "normal" },
       );
       const scenarios = response.data as MakeScenario[];
 
@@ -396,7 +526,7 @@ server.addTool({
                     `- Last Modified: ${s.updatedAt || "N/A"}\n`,
                 )
                 .join("\n") || "No scenarios found"
-            }\n\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining\n\nFull response:\n\`\`\`json\n${JSON.stringify(scenarios ?? [], null, 2)}\n\`\`\``,
+            }\n\n**Enhanced Rate Limit Status:** ${rateLimitManager.getQueueStatus().activeRequests} active requests, queue size: ${rateLimitManager.getQueueStatus().size}\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining\n\nFull response:\n\`\`\`json\n${JSON.stringify(scenarios ?? [], null, 2)}\n\`\`\``,
           },
         ],
       };
@@ -459,7 +589,11 @@ server.addTool({
         scenarioId: args.scenarioId,
       };
 
-      const response = await makeClient.createWebhook(webhookData);
+      const response = await createRateLimitedApiCall(
+        "create-webhook",
+        () => makeClient.createWebhook(webhookData),
+        { priority: "high" }, // High priority for creation operations
+      );
       const webhook = response.data as MakeWebhook;
 
       log.info(`[${operationId}] Webhook created successfully`, {
@@ -471,7 +605,7 @@ server.addTool({
         content: [
           {
             type: "text",
-            text: `✅ **Webhook Created Successfully!**\n\n**Webhook Details:**\n- **ID:** \`${webhook.id}\`\n- **Name:** ${webhook.name}\n- **URL:** \`${webhook.url}\`\n- **Status:** ${webhook.status || "enabled"}\n\n**Configuration:**\n- Method tracking: ${args.method ? "✅" : "❌"}\n- Header inclusion: ${args.header ? "✅" : "❌"}\n- JSON stringify: ${args.stringify ? "✅" : "❌"}\n- Team ID: ${args.teamId || "None"}\n- Connection ID: ${args.connectionId || "None"}\n- Scenario ID: ${args.scenarioId || "None"}\n\n**Next Steps:**\n1. 🔗 **Test the webhook** by sending a POST request to the URL\n2. 📊 **Monitor activity** in the Make.com dashboard\n3. 🎓 **Use learning mode** to auto-detect payload structure\n4. ⚙️ **Configure scenario** to process webhook data\n\n**Rate Limit Status:** ${makeClient.getRateLimitStatus().remaining} requests remaining`,
+            text: `✅ **Webhook Created Successfully!**\n\n**Webhook Details:**\n- **ID:** \`${webhook.id}\`\n- **Name:** ${webhook.name}\n- **URL:** \`${webhook.url}\`\n- **Status:** ${webhook.status || "enabled"}\n\n**Configuration:**\n- Method tracking: ${args.method ? "✅" : "❌"}\n- Header inclusion: ${args.header ? "✅" : "❌"}\n- JSON stringify: ${args.stringify ? "✅" : "❌"}\n- Team ID: ${args.teamId || "None"}\n- Connection ID: ${args.connectionId || "None"}\n- Scenario ID: ${args.scenarioId || "None"}\n\n**Next Steps:**\n1. 🔗 **Test the webhook** by sending a POST request to the URL\n2. 📊 **Monitor activity** in the Make.com dashboard\n3. 🎓 **Use learning mode** to auto-detect payload structure\n4. ⚙️ **Configure scenario** to process webhook data\n\n**Enhanced Rate Limit Status:** ${rateLimitManager.getQueueStatus().activeRequests} active, queue: ${rateLimitManager.getQueueStatus().size}\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining`,
           },
         ],
       };
@@ -530,9 +664,11 @@ server.addTool({
         params.limit = args.limit;
       }
 
-      const response = await makeClient.getWebhooks(
-        params.teamId as string | undefined,
-        params,
+      const response = await createRateLimitedApiCall(
+        "get-webhooks",
+        () =>
+          makeClient.getWebhooks(params.teamId as string | undefined, params),
+        { priority: "normal" },
       );
       const webhooks = response.data as MakeWebhook[];
 
@@ -573,7 +709,7 @@ server.addTool({
                 .filter(([_, v]) => v !== undefined)
                 .map(([k, v]) => `${k}: ${v}`)
                 .join(", ") || "None"
-            }\n\n**Webhooks:**\n${webhookList}\n\n**Management Commands:**\n- Use \`manage-webhook-enhanced\` to enable/disable webhooks\n- Use \`webhook-learning-mode\` to start/stop learning\n- Use \`delete-webhook\` to remove webhooks\n\n**Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining`,
+            }\n\n**Webhooks:**\n${webhookList}\n\n**Management Commands:**\n- Use \`manage-webhook-enhanced\` to enable/disable webhooks\n- Use \`webhook-learning-mode\` to start/stop learning\n- Use \`delete-webhook\` to remove webhooks\n\n**Enhanced Rate Limit Status:** ${rateLimitManager.getQueueStatus().activeRequests} active, queue: ${rateLimitManager.getQueueStatus().size}\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining`,
           },
         ],
       };
@@ -639,7 +775,11 @@ server.addTool({
         params.metricTypes = args.metricTypes.join(",");
       }
 
-      const response = await makeClient.getAnalytics(params);
+      const response = await createRateLimitedApiCall(
+        "get-analytics",
+        () => makeClient.getAnalytics(params),
+        { priority: "normal" },
+      );
       const analytics = response.data as AnalyticsData;
 
       // Generate insights
@@ -712,7 +852,7 @@ server.addTool({
                     .map(([status, count]) => `${status}(${count})`)
                     .join(", ")}`
                 : "No error data"
-            }\n\n## 💡 Recommendations\n${insights.totalOperations > 0 ? `${parseFloat(insights.successRate) > 95 ? "✅ Excellent performance! Your scenarios are running smoothly." : "⚠️ Consider investigating failed operations to improve success rate."}\n${analytics.performance?.averageResponseTime ? (analytics.performance.averageResponseTime < 1000 ? "✅ Great response times!" : "⚠️ Consider optimizing scenarios for better performance.") : ""}\n${analytics.errors?.totalErrors === 0 ? "✅ No errors detected - great job!" : "⚠️ Review error patterns and implement better error handling."}` : "📈 Start running scenarios to generate meaningful analytics!"}\n\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining\n\nFull analytics data:\n\`\`\`json\n${JSON.stringify(analytics, null, 2)}\n\`\`\``,
+            }\n\n## 💡 Recommendations\n${insights.totalOperations > 0 ? `${parseFloat(insights.successRate) > 95 ? "✅ Excellent performance! Your scenarios are running smoothly." : "⚠️ Consider investigating failed operations to improve success rate."}\n${analytics.performance?.averageResponseTime ? (analytics.performance.averageResponseTime < 1000 ? "✅ Great response times!" : "⚠️ Consider optimizing scenarios for better performance.") : ""}\n${analytics.errors?.totalErrors === 0 ? "✅ No errors detected - great job!" : "⚠️ Review error patterns and implement better error handling."}` : "📈 Start running scenarios to generate meaningful analytics!"}\n\n**Enhanced Rate Limit Status:** ${rateLimitManager.getQueueStatus().activeRequests} active requests, queue: ${rateLimitManager.getQueueStatus().size}\n**API Rate Limit:** ${makeClient.getRateLimitStatus().remaining} requests remaining\n\nFull analytics data:\n\`\`\`json\n${JSON.stringify(analytics, null, 2)}\n\`\`\``,
           },
         ],
       };
@@ -805,7 +945,11 @@ server.addTool({
       // Basic connectivity test
       if (args.testConnections) {
         try {
-          const _testResponse = await makeClient.getOrganizations();
+          const _testResponse = await createRateLimitedApiCall(
+            "test-connectivity",
+            () => makeClient.getOrganizations(),
+            { priority: "low" },
+          );
           healthData.makeApi!.status = "connected";
           healthData.connectivity = {
             status: "connected",
@@ -902,7 +1046,7 @@ Set these environment variables:
 - **MAKE_API_KEY** (required) - Your Make.com API token
 - **MAKE_BASE_URL** (optional) - API base URL (default: eu1.make.com)
 - **LOG_LEVEL** (optional) - Logging level (default: info)
-- **ENABLE_CONSOLE_LOGGING** (optional) - Enable console logs (default: false)
+- Console logging permanently disabled for MCP JSON-RPC protocol compliance
 
 ### 📈 Getting Started
 1. Configure environment variables

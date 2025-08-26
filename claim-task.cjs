@@ -1,1 +1,0 @@
-const TaskManager = require("/Users/jeremyparker/Desktop/Claude Coding Projects/infinite-continue-stop-hook/lib/taskManager"); const tm = new TaskManager("./TODO.json"); tm.claimTask("task_1756168138903_jg9lxcira", "claude_code_agent", "normal").then(result => console.log(JSON.stringify(result, null, 2)));
