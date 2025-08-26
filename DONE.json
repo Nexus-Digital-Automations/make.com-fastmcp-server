@@ -36963,9 +36963,41 @@
       "needs_linter_feedback": true,
       "linter_feedback_generated": false,
       "archived_from_todo": "./TODO.json"
+    },
+    {
+      "id": "task_1756168535960_yxinpzptu",
+      "title": "Fix JSON-RPC protocol interference errors",
+      "description": "Analyze and fix JSON parsing errors, Zod validation failures, and stdout pollution in FastMCP server",
+      "mode": "DEVELOPMENT",
+      "category": "bug",
+      "priority": "critical",
+      "status": "completed",
+      "dependencies": [],
+      "important_files": [],
+      "success_criteria": [],
+      "estimate": "",
+      "requires_research": false,
+      "subtasks": [],
+      "created_at": "2025-08-26T00:35:35.960Z",
+      "auto_research_created": false,
+      "access_history": [
+        {
+          "agentId": "system",
+          "timestamp": "2025-08-26T00:37:05.650Z",
+          "action": "status_change",
+          "details": {
+            "oldStatus": "pending",
+            "newStatus": "completed"
+          }
+        }
+      ],
+      "completed_at": "2025-08-26T00:37:05.650Z",
+      "needs_linter_feedback": true,
+      "linter_feedback_generated": false,
+      "archived_from_todo": "/Users/jeremyparker/Desktop/Claude Coding Projects/make.com-fastmcp-server/TODO.json"
     }
   ],
-  "total_completed": 855,
-  "last_completion": "2025-08-26T00:19:17.640Z",
+  "total_completed": 856,
+  "last_completion": "2025-08-26T00:37:05.650Z",
   "created_at": "2025-08-20T05:18:53.937Z"
 }
