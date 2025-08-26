@@ -40,41 +40,6 @@
       ]
     },
     {
-      "id": "task_1756168138903_9skb973d7",
-      "title": "Implement Rate Limit Management for Make.com API",
-      "description": "Implement intelligent request throttling and backoff strategies as planned feature from development/features.md - includes organization-aware rate limiting, circuit breaker patterns, and adaptive backoff algorithms",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "in_progress",
-      "dependencies": [],
-      "important_files": [
-        "development/features.md",
-        "development/reports/comprehensive-fastmcp-makecom-implementation-approach.md"
-      ],
-      "success_criteria": [
-        "Rate limiting system respects Make.com organization limits (60-1000 req/min)",
-        "Circuit breaker prevents cascading failures",
-        "Adaptive backoff with exponential retry strategies",
-        "Proper error handling and monitoring"
-      ],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-26T00:28:58.907Z",
-      "auto_research_created": true,
-      "started_at": "2025-08-26T00:47:34.847Z",
-      "claimed_by": "agent_1756169254847",
-      "assigned_agent": "agent_1756169254847",
-      "agent_assignment_history": [
-        {
-          "agent": "agent_1756169254847",
-          "action": "claimed",
-          "timestamp": "2025-08-26T00:47:34.847Z"
-        }
-      ]
-    },
-    {
       "id": "task_1756034288610_puw5mxlnh",
       "title": "Refactor executeWithRetry method complexity (22 → ≤12)",
       "description": "Apply Extract Method pattern to reduce executeWithRetry method complexity from 22 to ≤12 - highest priority remaining violation",
@@ -110,23 +75,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "task_1756169692630_4d65llbhg",
-      "title": "Research Make.com OAuth 2.0 API documentation and authentication flows",
-      "description": "Comprehensive research on Make.com OAuth 2.0 implementation including endpoints, flows, scopes, token management, and best practices",
-      "mode": "DEVELOPMENT",
-      "category": "research",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": [],
-      "important_files": [],
-      "success_criteria": [],
-      "estimate": "",
-      "requires_research": false,
-      "subtasks": [],
-      "created_at": "2025-08-26T00:54:52.630Z",
-      "auto_research_created": false
     },
     {
       "id": "task_1756168187151_zvr23aeid",
