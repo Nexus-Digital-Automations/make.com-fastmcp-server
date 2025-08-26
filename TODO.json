@@ -2,42 +2,26 @@
   "project": "root_files",
   "tasks": [
     {
-      "id": "task_1756169616790_psfuog8j7",
-      "title": "Research: Implement OAuth 2.0 Integration for Make.com API",
-      "description": "Research and analysis required for implementing: \"Implement OAuth 2.0 Integration for Make.com API\"\n\n**Implementation Task Details:**\nImplement OAuth 2.0 authentication flows as planned feature from development/features.md - support for OAuth-based Make.com authentication with secure token management and refresh capabilities\n\n**Research Objectives:**\n1. Investigate best practices and methodologies for this implementation\n2. Identify potential challenges, risks, and mitigation strategies  \n3. Research relevant technologies, frameworks, and tools\n4. Define implementation approach and architecture decisions\n5. Provide actionable recommendations and guidance\n\n**Implementation Task ID:** task_1756169616789_a2r5hrckv\n\n**Auto-created by:** TaskManager research dependency system\n**Research Priority:** This research task must be completed before implementation begins",
-      "mode": "RESEARCH",
-      "category": "research",
+      "id": "task_1756169616789_a2r5hrckv",
+      "title": "Implement OAuth 2.0 Integration for Make.com API",
+      "description": "Implement OAuth 2.0 authentication flows as planned feature from development/features.md - support for OAuth-based Make.com authentication with secure token management and refresh capabilities",
+      "mode": "DEVELOPMENT",
+      "category": "missing-feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "pending",
       "dependencies": [],
-      "important_files": [
-        "./development/research-reports/research-report-task_1756169616790_psfuog8j7.md"
-      ],
+      "important_files": ["development/features.md"],
       "success_criteria": [
-        "Research methodology and approach documented",
-        "Key findings and recommendations provided",
-        "Implementation guidance and best practices identified",
-        "Risk assessment and mitigation strategies outlined",
-        "Research report created: ./development/research-reports/research-report-task_1756169616790_psfuog8j7.md"
+        "OAuth 2.0 flow implementation with proper token handling",
+        "Secure token refresh mechanism",
+        "Integration with existing API client",
+        "Comprehensive error handling for auth failures"
       ],
-      "estimate": "1-2 hours",
-      "requires_research": false,
+      "estimate": "",
+      "requires_research": true,
       "subtasks": [],
-      "created_at": "2025-08-26T00:53:36.790Z",
-      "created_by": "auto-research-system",
-      "auto_created_for": "task_1756169616789_a2r5hrckv",
-      "assigned_agent": "development_session_1756169287111_1_general_780c153b",
-      "started_at": "2025-08-26T00:54:27.107Z",
-      "claimed_by": "development_session_1756169287111_1_general_780c153b",
-      "agent_assignment_history": [
-        {
-          "agentId": "development_session_1756169287111_1_general_780c153b",
-          "role": "primary",
-          "assignedAt": "2025-08-26T00:54:27.107Z",
-          "reassignReason": null,
-          "claimPriority": "normal"
-        }
-      ]
+      "created_at": "2025-08-26T00:53:36.794Z",
+      "auto_research_created": true
     },
     {
       "id": "task_1756034288610_puw5mxlnh",
@@ -106,28 +90,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "task_1756169616789_a2r5hrckv",
-      "title": "Implement OAuth 2.0 Integration for Make.com API",
-      "description": "Implement OAuth 2.0 authentication flows as planned feature from development/features.md - support for OAuth-based Make.com authentication with secure token management and refresh capabilities",
-      "mode": "DEVELOPMENT",
-      "category": "missing-feature",
-      "priority": "high",
-      "status": "pending",
-      "dependencies": ["task_1756169616790_psfuog8j7"],
-      "important_files": ["development/features.md"],
-      "success_criteria": [
-        "OAuth 2.0 flow implementation with proper token handling",
-        "Secure token refresh mechanism",
-        "Integration with existing API client",
-        "Comprehensive error handling for auth failures"
-      ],
-      "estimate": "",
-      "requires_research": true,
-      "subtasks": [],
-      "created_at": "2025-08-26T00:53:36.794Z",
-      "auto_research_created": true
     }
   ],
   "current_mode": "DEVELOPMENT",
