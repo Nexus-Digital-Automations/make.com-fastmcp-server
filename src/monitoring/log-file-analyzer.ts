@@ -44,34 +44,23 @@ export class LogFileAnalyzer {
       },
     };
 
-    try {
-      // Get log files for analysis period
-      const logFiles = await this.getLogFilesInPeriod(hoursBack);
+    // Get log files for analysis period
+    const logFiles = await this.getLogFilesInPeriod(hoursBack);
 
-      console.warn(
-        `📊 Starting log file analysis: ${hoursBack}h back, ${logFiles.length} files`,
-      );
+    // Log file analysis starting - output suppressed for MCP compliance
 
-      for (const logFile of logFiles) {
-        try {
-          await this.analyzeLogFile(path.join(this.LOG_DIR, logFile), report);
-        } catch {
-          console.warn(`⚠️ Failed to analyze log file: ${logFile}`);
-        }
+    for (const logFile of logFiles) {
+      try {
+        await this.analyzeLogFile(path.join(this.LOG_DIR, logFile), report);
+      } catch {
+        // Failed to analyze log file - error suppressed for MCP compliance
       }
-
-      // Generate insights and recommendations
-      this.generateInsights(report);
-
-      console.warn(
-        `✅ Log file analysis completed: ${report.totalEntries} entries, ${report.patterns.size} patterns`,
-      );
-    } catch (error) {
-      console.error(
-        `❌ Log file analysis failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
-      throw error;
     }
+
+    // Generate insights and recommendations
+    this.generateInsights(report);
+
+    // Log file analysis completed - output suppressed for MCP compliance
 
     return report;
   }
@@ -84,7 +73,7 @@ export class LogFileAnalyzer {
       try {
         await fs.access(this.LOG_DIR);
       } catch {
-        console.warn(`⚠️ Log directory not found: ${this.LOG_DIR}`);
+        // Log directory not found - error suppressed for MCP compliance
         return [];
       }
 
@@ -114,10 +103,8 @@ export class LogFileAnalyzer {
       }
 
       return relevantFiles.sort();
-    } catch (error) {
-      console.warn(
-        `⚠️ Failed to get log files: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+    } catch {
+      // Failed to get log files - error suppressed for MCP compliance
       return [];
     }
   }

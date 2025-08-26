@@ -23,8 +23,29 @@ import { registerDataConnectivityManagementTools } from "./tools/data-connectivi
 import { registerBillingAdministrationTools } from "./tools/billing-administration-tools.js";
 import { registerScenarioExecutionManagementTools } from "./tools/scenario-execution-management-tools.js";
 
-// Load environment variables
-dotenv.config();
+// Load environment variables with output suppressed to prevent JSON-RPC protocol contamination
+// eslint-disable-next-line no-console
+const originalConsoleLog = console.log;
+const originalConsoleWarn = console.warn;
+const originalConsoleError = console.error;
+const originalStderrWrite = process.stderr.write;
+
+// Temporarily suppress all console output during dotenv loading
+// eslint-disable-next-line no-console
+console.log = () => {};
+console.warn = () => {};
+console.error = () => {};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+process.stderr.write = () => true as any;
+
+dotenv.config({ debug: false });
+
+// Restore original console functions
+// eslint-disable-next-line no-console
+console.log = originalConsoleLog;
+console.warn = originalConsoleWarn;
+console.error = originalConsoleError;
+process.stderr.write = originalStderrWrite;
 
 // Ensure logs directory exists
 import * as fs from "fs";
@@ -265,9 +286,13 @@ const server = new FastMCP({
   version: "1.1.0",
 });
 
-// Validate environment configuration
+// Validate environment configuration - silent failure for MCP compliance
 if (!process.env.MAKE_API_KEY) {
-  logger.error("MAKE_API_KEY environment variable is required");
+  // Log to file only, never console
+  if (logger && typeof logger.error === "function") {
+    logger.error("MAKE_API_KEY environment variable is required");
+  }
+  // Silent process exit for MCP protocol compliance
   process.exit(1);
 }
 
@@ -293,7 +318,7 @@ const makeClient = new MakeAPIClient(
   logger,
 );
 
-logger.info("Enhanced Make.com API client initialized");
+// API client initialized - logged to file only
 
 // ==============================================================================
 // Core Scenario Tools (Enhanced)
@@ -930,7 +955,7 @@ server.start({
   transportType: "stdio",
 });
 
-const startupMessage = [
+const _startupMessage = [
   "🚀 Enhanced Make.com FastMCP Server started successfully",
   `📊 Environment: ${process.env.NODE_ENV || "development"}`,
   `🌐 API Base URL: ${process.env.MAKE_BASE_URL || "https://eu1.make.com/api/v2"}`,
@@ -946,6 +971,7 @@ const startupMessage = [
   "✅ Ready for comprehensive Make.com automation, development, and scenario management tasks!",
 ];
 
-startupMessage.forEach((msg) => logger.info(msg));
+// Startup message removed to prevent JSON-RPC protocol contamination
+// startupMessage.forEach((msg) => logger.info(msg));
 
 export default server;

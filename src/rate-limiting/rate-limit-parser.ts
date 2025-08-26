@@ -183,7 +183,7 @@ export class RateLimitParser {
         category: "RATE_LIMITING",
       });
     } else {
-      console.warn(logMessage);
+      // console.warn(logMessage); // Removed to prevent JSON-RPC protocol contamination
     }
   }
 }

@@ -79,16 +79,16 @@ export class AlertManager {
     // Maintain alert history limit
     this.enforceAlertHistoryLimit();
 
-    // Log the alert using appropriate level
-    if (alert.severity === "critical") {
-      console.error(
-        `🚨 Pattern alert triggered: ${alert.message} (${alert.severity}) - Count: ${alert.count}`,
-      );
-    } else {
-      console.warn(
-        `🚨 Pattern alert triggered: ${alert.message} (${alert.severity}) - Count: ${alert.count}`,
-      );
-    }
+    // Log the alert using appropriate level - console output removed to prevent JSON-RPC protocol contamination
+    // if (alert.severity === "critical") {
+    //   console.error(
+    //     `🚨 Pattern alert triggered: ${alert.message} (${alert.severity}) - Count: ${alert.count}`,
+    //   );
+    // } else {
+    //   console.warn(
+    //     `🚨 Pattern alert triggered: ${alert.message} (${alert.severity}) - Count: ${alert.count}`,
+    //   );
+    // }
 
     // Trigger notification if configured
     this.sendNotification(alert);
@@ -134,7 +134,7 @@ export class AlertManager {
 
     if (process.env.ALERT_WEBHOOK_URL) {
       // Example webhook integration
-      const payload: AlertNotificationPayload = {
+      const _payload: AlertNotificationPayload = {
         alert_id: alert.id,
         pattern: alert.patternId,
         severity: alert.severity,
@@ -145,25 +145,12 @@ export class AlertManager {
         escalation_level: alert.escalationLevel,
       };
 
-      // Log webhook notification attempt using warn level for operational visibility
-      console.warn(
-        `📢 Alert notification prepared for ${alert.id} (${alert.severity})`,
-      );
+      // Alert notification prepared - output suppressed for MCP compliance
 
-      // In a production system, this would use fetch/axios to send the webhook
-      // For now, we log the payload structure for integration guidance
-      if (process.env.NODE_ENV === "development") {
-        console.warn(`📨 Webhook payload:`, payload);
-      }
+      // Webhook payload logging suppressed for MCP compliance
     }
 
-    // Console notification for critical alerts
-    if (alert.severity === "critical" && alert.escalationLevel >= 2) {
-      console.warn(`🚨 CRITICAL ALERT: ${alert.message}`);
-      console.warn(`   Action Required: ${alert.action}`);
-      console.warn(`   Occurrences: ${alert.count}`);
-      console.warn(`   Escalation Level: ${alert.escalationLevel}`);
-    }
+    // Critical alert notification suppressed for MCP compliance
   }
 
   static getActiveAlerts(): PatternAlert[] {
@@ -204,9 +191,7 @@ export class AlertManager {
     if (alert && !alert.resolved) {
       alert.resolved = true;
 
-      console.warn(
-        `✅ Alert resolved: ${alertId} - ${_reason} (Duration: ${Date.now() - alert.firstOccurrence.getTime()}ms)`,
-      );
+      // Alert resolved - output suppressed for MCP compliance
 
       return true;
     }
@@ -223,11 +208,7 @@ export class AlertManager {
       }
     }
 
-    if (resolvedCount > 0) {
-      console.warn(
-        `✅ Pattern alerts resolved: ${patternId} - ${resolvedCount} alerts resolved`,
-      );
-    }
+    // Pattern alerts resolved - output suppressed for MCP compliance
 
     return resolvedCount;
   }
@@ -280,11 +261,7 @@ export class AlertManager {
     toDelete.forEach((alertId) => this.alerts.delete(alertId));
     const clearedCount = beforeCount - this.alerts.size;
 
-    if (clearedCount > 0) {
-      console.warn(
-        `🗑️ Resolved alerts cleared: ${clearedCount} alerts, ${this.alerts.size} remaining`,
-      );
-    }
+    // Resolved alerts cleared - output suppressed for MCP compliance
 
     return clearedCount;
   }
@@ -293,7 +270,7 @@ export class AlertManager {
     const clearedCount = this.alerts.size;
     this.alerts.clear();
 
-    console.warn(`🗑️ All alerts cleared: ${clearedCount} alerts`);
+    // All alerts cleared - output suppressed for MCP compliance
 
     return clearedCount;
   }

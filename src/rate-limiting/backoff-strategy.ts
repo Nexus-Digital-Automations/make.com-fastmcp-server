@@ -386,17 +386,17 @@ export async function retryWithBackoff<T>(
         throw error;
       }
 
-      // Log retry attempt
-      if (context?.operationName) {
-        console.warn(
-          `Retrying ${context.operationName} after ${backoffResult.delay}ms - ${backoffResult.reason}`,
-          {
-            attempt: backoffResult.attempt,
-            maxRetries: strategy.getConfig().maxRetries,
-            errorType,
-          },
-        );
-      }
+      // Log retry attempt - console output removed to prevent JSON-RPC protocol contamination
+      // if (context?.operationName) {
+      //   console.warn(
+      //     `Retrying ${context.operationName} after ${backoffResult.delay}ms - ${backoffResult.reason}`,
+      //     {
+      //       attempt: backoffResult.attempt,
+      //       maxRetries: strategy.getConfig().maxRetries,
+      //       errorType,
+      //     },
+      //   );
+      // }
 
       await delay(backoffResult.delay);
       attempt = backoffResult.attempt;

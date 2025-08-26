@@ -21,8 +21,29 @@ import {
 } from "./enhanced-rate-limit-manager.js";
 // Dependency monitoring is handled by local DependencyMonitor class
 
-// Load environment variables
-dotenv.config();
+// Load environment variables with output suppressed to prevent JSON-RPC protocol contamination
+// eslint-disable-next-line no-console
+const originalConsoleLog = console.log;
+const originalConsoleWarn = console.warn;
+const originalConsoleError = console.error;
+const originalStderrWrite = process.stderr.write;
+
+// Temporarily suppress all console output during dotenv loading
+// eslint-disable-next-line no-console
+console.log = () => {};
+console.warn = () => {};
+console.error = () => {};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+process.stderr.write = () => true as any;
+
+dotenv.config({ debug: false });
+
+// Restore original console functions
+// eslint-disable-next-line no-console
+console.log = originalConsoleLog;
+console.warn = originalConsoleWarn;
+console.error = originalConsoleError;
+process.stderr.write = originalStderrWrite;
 
 // Ensure logs directory exists before Winston initialization
 import * as fs from "fs";
@@ -3005,7 +3026,7 @@ server.start({
   transportType: "stdio",
 });
 
-const startupMessage = [
+const _startupMessage = [
   "Make.com Simple FastMCP Server started successfully",
   `Performance Monitoring: ${config.performanceMonitoringEnabled ? "ENABLED" : "DISABLED"}`,
   `Metrics Collection: ${config.metricsCollectionEnabled ? "ENABLED" : "DISABLED"}`,
@@ -3020,13 +3041,13 @@ const startupMessage = [
 
 // Log startup message - logged to file to avoid MCP interference
 
-// Log startup configuration
-logger.info(startupMessage, {
-  performanceMonitoring: config.performanceMonitoringEnabled,
-  metricsCollection: config.metricsCollectionEnabled,
-  healthCheck: config.healthCheckEnabled,
-  dependencyMonitoring: config.dependencyMonitoringEnabled,
-  maintenanceReports: config.maintenanceReportsEnabled,
-  memoryThreshold: config.memoryThresholdMB,
-  correlationId: "server-startup",
-});
+// Startup logging removed to prevent JSON-RPC protocol contamination
+// logger.info(startupMessage, {
+//   performanceMonitoring: config.performanceMonitoringEnabled,
+//   metricsCollection: config.metricsCollectionEnabled,
+//   healthCheck: config.healthCheckEnabled,
+//   dependencyMonitoring: config.dependencyMonitoringEnabled,
+//   maintenanceReports: config.maintenanceReportsEnabled,
+//   memoryThreshold: config.memoryThresholdMB,
+//   correlationId: "server-startup",
+// });

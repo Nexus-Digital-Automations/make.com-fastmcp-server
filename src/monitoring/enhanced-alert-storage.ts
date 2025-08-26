@@ -81,30 +81,22 @@ export class AlertArchiveManager {
   }
 
   private async writeToFile(alert: ArchivedAlert): Promise<void> {
-    try {
-      // Create archive directory if it doesn't exist
-      await fs.mkdir(this.config.archiveDirectory, { recursive: true });
+    // Create archive directory if it doesn't exist
+    await fs.mkdir(this.config.archiveDirectory, { recursive: true });
 
-      // Create category subdirectory
-      const categoryDir = path.join(
-        this.config.archiveDirectory,
-        alert.category,
-      );
-      await fs.mkdir(categoryDir, { recursive: true });
+    // Create category subdirectory
+    const categoryDir = path.join(this.config.archiveDirectory, alert.category);
+    await fs.mkdir(categoryDir, { recursive: true });
 
-      // Generate filename with date for organization
-      const date = new Date(alert.timestamp).toISOString().split("T")[0];
-      const filename = `${date}-${alert.id}.json`;
-      const filePath = path.join(categoryDir, filename);
+    // Generate filename with date for organization
+    const date = new Date(alert.timestamp).toISOString().split("T")[0];
+    const filename = `${date}-${alert.id}.json`;
+    const filePath = path.join(categoryDir, filename);
 
-      // Write alert data
-      await fs.writeFile(filePath, JSON.stringify(alert, null, 2));
+    // Write alert data
+    await fs.writeFile(filePath, JSON.stringify(alert, null, 2));
 
-      console.warn(`📁 Alert archived to: ${filePath}`);
-    } catch (error) {
-      console.error(`❌ Failed to archive alert ${alert.id}:`, error);
-      throw error;
-    }
+    // Alert archived - output suppressed for MCP compliance
   }
 
   private async readFromFile(alertId: string): Promise<PatternAlert | null> {
@@ -125,8 +117,8 @@ export class AlertArchiveManager {
           }
         }
       }
-    } catch (error) {
-      console.warn(`⚠️ Failed to retrieve archived alert ${alertId}:`, error);
+    } catch {
+      // Failed to retrieve archived alert - error suppressed for MCP compliance
     }
 
     return null;
@@ -134,14 +126,14 @@ export class AlertArchiveManager {
 
   private async writeToDatabase(_alert: ArchivedAlert): Promise<void> {
     // Placeholder for database integration
-    console.warn("📊 Database storage not implemented yet");
+    // Output suppressed for MCP compliance
   }
 
   private async readFromDatabase(
     _alertId: string,
   ): Promise<PatternAlert | null> {
     // Placeholder for database integration
-    console.warn("📊 Database retrieval not implemented yet");
+    // Output suppressed for MCP compliance
     return null;
   }
 
@@ -185,10 +177,10 @@ export class AlertArchiveManager {
       }
 
       if (cleanedCount > 0) {
-        console.warn(`🧹 Cleaned up ${cleanedCount} old archived alerts`);
+        // Output suppressed for MCP compliance
       }
-    } catch (error) {
-      console.error("❌ Failed to cleanup old archives:", error);
+    } catch {
+      // Error output suppressed for MCP compliance
     }
 
     return cleanedCount;
@@ -247,8 +239,8 @@ export class EnhancedAlertStorage {
 
         // Remove from hot storage
         this.hotAlerts.delete(alert.id);
-      } catch (error) {
-        console.error(`❌ Failed to archive alert ${alert.id}:`, error);
+      } catch {
+        // Error output suppressed for MCP compliance
       }
     }
   }
@@ -325,11 +317,8 @@ export class EnhancedAlertStorage {
         const alert = this.decompressAlert(compressed);
         await this.archiveManager.archiveAlert(alert);
         this.warmAlerts.delete(compressed.id);
-      } catch (error) {
-        console.error(
-          `❌ Failed to archive from warm storage ${compressed.id}:`,
-          error,
-        );
+      } catch {
+        // Failed to archive from warm storage - error suppressed for MCP compliance
       }
     }
   }
@@ -388,8 +377,8 @@ export class EnhancedAlertStorage {
       async () => {
         try {
           await this.archiveManager.cleanupOldArchives();
-        } catch (error) {
-          console.error("❌ Background archive cleanup failed:", error);
+        } catch {
+          // Error output suppressed for MCP compliance
         }
       },
       60 * 60 * 1000,
@@ -402,8 +391,8 @@ export class EnhancedAlertStorage {
           if (this.hotAlerts.size > this.config.maxHotAlerts * 0.8) {
             await this.archiveOldAlerts();
           }
-        } catch (error) {
-          console.error("❌ Background archiving failed:", error);
+        } catch {
+          // Error output suppressed for MCP compliance
         }
       },
       10 * 60 * 1000,
@@ -411,7 +400,7 @@ export class EnhancedAlertStorage {
   }
 
   async shutdown(): Promise<void> {
-    console.warn("🔄 Shutting down enhanced alert storage...");
+    // Output suppressed for MCP compliance
 
     // Archive all resolvable alerts before shutdown
     const alertsToArchive = Array.from(this.hotAlerts.values()).filter(
@@ -421,16 +410,11 @@ export class EnhancedAlertStorage {
     for (const alert of alertsToArchive) {
       try {
         await this.archiveManager.archiveAlert(alert);
-      } catch (error) {
-        console.error(
-          `❌ Failed to archive alert during shutdown ${alert.id}:`,
-          error,
-        );
+      } catch {
+        // Failed to archive alert during shutdown - error suppressed for MCP compliance
       }
     }
 
-    console.warn(
-      `✅ Enhanced alert storage shutdown complete. Archived ${alertsToArchive.length} alerts.`,
-    );
+    // Enhanced alert storage shutdown complete - output suppressed for MCP compliance
   }
 }

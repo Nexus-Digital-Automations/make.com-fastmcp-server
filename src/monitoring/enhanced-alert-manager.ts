@@ -72,45 +72,39 @@ export class EnhancedAlertManager {
   }
 
   private initializeComponents(): void {
-    try {
-      const config = this.configManager.getConfig();
+    const config = this.configManager.getConfig();
 
-      // Initialize enhanced storage
-      this.alertStorage = new EnhancedAlertStorage(config.storage);
+    // Initialize enhanced storage
+    this.alertStorage = new EnhancedAlertStorage(config.storage);
 
-      // Initialize correlation engine
-      this.correlationEngine = new BasicCorrelationEngine({
-        correlationWindow: config.correlation.timeWindow,
-        maxActiveCorrelations: config.correlation.maxCorrelations,
-        minConfidenceThreshold: config.correlation.minConfidenceThreshold,
-        enableLearning: config.correlation.enableLearning,
-      });
+    // Initialize correlation engine
+    this.correlationEngine = new BasicCorrelationEngine({
+      correlationWindow: config.correlation.timeWindow,
+      maxActiveCorrelations: config.correlation.maxCorrelations,
+      minConfidenceThreshold: config.correlation.minConfidenceThreshold,
+      enableLearning: config.correlation.enableLearning,
+    });
 
-      // Initialize notification manager
-      this.notificationManager = new MultiChannelNotificationManager();
-      this.setupNotificationChannels(config);
+    // Initialize notification manager
+    this.notificationManager = new MultiChannelNotificationManager();
+    this.setupNotificationChannels(config);
 
-      // Set up alert source for correlation engine
-      this.correlationEngine.setAlertSource((cutoffTime: number) => {
-        return this.getAllRecentAlerts(cutoffTime);
-      });
+    // Set up alert source for correlation engine
+    this.correlationEngine.setAlertSource((cutoffTime: number) => {
+      return this.getAllRecentAlerts(cutoffTime);
+    });
 
-      // Watch for configuration changes
-      this.configManager.onConfigChange((newConfig) => {
-        this.handleConfigurationChange(newConfig);
-      });
+    // Watch for configuration changes
+    this.configManager.onConfigChange((newConfig) => {
+      this.handleConfigurationChange(newConfig);
+    });
 
-      this.initialized = true;
+    this.initialized = true;
 
-      // Enhanced Alert Manager initialized successfully - logged to file to avoid MCP interference
-      // Storage info - logged to file to avoid MCP interference
-      // Correlation info - logged to file to avoid MCP interference
-      // Notifications info - logged to file to avoid MCP interference
-    } catch (error) {
-      // Failed to initialize Enhanced Alert Manager - logged to file to avoid MCP interference
-      console.error("Failed to initialize Enhanced Alert Manager:", error);
-      throw error;
-    }
+    // Enhanced Alert Manager initialized successfully - logged to file to avoid MCP interference
+    // Storage info - logged to file to avoid MCP interference
+    // Correlation info - logged to file to avoid MCP interference
+    // Notifications info - logged to file to avoid MCP interference
   }
 
   private setupNotificationChannels(config: EnhancedAlertManagerConfig): void {

@@ -191,7 +191,7 @@ export class RateLimitManager {
       defaultMeta: { component: "RateLimitManager" },
       transports: [
         new winston.transports.Console({
-          silent: process.env.NODE_ENV === "test",
+          silent: true, // Always silent to prevent JSON-RPC protocol contamination
         }),
       ],
     });
