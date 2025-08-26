@@ -5,9 +5,9 @@
 
 import axios, {
   AxiosInstance,
-  AxiosRequestConfig,
   AxiosResponse,
   AxiosError,
+  InternalAxiosRequestConfig,
 } from "axios";
 import winston from "winston";
 import { v4 as uuidv4 } from "uuid";
@@ -89,15 +89,20 @@ export class MakeAPIClient {
 
     // Request interceptor for logging
     this.axios.interceptors.request.use(
-      (
-        config: AxiosRequestConfig & {
-          correlationId?: string;
-          startTime?: number;
-        },
-      ) => {
+      (config: InternalAxiosRequestConfig) => {
         const correlationId = uuidv4();
-        config.correlationId = correlationId;
-        config.startTime = performance.now();
+        (
+          config as InternalAxiosRequestConfig & {
+            correlationId?: string;
+            startTime?: number;
+          }
+        ).correlationId = correlationId;
+        (
+          config as InternalAxiosRequestConfig & {
+            correlationId?: string;
+            startTime?: number;
+          }
+        ).startTime = performance.now();
 
         this.logger.debug("Make.com API request started", {
           correlationId,
@@ -111,15 +116,12 @@ export class MakeAPIClient {
 
     // Response interceptor for logging and rate limiting
     this.axios.interceptors.response.use(
-      (
-        response: AxiosResponse & {
-          config: AxiosRequestConfig & {
-            correlationId?: string;
-            startTime?: number;
-          };
-        },
-      ) => {
-        const { correlationId, startTime } = response.config;
+      (response: AxiosResponse) => {
+        const config = response.config as InternalAxiosRequestConfig & {
+          correlationId?: string;
+          startTime?: number;
+        };
+        const { correlationId, startTime } = config;
         const duration = startTime ? performance.now() - startTime : 0;
 
         this.logger.info("Make.com API request completed", {
@@ -134,7 +136,13 @@ export class MakeAPIClient {
         return response;
       },
       (error: AxiosError) => {
-        const { correlationId, startTime } = error.config || {};
+        const config = error.config as
+          | (InternalAxiosRequestConfig & {
+              correlationId?: string;
+              startTime?: number;
+            })
+          | undefined;
+        const { correlationId, startTime } = config || {};
         const duration = startTime ? performance.now() - startTime : 0;
 
         this.logger.error("Make.com API request failed", {
@@ -162,7 +170,7 @@ export class MakeAPIClient {
 
   private formatError(error: AxiosError): MakeAPIError {
     const status = error.response?.status;
-    const data = error.response?.data;
+    const data = error.response?.data as { message?: string } | undefined;
 
     switch (status) {
       case 401:
@@ -234,7 +242,7 @@ export class MakeAPIClient {
       });
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -245,7 +253,7 @@ export class MakeAPIClient {
       const response = await this.axios.post("/hooks", webhookData);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -262,7 +270,7 @@ export class MakeAPIClient {
       const response = await this.axios.get("/hooks", { params: queryParams });
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -271,7 +279,7 @@ export class MakeAPIClient {
       const response = await this.axios.get("/analytics", { params });
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -280,7 +288,7 @@ export class MakeAPIClient {
       const response = await this.axios.get("/organizations");
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -289,7 +297,7 @@ export class MakeAPIClient {
       const response = await this.axios.get(`/organizations/${orgId}`);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -299,7 +307,7 @@ export class MakeAPIClient {
       const response = await this.axios.get(endpoint);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -308,7 +316,7 @@ export class MakeAPIClient {
       const response = await this.axios.post("/teams", teamData);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -325,7 +333,7 @@ export class MakeAPIClient {
       const response = await this.axios.get("/connections", { params });
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -336,7 +344,7 @@ export class MakeAPIClient {
       const response = await this.axios.post("/connections", connectionData);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -347,7 +355,7 @@ export class MakeAPIClient {
       );
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -356,7 +364,7 @@ export class MakeAPIClient {
       const response = await this.axios.get(`/connections/${connectionId}`);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -373,7 +381,7 @@ export class MakeAPIClient {
       const response = await this.axios.get("/data-stores", { params });
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -382,7 +390,7 @@ export class MakeAPIClient {
       const response = await this.axios.get(`/data-stores/${dataStoreId}`);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -398,7 +406,7 @@ export class MakeAPIClient {
       const response = await this.axios.get(path, { params });
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -407,7 +415,7 @@ export class MakeAPIClient {
       const response = await this.axios.post(path, data);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -416,7 +424,7 @@ export class MakeAPIClient {
       const response = await this.axios.put(path, data);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -425,7 +433,7 @@ export class MakeAPIClient {
       const response = await this.axios.patch(path, data);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 
@@ -434,7 +442,7 @@ export class MakeAPIClient {
       const response = await this.axios.delete(path);
       return { data: response.data, status: response.status };
     } catch (error) {
-      throw this.formatError(error);
+      throw this.formatError(error as AxiosError);
     }
   }
 }

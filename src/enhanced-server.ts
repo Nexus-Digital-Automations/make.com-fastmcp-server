@@ -622,19 +622,23 @@ server.addTool({
         totalOperations: analytics.operations?.total || 0,
         successRate: analytics.operations?.total
           ? (
-              (analytics.operations.successful / analytics.operations.total) *
+              ((analytics.operations.successful || 0) /
+                analytics.operations.total) *
               100
             ).toFixed(2) + "%"
           : "N/A",
         dataTransferMB: analytics.dataTransfer
-          ? (analytics.dataTransfer.totalBytes / 1024 / 1024).toFixed(2) + " MB"
+          ? ((analytics.dataTransfer.totalBytes || 0) / 1024 / 1024).toFixed(
+              2,
+            ) + " MB"
           : "N/A",
         avgResponseTime: analytics.performance?.averageResponseTime
           ? analytics.performance.averageResponseTime + "ms"
           : "N/A",
         errorRate: analytics.operations?.total
           ? (
-              (analytics.operations.failed / analytics.operations.total) *
+              ((analytics.operations.failed || 0) /
+                analytics.operations.total) *
               100
             ).toFixed(2) + "%"
           : "N/A",
@@ -655,9 +659,9 @@ server.addTool({
               ? "🟡 Moderate"
               : "🔴 High",
         responseRating:
-          analytics.performance?.averageResponseTime <= 1000
+          (analytics.performance?.averageResponseTime || 0) <= 1000
             ? "🟢 Fast"
-            : analytics.performance?.averageResponseTime <= 3000
+            : (analytics.performance?.averageResponseTime || 0) <= 3000
               ? "🟡 Moderate"
               : "🔴 Slow",
       };
@@ -671,7 +675,7 @@ server.addTool({
         content: [
           {
             type: "text",
-            text: `📊 **Enhanced Analytics Report**\n\n**Period:** ${args.startDate} to ${args.endDate}${args.teamId ? `\n**Team:** ${args.teamId}` : ""}\n\n## 📈 Key Metrics\n- **Total Operations:** ${insights.totalOperations}\n- **Success Rate:** ${insights.successRate} ${performance.successRating}\n- **Error Rate:** ${insights.errorRate} ${performance.errorRating}\n- **Data Transfer:** ${insights.dataTransferMB}\n- **Avg Response:** ${insights.avgResponseTime} ${performance.responseRating}\n\n## 🔍 Detailed Breakdown\n${analytics.operations ? `**Operations:**\n- Successful: ${analytics.operations.successful}\n- Failed: ${analytics.operations.failed}\n- Total: ${analytics.operations.total}` : "No operation data"}\n\n${analytics.dataTransfer ? `**Data Transfer:**\n- Inbound: ${(analytics.dataTransfer.inboundBytes / 1024 / 1024).toFixed(2)} MB\n- Outbound: ${(analytics.dataTransfer.outboundBytes / 1024 / 1024).toFixed(2)} MB\n- Total: ${(analytics.dataTransfer.totalBytes / 1024 / 1024).toFixed(2)} MB` : "No transfer data"}\n\n${
+            text: `📊 **Enhanced Analytics Report**\n\n**Period:** ${args.startDate} to ${args.endDate}${args.teamId ? `\n**Team:** ${args.teamId}` : ""}\n\n## 📈 Key Metrics\n- **Total Operations:** ${insights.totalOperations}\n- **Success Rate:** ${insights.successRate} ${performance.successRating}\n- **Error Rate:** ${insights.errorRate} ${performance.errorRating}\n- **Data Transfer:** ${insights.dataTransferMB}\n- **Avg Response:** ${insights.avgResponseTime} ${performance.responseRating}\n\n## 🔍 Detailed Breakdown\n${analytics.operations ? `**Operations:**\n- Successful: ${analytics.operations.successful}\n- Failed: ${analytics.operations.failed}\n- Total: ${analytics.operations.total}` : "No operation data"}\n\n${analytics.dataTransfer ? `**Data Transfer:**\n- Inbound: ${((analytics.dataTransfer.inboundBytes || 0) / 1024 / 1024).toFixed(2)} MB\n- Outbound: ${((analytics.dataTransfer.outboundBytes || 0) / 1024 / 1024).toFixed(2)} MB\n- Total: ${((analytics.dataTransfer.totalBytes || 0) / 1024 / 1024).toFixed(2)} MB` : "No transfer data"}\n\n${
               analytics.errors
                 ? `**Error Analysis:**\n- Total Errors: ${analytics.errors.totalErrors}\n- By Type: ${Object.entries(
                     analytics.errors.errorsByType || {},
@@ -754,8 +758,8 @@ server.addTool({
         baseURL: process.env.MAKE_BASE_URL || "https://eu1.make.com/api/v2",
         tokenConfigured: !!process.env.MAKE_API_KEY,
       },
-      rateLimit: null,
-      connectivity: null,
+      rateLimit: undefined,
+      connectivity: undefined,
     };
 
     try {
@@ -777,7 +781,7 @@ server.addTool({
       if (args.testConnections) {
         try {
           const _testResponse = await makeClient.getOrganizations();
-          healthData.makeApi.status = "connected";
+          healthData.makeApi!.status = "connected";
           healthData.connectivity = {
             status: "connected",
             lastCheck: new Date().toISOString(),
@@ -785,7 +789,7 @@ server.addTool({
             lastTest: new Date().toISOString(),
           };
         } catch (error) {
-          healthData.makeApi.status = "error";
+          healthData.makeApi!.status = "error";
           healthData.connectivity = {
             status: "error",
             lastCheck: new Date().toISOString(),
@@ -798,13 +802,13 @@ server.addTool({
 
       // Overall health assessment
       const isHealthy =
-        healthData.makeApi.tokenConfigured &&
-        healthData.makeApi.status !== "error" &&
-        (healthData.rateLimit?.remaining > 10 || !args.includeRateLimit);
+        healthData.makeApi!.tokenConfigured &&
+        healthData.makeApi!.status !== "error" &&
+        ((healthData.rateLimit?.remaining || 0) > 10 || !args.includeRateLimit);
 
       log.info(`[${operationId}] Health check completed`, {
         overall: isHealthy ? "healthy" : "degraded",
-        apiStatus: healthData.makeApi.status,
+        apiStatus: healthData.makeApi!.status,
         rateLimit: healthData.rateLimit?.remaining,
       });
 
@@ -812,7 +816,7 @@ server.addTool({
         content: [
           {
             type: "text",
-            text: `${isHealthy ? "✅" : "⚠️"} **System Health Check**\n\n**Overall Status:** ${isHealthy ? "🟢 Healthy" : "🟡 Degraded"}\n**Timestamp:** ${healthData.timestamp}\n\n## 🖥️ Server Status\n- **Status:** ${healthData.server.status}\n- **Uptime:** ${Math.round(healthData.server.uptime)} seconds\n- **Memory Usage:** ${Math.round(healthData.server.memory.heapUsed / 1024 / 1024)} MB\n- **Memory Total:** ${Math.round(healthData.server.memory.heapTotal / 1024 / 1024)} MB\n\n## 🔌 Make.com API\n- **Base URL:** ${healthData.makeApi.baseURL}\n- **Token Configured:** ${healthData.makeApi.tokenConfigured ? "✅" : "❌"}\n- **Connection Status:** ${healthData.makeApi.status === "connected" ? "🟢 Connected" : healthData.makeApi.status === "error" ? "🔴 Error" : "⚪ Not Tested"}\n\n${healthData.rateLimit ? `## 📊 Rate Limit Status\n- **Remaining:** ${healthData.rateLimit.remaining} requests\n- **Limit:** ${healthData.rateLimit.limit} requests/minute\n- **Reset In:** ${healthData.rateLimit.resetIn} seconds\n- **Status:** ${healthData.rateLimit.remaining > 20 ? "🟢 Good" : healthData.rateLimit.remaining > 5 ? "🟡 Low" : "🔴 Critical"}\n` : ""}\n${healthData.connectivity ? `## 🌐 Connectivity Test\n${healthData.connectivity.error ? `- **Error:** ${healthData.connectivity.error}\n- **Recommendations:**\n  1. Verify API token is valid\n  2. Check network connectivity\n  3. Confirm Make.com API is operational\n  4. Review API permissions` : `- **Organizations API:** ${healthData.connectivity.organizations}\n- **Last Test:** ${healthData.connectivity.lastTest}\n- **Status:** 🟢 All systems operational`}\n` : ""}\n## 💡 Recommendations\n${!healthData.makeApi.tokenConfigured ? "❌ **Configure MAKE_API_KEY** in environment variables\n" : ""}${healthData.rateLimit?.remaining < 10 ? "⚠️ **Rate limit low** - consider reducing request frequency\n" : ""}${healthData.makeApi.status === "error" ? "🔴 **API connectivity issues** - check token and network\n" : ""}${isHealthy ? "✅ **System is healthy** - all checks passed!" : ""}\n\nFull health data:\n\`\`\`json\n${JSON.stringify(healthData, null, 2)}\n\`\`\``,
+            text: `${isHealthy ? "✅" : "⚠️"} **System Health Check**\n\n**Overall Status:** ${isHealthy ? "🟢 Healthy" : "🟡 Degraded"}\n**Timestamp:** ${healthData.timestamp}\n\n## 🖥️ Server Status\n- **Status:** ${healthData.server.status}\n- **Uptime:** ${Math.round(healthData.server.uptime)} seconds\n- **Memory Usage:** ${Math.round((healthData.server.memory?.heapUsed || 0) / 1024 / 1024)} MB\n- **Memory Total:** ${Math.round((healthData.server.memory?.heapTotal || 0) / 1024 / 1024)} MB\n\n## 🔌 Make.com API\n- **Base URL:** ${healthData.makeApi!.baseURL}\n- **Token Configured:** ${healthData.makeApi!.tokenConfigured ? "✅" : "❌"}\n- **Connection Status:** ${healthData.makeApi!.status === "connected" ? "🟢 Connected" : healthData.makeApi!.status === "error" ? "🔴 Error" : "⚪ Not Tested"}\n\n${healthData.rateLimit ? `## 📊 Rate Limit Status\n- **Remaining:** ${healthData.rateLimit.remaining} requests\n- **Limit:** ${healthData.rateLimit.limit} requests/minute\n- **Reset In:** ${healthData.rateLimit.resetIn} seconds\n- **Status:** ${(healthData.rateLimit.remaining || 0) > 20 ? "🟢 Good" : (healthData.rateLimit.remaining || 0) > 5 ? "🟡 Low" : "🔴 Critical"}\n` : ""}\n${healthData.connectivity ? `## 🌐 Connectivity Test\n${healthData.connectivity.error ? `- **Error:** ${healthData.connectivity.error}\n- **Recommendations:**\n  1. Verify API token is valid\n  2. Check network connectivity\n  3. Confirm Make.com API is operational\n  4. Review API permissions` : `- **Organizations API:** ${healthData.connectivity.organizations}\n- **Last Test:** ${healthData.connectivity.lastTest}\n- **Status:** 🟢 All systems operational`}\n` : ""}\n## 💡 Recommendations\n${!healthData.makeApi!.tokenConfigured ? "❌ **Configure MAKE_API_KEY** in environment variables\n" : ""}${(healthData.rateLimit?.remaining || 0) < 10 ? "⚠️ **Rate limit low** - consider reducing request frequency\n" : ""}${healthData.makeApi!.status === "error" ? "🔴 **API connectivity issues** - check token and network\n" : ""}${isHealthy ? "✅ **System is healthy** - all checks passed!" : ""}\n\nFull health data:\n\`\`\`json\n${JSON.stringify(healthData, null, 2)}\n\`\`\``,
           },
         ],
       };

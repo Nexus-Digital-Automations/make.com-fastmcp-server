@@ -47,6 +47,8 @@ interface MakeScenario {
   connections?: ScenarioConnection[];
   blueprint?: Record<string, unknown>;
   metadata?: Record<string, unknown>;
+  previousStatus?: string;
+  webhooks?: unknown[];
 }
 
 interface ScenarioModule {
@@ -54,6 +56,7 @@ interface ScenarioModule {
   type: string;
   parameters?: Record<string, unknown>;
   name?: string;
+  url?: string;
 }
 
 interface ScenarioConnection {
@@ -91,6 +94,15 @@ interface SchedulingConfig {
   type: string;
   interval?: string;
   unit?: string;
+}
+
+interface ExecutionResult {
+  status?: string;
+  operationsCount?: number;
+  dataProcessed?: number;
+  modulesExecuted?: number;
+  errors?: unknown[];
+  [key: string]: unknown;
 }
 
 // ================================
@@ -521,7 +533,13 @@ ${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`,
         // Collect additional information based on options
         const details: {
           scenario: MakeScenario;
-          analytics?: unknown;
+          analytics?: {
+            totalExecutions?: number;
+            successRate?: number;
+            averageDuration?: number;
+            dataProcessed?: number;
+            [key: string]: unknown;
+          };
           connections?: ScenarioConnection[];
           modules?: ScenarioModule[];
           blueprint?: Record<string, unknown>;
@@ -542,7 +560,13 @@ ${scenario.folder ? `- Folder: ${scenario.folder}` : ""}`,
               ).toISOString(),
               endDate: new Date().toISOString(),
             });
-            details.analytics = analyticsResponse.data;
+            details.analytics = analyticsResponse.data as {
+              totalExecutions?: number;
+              successRate?: number;
+              averageDuration?: number;
+              dataProcessed?: number;
+              [key: string]: unknown;
+            };
           } catch (error) {
             log.warn(`[${operationId}] Failed to fetch analytics`, {
               error: error instanceof Error ? error.message : String(error),
@@ -805,7 +829,7 @@ ${args.description ? `- **Description:** ${args.description}\n` : ""}${args.fold
           `/scenarios/${args.scenarioId}`,
           updateData,
         );
-        const updatedScenario = response.data;
+        const updatedScenario = response.data as MakeScenario;
 
         reportProgress({ progress: 100, total: 100 });
 
@@ -947,7 +971,7 @@ To permanently delete scenario \`${args.scenarioId}\`, you must set the \`confir
           const response = await makeClient.getScenarios(undefined, {
             scenarioId: args.scenarioId,
           });
-          scenarioInfo = response.data?.[0];
+          scenarioInfo = (response.data as MakeScenario[])?.[0];
         } catch {
           log.warn(
             `[${operationId}] Could not fetch scenario info before deletion`,
@@ -1061,7 +1085,11 @@ ${args.reason ? `- **Reason:** ${args.reason}` : ""}
           executionData,
         );
 
-        const execution = executeResponse.data;
+        const execution = executeResponse.data as {
+          id: string;
+          status?: string;
+          [key: string]: unknown;
+        };
         const executionId = execution.id;
 
         log.info(`[${operationId}] Scenario execution started`, {
@@ -1111,7 +1139,7 @@ ${JSON.stringify(args.inputData, null, 2)}
         const startTime = Date.now();
         const timeoutMs = args.timeout * 1000;
         let executionStatus = "running";
-        let executionResult = null;
+        let executionResult: ExecutionResult | null = null;
 
         while (
           executionStatus === "running" &&
@@ -1123,9 +1151,12 @@ ${JSON.stringify(args.inputData, null, 2)}
             const statusResponse = await makeClient.get(
               `/scenarios/${args.scenarioId}/executions/${executionId}`,
             );
-            const statusData = statusResponse.data;
-            executionStatus = statusData.status;
-            executionResult = statusData;
+            const statusData = statusResponse.data as {
+              status?: string;
+              [key: string]: unknown;
+            };
+            executionStatus = statusData.status || "unknown";
+            executionResult = statusData as ExecutionResult;
 
             const elapsed = (Date.now() - startTime) / 1000;
             const progressPercent = Math.min(
@@ -1302,7 +1333,7 @@ ${success ? "- ✅ Review execution logs for detailed results" : "- 🔍 Use `ge
           updateData,
         );
 
-        const updatedScenario = response.data;
+        const updatedScenario = response.data as MakeScenario;
 
         log.info(`[${operationId}] Successfully updated scenario status`, {
           scenarioId: args.scenarioId,
@@ -1861,10 +1892,10 @@ ${scenario.folder ? `- **Folder:** ${scenario.folder}` : ""}
 ${
   details.analytics
     ? `**Recent Analytics (30 days):**
-- **Executions:** ${details.analytics.totalExecutions || 0}
-- **Success Rate:** ${details.analytics.successRate ? `${(details.analytics.successRate * 100).toFixed(1)}%` : "N/A"}
-- **Avg Duration:** ${details.analytics.averageDuration ? `${details.analytics.averageDuration}ms` : "N/A"}
-- **Data Processed:** ${details.analytics.dataProcessed ? `${(details.analytics.dataProcessed / 1024 / 1024).toFixed(2)} MB` : "N/A"}
+- **Executions:** ${(details.analytics as { totalExecutions?: number; successRate?: number; averageDuration?: number; dataProcessed?: number; [key: string]: unknown }).totalExecutions || 0}
+- **Success Rate:** ${(details.analytics as { totalExecutions?: number; successRate?: number; averageDuration?: number; dataProcessed?: number; [key: string]: unknown }).successRate ? `${((details.analytics as { totalExecutions?: number; successRate?: number; averageDuration?: number; dataProcessed?: number; [key: string]: unknown }).successRate! * 100).toFixed(1)}%` : "N/A"}
+- **Avg Duration:** ${(details.analytics as { totalExecutions?: number; successRate?: number; averageDuration?: number; dataProcessed?: number; [key: string]: unknown }).averageDuration ? `${(details.analytics as { totalExecutions?: number; successRate?: number; averageDuration?: number; dataProcessed?: number; [key: string]: unknown }).averageDuration}ms` : "N/A"}
+- **Data Processed:** ${(details.analytics as { totalExecutions?: number; successRate?: number; averageDuration?: number; dataProcessed?: number; [key: string]: unknown }).dataProcessed ? `${((details.analytics as { totalExecutions?: number; successRate?: number; averageDuration?: number; dataProcessed?: number; [key: string]: unknown }).dataProcessed! / 1024 / 1024).toFixed(2)} MB` : "N/A"}
 `
     : ""
 }

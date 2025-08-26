@@ -184,12 +184,11 @@ export function registerUserAccessManagementTools(
 
       try {
         const result = await makeClient.getOrganizations();
+        const organizations = result.data as MakeOrganization[];
 
         log.info(`[${operationId}] Organizations retrieved successfully`, {
-          organizationCount: result.data?.length || 0,
+          organizationCount: organizations?.length || 0,
         });
-
-        const organizations = result.data || [];
 
         // Format organizations with enhanced information
         const formattedOrgs = await Promise.all(
@@ -200,7 +199,8 @@ export function registerUserAccessManagementTools(
             if (args.includeTeamCounts) {
               try {
                 const teams = await makeClient.getTeams(org.id.toString());
-                teamCount = teams.data?.length || 0;
+                const teamsData = (teams.data as MakeTeam[]) || [];
+                teamCount = teamsData.length || 0;
 
                 // Estimate user count from teams
                 userCount = teamCount * 3; // Rough estimate
@@ -314,13 +314,13 @@ export function registerUserAccessManagementTools(
             : Promise.resolve({ data: [] }),
         ]);
 
+        const org = orgResult.data as MakeOrganization;
+        const teams = (teamsResult.data as MakeTeam[]) || [];
+
         log.info(`[${operationId}] Organization details retrieved`, {
           organizationId: args.organizationId,
-          teamsCount: teamsResult.data?.length || 0,
+          teamsCount: teams?.length || 0,
         });
-
-        const org = orgResult.data;
-        const teams = teamsResult.data || [];
 
         return {
           content: [
@@ -331,7 +331,7 @@ export function registerUserAccessManagementTools(
                 `- ID: ${org?.id}\n` +
                 `- Organization ID: ${(org as MakeOrganization & { organizationId?: string })?.organizationId}\n` +
                 `- Your Role: ${(org as MakeOrganization & { role?: string })?.role || "member"}\n\n` +
-                (args.includeTeams && teams.length > 0
+                (args.includeTeams && teams && teams.length > 0
                   ? `**Teams (${teams.length}):**\n` +
                     teams
                       .map(
@@ -406,13 +406,12 @@ export function registerUserAccessManagementTools(
 
       try {
         const result = await makeClient.getTeams(args.organizationId);
+        const teams = (result.data as MakeTeam[]) || [];
 
         log.info(`[${operationId}] Teams retrieved successfully`, {
-          teamCount: result.data?.length || 0,
+          teamCount: teams?.length || 0,
           organizationId: args.organizationId,
         });
-
-        const teams = result.data || [];
 
         // Format teams with enhanced information
         const formattedTeams = await Promise.all(
@@ -425,7 +424,9 @@ export function registerUserAccessManagementTools(
                 const scenarios = await makeClient.getScenarios(
                   team.id.toString(),
                 );
-                scenarioCount = scenarios.data?.length || 0;
+                const scenariosData =
+                  (scenarios.data as { id: string }[]) || [];
+                scenarioCount = scenariosData.length || 0;
               } catch (error) {
                 logger.warn(
                   `Failed to get scenario count for team ${team.id}`,
@@ -525,10 +526,11 @@ export function registerUserAccessManagementTools(
         };
 
         const result = await makeClient.createTeam(teamData);
+        const createdTeam = result.data as MakeTeam;
 
         log.info(`[${operationId}] Team created successfully`, {
-          teamId: result.data?.id,
-          name: result.data?.name,
+          teamId: createdTeam?.id,
+          name: createdTeam?.name,
           organizationId: args.organizationId,
         });
 
@@ -536,13 +538,13 @@ export function registerUserAccessManagementTools(
           content: [
             {
               type: "text",
-              text: `✅ Team created successfully!\n\n**Team Details:**\n- ID: ${result.data?.id}\n- Name: ${result.data?.name}\n- Organization: ${args.organizationId}\n- Description: ${args.description || "None"}\n\n**Team Settings:**\n${
+              text: `✅ Team created successfully!\n\n**Team Details:**\n- ID: ${createdTeam?.id}\n- Name: ${createdTeam?.name}\n- Organization: ${args.organizationId}\n- Description: ${args.description || "None"}\n\n**Team Settings:**\n${
                 args.settings
                   ? Object.entries(args.settings)
                       .map(([key, value]) => `- ${key}: ${value}`)
                       .join("\n")
                   : "- Default settings applied"
-              }\n\n**Next Steps:**\n1. Invite users to the team with "invite-make-user"\n2. Configure team permissions and settings\n3. Create scenarios within this team\n4. Set up team-specific data stores and connections\n\nFull team data:\n\`\`\`json\n${JSON.stringify(result.data, null, 2)}\n\`\`\``,
+              }\n\n**Next Steps:**\n1. Invite users to the team with "invite-make-user"\n2. Configure team permissions and settings\n3. Create scenarios within this team\n4. Set up team-specific data stores and connections\n\nFull team data:\n\`\`\`json\n${JSON.stringify(createdTeam, null, 2)}\n\`\`\``,
             },
           ],
         };
